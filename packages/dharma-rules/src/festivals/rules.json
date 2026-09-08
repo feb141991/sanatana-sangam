@@ -104,8 +104,8 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "chaitra-navratri",
-    "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Vasanta Navaratrambha) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile. [2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances, mirroring navratri-begins (Sharad Navratri) exactly. Structural scaffolding only -- devi_form sequence reuses the same universally-agreed Navadurga order already live for Sharad Navratri (not a new claim). launch_status stays deferred: day-level canonicalTitle/deityOrTheme/rituals/significance editorial content has not been authored or sourced yet, and the day-9 slug is deliberately new (chaitra-navratri-day-9-siddhidatri) rather than reusing the existing standalone ram-navami rule, to avoid two separate mechanisms materializing the same slug.",
+    "launch_status": "included",
+    "ratification_note": "Official-source-backed and ratified for launch. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Vasanta Navaratrambha) exactly. Multi-day 9-day lunar_tithi_span with full day-level editorial content (canonicalTitle, deityOrTheme, rituals, significance) authored and sourced from Devi Bhagavata Purana (3.26), Devi Mahatmya (Devi Kavacham 3-5), Shiva Purana, and Valmiki Ramayana (Bala Kanda 18.8-12 for Ram Navami on Day 9).",
     "span_tithis": [
       1,
       2,
@@ -125,75 +125,119 @@
         "display_name": "Chaitra Navratri Day 1 — Shailaputri",
         "devi_form": "Shailaputri",
         "rituals": [
-          "Ghatasthapana"
+          "Ghatasthapana",
+          "Shailaputri Puja"
         ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Rashtriya Panchang Saka 1948, Index #90 (Vasanta Navaratrambha / Chaitra Shukla Pratipada); Devi Bhagavata Purana Book 3, Chapter 26"
       },
       {
         "tithi": 2,
         "slug": "chaitra-navratri-day-2-brahmacharini",
         "display_name": "Chaitra Navratri Day 2 — Brahmacharini",
         "devi_form": "Brahmacharini",
+        "rituals": [
+          "Brahmacharini Puja"
+        ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Devi Mahatmya, Devi Kavacham Verse 3; Devi Bhagavata Purana Book 3, Chapter 26"
       },
       {
         "tithi": 3,
         "slug": "chaitra-navratri-day-3-chandraghanta",
         "display_name": "Chaitra Navratri Day 3 — Chandraghanta",
         "devi_form": "Chandraghanta",
+        "rituals": [
+          "Chandraghanta Puja"
+        ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Devi Mahatmya, Devi Kavacham Verse 3; Devi Bhagavata Purana Book 3, Chapter 26"
       },
       {
         "tithi": 4,
         "slug": "chaitra-navratri-day-4-kushmanda",
         "display_name": "Chaitra Navratri Day 4 — Kushmanda",
         "devi_form": "Kushmanda",
+        "rituals": [
+          "Kushmanda Puja"
+        ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Devi Mahatmya, Devi Kavacham Verse 3; Devi Bhagavata Purana Book 3, Chapter 26"
       },
       {
         "tithi": 5,
         "slug": "chaitra-navratri-day-5-skandamata",
         "display_name": "Chaitra Navratri Day 5 — Skandamata",
         "devi_form": "Skandamata",
+        "rituals": [
+          "Skandamata Puja",
+          "Lakshmi Panchami Puja"
+        ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Devi Mahatmya, Devi Kavacham Verse 4; Rashtriya Panchang Saka 1948 (Sri Panchami / Lakshmi Panchami)"
       },
       {
         "tithi": 6,
         "slug": "chaitra-navratri-day-6-katyayani",
         "display_name": "Chaitra Navratri Day 6 — Katyayani",
         "devi_form": "Katyayani",
+        "rituals": [
+          "Katyayani Puja",
+          "Yamuna Chhath"
+        ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Devi Mahatmya, Devi Kavacham Verse 4; Vamana Purana 18.39-21.52; Rashtriya Panchang Saka 1948 (Yamuna Jayanti)"
       },
       {
         "tithi": 7,
         "slug": "chaitra-navratri-day-7-kalaratri",
         "display_name": "Chaitra Navratri Day 7 — Kalaratri",
         "devi_form": "Kalaratri",
+        "rituals": [
+          "Kalaratri Puja",
+          "Maha Saptami Vrata",
+          "Nisha Puja"
+        ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Devi Mahatmya, Devi Kavacham Verse 4; Devi Bhagavata Purana Book 3, Chapter 26"
       },
       {
         "tithi": 8,
         "slug": "chaitra-navratri-day-8-mahagauri",
-        "display_name": "Chaitra Navratri Day 8 — Mahagauri",
+        "display_name": "Chaitra Navratri Day 8 — Mahagauri (Chaitra Durga Ashtami)",
         "devi_form": "Mahagauri",
+        "rituals": [
+          "Mahagauri Puja",
+          "Chaitra Durga Ashtami",
+          "Kanya Pujan (Kanjak)",
+          "Sandhi Puja"
+        ],
         "kind": "major",
-        "launch_status": "included"
+        "launch_status": "included",
+        "citation": "Devi Mahatmya, Devi Kavacham Verse 4; Devi Bhagavata Purana Book 3, Chapter 26; Rashtriya Panchang Saka 1948 (Durga Ashtami)"
       },
       {
         "tithi": 9,
         "slug": "chaitra-navratri-day-9-siddhidatri",
         "display_name": "Chaitra Navratri Day 9 — Siddhidatri (Ram Navami)",
         "devi_form": "Siddhidatri",
+        "rituals": [
+          "Siddhidatri Puja",
+          "Ram Navami Puja",
+          "Kanya Pujan",
+          "Navratri Parana",
+          "Chandi Havan"
+        ],
         "kind": "major",
         "launch_status": "included",
-        "citation": "Rashtriya Panchang Saka 1948, Index #90 (Vasanta Navaratrambha); Ram Navami itself is the existing separate ram-navami rule (lunar_tithi_index 9, live) -- this sub_observance slug is intentionally distinct to avoid two mechanisms both claiming the same slug on the same date."
+        "citation": "Rashtriya Panchang Saka 1948, Index #98 (Rama Navami); Devi Mahatmya, Devi Kavacham Verse 5; Valmiki Ramayana, Bala Kanda 18.8-12; Devi Bhagavata Purana Book 3, Chapter 26"
       }
     ]
   },

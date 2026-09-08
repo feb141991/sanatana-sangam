@@ -1,0 +1,243 @@
+[
+  {
+    "slug": "navratri-day-5-skandamata",
+    "field": "significance",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Devi Mahatmya (Durga Saptashati)",
+        "pageOrSection": "Devi Kavacham, Verse 4 ('Panchamam Skandamate-ti')",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Devi Bhagavata Purana",
+        "pageOrSection": "Book 3, Chapter 26 (Navaratra Vrata Vidhi)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected from erroneous Kaumarika Khanda citation. Skandamata is established as the fifth Navadurga in Devi Kavacham (verse 4) and worship prescribed in Devi Bhagavata Purana 3.26."
+  },
+  {
+    "slug": "navratri-day-6-katyayani",
+    "field": "significance",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Devi Mahatmya (Durga Saptashati)",
+        "pageOrSection": "Chapters 2–3 (Manifestation from devas' combined effulgence and slaying of Mahishasura) and Devi Kavacham, Verse 4",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Vamana Purana",
+        "pageOrSection": "Chapters 18.39–21.52 (Katyayani manifestation in Sage Katyayana's ashram)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Devi Mahatmya chapter from Chapter 5 (Shumbha messenger episode) to Chapters 2–3 (Mahishasura episode / devas' effulgence), and corrected Vamana Purana verse range from 18:1–15 to 18.39–21.52."
+  },
+  {
+    "slug": "dussehra",
+    "field": "deityOrTheme",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Valmiki Ramayana",
+        "pageOrSection": "Yuddha Kanda, Chapters 107–108 (Rama's victory over Ravana)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Devi Mahatmya (Durga Saptashati)",
+        "pageOrSection": "Chapters 2–4, esp. Chapter 3 (Slaying of Mahishasura by Durga)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Bhavishya Purana",
+        "pageOrSection": "Uttara Parva, Chapter 138 (Vijaya Dashami / Aparajita Puja)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Devi Mahatmya chapter from Chapter 10 (which is the slaying of Shumbha) to Chapters 2–4 (the Madhyama Charitra, with Mahishasura slain in Chapter 3)."
+  },
+  {
+    "slug": "dussehra",
+    "field": "significance",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Valmiki Ramayana",
+        "pageOrSection": "Yuddha Kanda, Chapters 107–110",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Devi Mahatmya (Durga Saptashati)",
+        "pageOrSection": "Chapters 3–4 (Triumph over Mahishasura and Deva Stuti)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Bhavishya Purana",
+        "pageOrSection": "Uttara Parva, Chapter 138",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Devi Mahatmya chapter from Chapter 10, Verses 1–28 to Chapters 3–4 (climax of the Mahishasuramardini narrative celebrating triumph of Dharma)."
+  },
+  {
+    "slug": "naraka-chaturdashi",
+    "field": "rituals",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Skanda Purana",
+        "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya, Chapter 9, Verses 64–75 (Tailabhyanga, Apamarga snana, Yama Tarpana, Deepa Daan)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Padma Purana",
+        "pageOrSection": "Uttara Khanda, Chapter 122 (The Celebration of Dipavali — Tailabhyanga, Yama Tarpana)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected systematic Padma Purana error from Chapter 124 (which covers Haribodhini/Bhishmapanchaka) to Chapter 122 ('The Celebration of Dipavali')."
+  },
+  {
+    "slug": "diwali",
+    "field": "deityOrTheme",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Skanda Purana",
+        "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya, Chapter 9, Verses 76–90 & Sanatkumara Samhita",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Padma Purana",
+        "pageOrSection": "Uttara Khanda, Chapter 122 (Amavasya Lakshmi Puja)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 124 to Chapter 122 ('The Celebration of Dipavali')."
+  },
+  {
+    "slug": "diwali",
+    "field": "rituals",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Skanda Purana",
+        "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya, Chapter 9, Verses 76–95 (Pradosha Lakshmi Puja & Deepotsava)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Padma Purana",
+        "pageOrSection": "Uttara Khanda, Chapter 122, Verses 4–25 (Lakshmi Puja, Deepotsava)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 124 to Chapter 122, Verses 4–25."
+  },
+  {
+    "slug": "diwali",
+    "field": "significance",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Skanda Purana",
+        "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya, Chapter 9, Verses 76–95",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Padma Purana",
+        "pageOrSection": "Uttara Khanda, Chapter 122",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 124 to Chapter 122."
+  },
+  {
+    "slug": "bhai-dooj",
+    "field": "deityOrTheme",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Bhavishya Purana",
+        "pageOrSection": "Uttara Parva, Chapter 141, Verses 1–25 (Yama Dwitiya Mahatmya)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Padma Purana",
+        "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya / Bhratri Dwitiya section)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Skanda Purana",
+        "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya (Yama and Yamuna dialogue on Kartika Shukla Dwitiya)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Padma Purana chapter from Chapter 125 (which covers Magha Mahatmya) to Chapter 122 (the concluding Yamadvitiya section of the Dipavali cycle in Uttara Khanda)."
+  },
+  {
+    "slug": "bhai-dooj",
+    "field": "significance",
+    "verdict": "corrected",
+    "sourceRefs": [
+      {
+        "sourceName": "Bhavishya Purana",
+        "pageOrSection": "Uttara Parva, Chapter 141, Verses 1–25",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      },
+      {
+        "sourceName": "Padma Purana",
+        "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya section)",
+        "tier": 1,
+        "confidence": "high",
+        "usagePermitted": "academic_citation"
+      }
+    ],
+    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 125 to Chapter 122 (Yamadvitiya section)."
+  }
+]

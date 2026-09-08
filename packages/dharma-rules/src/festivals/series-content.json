@@ -607,14 +607,14 @@
             "sourceRefs": [
               {
                 "sourceName": "Devi Mahatmya (Durga Saptashati)",
-                "pageOrSection": "Devi Kavacham, Verse 4",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Panchamam Skandamate-ti')",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
               },
               {
-                "sourceName": "Skanda Purana",
-                "pageOrSection": "Kaumarika Khanda",
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Navaratra Vrata Vidhi)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -754,14 +754,14 @@
             "sourceRefs": [
               {
                 "sourceName": "Devi Mahatmya (Durga Saptashati)",
-                "pageOrSection": "Chapter 5 and Devi Kavacham, Verse 4",
+                "pageOrSection": "Chapters 2–3 (Manifestation from devas' combined effulgence and slaying of Mahishasura) and Devi Kavacham, Verse 4",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
               },
               {
                 "sourceName": "Vamana Purana",
-                "pageOrSection": "Chapter 18, Verses 1–15",
+                "pageOrSection": "Chapters 18.39–21.52 (Katyayani manifestation in Sage Katyayana's ashram)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1222,21 +1222,21 @@
             "sourceRefs": [
               {
                 "sourceName": "Valmiki Ramayana",
-                "pageOrSection": "Yuddha Kanda (Rama's victory over Ravana)",
+                "pageOrSection": "Yuddha Kanda, Chapters 107–108 (Rama's victory over Ravana)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
               },
               {
                 "sourceName": "Devi Mahatmya (Durga Saptashati)",
-                "pageOrSection": "Chapter 10 (Slaying of Mahishasura on Vijaya Dashami)",
+                "pageOrSection": "Chapters 2–4, esp. Chapter 3 (Slaying of Mahishasura by Durga)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
               },
               {
                 "sourceName": "Bhavishya Purana",
-                "pageOrSection": "Uttara Parva, Chapter 138 (Vijaya Dashami)",
+                "pageOrSection": "Uttara Parva, Chapter 138 (Vijaya Dashami / Aparajita Puja)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1317,7 +1317,7 @@
               },
               {
                 "sourceName": "Devi Mahatmya (Durga Saptashati)",
-                "pageOrSection": "Chapter 10, Verses 1–28",
+                "pageOrSection": "Chapters 3–4 (Triumph over Mahishasura and Deva Stuti)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1586,7 +1586,7 @@
               },
               {
                 "sourceName": "Padma Purana",
-                "pageOrSection": "Uttara Khanda, Chapter 124, Verses 1–3",
+                "pageOrSection": "Uttara Khanda, Chapter 122 (The Celebration of Dipavali — Tailabhyanga, Yama Tarpana)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1673,7 +1673,7 @@
               },
               {
                 "sourceName": "Padma Purana",
-                "pageOrSection": "Uttara Khanda, Chapter 124 (Amavasya Lakshmi Puja)",
+                "pageOrSection": "Uttara Khanda, Chapter 122 (Amavasya Lakshmi Puja)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1715,7 +1715,7 @@
               },
               {
                 "sourceName": "Padma Purana",
-                "pageOrSection": "Uttara Khanda, Chapter 124, Verses 4–25",
+                "pageOrSection": "Uttara Khanda, Chapter 122, Verses 4–25 (Lakshmi Puja, Deepotsava)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1742,7 +1742,7 @@
               },
               {
                 "sourceName": "Padma Purana",
-                "pageOrSection": "Uttara Khanda, Chapter 124",
+                "pageOrSection": "Uttara Khanda, Chapter 122",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1928,7 +1928,7 @@
               },
               {
                 "sourceName": "Padma Purana",
-                "pageOrSection": "Uttara Khanda, Chapter 125",
+                "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya / Bhratri Dwitiya section)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -1998,7 +1998,7 @@
               },
               {
                 "sourceName": "Padma Purana",
-                "pageOrSection": "Uttara Khanda, Chapter 125",
+                "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya section)",
                 "tier": 1,
                 "confidence": "high",
                 "usagePermitted": "academic_citation"
@@ -2638,131 +2638,2383 @@
     {
       "definitionKey": "ganeshotsav",
       "name": {
-        "value": { "en": "Ganeshotsav", "hi": "गणेशोत्सव", "pa": "ਗਣੇਸ਼ੋਤਸਵ" },
+        "value": {
+          "en": "Ganeshotsav",
+          "hi": "गणेशोत्सव",
+          "pa": "ਗਣੇਸ਼ੋਤਸਵ"
+        },
         "status": "source_backed",
-        "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Ganesh Chaturthi, Bhadrapada Shukla Chaturthi", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }],
-        "applicability": { "traditions": ["hindu"], "universal": false },
-        "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+        "sourceRefs": [
+          {
+            "sourceName": "Rashtriya Panchang Saka 1948",
+            "pageOrSection": "Ganesh Chaturthi, Bhadrapada Shukla Chaturthi",
+            "tier": 1,
+            "confidence": "high",
+            "usagePermitted": "academic_citation"
+          }
+        ],
+        "applicability": {
+          "traditions": [
+            "hindu"
+          ],
+          "universal": false
+        },
+        "translationStatus": {
+          "en": "source",
+          "hi": "reviewed_translation",
+          "pa": "reviewed_translation"
+        }
       },
       "tradition": "hindu",
       "children": [
         {
           "slug": "ganesh-chaturthi",
           "sequence": 1,
-          "canonicalTitle": { "value": { "en": "Ganesh Chaturthi", "hi": "गणेश चतुर्थी", "pa": "ਗਣੇਸ਼ ਚਤੁਰਥੀ" }, "status": "source_backed", "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Principal Festivals, Ganesh Chaturthi", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }], "applicability": { "traditions": ["hindu"], "universal": false }, "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Ganesha Puja", "Modak offering"], "hi": ["गणेश पूजा", "मोदक अर्पण"], "pa": ["ਗਣੇਸ਼ ਪੂਜਾ", "ਮੋਦਕ ਭੇਟ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "The opening day invokes Shri Ganesha before new beginnings and community worship.", "hi": "आरंभ का दिन नए कार्यों और सामुदायिक पूजा से पहले श्री गणेश का स्मरण कराता है।", "pa": "ਸ਼ੁਰੂਆਤੀ ਦਿਨ ਨਵੇਂ ਕੰਮਾਂ ਅਤੇ ਸੰਗਤਕ ਪੂਜਾ ਤੋਂ ਪਹਿਲਾਂ ਸ਼੍ਰੀ ਗਣੇਸ਼ ਦਾ ਸਿਮਰਨ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganesh Chaturthi",
+              "hi": "गणेश चतुर्थी",
+              "pa": "ਗਣੇਸ਼ ਚਤੁਰਥੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Principal Festivals, Ganesh Chaturthi",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Ganesha Puja",
+                "Modak offering"
+              ],
+              "hi": [
+                "गणेश पूजा",
+                "मोदक अर्पण"
+              ],
+              "pa": [
+                "ਗਣੇਸ਼ ਪੂਜਾ",
+                "ਮੋਦਕ ਭੇਟ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "The opening day invokes Shri Ganesha before new beginnings and community worship.",
+              "hi": "आरंभ का दिन नए कार्यों और सामुदायिक पूजा से पहले श्री गणेश का स्मरण कराता है।",
+              "pa": "ਸ਼ੁਰੂਆਤੀ ਦਿਨ ਨਵੇਂ ਕੰਮਾਂ ਅਤੇ ਸੰਗਤਕ ਪੂਜਾ ਤੋਂ ਪਹਿਲਾਂ ਸ਼੍ਰੀ ਗਣੇਸ਼ ਦਾ ਸਿਮਰਨ ਕਰਦਾ ਹੈ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-2",
           "sequence": 2,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 2", "hi": "गणेशोत्सव दिन २", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੨" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Daily aarti", "Naivedya"], "hi": ["दैनिक आरती", "नैवेद्य"], "pa": ["ਰੋਜ਼ਾਨਾ ਆਰਤੀ", "ਨੈਵੇਦਯ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A steady day for keeping the household or mandal puja alive.", "hi": "घर या मंडल की पूजा को स्थिर रखने का दिन।", "pa": "ਘਰ ਜਾਂ ਮੰਡਲ ਦੀ ਪੂਜਾ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 2",
+              "hi": "गणेशोत्सव दिन २",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੨"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Daily aarti",
+                "Naivedya"
+              ],
+              "hi": [
+                "दैनिक आरती",
+                "नैवेद्य"
+              ],
+              "pa": [
+                "ਰੋਜ਼ਾਨਾ ਆਰਤੀ",
+                "ਨੈਵੇਦਯ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A steady day for keeping the household or mandal puja alive.",
+              "hi": "घर या मंडल की पूजा को स्थिर रखने का दिन।",
+              "pa": "ਘਰ ਜਾਂ ਮੰਡਲ ਦੀ ਪੂਜਾ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-3",
           "sequence": 3,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 3", "hi": "गणेशोत्सव दिन ३", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੩" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Ganesha nama japa", "Prasad sharing"], "hi": ["गणेश नाम जप", "प्रसाद वितरण"], "pa": ["ਗਣੇਸ਼ ਨਾਮ ਜਪ", "ਪ੍ਰਸਾਦ ਵੰਡਣਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A day for repeating Ganesha's name and sharing blessings.", "hi": "गणेश नाम के जप और आशीर्वाद बांटने का दिन।", "pa": "ਗਣੇਸ਼ ਨਾਮ ਦੇ ਜਪ ਅਤੇ ਅਸੀਸਾਂ ਸਾਂਝੀਆਂ ਕਰਨ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 3",
+              "hi": "गणेशोत्सव दिन ३",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੩"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Ganesha nama japa",
+                "Prasad sharing"
+              ],
+              "hi": [
+                "गणेश नाम जप",
+                "प्रसाद वितरण"
+              ],
+              "pa": [
+                "ਗਣੇਸ਼ ਨਾਮ ਜਪ",
+                "ਪ੍ਰਸਾਦ ਵੰਡਣਾ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A day for repeating Ganesha's name and sharing blessings.",
+              "hi": "गणेश नाम के जप और आशीर्वाद बांटने का दिन।",
+              "pa": "ਗਣੇਸ਼ ਨਾਮ ਦੇ ਜਪ ਅਤੇ ਅਸੀਸਾਂ ਸਾਂਝੀਆਂ ਕਰਨ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-4",
           "sequence": 4,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 4", "hi": "गणेशोत्सव दिन ४", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੪" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Aarti", "Family prayer"], "hi": ["आरती", "परिवारिक प्रार्थना"], "pa": ["ਆਰਤੀ", "ਪਰਿਵਾਰਕ ਅਰਦਾਸ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A quiet continuation of devotion, discipline, and gratitude.", "hi": "भक्ति, अनुशासन और कृतज्ञता को शांत रूप से जारी रखने का दिन।", "pa": "ਭਗਤੀ, ਅਨੁਸ਼ਾਸਨ ਅਤੇ ਕ੍ਰਿਤਜਤਾ ਨੂੰ ਸ਼ਾਂਤੀ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 4",
+              "hi": "गणेशोत्सव दिन ४",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੪"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Aarti",
+                "Family prayer"
+              ],
+              "hi": [
+                "आरती",
+                "परिवारिक प्रार्थना"
+              ],
+              "pa": [
+                "ਆਰਤੀ",
+                "ਪਰਿਵਾਰਕ ਅਰਦਾਸ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A quiet continuation of devotion, discipline, and gratitude.",
+              "hi": "भक्ति, अनुशासन और कृतज्ञता को शांत रूप से जारी रखने का दिन।",
+              "pa": "ਭਗਤੀ, ਅਨੁਸ਼ਾਸਨ ਅਤੇ ਕ੍ਰਿਤਜਤਾ ਨੂੰ ਸ਼ਾਂਤੀ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-5",
           "sequence": 5,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 5", "hi": "गणेशोत्सव दिन ५", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੫" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Community aarti", "Offering sweets"], "hi": ["सामुदायिक आरती", "मिठाई अर्पण"], "pa": ["ਸੰਗਤਕ ਆਰਤੀ", "ਮਿਠਾਈ ਭੇਟ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A mid-festival day centered on shared worship and goodwill.", "hi": "उत्सव के मध्य में सामूहिक पूजा और सद्भाव का दिन।", "pa": "ਉਤਸਵ ਦੇ ਵਿਚਕਾਰ ਸਾਂਝੀ ਪੂਜਾ ਅਤੇ ਸਦਭਾਵ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 5",
+              "hi": "गणेशोत्सव दिन ५",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੫"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Community aarti",
+                "Offering sweets"
+              ],
+              "hi": [
+                "सामुदायिक आरती",
+                "मिठाई अर्पण"
+              ],
+              "pa": [
+                "ਸੰਗਤਕ ਆਰਤੀ",
+                "ਮਿਠਾਈ ਭੇਟ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A mid-festival day centered on shared worship and goodwill.",
+              "hi": "उत्सव के मध्य में सामूहिक पूजा और सद्भाव का दिन।",
+              "pa": "ਉਤਸਵ ਦੇ ਵਿਚਕਾਰ ਸਾਂਝੀ ਪੂਜਾ ਅਤੇ ਸਦਭਾਵ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-6",
           "sequence": 6,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 6", "hi": "गणेशोत्सव दिन ६", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੬" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Ganesha stotra", "Evening lamp"], "hi": ["गणेश स्तोत्र", "संध्या दीप"], "pa": ["ਗਣੇਸ਼ ਸਤੋਤਰ", "ਸ਼ਾਮ ਦਾ ਦੀਵਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A day to return to clarity before the busier closing days.", "hi": "समापन के व्यस्त दिनों से पहले स्पष्टता में लौटने का दिन।", "pa": "ਅੰਤਲੇ ਰੁੱਝੇ ਦਿਨਾਂ ਤੋਂ ਪਹਿਲਾਂ ਸਪਸ਼ਟਤਾ ਵੱਲ ਮੁੜਨ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 6",
+              "hi": "गणेशोत्सव दिन ६",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੬"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Ganesha stotra",
+                "Evening lamp"
+              ],
+              "hi": [
+                "गणेश स्तोत्र",
+                "संध्या दीप"
+              ],
+              "pa": [
+                "ਗਣੇਸ਼ ਸਤੋਤਰ",
+                "ਸ਼ਾਮ ਦਾ ਦੀਵਾ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A day to return to clarity before the busier closing days.",
+              "hi": "समापन के व्यस्त दिनों से पहले स्पष्टता में लौटने का दिन।",
+              "pa": "ਅੰਤਲੇ ਰੁੱਝੇ ਦਿਨਾਂ ਤੋਂ ਪਹਿਲਾਂ ਸਪਸ਼ਟਤਾ ਵੱਲ ਮੁੜਨ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-7",
           "sequence": 7,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 7", "hi": "गणेशोत्सव दिन ७", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੭" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Aarti", "Resolve obstacles"], "hi": ["आरती", "विघ्न निवेदन"], "pa": ["ਆਰਤੀ", "ਰੁਕਾਵਟਾਂ ਲਈ ਅਰਦਾਸ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A day to name obstacles and meet them with patience.", "hi": "विघ्नों को पहचानकर धैर्य से उनका सामना करने का दिन।", "pa": "ਰੁਕਾਵਟਾਂ ਨੂੰ ਪਛਾਣ ਕੇ ਧੀਰਜ ਨਾਲ ਮਿਲਣ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 7",
+              "hi": "गणेशोत्सव दिन ७",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੭"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Aarti",
+                "Resolve obstacles"
+              ],
+              "hi": [
+                "आरती",
+                "विघ्न निवेदन"
+              ],
+              "pa": [
+                "ਆਰਤੀ",
+                "ਰੁਕਾਵਟਾਂ ਲਈ ਅਰਦਾਸ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A day to name obstacles and meet them with patience.",
+              "hi": "विघ्नों को पहचानकर धैर्य से उनका सामना करने का दिन।",
+              "pa": "ਰੁਕਾਵਟਾਂ ਨੂੰ ਪਛਾਣ ਕੇ ਧੀਰਜ ਨਾਲ ਮਿਲਣ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-8",
           "sequence": 8,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 8", "hi": "गणेशोत्सव दिन ८", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੮" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Offer flowers", "Evening aarti"], "hi": ["फूल अर्पण", "संध्या आरती"], "pa": ["ਫੁੱਲ ਭੇਟ", "ਸ਼ਾਮ ਦੀ ਆਰਤੀ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A day for beauty, offering, and simple attention.", "hi": "सुंदरता, अर्पण और सरल ध्यान का दिन।", "pa": "ਸੁੰਦਰਤਾ, ਭੇਟ ਅਤੇ ਸਧਾਰਨ ਧਿਆਨ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 8",
+              "hi": "गणेशोत्सव दिन ८",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੮"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Offer flowers",
+                "Evening aarti"
+              ],
+              "hi": [
+                "फूल अर्पण",
+                "संध्या आरती"
+              ],
+              "pa": [
+                "ਫੁੱਲ ਭੇਟ",
+                "ਸ਼ਾਮ ਦੀ ਆਰਤੀ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A day for beauty, offering, and simple attention.",
+              "hi": "सुंदरता, अर्पण और सरल ध्यान का दिन।",
+              "pa": "ਸੁੰਦਰਤਾ, ਭੇਟ ਅਤੇ ਸਧਾਰਨ ਧਿਆਨ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-9",
           "sequence": 9,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 9", "hi": "गणेशोत्सव दिन ९", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੯" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Thanksgiving prayer", "Prepare for farewell"], "hi": ["कृतज्ञता प्रार्थना", "विदाई की तैयारी"], "pa": ["ਕ੍ਰਿਤਜਤਾ ਅਰਦਾਸ", "ਵਿਦਾਈ ਦੀ ਤਿਆਰੀ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "The festival begins turning toward gratitude and farewell.", "hi": "उत्सव कृतज्ञता और विदाई की ओर मुड़ता है।", "pa": "ਉਤਸਵ ਕ੍ਰਿਤਜਤਾ ਅਤੇ ਵਿਦਾਈ ਵੱਲ ਮੁੜਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 9",
+              "hi": "गणेशोत्सव दिन ९",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੯"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Thanksgiving prayer",
+                "Prepare for farewell"
+              ],
+              "hi": [
+                "कृतज्ञता प्रार्थना",
+                "विदाई की तैयारी"
+              ],
+              "pa": [
+                "ਕ੍ਰਿਤਜਤਾ ਅਰਦਾਸ",
+                "ਵਿਦਾਈ ਦੀ ਤਿਆਰੀ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "The festival begins turning toward gratitude and farewell.",
+              "hi": "उत्सव कृतज्ञता और विदाई की ओर मुड़ता है।",
+              "pa": "ਉਤਸਵ ਕ੍ਰਿਤਜਤਾ ਅਤੇ ਵਿਦਾਈ ਵੱਲ ਮੁੜਦਾ ਹੈ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "ganeshotsav-day-10",
           "sequence": 10,
-          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 10", "hi": "गणेशोत्सव दिन १०", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੧੦" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Final full aarti", "Community offering"], "hi": ["अंतिम पूर्ण आरती", "सामूहिक अर्पण"], "pa": ["ਅੰਤਿਮ ਪੂਰੀ ਆਰਤੀ", "ਸੰਗਤਕ ਭੇਟ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "A closing preparation day before visarjan.", "hi": "विसर्जन से पहले समापन की तैयारी का दिन।", "pa": "ਵਿਸਰਜਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮਾਪਤੀ ਦੀ ਤਿਆਰੀ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Ganeshotsav Day 10",
+              "hi": "गणेशोत्सव दिन १०",
+              "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੧੦"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Final full aarti",
+                "Community offering"
+              ],
+              "hi": [
+                "अंतिम पूर्ण आरती",
+                "सामूहिक अर्पण"
+              ],
+              "pa": [
+                "ਅੰਤਿਮ ਪੂਰੀ ਆਰਤੀ",
+                "ਸੰਗਤਕ ਭੇਟ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "A closing preparation day before visarjan.",
+              "hi": "विसर्जन से पहले समापन की तैयारी का दिन।",
+              "pa": "ਵਿਸਰਜਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮਾਪਤੀ ਦੀ ਤਿਆਰੀ ਦਾ ਦਿਨ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         },
         {
           "slug": "anant-chaturdashi-ganesh-visarjan",
           "sequence": 11,
-          "canonicalTitle": { "value": { "en": "Anant Chaturdashi / Ganesh Visarjan", "hi": "अनंत चतुर्दशी / गणेश विसर्जन", "pa": "ਅਨੰਤ ਚਤੁਰਦਸ਼ੀ / ਗਣੇਸ਼ ਵਿਸਰਜਨ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Ganesh Visarjan", "Farewell prayer"], "hi": ["गणेश विसर्जन", "विदाई प्रार्थना"], "pa": ["ਗਣੇਸ਼ ਵਿਸਰਜਨ", "ਵਿਦਾਈ ਅਰਦਾਸ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
-          "significance": { "value": { "en": "The concluding day carries the blessing home through farewell, humility, and renewal.", "hi": "समापन दिन विदाई, विनम्रता और नवीनीकरण से आशीर्वाद को घर ले जाता है।", "pa": "ਸਮਾਪਤੀ ਦਾ ਦਿਨ ਵਿਦਾਈ, ਨਿਮਰਤਾ ਅਤੇ ਨਵੀਂ ਸ਼ੁਰੂਆਤ ਰਾਹੀਂ ਅਸੀਸ ਨੂੰ ਘਰ ਲੈ ਜਾਂਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Anant Chaturdashi / Ganesh Visarjan",
+              "hi": "अनंत चतुर्दशी / गणेश विसर्जन",
+              "pa": "ਅਨੰਤ ਚਤੁਰਦਸ਼ੀ / ਗਣੇਸ਼ ਵਿਸਰਜਨ"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Ganesh Visarjan",
+                "Farewell prayer"
+              ],
+              "hi": [
+                "गणेश विसर्जन",
+                "विदाई प्रार्थना"
+              ],
+              "pa": [
+                "ਗਣੇਸ਼ ਵਿਸਰਜਨ",
+                "ਵਿਦਾਈ ਅਰਦਾਸ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "The concluding day carries the blessing home through farewell, humility, and renewal.",
+              "hi": "समापन दिन विदाई, विनम्रता और नवीनीकरण से आशीर्वाद को घर ले जाता है।",
+              "pa": "ਸਮਾਪਤੀ ਦਾ ਦਿਨ ਵਿਦਾਈ, ਨਿਮਰਤਾ ਅਤੇ ਨਵੀਂ ਸ਼ੁਰੂਆਤ ਰਾਹੀਂ ਅਸੀਸ ਨੂੰ ਘਰ ਲੈ ਜਾਂਦਾ ਹੈ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:ganeshotsav-series-2026-v1"
+          }
         }
       ]
     },
     {
       "definitionKey": "chhath-puja-four-days",
       "name": {
-        "value": { "en": "Chhath Puja", "hi": "छठ पूजा", "pa": "ਛੱਠ ਪੂਜਾ" },
+        "value": {
+          "en": "Chhath Puja",
+          "hi": "छठ पूजा",
+          "pa": "ਛੱਠ ਪੂਜਾ"
+        },
         "status": "source_backed",
-        "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Principal Festivals, Surya Shashthi / Chhat Bihar", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }],
-        "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false },
-        "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+        "sourceRefs": [
+          {
+            "sourceName": "Rashtriya Panchang Saka 1948",
+            "pageOrSection": "Principal Festivals, Surya Shashthi / Chhat Bihar",
+            "tier": 1,
+            "confidence": "high",
+            "usagePermitted": "academic_citation"
+          }
+        ],
+        "applicability": {
+          "traditions": [
+            "hindu"
+          ],
+          "regions": [
+            "Bihar",
+            "Jharkhand",
+            "Eastern Uttar Pradesh",
+            "Nepal Terai"
+          ],
+          "universal": false
+        },
+        "translationStatus": {
+          "en": "source",
+          "hi": "reviewed_translation",
+          "pa": "reviewed_translation"
+        }
       },
       "tradition": "hindu",
       "children": [
         {
           "slug": "chhath-nahay-khay",
           "sequence": 1,
-          "canonicalTitle": { "value": { "en": "Nahay Khay", "hi": "नहाय खाय", "pa": "ਨਹਾਇ ਖਾਇ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Ritual bath", "Simple sattvic meal"], "hi": ["स्नान", "सात्त्विक भोजन"], "pa": ["ਇਸ਼ਨਾਨ", "ਸਾਤਵਿਕ ਭੋਜਨ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
-          "significance": { "value": { "en": "The opening day prepares body and home for the Chhath vrata.", "hi": "आरंभ का दिन शरीर और घर को छठ व्रत के लिए तैयार करता है।", "pa": "ਸ਼ੁਰੂਆਤੀ ਦਿਨ ਸਰੀਰ ਅਤੇ ਘਰ ਨੂੰ ਛੱਠ ਵਰਤ ਲਈ ਤਿਆਰ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Nahay Khay",
+              "hi": "नहाय खाय",
+              "pa": "ਨਹਾਇ ਖਾਇ"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Ritual bath",
+                "Simple sattvic meal"
+              ],
+              "hi": [
+                "स्नान",
+                "सात्त्विक भोजन"
+              ],
+              "pa": [
+                "ਇਸ਼ਨਾਨ",
+                "ਸਾਤਵਿਕ ਭੋਜਨ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "The opening day prepares body and home for the Chhath vrata.",
+              "hi": "आरंभ का दिन शरीर और घर को छठ व्रत के लिए तैयार करता है।",
+              "pa": "ਸ਼ੁਰੂਆਤੀ ਦਿਨ ਸਰੀਰ ਅਤੇ ਘਰ ਨੂੰ ਛੱਠ ਵਰਤ ਲਈ ਤਿਆਰ ਕਰਦਾ ਹੈ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          }
         },
         {
           "slug": "chhath-kharna",
           "sequence": 2,
-          "canonicalTitle": { "value": { "en": "Kharna", "hi": "खरना", "pa": "ਖਰਨਾ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Daylong fast", "Evening prasad"], "hi": ["दिनभर व्रत", "संध्या प्रसाद"], "pa": ["ਦਿਨ ਭਰ ਵਰਤ", "ਸ਼ਾਮ ਦਾ ਪ੍ਰਸਾਦ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
-          "significance": { "value": { "en": "Kharna deepens restraint before the main arghya offerings.", "hi": "खरना मुख्य अर्घ्य से पहले संयम को गहरा करता है।", "pa": "ਖਰਨਾ ਮੁੱਖ ਅਰਘ ਤੋਂ ਪਹਿਲਾਂ ਸੰਯਮ ਨੂੰ ਗਹਿਰਾ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Kharna",
+              "hi": "खरना",
+              "pa": "ਖਰਨਾ"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Daylong fast",
+                "Evening prasad"
+              ],
+              "hi": [
+                "दिनभर व्रत",
+                "संध्या प्रसाद"
+              ],
+              "pa": [
+                "ਦਿਨ ਭਰ ਵਰਤ",
+                "ਸ਼ਾਮ ਦਾ ਪ੍ਰਸਾਦ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "Kharna deepens restraint before the main arghya offerings.",
+              "hi": "खरना मुख्य अर्घ्य से पहले संयम को गहरा करता है।",
+              "pa": "ਖਰਨਾ ਮੁੱਖ ਅਰਘ ਤੋਂ ਪਹਿਲਾਂ ਸੰਯਮ ਨੂੰ ਗਹਿਰਾ ਕਰਦਾ ਹੈ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          }
         },
         {
           "slug": "chhath-puja",
           "sequence": 3,
-          "canonicalTitle": { "value": { "en": "Sandhya Arghya / Chhath Puja", "hi": "संध्या अर्घ्य / छठ पूजा", "pa": "ਸੰਧਿਆ ਅਰਘ / ਛੱਠ ਪੂਜਾ" }, "status": "source_backed", "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Principal Festivals, Surya Shashthi / Chhat Bihar", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Sandhya Arghya", "Sun worship"], "hi": ["संध्या अर्घ्य", "सूर्य पूजा"], "pa": ["ਸੰਧਿਆ ਅਰਘ", "ਸੂਰਜ ਪੂਜਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
-          "significance": { "value": { "en": "The main evening offering honors Surya and Chhathi Maiya with devotion and discipline.", "hi": "मुख्य संध्या अर्घ्य सूर्य और छठी मैया को भक्ति और अनुशासन से समर्पित है।", "pa": "ਮੁੱਖ ਸ਼ਾਮ ਦਾ ਅਰਘ ਸੂਰਜ ਅਤੇ ਛੱਠੀ ਮਈਆ ਨੂੰ ਭਗਤੀ ਤੇ ਅਨੁਸ਼ਾਸਨ ਨਾਲ ਸਮਰਪਿਤ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Sandhya Arghya / Chhath Puja",
+              "hi": "संध्या अर्घ्य / छठ पूजा",
+              "pa": "ਸੰਧਿਆ ਅਰਘ / ਛੱਠ ਪੂਜਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Principal Festivals, Surya Shashthi / Chhat Bihar",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Sandhya Arghya",
+                "Sun worship"
+              ],
+              "hi": [
+                "संध्या अर्घ्य",
+                "सूर्य पूजा"
+              ],
+              "pa": [
+                "ਸੰਧਿਆ ਅਰਘ",
+                "ਸੂਰਜ ਪੂਜਾ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "The main evening offering honors Surya and Chhathi Maiya with devotion and discipline.",
+              "hi": "मुख्य संध्या अर्घ्य सूर्य और छठी मैया को भक्ति और अनुशासन से समर्पित है।",
+              "pa": "ਮੁੱਖ ਸ਼ਾਮ ਦਾ ਅਰਘ ਸੂਰਜ ਅਤੇ ਛੱਠੀ ਮਈਆ ਨੂੰ ਭਗਤੀ ਤੇ ਅਨੁਸ਼ਾਸਨ ਨਾਲ ਸਮਰਪਿਤ ਹੈ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          }
         },
         {
           "slug": "chhath-usha-arghya",
           "sequence": 4,
-          "canonicalTitle": { "value": { "en": "Usha Arghya", "hi": "उषा अर्घ्य", "pa": "ਉਸ਼ਾ ਅਰਘ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
-          "rituals": { "value": { "en": ["Morning arghya", "Vrata completion"], "hi": ["प्रातः अर्घ्य", "व्रत पूर्णता"], "pa": ["ਸਵੇਰ ਦਾ ਅਰਘ", "ਵਰਤ ਪੂਰਨਤਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
-          "significance": { "value": { "en": "The concluding sunrise offering completes the vrata with gratitude.", "hi": "समापन का सूर्योदय अर्घ्य कृतज्ञता के साथ व्रत पूर्ण करता है।", "pa": "ਅੰਤਿਮ ਸੂਰਜੋਦਯ ਅਰਘ ਕ੍ਰਿਤਜਤਾ ਨਾਲ ਵਰਤ ਪੂਰਾ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+          "canonicalTitle": {
+            "value": {
+              "en": "Usha Arghya",
+              "hi": "उषा अर्घ्य",
+              "pa": "ਉਸ਼ਾ ਅਰਘ"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Morning arghya",
+                "Vrata completion"
+              ],
+              "hi": [
+                "प्रातः अर्घ्य",
+                "व्रत पूर्णता"
+              ],
+              "pa": [
+                "ਸਵੇਰ ਦਾ ਅਰਘ",
+                "ਵਰਤ ਪੂਰਨਤਾ"
+              ]
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          },
+          "significance": {
+            "value": {
+              "en": "The concluding sunrise offering completes the vrata with gratitude.",
+              "hi": "समापन का सूर्योदय अर्घ्य कृतज्ञता के साथ व्रत पूर्ण करता है।",
+              "pa": "ਅੰਤਿਮ ਸੂਰਜੋਦਯ ਅਰਘ ਕ੍ਰਿਤਜਤਾ ਨਾਲ ਵਰਤ ਪੂਰਾ ਕਰਦਾ ਹੈ।"
+            },
+            "status": "council_reviewed_editorial",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "regions": [
+                "Bihar",
+                "Jharkhand",
+                "Eastern Uttar Pradesh",
+                "Nepal Terai"
+              ],
+              "universal": false
+            },
+            "reviewRef": "council:chhath-series-2026-v1"
+          }
+        }
+      ]
+    },
+    {
+      "definitionKey": "chaitra-navratri",
+      "name": {
+        "value": {
+          "en": "Chaitra Navratri",
+          "hi": "चैत्र नवरात्रि",
+          "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ"
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "sourceName": "Rashtriya Panchang Saka 1948",
+            "pageOrSection": "Chaitra Shukla Paksha, Index #90 (Vasanta Navaratrambha)",
+            "tier": 1,
+            "confidence": "high",
+            "usagePermitted": "academic_citation"
+          },
+          {
+            "sourceName": "Devi Bhagavata Purana",
+            "pageOrSection": "Book 3, Chapter 26, Verses 3–6 (Vasanta Navaratra Mahatmya)",
+            "tier": 1,
+            "confidence": "high",
+            "usagePermitted": "academic_citation"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        },
+        "translationStatus": {
+          "en": "source",
+          "hi": "reviewed_translation",
+          "pa": "reviewed_translation"
+        }
+      },
+      "tradition": "hindu",
+      "children": [
+        {
+          "slug": "chaitra-navratri-day-1-shailaputri",
+          "sequence": 1,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 1 — Shailaputri",
+              "hi": "चैत्र नवरात्रि दिन १ — शैलपुत्री",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੧ — ਸ਼ੈਲਪੁਤਰੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin/Chaitra Shukla Pratipada (Ghatasthapana, Index #90)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Prathamam Shailaputri cha')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Shailaputri",
+              "hi": "माँ शैलपुत्री",
+              "pa": "ਮਾਂ ਸ਼ੈਲਪੁਤਰੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Prathamam Shailaputri cha')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Navaratra Vrata Vidhi)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Ghatasthapana",
+                "Shailaputri Puja"
+              ],
+              "hi": [
+                "घटस्थापना",
+                "शैलपुत्री पूजा"
+              ],
+              "pa": [
+                "ਘਟਸਥਾਪਨਾ",
+                "ਸ਼ੈਲਪੁਤਰੀ ਪੂਜਾ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Pratipada mentions Kalashasthapana",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26, Verses 1–25 (Kalashasthapana and Pratipada Puja)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "First day of Chaitra Navratri marking the Hindu New Year (Nav Samvatsar) and worship of Maa Shailaputri, the daughter of the Himalayas embodying stability and devotion.",
+              "hi": "नव संवत्सर के शुभारंभ पर वसंत नवरात्रि का प्रथम दिवस, जिसमें हिमालय की पुत्री एवं अडिग निष्ठा की प्रतीक माँ शैलपुत्री की आराधना और घटस्थापना की जाती है।",
+              "pa": "ਨਵੇਂ ਸੰਵਤਸਰ ਦੇ ਆਰੰਭ 'ਤੇ ਚੈਤ੍ਰ ਨਰਾਤਿਆਂ ਦਾ ਪਹਿਲਾ ਦਿਨ, ਜਿਸ ਵਿੱਚ ਹਿਮਾਲਿਆ ਦੀ ਧੀ ਅਤੇ ਅਡੋਲ ਭਗਤੀ ਦੇ ਪ੍ਰਤੀਕ ਮਾਂ ਸ਼ੈਲਪੁਤਰੀ ਦੀ ਅਰਾਧਨਾ ਤੇ ਘਟਸਥਾਪਨਾ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Shiva Purana",
+                "pageOrSection": "Rudra Samhita, Parvati Khanda, Chapters 1–2",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26, Verses 3–6",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-2-brahmacharini",
+          "sequence": 2,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 2 — Brahmacharini",
+              "hi": "चैत्र नवरात्रि दिन २ — ब्रह्मचारिणी",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੨ — ਬ੍ਰਹਮਚਾਰਿਣੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Dwitiya",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Dvitiyam Brahmacharini')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Brahmacharini",
+              "hi": "माँ ब्रह्मचारिणी",
+              "pa": "ਮਾਂ ਬ੍ਰਹਮਚਾਰਿਣੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Dvitiyam Brahmacharini')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Brahmacharini Puja"
+              ],
+              "hi": [
+                "ब्रह्मचारिणी पूजा"
+              ],
+              "pa": [
+                "ਬ੍ਰਹਮਚਾਰਿਣੀ ਪੂਜਾ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Dwitiya Navaratra Puja)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Second form of Navadurga, personifying ascetic discipline, penance (Tapas), and single-minded spiritual absorption.",
+              "hi": "नवदुर्गा का द्वितीय स्वरूप, जो कठोर तपस्या, संयम, सदाचार और ज्ञान की अधिष्ठात्री देवी हैं।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਦੂਜਾ ਸਰੂਪ, ਜੋ ਕਠਿਨ ਤਪੱਸਿਆ, ਸੰਜਮ ਅਤੇ ਅਧਿਆਤਮਿਕ ਸਾਧਨਾ ਦੀ ਪ੍ਰਤੀਕ ਹਨ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Shiva Purana",
+                "pageOrSection": "Rudra Samhita, Parvati Khanda, Chapters 11–14 (Tapasya of Parvati)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-3-chandraghanta",
+          "sequence": 3,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 3 — Chandraghanta",
+              "hi": "चैत्र नवरात्रि दिन ३ — चंद्रघंटा",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੩ — ਚੰਦਰਘੰਟਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Tritiya",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Tritiyam Chandraghanteti')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Chandraghanta",
+              "hi": "माँ चंद्रघंटा",
+              "pa": "ਮਾਂ ਚੰਦਰਘੰਟਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Tritiyam Chandraghanteti')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Chandraghanta Puja"
+              ],
+              "hi": [
+                "चंद्रघंटा पूजा"
+              ],
+              "pa": [
+                "ਚੰਦਰਘੰਟਾ ਪੂਜਾ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Tritiya Navaratra Puja)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Third form of Navadurga, adorned with a crescent bell-shaped moon, bestowing fearlessness, peace, and readiness for righteous action.",
+              "hi": "नवदुर्गा का तृतीय स्वरूप, जिनके मस्तक पर घंटे के आकार का अर्धचंद्र सुशोभित है; वे निर्भयता, शांति और सौम्यता प्रदान करती हैं।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਤੀਜਾ ਸਰੂਪ, ਜਿਨ੍ਹਾਂ ਦੇ ਮੱਥੇ 'ਤੇ ਘੰਟੀ ਵਰਗਾ ਅੱਧਾ ਚੰਦਰਮਾ ਸਜਿਆ ਹੈ; ਉਹ ਨਿਰਭੈਤਾ ਅਤੇ ਸ਼ਾਂਤੀ ਦੀ ਦਾਤੀ ਹਨ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-4-kushmanda",
+          "sequence": 4,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 4 — Kushmanda",
+              "hi": "चैत्र नवरात्रि दिन ४ — कूष्माण्डा",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੪ — ਕੂਸ਼ਮਾਂਡਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Chaturthi",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Kushmandeti Chaturthakam')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Kushmanda",
+              "hi": "माँ कूष्माण्डा",
+              "pa": "ਮਾਂ ਕੂਸ਼ਮਾਂਡਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3 ('Kushmandeti Chaturthakam')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Kushmanda Puja"
+              ],
+              "hi": [
+                "कूष्माण्डा पूजा"
+              ],
+              "pa": [
+                "ਕੂਸ਼ਮਾਂਡਾ ਪੂਜਾ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Chaturthi Navaratra Puja)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Fourth form of Navadurga whose gentle divine smile manifested the cosmic egg (Brahmanda), dwelling within the core of the Sun.",
+              "hi": "नवदुर्गा का चतुर्थ स्वरूप, जिनके मन्द हास्य से ब्रह्मांड की उत्पत्ति हुई; वे सूर्यमंडल के भीतर निवास कर तेज और ओज प्रदान करती हैं।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਚੌਥਾ ਸਰੂਪ, ਜਿਨ੍ਹਾਂ ਦੀ ਮੁਸਕਾਨ ਨਾਲ ਬ੍ਰਹਿਮੰਡ ਦੀ ਰਚਨਾ ਹੋਈ; ਉਹ ਸੂਰਜ ਮੰਡਲ ਵਿੱਚ ਨਿਵਾਸ ਕਰਦੇ ਹਨ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 3",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 7, Chapter 35 (Devi Gita — Cosmic Manifestation)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-5-skandamata",
+          "sequence": 5,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 5 — Skandamata",
+              "hi": "चैत्र नवरात्रि दिन ५ — स्कन्दमाता",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੫ — ਸਕੰਦਮਾਤਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Panchami",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Panchamam Skandamateti')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Skandamata",
+              "hi": "माँ स्कन्दमाता",
+              "pa": "ਮਾਂ ਸਕੰਦਮਾਤਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Panchamam Skandamateti')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Skandamata Puja",
+                "Lakshmi Panchami Puja"
+              ],
+              "hi": [
+                "स्कन्दमाता पूजा",
+                "लक्ष्मी पंचमी पूजा"
+              ],
+              "pa": [
+                "ਸਕੰਦਮਾਤਾ ਪੂਜਾ",
+                "ਲਕਸ਼ਮੀ ਪੰਚਮੀ ਪੂਜਾ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Panchami Navaratra Puja)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Panchami (Sri Panchami / Lakshmi Panchami)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Fifth form of Navadurga, mother of Lord Skanda (Kartikeya), bestower of maternal grace, salvation, and wisdom.",
+              "hi": "नवदुर्गा का पाँचवाँ स्वरूप, भगवान स्कन्द (कार्तिकेय) की माता, जो वात्सल्य, ज्ञान और मोक्ष प्रदान करती हैं।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਪੰਜਵਾਂ ਸਰੂਪ, ਭਗਵਾਨ ਸਕੰਦ ਦੀ ਮਾਤਾ, ਜੋ ਮਮਤਾ, ਬੁੱਧੀ ਅਤੇ ਮੁਕਤੀ ਦੀ ਦਾਤੀ ਹਨ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-6-katyayani",
+          "sequence": 6,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 6 — Katyayani",
+              "hi": "चैत्र नवरात्रि दिन ६ — कात्यायनी",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੬ — ਕਾਤਿਆਇਨੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Shashthi",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Shashtham Katyayaniti cha')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Katyayani",
+              "hi": "माँ कात्यायनी",
+              "pa": "ਮਾਂ ਕਾਤਿਆਇਨੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Shashtham Katyayaniti cha')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Katyayani Puja",
+                "Yamuna Chhath"
+              ],
+              "hi": [
+                "कात्यायनी पूजा",
+                "यमुना छठ"
+              ],
+              "pa": [
+                "ਕਾਤਿਆਇਨੀ ਪੂਜਾ",
+                "ਯਮੁਨਾ ਛਠ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Shashthi Navaratra Puja)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Shashthi (Yamuna Jayanti / Chaitra Chhath)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Sixth form of Navadurga, manifest from the combined effulgence of the devas in the hermitage of Sage Katyayana to eliminate evil and fulfill righteous desires.",
+              "hi": "नवदुर्गा का छठा स्वरूप, जो देवों के सम्मिलित तेज से महर्षि कात्यायन के आश्रम में प्रकट हुईं और धर्म की रक्षा कर साधकों के मनोरथ पूर्ण करती हैं।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਛੇਵਾਂ ਸਰੂਪ, ਜੋ ਦੇਵਤਿਆਂ ਦੇ ਸਾਂਝੇ ਤੇਜ ਤੋਂ ਰਿਸ਼ੀ ਕਾਤਿਆਇਨ ਦੇ ਆਸ਼ਰਮ ਵਿੱਚ ਪ੍ਰਗਟ ਹੋਏ ਅਤੇ ਧਰਮ ਦੀ ਰੱਖਿਆ ਕਰਦੇ ਹਨ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Chapters 2–3 (Effulgence of Devas and manifestation of Devi) and Devi Kavacham, Verse 4",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Vamana Purana",
+                "pageOrSection": "Chapters 18.39–21.52 (Katyayani manifestation in Sage Katyayana's ashram)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-7-kalaratri",
+          "sequence": 7,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 7 — Kalaratri",
+              "hi": "चैत्र नवरात्रि दिन ७ — कालरात्रि",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੭ — ਕਾਲਰਾਤਰੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Saptami",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Saptamam Kalaratriti')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Kalaratri",
+              "hi": "माँ कालरात्रि",
+              "pa": "ਮਾਂ ਕਾਲਰਾਤਰੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Saptamam Kalaratriti')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Kalaratri Puja",
+                "Maha Saptami Vrata",
+                "Nisha Puja"
+              ],
+              "hi": [
+                "कालरात्रि पूजा",
+                "महा सप्तमी व्रत",
+                "निशा पूजा"
+              ],
+              "pa": [
+                "ਕਾਲਰਾਤਰੀ ਪੂਜਾ",
+                "ਮਹਾ ਸਪਤਮੀ ਵਰਤ",
+                "ਨਿਸ਼ਾ ਪੂਜਾ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Saptami Navaratra Puja)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Seventh form of Navadurga, the fiercest destroyer of ignorance, darkness, and demonic forces, known as Shubhankari for always conferring auspicious blessings on devotees.",
+              "hi": "नवदुर्गा का सप्तम स्वरूप, जो अज्ञान और अंधकार का नाश करने वाली घोर संहारक हैं, किंतु भक्तों के लिए सदा शुभ फलदायिनी होने से 'शुभंकरी' कहलाती हैं।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਸੱਤਵਾਂ ਸਰੂਪ, ਜੋ ਅਗਿਆਨ ਅਤੇ ਬਦੀ ਦਾ ਨਾਸ਼ ਕਰਨ ਵਾਲੇ ਹਨ ਅਤੇ ਭਗਤਾਂ ਲਈ ਸਦਾ ਸ਼ੁਭੰਕਰੀ (ਕਲਿਆਣਕਾਰੀ) ਹਨ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-8-mahagauri",
+          "sequence": 8,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 8 — Mahagauri",
+              "hi": "चैत्र नवरात्रि दिन ८ — महागौरी",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੮ — ਮਹਾਗੌਰੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Ashtami (Durga Ashtami)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Mahagauriti Chashtamam')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Mahagauri",
+              "hi": "माँ महागौरी",
+              "pa": "ਮਾਂ ਮਹਾਗੌਰੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4 ('Mahagauriti Chashtamam')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Mahagauri Puja",
+                "Chaitra Durga Ashtami",
+                "Kanya Pujan (Kanjak)",
+                "Sandhi Puja"
+              ],
+              "hi": [
+                "महागौरी पूजा",
+                "चैत्र दुर्गाष्टमी",
+                "कन्या पूजन (कंजक)",
+                "संधि पूजा"
+              ],
+              "pa": [
+                "ਮਹਾਗੌਰੀ ਪੂਜਾ",
+                "ਚੈਤ੍ਰ ਦੁਰਗਾ ਅਸ਼ਟਮੀ",
+                "ਕੰਨਿਆ ਪੂਜਨ (ਕੰਜਕ)",
+                "ਸੰਧੀ ਪੂਜਾ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26, Verses 32–45 (Maha Ashtami Vrata and Kumari Puja / Kanya Pujan Vidhi)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Chaitra Shukla Ashtami (Durga Ashtami)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Eighth form of Navadurga, embodying pristine purity, serenity, and compassion, whose worship purifies all past sins and grants divine grace.",
+              "hi": "नवदुर्गा का अष्टम स्वरूप, जो परम पावनता, सौम्यता और करुणा की प्रतिमूर्ति हैं; इनकी उपासना से समस्त पापों का शमन और आत्म-शांति प्राप्त होती है।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਅੱਠਵਾਂ ਸਰੂਪ, ਜੋ ਪਵਿੱਤਰਤਾ, ਸ਼ਾਂਤੀ ਅਤੇ ਦਇਆ ਦੀ ਮੂਰਤ ਹਨ; ਇਨ੍ਹਾਂ ਦੀ ਪੂਜਾ ਸਾਰੇ ਪਾਪਾਂ ਦਾ ਨਾਸ ਕਰਦੀ ਹੈ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 4",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26, Verses 30–45",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Shiva Purana",
+                "pageOrSection": "Rudra Samhita, Parvati Khanda (Purification and manifestation of Gauri)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
+        },
+        {
+          "slug": "chaitra-navratri-day-9-siddhidatri",
+          "sequence": 9,
+          "canonicalTitle": {
+            "value": {
+              "en": "Chaitra Navratri Day 9 — Siddhidatri (Ram Navami)",
+              "hi": "चैत्र नवरात्रि दिन ९ — सिद्धिदात्री (रामनवमी)",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤੇ ਦਿਨ ੯ — ਸਿੱਧੀਦਾਤਰੀ (ਰਾਮ ਨੌਮੀ)"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Entry #98 (Rama Navami / Chaitra Shukla Navami)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 5 ('Navamam Siddhidatri cha Navadurgaah Prakeertitaah')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Siddhidatri & Bhagavan Sri Rama",
+              "hi": "माँ सिद्धिदात्री एवं भगवान श्रीराम",
+              "pa": "ਮਾਂ ਸਿੱਧੀਦਾਤਰੀ ਅਤੇ ਭਗਵਾਨ ਸ਼੍ਰੀ ਰਾਮ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 5 ('Navamam Siddhidatri cha')",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26 (Navami Vrata Completion and Navaratra Parana Vidhi)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Valmiki Ramayana",
+                "pageOrSection": "Bala Kanda, Chapter 18, Verses 8–12 (Birth of Sri Rama on Chaitra Shukla Navami)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Siddhidatri Puja",
+                "Ram Navami Puja",
+                "Kanya Pujan",
+                "Navratri Parana",
+                "Chandi Havan"
+              ],
+              "hi": [
+                "सिद्धिदात्री पूजा",
+                "रामनवमी पूजा",
+                "कन्या पूजन",
+                "नवरात्रि पारण",
+                "चंडी हवन"
+              ],
+              "pa": [
+                "ਸਿੱਧੀਦਾਤਰੀ ਪੂਜਾ",
+                "ਰਾਮ ਨੌਮੀ ਪੂਜਾ",
+                "ਕੰਨਿਆ ਪੂਜਨ",
+                "ਨਰਾਤੇ ਪਾਰਣਾ",
+                "ਚੰਡੀ ਹਵਨ"
+              ]
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Entry #98 (Rama Navami / Chaitra Shukla Navami)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26, Verses 45–55 (Navami Puja, Homa, and Parana Vidhi)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Valmiki Ramayana",
+                "pageOrSection": "Bala Kanda, Chapter 18 (Rama Janmotsava)",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Grand culmination of Chaitra Navratri honoring Maa Siddhidatri, granter of all eight Siddhis and spiritual perfections, harmonized with the auspicious descent of Maryada Purushottama Bhagavan Sri Rama.",
+              "hi": "चैत्र नवरात्रि का पावन समापन, जिसमें अष्ट सिद्धियों की दात्री माँ सिद्धिदात्री की आराधना के साथ मर्यादा पुरुषोत्तम भगवान श्रीराम का प्राकट्योत्सव (रामनवमी) श्रद्धापूर्वक मनाया जाता है।",
+              "pa": "ਚੈਤ੍ਰ ਨਰਾਤਿਆਂ ਦਾ ਪਵਿੱਤਰ ਸਮਾਪਨ, ਜਿਸ ਵਿੱਚ ਅੱਠ ਸਿੱਧੀਆਂ ਦੀ ਦਾਤੀ ਮਾਂ ਸਿੱਧੀਦਾਤਰੀ ਦੀ ਅਰਾਧਨਾ ਦੇ ਨਾਲ ਮਰਯਾਦਾ ਪੁਰਸ਼ੋਤਮ ਭਗਵਾਨ ਸ਼੍ਰੀ ਰਾਮ ਦਾ ਪ੍ਰਕਾਸ਼ ਉਤਸਵ (ਰਾਮ ਨੌਮੀ) ਮਨਾਇਆ ਜਾਂਦਾ ਹੈ।"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Devi Mahatmya (Durga Saptashati)",
+                "pageOrSection": "Devi Kavacham, Verse 5",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Devi Bhagavata Purana",
+                "pageOrSection": "Book 3, Chapter 26, Verses 45–55",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Valmiki Ramayana",
+                "pageOrSection": "Bala Kanda, Chapter 18, Verses 8–12",
+                "tier": 1,
+                "confidence": "high",
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": {
+              "universal": true
+            },
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          }
         }
       ]
     }
