@@ -35,5 +35,24 @@
       { "slug": "govardhan-puja", "sequence": 4, "title": "Govardhan Puja" },
       { "slug": "bhai-dooj", "sequence": 5, "title": "Bhai Dooj" }
     ]
+  },
+  {
+    "definitionKey": "paryushana-parva",
+    "version": "1.0.0",
+    "mode": "daily_journey",
+    "name": "Paryushana Parva",
+    "tradition": "jain",
+    "anchorSlug": "paryushana-parva-begins",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "paryushana-parva-begins", "sequence": 1, "title": "Paryushana Day 1" },
+      { "slug": "paryushana-day-2", "sequence": 2, "title": "Paryushana Day 2" },
+      { "slug": "paryushana-day-3", "sequence": 3, "title": "Paryushana Day 3" },
+      { "slug": "paryushana-day-4", "sequence": 4, "title": "Paryushana Day 4" },
+      { "slug": "paryushana-day-5", "sequence": 5, "title": "Paryushana Day 5" },
+      { "slug": "paryushana-day-6", "sequence": 6, "title": "Paryushana Day 6" },
+      { "slug": "paryushana-day-7", "sequence": 7, "title": "Paryushana Day 7" },
+      { "slug": "samvatsari-paryushana-ends", "sequence": 8, "title": "Samvatsari" }
+    ]
   }
 ]

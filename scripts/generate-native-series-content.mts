@@ -48,6 +48,7 @@ export interface ObservanceSeriesSourceRef {
   sourceName: string;
   pageOrSection?: string;
   tier: number;
+  confidence?: 'high' | 'medium' | 'low' | string;
   usagePermitted: string;
 }
 

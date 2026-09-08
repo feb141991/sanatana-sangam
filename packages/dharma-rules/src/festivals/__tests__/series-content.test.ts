@@ -54,7 +54,7 @@ describe('Multi-Day Observance Series Content — Sourced Provenance & Zero Fabr
     expect(diwali.rituals.value.en).toContain('Lakshmi Puja');
   });
 
-  it('4. localisation completeness: all 15 children have English, Hindi, and Punjabi canonical titles', () => {
+  it('4. localisation completeness: all series children have English, Hindi, and Punjabi canonical titles', () => {
     let count = 0;
     for (const s of data.series) {
       for (const c of s.children) {
@@ -64,7 +64,7 @@ describe('Multi-Day Observance Series Content — Sourced Provenance & Zero Fabr
         expect(c.canonicalTitle.value.pa).toBeTruthy();
       }
     }
-    expect(count).toBe(15);
+    expect(count).toBe(23);
   });
 
   it('5. source separation: Rashtriya Panchang is NOT cited as author of narrative significance paragraphs', () => {
