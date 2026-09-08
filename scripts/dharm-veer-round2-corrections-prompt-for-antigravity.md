@@ -1,12 +1,18 @@
-# Task: Round 2 — fix 17 remaining Dharm Veer translation issues (a different defect type)
+# Task: Round 2 — fix 22 remaining Dharm Veer field issues (a different defect type)
 
 ## Context
 
 You (or a prior pass) already fixed the first round of 28 flagged rows — the invented
 names/places/numbers (fake antagonists, fake ages, fake events) are confirmed gone. An
 independent re-audit of all 76 rows then found a SECOND, subtler defect type surviving in 17
-rows, listed in `dharm-veer-round2-corrections-needed.json` (this folder). This is a smaller,
-more targeted correction than round 1 — only these 17 rows, only the specific fields listed.
+heroes, listed in `dharm-veer-round2-corrections-needed.json` (this folder). This is a smaller,
+more targeted correction than round 1 — only these 17 heroes, only the specific fields listed.
+
+**Count carefully**: it's 17 heroes, but several have more than one affected field (e.g.
+`guru-gobind-singh` has both `trial` and `moral` flagged; `shrimad-rajchandra` has `trial`,
+`teaching`, and `moral`) — so the actual number of `{slug, field}` pairs to fix is **22**, not 17.
+Each `fields_to_regenerate` array in the JSON lists every field for that hero that needs work;
+don't stop after the first one.
 
 ## The defect this time: substitution and silent drops, not invented facts
 
@@ -35,10 +41,12 @@ about two related but different problems:
 
 ## What to fix
 
-For each of the 17 entries in `dharm-veer-round2-corrections-needed.json`, regenerate ONLY the
-`field` + `languages_to_fix` listed. Each entry gives you: the exact `issue` description, the
-`english_source` for that field, and the `current_hindi_wrong`/`current_punjabi_wrong` text for
-reference (do not reuse it — it's there so you can see exactly what's wrong).
+For each of the 17 hero entries in `dharm-veer-round2-corrections-needed.json`, regenerate EVERY
+field listed in that hero's `fields_to_regenerate` array — some heroes have just one, others have
+two or three, for 22 `{slug, field}` pairs total. For each field, fix ONLY the `languages_to_fix`
+listed. Each field entry gives you: the exact `issue` description, the `english_source` for that
+field, and the `current_hindi_wrong`/`current_punjabi_wrong` text for reference (do not reuse it —
+it's there so you can see exactly what's wrong).
 
 `severity_tier`: `A` = severe (a substitution affecting the core meaning, or the maitreyi
 fabrication), `B` = moderate (one field substituted or a meaningful drop), `C` = minor (a single
@@ -60,6 +68,7 @@ Produce `dharm-veer-round2-corrections-output.json`, a flat array:
 }
 ```
 
-One element per `{slug, field}` pair (17 total, one language-pair fix each in this batch). Report
-back: how many of the 17 you completed, and flag anything you were unsure how to translate rather
-than guessing.
+One element per `{slug, field}` pair — **22 total** across the 17 heroes (not 17; several heroes
+have more than one flagged field, so double-check you've covered every entry in each hero's
+`fields_to_regenerate` array before considering that hero done). Report back: how many of the 22
+you completed, and flag anything you were unsure how to translate rather than guessing.
