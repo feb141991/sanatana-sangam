@@ -94,8 +94,8 @@
     "description": "Spring Navratri beginning on Chaitra Shukla Pratipada, nine days of Devi worship leading to Ram Navami.",
     "kind": "major",
     "tradition": "hindu",
-    "rule_family": "lunar_tithi",
-    "verification_type": "lunar_tithi",
+    "rule_family": "lunar_tithi_span",
+    "verification_type": "lunar_tithi_span",
     "lunar_masa_name": "Magha",
     "corrected_lunar_masa_name": "Chaitra",
     "corrected_month_system": "amanta",
@@ -105,7 +105,97 @@
     "route_kind": "vrat",
     "route_slug": "chaitra-navratri",
     "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Vasanta Navaratrambha) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Vasanta Navaratrambha) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile. [2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances, mirroring navratri-begins (Sharad Navratri) exactly. Structural scaffolding only -- devi_form sequence reuses the same universally-agreed Navadurga order already live for Sharad Navratri (not a new claim). launch_status stays deferred: day-level canonicalTitle/deityOrTheme/rituals/significance editorial content has not been authored or sourced yet, and the day-9 slug is deliberately new (chaitra-navratri-day-9-siddhidatri) rather than reusing the existing standalone ram-navami rule, to avoid two separate mechanisms materializing the same slug.",
+    "span_tithis": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "cluster_slug": "chaitra-navratri",
+    "sub_observances": [
+      {
+        "tithi": 1,
+        "slug": "chaitra-navratri-day-1-shailaputri",
+        "display_name": "Chaitra Navratri Day 1 — Shailaputri",
+        "devi_form": "Shailaputri",
+        "rituals": [
+          "Ghatasthapana"
+        ],
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 2,
+        "slug": "chaitra-navratri-day-2-brahmacharini",
+        "display_name": "Chaitra Navratri Day 2 — Brahmacharini",
+        "devi_form": "Brahmacharini",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 3,
+        "slug": "chaitra-navratri-day-3-chandraghanta",
+        "display_name": "Chaitra Navratri Day 3 — Chandraghanta",
+        "devi_form": "Chandraghanta",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 4,
+        "slug": "chaitra-navratri-day-4-kushmanda",
+        "display_name": "Chaitra Navratri Day 4 — Kushmanda",
+        "devi_form": "Kushmanda",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 5,
+        "slug": "chaitra-navratri-day-5-skandamata",
+        "display_name": "Chaitra Navratri Day 5 — Skandamata",
+        "devi_form": "Skandamata",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 6,
+        "slug": "chaitra-navratri-day-6-katyayani",
+        "display_name": "Chaitra Navratri Day 6 — Katyayani",
+        "devi_form": "Katyayani",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 7,
+        "slug": "chaitra-navratri-day-7-kalaratri",
+        "display_name": "Chaitra Navratri Day 7 — Kalaratri",
+        "devi_form": "Kalaratri",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 8,
+        "slug": "chaitra-navratri-day-8-mahagauri",
+        "display_name": "Chaitra Navratri Day 8 — Mahagauri",
+        "devi_form": "Mahagauri",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 9,
+        "slug": "chaitra-navratri-day-9-siddhidatri",
+        "display_name": "Chaitra Navratri Day 9 — Siddhidatri (Ram Navami)",
+        "devi_form": "Siddhidatri",
+        "kind": "major",
+        "launch_status": "included",
+        "citation": "Rashtriya Panchang Saka 1948, Index #90 (Vasanta Navaratrambha); Ram Navami itself is the existing separate ram-navami rule (lunar_tithi_index 9, live) -- this sub_observance slug is intentionally distinct to avoid two mechanisms both claiming the same slug on the same date."
+      }
+    ]
   },
   {
     "slug": "ugadi",
@@ -274,8 +364,8 @@
     "description": "Gupt Navratri in Ashadha, a quieter Devi sadhana period observed in Shakta and regional traditions.",
     "kind": "regional",
     "tradition": "hindu",
-    "rule_family": "lunar_tithi",
-    "verification_type": "lunar_tithi",
+    "rule_family": "lunar_tithi_span",
+    "verification_type": "lunar_tithi_span",
     "lunar_masa_name": "Vaishakha",
     "corrected_lunar_masa_name": "Ashadha",
     "corrected_month_system": "amanta",
@@ -284,7 +374,85 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "gupt-navratri",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "span_tithis": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "cluster_slug": "gupt-navratri-ashadha",
+    "sub_observances": [
+      {
+        "tithi": 1,
+        "slug": "gupt-navratri-ashadha-day-1",
+        "display_name": "Ashadha Gupt Navratri Day 1",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 2,
+        "slug": "gupt-navratri-ashadha-day-2",
+        "display_name": "Ashadha Gupt Navratri Day 2",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 3,
+        "slug": "gupt-navratri-ashadha-day-3",
+        "display_name": "Ashadha Gupt Navratri Day 3",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 4,
+        "slug": "gupt-navratri-ashadha-day-4",
+        "display_name": "Ashadha Gupt Navratri Day 4",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 5,
+        "slug": "gupt-navratri-ashadha-day-5",
+        "display_name": "Ashadha Gupt Navratri Day 5",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 6,
+        "slug": "gupt-navratri-ashadha-day-6",
+        "display_name": "Ashadha Gupt Navratri Day 6",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 7,
+        "slug": "gupt-navratri-ashadha-day-7",
+        "display_name": "Ashadha Gupt Navratri Day 7",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 8,
+        "slug": "gupt-navratri-ashadha-day-8",
+        "display_name": "Ashadha Gupt Navratri Day 8",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 9,
+        "slug": "gupt-navratri-ashadha-day-9",
+        "display_name": "Ashadha Gupt Navratri Day 9",
+        "kind": "regional",
+        "launch_status": "deferred"
+      }
+    ],
+    "ratification_note": "[2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances (structural scaffolding only). devi_form / Mahavidya assignment per day is DELIBERATELY LEFT UNSET here -- unlike Sharad/Chaitra Navratri (a single, universally-agreed Navadurga sequence), Gupt Navratri association with the 10 Mahavidyas over 9 days is genuinely disputed/sampradaya-dependent (some traditions merge two Mahavidyas on one day, others read the sequence differently) -- assigning one reading here without a sourced ratification would violate the no-unaudited-tradition-claims rule. Each sub_observance kept launch_status=deferred pending a sourcing pass. The base date anchor itself (tithi 1) also has no citation/ratification_note yet -- unlike chaitra-navratri-begins, this is unsourced at the day-1 level too, not just the sub-day level."
   },
   {
     "slug": "guru-purnima",
@@ -411,6 +579,157 @@
     "launch_status": "included",
     "corrected_tithi_reference_time": "madhyahna",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Chaturthi begins ~07:00-07:30 IST on 2026-09-14, absent at that day's sunrise). Corrected engine independently computes 2026-09-14, matching Rashtriya Panchang 1948 SE entry #41 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
+  },
+  {
+    "slug": "ganeshotsav-day-2",
+    "display_name": "Ganeshotsav Day 2",
+    "emoji": "🐘",
+    "description": "Second day of Ganeshotsav, continuing Ganesha puja and household/community offerings.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 1,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-3",
+    "display_name": "Ganeshotsav Day 3",
+    "emoji": "🐘",
+    "description": "Third day of Ganeshotsav, a continued day of Ganesha worship.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 2,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-4",
+    "display_name": "Ganeshotsav Day 4",
+    "emoji": "🐘",
+    "description": "Fourth day of Ganeshotsav, keeping the festival observance active.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 3,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-5",
+    "display_name": "Ganeshotsav Day 5",
+    "emoji": "🐘",
+    "description": "Fifth day of Ganeshotsav, often marked by ongoing home and mandal worship.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 4,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-6",
+    "display_name": "Ganeshotsav Day 6",
+    "emoji": "🐘",
+    "description": "Sixth day of Ganeshotsav, continuing daily puja and offerings.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 5,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-7",
+    "display_name": "Ganeshotsav Day 7",
+    "emoji": "🐘",
+    "description": "Seventh day of Ganeshotsav, a continued day of devotion to Ganesha.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 6,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-8",
+    "display_name": "Ganeshotsav Day 8",
+    "emoji": "🐘",
+    "description": "Eighth day of Ganeshotsav, continuing the festival cycle before visarjan.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 7,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-9",
+    "display_name": "Ganeshotsav Day 9",
+    "emoji": "🐘",
+    "description": "Ninth day of Ganeshotsav, approaching the concluding visarjan period.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 8,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "ganeshotsav-day-10",
+    "display_name": "Ganeshotsav Day 10",
+    "emoji": "🐘",
+    "description": "Tenth day of Ganeshotsav, the final preparation day before Anant Chaturdashi.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 9,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included"
+  },
+  {
+    "slug": "anant-chaturdashi-ganesh-visarjan",
+    "display_name": "Anant Chaturdashi / Ganesh Visarjan",
+    "emoji": "🐘",
+    "description": "Concluding Ganeshotsav day, traditionally associated with Ganesh Visarjan and Anant Chaturdashi.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "ganesh-chaturthi",
+    "relative_offset_days": 10,
+    "route_kind": "festival",
+    "route_slug": "ganesh-chaturthi",
+    "launch_status": "included",
+    "ratification_note": "Series endpoint anchored to the already source-backed Ganesh Chaturthi rule. The public app treats this as Ganeshotsav's concluding Visarjan card; a standalone Anant Chaturdashi vrata rule can be added later if separately sourced."
   },
   {
     "slug": "onam",
@@ -752,8 +1071,55 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 6,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-11-15, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #59, Surya Shashthi/Chhat Bihar) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+    "route_kind": "festival",
+    "route_slug": "chhath-puja",
+    "launch_status": "included",
+    "ratification_note": "Official-source-backed for the canonical Surya Shashthi / Chhat Bihar date. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-11-15, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #59, Surya Shashthi/Chhat Bihar) exactly. Promoted 2026-09-08 as the anchor day for the four-day Chhath cluster; adjoining preparation and Usha Arghya days are relative app-facing series children, not independent lunar claims."
+  },
+  {
+    "slug": "chhath-nahay-khay",
+    "display_name": "Chhath Day 1 — Nahay Khay",
+    "emoji": "☀️",
+    "description": "Opening day of Chhath Puja, observed with ritual bathing and simple sattvic food.",
+    "kind": "regional",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "chhath-puja",
+    "relative_offset_days": -2,
+    "route_kind": "festival",
+    "route_slug": "chhath-puja",
+    "launch_status": "included"
+  },
+  {
+    "slug": "chhath-kharna",
+    "display_name": "Chhath Day 2 — Kharna",
+    "emoji": "☀️",
+    "description": "Second day of Chhath Puja, associated with fasting, evening offerings, and prasad.",
+    "kind": "regional",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "chhath-puja",
+    "relative_offset_days": -1,
+    "route_kind": "festival",
+    "route_slug": "chhath-puja",
+    "launch_status": "included"
+  },
+  {
+    "slug": "chhath-usha-arghya",
+    "display_name": "Chhath Day 4 — Usha Arghya",
+    "emoji": "☀️",
+    "description": "Concluding morning of Chhath Puja, offering arghya to the rising sun.",
+    "kind": "regional",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "chhath-puja",
+    "relative_offset_days": 1,
+    "route_kind": "festival",
+    "route_slug": "chhath-puja",
+    "launch_status": "included"
   },
   {
     "slug": "kartik-purnima",
@@ -1115,8 +1481,8 @@
     "description": "Gupt Navratri in Magha, a quieter Devi sadhana period observed in Shakta and regional traditions.",
     "kind": "regional",
     "tradition": "hindu",
-    "rule_family": "lunar_tithi",
-    "verification_type": "lunar_tithi",
+    "rule_family": "lunar_tithi_span",
+    "verification_type": "lunar_tithi_span",
     "lunar_masa_name": "Margashirsha",
     "corrected_lunar_masa_name": "Magha",
     "corrected_month_system": "amanta",
@@ -1125,7 +1491,85 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "gupt-navratri",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "span_tithis": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "cluster_slug": "gupt-navratri-magha",
+    "sub_observances": [
+      {
+        "tithi": 1,
+        "slug": "gupt-navratri-magha-day-1",
+        "display_name": "Magha Gupt Navratri Day 1",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 2,
+        "slug": "gupt-navratri-magha-day-2",
+        "display_name": "Magha Gupt Navratri Day 2",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 3,
+        "slug": "gupt-navratri-magha-day-3",
+        "display_name": "Magha Gupt Navratri Day 3",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 4,
+        "slug": "gupt-navratri-magha-day-4",
+        "display_name": "Magha Gupt Navratri Day 4",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 5,
+        "slug": "gupt-navratri-magha-day-5",
+        "display_name": "Magha Gupt Navratri Day 5",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 6,
+        "slug": "gupt-navratri-magha-day-6",
+        "display_name": "Magha Gupt Navratri Day 6",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 7,
+        "slug": "gupt-navratri-magha-day-7",
+        "display_name": "Magha Gupt Navratri Day 7",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 8,
+        "slug": "gupt-navratri-magha-day-8",
+        "display_name": "Magha Gupt Navratri Day 8",
+        "kind": "regional",
+        "launch_status": "deferred"
+      },
+      {
+        "tithi": 9,
+        "slug": "gupt-navratri-magha-day-9",
+        "display_name": "Magha Gupt Navratri Day 9",
+        "kind": "regional",
+        "launch_status": "deferred"
+      }
+    ],
+    "ratification_note": "[2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances (structural scaffolding only). devi_form / Mahavidya assignment per day is DELIBERATELY LEFT UNSET here -- unlike Sharad/Chaitra Navratri (a single, universally-agreed Navadurga sequence), Gupt Navratri association with the 10 Mahavidyas over 9 days is genuinely disputed/sampradaya-dependent (some traditions merge two Mahavidyas on one day, others read the sequence differently) -- assigning one reading here without a sourced ratification would violate the no-unaudited-tradition-claims rule. Each sub_observance kept launch_status=deferred pending a sourcing pass. The base date anchor itself (tithi 1) also has no citation/ratification_note yet -- unlike chaitra-navratri-begins, this is unsourced at the day-1 level too, not just the sub-day level."
   },
   {
     "slug": "guru-gobind-singh-gurpurab",

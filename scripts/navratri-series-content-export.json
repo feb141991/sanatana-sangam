@@ -1,0 +1,161 @@
+[
+  {
+    "definitionKey": "chaitra-navratri",
+    "seriesName": "Chaitra Navratri",
+    "tradition": "hindu",
+    "note": "Same 9-day Navadurga sequence as the already-live Sharad Navratri (structurally identical, different lunar month -- Chaitra Shukla Pratipada through Navami/Ram Navami). Devi identity per day is already fixed by the existing Navadurga order; what is needed is canonicalTitle, deityOrTheme, rituals, and significance for EACH day, matching the depth/detail of the already-approved Sharad Navratri content in series-content.json (use that as your quality/format bar).",
+    "children": [
+      {
+        "slug": "chaitra-navratri-day-1-shailaputri",
+        "sequence": 1,
+        "deityForm": "Shailaputri"
+      },
+      {
+        "slug": "chaitra-navratri-day-2-brahmacharini",
+        "sequence": 2,
+        "deityForm": "Brahmacharini"
+      },
+      {
+        "slug": "chaitra-navratri-day-3-chandraghanta",
+        "sequence": 3,
+        "deityForm": "Chandraghanta"
+      },
+      {
+        "slug": "chaitra-navratri-day-4-kushmanda",
+        "sequence": 4,
+        "deityForm": "Kushmanda"
+      },
+      {
+        "slug": "chaitra-navratri-day-5-skandamata",
+        "sequence": 5,
+        "deityForm": "Skandamata"
+      },
+      {
+        "slug": "chaitra-navratri-day-6-katyayani",
+        "sequence": 6,
+        "deityForm": "Katyayani"
+      },
+      {
+        "slug": "chaitra-navratri-day-7-kalaratri",
+        "sequence": 7,
+        "deityForm": "Kalaratri"
+      },
+      {
+        "slug": "chaitra-navratri-day-8-mahagauri",
+        "sequence": 8,
+        "deityForm": "Mahagauri"
+      },
+      {
+        "slug": "chaitra-navratri-day-9-siddhidatri",
+        "sequence": 9,
+        "deityForm": "Siddhidatri (also Ram Navami)"
+      }
+    ]
+  },
+  {
+    "definitionKey": "gupt-navratri-ashadha",
+    "seriesName": "Ashadha Gupt Navratri",
+    "tradition": "hindu",
+    "note": "UNLIKE Chaitra/Sharad Navratri, the day-to-deity mapping for Gupt Navratri is NOT yet fixed in our data. Gupt Navratri is traditionally associated with worship of the 10 Mahavidyas (Kali, Tara, Tripura Sundari, Bhuvaneshwari, Chhinnamasta, Bhairavi, Dhumavati, Bagalamukhi, Matangi, Kamala) across 9 days -- note the 10-vs-9 mismatch is real and needs your research, not an assumption. Occurs in the Ashadha (typically June-July) lunar month.",
+    "children": [
+      {
+        "slug": "gupt-navratri-ashadha-day-1",
+        "sequence": 1,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-2",
+        "sequence": 2,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-3",
+        "sequence": 3,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-4",
+        "sequence": 4,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-5",
+        "sequence": 5,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-6",
+        "sequence": 6,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-7",
+        "sequence": 7,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-8",
+        "sequence": 8,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-ashadha-day-9",
+        "sequence": 9,
+        "deityForm": null
+      }
+    ]
+  },
+  {
+    "definitionKey": "gupt-navratri-magha",
+    "seriesName": "Magha Gupt Navratri",
+    "tradition": "hindu",
+    "note": "UNLIKE Chaitra/Sharad Navratri, the day-to-deity mapping for Gupt Navratri is NOT yet fixed in our data. Gupt Navratri is traditionally associated with worship of the 10 Mahavidyas (Kali, Tara, Tripura Sundari, Bhuvaneshwari, Chhinnamasta, Bhairavi, Dhumavati, Bagalamukhi, Matangi, Kamala) across 9 days -- note the 10-vs-9 mismatch is real and needs your research, not an assumption. Occurs in the Magha (typically January-February) lunar month.",
+    "children": [
+      {
+        "slug": "gupt-navratri-magha-day-1",
+        "sequence": 1,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-2",
+        "sequence": 2,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-3",
+        "sequence": 3,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-4",
+        "sequence": 4,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-5",
+        "sequence": 5,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-6",
+        "sequence": 6,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-7",
+        "sequence": 7,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-8",
+        "sequence": 8,
+        "deityForm": null
+      },
+      {
+        "slug": "gupt-navratri-magha-day-9",
+        "sequence": 9,
+        "deityForm": null
+      }
+    ]
+  }
+]

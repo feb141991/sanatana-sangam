@@ -54,5 +54,102 @@
       { "slug": "paryushana-day-7", "sequence": 7, "title": "Paryushana Day 7" },
       { "slug": "samvatsari-paryushana-ends", "sequence": 8, "title": "Samvatsari" }
     ]
+  },
+  {
+    "definitionKey": "ganeshotsav",
+    "version": "1.0.0",
+    "mode": "festival_cluster",
+    "name": "Ganeshotsav",
+    "tradition": "hindu",
+    "anchorSlug": "ganesh-chaturthi",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "ganesh-chaturthi", "sequence": 1, "title": "Ganesh Chaturthi" },
+      { "slug": "ganeshotsav-day-2", "sequence": 2, "title": "Ganeshotsav Day 2" },
+      { "slug": "ganeshotsav-day-3", "sequence": 3, "title": "Ganeshotsav Day 3" },
+      { "slug": "ganeshotsav-day-4", "sequence": 4, "title": "Ganeshotsav Day 4" },
+      { "slug": "ganeshotsav-day-5", "sequence": 5, "title": "Ganeshotsav Day 5" },
+      { "slug": "ganeshotsav-day-6", "sequence": 6, "title": "Ganeshotsav Day 6" },
+      { "slug": "ganeshotsav-day-7", "sequence": 7, "title": "Ganeshotsav Day 7" },
+      { "slug": "ganeshotsav-day-8", "sequence": 8, "title": "Ganeshotsav Day 8" },
+      { "slug": "ganeshotsav-day-9", "sequence": 9, "title": "Ganeshotsav Day 9" },
+      { "slug": "ganeshotsav-day-10", "sequence": 10, "title": "Ganeshotsav Day 10" },
+      { "slug": "anant-chaturdashi-ganesh-visarjan", "sequence": 11, "title": "Anant Chaturdashi / Ganesh Visarjan" }
+    ]
+  },
+  {
+    "definitionKey": "chhath-puja-four-days",
+    "version": "1.0.0",
+    "mode": "festival_cluster",
+    "name": "Chhath Puja",
+    "tradition": "hindu",
+    "anchorSlug": "chhath-puja",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "chhath-nahay-khay", "sequence": 1, "title": "Nahay Khay" },
+      { "slug": "chhath-kharna", "sequence": 2, "title": "Kharna" },
+      { "slug": "chhath-puja", "sequence": 3, "title": "Sandhya Arghya / Chhath Puja" },
+      { "slug": "chhath-usha-arghya", "sequence": 4, "title": "Usha Arghya" }
+    ]
+  },
+  {
+    "definitionKey": "chaitra-navratri",
+    "version": "1.0.0",
+    "mode": "daily_journey",
+    "name": "Chaitra Navratri",
+    "tradition": "hindu",
+    "anchorSlug": "chaitra-navratri-day-1-shailaputri",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "chaitra-navratri-day-1-shailaputri", "sequence": 1, "title": "Chaitra Navratri Day 1 — Shailaputri", "deityOrTheme": "Shailaputri", "rituals": ["Ghatasthapana"] },
+      { "slug": "chaitra-navratri-day-2-brahmacharini", "sequence": 2, "title": "Chaitra Navratri Day 2 — Brahmacharini", "deityOrTheme": "Brahmacharini" },
+      { "slug": "chaitra-navratri-day-3-chandraghanta", "sequence": 3, "title": "Chaitra Navratri Day 3 — Chandraghanta", "deityOrTheme": "Chandraghanta" },
+      { "slug": "chaitra-navratri-day-4-kushmanda", "sequence": 4, "title": "Chaitra Navratri Day 4 — Kushmanda", "deityOrTheme": "Kushmanda" },
+      { "slug": "chaitra-navratri-day-5-skandamata", "sequence": 5, "title": "Chaitra Navratri Day 5 — Skandamata", "deityOrTheme": "Skandamata" },
+      { "slug": "chaitra-navratri-day-6-katyayani", "sequence": 6, "title": "Chaitra Navratri Day 6 — Katyayani", "deityOrTheme": "Katyayani" },
+      { "slug": "chaitra-navratri-day-7-kalaratri", "sequence": 7, "title": "Chaitra Navratri Day 7 — Kalaratri", "deityOrTheme": "Kalaratri" },
+      { "slug": "chaitra-navratri-day-8-mahagauri", "sequence": 8, "title": "Chaitra Navratri Day 8 — Mahagauri", "deityOrTheme": "Mahagauri" },
+      { "slug": "chaitra-navratri-day-9-siddhidatri", "sequence": 9, "title": "Chaitra Navratri Day 9 — Siddhidatri (Ram Navami)", "deityOrTheme": "Siddhidatri" }
+    ]
+  },
+  {
+    "definitionKey": "gupt-navratri-ashadha",
+    "version": "1.0.0",
+    "mode": "daily_journey",
+    "name": "Ashadha Gupt Navratri",
+    "tradition": "hindu",
+    "anchorSlug": "gupt-navratri-ashadha-day-1",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "gupt-navratri-ashadha-day-1", "sequence": 1, "title": "Ashadha Gupt Navratri Day 1" },
+      { "slug": "gupt-navratri-ashadha-day-2", "sequence": 2, "title": "Ashadha Gupt Navratri Day 2" },
+      { "slug": "gupt-navratri-ashadha-day-3", "sequence": 3, "title": "Ashadha Gupt Navratri Day 3" },
+      { "slug": "gupt-navratri-ashadha-day-4", "sequence": 4, "title": "Ashadha Gupt Navratri Day 4" },
+      { "slug": "gupt-navratri-ashadha-day-5", "sequence": 5, "title": "Ashadha Gupt Navratri Day 5" },
+      { "slug": "gupt-navratri-ashadha-day-6", "sequence": 6, "title": "Ashadha Gupt Navratri Day 6" },
+      { "slug": "gupt-navratri-ashadha-day-7", "sequence": 7, "title": "Ashadha Gupt Navratri Day 7" },
+      { "slug": "gupt-navratri-ashadha-day-8", "sequence": 8, "title": "Ashadha Gupt Navratri Day 8" },
+      { "slug": "gupt-navratri-ashadha-day-9", "sequence": 9, "title": "Ashadha Gupt Navratri Day 9" }
+    ]
+  },
+  {
+    "definitionKey": "gupt-navratri-magha",
+    "version": "1.0.0",
+    "mode": "daily_journey",
+    "name": "Magha Gupt Navratri",
+    "tradition": "hindu",
+    "anchorSlug": "gupt-navratri-magha-day-1",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "gupt-navratri-magha-day-1", "sequence": 1, "title": "Magha Gupt Navratri Day 1" },
+      { "slug": "gupt-navratri-magha-day-2", "sequence": 2, "title": "Magha Gupt Navratri Day 2" },
+      { "slug": "gupt-navratri-magha-day-3", "sequence": 3, "title": "Magha Gupt Navratri Day 3" },
+      { "slug": "gupt-navratri-magha-day-4", "sequence": 4, "title": "Magha Gupt Navratri Day 4" },
+      { "slug": "gupt-navratri-magha-day-5", "sequence": 5, "title": "Magha Gupt Navratri Day 5" },
+      { "slug": "gupt-navratri-magha-day-6", "sequence": 6, "title": "Magha Gupt Navratri Day 6" },
+      { "slug": "gupt-navratri-magha-day-7", "sequence": 7, "title": "Magha Gupt Navratri Day 7" },
+      { "slug": "gupt-navratri-magha-day-8", "sequence": 8, "title": "Magha Gupt Navratri Day 8" },
+      { "slug": "gupt-navratri-magha-day-9", "sequence": 9, "title": "Magha Gupt Navratri Day 9" }
+    ]
   }
 ]
