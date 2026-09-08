@@ -61,16 +61,9 @@
         "tier": 1,
         "confidence": "high",
         "usagePermitted": "academic_citation"
-      },
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 138 (Vijaya Dashami / Aparajita Puja)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Devi Mahatmya chapter from Chapter 10 (which is the slaying of Shumbha) to Chapters 2–4 (the Madhyama Charitra, with Mahishasura slain in Chapter 3)."
+    "note": "Corrected Devi Mahatmya chapter from Chapter 10 (which is the slaying of Shumbha) to Chapters 2–4 (the Madhyama Charitra, with Mahishasura slain in Chapter 3). A supplementary Bhavishya Purana Uttara Parva Ch.138 citation from the round-2 output was dropped here -- independent verification could not confirm that chapter's content matches (its topic couldn't be located), so it is withheld rather than presented as source_backed at 'high confidence'."
   },
   {
     "slug": "dussehra",
@@ -90,16 +83,9 @@
         "tier": 1,
         "confidence": "high",
         "usagePermitted": "academic_citation"
-      },
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 138",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Devi Mahatmya chapter from Chapter 10, Verses 1–28 to Chapters 3–4 (climax of the Mahishasuramardini narrative celebrating triumph of Dharma)."
+    "note": "Corrected Devi Mahatmya chapter from Chapter 10, Verses 1–28 to Chapters 3–4 (climax of the Mahishasuramardini narrative celebrating triumph of Dharma). A supplementary Bhavishya Purana Uttara Parva Ch.138 citation from the round-2 output was dropped here -- unverifiable, see dussehra/deityOrTheme's note above for the same withholding rationale."
   },
   {
     "slug": "naraka-chaturdashi",
@@ -195,13 +181,6 @@
     "verdict": "corrected",
     "sourceRefs": [
       {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 141, Verses 1–25 (Yama Dwitiya Mahatmya)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
-      },
-      {
         "sourceName": "Padma Purana",
         "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya / Bhratri Dwitiya section)",
         "tier": 1,
@@ -212,24 +191,17 @@
         "sourceName": "Skanda Purana",
         "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya (Yama and Yamuna dialogue on Kartika Shukla Dwitiya)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Padma Purana chapter from Chapter 125 (which covers Magha Mahatmya) to Chapter 122 (the concluding Yamadvitiya section of the Dipavali cycle in Uttara Khanda)."
+    "note": "Corrected Padma Purana chapter from Chapter 125 (which covers Magha Mahatmya) to Chapter 122 (the concluding Yamadvitiya section of the Dipavali cycle in Uttara Khanda) -- this correction is independently verified (fetched Ch.122's actual text, confirms Yama fed by Yamuna and the sister's-hand ritual). A supplementary Bhavishya Purana Uttara Parva Ch.141 citation from the round-2 output was dropped here -- unverifiable, no source found confirming that chapter's content. The Skanda Purana ref's confidence is downgraded to medium since its specific chapter/verse pinpoint also couldn't be independently checked, unlike the Padma Purana Ch.122 correction."
   },
   {
     "slug": "bhai-dooj",
     "field": "significance",
     "verdict": "corrected",
     "sourceRefs": [
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 141, Verses 1–25",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
-      },
       {
         "sourceName": "Padma Purana",
         "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya section)",
@@ -238,6 +210,6 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 125 to Chapter 122 (Yamadvitiya section)."
+    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 125 to Chapter 122 (Yamadvitiya section) -- independently verified. A supplementary Bhavishya Purana Uttara Parva Ch.141 citation from the round-2 output was dropped here -- unverifiable, see bhai-dooj/deityOrTheme's note above for the same withholding rationale."
   }
 ]
