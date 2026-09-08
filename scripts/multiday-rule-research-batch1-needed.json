@@ -1,0 +1,121 @@
+[
+  {
+    "candidate": "holi-two-day-split",
+    "currentCodeStatus": {
+      "rulesJson": "A single included rule exists as holi.",
+      "knownIssue": "The rule note says the current date tracks Holika Dahan / Phalguna Purnima, but the user-facing festival often expects Rangwali Holi/Dhulandi on the following day."
+    },
+    "researchQuestions": [
+      "Should Shoonaya preserve holi as the Holika Dahan night or migrate holi to Rangwali Holi?",
+      "Should the production model be a 2-day festival_cluster with holika-dahan and rangwali-holi children?",
+      "What source-backed names should be used across India/global English UI?"
+    ],
+    "requiredEvidence": [
+      "At least one Hindu calendar/almanac source that lists Holika Dahan and Holi/Rangwali Holi as adjacent dates.",
+      "A source note supporting the date relationship to Phalguna Purnima and the following day."
+    ],
+    "expectedOutput": "A source-backed slug/date migration plan, including backward compatibility for any existing holi route_slug usage."
+  },
+  {
+    "candidate": "onam-ten-day-series",
+    "currentCodeStatus": {
+      "rulesJson": "A single deferred onam rule exists and is aligned to Thiruvonam.",
+      "knownIssue": "The 10-day Atham through Thiruvonam journey is not modeled."
+    },
+    "researchQuestions": [
+      "Can the 10-day sequence be safely modeled as relative offsets from the existing Thiruvonam/Onam anchor?",
+      "What are the canonical child day names and sequence used in Kerala sources?",
+      "Should Shoonaya show all 10 days or a shorter lead-up in app cards?"
+    ],
+    "requiredEvidence": [
+      "Official Kerala calendar or tourism/cultural source for Atham-to-Thiruvonam sequence.",
+      "Source-backed spelling for each child day label."
+    ],
+    "expectedOutput": "A 10-child daily_journey proposal with slugs, sequence numbers, offsets from onam, and citations."
+  },
+  {
+    "candidate": "pitru-paksha-season",
+    "currentCodeStatus": {
+      "rulesJson": "mahalaya-amavasya exists as a deferred relative rule; no multi-day Pitru Paksha series exists.",
+      "code": "src/lib/pitru-paksha.ts has helper logic, but it is not a canonical festival rule series."
+    },
+    "researchQuestions": [
+      "Should the app represent Pitru Paksha as a 16-day season/banner, daily journey, or endpoint-only Mahalaya/Sarva Pitru Amavasya card?",
+      "What start/end convention should be used for the global/default calendar profile?",
+      "Should daily tithi-specific shraddha cards be avoided unless full panchang tithi mapping is reviewed?"
+    ],
+    "requiredEvidence": [
+      "A reliable Hindu calendar/almanac source for the Pitru Paksha start and Sarva Pitru Amavasya endpoint.",
+      "Evidence for whether daily named content is sufficiently stable for general users."
+    ],
+    "expectedOutput": "A conservative app-shape recommendation, preferably season or banner-only unless daily rules are strongly sourced."
+  },
+  {
+    "candidate": "das-lakshana-dharma",
+    "currentCodeStatus": {
+      "rulesJson": "A deferred single anchor rule exists as das-lakshana-dharma-begins.",
+      "knownIssue": "The 10-day Digambara sequence, end rule, Kshamavani relationship, and ten-dharma order are not source-ratified."
+    },
+    "researchQuestions": [
+      "What is the source-backed 10-day order of the ten dharmas?",
+      "Does the series start on Bhadrapada Shukla Panchami in the default model?",
+      "How should Kshamavani be represented: final child day, following day, or separate adjacent observance?"
+    ],
+    "requiredEvidence": [
+      "Jain source for the Digambara Das Lakshana sequence and dates.",
+      "Separate evidence for Kshamavani timing if included."
+    ],
+    "expectedOutput": "A 10-day Jain daily_journey proposal, or keep_deferred if primary/reliable sources are insufficient."
+  },
+  {
+    "candidate": "pongal-four-day-cycle",
+    "currentCodeStatus": {
+      "rulesJson": "No multi-day Pongal series exists.",
+      "knownIssue": "The Makar Sankranti/Tamil Thai relationship and regional scope must be modeled explicitly."
+    },
+    "researchQuestions": [
+      "Should this be a Tamil/regional 4-day festival_cluster rather than a pan-India Makar Sankranti replacement?",
+      "What exact child labels should be used: Bhogi, Thai Pongal/Surya Pongal, Mattu Pongal, Kaanum Pongal?",
+      "Can these be modeled as fixed Gregorian dates for launch, or should they depend on a solar calendar rule?"
+    ],
+    "requiredEvidence": [
+      "Tamil Nadu government, tourism, or other reliable calendar source for the four-day structure.",
+      "Source-backed relationship to Thai month/Makar Sankranti."
+    ],
+    "expectedOutput": "A scoped regional festival_cluster recommendation with rule type and child slugs."
+  },
+  {
+    "candidate": "hola-mohalla-three-day-series",
+    "currentCodeStatus": {
+      "rulesJson": "A single included Sikh rule exists as holla-mohalla.",
+      "knownIssue": "The spelling, route/slug normalization, and 3-day Anandpur Sahib structure need source confirmation."
+    },
+    "researchQuestions": [
+      "Should the slug be normalized from holla-mohalla to hola-mohalla while preserving backwards compatibility?",
+      "Is the launch-safe model a single day, 3-day festival_cluster, or a longer mela period?",
+      "What official Sikh/source-backed date relationship to Holi should be used?"
+    ],
+    "requiredEvidence": [
+      "Reliable Sikh institutional or historical source for spelling and timing.",
+      "Source-backed evidence for a 3-day structure if proposed."
+    ],
+    "expectedOutput": "A Sikh calendar recommendation with exact slugs, route compatibility notes, and source citations."
+  },
+  {
+    "candidate": "tulsi-vivah-bhishma-panchaka",
+    "currentCodeStatus": {
+      "rulesJson": "No series exists for this relationship.",
+      "knownIssue": "The relationship between Devutthana Ekadashi, Tulsi Vivah, Bhishma Panchaka, and Kartik Purnima is not modeled."
+    },
+    "researchQuestions": [
+      "Should Bhishma Panchaka be a 5-day vrata series from Kartika Shukla Ekadashi to Kartika Purnima?",
+      "Should Tulsi Vivah be inside that span, adjacent to it, or a separate single-day card?",
+      "Which parts are broad enough for the general Hindu calendar versus sampradaya-specific?"
+    ],
+    "requiredEvidence": [
+      "Reliable Hindu calendar/almanac source for the 5-day span.",
+      "Source-backed relation among Devutthana Ekadashi, Tulsi Vivah, and Kartik Purnima."
+    ],
+    "expectedOutput": "A conservative rule proposal or a recommendation to keep separate single-day observances."
+  }
+]

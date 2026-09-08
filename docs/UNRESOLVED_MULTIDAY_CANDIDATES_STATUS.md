@@ -17,6 +17,33 @@ Date: 2026-09-08
 
 ## Source/rule research first
 
+### Batch 1 Fix Path
+
+The next unblock step is source/rule research, not app content, for the
+candidates most likely to become implementable without a broader governance
+decision:
+
+- `holi-two-day-split`
+- `onam-ten-day-series`
+- `pitru-paksha-season`
+- `das-lakshana-dharma`
+- `pongal-four-day-cycle`
+- `hola-mohalla-three-day-series`
+- `tulsi-vivah-bhishma-panchaka`
+
+Input package:
+`scripts/multiday-rule-research-batch1-needed.json`
+
+Execution prompt:
+`scripts/multiday-rule-research-batch1-prompt-for-antigravity.md`
+
+Expected output:
+`scripts/multiday-rule-research-batch1-output.json`
+
+Do not promote or edit production rules from this batch alone. The output needs
+an independent verification pass before any `rules.json`, `series.json`, or
+`series-content.json` change.
+
 ### Gupt Navratri, Ashadha and Magha
 
 - Current code status: 9-day scaffolds exist, all child days remain deferred.
