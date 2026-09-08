@@ -1,0 +1,487 @@
+[
+  {
+    "slug": "makar-sankranti",
+    "display_name": "Makar Sankranti",
+    "description": "Harvest festival marking the sun's transition into Capricorn"
+  },
+  {
+    "slug": "vasant-panchami",
+    "display_name": "Vasant Panchami",
+    "description": "Festival of Goddess Saraswati, marks arrival of spring"
+  },
+  {
+    "slug": "maha-shivaratri",
+    "display_name": "Maha Shivaratri",
+    "description": "The great night of Shiva — night-long vigil and worship"
+  },
+  {
+    "slug": "holi",
+    "display_name": "Holi",
+    "description": "Festival of colours celebrating victory of good over evil"
+  },
+  {
+    "slug": "gudi-padwa",
+    "display_name": "Gudi Padwa",
+    "description": "Hindu New Year according to the Shalivahana calendar"
+  },
+  {
+    "slug": "chaitra-navratri-begins",
+    "display_name": "Chaitra Navratri begins",
+    "description": "Spring Navratri beginning on Chaitra Shukla Pratipada, nine days of Devi worship leading to Ram Navami."
+  },
+  {
+    "slug": "ugadi",
+    "display_name": "Ugadi",
+    "description": "New Year for Telugu and Kannada communities"
+  },
+  {
+    "slug": "ram-navami",
+    "display_name": "Ram Navami",
+    "description": "Celebration of the birth of Lord Rama"
+  },
+  {
+    "slug": "hanuman-jayanti",
+    "display_name": "Hanuman Jayanti",
+    "description": "Celebration of the birth of Lord Hanuman"
+  },
+  {
+    "slug": "akshaya-tritiya",
+    "display_name": "Akshaya Tritiya",
+    "description": "Auspicious day for new beginnings — celebrated by Hindu and Jain"
+  },
+  {
+    "slug": "narasimha-jayanti",
+    "display_name": "Narasimha Jayanti",
+    "description": "Celebration of Vishnu's Narasimha avatar"
+  },
+  {
+    "slug": "shani-jayanti",
+    "display_name": "Shani Jayanti",
+    "description": "Birth anniversary of Shani Dev — the lord of karma and justice"
+  },
+  {
+    "slug": "vat-savitri-amavasya",
+    "display_name": "Vat Savitri Vrat",
+    "description": "Vrat observed by married women for the well-being of their husbands (Jyeshtha Amavasya — North India)"
+  },
+  {
+    "slug": "vat-savitri-purnima",
+    "display_name": "Vat Savitri Purnima",
+    "description": "Vrat observed by married women for the well-being of their husbands (Jyeshtha Purnima — Maharashtra, Gujarat, Karnataka)"
+  },
+  {
+    "slug": "jagannath-rath-yatra",
+    "display_name": "Jagannath Rath Yatra",
+    "description": "Grand chariot procession of Lord Jagannath at Puri"
+  },
+  {
+    "slug": "gupt-navratri-ashadha-begins",
+    "display_name": "Ashadha Gupt Navratri begins",
+    "description": "Gupt Navratri in Ashadha, a quieter Devi sadhana period observed in Shakta and regional traditions."
+  },
+  {
+    "slug": "guru-purnima",
+    "display_name": "Guru Purnima",
+    "description": "Day to honour spiritual teachers and gurus — observed by all traditions"
+  },
+  {
+    "slug": "nag-panchami",
+    "display_name": "Nag Panchami",
+    "description": "Worship of serpent deities for protection"
+  },
+  {
+    "slug": "raksha-bandhan",
+    "display_name": "Raksha Bandhan",
+    "description": "Festival celebrating the bond between brothers and sisters"
+  },
+  {
+    "slug": "krishna-janmashtami",
+    "display_name": "Krishna Janmashtami (Smarta / Nishita)",
+    "description": "Celebration of the birth of Lord Krishna at midnight (Smarta observance during Ashtami / Nishita Vyapti)"
+  },
+  {
+    "slug": "krishna-janmashtami",
+    "display_name": "Krishna Janmashtami (Gaudiya / ISKCON)",
+    "description": "Celebration of the birth of Lord Krishna (Gaudiya Vaishnava / ISKCON observance during Rohini Nakshatra / Udaya Tithi)"
+  },
+  {
+    "slug": "ganesh-chaturthi",
+    "display_name": "Ganesh Chaturthi",
+    "description": "10-day festival celebrating the birth of Lord Ganesha"
+  },
+  {
+    "slug": "onam",
+    "display_name": "Onam",
+    "description": "Harvest festival of Kerala celebrating King Mahabali's return"
+  },
+  {
+    "slug": "hartalika-teej",
+    "display_name": "Hartalika Teej",
+    "description": "Vrat observed by Hindu women for marital bliss — a fast for Shiva and Parvati, welcoming the monsoon"
+  },
+  {
+    "slug": "mahalaya-amavasya",
+    "display_name": "Mahalaya Amavasya",
+    "description": "Day to offer prayers to ancestors (Pitru Paksha ends)"
+  },
+  {
+    "slug": "navratri-begins",
+    "display_name": "Sharad Navratri begins",
+    "description": "Nine nights of worship of Goddess Durga, Lakshmi and Saraswati"
+  },
+  {
+    "slug": "chintpurni-mata-chaitra-navratri",
+    "display_name": "Chintpurni Mata Chaitra Navratri",
+    "description": "Regional Shakti Peeth observance at Maa Chintpurni, associated with Chaitra Navratri Devi worship."
+  },
+  {
+    "slug": "chintpurni-mata-sharad-navratri",
+    "display_name": "Chintpurni Mata Sharad Navratri",
+    "description": "Regional Shakti Peeth observance at Maa Chintpurni, associated with Sharad Navratri Devi worship."
+  },
+  {
+    "slug": "karva-chauth",
+    "display_name": "Karva Chauth",
+    "description": "Vrat observed by married Hindu women for their husbands"
+  },
+  {
+    "slug": "dhanteras",
+    "display_name": "Dhanteras",
+    "description": "First day of Diwali festival — worship of Goddess Lakshmi"
+  },
+  {
+    "slug": "diwali",
+    "display_name": "Diwali",
+    "description": "Festival of lights — celebrated by Hindu, Jain and Sikh communities"
+  },
+  {
+    "slug": "naraka-chaturdashi",
+    "display_name": "Naraka Chaturdashi",
+    "description": "A Krishna Chaturdashi observance identified by Rashtriya Panchang with the Purvarunodaya qualifier."
+  },
+  {
+    "slug": "govardhan-puja",
+    "display_name": "Govardhan Puja",
+    "description": "Worship of Govardhan Hill and Lord Krishna"
+  },
+  {
+    "slug": "bhai-dooj",
+    "display_name": "Bhai Dooj",
+    "description": "Celebration of the bond between brothers and sisters"
+  },
+  {
+    "slug": "chhath-puja",
+    "display_name": "Chhath Puja",
+    "description": "Worship of the Sun God and Chhathi Maiya"
+  },
+  {
+    "slug": "kartik-purnima",
+    "display_name": "Kartik Purnima",
+    "description": "Full moon of Kartik month — extremely auspicious for bathing"
+  },
+  {
+    "slug": "vivah-panchami",
+    "display_name": "Vivah Panchami",
+    "description": "Anniversary of the marriage of Rama and Sita"
+  },
+  {
+    "slug": "gita-jayanti",
+    "display_name": "Gita Jayanti",
+    "description": "Anniversary of the recitation of the Bhagavad Gita by Lord Krishna"
+  },
+  {
+    "slug": "vaikunta-ekadashi",
+    "display_name": "Vaikunta Ekadashi",
+    "description": "Most auspicious Ekadashi — the gates of Vaikunta are open"
+  },
+  {
+    "slug": "kamada-ekadashi",
+    "display_name": "Kamada Ekadashi",
+    "description": "First Ekadashi of the Hindu New Year — fulfills all pure desires"
+  },
+  {
+    "slug": "nirjala-ekadashi",
+    "display_name": "Nirjala Ekadashi",
+    "description": "Waterless fast granting the merit of all 24 Ekadashis"
+  },
+  {
+    "slug": "devshayani-ekadashi",
+    "display_name": "Devshayani Ekadashi",
+    "description": "Beginning of Lord Vishnu's four-month cosmic slumber (Chaturmas)"
+  },
+  {
+    "slug": "shravana-putrada-ekadashi",
+    "display_name": "Putrada Ekadashi (Shravana)",
+    "description": "Shravana Ekadashi for progeny, family lineage, and prosperity"
+  },
+  {
+    "slug": "parivartini-ekadashi",
+    "display_name": "Parivartini Ekadashi",
+    "description": "The day Lord Vishnu turns upon His side during Chaturmas slumber"
+  },
+  {
+    "slug": "devutthana-ekadashi",
+    "display_name": "Devutthana Ekadashi",
+    "description": "Awakening of Lord Vishnu from cosmic sleep, marking the end of Chaturmas"
+  },
+  {
+    "slug": "amalaki-ekadashi",
+    "display_name": "Amalaki Ekadashi",
+    "description": "Celebration of the sacred Amla tree as the abode of Lord Vishnu"
+  },
+  {
+    "slug": "papmochani-ekadashi",
+    "display_name": "Papmochani Ekadashi",
+    "description": "The Ekadashi that liberates from accumulated sins"
+  },
+  {
+    "slug": "apara-ekadashi",
+    "display_name": "Apara Ekadashi",
+    "description": "The Ekadashi granting limitless spiritual merit"
+  },
+  {
+    "slug": "kamika-ekadashi",
+    "display_name": "Kamika Ekadashi",
+    "description": "The Ekadashi that grants all desires and removes fear"
+  },
+  {
+    "slug": "aja-ekadashi",
+    "display_name": "Aja Ekadashi",
+    "description": "The Ekadashi that destroys sins and restores lost glory"
+  },
+  {
+    "slug": "rama-ekadashi",
+    "display_name": "Rama Ekadashi",
+    "description": "The Ekadashi named after Goddess Lakshmi granting prosperity"
+  },
+  {
+    "slug": "utpanna-ekadashi",
+    "display_name": "Utpanna Ekadashi",
+    "description": "The Ekadashi commemorating the birth of Goddess Ekadashi"
+  },
+  {
+    "slug": "saphala-ekadashi",
+    "display_name": "Saphala Ekadashi",
+    "description": "The Ekadashi that makes all endeavors successful"
+  },
+  {
+    "slug": "vijaya-ekadashi",
+    "display_name": "Vijaya Ekadashi",
+    "description": "The Ekadashi of absolute victory in all endeavors"
+  },
+  {
+    "slug": "gupt-navratri-magha-begins",
+    "display_name": "Magha Gupt Navratri begins",
+    "description": "Gupt Navratri in Magha, a quieter Devi sadhana period observed in Shakta and regional traditions."
+  },
+  {
+    "slug": "guru-gobind-singh-gurpurab",
+    "display_name": "Guru Gobind Singh Gurpurab",
+    "description": "Celebration of the birth of Guru Gobind Singh Ji — 10th Sikh Guru and founder of the Khalsa"
+  },
+  {
+    "slug": "lohri",
+    "display_name": "Lohri",
+    "description": "Punjabi harvest festival celebrated the night before Makar Sankranti — bonfires, folk songs and community"
+  },
+  {
+    "slug": "guru-ravidas-jayanti",
+    "display_name": "Guru Ravidas Jayanti",
+    "description": "Birth anniversary of Guru Ravidas Ji — saint-poet whose verses appear in the Guru Granth Sahib"
+  },
+  {
+    "slug": "holla-mohalla",
+    "display_name": "Holla Mohalla",
+    "description": "Sikh martial festival initiated by Guru Gobind Singh Ji — mock battles, poetry, music and langar at Anandpur Sahib"
+  },
+  {
+    "slug": "baisakhi",
+    "display_name": "Baisakhi",
+    "description": "Harvest festival and founding of the Khalsa Panth by Guru Gobind Singh Ji in 1699 — one of the most joyous Sikh celebrations"
+  },
+  {
+    "slug": "guru-amar-das-gurpurab",
+    "display_name": "Guru Amar Das Gurpurab",
+    "description": "Birth anniversary of Guru Amar Das Ji — 3rd Sikh Guru who abolished purdah and caste discrimination"
+  },
+  {
+    "slug": "guru-arjan-dev-martyrdom",
+    "display_name": "Guru Arjan Dev Martyrdom",
+    "description": "Shaheedi Diwas — remembrance of the martyrdom of Guru Arjan Dev Ji, 5th Guru and compiler of the Adi Granth"
+  },
+  {
+    "slug": "guru-har-krishan-gurpurab",
+    "display_name": "Guru Har Krishan Gurpurab",
+    "description": "Birth anniversary of Guru Har Krishan Ji — 8th Sikh Guru who became Guru at age 5"
+  },
+  {
+    "slug": "guru-ram-das-gurpurab",
+    "display_name": "Guru Ram Das Gurpurab",
+    "description": "Birth anniversary of Guru Ram Das Ji — 4th Sikh Guru and founder of Amritsar"
+  },
+  {
+    "slug": "bandhi-chhor-divas",
+    "display_name": "Bandhi Chhor Divas",
+    "description": "Sikh celebration of freedom — marks Guru Hargobind Ji's release from Gwalior Fort along with 52 kings. Coincides with Diwali."
+  },
+  {
+    "slug": "guru-nanak-gurpurab",
+    "display_name": "Guru Nanak Gurpurab",
+    "description": "Prakash Utsav of Guru Nanak Dev Ji — founder of Sikhism. The most important Sikh celebration, marked by Akhand Path, nagar kirtan and langar."
+  },
+  {
+    "slug": "guru-tegh-bahadur-martyrdom",
+    "display_name": "Guru Tegh Bahadur Martyrdom",
+    "description": "Shaheedi Diwas — remembrance of the martyrdom of Guru Tegh Bahadur Ji, 9th Guru, who sacrificed his life for religious freedom"
+  },
+  {
+    "slug": "sahibzade-shaheedi-diwas",
+    "display_name": "Sahibzade Shaheedi Diwas",
+    "description": "Remembrance of the four Sahibzade — sons of Guru Gobind Singh Ji who were martyred for their faith in December 1704"
+  },
+  {
+    "slug": "parinirvana-day",
+    "display_name": "Parinirvana Day",
+    "description": "Nirvana Day — commemorates the passing of the Buddha into final Nirvana at Kushinagar, aged 80. A day for meditation and reflection on impermanence."
+  },
+  {
+    "slug": "losar-tibetan-new-year",
+    "display_name": "Losar (Tibetan New Year)",
+    "description": "Tibetan Buddhist New Year — three days of prayer, ritual dances, offerings and community gatherings to welcome the new lunar year"
+  },
+  {
+    "slug": "magha-puja",
+    "display_name": "Magha Puja",
+    "description": "Full moon day commemorating the spontaneous gathering of 1,250 enlightened disciples before the Buddha — Fourfold Assembly Day"
+  },
+  {
+    "slug": "vesak-buddha-purnima",
+    "display_name": "Vesak / Buddha Purnima",
+    "description": "The most sacred Buddhist observance — marking the birth, enlightenment and Parinirvana of the Buddha on the full moon of Vaisakha"
+  },
+  {
+    "slug": "asalha-puja",
+    "display_name": "Asalha Puja",
+    "description": "Dharma Day — commemorates the Buddha's first turning of the Wheel of Dharma, teaching the Four Noble Truths to five ascetics at Sarnath"
+  },
+  {
+    "slug": "vassa-begins-rains-retreat",
+    "display_name": "Vassa begins (Rains Retreat)",
+    "description": "Beginning of the three-month Buddhist Rains Retreat — monks remain in monasteries for intensive meditation, study and teaching"
+  },
+  {
+    "slug": "ullambana-ancestor-day",
+    "display_name": "Ullambana (Ancestor Day)",
+    "description": "East Asian Buddhist observance for honouring ancestors and transferring merit to departed souls — held on the 15th day of the 7th lunar month"
+  },
+  {
+    "slug": "pavarana-end-of-vassa",
+    "display_name": "Pavarana (End of Vassa)",
+    "description": "End of the three-month Rains Retreat — monks invite feedback from the community and express gratitude for the retreat period"
+  },
+  {
+    "slug": "kathina",
+    "display_name": "Kathina",
+    "description": "Merit-making ceremony offering robes and requisites to monks at the end of Vassa — one of the most auspicious Buddhist occasions for lay practitioners"
+  },
+  {
+    "slug": "sangha-day-loy-krathong",
+    "display_name": "Sangha Day (Loy Krathong)",
+    "description": "Buddhist Sangha Day — celebration of the spiritual community. Coincides with Loy Krathong in Thailand, where lotus-shaped lanterns are floated on water."
+  },
+  {
+    "slug": "bodhi-day",
+    "display_name": "Bodhi Day",
+    "description": "Commemorates the night the Buddha attained enlightenment under the Bodhi tree at Bodh Gaya — observed with meditation, chanting and study"
+  },
+  {
+    "slug": "mahavir-jayanti",
+    "display_name": "Mahavir Jayanti",
+    "description": "Birth anniversary of Bhagwan Mahavira — the 24th and last Tirthankara of the current cosmic cycle, born in 599 BCE"
+  },
+  {
+    "slug": "akshaya-tritiya-jain",
+    "display_name": "Akshaya Tritiya (Jain)",
+    "description": "Akshaya Tritiya — Jains celebrate Bhagwan Rishabhanatha's first ahimsa-based food offering (sugarcane juice) after a year of fasting. Breaking of the year-long fast."
+  },
+  {
+    "slug": "paryushana-parva-begins",
+    "display_name": "Paryushana Parva begins",
+    "description": "The holiest Jain festival — 8 days (Shvetambara) of intensive fasting, prayer, scripture study and self-purification. The apex of the Jain spiritual year."
+  },
+  {
+    "slug": "samvatsari-paryushana-ends",
+    "display_name": "Samvatsari (Paryushana ends)",
+    "description": "Samvatsari — the Jain day of universal forgiveness. Micchami Dukkadam: may all wrongdoing be forgiven. Jains seek and grant forgiveness from everyone."
+  },
+  {
+    "slug": "das-lakshana-dharma-begins",
+    "display_name": "Das Lakshana Dharma begins",
+    "description": "Digambara Jain equivalent of Paryushana — 10 days of meditation on the ten supreme virtues: forgiveness, humility, honesty, purity, truth, restraint, austerity, renunciation, non-attachment and celibacy"
+  },
+  {
+    "slug": "jain-new-year-pratipada",
+    "display_name": "Jain New Year (Pratipada)",
+    "description": "Jain New Year — the day after Diwali marks the beginning of the Jain calendar year, following the Nirvana of Bhagwan Mahavira"
+  },
+  {
+    "slug": "jain-diwali-nirvana-ladnun",
+    "display_name": "Jain Diwali (Nirvana Ladnun)",
+    "description": "Jain Diwali — marks the Nirvana (liberation) of Bhagwan Mahavira in 527 BCE at Pavapuri. Observed with lamp-lighting, fasting and scripture recitation."
+  },
+  {
+    "slug": "kartik-purnima-jain",
+    "display_name": "Kartik Purnima (Jain)",
+    "description": "Sacred full moon — commemorates the Nirvana of Bhagwan Rishabhanatha (Adinath), the first Tirthankara. A day for fasting and pilgrimage."
+  },
+  {
+    "slug": "ekadashi",
+    "display_name": "Ekadashi",
+    "description": "Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu."
+  },
+  {
+    "slug": "pradosh-vrat",
+    "display_name": "Pradosh Vrat",
+    "description": "Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour."
+  },
+  {
+    "slug": "purnima-vrat",
+    "display_name": "Purnima Vrat",
+    "description": "Monthly full moon observance for Satyanarayan Puja, charity, mantra, and family worship according to tradition."
+  },
+  {
+    "slug": "amavasya-vrat",
+    "display_name": "Amavasya",
+    "description": "Monthly new moon observance for stillness, ancestor remembrance, charity, and local family practice."
+  },
+  {
+    "slug": "vinayaka-chaturthi",
+    "display_name": "Vinayaka Chaturthi",
+    "description": "Monthly Shukla Chaturthi observance for Lord Ganesha, distinct from the Krishna-paksha Sankashti Chaturthi vrat."
+  },
+  {
+    "slug": "sankashti-chaturthi",
+    "display_name": "Sankashti Chaturthi",
+    "description": "Monthly Sankashti Chaturthi vrat to Lord Ganesha — the 4th tithi of the waning moon."
+  },
+  {
+    "slug": "shravan-somvar",
+    "display_name": "Shravan Somvar",
+    "description": "Mondays of the Shravan month, observed with Shiva worship and fasting according to family or sampradaya practice."
+  },
+  {
+    "slug": "mangala-gauri-vrat",
+    "display_name": "Mangala Gauri Vrat",
+    "description": "Tuesdays of Shravan, especially observed by married women in several regional traditions for Gauri worship."
+  },
+  {
+    "slug": "yogini-ekadashi",
+    "display_name": "Yogini Ekadashi (Smarta)",
+    "description": "The Ekadashi that cures diseases and grants liberation (Smarta observance)"
+  },
+  {
+    "slug": "yogini-ekadashi",
+    "display_name": "Yogini Ekadashi (Vaishnava & Vidhava)",
+    "description": "The Ekadashi that cures diseases and grants liberation (Vaishnava & Vidhava observance)"
+  }
+]

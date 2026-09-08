@@ -642,6 +642,13 @@ export interface Database {
           emoji: string | null;
           description: string | null;
           is_shared: boolean;
+          // Hindi/Punjabi rendering of display_name/description, added by
+          // migration 20260908150000_observance_definitions_local_language_columns.sql
+          // -- same _local/_pa convention as dharm_veers.
+          display_name_local: string | null;
+          display_name_pa: string | null;
+          description_local: string | null;
+          description_pa: string | null;
         };
         Insert: Omit<Database['public']['Tables']['observance_definitions']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['observance_definitions']['Insert']>;
@@ -943,6 +950,19 @@ export interface Database {
           source_citations: Json;
           reviewed_by: string | null;
           reviewed_at: string | null;
+          // Added by supabase/migrations/20260908120000_dharm_veer_local_language_columns.sql
+          // -- Hindi tagline (previously missing entirely) and full Punjabi
+          // (Gurmukhi) column family. See src/lib/dharm-veer-generation.ts,
+          // src/lib/dharm-veer-db.ts, scripts/backfill-dharm-veer-translations.ts.
+          tagline_local: string | null;
+          name_pa: string | null;
+          tagline_pa: string | null;
+          journey_pa: string | null;
+          trial_pa: string | null;
+          teaching_pa: string | null;
+          moral_pa: string | null;
+          legacy_pa: string | null;
+          quote_pa: string | null;
         };
         Insert: Omit<Database['public']['Tables']['dharm_veers']['Row'], 'id' | 'created_at' | 'source_backed' | 'review_status' | 'source_citations' | 'reviewed_by' | 'reviewed_at'> & {
           source_backed?: boolean;

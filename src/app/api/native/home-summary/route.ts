@@ -144,16 +144,12 @@ type HomeSummaryResponse = {
     festivalLabel: string | null;
     vratLabel: string | null;
     viewedToday: boolean;
-    observance: {
-      name: string;
-      emoji: string | null;
-      daysLeft: number;
-      routeKind: string;
-      routeSlug: string;
-      href: string;
-      label: string;
-      date: string;
-    } | null;
+    // Was a hand-duplicated literal missing monthLabel/description (both of
+    // which are actually sent) -- reusing ObservanceEntry keeps this type
+    // honest with what buildObservanceEntry() actually returns, including
+    // the nameLocal/namePa/descriptionLocal/descriptionPa fields added for
+    // SacredDaysCard's Hindi/Punjabi support.
+    observance: ObservanceEntry | null;
     upcomingObservances: ObservanceEntry[];
     series?: ObservanceSeries[];
     storyCards?: HomeObservanceStoryCard[];

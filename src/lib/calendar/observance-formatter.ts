@@ -679,8 +679,12 @@ export function formatOccurrencesToResults(
 export type ObservanceDefinitionJoin = {
   slug: string;
   display_name: string;
+  display_name_local: string | null;
+  display_name_pa: string | null;
   emoji: string | null;
   description: string | null;
+  description_local: string | null;
+  description_pa: string | null;
   kind: string | null;
   tradition: string | null;
   route_kind: string | null;
@@ -695,6 +699,12 @@ export type ObservanceRow = {
 
 export type ObservanceEntry = {
   name: string;
+  // Hindi/Punjabi renderings of name/description, viewer-language selection
+  // done client-side (mirrors the dharm_veers pickDharmVeerLocalizedText
+  // pattern) since native already threads a `lang` prop down to the card.
+  // null/undefined until a given slug's translation is backfilled.
+  nameLocal?: string | null;
+  namePa?: string | null;
   emoji: string | null;
   daysLeft: number;
   routeKind: string;
@@ -703,6 +713,8 @@ export type ObservanceEntry = {
   label: string;
   monthLabel: string | null;
   description: string | null;
+  descriptionLocal?: string | null;
+  descriptionPa?: string | null;
   date: string;
 };
 
@@ -726,6 +738,8 @@ export function buildObservanceEntry(
 
   return {
     name,
+    nameLocal: definition.display_name_local ?? null,
+    namePa: definition.display_name_pa ?? null,
     emoji: definition.emoji ?? '🪔',
     daysLeft,
     routeKind,
@@ -734,6 +748,8 @@ export function buildObservanceEntry(
     label,
     monthLabel,
     description: definition.description ?? null,
+    descriptionLocal: definition.description_local ?? null,
+    descriptionPa: definition.description_pa ?? null,
     date: row.date,
   };
 }

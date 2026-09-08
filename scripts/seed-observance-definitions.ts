@@ -57,6 +57,8 @@ async function run() {
   const upsertData = CANONICAL_RULES.map(rule => ({
     slug: rule.slug,
     display_name: rule.display_name,
+    display_name_local: rule.display_name_local || null,
+    display_name_pa: rule.display_name_pa || null,
     kind: rule.kind,
     tradition: rule.tradition,
     calendar_rule_type: rule.rule_family,
@@ -66,6 +68,8 @@ async function run() {
     region: rule.region || null,
     emoji: rule.emoji || '🪔',
     description: rule.description || null,
+    description_local: rule.description_local || null,
+    description_pa: rule.description_pa || null,
     is_shared: false,
     active: true
   }));

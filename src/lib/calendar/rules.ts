@@ -27,8 +27,16 @@ export interface SubObservance {
 export interface ObservanceRule {
   slug: string;
   display_name: string;
+  // Hindi (Devanagari) / Punjabi (Gurmukhi) renderings of display_name and
+  // description, matching the dharm_veers *_local/*_pa convention. Optional
+  // because most of the 97 rules don't have these yet -- backfilled per-slug
+  // as translations land, not required for a rule to publish.
+  display_name_local?: string;
+  display_name_pa?: string;
   emoji: string;
   description: string;
+  description_local?: string;
+  description_pa?: string;
   kind: 'major' | 'vrat' | 'regional';
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
   rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar' | 'solar_sankranti' | 'solar_month_day' | 'lunar_tithi_span';

@@ -67,8 +67,12 @@ const FESTIVAL_MIRROR_CALENDAR_PROFILE = 'legacy-ujjain';
 export interface OccurrenceDefinitionJoin {
   slug: string;
   display_name: string;
+  display_name_local: string | null;
+  display_name_pa: string | null;
   emoji: string | null;
   description: string | null;
+  description_local: string | null;
+  description_pa: string | null;
   kind: string;
   tradition: string;
   route_kind: string | null;

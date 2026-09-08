@@ -43,6 +43,14 @@
         "type": "string",
         "description": "Human readable name of the observance"
       },
+      "display_name_local": {
+        "type": "string",
+        "description": "Hindi (Devanagari) rendering of display_name. Optional -- backfilled per-slug."
+      },
+      "display_name_pa": {
+        "type": "string",
+        "description": "Punjabi (Gurmukhi) rendering of display_name. Optional -- backfilled per-slug."
+      },
       "emoji": {
         "type": "string",
         "description": "Emoji representing the observance visually"
@@ -50,6 +58,14 @@
       "description": {
         "type": "string",
         "description": "Short description of the festival's meaning"
+      },
+      "description_local": {
+        "type": "string",
+        "description": "Hindi (Devanagari) rendering of description. Optional -- backfilled per-slug."
+      },
+      "description_pa": {
+        "type": "string",
+        "description": "Punjabi (Gurmukhi) rendering of description. Optional -- backfilled per-slug."
       },
       "kind": {
         "type": "string",

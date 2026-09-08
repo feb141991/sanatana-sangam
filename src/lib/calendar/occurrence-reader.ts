@@ -52,8 +52,12 @@ export const CALENDAR_OCCURRENCE_SELECT = `
   observance_definitions!inner(
     slug,
     display_name,
+    display_name_local,
+    display_name_pa,
     emoji,
     description,
+    description_local,
+    description_pa,
     kind,
     tradition,
     route_kind,
