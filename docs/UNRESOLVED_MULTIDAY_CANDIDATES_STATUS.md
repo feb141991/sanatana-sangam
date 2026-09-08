@@ -44,6 +44,37 @@ Do not promote or edit production rules from this batch alone. The output needs
 an independent verification pass before any `rules.json`, `series.json`, or
 `series-content.json` change.
 
+### Batch 1 Verification Result
+
+Verified output:
+`scripts/multiday-rule-research-batch1-output.json`
+
+Ready for engineering planning:
+
+- `holi-two-day-split`: safe as a 2-day cluster, but needs slug compatibility
+  handling because current `holi` likely represents Holika Dahan.
+- `onam-ten-day-series`: safe as a Kerala/regional 10-day journey anchored on
+  existing `onam` / Thiruvonam.
+- `pongal-four-day-cycle`: safe as a Tamil/regional 4-day cluster, separate from
+  pan-India Makar Sankranti.
+
+Structurally likely, but needs one stronger source before launch:
+
+- `das-lakshana-dharma`: 10-day structure and dharma order are coherent, but
+  should get one stronger Digambara/Jain source before promotion.
+
+Conservative implementation only:
+
+- `pitru-paksha-season`: use a season/banner wrapper first. Do not build daily
+  tithi-specific cards until tithi/source handling is reviewed.
+
+Still needs scholar/product decision:
+
+- `hola-mohalla-three-day-series`: keep single-day rule for now. Three-day mela
+  shape may be location/institution-specific.
+- `tulsi-vivah-bhishma-panchaka`: keep related observances separate for now;
+  one combined series would overstate a tradition-specific relationship.
+
 ### Gupt Navratri, Ashadha and Magha
 
 - Current code status: 9-day scaffolds exist, all child days remain deferred.

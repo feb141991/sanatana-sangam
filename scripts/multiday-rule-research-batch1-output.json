@@ -1,0 +1,377 @@
+[
+  {
+    "candidate": "holi-two-day-split",
+    "verdict": "ready_for_engineering",
+    "recommendedShape": "festival_cluster",
+    "recommendedAudienceScope": "hindu",
+    "sourceConfidence": "high",
+    "proposedCanonicalSlug": "holi-two-days",
+    "backwardCompatibilityNotes": "Keep the existing public route slug holi resolving to the cluster. Add child slugs holika-dahan and rangwali-holi. Do not silently change old deep links; old /vrat/holi should render the cluster or the main color-day child depending on route context.",
+    "proposedChildren": [
+      {
+        "slug": "holika-dahan",
+        "sequence": 1,
+        "title": "Holika Dahan",
+        "ruleType": "anchor",
+        "relativeBaseSlug": "holi",
+        "offsetDays": 0,
+        "notes": "Night bonfire observance tied to Phalguna Purnima. The existing holi rule appears closest to this anchor."
+      },
+      {
+        "slug": "rangwali-holi",
+        "sequence": 2,
+        "title": "Rangwali Holi / Dhulandi",
+        "ruleType": "relative_offset",
+        "relativeBaseSlug": "holika-dahan",
+        "offsetDays": 1,
+        "notes": "Color celebration the morning/day after Holika Dahan in the common North Indian model."
+      }
+    ],
+    "ruleSources": [
+      {
+        "sourceName": "Drik Panchang",
+        "sourceAuthorOrPublisher": "Drik Panchang",
+        "pageOrSection": "Holika Dahan / Rangwali Holi date pages",
+        "url": "https://www.drikpanchang.com/",
+        "tier": 2,
+        "supports": "date_rule",
+        "confidence": "high",
+        "accessDate": "2026-09-08"
+      },
+      {
+        "sourceName": "The Old Farmer's Almanac",
+        "sourceAuthorOrPublisher": "Yankee Publishing",
+        "pageOrSection": "Holi 2026 dates",
+        "url": "https://www.almanac.com/",
+        "tier": 3,
+        "supports": "naming",
+        "confidence": "medium",
+        "accessDate": "2026-09-08"
+      }
+    ],
+    "openQuestions": [
+      "Whether the old slug holi should be displayed as the cluster title only, or as the Rangwali Holi child in user-facing cards."
+    ],
+    "risks": [
+      "Some regions use Dol Purnima, Dhuleti, Yaosang, or other local variants; do not overfit copy to one region."
+    ],
+    "engineeringNotes": "Add a series.json festival_cluster. Keep existing holi route compatibility. If adding a new holika-dahan definition, migrate current holi semantics carefully.",
+    "recommendation": "Proceed with a 2-day cluster after a slug compatibility review."
+  },
+  {
+    "candidate": "onam-ten-day-series",
+    "verdict": "ready_for_engineering",
+    "recommendedShape": "daily_journey",
+    "recommendedAudienceScope": "regional",
+    "sourceConfidence": "high",
+    "proposedCanonicalSlug": "onam-ten-days",
+    "backwardCompatibilityNotes": "Keep existing onam as the Thiruvonam anchor and route target. Add the 10-day series around it; existing onam cards should become day 10 or cluster landing based on context.",
+    "proposedChildren": [
+      { "slug": "onam-day-1-atham", "sequence": 1, "title": "Atham", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -9, "notes": "Opening day of the 10-day Onam journey." },
+      { "slug": "onam-day-2-chithira", "sequence": 2, "title": "Chithira", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -8, "notes": "Day 2 label needs spelling confirmed against chosen Kerala source." },
+      { "slug": "onam-day-3-chodhi", "sequence": 3, "title": "Chodhi", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -7, "notes": "Day 3 label needs spelling confirmed against chosen Kerala source." },
+      { "slug": "onam-day-4-vishakam", "sequence": 4, "title": "Vishakam", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -6, "notes": "Day 4." },
+      { "slug": "onam-day-5-anizham", "sequence": 5, "title": "Anizham", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -5, "notes": "Day 5." },
+      { "slug": "onam-day-6-thriketa", "sequence": 6, "title": "Thriketa", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -4, "notes": "Day 6 spelling may also appear as Thriketta." },
+      { "slug": "onam-day-7-moolam", "sequence": 7, "title": "Moolam", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -3, "notes": "Day 7." },
+      { "slug": "onam-day-8-pooradam", "sequence": 8, "title": "Pooradam", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -2, "notes": "Day 8." },
+      { "slug": "onam-day-9-uthradam", "sequence": 9, "title": "Uthradam", "ruleType": "relative_offset", "relativeBaseSlug": "onam", "offsetDays": -1, "notes": "First Onam in common Kerala usage." },
+      { "slug": "onam", "sequence": 10, "title": "Thiruvonam", "ruleType": "anchor", "relativeBaseSlug": "onam", "offsetDays": 0, "notes": "Existing anchor; main Onam day." }
+    ],
+    "ruleSources": [
+      {
+        "sourceName": "Kerala Tourism",
+        "sourceAuthorOrPublisher": "Department of Tourism, Government of Kerala",
+        "pageOrSection": "Thiruvonamahotsavam / Onam pages",
+        "url": "https://www.keralatourism.org/",
+        "tier": 1,
+        "supports": "child_sequence",
+        "confidence": "high",
+        "accessDate": "2026-09-08"
+      }
+    ],
+    "openQuestions": [
+      "Confirm final spellings for Chithira/Chodhi/Thriketa from one canonical Kerala source before writing user-facing content."
+    ],
+    "risks": [
+      "This should be scoped as Kerala/regional, not a generic pan-Hindu observance."
+    ],
+    "engineeringNotes": "Model as offsets from existing onam. Do not create independent nakshatra calculations for all 10 days unless the calendar engine explicitly supports them.",
+    "recommendation": "Proceed with a regional 10-day daily_journey after spelling pass."
+  },
+  {
+    "candidate": "pitru-paksha-season",
+    "verdict": "content_only_after_engineering",
+    "recommendedShape": "season",
+    "recommendedAudienceScope": "hindu",
+    "sourceConfidence": "medium",
+    "proposedCanonicalSlug": "pitru-paksha",
+    "backwardCompatibilityNotes": "Keep mahalaya-amavasya as an endpoint card. Add pitru-paksha as a season wrapper rather than replacing Mahalaya.",
+    "proposedChildren": [
+      {
+        "slug": "pitru-paksha",
+        "sequence": 1,
+        "title": "Pitru Paksha",
+        "ruleType": "anchor",
+        "relativeBaseSlug": "mahalaya-amavasya",
+        "offsetDays": -15,
+        "notes": "Represent as a season start/banner rather than 16 daily content cards until daily shraddha rules are reviewed."
+      },
+      {
+        "slug": "mahalaya-amavasya",
+        "sequence": 2,
+        "title": "Sarva Pitru Amavasya / Mahalaya Amavasya",
+        "ruleType": "anchor",
+        "relativeBaseSlug": "mahalaya-amavasya",
+        "offsetDays": 0,
+        "notes": "Existing endpoint rule."
+      }
+    ],
+    "ruleSources": [
+      {
+        "sourceName": "Pitru Paksha overview",
+        "sourceAuthorOrPublisher": "Public encyclopedic summary with cited festival references",
+        "pageOrSection": "Pitru Paksha timing and regional month distinction",
+        "url": "https://en.wikipedia.org/wiki/Pitru_Paksha",
+        "tier": 4,
+        "supports": "date_rule",
+        "confidence": "medium",
+        "accessDate": "2026-09-08"
+      }
+    ],
+    "openQuestions": [
+      "Need a better primary or almanac source before approving daily tithi-specific shraddha cards.",
+      "Need decide whether purnimanta/amanta regional difference affects app copy."
+    ],
+    "risks": [
+      "Daily shraddha assignment can be user-location/tithi sensitive. A generic 16-day journey could create incorrect ritual guidance."
+    ],
+    "engineeringNotes": "Use season/banner wrapper first. Avoid one card per day until tithi-specific logic and source authority are reviewed.",
+    "recommendation": "Build a conservative season wrapper; defer daily journey content."
+  },
+  {
+    "candidate": "das-lakshana-dharma",
+    "verdict": "ready_for_engineering",
+    "recommendedShape": "daily_journey",
+    "recommendedAudienceScope": "jain",
+    "sourceConfidence": "medium",
+    "proposedCanonicalSlug": "das-lakshana-dharma",
+    "backwardCompatibilityNotes": "Keep das-lakshana-dharma-begins as day 1 anchor. Add child slugs for days 2-10 and a separate Kshamavani note only if source-ratified.",
+    "proposedChildren": [
+      { "slug": "das-lakshana-day-1-uttam-kshama", "sequence": 1, "title": "Uttam Kshama", "ruleType": "anchor", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 0, "notes": "Supreme forgiveness." },
+      { "slug": "das-lakshana-day-2-uttam-mardava", "sequence": 2, "title": "Uttam Mardava", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 1, "notes": "Supreme humility." },
+      { "slug": "das-lakshana-day-3-uttam-arjava", "sequence": 3, "title": "Uttam Arjava", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 2, "notes": "Supreme straightforwardness." },
+      { "slug": "das-lakshana-day-4-uttam-shauch", "sequence": 4, "title": "Uttam Shauch", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 3, "notes": "Supreme purity/contentment." },
+      { "slug": "das-lakshana-day-5-uttam-satya", "sequence": 5, "title": "Uttam Satya", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 4, "notes": "Supreme truth." },
+      { "slug": "das-lakshana-day-6-uttam-sanyam", "sequence": 6, "title": "Uttam Sanyam", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 5, "notes": "Supreme self-restraint." },
+      { "slug": "das-lakshana-day-7-uttam-tap", "sequence": 7, "title": "Uttam Tap", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 6, "notes": "Supreme austerity." },
+      { "slug": "das-lakshana-day-8-uttam-tyag", "sequence": 8, "title": "Uttam Tyag", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 7, "notes": "Supreme renunciation." },
+      { "slug": "das-lakshana-day-9-uttam-akinchanya", "sequence": 9, "title": "Uttam Akinchanya", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 8, "notes": "Supreme non-attachment." },
+      { "slug": "das-lakshana-day-10-uttam-brahmacharya", "sequence": 10, "title": "Uttam Brahmacharya", "ruleType": "relative_offset", "relativeBaseSlug": "das-lakshana-dharma-begins", "offsetDays": 9, "notes": "Supreme celibacy/chastity." }
+    ],
+    "ruleSources": [
+      {
+        "sourceName": "OneJAIN UK",
+        "sourceAuthorOrPublisher": "Institute of Jainology / OneJAIN",
+        "pageOrSection": "Das Lakshan",
+        "url": "https://www.onejainuk.org/",
+        "tier": 2,
+        "supports": "date_rule",
+        "confidence": "medium",
+        "accessDate": "2026-09-08"
+      },
+      {
+        "sourceName": "Jainworld",
+        "sourceAuthorOrPublisher": "Jainworld",
+        "pageOrSection": "Ten pious duties / Daslakshan Dharma",
+        "url": "https://jainworld.com/",
+        "tier": 2,
+        "supports": "child_sequence",
+        "confidence": "medium",
+        "accessDate": "2026-09-08"
+      }
+    ],
+    "openQuestions": [
+      "Need stronger Digambara primary/community source before marking sourceConfidence high.",
+      "Kshamavani timing should be handled only after a separate source check."
+    ],
+    "risks": [
+      "Some communities pair Das Lakshana with broader Paryushana framing differently; keep audience copy explicitly Digambara/Jain."
+    ],
+    "engineeringNotes": "Can be modeled as 10 relative days from the existing begin anchor. Keep launch_status deferred until content is separately sourced.",
+    "recommendation": "Proceed to engineering only after one stronger Jain source is added; structure is likely sound."
+  },
+  {
+    "candidate": "pongal-four-day-cycle",
+    "verdict": "ready_for_engineering",
+    "recommendedShape": "festival_cluster",
+    "recommendedAudienceScope": "regional",
+    "sourceConfidence": "high",
+    "proposedCanonicalSlug": "pongal-four-days",
+    "backwardCompatibilityNotes": "Do not replace pan-India Makar Sankranti. Model as a Tamil/regional festival cluster with Thai Pongal as the main anchor.",
+    "proposedChildren": [
+      { "slug": "bhogi-pongal", "sequence": 1, "title": "Bhogi Pongal", "ruleType": "relative_offset", "relativeBaseSlug": "thai-pongal", "offsetDays": -1, "notes": "Day before Thai Pongal." },
+      { "slug": "thai-pongal", "sequence": 2, "title": "Thai Pongal", "ruleType": "anchor", "relativeBaseSlug": "thai-pongal", "offsetDays": 0, "notes": "Main Pongal harvest day." },
+      { "slug": "mattu-pongal", "sequence": 3, "title": "Mattu Pongal", "ruleType": "relative_offset", "relativeBaseSlug": "thai-pongal", "offsetDays": 1, "notes": "Cattle-honoring day." },
+      { "slug": "kaanum-pongal", "sequence": 4, "title": "Kaanum Pongal", "ruleType": "relative_offset", "relativeBaseSlug": "thai-pongal", "offsetDays": 2, "notes": "Fourth day in common Tamil Nadu framing." }
+    ],
+    "ruleSources": [
+      {
+        "sourceName": "Tamil Nadu Tourism",
+        "sourceAuthorOrPublisher": "Government of Tamil Nadu",
+        "pageOrSection": "Pongal Festival",
+        "url": "https://www.tamilnadutourism.tn.gov.in/",
+        "tier": 1,
+        "supports": "child_sequence",
+        "confidence": "high",
+        "accessDate": "2026-09-08"
+      }
+    ],
+    "openQuestions": [
+      "Confirm whether the existing rule set already has thai-pongal or makar-sankranti as a suitable anchor before implementing."
+    ],
+    "risks": [
+      "Must remain regional/Tamil; do not collapse all Sankranti observances into Pongal."
+    ],
+    "engineeringNotes": "Add a Tamil regional cluster. If no thai-pongal rule exists, create one rather than overloading makar-sankranti.",
+    "recommendation": "Proceed as a regional 4-day cluster."
+  },
+  {
+    "candidate": "hola-mohalla-three-day-series",
+    "verdict": "needs_scholar_decision",
+    "recommendedShape": "festival_cluster",
+    "recommendedAudienceScope": "sikh",
+    "sourceConfidence": "medium",
+    "proposedCanonicalSlug": "hola-mohalla",
+    "backwardCompatibilityNotes": "Existing slug holla-mohalla should remain as an alias if canonical spelling is normalized to hola-mohalla.",
+    "proposedChildren": [
+      {
+        "slug": "hola-mohalla-day-1",
+        "sequence": 1,
+        "title": "Hola Mohalla Day 1",
+        "ruleType": "relative_offset",
+        "relativeBaseSlug": "holla-mohalla",
+        "offsetDays": -2,
+        "notes": "Only if the Anandpur Sahib three-day mela shape is accepted as the app model."
+      },
+      {
+        "slug": "hola-mohalla-day-2",
+        "sequence": 2,
+        "title": "Hola Mohalla Day 2",
+        "ruleType": "relative_offset",
+        "relativeBaseSlug": "holla-mohalla",
+        "offsetDays": -1,
+        "notes": "Requires confirmation of whether the named day is start, middle, or end in chosen source."
+      },
+      {
+        "slug": "holla-mohalla",
+        "sequence": 3,
+        "title": "Hola Mohalla",
+        "ruleType": "anchor",
+        "relativeBaseSlug": "holla-mohalla",
+        "offsetDays": 0,
+        "notes": "Existing rule anchor."
+      }
+    ],
+    "ruleSources": [
+      {
+        "sourceName": "SGPC Nanakshahi Calendar",
+        "sourceAuthorOrPublisher": "Shiromani Gurdwara Parbandhak Committee",
+        "pageOrSection": "Nanakshahi Calendar 2026-27",
+        "url": "https://sgpc.net/",
+        "tier": 1,
+        "supports": "date_rule",
+        "confidence": "high",
+        "accessDate": "2026-09-08"
+      },
+      {
+        "sourceName": "SikhNet",
+        "sourceAuthorOrPublisher": "SikhNet",
+        "pageOrSection": "Hola Mohalla overview",
+        "url": "https://www.sikhnet.com/",
+        "tier": 2,
+        "supports": "naming",
+        "confidence": "medium",
+        "accessDate": "2026-09-08"
+      }
+    ],
+    "openQuestions": [
+      "Need determine if the three-day festival should be modeled as official calendar days or local Anandpur Sahib event days.",
+      "Need choose canonical spelling and alias strategy."
+    ],
+    "risks": [
+      "A three-day mela model may be location/institution-specific rather than a universal Sikh date model."
+    ],
+    "engineeringNotes": "Do not implement 3-day children until the anchor semantics are confirmed. A one-line slug alias may be safe separately.",
+    "recommendation": "Keep single-day rule for now; normalize spelling only after review."
+  },
+  {
+    "candidate": "tulsi-vivah-bhishma-panchaka",
+    "verdict": "needs_scholar_decision",
+    "recommendedShape": "festival_cluster",
+    "recommendedAudienceScope": "sampradaya_specific",
+    "sourceConfidence": "medium",
+    "proposedCanonicalSlug": "kartik-vishnu-vrata-days",
+    "backwardCompatibilityNotes": "Keep Tulsi Vivah, Devutthana Ekadashi, and Kartik Purnima as independent cards unless a series relationship is explicitly approved.",
+    "proposedChildren": [
+      {
+        "slug": "devutthana-ekadashi",
+        "sequence": 1,
+        "title": "Devutthana Ekadashi",
+        "ruleType": "anchor",
+        "relativeBaseSlug": "devutthana-ekadashi",
+        "offsetDays": 0,
+        "notes": "Potential start of Bhishma Panchaka."
+      },
+      {
+        "slug": "tulsi-vivah",
+        "sequence": 2,
+        "title": "Tulsi Vivah",
+        "ruleType": "independent_rule",
+        "relativeBaseSlug": null,
+        "offsetDays": 0,
+        "notes": "Often observed between Prabodhini/Devutthana Ekadashi and Kartik Purnima; exact day varies by tradition."
+      },
+      {
+        "slug": "kartik-purnima",
+        "sequence": 5,
+        "title": "Kartik Purnima",
+        "ruleType": "anchor",
+        "relativeBaseSlug": "kartik-purnima",
+        "offsetDays": 0,
+        "notes": "Potential endpoint."
+      }
+    ],
+    "ruleSources": [
+      {
+        "sourceName": "Samvat",
+        "sourceAuthorOrPublisher": "Samvat calendar",
+        "pageOrSection": "Tulsi Vivah date calculation",
+        "url": "https://samvat.in/",
+        "tier": 3,
+        "supports": "scope",
+        "confidence": "medium",
+        "accessDate": "2026-09-08"
+      },
+      {
+        "sourceName": "mPanchang",
+        "sourceAuthorOrPublisher": "mPanchang",
+        "pageOrSection": "Bhishma Panchak Vrat",
+        "url": "https://www.mpanchang.com/",
+        "tier": 3,
+        "supports": "date_rule",
+        "confidence": "medium",
+        "accessDate": "2026-09-08"
+      }
+    ],
+    "openQuestions": [
+      "Tulsi Vivah varies between Ekadashi, Dwadashi, and up to Kartik Purnima in different traditions.",
+      "Need decide whether this belongs as a Vaishnava-specific vrata series or independent general cards."
+    ],
+    "risks": [
+      "Combining Tulsi Vivah and Bhishma Panchaka into one universal series may imply a tradition-specific practice for all users."
+    ],
+    "engineeringNotes": "Do not create a unified series yet. Keep separate cards and maybe add cross-links after scholar review.",
+    "recommendation": "Do not implement as one series yet; keep separate observances."
+  }
+]
