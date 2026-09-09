@@ -21,6 +21,8 @@ import {
 import type { generateHealthReport } from "@/lib/monitoring/aggregation";
 import type { MonitoringEvent } from "@/lib/monitoring/events";
 import PushMonitoringSection from "./PushMonitoringSection";
+import EmailMonitoringSection from "./EmailMonitoringSection";
+import { Mail } from "lucide-react";
 import ClientErrorMonitoringSection from "./ClientErrorMonitoringSection";
 import ApiMonitoringSection, { API_CATALOG } from "./ApiMonitoringSection";
 import { resolveContentReport } from "./actions";
@@ -493,6 +495,18 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         </button>
 
         <button
+          onClick={() => handleTabChange("emails")}
+          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
+            activeTab === "emails"
+              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
+              : "border-transparent text-gray-500 hover:text-gray-900"
+          )}
+        >
+          <Mail size={14} />
+          <span>Email & Auth Deliverability</span>
+        </button>
+
+        <button
           onClick={() => handleTabChange("push")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
             activeTab === "push"
@@ -636,6 +650,11 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
             </div>
           </div>
         </div>
+      )}
+
+      {/* ─── TAB: EMAIL DELIVERABILITY & AUTH MONITORING ───────────────────── */}
+      {activeTab === "emails" && (
+        <EmailMonitoringSection />
       )}
 
       {/* ─── TAB 2: PUSH NOTIFICATIONS GATEWAY ──────────────────────────────── */}

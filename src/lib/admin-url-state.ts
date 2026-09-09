@@ -4,7 +4,7 @@
  * unrelated query parameters when updating tabs, filters, or record targets.
  */
 
-export const MONITORING_TABS = ["apis", "telemetry", "push", "errors", "ai_reports"] as const;
+export const MONITORING_TABS = ["apis", "telemetry", "push", "emails", "errors", "ai_reports"] as const;
 export type MonitoringTab = typeof MONITORING_TABS[number];
 
 export const MODERATION_FILTERS = ["all", "pending", "reviewed", "actioned", "dismissed"] as const;

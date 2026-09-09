@@ -592,6 +592,35 @@ export function getPanchangTimes(
   };
 }
 
+// ─── getNextBrahmaMuhurtaInstant ───────────────────────────────────────────────
+// For scheduling a wake-up notification, unlike getPanchangTimes (used for
+// on-screen display), missing coordinates must never silently fall back to
+// Ujjain -- that would wake someone in a real, different location up at an
+// India-computed instant translated onto their own clock, hours off from
+// their actual dawn. Returns null so the caller skips scheduling entirely
+// until real coordinates exist, instead of guessing.
+//
+// If today's Brahma Muhurta has already passed relative to `now`, returns
+// tomorrow's instead (mirrors sacred-time.ts's getNextLocalHourUtc "always
+// return the next upcoming occurrence" contract).
+export function getNextBrahmaMuhurtaInstant(
+  now: Date,
+  lat: number | null | undefined,
+  lon: number | null | undefined,
+): Date | null {
+  if (lat == null || lon == null || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return null;
+  }
+
+  const todayStart = getPanchangTimes(now, lat, lon).brahmaMuhurtaStart;
+  if (todayStart.getTime() > now.getTime()) {
+    return todayStart;
+  }
+
+  const tomorrowRef = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  return getPanchangTimes(tomorrowRef, lat, lon).brahmaMuhurtaStart;
+}
+
 // ─── isInWindow ───────────────────────────────────────────────────────────────
 // Returns true if `now` falls within [start - toleranceMs, end + toleranceMs].
 export function isInWindow(

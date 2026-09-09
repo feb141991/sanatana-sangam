@@ -1,26 +1,34 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendPushNotification } from '@/lib/push-server';
-import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
-import { getPanchangTimes, isInWindow } from '@/lib/panchang';
+import { emitEvent } from '@/lib/monitoring/events';
+import { getLocalDateIso, isHourInQuietWindow, getLocalHour, resolveTimeZone } from '@/lib/sacred-time';
+import { getNextBrahmaMuhurtaInstant } from '@/lib/panchang';
 
-// ─── Brahma Muhurta Sacred Alert ──────────────────────────────────────────────
+// ─── Brahma Muhurta Sacred Alert Enqueuer ────────────────────────────────────
 //
-// Fires a precise wake-up notification exactly when each user's personal
-// Brahma Muhurta window opens (1hr 36min before sunrise, typically 4–5 AM).
+// Computes each user's own next Brahma Muhurta instant (1hr 36min before
+// their own local sunrise, from their real profile coordinates) and enqueues
+// a deterministic pending row into `notification_schedule`. The shared
+// `notification-dispatch` cron (pg_cron, every 10 min) claims and delivers
+// due rows precisely -- this route no longer sends anything itself, and no
+// longer depends on running every 15 minutes to catch each user's instant.
 //
-// Schedule: run every 15 min via Vercel cron (*/15 * * * *).
-//   Each run only sends to users whose BM window opened in the LAST 15 minutes,
-//   so each user receives exactly one alert per day.
+// Users with no known latitude/longitude are skipped entirely rather than
+// falling back to a default location's sunrise -- see
+// getNextBrahmaMuhurtaInstant in lib/panchang.ts for why a silent fallback
+// there is itself a correctness bug, not a convenience.
 //
-// notification_key: `brahma_muhurta:${localDate}` — deduplicates any double-sends.
+// Schedule: run once daily, at any fixed UTC time (currently 03:00 UTC, see
+// vercel.json -- unchanged from before this rewrite). The exact tick time no
+// longer matters for correctness: getNextBrahmaMuhurtaInstant always returns
+// each user's genuinely next upcoming instant relative to whenever this runs
+// (today's if still ahead, tomorrow's if already passed), so every user gets
+// exactly one correctly-timed row enqueued per run, every day, regardless of
+// their timezone.
 //
-// Requires in vercel.json / next.config:
-//   { "path": "/api/cron/brahma-muhurta", "schedule": "*/15 * * * *" }
+// notification_key: `brahma_muhurta:${user_id}:${localDate}` — deduplicates
+// any double-enqueue for the same user's same spiritual morning.
 // ─────────────────────────────────────────────────────────────────────────────
-
-/** How far back to look for BM window opens (ms). Should match cron interval. */
-const LOOKBACK_MS = 16 * 60_000; // 16 minutes (extra 1 min overlap for safety)
 
 const TRADITION_COPY: Record<string, { title: string; body: string }> = {
   hindu: {
@@ -42,6 +50,7 @@ const TRADITION_COPY: Record<string, { title: string; body: string }> = {
 };
 
 export async function GET(request: Request) {
+  const startTime = Date.now();
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
     return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
@@ -53,7 +62,6 @@ export async function GET(request: Request) {
 
   const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
   if (!supabaseUrl || !serviceRoleKey) {
     return NextResponse.json(
       { error: 'Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY' },
@@ -62,134 +70,140 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const now = new Date();
 
   try {
-    const now        = new Date();
-    const baseUrl    = new URL(request.url).origin;
-    const actionUrl  = new URL('/nitya-karma', baseUrl).toString();
-
-    // ── Step 1: Fetch all users ───────────────────────────────────────────────
+    // ── Step 1: Fetch all active users ────────────────────────────────────────
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, full_name, tradition, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end');
+      .select('id, tradition, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting')
+      .or('is_deleting.is.null,is_deleting.eq.false');
 
     if (usersError) {
-      console.error('BM cron users query failed:', usersError);
+      console.error('[brahma-muhurta/enqueuer] Fetch profiles error:', usersError);
       return NextResponse.json({ error: `Profiles query failed: ${usersError.message}` }, { status: 500 });
     }
 
     if (!users || users.length === 0) {
-      return NextResponse.json({ message: 'No users', sent: 0 });
+      return NextResponse.json({ message: 'No users', enqueued: 0 });
     }
 
-    // ── Step 2: Find users whose BM window JUST opened (within last 16 min) ───
     type Profile = typeof users[0];
-    const justOpenedUsers: Profile[] = [];
 
-    for (const user of users) {
-      const lat = (user as any).latitude  as number | null;
-      const lon = (user as any).longitude as number | null;
-      const tz  = resolveTimeZone((user as any).timezone);
+    const scheduledRows: Array<{
+      user_id: string;
+      title: string;
+      body: string;
+      send_at: string;
+      notification_type: string;
+      status: 'pending';
+      metadata: Record<string, unknown>;
+      notification_key: string;
+      retry_count: number;
+    }> = [];
 
-      // Check quiet hours first
-      const inQuietHours = !canSendInLocalWindow(
-        now, tz, 4, // 4 AM local target — used only for quiet-hour check
-        (user as any).notification_quiet_hours_start ?? null,
-        (user as any).notification_quiet_hours_end   ?? null,
-        1, // narrow ±1h window for quiet-hour check only
-      );
-      if (inQuietHours) continue;
+    let skippedNoCoordinates = 0;
+    let skippedQuietHours = 0;
 
-      try {
-        const times = getPanchangTimes(now, lat, lon);
-        const bmStart = times.brahmaMuhurtaStart;
+    // ── Step 2: Compute each user's own next Brahma Muhurta instant ──────────
+    for (const u of users as Profile[]) {
+      const lat = (u as any).latitude as number | null;
+      const lon = (u as any).longitude as number | null;
+      const tz  = resolveTimeZone((u as any).timezone);
 
-        // BM window opened in the last LOOKBACK_MS milliseconds?
-        const msSinceBmStart = now.getTime() - bmStart.getTime();
-        if (msSinceBmStart >= 0 && msSinceBmStart <= LOOKBACK_MS) {
-          justOpenedUsers.push(user);
-        }
-      } catch {
-        // If panchang calc fails, skip this user — don't want to spam
+      const sendAt = getNextBrahmaMuhurtaInstant(now, lat, lon);
+      if (!sendAt) {
+        // No real location on file -- skip rather than silently substitute
+        // a default location's sunrise (see getNextBrahmaMuhurtaInstant).
+        skippedNoCoordinates += 1;
+        continue;
       }
-    }
 
-    if (justOpenedUsers.length === 0) {
-      return NextResponse.json({ message: 'No users entering BM window right now', sent: 0 });
-    }
+      const targetLocalHour = getLocalHour(sendAt, tz);
+      const quietStart = (u as any).notification_quiet_hours_start !== null ? Number((u as any).notification_quiet_hours_start) : null;
+      const quietEnd   = (u as any).notification_quiet_hours_end   !== null ? Number((u as any).notification_quiet_hours_end)   : null;
 
-    // ── Step 3: Build notification rows ──────────────────────────────────────
-    const notifications = justOpenedUsers.map((u) => {
-      const tz        = resolveTimeZone((u as any).timezone);
-      const localDate = getLocalDateIso(now, tz);
+      if (isHourInQuietWindow(targetLocalHour, quietStart, quietEnd)) {
+        skippedQuietHours += 1;
+        continue;
+      }
+
+      const localDateIso = getLocalDateIso(sendAt, tz);
       const tradition = (u as any).tradition ?? 'hindu';
-      const copy      = TRADITION_COPY[tradition] ?? TRADITION_COPY.hindu;
+      const copy = TRADITION_COPY[tradition] ?? TRADITION_COPY.hindu;
+      const dedupeKey = `brahma_muhurta:${u.id}:${localDateIso}`;
 
-      return {
-        user_id:          u.id,
-        title:            copy.title,
-        body:             copy.body,
-        emoji:            '🌅',
-        type:             'brahma_muhurta' as const,
-        action_url:       '/nitya-karma',
-        notification_key: `brahma_muhurta:${localDate}`,
-        local_date:       localDate,
-        sent_timezone:    tz,
-      };
+      scheduledRows.push({
+        user_id:           u.id,
+        title:             copy.title,
+        body:              copy.body,
+        send_at:           sendAt.toISOString(),
+        notification_type: 'brahma_muhurta',
+        status:            'pending',
+        metadata: {
+          tradition,
+          emoji:      '🌅',
+          type:       'brahma_muhurta',
+          action_url: '/nitya-karma',
+          timezone:   tz,
+          local_date: localDateIso,
+        },
+        notification_key: dedupeKey,
+        retry_count: 0,
+      });
+    }
+
+    if (scheduledRows.length === 0) {
+      return NextResponse.json({
+        message: 'No users to schedule',
+        enqueued: 0,
+        skipped_no_coordinates: skippedNoCoordinates,
+        skipped_quiet_hours: skippedQuietHours,
+      });
+    }
+
+    // ── Step 3: Upsert scheduled rows in batches of 100 with deduplication ──
+    let totalEnqueued = 0;
+    for (let i = 0; i < scheduledRows.length; i += 100) {
+      const batch = scheduledRows.slice(i, i + 100);
+      const { data: upserted, error: upsertError } = await supabase
+        .from('notification_schedule')
+        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
+        .select('id');
+
+      if (upsertError) {
+        console.error('[brahma-muhurta/enqueuer] Upsert error:', upsertError.message);
+        return NextResponse.json({ error: `Notification schedule upsert failed: ${upsertError.message}` }, { status: 500 });
+      }
+
+      totalEnqueued += upserted?.length ?? 0;
+    }
+
+    emitEvent({
+      severity: 'P3',
+      domain: 'notifications',
+      route: '/api/cron/brahma-muhurta',
+      latency_ms: Date.now() - startTime,
+      context: {
+        status: 'enqueued',
+        total_eligible: users.length,
+        scheduled_candidates: scheduledRows.length,
+        enqueued_count: totalEnqueued,
+        skipped_no_coordinates: skippedNoCoordinates,
+        skipped_quiet_hours: skippedQuietHours,
+      },
     });
 
-    // ── Step 4: Upsert with dedup ─────────────────────────────────────────────
-    let totalInserted    = 0;
-    const insertedUserIds: string[] = [];
-
-    for (let i = 0; i < notifications.length; i += 100) {
-      const batch = notifications.slice(i, i + 100);
-      const { data: insertedRows, error: insertError } = await supabase
-        .from('notifications')
-        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
-
-      if (insertError) {
-        console.error('BM cron insert failed:', insertError);
-        return NextResponse.json({ error: `Notification insert failed: ${insertError.message}` }, { status: 500 });
-      }
-
-      totalInserted += insertedRows?.length ?? 0;
-      insertedUserIds.push(...(insertedRows ?? []).map((r: { user_id: string }) => r.user_id));
-    }
-
-    // ── Step 5: Send push notifications ──────────────────────────────────────
-    // Group by tradition for batched OneSignal calls
-    const byTradition = new Map<string, { userIds: string[]; copy: { title: string; body: string } }>();
-    for (const u of justOpenedUsers) {
-      if (!insertedUserIds.includes(u.id)) continue;
-      const t    = (u as any).tradition ?? 'hindu';
-      const copy = TRADITION_COPY[t] ?? TRADITION_COPY.hindu;
-      if (!byTradition.has(t)) byTradition.set(t, { userIds: [], copy });
-      byTradition.get(t)!.userIds.push(u.id);
-    }
-
-    let totalPushTargets = 0;
-    for (const { userIds, copy } of byTradition.values()) {
-      const pushResult = await sendPushNotification({
-        userIds,
-        title: copy.title,
-        body:  copy.body,
-        url:   actionUrl,
-        data:  { type: 'brahma_muhurta' },
-      });
-      totalPushTargets += pushResult.sent;
-    }
-
     return NextResponse.json({
-      message:       'Brahma Muhurta alerts sent',
-      just_opened:   justOpenedUsers.length,
-      inserted:      totalInserted,
-      push_targets:  totalPushTargets,
+      message: 'Brahma Muhurta alerts enqueued',
+      total_eligible: users.length,
+      enqueued: totalEnqueued,
+      skipped_no_coordinates: skippedNoCoordinates,
+      skipped_quiet_hours: skippedQuietHours,
     });
 
   } catch (error) {
-    console.error('BM cron crashed:', error);
+    console.error('[brahma-muhurta/enqueuer] Cron crashed:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Brahma Muhurta cron crashed' },
       { status: 500 }
