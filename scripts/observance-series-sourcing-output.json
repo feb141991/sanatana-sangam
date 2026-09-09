@@ -8,7 +8,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Pratipada (Ghatasthapana)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -19,7 +19,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Backed by Rashtriya Panchang (Ashwin Shukla Pratipada) and primary scriptural Navadurga sequence in Devi Kavacham."
+    "note": "Backed by Rashtriya Panchang (Ashwin Shukla Pratipada) and primary scriptural Navadurga sequence in Devi Kavacham. [2026-09-09] Rashtriya Panchang page-locator downgraded to medium confidence -- the tithi-name-to-day mapping itself is well corroborated by independent panchang sources, but the specific physical-almanac page/index reference cannot be checked online."
   },
   {
     "slug": "navratri-day-1-shailaputri",
@@ -52,18 +52,18 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Pratipada mentions Kalashasthapana",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
         "sourceName": "Devi Bhagavata Purana",
         "pageOrSection": "Book 3, Chapter 26, Verses 1–25 (Kalashasthapana and Pratipada Puja)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Ghatasthapana / Kalashasthapana and Shailaputri worship on Pratipada are canonically codified in Devi Bhagavata Purana 3.26 and Rashtriya Panchang."
+    "note": "Ghatasthapana / Kalashasthapana and Shailaputri worship on Pratipada are canonically codified in Devi Bhagavata Purana 3.26 and Rashtriya Panchang. [2026-09-09] Downgraded to medium confidence: the chapter-level attribution (DBP Book 3, Ch.26) is corroborated, but the specific verse range/sub-section name and the Rashtriya Panchang page locator are not independently verse-checked."
   },
   {
     "slug": "navratri-day-1-shailaputri",
@@ -79,13 +79,13 @@
       },
       {
         "sourceName": "Shiva Purana",
-        "pageOrSection": "Rudra Samhita, Parvati Khanda, Chapters 1–2",
+        "pageOrSection": "Rudra Samhita, Parvati Khanda, Chapter 6 (Parvati's birth)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Devi born as daughter of the Himalayas (Himavan / Shailaraja), symbolizing steadfastness and divine devotion after the Sati incarnation."
+    "note": "Devi born as daughter of the Himalayas (Himavan / Shailaraja), symbolizing steadfastness and divine devotion after the Sati incarnation. [2026-09-09] Corrected Shiva Purana chapter from 1-2 (which cover Himachala's marriage and Sanaka's curse on Mena -- precursor material, not the birth) to Chapter 6, independently confirmed as Parvati's actual birth narrative. Downgraded to medium confidence since chapter-level attribution for a Purana this size is corroborated but not verse-checked."
   },
   {
     "slug": "navratri-day-2-brahmacharini",
@@ -96,7 +96,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Dwitiya",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -107,7 +107,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Dwitiya tithi observance of Brahmacharini sourced to Rashtriya Panchang and Devi Kavacham."
+    "note": "Dwitiya tithi observance of Brahmacharini sourced to Rashtriya Panchang and Devi Kavacham. [2026-09-09] Rashtriya Panchang page-locator downgraded to medium confidence -- the tithi-name-to-day mapping itself is well corroborated by independent panchang sources, but the specific physical-almanac page/index reference cannot be checked online."
   },
   {
     "slug": "navratri-day-2-brahmacharini",
@@ -140,11 +140,11 @@
         "sourceName": "Devi Bhagavata Purana",
         "pageOrSection": "Book 3, Chapter 26 (Dwitiya Navaratra Puja)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Worship of the ascetic form Brahmacharini on Dwitiya is governed by Navaratra puja paddhatis in Devi Bhagavata Purana."
+    "note": "Worship of the ascetic form Brahmacharini on Dwitiya is governed by Navaratra puja paddhatis in Devi Bhagavata Purana. [2026-09-09] Downgraded to medium confidence: the chapter-level attribution (DBP Book 3, Ch.26) is corroborated, but the specific verse range/sub-section name is not independently verse-checked."
   },
   {
     "slug": "navratri-day-2-brahmacharini",
@@ -153,9 +153,9 @@
     "sourceRefs": [
       {
         "sourceName": "Shiva Purana",
-        "pageOrSection": "Rudra Samhita, Parvati Khanda, Chapters 11–14",
+        "pageOrSection": "Rudra Samhita, Parvati Khanda, Chapters 21-22 (Parvati's penance to win Shiva)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -166,7 +166,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Reflects Parvati's unyielding tapasya (brahmacharya) of thousands of years in the forest to win Lord Shiva."
+    "note": "Reflects Parvati's unyielding tapasya (brahmacharya) of thousands of years in the forest to win Lord Shiva. [2026-09-09] Corrected Shiva Purana chapter from 11-14 (which cover Shiva-Himavat/Shiva-Parvati preliminary dialogues and the unrelated birth of Taraka/Vajranga) to Chapters 21-22, independently confirmed as Parvati's actual tapasya narrative. Downgraded to medium confidence for the same reason as day-1's parallel citation."
   },
   {
     "slug": "navratri-day-3-chandraghanta",
@@ -177,7 +177,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Tritiya",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -188,7 +188,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Tritiya Navaratri title backed by Rashtriya Panchang and Devi Kavacham."
+    "note": "Tritiya Navaratri title backed by Rashtriya Panchang and Devi Kavacham. [2026-09-09] Rashtriya Panchang page-locator downgraded to medium confidence -- the tithi-name-to-day mapping itself is well corroborated by independent panchang sources, but the specific physical-almanac page/index reference cannot be checked online."
   },
   {
     "slug": "navratri-day-3-chandraghanta",
@@ -221,11 +221,11 @@
         "sourceName": "Devi Bhagavata Purana",
         "pageOrSection": "Book 3, Chapter 26 (Tritiya Navaratra Puja)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Tritiya tithi puja rituals dedicated to Chandraghanta."
+    "note": "Tritiya tithi puja rituals dedicated to Chandraghanta. [2026-09-09] Downgraded to medium confidence: the chapter-level attribution (DBP Book 3, Ch.26) is corroborated, but the specific verse range/sub-section name is not independently verse-checked."
   },
   {
     "slug": "navratri-day-3-chandraghanta",
@@ -251,7 +251,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Chaturthi",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -262,7 +262,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Chaturthi Navaratri title sourced to Rashtriya Panchang and Devi Kavacham."
+    "note": "Chaturthi Navaratri title sourced to Rashtriya Panchang and Devi Kavacham. [2026-09-09] Rashtriya Panchang page-locator downgraded to medium confidence -- the tithi-name-to-day mapping itself is well corroborated by independent panchang sources, but the specific physical-almanac page/index reference cannot be checked online."
   },
   {
     "slug": "navratri-day-4-kushmanda",
@@ -295,11 +295,11 @@
         "sourceName": "Devi Bhagavata Purana",
         "pageOrSection": "Book 3, Chapter 26 (Chaturthi Navaratra Puja)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Chaturthi tithi puja rituals dedicated to Kushmanda."
+    "note": "Chaturthi tithi puja rituals dedicated to Kushmanda. [2026-09-09] Downgraded to medium confidence: the chapter-level attribution (DBP Book 3, Ch.26) is corroborated, but the specific verse range/sub-section name is not independently verse-checked."
   },
   {
     "slug": "navratri-day-4-kushmanda",
@@ -325,7 +325,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Panchami",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -336,7 +336,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Panchami Navaratri title sourced to Rashtriya Panchang and Devi Kavacham."
+    "note": "Panchami Navaratri title sourced to Rashtriya Panchang and Devi Kavacham. [2026-09-09] Rashtriya Panchang page-locator downgraded to medium confidence -- the tithi-name-to-day mapping itself is well corroborated by independent panchang sources, but the specific physical-almanac page/index reference cannot be checked online."
   },
   {
     "slug": "navratri-day-5-skandamata",
@@ -369,11 +369,11 @@
         "sourceName": "Devi Bhagavata Purana",
         "pageOrSection": "Book 3, Chapter 26 (Panchami Navaratra Puja)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Panchami tithi puja rituals dedicated to Skandamata."
+    "note": "Panchami tithi puja rituals dedicated to Skandamata. [2026-09-09] Downgraded to medium confidence: the chapter-level attribution (DBP Book 3, Ch.26) is corroborated, but the specific verse range/sub-section name is not independently verse-checked."
   },
   {
     "slug": "navratri-day-5-skandamata",
@@ -406,7 +406,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Shashthi (Durga Sasthi)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -417,7 +417,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Shashthi Navaratri title sourced to Rashtriya Panchang and Devi Kavacham."
+    "note": "Shashthi Navaratri title sourced to Rashtriya Panchang and Devi Kavacham. [2026-09-09] Rashtriya Panchang page-locator downgraded to medium confidence -- the tithi-name-to-day mapping itself is well corroborated by independent panchang sources, but the specific physical-almanac page/index reference cannot be checked online."
   },
   {
     "slug": "navratri-day-6-katyayani",
@@ -450,25 +450,25 @@
         "sourceName": "Kalika Purana",
         "pageOrSection": "Chapters 60–62 (Bodhana and Bilva Nimantrana Vidhi)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
         "sourceName": "Brihad-dharma Purana",
         "pageOrSection": "Purva Khanda (Akalbodhan / Sasthi Bodhon)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Shashthi (Durga Sasthi / Bilva Nimantran)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Bilva Nimantran and Sasthi Bodhon are classical Eastern/Pan-Indian Shashthi rituals codified in Kalika Purana and Brihaddharma Purana."
+    "note": "Bilva Nimantran and Sasthi Bodhon are classical Eastern/Pan-Indian Shashthi rituals codified in Kalika Purana and Brihaddharma Purana. [2026-09-09] Downgraded Kalika Purana/Brihad-dharma Purana to medium confidence -- independent research found a direct scholarly statement that Nabapatrika/related bodhon rituals have no explicit Puranic reference and are more likely a medieval Bengali folk-textual tradition (earliest known attestation: the 15th-century Krittivasi Ramayana, not a Purana). The general fact that Bilva Nimantran/Sasthi Bodhon occur on this day is still well-corroborated (Rashtriya Panchang, regional practice); it's specifically the Puranic textual provenance that's in doubt. Rashtriya Panchang page-locator also downgraded (uncheckable physical-almanac pinpoint, consistent with the rest of this file)."
   },
   {
     "slug": "navratri-day-6-katyayani",
@@ -501,7 +501,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Saptami (Maha Saptami)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -512,7 +512,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Saptami Navaratri title sourced to Rashtriya Panchang and Devi Kavacham."
+    "note": "Saptami Navaratri title sourced to Rashtriya Panchang and Devi Kavacham. [2026-09-09] Rashtriya Panchang page-locator downgraded to medium confidence -- the tithi-name-to-day mapping itself is well corroborated by independent panchang sources, but the specific physical-almanac page/index reference cannot be checked online."
   },
   {
     "slug": "navratri-day-7-kalaratri",
@@ -545,25 +545,25 @@
         "sourceName": "Kalika Purana",
         "pageOrSection": "Chapters 60–61 (Patrika Pravesha / Nabapatrika Snana)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
         "sourceName": "Brihad-dharma Purana",
         "pageOrSection": "Purva Khanda (Kola Bou / Nabapatrika Pravesha)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Ashwin Shukla Saptami (Maha Saptami)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Maha Saptami Puja and Nabapatrika (nine-plant Kola Bou) installation are codified in Kalika Purana and Brihaddharma Purana."
+    "note": "Maha Saptami Puja and Nabapatrika (nine-plant Kola Bou) installation are codified in Kalika Purana and Brihaddharma Purana. [2026-09-09] Downgraded Kalika Purana/Brihad-dharma Purana to medium confidence -- same Nabapatrika/Kola Bou provenance concern as navratri-day-6-katyayani/rituals: a scholar is explicitly quoted stating no Puranic reference to Nabapatrika exists, with its earliest known attestation being the 15th-century Krittivasi Ramayana (Bengali, not a Purana). Rashtriya Panchang page-locator also downgraded for the same reason as elsewhere in this file."
   },
   {
     "slug": "navratri-day-7-kalaratri",
@@ -625,11 +625,11 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Index #49 (p.7, English edition) — Durgastami (Maha Astami)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Maha Ashtami Puja, Sandhi Puja (Ashtami-Navami sandhikala), and Kanya Pujan are codified in Devi Mahatmya ch. 7 and Devi Bhagavata 3.27."
+    "note": "Maha Ashtami Puja, Sandhi Puja (Ashtami-Navami sandhikala), and Kanya Pujan are codified in Devi Mahatmya ch. 7 and Devi Bhagavata 3.27. [2026-09-09] Rashtriya Panchang Index #49 downgraded to medium confidence for consistency -- the structurally identical Index #51 citation (dussehra/rituals) was already downgraded for the same reason (uncheckable physical-almanac page locator); the tithi/festival-name mapping itself remains well corroborated."
   },
   {
     "slug": "durga-ashtami",
@@ -684,7 +684,7 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Index #50 (p.7, English edition) mentions Ayudha Puja / Mahanavami",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       },
       {
@@ -702,7 +702,7 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Ayudha Puja (weapon/implement worship), Maha Navami Puja, and Chandi Havan are attested by Rashtriya Panchang and Devi Bhagavata Purana 3.27."
+    "note": "Ayudha Puja (weapon/implement worship), Maha Navami Puja, and Chandi Havan are attested by Rashtriya Panchang and Devi Bhagavata Purana 3.27. [2026-09-09] Rashtriya Panchang Index #50 downgraded to medium confidence for consistency -- the structurally identical Index #51 citation (dussehra/rituals) was already downgraded for the same reason (uncheckable physical-almanac page locator); the tithi/festival-name mapping itself remains well corroborated."
   },
   {
     "slug": "maha-navami",
@@ -715,16 +715,9 @@
         "tier": 1,
         "confidence": "high",
         "usagePermitted": "academic_citation"
-      },
-      {
-        "sourceName": "Markandeya Purana",
-        "pageOrSection": "Devi Mahatmya Dhyana Slokas",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Ninth Navadurga who bestows all 8 Ashta Siddhis and cosmic accomplishments, revered by devas and siddhas."
+    "note": "Ninth Navadurga who bestows all 8 Ashta Siddhis and cosmic accomplishments, revered by devas and siddhas. [2026-09-09] Removed a 'Markandeya Purana / Devi Mahatmya Dhyana Slokas' citation -- independent research found Dhyana slokas are documented as later liturgical additions appended to Devi Mahatmya recitation practice, not part of the Purana's canonical narrative text, and this citation was redundant with the 'Devi Mahatmya (Durga Saptashati)' source already listed in this same field."
   },
   {
     "slug": "dussehra",
