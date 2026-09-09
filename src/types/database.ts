@@ -16,6 +16,12 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 export interface Database {
   public: {
     Tables: {
+      calendar_subscriptions: {
+        Row: { user_id: string; token: string; settings: Json; created_at: string };
+        Insert: { user_id: string; token: string; settings: Json; created_at?: string };
+        Update: { user_id?: string; token?: string; settings?: Json; created_at?: string };
+        Relationships: [];
+      };
       client_error_events: {
         Row: {
           id: string;
