@@ -744,29 +744,15 @@
         "tier": 1,
         "confidence": "high",
         "usagePermitted": "academic_citation"
-      },
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 138 (Vijaya Dashami / Aparajita Puja)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Devi Mahatmya chapter from Chapter 10 (which is the slaying of Shumbha) to Chapters 2–4 (the Madhyama Charitra, with Mahishasura slain in Chapter 3)."
+    "note": "Corrected Devi Mahatmya chapter from Chapter 10 (which is the slaying of Shumbha) to Chapters 2–4 (the Madhyama Charitra, with Mahishasura slain in Chapter 3). A supplementary Bhavishya Purana Uttara Parva Ch.138 citation from the round-2 output was dropped here -- independent verification could not confirm that chapter's content matches (its topic couldn't be located), so it is withheld rather than presented as source_backed at 'high confidence'."
   },
   {
     "slug": "dussehra",
     "field": "rituals",
     "verdict": "sourced",
     "sourceRefs": [
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 138, Verses 1–25 (Aparajita Puja, Seemollanghana, Shami Puja)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
-      },
       {
         "sourceName": "Kalika Purana",
         "pageOrSection": "Chapter 62 (Durga Visarjan Vidhi)",
@@ -778,11 +764,11 @@
         "sourceName": "Rashtriya Panchang Saka 1948",
         "pageOrSection": "Index #51 (p.7, English edition) — Vijaya Dasami (Bengal & Kerala)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Durga Visarjan is codified in Kalika Purana ch. 62; Aparajita Puja in Bhavishya Purana 138; Sindoor Khela (Bengal) and Vidyarambham (Kerala) in regional Panchang traditions."
+    "note": "Durga Visarjan is codified in Kalika Purana ch. 62; Sindoor Khela (Bengal) and Vidyarambham (Kerala) in regional Panchang traditions. [2026-09-09] Dropped a Bhavishya Purana Uttara Parva Ch.138 citation for Aparajita Puja that appeared identically in this record's sibling fields (deityOrTheme/significance) -- round-2 independent verification could not confirm that chapter's content anywhere, and it was already stripped from those siblings for the same reason (see observance-series-sourcing-round2-output.json). Rashtriya Panchang Index# confidence downgraded to medium -- flagged generally as an uncheckable pinpoint locator for a physical almanac, not independently verified."
   },
   {
     "slug": "dussehra",
@@ -802,16 +788,9 @@
         "tier": 1,
         "confidence": "high",
         "usagePermitted": "academic_citation"
-      },
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 138",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Devi Mahatmya chapter from Chapter 10, Verses 1–28 to Chapters 3–4 (climax of the Mahishasuramardini narrative celebrating triumph of Dharma)."
+    "note": "Corrected Devi Mahatmya chapter from Chapter 10, Verses 1–28 to Chapters 3–4 (climax of the Mahishasuramardini narrative celebrating triumph of Dharma). A supplementary Bhavishya Purana Uttara Parva Ch.138 citation from the round-2 output was dropped here -- unverifiable, see dussehra/deityOrTheme's note above for the same withholding rationale."
   },
   {
     "slug": "dhanteras",
@@ -824,16 +803,9 @@
         "tier": 1,
         "confidence": "high",
         "usagePermitted": "academic_citation"
-      },
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva (Dhanatrayodashi Dhanvantari Vrata)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Lord Dhanvantari and Devi Lakshmi emerged from the churning of the Ocean of Milk (Samudra Manthan) on Trayodashi."
+    "note": "Lord Dhanvantari and Devi Lakshmi emerged from the churning of the Ocean of Milk (Samudra Manthan) on Trayodashi. [2026-09-09] Dropped a Bhavishya Purana Uttara Parva citation with no chapter/verse number given -- independent web search found the Dhanvantari/Dhanteras legend generally attributed to the Bhagavata Purana (already cited above and independently confirmed), with no corroboration found tying this specifically to the Bhavishya Purana. Same source that produced two other now-confirmed-unverifiable Bhavishya Purana citations elsewhere in this file (Ch.138, Ch.141), so withheld rather than kept at high confidence."
   },
   {
     "slug": "dhanteras",
@@ -846,16 +818,9 @@
         "tier": 1,
         "confidence": "high",
         "usagePermitted": "academic_citation"
-      },
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva (Dhanvantari and Kuber Puja Vidhi)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Yamadeepdaan is explicitly enjoined in Skanda Purana (Kartika Mahatmya 9.61-63) to avert untimely death; Dhanvantari and Kuber worship in Bhavishya Purana."
+    "note": "Yamadeepdaan is explicitly enjoined in Skanda Purana (Kartika Mahatmya 9.61-63) to avert untimely death -- this verse was independently corroborated verbatim against outside sources earlier in this session. [2026-09-09] Dropped a Bhavishya Purana Uttara Parva citation for Dhanvantari/Kuber Puja with no chapter/verse number given -- unverifiable, same reasoning as the deityOrTheme field above."
   },
   {
     "slug": "dhanteras",
@@ -1090,13 +1055,6 @@
     "verdict": "sourced",
     "sourceRefs": [
       {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 141, Verses 1–25 (Yama Dwitiya Mahatmya)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
-      },
-      {
         "sourceName": "Padma Purana",
         "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya / Bhratri Dwitiya section)",
         "tier": 1,
@@ -1107,11 +1065,11 @@
         "sourceName": "Skanda Purana",
         "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya (Yama and Yamuna dialogue on Kartika Shukla Dwitiya)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Padma Purana chapter from Chapter 125 (which covers Magha Mahatmya) to Chapter 122 (the concluding Yamadvitiya section of the Dipavali cycle in Uttara Khanda)."
+    "note": "Corrected Padma Purana chapter from Chapter 125 (which covers Magha Mahatmya) to Chapter 122 (the concluding Yamadvitiya section of the Dipavali cycle in Uttara Khanda) -- this correction is independently verified (fetched Ch.122's actual text, confirms Yama fed by Yamuna and the sister's-hand ritual). A supplementary Bhavishya Purana Uttara Parva Ch.141 citation from the round-2 output was dropped here -- unverifiable, no source found confirming that chapter's content. The Skanda Purana ref's confidence is downgraded to medium since its specific chapter/verse pinpoint also couldn't be independently checked, unlike the Padma Purana Ch.122 correction."
   },
   {
     "slug": "bhai-dooj",
@@ -1119,34 +1077,20 @@
     "verdict": "sourced",
     "sourceRefs": [
       {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 141, Verses 1–20 (Sister applying Tilaka, feasting brother, Yamuna Snana)",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
-      },
-      {
         "sourceName": "Skanda Purana",
         "pageOrSection": "Vaishnava Khanda, Kartika Mahatmya (Bhratridvitiya Puja Vidhi)",
         "tier": 1,
-        "confidence": "high",
+        "confidence": "medium",
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Bhai Tika (sister applying auspicious tilaka and offering meal) and Yama Dwitiya Puja are prescribed in Bhavishya Purana 141."
+    "note": "Bhai Tika (sister applying auspicious tilaka and offering meal) rituals. [2026-09-09] Dropped a Bhavishya Purana Uttara Parva Ch.141 citation -- round-2 independent verification could not confirm that chapter's content anywhere, and it was already stripped from this record's sibling fields (deityOrTheme/significance) for the same reason. Skanda Purana confidence downgraded to medium -- its specific chapter/verse pinpoint for this ritual could not be independently checked, though the general Kartika Mahatmya section and the Yama-Yamuna theme are correctly attested."
   },
   {
     "slug": "bhai-dooj",
     "field": "significance",
     "verdict": "sourced",
     "sourceRefs": [
-      {
-        "sourceName": "Bhavishya Purana",
-        "pageOrSection": "Uttara Parva, Chapter 141, Verses 1–25",
-        "tier": 1,
-        "confidence": "high",
-        "usagePermitted": "academic_citation"
-      },
       {
         "sourceName": "Padma Purana",
         "pageOrSection": "Uttara Khanda, Chapter 122 (Yamadvitiya section)",
@@ -1155,6 +1099,6 @@
         "usagePermitted": "academic_citation"
       }
     ],
-    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 125 to Chapter 122 (Yamadvitiya section)."
+    "note": "Corrected Padma Purana Uttara Khanda citation from Chapter 125 to Chapter 122 (Yamadvitiya section) -- independently verified. A supplementary Bhavishya Purana Uttara Parva Ch.141 citation from the round-2 output was dropped here -- unverifiable, see bhai-dooj/deityOrTheme's note above for the same withholding rationale."
   }
 ]
