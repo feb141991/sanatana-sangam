@@ -3,6 +3,7 @@ import { createServiceRoleSupabaseClient } from '@/lib/admin';
 
 export type PushTokenEventType =
   | 'registered'
+  | 'registration_failed'
   | 'pruned_device_not_registered'
   | 'pruned_other';
 
