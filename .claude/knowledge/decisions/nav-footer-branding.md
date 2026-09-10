@@ -1,33 +1,31 @@
-# Nav and Footer Branding — Logo Image, Not Text
+# Nav and Footer Branding — Mark With Editorial Wordmark
 
-**Date:** 2026-06-06
-**Session context:** Replacing "Shoonaya." text in nav and footer with the logo image
+**Date:** 2026-09-11
+**Session context:** Creating the shared premium marketing shell and Notch Navbar
 **Category:** decision
 
 ## What we decided
 
-`river-light-horizontal.png` is the canonical logo for nav and footer placements. Text
-renderings of "Shoonaya" (with or without a trailing dot) are replaced by this image.
-
-`/icons/logo.png` is retained exclusively for favicon and PWA icon contexts.
-
-No trailing dot appears in any logo treatment.
+Public navigation and footer branding use the canonical `BrandMark` beside an editorial text
+wordmark reading “Shoonaya”. The square mark remains the canonical image asset while the wordmark
+is rendered accessibly with the display type system.
 
 ## Why
 
-The horizontal river-light logo is the designed brand mark. Text fallbacks were placeholders
-during early development. Using the image asset ensures consistent brand expression and avoids
-font-rendering variation across devices.
-
-Two logo files exist for a reason: the horizontal lockup works in nav/footer (wide, low-height
-space); the square icon works in favicon/PWA (small, square context).
+The previously documented horizontal lockup is not present in the repository. The founder-approved
+hero direction uses a mark-plus-wordmark composition, and the shared React treatment remains crisp,
+responsive and theme-compatible without introducing an unverified logo asset.
 
 ## Constraints this creates
 
-- Do not use text "Shoonaya" or "Shoonaya." in nav or footer — always use the image
-- The horizontal logo asset path is `river-light-horizontal.png` — do not rename it without
-  updating all nav and footer references
-- Dark mode: confirm `river-light-horizontal.png` has sufficient contrast on dark backgrounds,
-  or provide a `river-dark-horizontal.png` variant if needed
+- Use `BrandMark` rather than inventing or regenerating the symbol.
+- The text wordmark has no trailing dot.
+- The combined link has one meaningful accessible name.
+- Product icons, favicons and store artwork remain separate asset contexts.
+
+## What we explicitly rejected
+
+- Referencing the missing `river-light-horizontal.png` asset.
+- Using different improvised logos across marketing pages.
 
 ---

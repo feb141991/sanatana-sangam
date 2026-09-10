@@ -1,33 +1,34 @@
-# Feature Card Routing — Link to /signup, Not App Routes
+# Marketing Feature Routing — Public Detail Pages, Then Native Beta
 
-**Date:** 2026-06-06
-**Session context:** Landing page feature/platform cards clicking through to protected routes
+**Date:** 2026-09-11
+**Session context:** Replacing the PWA-promoting landing page with a premium website that serves as the gateway to the native app
 **Category:** decision
 
 ## What we decided
 
-Feature and platform cards on the landing page link to `/signup`, not to protected app routes
-such as `/discover` or `/japa`.
+Public feature cards link to indexable marketing detail pages under `/features/*`.
+Conversion actions lead to `/beta/android`, not `/signup`, `/login`, or protected browser-app routes.
+Account creation and sign-in are native-app experiences going forward.
 
 ## Why
 
-Unauthenticated users who click a feature card get redirected back to landing by the auth guard —
-a dead end that signals a broken product. Linking directly to `/signup` delivers the correct next
-step and avoids a redirect loop.
-
-The feature cards are aspirational, not functional entry points for anonymous visitors. Their job
-is to convert interest into signup intent.
+Shoonaya.com is now the public brand, education and acquisition surface. Visitors should be able
+to understand each feature without entering the legacy browser application, while the final
+conversion journey remains honest about current Android beta availability.
 
 ## Constraints this creates
 
-- Landing page cards must never hardcode internal app paths (`/japa`, `/kosh`, `/discover`, etc.)
-- If a card needs to deep-link post-auth (e.g., land the user on `/japa` after signup), that must
-  be handled via a `?redirect=` query param on `/signup`, not a direct link
-- This rule applies to all marketing surfaces (landing, blog embeds, email CTAs)
+- Public navigation must not promote the PWA or Add to Home Screen.
+- Marketing cards must not link directly to authenticated browser routes.
+- The Android beta page fails closed until `NEXT_PUBLIC_ANDROID_BETA_URL` contains a verified URL.
+- App Store and Google Play badges appear only when their real destinations are published.
+- OAuth callbacks, recovery routes and existing browser access may remain during transition, but
+  are infrastructure or legacy access—not the public product proposition.
 
 ## What we explicitly rejected
 
-- Linking to the protected route directly (auth redirect loop, poor first impression)
-- Showing the feature only to signed-in users in the marketing cards (reduces aspiration signal)
+- Sending marketing visitors to `/signup` as though Shoonaya were still a browser product.
+- Publishing placeholder store links or implying native availability before verification.
+- Using one long landing page as the only public explanation of the product.
 
 ---

@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import type { ReactNode } from 'react';
-import BrandMark from '@/components/BrandMark';
-import PrivacyChoicesButton from '@/components/privacy/PrivacyChoicesButton';
+import Link from "next/link";
+import type { ReactNode } from "react";
+
+import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 type PublicPageShellProps = {
   eyebrow: string;
@@ -12,80 +12,71 @@ type PublicPageShellProps = {
   asideBody?: string;
 };
 
-const footerLinks = [
-  { href: '/about', label: 'About' },
-  { href: '/privacy', label: 'Privacy' },
-  { href: '/terms', label: 'Terms' },
-  { href: '/guidelines', label: 'Guidelines' },
-  { href: '/sources', label: 'Sources' },
-  { href: '/contact', label: 'Contact' },
-];
-
 export default function PublicPageShell({
   eyebrow,
   title,
   intro,
   children,
-  asideTitle = 'Platform Trust Layer',
-  asideBody = 'These pages define how Shoonaya handles privacy, conduct, safety, and support to ensure a pure dharmic environment.',
+  asideTitle = "Platform trust",
+  asideBody = "Shoonaya keeps privacy, safety, source integrity and honest product status visible across the public website and native app.",
 }: PublicPageShellProps) {
   return (
-    <main className="min-h-screen overflow-x-hidden px-4 py-6 md:py-10">
-      <div className="max-w-6xl mx-auto min-w-0 space-y-6">
-        <nav className="glass-panel-strong min-w-0 rounded-[1.85rem] px-4 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <Link href="/" className="flex min-w-0 items-center gap-2 text-[color:var(--text-cream)]">
-            <BrandMark size="sm" />
-            <span className="font-display font-bold text-lg break-words">
-              Shoo<span className="text-gradient">naya</span>
-            </span>
-          </Link>
-          <div className="flex min-w-0 flex-wrap items-center gap-3 text-sm text-[color:var(--brand-muted)]">
-            {footerLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="hover:text-[color:var(--text-cream)] transition-colors">
-                {link.label}
-              </Link>
-            ))}
-            <PrivacyChoicesButton className="hover:text-[color:var(--text-cream)] transition-colors" />
-            <Link href="/signup" className="glass-button-primary px-4 py-2 rounded-full text-white font-semibold">
-              Join Free
-            </Link>
-          </div>
-        </nav>
-
-        <section className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-          <article className="glass-panel-strong min-w-0 rounded-[2rem] p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.24em] text-[#7B1A1A]/75 mb-4 break-words">{eyebrow}</p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-[color:var(--text-cream)] leading-tight mb-4 break-words">
+    <MarketingShell>
+      <main className="px-5 pb-20 pt-36 sm:px-8 lg:px-10 lg:pb-28 lg:pt-44">
+        <div className="mx-auto max-w-7xl">
+          <header className="max-w-4xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--brand-primary-strong)]">
+              {eyebrow}
+            </p>
+            <h1 className="mt-5 font-display text-5xl font-medium leading-none tracking-[-0.035em] text-[var(--text-cream)] sm:text-6xl lg:text-7xl">
               {title}
             </h1>
-            <p className="text-[color:var(--brand-muted)] leading-relaxed max-w-3xl break-words">{intro}</p>
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--text-muted-warm)]">
+              {intro}
+            </p>
+          </header>
 
-            <div className="mt-8 min-w-0 space-y-6 text-sm leading-7 text-[color:var(--text-muted-warm)]">
+          <div className="mt-14 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
+            <article className="min-w-0 space-y-8 rounded-[2.25rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-7 text-base leading-8 text-[var(--text-muted-warm)] shadow-[var(--shadow-soft)] sm:p-10">
               {children}
-            </div>
-          </article>
+            </article>
 
-          <aside className="min-w-0 space-y-4">
-            <div className="glass-panel rounded-[1.75rem] p-5">
-              <p className="text-xs uppercase tracking-[0.22em] text-[#7B1A1A]/70 mb-2 break-words">Why This Matters</p>
-              <h2 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mb-3 break-words">{asideTitle}</h2>
-              <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed break-words">{asideBody}</p>
-            </div>
+            <aside className="min-w-0 space-y-5">
+              <section className="rounded-[2rem] border border-[var(--card-border)] bg-[var(--surface-soft)] p-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
+                  Why this matters
+                </p>
+                <h2 className="mt-3 font-display text-3xl font-semibold text-[var(--text-cream)]">
+                  {asideTitle}
+                </h2>
+                <p className="mt-4 text-sm leading-7 text-[var(--text-muted-warm)]">
+                  {asideBody}
+                </p>
+              </section>
 
-            <div className="glass-panel rounded-[1.75rem] p-5">
-              <p className="text-xs uppercase tracking-[0.22em] text-[#7B1A1A]/70 mb-3">Quick Links</p>
-              <div className="flex flex-col gap-2">
-                <Link href="/signup" className="glass-button-primary rounded-2xl px-4 py-3 text-white text-sm font-semibold text-center">
-                  Create Your Account
-                </Link>
-                <Link href="/contact" className="glass-button-secondary rounded-2xl px-4 py-3 text-[#7B1A1A] text-sm font-semibold text-center">
-                  Contact Support
-                </Link>
-              </div>
-            </div>
-          </aside>
-        </section>
-      </div>
-    </main>
+              <section className="rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
+                  Continue
+                </p>
+                <div className="mt-5 flex flex-col gap-3">
+                  <Link
+                    href="/beta/android"
+                    className="flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand-primary)] px-4 text-sm font-semibold text-[var(--surface-base)]"
+                  >
+                    Join the Android beta
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="flex min-h-12 items-center justify-center rounded-2xl border border-[var(--card-border)] px-4 text-sm font-semibold text-[var(--text-cream)]"
+                  >
+                    Contact Shoonaya
+                  </Link>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </div>
+      </main>
+    </MarketingShell>
   );
 }

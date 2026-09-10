@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
+import { NextRequest, NextResponse } from "next/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { verifyAdminToken, ADMIN_COOKIE } from "@/lib/admin-auth";
 
 // ─── Preview / Coming-Soon Gate ───────────────────────────────────────────────
 //
@@ -14,54 +14,58 @@ import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
 // Cookie lasts 30 days. Recipient can use the app normally once set.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PREVIEW_COOKIE = 'shoonaya_preview';
-const AUTH_COOKIE_PATTERNS = ['auth-token', 'sb-'] as const;
+const PREVIEW_COOKIE = "shoonaya_preview";
+const AUTH_COOKIE_PATTERNS = ["auth-token", "sb-"] as const;
 const AUTH_LOOKUP_TIMEOUT_MS = 2_500;
 
-const PUBLIC_ADMIN_PATHS = [
-  '/admin/login',
-  '/api/admin/auth',
-];
+const PUBLIC_ADMIN_PATHS = ["/admin/login", "/api/admin/auth"];
 
 // Always public — landing, auth, marketing, static assets
 const ALWAYS_PUBLIC_EXACT = new Set([
-  '/',
-  '/join',
-  '/about',
-  '/what-is-shoonaya',
-  '/contact',
-  '/privacy',
-  '/terms',
-  '/guidelines',
-  '/banned',
-  '/data-deletion',
-  '/pricing',
-  '/payment',
-  '/login',
-  '/signup',
-  '/whatsapp-login',
-  '/forgot-password',
-  '/reset-password',
-  '/confirm-email',
-  '/offline',
+  "/",
+  "/join",
+  "/about",
+  "/what-is-shoonaya",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/guidelines",
+  "/banned",
+  "/data-deletion",
+  "/pricing",
+  "/features",
+  "/traditions",
+  "/community",
+  "/sources",
+  "/payment",
+  "/login",
+  "/signup",
+  "/whatsapp-login",
+  "/forgot-password",
+  "/reset-password",
+  "/confirm-email",
+  "/offline",
 ]);
 
 const ALWAYS_PUBLIC_PREFIX = [
-  '/api/',
-  '/admin',
-  '/_next/',
-  '/icons/',
-  '/assets/',
-  '/fonts/',
-  '/blessing/',
-  '/name/',
-  '/discover/',
-  '/invite/',
-  '/auth/',
-  '/founding/',
-  '/sthapaka/',
-  '/sitemap',
-  '/robots',
+  "/api/",
+  "/admin",
+  "/_next/",
+  "/icons/",
+  "/assets/",
+  "/fonts/",
+  "/blessing/",
+  "/name/",
+  "/discover/",
+  "/invite/",
+  "/auth/",
+  "/founding/",
+  "/sthapaka/",
+  "/features/",
+  "/traditions/",
+  "/beta/",
+  "/sitemap",
+  "/robots",
 ];
 
 export async function middleware(req: NextRequest) {
@@ -70,7 +74,7 @@ export async function middleware(req: NextRequest) {
   } catch (err) {
     // Never let an unhandled throw reach Vercel's edge — it returns 403.
     // Fall through and let the request proceed normally.
-    console.error('[middleware] unhandled error:', err);
+    console.error("[middleware] unhandled error:", err);
     return NextResponse.next();
   }
 }
@@ -79,25 +83,30 @@ function isAuthCookieName(name: string): boolean {
   return AUTH_COOKIE_PATTERNS.some((pattern) => name.includes(pattern));
 }
 
-function isInvalidAuthSessionError(error: { message?: string; code?: string; status?: number } | null | undefined): boolean {
+function isInvalidAuthSessionError(
+  error:
+    { message?: string; code?: string; status?: number } | null | undefined,
+): boolean {
   if (!error) return false;
   return (
-    error.message?.includes('Refresh Token') ||
-    error.message?.includes('refresh_token') ||
-    error.code === 'refresh_token_not_found' ||
-    error.code === 'user_not_found' ||
-    error.status === 400 ||
-    error.status === 401 ||
-    error.status === 403
-  ) ?? false;
+    (error.message?.includes("Refresh Token") ||
+      error.message?.includes("refresh_token") ||
+      error.code === "refresh_token_not_found" ||
+      error.code === "user_not_found" ||
+      error.status === 400 ||
+      error.status === 401 ||
+      error.status === 403) ??
+    false
+  );
 }
 
 function clearAuthCookies(req: NextRequest, res: NextResponse): NextResponse {
-  req.cookies.getAll()
+  req.cookies
+    .getAll()
     .filter((cookie) => isAuthCookieName(cookie.name))
     .forEach((cookie) => {
-      res.cookies.set(cookie.name, '', {
-        path: '/',
+      res.cookies.set(cookie.name, "", {
+        path: "/",
         maxAge: 0,
       });
     });
@@ -113,14 +122,20 @@ async function getMiddlewareUser(req: NextRequest, res: NextResponse) {
         getAll() {
           return req.cookies.getAll();
         },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+        setAll(
+          cookiesToSet: {
+            name: string;
+            value: string;
+            options: CookieOptions;
+          }[],
+        ) {
           cookiesToSet.forEach(({ name, value, options }) => {
             req.cookies.set(name, value);
             res.cookies.set(name, value, options);
           });
         },
       },
-    }
+    },
   );
 
   return supabase.auth.getUser();
@@ -137,17 +152,22 @@ export function shouldVerifyUserInMiddleware({
 }): boolean {
   // Authentication for application pages belongs to their server/client auth
   // guards. Middleware only needs a verified user for these routing decisions.
-  return pathname === '/' || (!appOpen && !isPublicPath);
+  return !appOpen && !isPublicPath;
 }
 
-async function getMiddlewareUserWithTimeout(req: NextRequest, res: NextResponse) {
+async function getMiddlewareUserWithTimeout(
+  req: NextRequest,
+  res: NextResponse,
+) {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<{
     data: { user: null };
     error: null;
   }>((resolve) => {
     timeoutId = setTimeout(() => {
-      console.warn('[middleware] Supabase user lookup timed out; using anonymous routing fallback');
+      console.warn(
+        "[middleware] Supabase user lookup timed out; using anonymous routing fallback",
+      );
       resolve({ data: { user: null }, error: null });
     }, AUTH_LOOKUP_TIMEOUT_MS);
   });
@@ -159,61 +179,53 @@ async function getMiddlewareUserWithTimeout(req: NextRequest, res: NextResponse)
   }
 }
 
-function redirectHome(req: NextRequest, res: NextResponse): NextResponse {
-  const homeUrl = req.nextUrl.clone();
-  homeUrl.pathname = '/home';
-  homeUrl.search = '';
-  const redirectResponse = NextResponse.redirect(homeUrl);
-  res.cookies.getAll().forEach((cookie) => {
-    const { name, value, ...options } = cookie;
-    redirectResponse.cookies.set(name, value, options);
-  });
-  return redirectResponse;
-}
-
 async function middlewareHandler(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const envPreviewKey = process.env.PREVIEW_KEY ?? '';
+  const envPreviewKey = process.env.PREVIEW_KEY ?? "";
   const res = NextResponse.next();
 
   // OAuth callback requests must reach the route handler even when the browser
   // carries stale Supabase cookies. Otherwise middleware clears the stale cookie
   // and redirects to `/`, discarding the fresh `code` before it can be exchanged.
   const isOAuthExchangeRequest =
-    pathname === '/auth/callback' ||
-    (pathname === '/' && req.nextUrl.searchParams.has('code'));
+    pathname === "/auth/callback" ||
+    (pathname === "/" && req.nextUrl.searchParams.has("code"));
 
   if (isOAuthExchangeRequest) {
     return res;
   }
 
   // ── Step 1: ?preview=KEY → set cookie + redirect to clean URL ─────────────
-  const previewParam = req.nextUrl.searchParams.get('preview');
+  const previewParam = req.nextUrl.searchParams.get("preview");
   if (previewParam && envPreviewKey && previewParam === envPreviewKey) {
     const cleanUrl = req.nextUrl.clone();
-    cleanUrl.searchParams.delete('preview');
+    cleanUrl.searchParams.delete("preview");
     const res = NextResponse.redirect(cleanUrl);
     res.cookies.set(PREVIEW_COOKIE, envPreviewKey, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 30,
-      path: '/',
+      path: "/",
     });
     return res;
   }
 
   // ── Step 2: Coming-soon gate ───────────────────────────────────────────────
-  const appOpen = process.env.APP_OPEN !== 'false';
+  const appOpen = process.env.APP_OPEN !== "false";
   const isPublicPath =
     ALWAYS_PUBLIC_EXACT.has(pathname) ||
     ALWAYS_PUBLIC_PREFIX.some((prefix) => pathname.startsWith(prefix));
-  const hasAuthCookie = req.cookies.getAll().some((cookie) => isAuthCookieName(cookie.name));
-  const shouldVerifyUser = hasAuthCookie && shouldVerifyUserInMiddleware({
-    pathname,
-    appOpen,
-    isPublicPath,
-  });
+  const hasAuthCookie = req.cookies
+    .getAll()
+    .some((cookie) => isAuthCookieName(cookie.name));
+  const shouldVerifyUser =
+    hasAuthCookie &&
+    shouldVerifyUserInMiddleware({
+      pathname,
+      appOpen,
+      isPublicPath,
+    });
   const {
     data: { user },
     error: authError,
@@ -223,8 +235,8 @@ async function middlewareHandler(req: NextRequest) {
 
   if (isInvalidAuthSessionError(authError)) {
     const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    loginUrl.search = '?reason=session_expired';
+    loginUrl.pathname = "/login";
+    loginUrl.search = "?reason=session_expired";
     return clearAuthCookies(req, NextResponse.redirect(loginUrl));
   }
 
@@ -233,40 +245,36 @@ async function middlewareHandler(req: NextRequest) {
       // Logged-in users always get through. The gate is for anonymous visitors
       // only, but auth must be confirmed by Supabase instead of cookie presence.
       if (!user) {
-        const previewCookie = req.cookies.get(PREVIEW_COOKIE)?.value ?? '';
+        const previewCookie = req.cookies.get(PREVIEW_COOKIE)?.value ?? "";
         const hasPreviewAccess = envPreviewKey
           ? previewCookie === envPreviewKey
           : false;
 
         if (!hasPreviewAccess) {
           const landingUrl = req.nextUrl.clone();
-          landingUrl.pathname = '/';
-          landingUrl.search = '';
+          landingUrl.pathname = "/";
+          landingUrl.search = "";
           return NextResponse.redirect(landingUrl);
         }
       }
     }
   }
 
-  // ── Step 3: Logged-in users at / → go to /home ────────────────────────────
-  // Placed AFTER the gate so it only fires when access is already granted.
-  if (pathname === '/') {
-    if (user) {
-      return redirectHome(req, res);
-    }
-  }
-
-  // ── Step 4: Admin guard (unchanged) ───────────────────────────────────────
-  const isAdminPage = pathname.startsWith('/admin');
-  const isAdminApi  = pathname.startsWith('/api/admin');
+  // ── Step 3: Admin guard (unchanged) ───────────────────────────────────────
+  const isAdminPage = pathname.startsWith("/admin");
+  const isAdminApi = pathname.startsWith("/api/admin");
 
   if (!isAdminPage && !isAdminApi) return res;
 
-  if (PUBLIC_ADMIN_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))) {
+  if (
+    PUBLIC_ADMIN_PATHS.some(
+      (p) => pathname === p || pathname.startsWith(p + "/"),
+    )
+  ) {
     return res;
   }
 
-  const token = req.cookies.get(ADMIN_COOKIE)?.value ?? '';
+  const token = req.cookies.get(ADMIN_COOKIE)?.value ?? "";
   let session: { username: string } | null = null;
   try {
     session = await verifyAdminToken(token);
@@ -276,11 +284,14 @@ async function middlewareHandler(req: NextRequest) {
 
   if (!session) {
     if (isAdminApi) {
-      return NextResponse.json({ error: 'Admin authentication required' }, { status: 401 });
+      return NextResponse.json(
+        { error: "Admin authentication required" },
+        { status: 401 },
+      );
     }
     const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = '/admin/login';
-    loginUrl.search = '';
+    loginUrl.pathname = "/admin/login";
+    loginUrl.search = "";
     return NextResponse.redirect(loginUrl);
   }
 
@@ -291,6 +302,6 @@ export const config = {
   matcher: [
     // Match everything except static files — .html excluded to prevent
     // the beforeFiles rewrite (/→/landing.html) from re-triggering middleware
-    '/((?!.well-known/workflow/|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|html)).*)',
+    "/((?!.well-known/workflow/|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|html)).*)",
   ],
 };

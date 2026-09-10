@@ -5,16 +5,18 @@ Updated by the `shoonaya-knowledge-curator` agent.
 
 ## Structure
 
-| Folder | What lives here |
-|--------|----------------|
-| `decisions/` | Why we chose X over Y — product, technical, UX calls |
-| `architecture/` | System design: data models, API patterns, component contracts |
-| `product/` | Feature design rationale, user psychology, progressive disclosure logic |
-| `rituals/` | Dharmic/spiritual correctness decisions — tradition-specific choices |
+| Folder          | What lives here                                                         |
+| --------------- | ----------------------------------------------------------------------- |
+| `decisions/`    | Why we chose X over Y — product, technical, UX calls                    |
+| `architecture/` | System design: data models, API patterns, component contracts           |
+| `product/`      | Feature design rationale, user psychology, progressive disclosure logic |
+| `rituals/`      | Dharmic/spiritual correctness decisions — tradition-specific choices    |
 
 ## Key Documents
 
 ### Architecture
+
+- [Native App Marketing Gateway](architecture/native-app-marketing-gateway.md) — Shoonaya.com is the premium multi-page public doorway; the native app is the canonical product experience
 - [Share Cards](architecture/share-cards.md) — Canvas rendering, card types, viral loop design
 - [Location Persistence](architecture/location-persistence.md) — Save GPS on most-visited screen (HomeDashboard), not profile page
 - [Ashrama Duty Persistence](architecture/ashrama-duty-persistence.md) — localStorage for grihastha, sessionStorage for other stages
@@ -24,6 +26,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Admin Auth Patterns](architecture/admin-auth-patterns.md) — Server actions re-verify HMAC independently; content_reports status union; postgrest-js v2 .update() never bug workaround; Next.js 15 searchParams must be awaited
 
 ### Product
+
 - [Dinacharya System](product/dinacharya-system.md) — Full-day rhythm architecture and progressive disclosure
 - [Waitlist Funnel](product/waitlist-funnel.md) — 3-step form, duplicate-email handling, unified hero + CTA forms
 - [Onboarding Name Auto-fill](product/onboarding-name-autofill.md) — Pre-fill name from waitlist table to avoid double-ask
@@ -32,11 +35,13 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Greeting System Conventions](product/greeting-system-conventions.md) — Empty-string userName fallback, comma-guard, 3-tier greeting pool fallback chain; tradition × time-of-day greeting matrix (Hindu sampradayas, Sikh, Buddhist, Jain); `sai` sampradaya added; greeting edit discoverability hint; new user welcome card
 
 ### Rituals
+
 - [Nitya Karma Sequence](rituals/nitya-karma-sequence.md) — Correct Hindu morning order and tradition-aware sequence constraints
 
 ### Decisions
+
 - [Shoonaya Agent Operating Model](decisions/shoonaya-agent-operating-model.md) — How role agents, graphify, and knowledge curation support the team
-- [Feature Card Routing](decisions/feature-card-routing.md) — Landing cards link to /signup, never to protected app routes
+- [Marketing Feature Routing](decisions/feature-card-routing.md) — Feature cards link to public detail pages and convert through the verified Android beta gateway
 - [Nav and Footer Branding](decisions/nav-footer-branding.md) — river-light-horizontal.png is canonical; no text fallbacks
 - [Nitya Karma Error Boundaries](decisions/nitya-karma-error-boundaries.md) — Route-level error.tsx on /insights and /plans; reset() + Go Back recovery; never a single parent boundary
 - [Calendar Launch Governance](decisions/calendar-launch-governance.md) — Neutral launch defaults, unresolved-date withholding, profile-selected variants, and deferred scholarly scope
@@ -44,6 +49,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 ## How to add entries
 
 Run the knowledge curator agent after any session with significant decisions:
+
 ```
 use agent: shoonaya-knowledge-curator
 "Capture decisions from this session"

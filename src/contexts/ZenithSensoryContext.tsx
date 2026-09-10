@@ -1,63 +1,80 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { readLocalStorageItem, writeLocalStorageItem } from '@/lib/safe-browser-storage';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { usePathname } from "next/navigation";
+import {
+  readLocalStorageItem,
+  writeLocalStorageItem,
+} from "@/lib/safe-browser-storage";
 
-type SensoryTheme = 'home' | 'bhakti' | 'pathshala' | 'panchang' | 'none';
+type SensoryTheme = "home" | "bhakti" | "pathshala" | "panchang" | "none";
 
 interface ZenithSensoryContextType {
   theme: SensoryTheme;
   setTheme: (theme: SensoryTheme) => void;
-  playHaptic: (type: 'light' | 'medium' | 'heavy') => void;
+  playHaptic: (type: "light" | "medium" | "heavy") => void;
   isMuted: boolean;
   setIsMuted: (muted: boolean) => void;
 }
 
-const ZenithSensoryContext = createContext<ZenithSensoryContextType | undefined>(undefined);
+const ZenithSensoryContext = createContext<
+  ZenithSensoryContextType | undefined
+>(undefined);
 
 // Ambiance URLs (High-quality placeholders)
 const AMBIANCE_MAP: Record<SensoryTheme, string | null> = {
-  home:      'https://assets.mixkit.co/sfx/preview/mixkit-distant-church-bells-ringing-585.mp3', // Placeholder for temple bells
-  bhakti:    null, // Removed per user request
-  pathshala: 'https://assets.mixkit.co/sfx/preview/mixkit-wind-chimes-gentle-breeze-2718.mp3', // Placeholder for library/wind
-  panchang:  'https://assets.mixkit.co/sfx/preview/mixkit-ambient-night-crickets-and-wind-2483.mp3', // Placeholder for cosmic night
-  none:      null,
+  home: "https://assets.mixkit.co/sfx/preview/mixkit-distant-church-bells-ringing-585.mp3", // Placeholder for temple bells
+  bhakti: null, // Removed per user request
+  pathshala:
+    "https://assets.mixkit.co/sfx/preview/mixkit-wind-chimes-gentle-breeze-2718.mp3", // Placeholder for library/wind
+  panchang:
+    "https://assets.mixkit.co/sfx/preview/mixkit-ambient-night-crickets-and-wind-2483.mp3", // Placeholder for cosmic night
+  none: null,
 };
 
-export function ZenithSensoryProvider({ children }: { children: React.ReactNode }) {
+export function ZenithSensoryProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
-  const [theme, setTheme] = useState<SensoryTheme>('none');
+  const [theme, setTheme] = useState<SensoryTheme>("none");
   const [isMuted, setIsMuted] = useState(false);
   const [storageReady, setStorageReady] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Hydrate after mount so server and first-client render remain identical.
   useEffect(() => {
-    const storedValue = readLocalStorageItem('shoonaya-sensory-muted');
-    if (storedValue !== null) setIsMuted(storedValue === 'true');
+    const storedValue = readLocalStorageItem("shoonaya-sensory-muted");
+    if (storedValue !== null) setIsMuted(storedValue === "true");
     setStorageReady(true);
   }, []);
 
   // Persist mute state
   useEffect(() => {
     if (!storageReady) return;
-    writeLocalStorageItem('shoonaya-sensory-muted', String(isMuted));
+    writeLocalStorageItem("shoonaya-sensory-muted", String(isMuted));
   }, [isMuted, storageReady]);
 
   // Automatically switch theme based on route
   useEffect(() => {
-    if (pathname.includes('/bhakti')) setTheme('bhakti');
-    else if (pathname.includes('/pathshala')) setTheme('pathshala');
-    else if (pathname.includes('/panchang')) setTheme('panchang');
-    else if (pathname === '/' || pathname.includes('/home')) setTheme('home');
-    else setTheme('none');
+    if (pathname.includes("/bhakti")) setTheme("bhakti");
+    else if (pathname.includes("/pathshala")) setTheme("pathshala");
+    else if (pathname.includes("/panchang")) setTheme("panchang");
+    else if (pathname.includes("/home")) setTheme("home");
+    else setTheme("none");
   }, [pathname]);
 
   // Handle Audio Transitions
   useEffect(() => {
     const url = AMBIANCE_MAP[theme];
-    
+
     if (!url || isMuted) {
       if (audioRef.current) {
         // Fade out
@@ -78,10 +95,10 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
 
     // New Audio
     if (audioRef.current) audioRef.current.pause();
-    
+
     let newAudio: HTMLAudioElement;
     try {
-      if (typeof window.Audio !== 'function') return;
+      if (typeof window.Audio !== "function") return;
       newAudio = new window.Audio(url);
       newAudio.loop = true;
       newAudio.volume = 0;
@@ -89,21 +106,26 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
 
       const playPromise = newAudio.play();
       if (playPromise !== undefined) {
-        playPromise.then(() => {
-          // Fade in
-          let vol = 0;
-          const fade = setInterval(() => {
-            if (vol < 0.15) { // Keep ambiance subtle
-              vol += 0.02;
-              newAudio.volume = vol;
-            } else {
-              clearInterval(fade);
-            }
-          }, 100);
-        }).catch(e => console.warn('[ZenithSensory] Audio blocked by browser policy:', e));
+        playPromise
+          .then(() => {
+            // Fade in
+            let vol = 0;
+            const fade = setInterval(() => {
+              if (vol < 0.15) {
+                // Keep ambiance subtle
+                vol += 0.02;
+                newAudio.volume = vol;
+              } else {
+                clearInterval(fade);
+              }
+            }, 100);
+          })
+          .catch((e) =>
+            console.warn("[ZenithSensory] Audio blocked by browser policy:", e),
+          );
       }
     } catch (error) {
-      console.warn('[ZenithSensory] Audio is unavailable:', error);
+      console.warn("[ZenithSensory] Audio is unavailable:", error);
       return;
     }
 
@@ -112,8 +134,8 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
     };
   }, [theme, isMuted]);
 
-  const playHaptic = (type: 'light' | 'medium' | 'heavy') => {
-    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+  const playHaptic = (type: "light" | "medium" | "heavy") => {
+    if (typeof window !== "undefined" && "vibrate" in navigator) {
       const patterns = {
         light: 10,
         medium: 30,
@@ -124,7 +146,9 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
   };
 
   return (
-    <ZenithSensoryContext.Provider value={{ theme, setTheme, playHaptic, isMuted, setIsMuted }}>
+    <ZenithSensoryContext.Provider
+      value={{ theme, setTheme, playHaptic, isMuted, setIsMuted }}
+    >
       {children}
     </ZenithSensoryContext.Provider>
   );
@@ -132,6 +156,9 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
 
 export const useZenithSensory = () => {
   const context = useContext(ZenithSensoryContext);
-  if (!context) throw new Error('useZenithSensory must be used within a ZenithSensoryProvider');
+  if (!context)
+    throw new Error(
+      "useZenithSensory must be used within a ZenithSensoryProvider",
+    );
   return context;
 };
