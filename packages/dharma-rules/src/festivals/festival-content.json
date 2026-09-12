@@ -2471,6 +2471,2292 @@
           }
         }
       }
+    },
+    {
+      "definitionKey": "makar-sankranti",
+      "emoji": "🪁",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Makar Sankranti",
+          "hi": "मकर संक्रांति"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Surya Siddhanta / Surya Upanishad",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The auspicious northward journey of the Sun and harvest celebration",
+          "hi": "भगवान सूर्य का मकर राशि में प्रवेश एवं उत्तरायण का महापर्व"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Surya Siddhanta",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Makar Sankranti marks the astronomical transit (Sankranti) of Surya (the Sun deity) into Makara Rashi (Capricorn), signaling the end of winter and the beginning of longer, warmer days (Uttarayan). Celebrated across India as Pongal, Uttarayan, Maghi, and Khichdi, it is a day of profound gratitude to nature, holy dips in sacred rivers (Snan), and charitable giving (Dana).",
+          "hi": "सूर्य देव के धनु राशि से मकर राशि में संक्रमण को मकर संक्रांति कहते हैं। इस दिन से सूर्य उत्तरायण होते हैं और ऋतु परिवर्तन के साथ दिनों की लंबाई बढ़ने लगती है। यह पर्व पवित्र नदियों में स्नान, सूर्य उपासना, तिल-गुड़ के दान और प्रकृति के प्रति आभार व्यक्त करने का पावन दिन है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Surya Upanishad / Vishnu Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Holy bath (Snan) in sacred rivers (Ganga, Yamuna, Godavari, Kaveri) at sunrise",
+            "Offering Arghya to Surya Deva with water, red flowers, and unbroken rice",
+            "Donation (Dana) of sesame seeds (Til), jaggery (Gud), warm clothes, and Khichdi to the needy",
+            "Sharing sesame and jaggery sweets (Tilgul) with prayers for sweet and harmonious speech"
+          ],
+          "hi": [
+            "प्रातःकाल पवित्र नदियों या गंगाजल मिले जल से स्नान",
+            "सूर्य नारायण को ताम्र पात्र से जल, रोली और अक्षत का अर्घ्य समर्पण",
+            "तिल, गुड़, उड़द दाल, चावल (खिचड़ी) और ऊनी वस्त्रों का दान",
+            "तिल-गुड़ के लड्डू बांटना और मधुर वाणी व स्नेह का संकल्प लेना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Perform charity and bathing during the auspicious Punya Kaal window",
+            "Offer fresh water and food to birds and cows",
+            "Eat warm sattvic khichdi and sesame sweets"
+          ],
+          "hi": [
+            "पुण्य काल मुहूर्त में स्नान, जप और दान संपन्न करें",
+            "गौ-माता को गुड़ व हरा चारा खिलाएं और पक्षियों को दाना डालें",
+            "तिल और खिचड़ी का सात्विक प्रसाद ग्रहण करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid consumption of non-vegetarian food, alcohol, or harsh speech",
+            "Avoid bathing before sunrise or missing the Punya Kaal"
+          ],
+          "hi": [
+            "तामसिक भोजन, नशा या कटु वचनों से दूर रहें",
+            "पुण्य काल के शुभ समय को व्यर्थ न जाने दें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Copper vessel (Lota) for Arghya",
+            "Sesame seeds (Til) & Jaggery (Gud)",
+            "Rice & Urad dal for Khichdi",
+            "Red sandalwood paste & flowers",
+            "Ghee diya & camphor"
+          ],
+          "hi": [
+            "तांबे का लोटा (अर्घ्य हेतु)",
+            "तिल व गुड़",
+            "खिचड़ी सामग्री (चावल व काली उड़द दाल)",
+            "रक्त चंदन व लाल पुष्प",
+            "घी का दीपक व कपूर"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ सूर्याय नमः। ॐ ह्रीं ह्रीं सूर्याय सहस्रकिरणाय मनोवांछित फलम् देहि देहि स्वाहा॥",
+        "transliteration": "oṃ sūryāya namaḥ, oṃ hrīṃ hrīṃ sūryāya sahasrakiraṇāya manovāñchita phalam dehi dehi svāhā",
+        "translation": {
+          "value": {
+            "en": "Salutations to the Sun God. Om, to the thousand-rayed Surya, bestower of light and warmth, fulfill our highest and most righteous aspirations.",
+            "hi": "सूर्य देव को नमस्कार है। हे सहस्र किरणों वाले तेजस्वी सूर्य देव! आप हमें प्रकाश, आरोग्य और मनोवांछित सद्गति प्रदान करें।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Surya Upanishad / Traditional Vedic Surya Mantra",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "vasant-panchami",
+      "emoji": "🌼",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Vasant Panchami",
+          "hi": "बसंत पंचमी (सरस्वती पूजा)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Saraswati Rahasya Upanishad / Padma Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Honoring Goddess Saraswati, embodiment of wisdom, arts, and springtime renewal",
+          "hi": "विद्या, ज्ञान, वाणी और कला की अधिष्ठात्री देवी मां सरस्वती की वंदना"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Vasant Panchami (Saraswati Puja), celebrated on Magha Shukla Panchami, marks the advent of spring (Vasant Ritu) and the appearance of Goddess Saraswati, the embodiment of wisdom, music, learning, and eloquence. Adorned in radiant yellow (symbolizing mustard blossoms and intellectual illumination), devotees place sacred scriptures, pens, and musical instruments before the Goddess to seek Her blessings.",
+          "hi": "माघ मास के शुक्ल पक्ष की पंचमी को बसंत पंचमी का पावन पर्व मनाया जाता है। इसी दिन ज्ञान, विद्या, वाणी, संगीत और कला की देवी मां सरस्वती का प्राकट्य हुआ था। पीला रंग ज्ञान और बसंत की नई ऊर्जा का प्रतीक है। इस दिन पुस्तकों, वाद्य यंत्रों और लेखनी का पूजन कर विद्यारंभ संस्कार किया जाता है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana / Matsya Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Saraswati Avahana and Shodashopachara worship with yellow flowers (marigold/mustard blossoms)",
+            "Vidyarambha (Akshararambham): Introducing young children to reading and writing their first sacred letters",
+            "Placing books, sacred texts, pens, and musical instruments at the deity's altar",
+            "Wearing yellow attire and preparing saffron-infused sweet yellow rice (Meethe Chawal)"
+          ],
+          "hi": [
+            "मां सरस्वती का आह्वान, षोडशोपचार पूजन एवं पीले पुष्प व गेंदे की माला अर्पित करना",
+            "विद्यारंभ संस्कार: छोटे बच्चों को पहली बार अक्षराभ्यास कराना",
+            "पुस्तकों, कलम और वाद्य यंत्रों को देवी के चरणों में रखकर आशीर्वाद लेना",
+            "पीत वस्त्र धारण करना और केसरिया मीठे चावल या बूंदी का भोग लगाना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Saraswati Puja Vidhi",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Wear clean yellow or white clothing during the puja",
+            "Chant the Saraswati Vandana and Gayatri Mantra",
+            "Gift books, pens, and educational materials to students in need"
+          ],
+          "hi": [
+            "पूजन के समय पीले या श्वेत वस्त्र धारण करें",
+            "सरस्वती वंदना और गायत्री मंत्र का पाठ करें",
+            "जरूरतमंद विद्यार्थियों को पुस्तक व पठन सामग्री भेंट करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not touch books or musical instruments with feet or impure hands",
+            "Avoid harsh, abusive, or deceitful speech on this day sacred to Vak (speech)"
+          ],
+          "hi": [
+            "पुस्तकों या वाद्य यंत्रों को पैरों से स्पर्श न करें",
+            "वाणी की देवी के दिन किसी के प्रति कटु या असत्य वचन न कहें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Saraswati deity/picture",
+            "Yellow flowers & marigold garland",
+            "White/yellow sandalwood paste",
+            "Pens, notebook, inkpot, or musical instrument",
+            "Saffron sweet rice or yellow laddus",
+            "Ghee lamp & incense"
+          ],
+          "hi": [
+            "मां सरस्वती की प्रतिमा/चित्र",
+            "पीले फूल व गेंदे की माला",
+            "श्वेत/पीत चंदन",
+            "लेखनी, पुस्तक व दवात",
+            "केसरिया भात या बेसन के लड्डू",
+            "घी का दीपक व धूप"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "सरस्वति नमस्तुभ्यं वरदे कामरूपिणि। विद्यारम्भं करिष्यामि सिद्धिर्भवतु मे सदा॥",
+        "transliteration": "sarasvati namastubhyaṃ varade kāmarūpiṇi, vidyārambhaṃ kariṣyāmi siddhirbhavatu me sadā",
+        "translation": {
+          "value": {
+            "en": "Salutations to You, O Goddess Saraswati, giver of boons and embodiment of all desires. As I begin my learning, may there always be accomplishment and wisdom for me.",
+            "hi": "हे वरदायिनी और सर्वमनोरथ पूर्ण करने वाली मां सरस्वती! आपको नमस्कार है। मैं विद्या अध्ययन आरंभ करने जा रहा हूँ, मुझे सदा सफलता और सद्बुद्धि प्राप्त हो।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Traditional Saraswati Prarthana / Padma Purana",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "gudi-padwa",
+      "emoji": "🏮",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Gudi Padwa",
+          "hi": "गुड़ी पड़वा (नव संवत्सर)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Brahma Purana / Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Traditional Maharashtra & Deccan New Year celebrating cosmic creation and victory",
+          "hi": "नव संवत्सर का शुभारंभ, विजय पताका गुड़ी की स्थापना और उल्लास"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Brahma Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Gudi Padwa, celebrated on Chaitra Shukla Pratipada, marks the commencement of the traditional Hindu lunar New Year (Nav Samvatsar). It commemorates the day Lord Brahma created the cosmos, and the victorious return of Lord Rama to Ayodhya after defeating Ravana. The raising of the Gudi (a victory flag adorned with neem leaves, mango leaves, a silver/copper pot, and sugar garland) atop homes signifies prosperity, auspiciousness, and spiritual triumph.",
+          "hi": "चैत्र मास के शुक्ल पक्ष की प्रतिपदा को गुड़ी पड़वा और हिंदू नववर्ष का शुभारंभ होता है। मान्यता है कि इसी दिन ब्रह्मा जी ने सृष्टि की रचना की थी और प्रभु श्री राम ने दक्षिण में सुग्रीव के साथ मिलकर बाली के अत्याचार से मुक्ति दिलाई थी। घर-घर में फहराई जाने वाली \"गुड़ी\" विजय, समृद्धि और नकारात्मकता को दूर भगाने का पावन प्रतीक है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Brahma Purana / Jyotisha Shastra",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Early morning holy oil bath and decorating home entrance with colorful Rangoli and mango leaf Toran",
+            "Hoisting the sacred Gudi (bright silk cloth, neem leaves, flower garland, sugar crystal necklace, topped with inverted copper/silver vessel) outside the window or terrace",
+            "Consuming a traditional paste of neem leaves, jaggery, tamarind, and ajwain representing life's diverse flavors",
+            "Preparing festive Shrikhand and Puri to share with family and neighbors"
+          ],
+          "hi": [
+            "प्रातःकाल सुगंधित तेल से स्नान कर मुख्य द्वार पर सुंदर रंगोली और आम के पत्तों का तोरण सजाना",
+            "गुड़ी स्थापना: बांस की छड़ी पर रेशमी वस्त्र, नीम की पत्तियां, फूलों की माला, शक्कर की गाठी और तांबे का लोटा लगाकर गुड़ी फहराना",
+            "नीम की पत्ती, गुड़, इमली और अजवाइन का कड़वा-मीठा प्रसाद ग्रहण करना",
+            "श्रीखंड-पूरी और पारंपरिक व्यंजनों का परिवार के साथ आनंद लेना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Maharashtrian cultural tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Hoist the Gudi facing east during early morning auspicious muhurat",
+            "Taste the traditional neem-jaggery preparation for digestive and spiritual balance",
+            "Greet family and elders with prayers for peace and prosperity in the new year"
+          ],
+          "hi": [
+            "प्रातःकाल शुभ मुहूर्त में पूर्व दिशा की ओर गुड़ी स्थापित करें",
+            "आरोग्य और संतुलन हेतु नीम-गुड़ का पारंपरिक प्रसाद अवश्य लें",
+            "बड़ों का आशीर्वाद लेकर नववर्ष की मंगलकामनाएं साझा करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid keeping the Gudi hoisted past sunset (it should be lowered reverently with evening aarti)",
+            "Avoid anger, lethargy, or discordant thoughts on the first day of the year"
+          ],
+          "hi": [
+            "सूर्यास्त के बाद गुड़ी को खुले में न छोड़ें, संध्या समय आदरपूर्वक उतार लें",
+            "साल के पहले दिन कलह, आलस्य या नकारात्मक विचारों से बचें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Bamboo stick & silk cloth (red/yellow/saffron)",
+            "Copper or silver pot (Kalash/Lota)",
+            "Fresh neem & mango leaves",
+            "Flower garland & sugar crystal necklace (Gaathi)",
+            "Roli, akshat, haldi, and diya",
+            "Shrikhand & Puri"
+          ],
+          "hi": [
+            "बांस की लकड़ी व रेशमी वस्त्र",
+            "तांबे या चांदी का लोटा",
+            "नीम और आम की पत्तियां",
+            "फूलों की माला व शक्कर की गाठी",
+            "रोली, अक्षत, हल्दी व दीपक",
+            "श्रीखंड व पूरी"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ब्रह्मध्वज नमस्तेऽस्तु सर्वाभीष्टफलप्रद। प्राप्तेऽस्मिन् वत्सरे नित्यं मद्गृहे मङ्गलं कुरु॥",
+        "transliteration": "brahmadhvaja namaste'stu sarvābhīṣṭaphalaprada, prāpte'smin vatsare nityaṃ madgṛhe maṅgalaṃ kuru",
+        "translation": {
+          "value": {
+            "en": "Salutations to You, O Brahma-dhwaja (sacred Gudi), granter of all righteous wishes! Throughout this arriving new year, please bestow peace, auspiciousness, and well-being upon our home.",
+            "hi": "हे सभी मनोकामनाओं को पूर्ण करने वाली ब्रह्मध्वज (गुड़ी)! आपको नमस्कार है। इस नए वर्ष में हमारे घर में सदा सुख, शांति और मंगल का वास हो।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Brahma Purana Gudi Puja Stotram",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "ugadi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Ugadi",
+          "hi": "उगादी (युगादि)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Surya Siddhanta / Shalivahana Shaka tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Deccan Lunar New Year — embracing the six flavors of life with wisdom",
+          "hi": "दक्षिण भारत का पावन नववर्ष — षड्रुचियों से परिपूर्ण जीवन का उत्सव"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Shalivahana Shaka tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Ugadi (derived from Yuga + Adi, meaning 'the beginning of an era'), celebrated on Chaitra Shukla Pratipada across Karnataka, Andhra Pradesh, and Telangana, heralds the start of the Vedic lunar year (Shalivahana Shaka). The central ritual of consuming Ugadi Pachadi (combining sweet, sour, salty, bitter, tangy, and spicy tastes) profoundly symbolizes life's diverse experiences, reminding seekers to accept joy and hardship with equanimity.",
+          "hi": "युग + आदि से बना \"उगादी\" पर्व कर्नाटक, आंध्र प्रदेश और तेलंगाना में नववर्ष के रूप में मनाया जाता है। यह सृष्टि के प्रारंभ और शालिवाहन शक के नए वर्ष का पावन दिन है। इस दिन षड्रस (छह स्वादों) से बना \"उगादी पच्चड़ी\" प्रसाद ग्रहण किया जाता है, जो यह संदेश देता है कि जीवन में सुख, दुःख, सफलता और चुनौतियों को समभाव से स्वीकार करना चाहिए।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Surya Siddhanta / Vedic Calendar tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Pre-dawn head bath (Tailabhyanga) and tying fresh green mango leaf Torans on entrances",
+            "Preparing and consuming Ugadi Pachadi (made with neem flowers, raw mango, jaggery, tamarind, salt, and chili)",
+            "Panchanga Sravanam: Listening to the traditional astrological forecast for the coming year at temples or homes",
+            "Preparing festive delicacies like Bobbatlu (Puran Poli) and sharing gifts with loved ones"
+          ],
+          "hi": [
+            "ब्रह्ममुहूर्त में तैल अभ्यंग स्नान और घर के द्वारों पर आम के पत्तों का तोरण बांधना",
+            "उगादी पच्चड़ी (नीम के फूल, कच्चा आम, गुड़, इमली, नमक व मिर्च) का निर्माण और प्रसाद वितरण",
+            "पंचांग श्रवणम्: आगामी वर्ष के शुभ-अशुभ फल, वर्षा और ग्रह स्थिति का विद्वानों से श्रवण",
+            "बोब्बट्लू (पूरन पोली) जैसे स्वादिष्ट मिष्ठान बनाना और प्रियजनों को भेंट देना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Deccan Vedic tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Partake in the Ugadi Pachadi as the first sacred food of the day",
+            "Listen to the traditional Panchangam with family for spiritual alignment",
+            "Seek the blessings of elders and parents for a virtuous year ahead"
+          ],
+          "hi": [
+            "दिन का प्रथम आहार उगादी पच्चड़ी के रूप में श्रद्धापूर्वक ग्रहण करें",
+            "परिवार सहित नए वर्ष के पंचांग का श्रवण करें",
+            "माता-पिता और गुरुजनों के चरण स्पर्श कर आशीर्वाद लें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid discarding or refusing the bitter component in the Ugadi Pachadi",
+            "Avoid entering the new year with lingering bitterness, anger, or pessimism"
+          ],
+          "hi": [
+            "पच्चड़ी के किसी भी रस (विशेषकर नीम की कड़वाहट) का तिरस्कार न करें",
+            "मन में किसी के प्रति वैर, द्वेष या निराशा न रखें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Fresh mango leaves for Toranam",
+            "Neem flowers & raw mango pieces",
+            "Jaggery, tamarind pulp, and rock salt",
+            "Panchangam book / calendar",
+            "Coconut, betel leaves, turmeric, and vermilion",
+            "Ghee lamp"
+          ],
+          "hi": [
+            "आम के ताजे पत्ते (तोरण)",
+            "नीम के फूल व कच्चे आम के टुकड़े",
+            "गुड़, इमली व सेंधा नमक",
+            "नया पंचांग",
+            "नारियल, पान के पत्ते, हल्दी व कुमकुम",
+            "घी का दीपक"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "शतारुषि च कामान् मे कुरु सत्यं सुरेश्वर। नववर्षे प्रपन्नेऽस्मिन् भव मे वरदो हर॥",
+        "transliteration": "śatāruṣi ca kāmān me kuru satyaṃ sureśvara, navavarṣe prapanne'smin bhava me varado hara",
+        "translation": {
+          "value": {
+            "en": "O Supreme Lord, fulfill all my righteous aspirations. As this new year dawns upon us, may You bestow Your divine protection, health, and grace upon our path.",
+            "hi": "हे देवाधिदेव! मेरे सभी सात्विक संकल्पों को सिद्ध करें। इस नूतन वर्ष में मुझ पर अपनी कृपा और कल्याणकारी दृष्टि बनाए रखें।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Traditional Vedic Samvatsara Prarthana",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "akshaya-tritiya",
+      "emoji": "💛",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Akshaya Tritiya",
+          "hi": "अक्षय तृतीया (आखा तीज)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana / Padma Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The day of eternal, inexhaustible auspiciousness and spiritual virtue",
+          "hi": "अक्षय पुण्य, सुख-समृद्धि और अटूट शुभता का पावन दिवस"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Akshaya Tritiya (Akha Teej), celebrated on Vaishakha Shukla Tritiya, is one of the most auspicious days in the Vedic calendar where the Sun and Moon are both in supreme exaltation. 'Akshaya' means 'that which never diminishes'. It marks the beginning of Satya Yuga, the birth of Lord Parashurama (the sixth avatar of Vishnu), the descent of Holy Ganga to earth, and the day Sage Vyasa began composing the Mahabharata with Lord Ganesha. Spiritual practices, charitable giving (Dana), and virtuous deeds performed on this day yield inexhaustible merits.",
+          "hi": "वैशाख शुक्ल तृतीया को अक्षय तृतीया कहते हैं। \"अक्षय\" का अर्थ है जिसका कभी क्षय (नाश) न हो। इस दिन सूर्य और चंद्रमा दोनों अपनी उच्च राशि में होते हैं। इसी पावन दिन सतयुग का आरंभ, भगवान परशुराम का प्राकट्य, मां गंगा का धराधाम पर अवतरण और महर्षि वेदव्यास द्वारा महाभारत का लेखन आरंभ हुआ था। इस दिन किया गया जप, तप, दान और सत्कर्म अनंत गुना पुण्य फल देता है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana (Vaishakha Mahatmya) / Bhavishya Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Worship of Lord Vishnu, Goddess Lakshmi, and Lord Parashurama with white/yellow flowers",
+            "Ghat Dana (Udaka Kumbha Dana): Donating earthen pots filled with cold water, jaggery, seasonal fruits, and barley (Yava) to travelers and seekers",
+            "Performing Japa, Tapa, Homa, and spiritual charity (Annadanam)",
+            "Starting new virtuous initiatives, purchasing sacred gold/silver, or planting medicinal trees"
+          ],
+          "hi": [
+            "भगवान विष्णु, माता लक्ष्मी और परशुराम जी का तुलसी व पीले पुष्पों से पूजन",
+            "घट दान (जल कुंभ दान): मिट्टी के घड़े में शीतल जल, खरबूजा, सत्तू, पंखा और दक्षिणा रखकर दान करना",
+            "जप, ध्यान, हवन और जरूरतमंदों को अन्न-जल का दान",
+            "सद्कर्मों, नए व्यापार या मांगलिक कार्यों का शुभारंभ और स्वर्ण/रजत का क्रय"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Dharma Shastra / Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Donate drinking water pots, food, fans, and umbrellas to alleviate summer heat for others",
+            "Recite the Vishnu Sahasranama or Sri Suktam with deep devotion",
+            "Plant sacred trees like Tulsi, Peepal, or Banyan"
+          ],
+          "hi": [
+            "ग्रीष्म ऋतु में राहगीरों और जरूरतमंदों को जल, फल, पंखा और अन्न दान करें",
+            "श्री विष्णु सहस्रनाम या श्री सूक्त का पाठ करें",
+            "तुलसी या छायादार वृक्षों का रोपण करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid hoarding wealth without sharing or neglecting charity on this day",
+            "Do not engage in deceptive transactions, disputes, or unethical deeds"
+          ],
+          "hi": [
+            "इस दिन केवल भौतिक संचय में न लगें, अपनी सामर्थ्य अनुसार दान अवश्य करें",
+            "असत्य भाषण, विवाद या किसी को कष्ट पहुँचाने से बचें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Earthen water pot (Kumbha)",
+            "Barley grains (Yava) & Wheat",
+            "Yellow sandalwood, tulsi, and flowers",
+            "Melons, mangoes, and jaggery",
+            "Hand fan (Pankha) and umbrella (for Dana)",
+            "Ghee diya"
+          ],
+          "hi": [
+            "मिट्टी का घड़ा (कुंभ)",
+            "जौ (यव) व गेहूं",
+            "पीला चंदन, तुलसी दल व पुष्प",
+            "खरबूजा, आम व गुड़",
+            "हाथ का पंखा व छाता (दानार्थ)",
+            "गाय के घी का दीपक"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ नमो नारायणाय। वैशाखे मासि राजेन्द्र तृतीयायां सिताह्वये। या याः क्रियाः प्रकुर्वीत सर्वास्ता अक्षय्या भवेत्॥",
+        "transliteration": "oṃ namo nārāyaṇāya, vaiśākhe māsi rājendra tṛtīyāyāṃ sitāhvaye, yā yāḥ kriyāḥ prakurvīta sarvāstā akṣayyā bhavet",
+        "translation": {
+          "value": {
+            "en": "Om Namo Narayanaya. On the third lunar day of the bright fortnight of Vaishakha, whatever virtuous, devotional, and charitable actions are performed become eternal and inexhaustible.",
+            "hi": "भगवान नारायण को नमन है। वैशाख मास के शुक्ल पक्ष की तृतीया तिथि को जो भी जप, दान और सत्कर्म किए जाते हैं, वे सभी अक्षय और अनंत फल देने वाले होते हैं।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana / Skanda Purana",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "narasimha-jayanti",
+      "emoji": "🦁",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Narasimha Jayanti",
+          "hi": "नृसिंह जयंती"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Narasimha Purana / Srimad Bhagavatam",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The ferocious yet compassionate advent of Lord Narasimha to protect Prahlada",
+          "hi": "भक्त प्रह्लाद की रक्षा हेतु भगवान श्री नृसिंह का दिव्य प्राकट्य"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Srimad Bhagavatam",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Narasimha Jayanti, celebrated on Vaishakha Shukla Chaturdashi, marks the twilight manifestation of Lord Narasimha — the half-lion, half-human avatar of Lord Vishnu. He burst forth from a pillar at dusk to slay the demon Hiranyakashipu, fulfilling impossible celestial boons while safeguarding His five-year-old devotee Prahlada. Lord Narasimha embodies supreme cosmic protection, destruction of ego, and unwavering defense of true surrender (Sharanagati).",
+          "hi": "वैशाख मास के शुक्ल पक्ष की चतुर्दशी तिथि को संध्या काल (प्रदोष वेला) में भगवान श्री नृसिंह का प्राकट्य हुआ था। अपने अनन्य भक्त प्रह्लाद के विश्वास की रक्षा करने और अहंकारी हिरण्यकश्यप का संहार करने हेतु भगवान खंभे को चीरकर प्रकट हुए थे। यह पर्व ईश्वर की सर्वव्यापकता, शरणागति और भक्तों की हर संकट से रक्षा का जीवंत प्रमाण है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Srimad Bhagavatam (Canto 7) / Narasimha Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Fast throughout the day until sunset/dusk (Narasimha manifestation timing)",
+            "Pradosh Kaal Abhishekam with milk, curd, honey, panchamrita, and cool scented waters",
+            "Offering red/yellow flowers, Tulsi leaves, and jaggery water (Panakam) as cooling prasad",
+            "Chanting the Narasimha Kavacham and Sri Narasimha Maha-mantra"
+          ],
+          "hi": [
+            "दिनभर उपवास एवं संध्या समय (गोधूलि वेला) में विशेष पूजन",
+            "पंचामृत, शीतल जल और चंदन से भगवान नृसिंह का अभिषेक",
+            "लाल पुष्प, तुलसी दल और शीतलता प्रदान करने वाले पनाकम (गुड़-सोंठ-इलायची जल) का भोग",
+            "श्री नृसिंह कवच एवं नृसिंह महामंत्र का भावपूर्ण पाठ"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vaishnava Agama tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Perform the main puja during twilight (Sandhyakala / sunset)",
+            "Cultivate pure humility, unshakeable faith, and fearless surrender like Prahlada",
+            "Offer cooling foods like Panakam, curd rice, and fruits"
+          ],
+          "hi": [
+            "सूर्यास्त के समय गोधूलि वेला में मुख्य आरती और पूजन करें",
+            "प्रह्लाद के समान निष्काम भक्ति और ईश्वर के प्रति अटूट विश्वास रखें",
+            "पनाकम, पंचामृत और मौसमी फलों का नैवेद्य लगाएं"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not consume food before sunset puja",
+            "Avoid pride, cruelty, or oppressive attitudes towards the vulnerable"
+          ],
+          "hi": [
+            "संध्या पूजन और सूर्यास्त से पूर्व व्रत न खोलें",
+            "अहंकार, क्रोध या किसी निर्बल के प्रति क्रूरता का भाव न रखें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Narasimha / Lakshmi-Narasimha image/idol",
+            "Panchamrita ingredients & sandalwood",
+            "Red flowers & tulsi garland",
+            "Panakam (jaggery water with cardamom and ginger)",
+            "Dhoop, camphor, and pure ghee lamp"
+          ],
+          "hi": [
+            "लक्ष्मीनृसिंह विग्रह/चित्र",
+            "पंचामृत सामग्री व शीतल चंदन",
+            "लाल पुष्प व तुलसी की माला",
+            "पनाकम (गुड़-इलायची का शीतल पेय)",
+            "धूप, कपूर व घी का दीपक"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "उग्रं वीरं महाविष्णुं ज्वलन्तं सर्वतोमुखम्। नृसिंहं भीषणं भद्रं मृत्युमृत्युं नमाम्यहम्॥",
+        "transliteration": "ugraṃ vīraṃ mahāviṣṇuṃ jvalantaṃ sarvatomukham, nṛsiṃhaṃ bhīṣaṇaṃ bhadraṃ mṛtyumṛtyuṃ namāmyaham",
+        "translation": {
+          "value": {
+            "en": "I bow to the ferocious and valorous Lord Narasimha, the great manifestation of Vishnu, radiant on all sides, terrifying to evil yet supremely benevolent to devotees, the vanquisher of death itself.",
+            "hi": "जो अत्यंत तेजस्वी, वीर, महाविष्णु स्वरूप, प्रज्वलित, सर्वव्यापी, दुष्टों के लिए भीषण परंतु भक्तों के लिए परम कल्याणकारी और मृत्यु के भी मृत्यु हैं, उन भगवान नृसिंह को मैं प्रणाम करता हूँ।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Narasimha Tapaniya Upanishad",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "shani-jayanti",
+      "emoji": "⚖️",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Shani Jayanti",
+          "hi": "शनि जयंती"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana / Surya Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Honoring Lord Shani, the cosmic dispenser of justice and karmic discipline",
+          "hi": "कर्मफलदाता, न्याय के देव भगवान सूर्यपुत्र शनि देव का जन्मोत्सव"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Shani Jayanti, celebrated on Jyeshtha Amavasya (the new moon day of Jyeshtha), marks the appearance of Lord Shani (Saturn), the son of Surya (Sun) and Chhaya (Shadow). Revering Shani Deva is not about fear, but about honoring cosmic justice, discipline, perseverance, humility, and the inexorable law of Karma. Sincere prayers and charitable service to the poor and differently-abled on this day appease Saturn's malefic effects and awaken spiritual steadfastness.",
+          "hi": "ज्येष्ठ मास की अमावस्या को भगवान सूर्य और माता छाया के पुत्र शनि देव का जन्मोत्सव मनाया जाता है। शनि देव क्रूर नहीं, बल्कि न्याय के निष्पक्ष देवता (कर्मफलदाता) हैं जो मनुष्य को उसके कर्मों के अनुसार फल देते हैं। यह दिन संयम, अनुशासन, दीन-दुखियों की सेवा और आत्म-समीक्षा का पावन अवसर है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana (Kashi Khanda) / Brahma Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Bathing with black sesame seeds (Til) and wearing dark blue or black attire",
+            "Abhishekam of Shani Shila with mustard oil (Sarson ka tel) and black sesame",
+            "Lighting a mustard oil lamp under a Peepal tree and performing seven circumambulations",
+            "Donating iron utensils, black umbrella, leather footwear, mustard oil, and black urad dal to the needy"
+          ],
+          "hi": [
+            "तिल युक्त जल से स्नान और सात्विक दिनचर्या",
+            "शनि विग्रह या शिला पर सरसों का तेल और काले तिल अर्पित करना",
+            "पीपल के वृक्ष के नीचे सरसों के तेल का दीपक जलाना और सात बार परिक्रमा करना",
+            "काले तिल, उड़द की दाल, सरसों का तेल, छाता और जूते-चप्पल जरूरतमंदों को दान करना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Feed black crows, stray dogs, and cows with mustard-oil smeared rotis",
+            "Recite the Shani Chalisa, Dasaratha Shani Stotram, or Hanuman Chalisa",
+            "Serve the elderly, laborers, and underprivileged with respect"
+          ],
+          "hi": [
+            "काले कौवों, कुत्तों और गौ-माता को तेल लगी रोटी खिलाएं",
+            "राजा दशरथ कृत शनि स्तोत्र या हनुमान चालीसा का पाठ करें",
+            "श्रमिकों, असहायों और वृद्धों की सेवा करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not look directly into the eyes of Shani Deva's idol (focus on His sacred feet)",
+            "Avoid purchasing iron items, mustard oil, or leather goods on this day (donate them instead)",
+            "Avoid deceiving, cheating, or disrespecting workers and domestic help"
+          ],
+          "hi": [
+            "शनि प्रतिमा की आंखों में सीधा न देखें, दृष्टि भगवान के चरणों पर रखें",
+            "इस दिन लोहा, तेल या चमड़े की वस्तुएं खरीदकर घर न लाएं, केवल दान करें",
+            "श्रमिकों या असहाय जनों का अनादर या शोषण न करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Pure mustard oil",
+            "Black sesame seeds (Kala Til)",
+            "Black urad dal & iron nail/coin",
+            "Blue/purple flowers & Shami leaves",
+            "Earthen diya & raw cotton wick",
+            "Jaggery and black gram prasad"
+          ],
+          "hi": [
+            "शुद्ध सरसों का तेल",
+            "काले तिल",
+            "काली उड़द की दाल व लोहे की कील/सिक्का",
+            "नीले/अपराजिता के पुष्प व शमी पत्र",
+            "मिट्टी का दीपक",
+            "गुड़ व काले चने का प्रसाद"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ नीलांजनसमाभासं रविपुत्रं यमाग्रजम्। छायामार्तण्डसम्भूतं तं नमामि शनैश्चरम्॥",
+        "transliteration": "oṃ nīlāñjanasamābhāsaṃ raviputraṃ yamāgrajam, chāyāmārtaṇḍasambhūtaṃ taṃ namāmi śanaiścaram",
+        "translation": {
+          "value": {
+            "en": "I bow to Lord Shani, radiant as dark blue collyrium, the son of the Sun God, the elder brother of Yama, born of Chhaya and Martanda, the slow-moving arbiter of destiny.",
+            "hi": "नीले अंजन के समान कांति वाले, सूर्य के पुत्र, यमराज के अग्रज, माता छाया और मार्तण्ड से उत्पन्न, मंद गति से चलने वाले भगवान शनैश्चर को मैं प्रणाम करता हूँ।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Navagraha Stotram (Sage Vyasa) / Skanda Purana",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "jagannath-rath-yatra",
+      "emoji": "🛕",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Jagannath Rath Yatra",
+          "hi": "जगन्नाथ रथ यात्रा"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana (Utkala Khanda) / Brahma Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The grand chariot festival of Lord Jagannath, Balabhadra, and Subhadra in Puri",
+          "hi": "भगवान जगन्नाथ, बलभद्र और सुभद्रा की पावन रथ यात्रा"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Jagannath Rath Yatra, celebrated on Ashadha Shukla Dwitiya in Sri Kshetra Puri (Odisha) and worldwide, is the monumental chariot festival of Mahaprabhu Jagannath (Lord of the Universe, Krishna), His elder brother Balabhadra, and sister Subhadra. The deities step out of the sanctum sanctorum to ride their magnificent wooden chariots (Nandighosha, Taladhwaja, and Darpadalana) to the Gundicha Temple, gracing all beings regardless of caste, creed, or status with divine Darshan.",
+          "hi": "आषाढ़ मास के शुक्ल पक्ष की द्वितीया तिथि को ओडिशा के पुरी धाम में जगन्नाथ रथ यात्रा का महापर्व आरंभ होता है। ब्रह्मांड के स्वामी भगवान जगन्नाथ, उनके बड़े भाई बलभद्र और बहन सुभद्रा अपने गर्भगृह से बाहर आकर विशाल रथों (नंदीघोष, तालध्वज, दर्पदलन) पर सवार होकर गुंडिचा मंदिर जाते हैं। यह पर्व जाति-वर्ण के भेद से परे सभी भक्तों को भगवान के साक्षात दर्शन और कृपा का सुअवसर प्रदान करता है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana (Utkala Khanda)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Pahandi Bije: Ceremonial rhythmic procession carrying the deities onto their respective towering chariots",
+            "Chhera Panhara: The King (Gajapati Maharaja) sweeping the chariot platforms with a golden broom, symbolizing supreme humility before God",
+            "Pulling the sacred chariot ropes by thousands of devout pilgrims",
+            "Nine-day stay at Gundicha Temple and the triumphant return on Bahuda Yatra"
+          ],
+          "hi": [
+            "पहांडी विजय: जयघोष और मृदंग की ध्वनि के साथ विग्रहों को रथों पर विराजमान करना",
+            "छेरा पहंरा: पुरी के गजपति महाराज द्वारा सोने की झाड़ू से रथ के फर्श को बुहारना (परम विनम्रता का प्रतीक)",
+            "भक्तों द्वारा श्रद्धापूर्वक रथ की पवित्र रस्सियों को खींचना",
+            "गुंडिचा मंदिर में नौ दिनों का प्रवास और बहुड़ा यात्रा (वापसी)"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Puri Jagannath Temple tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Participate in pulling the chariot ropes or visualizing the Rath Yatra with deep devotion",
+            "Partake in Mahaprasad (Khaja, Malpua, Dalma) with reverence",
+            "Chant the Holy Names: 'Hare Krishna', 'Jai Jagannath'"
+          ],
+          "hi": [
+            "रथ की रस्सियों को स्पर्श कर खींचने का सौभाग्य प्राप्त करें या मानसिक दर्शन करें",
+            "भगवान के पावन महाप्रसाद का आदरपूर्वक सेवन करें",
+            "\"जय जगन्नाथ\" और हरिनाम संकीर्तन करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not disrespect Mahaprasad or waste food",
+            "Avoid pushing or causing harm in crowded processions"
+          ],
+          "hi": [
+            "महाप्रसाद का अनादर न करें और न ही उसे व्यर्थ फेंकें",
+            "भीड़ में किसी को धक्का न दें और व्यवस्था का पालन करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Jagannath, Balabhadra, Subhadra frame/idol",
+            "Puri Mahaprasad / Khaja & sweet kheer",
+            "Tulsi garland & yellow/red vastra",
+            "Chandan & scented flowers",
+            "Conch shell, bell, and camphor diya"
+          ],
+          "hi": [
+            "भगवान जगन्नाथ-बलभद्र-सुभद्रा चित्र/विग्रह",
+            "जगन्नाथ महाप्रसाद / खाजा व खीर",
+            "तुलसी की माला व पीत-रक्त वस्त्र",
+            "चंदन व सुगंधित पुष्प",
+            "शंख, घंटी व कपूर का दीपक"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "नीलाचलनिवासाय नित्याय परमात्मने। बलभद्रसुभद्राभ्यां जगन्नाथाय ते नमः॥",
+        "transliteration": "nīlācalanivāsāya nityāya paramātmane, balabhadrasubhadrābhyāṃ jagannāthāya te namaḥ",
+        "translation": {
+          "value": {
+            "en": "Salutations to Lord Jagannath, who resides in the sacred realm of Nilachala, the eternal Supreme Soul, along with His brother Balabhadra and sister Subhadra.",
+            "hi": "नीलाचल (पुरी) में निवास करने वाले, नित्य, परमात्मा स्वरूप, भ्राता बलभद्र और भगिनी सुभद्रा सहित विराजमान भगवान जगन्नाथ को मेरा सादर नमन है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Jagannatha Ashtakam (Adi Shankaracharya) / Skanda Purana",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "nag-panchami",
+      "emoji": "🐍",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Nag Panchami",
+          "hi": "नाग पंचमी"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhavishya Purana / Mahabharata",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Veneration of sacred serpents as guardians of nature and cosmic energy",
+          "hi": "सर्प देवों की पूजा, कालसर्प शांति एवं प्रकृति संरक्षण का पर्व"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhavishya Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Nag Panchami, celebrated on Shravana Shukla Panchami, is an ancient Vedic festival honoring serpents (Nagas) — revering Ananta (who supports the cosmos), Vasuki (around Lord Shiva's neck), and Sheshanaga. It symbolizes reverence for all wildlife, acknowledgment of the serpent power (Kundalini Shakti), freedom from fears and phobias, and protection from venomous creatures during the monsoon season.",
+          "hi": "श्रावण मास के शुक्ल पक्ष की पंचमी तिथि को नाग पंचमी मनाई जाती है। इस दिन अनंत, वासुकि, शेष, पद्म, कंबोल, कर्कोटक, अश्वतर, धृतराष्ट्र, शंखपाल, कालिया, तक्षक और पिंगल — इन बारह प्रमुख नाग देवों की पूजा की जाती है। यह पर्व सर्पों के प्रति कृतज्ञता, कालसर्प दोष शमन और प्रकृति के संतुलन का प्रतीक है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhavishya Purana / Mahabharata (Astika Parva)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Drawing serpent motifs with cow dung or turmeric/sandalwood paste at the entrance of the house",
+            "Offering raw milk, puffed rice (Lava/Kheel), turmeric, and flowers to Nag Devata",
+            "Visiting natural snake anthills (Valmiki) or Shiva temples to offer prayers",
+            "Abstaining from plowing fields or cutting vegetation on this day to protect subterranean creatures"
+          ],
+          "hi": [
+            "घर के मुख्य द्वार पर गाय के गोबर या हल्दी-चंदन से नाग देवता की आकृति बनाना",
+            "नाग देवता को कच्चा दूध, लावा (खील), हल्दी, दूर्वा और पुष्प अर्पित करना",
+            "शिव मंदिर में जाकर नाग देवता और शिवलिंग का पूजन",
+            "इस दिन खेत में हल चलाना, मिट्टी खोदना या साग-सब्जी काटना वर्जित माना जाता है"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Vedic ritual guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Offer milk, flowers, and puffed rice at snake shrines or Lord Shiva's feet",
+            "Chant the Navanaga Stotra for protection against fears and poison",
+            "Protect reptiles and respect environmental biodiversity"
+          ],
+          "hi": [
+            "शिव मंदिर में नाग देवता को कच्चा दूध और खील अर्पित करें",
+            "नवनाग स्तोत्र या \"ॐ नमः शिवाय\" का जप करें",
+            "जीव-जंतुओं और पर्यावरण की रक्षा का संकल्प लें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not dig the earth, plow farmland, or use sharp iron blades on this day",
+            "Do not feed snakes forcefully (offer milk symbolically at idols/shrines instead)"
+          ],
+          "hi": [
+            "इस दिन जमीन में खुदाई या हल चलाने का कार्य न करें",
+            "जीवित सांपों को जबरन दूध पिलाने जैसी पीड़ा न दें, मंदिर के विग्रह पर प्रतीकात्मक अर्पण करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral & environmental guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Nag Devata idol / silver serpent image",
+            "Raw cow milk & puffed rice (Lava/Kheel)",
+            "Turmeric, kumkum, and chandan",
+            "Durva grass & white/yellow flowers",
+            "Ghee diya & incense"
+          ],
+          "hi": [
+            "नाग देवता की प्रतिमा/चांदी के नाग-नागिन",
+            "कच्चा गाय का दूध व लावा (खील)",
+            "हल्दी, कुमकुम व चंदन",
+            "दूर्वा घास व श्वेत पुष्प",
+            "घी का दीपक व धूप"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "सर्वे नागाः प्रीयन्तां मे ये केचित् पृथिवीतले। ये च हेलिमरीचिस्था येऽन्तरे दिवि संस्थिताः॥",
+        "transliteration": "sarve nāgāḥ prīyantāṃ me ye kecit pṛthivītale, ye ca helimarīcisthā ye'ntare divi saṃsthitāḥ",
+        "translation": {
+          "value": {
+            "en": "May all sacred serpents be pleased with me — those who dwell upon the earth, those in the sun's rays, and those established in the celestial realms.",
+            "hi": "इस पृथ्वी पर, सूर्य की किरणों में और स्वर्ग लोक में स्थित सभी नाग देवता मुझ पर प्रसन्न हों और मेरी रक्षा करें।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Bhavishya Purana Nag Stotram",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "hartalika-teej",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Hartalika Teej",
+          "hi": "हरतालिका तीज"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhavishya Purana / Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Goddess Parvati's supreme austerity to unite with Lord Shiva",
+          "hi": "माता पार्वती की अखंड तपस्या और सुहाग की अमरता का पावन व्रत"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhavishya Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Hartalika Teej, observed on Bhadrapada Shukla Tritiya (the day before Ganesh Chaturthi), commemorates Goddess Parvati's profound tapasya in the forest to attain Lord Shiva as Her consort. 'Harat' means abduction and 'Aalika' means female friends — referring to Parvati's companions taking Her to a secluded grove to allow Her uninterrupted meditation. Married and unmarried women observe a strict nirjala fast, creating clay Shiva-Parvati idols and praying for marital harmony, longevity, and spiritual strength.",
+          "hi": "भाद्रपद मास के शुक्ल पक्ष की तृतीया को हरतालिका तीज का महापर्व मनाया जाता है। \"हरत\" अर्थात हरण और \"आलिका\" अर्थात सखियां — माता पार्वती की सखियां उन्हें घने वन में ले गई थीं जहाँ उन्होंने रेत के शिवलिंग बनाकर कठोर तप किया और देवाधिदेव महादेव को पति रूप में प्राप्त किया। महिलाएं अखंड सौभाग्य, सुयोग्य वर और दांपत्य जीवन में माधुर्य हेतु यह निर्जला व्रत रखती हैं।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhavishya Purana / Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Strict Nirjala (waterless) fast observed throughout the day and night",
+            "Crafting sand/clay idols of Lord Shiva, Goddess Parvati, and Lord Ganesha",
+            "Evening and night four-prahara puja with 16 types of sacred leaves (Patri) and solah shringar offerings",
+            "Listening to the Hartalika Teej Vrat Katha and performing night-long devotional singing (Jagaran)"
+          ],
+          "hi": [
+            "दिन और रात भर का कठोर निर्जला व्रत",
+            "बालू (रेत) या मिट्टी से शिव, पार्वती और गणेश जी की प्रतिमाओं का निर्माण",
+            "रात्रि में चारों प्रहर पूजन, 16 प्रकार के पवित्र पत्र (पत्री) और सुहाग सामग्री (सोलह श्रृंगार) का अर्पण",
+            "हरतालिका तीज व्रत कथा का श्रवण एवं रात्रि जागरण"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Vrat Vidhi",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Adorn traditional green or auspicious attire with sixteen ornaments (Solah Shringar)",
+            "Offer 16 sacred leaves (Bel, Shami, Dhatura, Tulsi, Mango, etc.) during the four praharas",
+            "Break the fast (Paran) only after morning puja on Chaturdashi"
+          ],
+          "hi": [
+            "हरे या लाल रंग के सुंदर वस्त्र व सोलह श्रृंगार धारण करें",
+            "शिव-पार्वती को 16 प्रकार की पत्तियां, सुहाग पिटारी और फल-मिष्ठान अर्पित करें",
+            "अगले दिन प्रातः पूजा और विसर्जन के पश्चात ही पारण करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid sleeping during the day or night of the fast (observe Jagaran)",
+            "Do not harbor anger, jealousy, or disharmony with family"
+          ],
+          "hi": [
+            "व्रत के दिन और रात में सोने से बचें (रात्रि जागरण करें)",
+            "मन में किसी प्रकार का द्वेष, क्रोध या अशांति न आने दें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Clay/sand for Shiva-Parvati idols",
+            "Solah Shringar items (bangles, bindi, mehendi, sindoor, mirror)",
+            "16 types of holy leaves (Patri)",
+            "Bananas, coconut, sweets & fresh fruits",
+            "Ghee diya, camphor, and dhoop"
+          ],
+          "hi": [
+            "मिट्टी/रेत की प्रतिमाएं",
+            "सुहाग का सामान (चूड़ियां, बिंदी, सिंदूर, मेहंदी, चुनरी)",
+            "16 प्रकार के पत्र (बेलपत्र, धतूरा, शमी आदि)",
+            "केले, नारियल, फल व मिष्ठान",
+            "घी का दीपक, कपूर व धूप"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "उमामहेश्वराभ्यां नमः। साम्बसदाशिवाय नमः। देवि देवि उमे गौरि त्राहि मां करुणावति। सर्वकामप्रदे गौरि नमोऽस्तु शंकरप्रिये॥",
+        "transliteration": "umāmaheśvarābhyāṃ namaḥ, sāmbasadāśivāya namaḥ, devi devi ume gauri trāhi māṃ karuṇāvati, sarvakāmaprade gauri namo'stu śaṅkarapriye",
+        "translation": {
+          "value": {
+            "en": "Salutations to Uma and Maheswara! Salutations to Eternal Samba Shiva! O compassionate Goddess Gauri, fulfiller of all pure desires and beloved of Shankara, protect and bless our family.",
+            "hi": "मां उमा और भगवान महेश्वर को नमस्कार है। हे करुणामयी देवी गौरी! हे शंकर की प्रियतमा! आप मेरी रक्षा करें और मेरे सुहाग व परिवार को अखंड सौभाग्य प्रदान करें।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Bhavishya Purana / Hartalika Vrat Vidhi",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "karva-chauth",
+      "emoji": "🌙",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Karva Chauth",
+          "hi": "करवा चौथ (करक चतुर्थी)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana / Narada Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Sacred fast of devotion, mutual love, and longevity of spouses",
+          "hi": "अखंड सौभाग्य, अटूट दांपत्य प्रेम और चंद्र दर्शन का पावन व्रत"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Karva Chauth (Karak Chaturthi), celebrated on Kartika Krishna Chaturdashi (four days after Sharad Purnima), is a cherished festival observed by married Hindu women across Northern and Western India for the health, prosperity, and longevity of their husbands. Women observe a strict waterless fast from dawn, listening to the sacred story of Queen Veervati, and break the fast only after sighting the Moon through a sieve (Chhalni) and offering Arghya from an earthen pot (Karva).",
+          "hi": "कार्तिक मास के कृष्ण पक्ष की चतुर्थी तिथि को करवा चौथ का महापर्व मनाया जाता है। सुहागिन महिलाएं अपने पति की दीर्घायु, उत्तम स्वास्थ्य और दांपत्य जीवन में अमर प्रेम हेतु सूर्योदय से चंद्रोदय तक निर्जला व्रत रखती हैं। संध्या समय करवा चौथ की पावन कथा सुनी जाती है और रात्रि में छलनी की ओट से चंद्र दर्शन कर अर्घ्य देने के पश्चात पति के हाथों जल पीकर व्रत खोला जाता है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Skanda Purana / Vratraj tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Consuming early morning Sargi (pre-dawn meal of fruits, sweets, and nuts gifted by the mother-in-law) before sunrise",
+            "Day-long Nirjala fast and adorning beautiful festive attire and Mehendi",
+            "Evening Karva Puja: Sitting in a circle, rotating the decorated Karvas (Feri ceremony), and listening to the Karva Chauth Vrat Katha",
+            "Sighting the rising Moon and husband through a sieve, offering Arghya, and taking the first sip of water from the spouse"
+          ],
+          "hi": [
+            "सूर्योदय से पूर्व सास द्वारा दी गई सरगी (फल, सूखे मेवे, मिष्ठान) का सेवन",
+            "दिनभर निर्जला व्रत, हाथों में मेहंदी और पारंपरिक दुल्हन सा श्रृंगार",
+            "संध्या समय सामूहिक रूप से करवा फेरना और करवा चौथ की पावन कथा सुनना",
+            "रात्रि में चंद्रोदय होने पर छलनी से चंद्रमा और पति का दर्शन, अर्घ्य समर्पण और पति के हाथों जल ग्रहण कर व्रत का पारण"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Karva Chauth Vidhi",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Eat the traditional Sargi before dawn (Brahma Muhurat)",
+            "Exchange decorated earthen pots (Karvas) with female elders and seek their blessings",
+            "Break the fast reverently after offering Arghya to Chandra Deva"
+          ],
+          "hi": [
+            "सूर्योदय से पूर्व सरगी ग्रहण कर व्रत का संकल्प लें",
+            "सासू मां के चरण स्पर्श कर बायना (उपहार व मिष्ठान) भेंट करें",
+            "चंद्रमा को अर्घ्य देकर ही श्रद्धापूर्वक व्रत खोलें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional ritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not consume food or water before the moon sighting",
+            "Avoid wearing dark black, dull brown, or white clothing during the rituals",
+            "Avoid using scissors, needles, or sharp cutting objects during the fast"
+          ],
+          "hi": [
+            "चंद्र दर्शन और अर्घ्य से पूर्व जल या अन्न ग्रहण न करें",
+            "पूजा में काले या सफेद वस्त्र न पहनें, लाल/गुलाबी/पीले सुहाग रंग चुनें",
+            "व्रत के दौरान सुई, धागा या कैंची जैसी नुकीली वस्तुओं का उपयोग न करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Decorated earthen/brass Karva with spout & lid",
+            "Sieve (Chhalni) and diya",
+            "Roli, akshat, chandan, and kumkum",
+            "Sweets (Mathri/Peda) & dry fruits",
+            "Water lota for Chandra Arghya",
+            "Sindoor, mehendi, and bindi"
+          ],
+          "hi": [
+            "टोंटीदार मिट्टी या पीतल का करवा",
+            "छलनी व दीपक",
+            "रोली, अक्षत, चंदन व कुमकुम",
+            "मीठी/नमकीन मठरी व फल",
+            "चंद्र अर्घ्य हेतु जल का लोटा",
+            "सिंदूर, बिंदी व श्रृंगार सामग्री"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ चं चन्द्रमसे नमः। क्षीरोदार्णवसम्भूताय अत्रिनेत्रसमुद्भव। गृहाणार्घ्यं शशाङ्केश रोहिण्यासहितो मम॥",
+        "transliteration": "oṃ caṃ candramase namaḥ, kṣīrodārṇavasambhūtāya atrinetrasamudbhava, gṛhāṇārghyaṃ śaśāṅkeśa rohiṇyāsahito mama",
+        "translation": {
+          "value": {
+            "en": "Om, salutations to the Moon God. O Lord of the night, born of the cosmic ocean and Sage Atri, accompanied by Rohini, please accept this sacred oblation and bless our marital bond.",
+            "hi": "चंद्र देव को नमस्कार है। हे समुद्र मंथन से उत्पन्न, अत्रि मुनि के नेत्रों से प्रकट और रोहिणी के प्रिय स्वामी चंद्र देव! आप मेरा यह अर्घ्य स्वीकार करें और मेरे वैवाहिक जीवन को सुखमय बनाएं।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Skanda Purana Chandra Arghya Shloka",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "gita-jayanti",
+      "emoji": "📖",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Gita Jayanti",
+          "hi": "गीता जयंती (मोक्षदा एकादशी)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Srimad Bhagavad Gita / Mahabharata",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Celebrating the divine dialogue of the Bhagavad Gita spoken by Lord Krishna",
+          "hi": "कुरुक्षेत्र में भगवान श्री कृष्ण द्वारा श्रीमद्भगवद्गीता के दिव्य उपदेश का दिवस"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Mahabharata (Bhishma Parva)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Gita Jayanti, celebrated on Margashirsha Shukla Ekadashi (Mokshada Ekadashi), marks the historical day when Bhagavan Sri Krishna imparted the timeless spiritual dialogue of the Srimad Bhagavad Gita to Arjuna on the battlefield of Kurukshetra over 5,000 years ago. Comprising 700 verses across 18 chapters, the Gita synthesizes Karma Yoga (selfless action), Bhakti Yoga (unconditional love), and Jnana Yoga (spiritual wisdom), guiding human consciousness through moral crisis to liberation.",
+          "hi": "मार्गशीर्ष मास के शुक्ल पक्ष की एकादशी (मोक्षदा एकादशी) को भगवान श्री कृष्ण ने कुरुक्षेत्र की रणभूमि में धनुर्धर अर्जुन को श्रीमद्भगवद्गीता का अमर उपदेश दिया था। 18 अध्यायों और 700 श्लोकों का यह महाग्रंथ कर्म, भक्ति, ज्ञान और निष्काम कर्मयोग का सार्वकालिक मार्गदर्शक है। यह एकमात्र ऐसा धर्मग्रंथ है जिसकी स्वयं जयंती मनाई जाती है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Mahabharata / Gita Mahatmya (Varaha Purana)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Observing Mokshada Ekadashi fast and reading all 18 chapters or select chapters (Gita Mahatmya)",
+            "Worship of the sacred text (Srimad Bhagavad Gita) with flowers, chandan, and incense",
+            "Recitation and reflection upon Chapter 12 (Bhakti Yoga) and Chapter 15 (Purushottama Yoga)",
+            "Gifting copies of the Bhagavad Gita to students, seekers, and libraries"
+          ],
+          "hi": [
+            "मोक्षदा एकादशी का उपवास और श्रीमद्भगवद्गीता के अध्यायों का सामूहिक अथवा व्यक्तिगत पाठ",
+            "पवित्र ग्रंथ भगवद्गीता को वेदी पर रखकर पुष्प, चंदन, धूप और दीप से पूजन",
+            "12वें अध्याय (भक्तियोग) और 15वें अध्याय (पुरुषोत्तम योग) का विशेष मनन",
+            "विद्यार्थियों और जिज्ञासुओं को श्रीमद्भगवद्गीता की प्रतियां उपहार में देना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vaishnava tradition / Gita Mahatmya",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Read or listen to at least one chapter of the Gita with thoughtful introspection",
+            "Distribute Bhagavad Gita books and spiritual wisdom freely",
+            "Practice equanimity, mindfulness, and dedicated selfless service (Nishkama Karma)"
+          ],
+          "hi": [
+            "कम से कम एक अध्याय का अर्थ सहित पाठ और स्वाध्याय करें",
+            "गीता जी की प्रतियों का वितरण करें",
+            "अपने दैनिक जीवन में निष्काम कर्म और समत्व भाव का आचरण करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional spiritual guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not treat the sacred scripture as a mere decorative book",
+            "Avoid consuming grains on this Mokshada Ekadashi day"
+          ],
+          "hi": [
+            "पवित्र ग्रंथ को बिना समझे या केवल प्रदर्शन हेतु न रखें, स्वाध्याय अवश्य करें",
+            "एकादशी तिथि पर अन्न ग्रहण से बचें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Srimad Bhagavad Gita scripture",
+            "Krishna-Arjuna chariot image/idol",
+            "Yellow flowers & tulsi leaves",
+            "Sandalwood paste & incense",
+            "Pure ghee lamp",
+            "Sweets / Makhan-mishri"
+          ],
+          "hi": [
+            "श्रीमद्भगवद्गीता ग्रंथ",
+            "श्री कृष्ण-अर्जुन रथ विग्रह/चित्र",
+            "पीले पुष्प व तुलसी दल",
+            "चंदन व धूप",
+            "गाय के घी का दीपक",
+            "माखन-मिश्री व फल"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional puja essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "सर्वोपनिषदो गावो दोग्धा गोपालनन्दनः। पार्थो वत्सः सुधीर्भोक्ता दुग्धं गीतामृतं महत्॥",
+        "transliteration": "sarvopaniṣado gāvo dogdhā gopālanandanaḥ, pārtho vatsaḥ sudhīrbhoktā dugdhaṃ gītāmṛtaṃ mahat",
+        "translation": {
+          "value": {
+            "en": "All the Upanishads are the cows, the milker is Sri Krishna the son of Nanda, Arjuna is the calf, wise seekers of purified intellect are the drinkers, and the supreme nectar of the Gita is the milk.",
+            "hi": "समस्त उपनिषद गौएं हैं, भगवान श्री कृष्ण उन्हें दुहने वाले ग्वाले हैं, अर्जुन बछड़ा है, शुद्ध बुद्धि वाले मनुष्य उस दूध का पान करने वाले हैं और श्रीमद्भगवद्गीता ही वह अमृतमय महान दुग्ध है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Gita Dhyanam (verse 4) / Mahabharata",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
     }
   ]
 }
