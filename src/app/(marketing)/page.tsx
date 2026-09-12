@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { HeroFeatureCarousel } from "@/components/marketing/HeroFeatureCarousel";
+import { LegacyHomeSections } from "@/components/marketing/LegacyHomeSections";
 import { marketingFeatures, marketingTraditions } from "@/config/marketing";
 
 export const metadata: Metadata = {
@@ -118,6 +119,8 @@ export default function MarketingHomePage() {
           </div>
         </div>
       </section>
+
+      <LegacyHomeSections />
 
       <section
         id="discover"
