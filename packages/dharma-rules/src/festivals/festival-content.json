@@ -4757,6 +4757,1917 @@
           }
         }
       }
+    },
+    {
+      "definitionKey": "baisakhi",
+      "emoji": "🌾",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Vaisakhi",
+          "hi": "बैसाखी (खालसा साजना दिवस)",
+          "pa": "ਵੈਸਾਖੀ (ਖ਼ਾਲਸਾ ਸਾਜਣਾ ਦਿਵਸ)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Khalsa Panth Creation (1699) / Sri Guru Granth Sahib Ji",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Celebration of the spring harvest and the birth of the Khalsa Panth in 1699",
+          "hi": "वसंत ऋतु की फसल और 1699 में खालसा पंथ की स्थापना का महापर्व",
+          "pa": "ਫ਼ਸਲ ਦੀ ਵਾਢੀ ਅਤੇ 1699 ਵਿੱਚ ਖ਼ਾਲਸਾ ਪੰਥ ਦੇ ਸਾਜਣਾ ਦਿਵਸ ਦਾ ਪਵਿੱਤਰ ਤਿਉਹਾਰ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Khalsa Tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Vaisakhi (Baisakhi), celebrated on the first day of the solar month of Vaisakh (typically April 13/14), holds dual significance for Sikhs and Punjabis. Historically, it marks the bountiful rabi harvest. Spiritually and historically, on Vaisakhi day in 1699 at Anandpur Sahib, the tenth Guru, Sri Guru Gobind Singh Ji, created the Khalsa Panth — initiating the Panj Pyare (Five Beloved Ones) with Khande di Pahul (Amrit) and bestowing a distinct identity of saint-soldiers dedicated to universal justice, equality, and protection of the oppressed.",
+          "hi": "वैशाख मास के प्रथम दिन मनाया जाने वाला बैसाखी पर्व सिखों और संपूर्ण भारत का प्रमुख पावन पर्व है। यह जहां एक ओर रबी की फसल की कटाई और समृद्धि का उत्सव है, वहीं 1699 में इसी दिन आनंदपुर साहिब में दशमेश पिता श्री गुरु गोविंद सिंह जी ने पंज प्यारों को अमृत छकाकर \"खालसा पंथ\" की स्थापना की थी। यह दिन समानता, स्वाभिमान, साहस और मानवता की सेवा का अमर प्रतीक है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Historical record / Sri Guru Granth Sahib Ji",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Early morning Amrit Vela bath and listening to Asa di Var at Gurdwara",
+            "Bhog of 48-hour continuous Akhand Path of Sri Guru Granth Sahib Ji",
+            "Nagar Kirtan procession led by the Panj Pyare carrying the Nishan Sahib",
+            "Amrit Sanchar (Khande di Pahul) initiation ceremonies for devout seekers",
+            "Community Langar seva feeding thousands regardless of background"
+          ],
+          "hi": [
+            "प्रातः अमृत वेला में स्नान और गुरुद्वारे में आसा दी वार का श्रवण",
+            "श्री गुरु ग्रंथ साहिब जी के 48 घंटे के अखंड पाठ का भोग",
+            "पंज प्यारों की अगुवाई में पवित्र नगर कीर्तन और निशान साहिब की सेवा",
+            "अमृत संचार (खांडे दी पाहुल) द्वारा अमृत छकना",
+            "गुरु का अटूट लंगर तैयार करना और बिना किसी भेद के सभी को छकाना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Wear clean traditional yellow, kesari (saffron), or blue attire",
+            "Engage in selfless Seva (serving water, cleaning shoes, cooking in Langar)",
+            "Reflect upon the Five Ks (Kesh, Kangha, Kara, Kachera, Kirpan) and the high ideals of the Khalsa"
+          ],
+          "hi": [
+            "केसरिया या सात्विक वस्त्र धारण कर गुरुद्वारे में नतमस्तक हों",
+            "गुरु घर में तन-मन से निःस्वार्थ सेवा (लंगर, बर्तन मांजना, जोड़ा घर) करें",
+            "खालसा के उच्च आदर्शों — सत्य, निर्भयता और दीन-दुखियों की रक्षा का स्मरण करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not consume tobacco, alcohol, or intoxicants",
+            "Do not practice discrimination, social inequality, or superstition"
+          ],
+          "hi": [
+            "तंबाकू, शराब या किसी भी प्रकार के नशे से सर्वथा दूर रहें",
+            "जाति-पाति, ऊंच-नीच या अंधविश्वास जैसी कुरीतियों से बचें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Rumalla Sahib (silk drapery for Guru Granth Sahib)",
+            "Karah Parshad (sacred wheat, ghee, sugar pudding)",
+            "Fresh flowers for Darbar",
+            "Nishan Sahib chola (saffron fabric)",
+            "Incense & Chaur Sahib"
+          ],
+          "hi": [
+            "रुमाला साहिब (गुरु ग्रंथ साहिब हेतु रेशमी वस्त्र)",
+            "कड़ाह प्रसाद (शुद्ध घी का हलवा)",
+            "दरबार साहिब हेतु ताजे पुष्प",
+            "निशान साहिब का चोला (केसरिया वस्त्र)",
+            "चौर साहिब व धूप"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ। ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ॥",
+        "transliteration": "vāhigurū jī kā khālasā, vāhigurū jī kī fateh",
+        "translation": {
+          "value": {
+            "en": "The Khalsa belongs to the Wondrous Lord (Waheguru). The Victory belongs to the Wondrous Lord.",
+            "hi": "खालसा अकाल पुरख (परमेश्वर) का है और विजय भी अकाल पुरख की ही है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Khalsa Fateh (Guru Gobind Singh Ji, 1699)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "guru-nanak-gurpurab",
+      "emoji": "☬",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Guru Nanak Gurpurab",
+          "hi": "गुरु नानक देव जी का प्रकाश पर्व",
+          "pa": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦਾ ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji / Janamsakhi tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Celebrating the birth of Sri Guru Nanak Dev Ji, founder of Sikhi",
+          "hi": "सिख धर्म के संस्थापक एवं जगत गुरु श्री गुरु नानक देव जी का प्रकाश उत्सव",
+          "pa": "ਸਿੱਖ ਧਰਮ ਦੇ ਬਾਨੀ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦਾ ਪ੍ਰਕਾਸ਼ ਦਿਹਾੜਾ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh historical tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Guru Nanak Gurpurab (Prakash Divas), celebrated on Kartika Purnima, marks the appearance in 1469 of Sri Guru Nanak Dev Ji in Rai Bhoi di Talwandi (Nankana Sahib). The first of the ten Sikh Gurus, Guru Nanak illuminated the world with the message of Ik Onkar (One Universal Creator), universal human fraternity ('Na koi hindu na koi musalman'), the dignity of honest labor (Kirat Karo), sharing with others (Vand Chhako), and constant remembrance of the Divine (Naam Japo).",
+          "hi": "कार्तिक मास की पूर्णिमा को सिख धर्म के प्रथम गुरु और प्रवर्तक श्री गुरु नानक देव जी का प्रकाश पर्व मनाया जाता है। 1469 में ननकाना साहिब में अवतरित होकर गुरु नानक देव जी ने \"इक ओंकार\" (ईश्वर एक है), अंधविश्वासों के उन्मूलन, सभी मनुष्यों की समानता और तीन मूल सिद्धांतों — \"नाम जपो, कीरत करो, वंड छको\" का अमर संदेश दिया।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji / Bhai Gurdas Vaaran",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Prabhat Pheris: Early morning singing of Gurbani hymns through neighborhoods leading up to the Gurpurab",
+            "Akhand Path: 48-hour continuous reading of Sri Guru Granth Sahib Ji concluding at Gurdwara",
+            "Gurbani Kirtan and Katha expounding the Japji Sahib and Asa di Var",
+            "Grand community Langar served to all visitors with boundless love and equality"
+          ],
+          "hi": [
+            "प्रभात फेरियां: प्रकाश पर्व से पहले प्रातःकाल गुरबाणी के शब्द गाते हुए नगर भ्रमण",
+            "श्री गुरु ग्रंथ साहिब जी का 48 घंटे का अखंड पाठ और भोग",
+            "जपुजी साहिब, आसा दी वार और कीर्तन-कथा का भावपूर्ण श्रवण",
+            "विशाल लंगर सेवा जिसमें सभी वर्गों के लोग पंगत में बैठकर एक साथ भोजन करते हैं"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Cover head and remove shoes before entering the Gurdwara or reading Gurbani",
+            "Reflect upon the Japji Sahib and live by the tenets of Kirat (honest work) and Vand Chhako (sharing)",
+            "Serve unconditionally in the Langar hall or shoe-tending counter (Joda Ghar)"
+          ],
+          "hi": [
+            "गुरुद्वारे में प्रवेश से पूर्व सिर ढकें और चरण स्वच्छ करें",
+            "जपुजी साहिब का पाठ करें और ईमानदारी की कमाई व दानशीलता का आचरण करें",
+            "लंगर और जोड़ा घर में श्रद्धापूर्वक निष्काम सेवा करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not harbor bigotry, caste prejudices, or gender inequality",
+            "Avoid ego (Ahankar) and ostentatious ritualism without heartfelt devotion"
+          ],
+          "hi": [
+            "जातिगत भेदभाव, ऊंच-नीच या अहंकार का त्याग करें",
+            "दिखावे और पाखंड से दूर रहकर सादगी और प्रेम का मार्ग अपनाएं"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Karah Parshad ingredients (equal parts whole wheat flour, desi ghee, sugar, water)",
+            "Rumalla Sahib",
+            "Degh (large cauldron) for Langar",
+            "Chaur Sahib",
+            "Flowers for Palki Sahib"
+          ],
+          "hi": [
+            "कड़ाह प्रसाद सामग्री (समान मात्रा में आटा, देसी घी, चीनी व जल)",
+            "रुमाला साहिब",
+            "लंगर हेतु देग",
+            "चौर साहिब",
+            "पालकी साहिब हेतु पुष्प"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ॥",
+        "transliteration": "ik oṅkār sat nām kartā purakh nirbhau nirvair akāl mūrat ajūnī saibhaṃ gur prasād",
+        "translation": {
+          "value": {
+            "en": "One Universal Creator God, Truth is the Name, Creative Being Personified, No Fear, No Hatred, Eternal Form, Unborn, Self-Existent, By Guru's Grace.",
+            "hi": "ईश्वर एक है, उसका नाम सत्य है, वह सृष्टि का कर्ता है, भय-रहित है, वैर-रहित है, अकाल मूरत (काल से परे) है, जन्म-मरण से मुक्त है, स्वयंभू है और गुरु की कृपा से प्राप्त होता है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Mool Mantar (Sri Guru Granth Sahib Ji, Ang 1, Guru Nanak Dev Ji)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "guru-gobind-singh-gurpurab",
+      "emoji": "☬",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Guru Gobind Singh Gurpurab",
+          "hi": "गुरु गोबिंद सिंह जी का प्रकाश पर्व",
+          "pa": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਦਾ ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Dasam Granth / Sikh historical tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The Prakash Divas of the tenth Master, poet, saint-soldier, and creator of the Khalsa",
+          "hi": "दशमेश पिता, संत-सिपाही, खालसा सृजक श्री गुरु गोबिंद सिंह जी का प्रकाश पर्व",
+          "pa": "ਦਸਮੇਸ਼ ਪਿਤਾ, ਸੰਤ-ਸਿਪਾਹੀ ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਦਾ ਪ੍ਰਕਾਸ਼ ਦਿਹਾੜਾ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Khalsa Tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "The Prakash Gurpurab of Sri Guru Gobind Singh Ji (born in Patna Sahib in 1666) celebrates the tenth Sikh Guru. A supreme spiritual master, poet, philosopher, and warrior, He sacrificed His father (Guru Tegh Bahadur Ji), His four sons (Chaar Sahibzade), and His mother (Mata Gujri Ji) to protect religious freedom and human dignity. He formalized the Khalsa and passed the eternal Guruship to Sri Guru Granth Sahib Ji.",
+          "hi": "1666 में पटना साहिब में अवतरित दशमेश पिता श्री गुरु गोबिंद सिंह जी का प्रकाश पर्व वीरता, त्याग और भक्ति का अनुपम संगम है। उन्होंने धर्म और मानवीय मूल्यों की रक्षा हेतु अपने पिता, चारों साहिबजादों और माता का बलिदान सहर्ष स्वीकार किया। उन्होंने खालसा पंथ का सृजन किया और \"सब सिखनि को हुकम है गुरु मान्यो ग्रंथ\" कहकर श्री गुरु ग्रंथ साहिब जी को शाश्वत गुरु घोषित किया।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Dasam Granth / Bhai Nand Lal Ji",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Continuous recital of Akhand Path and Dasam Granth / Chaupai Sahib bani",
+            "Gatka martial arts demonstrations showcasing the self-defense discipline of the Khalsa",
+            "Kirtan Darbar reciting Jaap Sahib, Tav-Prasad Savaiye, and Zafarnama",
+            "Serving Langar and distribution of Karah Parshad"
+          ],
+          "hi": [
+            "अखंड पाठ साहिब, चौपई साहिब और जापु साहिब का भावपूर्ण पाठ",
+            "गतका (सिख युद्ध कला) का शौर्यपूर्ण प्रदर्शन",
+            "कीर्तन दरबार में दशम वाणी और ज़फ़रनामा का गायन व व्याख्या",
+            "अटूट लंगर सेवा और कड़ाह प्रसाद का वितरण"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Recite the Rehras Sahib, Chaupai Sahib, and Jaap Sahib",
+            "Stand courageously against injustice and tyranny in daily life",
+            "Treat all humanity as one single divine race ('Mānas kī jāt sabhai ekai pahicānbo')"
+          ],
+          "hi": [
+            "जापु साहिब, तव-प्रसाद सवैये और चौपई साहिब का नित्य पाठ करें",
+            "अन्याय और अत्याचार के विरुद्ध निडरता से खड़े हों",
+            "समस्त मानव जाति को एक ही ईश्वर की संतान समझें (\"मानस की जात सबै एकै पहिचानबो\")"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Dasam Granth teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid cowardice, complacency, or surrendering moral convictions under pressure",
+            "Do not engage in unrighteous or oppressive behavior"
+          ],
+          "hi": [
+            "कायरता, भय या अधर्म के आगे न झुकें",
+            "किसी निर्बल को कष्ट न दें और मर्यादा का पालन करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Rumalla Sahib & Chaur Sahib",
+            "Karah Parshad",
+            "Khanda & Kirpan (symbolic of justice)",
+            "Incense and fresh garland",
+            "Ghee lamp"
+          ],
+          "hi": [
+            "रुमाला साहिब व चौर साहिब",
+            "कड़ाह प्रसाद",
+            "खांडा व कृपाण (न्याय व शक्ति का प्रतीक)",
+            "धूप, दीप व पुष्प"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਦੇਹ ਸਿਵਾ ਬਰੁ ਮੋਹਿ ਇਹੈ ਸੁਭ ਕਰਮਨ ਤੇ ਕਬਹੂੰ ਨ ਟਰੋਂ। ਨ ਡਰੋਂ ਅਰਿ ਸੋ ਜਬ ਜਾਇ ਲਰੋਂ ਨਿਸਚੈ ਕਰਿ ਅਪੁਨੀ ਜੀਤ ਕਰੋਂ॥",
+        "transliteration": "deh sivā baru mohi ihai subha karaman te kabhūṃ na ṭaroṃ, na ḍaroṃ ari so jaba jāi laroṃ nisacai kari apunī jīta karoṃ",
+        "translation": {
+          "value": {
+            "en": "Grant me this boon, O Lord, that I may never hesitate from performing righteous deeds. May I have no fear when I go into battle against unrighteousness, and with firm determination, ensure victory.",
+            "hi": "हे प्रभु! मुझे यह वरदान दें कि मैं शुभ कर्मों को करने से कभी पीछे न हटू। जब मैं धर्म और न्याय के लिए अधर्म से युद्ध करूँ, तो भयभीत न होऊँ और निश्चय ही अपनी विजय सुनिश्चित करूँ।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Chandi Charitar (Sri Dasam Granth, Guru Gobind Singh Ji)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "bandhi-chhor-divas",
+      "emoji": "☬",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Bandhi Chhor Divas",
+          "hi": "बंदी छोड़ दिवस",
+          "pa": "ਬੰਦੀ ਛੋੜ ਦਿਵਸ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhai Gurdas Vaaran / Sikh historical tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Day of Liberation — Guru Hargobind Ji freeing 52 innocent kings from Gwalior Fort",
+          "hi": "मुक्ति दिवस — छठे गुरु हरगोबिंद साहिब द्वारा ग्वालियर किले से 52 राजाओं की रिहाई",
+          "pa": "ਛੇਵੇਂ ਪਾਤਸ਼ਾਹ ਸ੍ਰੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ ਵੱਲੋਂ 52 ਰਾਜਿਆਂ ਨੂੰ ਗਵਾਲੀਅਰ ਦੇ ਕਿਲੇ ਤੋਂ ਰਿਹਾਅ ਕਰਵਾਉਣ ਦਾ ਪਵਿੱਤਰ ਦਿਨ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh historical tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Bandhi Chhor Divas ('Day of Liberation'), celebrated concurrently with Diwali on Kartika Amavasya, commemorates the triumphant release in 1619 of the sixth Sikh Guru, Sri Guru Hargobind Sahib Ji, from wrongful imprisonment at Gwalior Fort by Emperor Jahangir. Refusing to leave alone, Guru Sahib secured the liberation of 52 innocent Hindu hill chieftains and kings by having a special cloak made with 52 tassels so each king could hold one and walk out to freedom. When Guru Ji returned to Sri Amritsar, the entire city and Sri Harmandir Sahib were illuminated with radiant oil lamps in celebration of liberation and righteousness.",
+          "hi": "कार्तिक अमावस्या (दीपावली) के दिन मनाया जाने वाला बंदी छोड़ दिवस छठे सिख गुरु, मीरी-पीरी के मालिक श्री गुरु हरगोबिंद साहिब जी की ग्वालियर के किले से रिहाई का विजयोत्सव है। जब जहांगीर ने गुरु जी को रिहा करने का आदेश दिया, तो गुरु साहिब ने अकेले जाने से इंकार कर दिया और अपने 52 कलियों वाले चोले के छोर पकड़वाकर 52 निर्दोष हिंदू राजाओं को भी कैद से मुक्त कराया। जब गुरु जी अमृतसर पहुंचे, तो हरमंदिर साहिब को दीपमालाओं से सजाया गया।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhai Gurdas Vaaran (Vaar 24) / Sikh history",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Deepmala: Lighting thousands of ghee/oil lamps around Sri Harmandir Sahib and local Gurdwaras",
+            "Listening to Gurbani Kirtan expounding Miri-Piri (temporal and spiritual balance) and divine justice",
+            "Bhog of Sri Guru Granth Sahib Ji and sharing Karah Parshad",
+            "Reciting prayers for the liberation of political prisoners and human rights worldwide"
+          ],
+          "hi": [
+            "दीपमाला: श्री हरमंदिर साहिब और सभी गुरुद्वारों में मिट्टी व घी के दीपकों की सुंदर दीपमाला सजाना",
+            "मीरी-पीरी (भक्ति और शक्ति) के सिद्धांतों पर गुरबाणी कीर्तन और कथा का श्रवण",
+            "श्री गुरु ग्रंथ साहिब जी का पाठ और कड़ाह प्रसाद वितरण",
+            "समस्त मानवता की मुक्ति, न्याय और परोपकार की प्रार्थना (अरदास)"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh traditional practice",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Light eco-friendly earthen diyas and meditate on the light of Divine Wisdom",
+            "Stand up for the protection, freedom, and rights of the oppressed",
+            "Serve in the Gurdwara and partake in community Langar"
+          ],
+          "hi": [
+            "घर और गुरुद्वारे में शुद्ध घी के दीये जलाएं और आत्म-प्रकाश का ध्यान करें",
+            "निर्बलों और अन्याय से पीड़ित लोगों की सहायता का संकल्प लें",
+            "लंगर में सेवा करें और अरदास में शामिल हों"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid excessive noise, gambling, or toxic fireworks that pollute the environment",
+            "Do not overlook the profound spiritual message of liberation behind the festival"
+          ],
+          "hi": [
+            "प्रदूषणकारी पटाखों या जुआ जैसी कुरीतियों से बचें",
+            "इस पर्व के स्वतंत्रता और परोपकार के पावन संदेश को न भूलें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Earthen lamps (Diyas) and mustard oil / pure ghee",
+            "Rumalla Sahib",
+            "Karah Parshad",
+            "Fresh flowers & candles",
+            "Incense"
+          ],
+          "hi": [
+            "मिट्टी के दीपक व सरसों का तेल/घी",
+            "रुमाला साहिब",
+            "कड़ाह प्रसाद",
+            "ताजे फूल व मोमबत्तियां",
+            "धूप"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਸਤਿਗੁਰ ਬੰਦੀਛੋੜੁ ਹੈ ਜੀਵਣ ਮੁਕਤਿ ਕਰੈ ਓਡੀਣਾ॥",
+        "transliteration": "satigur bandīchoṛu hai jīvaṇa mukati karai oḍīṇā",
+        "translation": {
+          "value": {
+            "en": "The True Guru is the Liberator from all bondage; He liberates the soul even while living in this world.",
+            "hi": "सच्चे गुरु समस्त बंधनों को काटने वाले (बंदी छोड़) हैं; वे इस संसार में रहते हुए ही जीवात्मा को मुक्त कर देते हैं।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Bhai Gurdas Ji Vaaran (Vaar 24, Pauri 20)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "holla-mohalla",
+      "emoji": "🏹",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Hola Mohalla",
+          "hi": "होला मोहल्ला",
+          "pa": "ਹੋਲਾ ਮਹੱਲਾ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Dasam Granth / Anandpur Sahib tradition (1701)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Celebration of martial valor, readiness, and spiritual strength established at Anandpur Sahib",
+          "hi": "आनंदपुर साहिब में संत-सिपाहियों के शौर्य, गतका और युद्ध कौशल का महापर्व",
+          "pa": "ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਵਿਖੇ ਸ਼ਸਤਰ ਵਿੱਦਿਆ, ਗਤਕਾ ਅਤੇ ਵੀਰਤਾ ਦਾ ਮਹਾਨ ਪੁਰਬ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Khalsa Tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Hola Mohalla, established in 1701 by Sri Guru Gobind Singh Ji at Anandpur Sahib (observed on Chet Vadi 1, the day after Holi), transformed the spring festival into a grand assembly of martial agility, poetry, and spiritual fortitude. 'Hola' is the masculine form of Holi, and 'Mohalla' denotes an organized military procession. Instead of throwing colors, the Khalsa gathered for Gatka martial arts, horse-riding, mock battles, weapon training (Shastar Vidya), and Kavi Darbar (poetry symposiums).",
+          "hi": "1701 में दशमेश पिता श्री गुरु गोबिंद सिंह जी ने आनंदपुर साहिब में होला मोहल्ला का प्रारंभ किया। उन्होंने पारंपरिक होली के रंगोत्सव को वीरता और शौर्य के पर्व में बदल दिया। \"होला\" होली का पौरुष रूप है और \"मोहल्ला\" का अर्थ है सुसज्जित सैन्य दल। इस दिन आनंदपुर साहिब में निहंग सिंहों द्वारा घुड़सवारी, गतका, शस्त्र विद्या और कवि दरबार के माध्यम से धर्म-रक्षा की तत्परता का प्रदर्शन किया जाता है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Dasam Granth / Sri Guru Granth Sahib Ji",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Nishan Sahib flag march and grand Mohalla procession at Takht Sri Keshgarh Sahib",
+            "Gatka and martial arts displays, archery, fencing, and equestrian feats by Nihang Singhs",
+            "Kavi Darbar: Chanting of devotional and heroic poetry (Bir Ras and Shanti Ras)",
+            "Massive 24/7 community Langar serving millions of pilgrims"
+          ],
+          "hi": [
+            "तख्त श्री केसगढ़ साहिब पर विशाल मोहल्ला जुलूस और निशान साहिब की अगुवाई",
+            "निहंग सिंहों द्वारा हैरतअंगेज गतका प्रदर्शन, घुड़सवारी और शस्त्र संचालन",
+            "कवि दरबार में वीर रस और भक्ति रस की कविताओं का गायन",
+            "अटूट 24 घंटे लंगर सेवा"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Anandpur Sahib Khalsa tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Maintain disciplined, fearless, and protective conduct towards society",
+            "Participate in or encourage traditional martial arts (Gatka) and physical fitness",
+            "Listen to heroic Gurbani hymns from Dasam Granth and Sri Guru Granth Sahib"
+          ],
+          "hi": [
+            "शारीरिक और मानसिक रूप से सुदृढ़ और अनुशासित रहें",
+            "पारंपरिक गतका और आत्मरक्षा के कौशलों का आदर करें",
+            "वीर रस की गुरबाणी और इतिहास का श्रवण करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Khalsa code of conduct",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid unruly behavior, chemical dyes, or indiscipline",
+            "Do not display weapons for aggression or vanity; maintain reverence for Shastars"
+          ],
+          "hi": [
+            "हुड़दंग या अनुशासनहीनता से बचें",
+            "शस्त्रों का दुरुपयोग या व्यर्थ प्रदर्शन न करें, उन्हें धर्म रक्षा का साधन मानें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Rumalla Sahib",
+            "Karah Parshad",
+            "Shastars (Khanda, Kirpan, Chakram, Teer)",
+            "Saffron / Blue fabric for Nishan Sahib",
+            "Dry natural gulal for celebratory sprinkling"
+          ],
+          "hi": [
+            "रुमाला साहिब",
+            "कड़ाह प्रसाद",
+            "पवित्र शस्त्र (खांडा, कृपाण, तीर)",
+            "निशान साहिब हेतु वस्त्र",
+            "प्राकृतिक अबीर-गुलाल"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Khalsa traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਸੂਰਾ ਸੋ ਪਹਿਚਾਨੀਐ ਜੁ ਲਰੈ ਦੀਨ ਕੇ ਹੇਤ। ਪੁਰਜਾ ਪੁਰਜਾ ਕਟਿ ਮਰੈ ਕਬਹੂ ਨ ਛਾਡੈ ਖੇਤੁ॥",
+        "transliteration": "sūrā so pahicānīai ju larai dīna ke heta, purajā purajā kaṭi marai kabhū na chāḍai khetu",
+        "translation": {
+          "value": {
+            "en": "He alone is recognized as a true warrior who fights for the sake of the defenseless and oppressed. Though cut piece by piece, he never abandons the battlefield of righteousness.",
+            "hi": "सच्चा शूरवीर वही है जो दीन-दुखियों और धर्म की रक्षा हेतु युद्ध करता है। भले ही उसके टुकड़े-टुकड़े हो जाएं, परंतु वह धर्म के रणक्षेत्र को कभी नहीं छोड़ता।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Sri Guru Granth Sahib Ji (Ang 1105, Bhagat Kabir Ji)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "lohri",
+      "emoji": "🔥",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Lohri",
+          "hi": "लोहड़ी",
+          "pa": "ਲੋਹੜੀ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Punjabi agrarian & cultural tradition",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Winter harvest festival celebrating new beginnings, warmth, and the legend of Dulla Bhatti",
+          "hi": "शीत ऋतु की विदाई, नई फसल और दुल्ला भट्टी की लोककथा का पावन उत्सव",
+          "pa": "ਸਿਆਲ ਦੀ ਰੁੱਤ, ਨਵੀਂ ਫ਼ਸਲ ਅਤੇ ਆਪਸੀ ਭਾਈਚਾਰੇ ਦਾ ਲੋਕ ਤਿਉਹਾਰ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Punjabi traditional culture",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Lohri, celebrated on the eve of Makar Sankranti (the last day of the lunar month of Poh / Pausha, typically January 13), is the joyful winter solstice harvest festival of Punjab. Families gather around a community bonfire at twilight to thank the Sun and Agni for the ripening sugarcane and winter crops. It celebrates new births and recent marriages, reinforcing family solidarity, neighborly harmony, and the legend of Dulla Bhatti (who rescued innocent girls from tyranny).",
+          "hi": "पौष मास के अंतिम दिन (मकर संक्रांति की पूर्व संध्या) पर लोहड़ी का पावन लोकपर्व मनाया जाता है। कड़ाके की ठंड में संध्या समय अलाव (पवित्र अग्नि) जलाकर नई फसल (गन्ना, मक्का, तिल) के पकने की खुशी मनाई जाती है। यह पर्व नवविवाहित जोड़ों, नवजात शिशुओं और समाज में आपसी सौहार्द, मिठास और दुल्ला भट्टी के त्याग व परोपकार की स्मृति का प्रतीक है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji (Poh Mahatmya) / Punjabi heritage",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Lighting the sacred community bonfire at sunset with wood and dried cow dung",
+            "Parikrama (circumambulation) of the fire, offering sesame seeds (Til), jaggery (Gur), rewri, gajak, and popcorn into the flames with prayers for prosperity",
+            "Singing traditional Punjabi folk songs and dancing Bhangra and Giddha",
+            "Distributing festive Til-Gur, Peanuts (Mungphali), Rewri, and Sarson da Saag with Makki di Roti"
+          ],
+          "hi": [
+            "संध्या समय लकड़ी और उपलों से पवित्र अलाव (लोहड़ी की अग्नि) प्रज्वलित करना",
+            "अग्नि की परिक्रमा करते हुए तिल, गुड़, रेवड़ी, मूंगफली और मक्का (फुल्ले) अग्नि देव को अर्पित करना",
+            "पारंपरिक लोकगीत गाना और गिद्धा-भांगड़ा करना",
+            "तिल-गुड़, रेवड़ी, गज्जक, मूंगफली और सरसों के साग-मक्के की रोटी का सामूहिक सहभोज"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional community practice",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Celebrate with community unity, inviting neighbors and relatives",
+            "Share warm food and blankets with the impoverished and homeless",
+            "Respect the agrarian roots and gratitude towards nature's harvest"
+          ],
+          "hi": [
+            "सामूहिक रूप से अलाव के चारों ओर मिलकर खुशियां मनाएं",
+            "कड़ाके की ठंड में जरूरतमंदों को गर्म कपड़े, कंबल और तिल-गुड़ दान करें",
+            "प्रकृति और अन्नदाता किसानों के प्रति कृतज्ञता व्यक्त करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional moral guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid burning plastic, rubber, or toxic materials in the bonfire",
+            "Avoid vulgarity or excessive noise that disturbs elders and infants"
+          ],
+          "hi": [
+            "अग्नि में प्लास्टिक, रबर या जहरीला कचरा न जलाएं",
+            "शोर-शराबे या अशोभनीय व्यवहार से बचें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Environmental & community guidance",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Wood logs for bonfire",
+            "Sesame seeds (Til) & Rewri / Gajak",
+            "Peanuts (Mungphali) & Popcorn",
+            "Jaggery (Gur) and sugarcane",
+            "Sarson ka Saag & Makki ki Roti"
+          ],
+          "hi": [
+            "अलाव हेतु सूखी लकड़ी",
+            "तिल, रेवड़ी व गज्जक",
+            "मूंगफली व मक्के के फुल्ले",
+            "गुड़ व गन्ने की मिठास",
+            "सरसों का साग व मक्के की रोटी"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional festive essentials",
+            "tier": 2,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਸਭੇ ਜੀਅ ਸਮਾਲਿ ਨਿਰੰਜਨੁ ਆਪਣਾ। ਜੀਅ ਜੰਤ ਸਭਿ ਤਿਸ ਕੇ ਸਭਨਾ ਰਿਜਕੁ ਦਿਤੋਨੁ ਅਪਾਰਾ॥",
+        "transliteration": "sabhe jīa samāli nirañjanu āpaṇā, jīa jaṃta sabhi tisa ke sabhanā rijaku ditonu apārā",
+        "translation": {
+          "value": {
+            "en": "The Immaculate Lord cherishes all His creatures. All beings belong to Him; He bestows boundless sustenance upon everyone.",
+            "hi": "निर्मल परमात्मा समस्त जीवों की रक्षा और पालन करते हैं। सभी प्राणी उन्हीं के हैं और वे ही सबको असीम अन्न-जल और पोषण प्रदान करते हैं।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Sri Guru Granth Sahib Ji (Ang 652, Guru Ram Das Ji)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "guru-arjan-dev-martyrdom",
+      "emoji": "☬",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Guru Arjan Dev Martyrdom",
+          "hi": "गुरु अर्जन देव जी का शहीदी दिवस",
+          "pa": "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਦਾ ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji / Sikh historical record (1606)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The supreme sacrifice of the fifth Guru in 1606 — the first martyr of the Sikh faith",
+          "hi": "सिख धर्म के प्रथम शहीद, पांचवें गुरु श्री गुरु अर्जन देव जी का अमर बलिदान",
+          "pa": "ਸ਼ਹੀਦਾਂ ਦੇ ਸਿਰਤਾਜ ਪੰਚਮ ਪਾਤਸ਼ਾਹ ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਦੀ ਲਾਸਾਨੀ ਸ਼ਹਾਦਤ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh historical tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "The Shaheedi Gurpurab of Sri Guru Arjan Dev Ji (observed on Jeth Sudi 4, typically in May/June) commemorates the supreme martyrdom of the fifth Sikh Guru in 1606 at Lahore. Guru Arjan Dev Ji compiled the Adi Granth (the precursor to Sri Guru Granth Sahib Ji) and built Sri Harmandir Sahib with four open doors. When Mughal Emperor Jahangir demanded alterations to the sacred hymns and payment of an unjust fine, Guru Sahib refused to compromise divine truth. Despite enduring five days of horrific torture on burning hot iron plates and boiling cauldrons in the blistering summer, He remained in absolute peace, uttering 'Tera kiya meetha laage' (Thy Will is sweet to me).",
+          "hi": "ज्येष्ठ मास के शुक्ल पक्ष की चतुर्थी को सिख धर्म के प्रथम शहीद, पांचवें पातशाह श्री गुरु अर्जन देव जी का शहीदी दिवस मनाया जाता है। उन्होंने श्री आदि ग्रंथ का संकलन किया और श्री हरमंदिर साहिब की नींव रखवाई। जब मुगल बादशाह जहांगीर ने उन पर धर्म-परिवर्तन और बाणी में फेरबदल का दबाव बनाया, तो गुरु जी ने सत्य से समझौता नहीं किया। जेठ की तपती धूप में तवे पर बैठकर और उबलती देग में शीश नवाकर उन्होंने \"तेरा कीआ मीठा लागै\" कहते हुए अपने प्राण न्यौछावर कर दिए।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji / Sikh history",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Chabeel Seva: Setting up public stalls serving cold, sweetened rose milk-water (Kachi Lassi / Chabeel) to all passersby to cool the summer heat in remembrance of Guru Ji's cooling grace",
+            "Reading and recitation of Sukhmani Sahib (composed by Guru Arjan Dev Ji)",
+            "Sukhmani Sahib Kirtan Darbars expounding peace and unshakeable fortitude",
+            "Simple Langar served with solemnity and deep humility"
+          ],
+          "hi": [
+            "छबील सेवा: जेठ की भीषण गर्मी में हर गली-चौराहे पर शीतल मीठे जल और कच्ची लस्सी की छबील लगाकर राहगीरों को पिलाना",
+            "गुरु अर्जन देव जी द्वारा रचित \"सुखमनी साहिब\" का अमृतमयी पाठ",
+            "कीर्तन दरबार में शांति और ईश्वर की रजा में रहने के शब्दों का गायन",
+            "विनम्र भाव से सात्विक लंगर सेवा"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Set up or contribute to Chabeel stalls serving cool sweet water to the public",
+            "Recite Sukhmani Sahib ('The Song of Peace') for mental tranquility and spiritual balance",
+            "Cultivate acceptance of the Divine Will (Bhana Man-na) during tribulations"
+          ],
+          "hi": [
+            "राहगीरों को शीतल जल और छबील पिलाकर सेवा करें",
+            "मानसिक शांति और आत्मिक बल हेतु \"सुखमनी साहिब\" का पाठ करें",
+            "दुख-सुख में ईश्वर के हुकम को मीठा मानने का समभाव रखें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid complaints, anger, or bitterness in the face of adversity",
+            "Do not engage in lavish celebrations on this day of solemn reflection"
+          ],
+          "hi": [
+            "प्रतिकूल परिस्थितियों में अधीरता या शिकायत से बचें",
+            "इस दिन किसी प्रकार के दिखावे या तड़क-भड़क से दूर रहकर सादगी से नमन करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Chabeel ingredients (water, milk, rose syrup/Rooh Afza, ice)",
+            "Rumalla Sahib",
+            "Karah Parshad",
+            "Sukhmani Sahib gutka",
+            "Incense & white flowers"
+          ],
+          "hi": [
+            "छबील सामग्री (शीतल जल, दूध, गुलाब का शर्बत)",
+            "रुमाला साहिब",
+            "कड़ाह प्रसाद",
+            "सुखमनी साहिब गुटका",
+            "धूप व श्वेत पुष्प"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਤੇਰਾ ਕੀਆ ਮੀਠਾ ਲਾਗੈ। ਹਰਿ ਨਾਮੁ ਪਦਾਰਥੁ ਨਾਨਕੁ ਮਾਂਗੈ॥",
+        "transliteration": "terā kīā mīṭhā lāgai, hari nāmu padārathu nānaku māṅgai",
+        "translation": {
+          "value": {
+            "en": "Your actions seem so sweet to me, O Lord. Nanak begs for the supreme treasure of the Lord's Holy Name.",
+            "hi": "हे प्रभु! आपका किया हुआ सब कुछ मुझे अत्यंत मीठा (प्रिय) लगता है। आपका यह दास नानक केवल आपके पावन नाम का अनमोल धन मांगता है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Sri Guru Granth Sahib Ji (Ang 394, Guru Arjan Dev Ji, Rag Asa)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "guru-tegh-bahadur-martyrdom",
+      "emoji": "☬",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Guru Tegh Bahadur Martyrdom",
+          "hi": "गुरु तेग बहादुर जी का शहीदी दिवस (हिंद दी चादर)",
+          "pa": "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ ਦਾ ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ (ਹਿੰਦ ਦੀ ਚਾਦਰ)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji / Sri Dasam Granth (Bachittar Natak)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The supreme martyrdom in 1675 in Delhi to defend the religious freedom of another community",
+          "hi": "चांदनी चौक में तिलक-जनेऊ और धार्मिक स्वतंत्रता की रक्षा हेतु दिया गया अमर बलिदान",
+          "pa": "ਧਰਮ ਹੇਤ ਸਾਕਾ ਜਿਨਿ ਕੀਆ, ਸੀਸੁ ਦੀਆ ਪਰ ਸਿਰਰੁ ਨ ਦੀਆ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bachittar Natak",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "The Shaheedi Divas of Sri Guru Tegh Bahadur Ji (the ninth Sikh Guru, revered as 'Hind di Chadar' — Shield of India) commemorates His historic martyrdom on November 11, 1675, at Chandni Chowk, Delhi (now Gurdwara Sis Ganj Sahib). When a delegation of Kashmiri Pandits sought His protection against forced conversions by Emperor Aurangzeb, Guru Sahib fearlessly stood up for their right to practice their faith freely. Accompanied by Bhai Mati Das, Bhai Sati Das, and Bhai Dayala Ji (who were martyred before His eyes), Guru Tegh Bahadur Ji surrendered His life rather than His spiritual conviction — setting a unique historical precedent of dying for the religious freedom of people belonging to another tradition.",
+          "hi": "1675 में दिल्ली के चांदनी चौक (वर्तमान शीश गंज साहिब) में नौवें पातशाह श्री गुरु तेग बहादुर जी का पावन शहीदी दिवस मनाया जाता है। जब कश्मीरी पंडितों ने औरंगजेब के अत्याचार और जबरन धर्म-परिवर्तन से रक्षा की गुहार लगाई, तो गुरु साहिब ने तिलक और जनेऊ की रक्षा हेतु अपना शीश बलिदान कर दिया। उनके साथ भाई मती दास, भाई सती दास और भाई दयाला जी ने भी क्रूर यातनाएं सहते हुए शहादत दी। गुरु साहिब को \"हिंद दी चादर\" कहा जाता है क्योंकि उन्होंने किसी अन्य धर्म के लोगों के विश्वास की रक्षा हेतु अपने प्राण न्यौछावर किए।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Dasam Granth (Bachittar Natak) / Sri Guru Granth Sahib Ji",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Solemn Gurbani Kirtan recitations of the 57 Saloks of Guru Tegh Bahadur Ji (Salok Mahalla 9)",
+            "Akhand Path bhog at Gurdwaras (particularly Gurdwara Sis Ganj Sahib and Rakab Ganj Sahib)",
+            "Seminars and lectures on human rights, religious freedom, and pluralism",
+            "Quiet, humble community Langar service"
+          ],
+          "hi": [
+            "गुरु तेग बहादुर जी द्वारा रचित 57 श्लोकों (सलोक महला 9) का वैराग्यमय कीर्तन और श्रवण",
+            "गुरुद्वारों में अखंड पाठ का भोग और गुरु साहिब के त्याग का स्मरण",
+            "धार्मिक स्वतंत्रता और मानवाधिकारों पर गोष्ठियों का आयोजन",
+            "सात्विक लंगर और जल सेवा"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Recite Salok Mahalla 9 from Sri Guru Granth Sahib Ji with deep contemplation",
+            "Defend the right of every human being to practice their faith without fear",
+            "Cultivate detachment, compassion, and courage in moral adversity"
+          ],
+          "hi": [
+            "श्री गुरु ग्रंथ साहिब जी के अंत में अंकित \"सलोक महला 9\" का पाठ करें",
+            "हर व्यक्ति के आस्था और विचार की स्वतंत्रता का सम्मान व रक्षा करें",
+            "संसार की नश्वरता और प्रभु नाम की शाश्वतता का मनन करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not engage in fanaticism, bigotry, or forced conformity",
+            "Avoid compromising on moral integrity out of fear or worldly gain"
+          ],
+          "hi": [
+            "कट्टरता, असहिष्णुता या दूसरों पर अपने विचार थोपने से बचें",
+            "भय या प्रलोभन के वशीभूत होकर अपने धर्म और सत्य का त्याग न करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Rumalla Sahib",
+            "Karah Parshad",
+            "Chaur Sahib",
+            "White flowers & incense",
+            "Sri Guru Granth Sahib Ji with focus on Salok Mahalla 9"
+          ],
+          "hi": [
+            "रुमाला साहिब",
+            "कड़ाह प्रसाद",
+            "चौर साहिब",
+            "श्वेत पुष्प व धूप",
+            "सलोक महला 9 की पोथी"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਧਰਮ ਹੇਤ ਸਾਕਾ ਜਿਨਿ ਕੀਆ। ਸੀਸੁ ਦੀਆ ਪਰ ਸਿਰਰੁ ਨ ਦੀਆ॥",
+        "transliteration": "dharama heta sākā jini kīā, sīsu dīā para siraru na dīā",
+        "translation": {
+          "value": {
+            "en": "He performed this monumental sacrifice for the sake of Dharma; He gave up His head, but never His spiritual conviction.",
+            "hi": "उन्होंने धर्म की रक्षा हेतु यह महान बलिदान दिया; उन्होंने अपना शीश दे दिया, परंतु अपने सिद्धांतों और धर्म का कभी त्याग नहीं किया।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Bachittar Natak (Sri Dasam Granth, Guru Gobind Singh Ji)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "sahibzade-shaheedi-diwas",
+      "emoji": "☬",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Chaar Sahibzade Shaheedi Diwas",
+          "hi": "चार साहिबजादे शहीदी दिवस (वीर बाल दिवस)",
+          "pa": "ਚਾਰ ਸਾਹਿਬਜ਼ਾਦੇ ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ (ਸਾਕਾ ਸਰਹਿੰਦ ਤੇ ਚਮਕੌਰ)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh historical record (1704) / Zafarnama",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Remembering the supreme martyrdom of the four young sons of Guru Gobind Singh Ji in 1704",
+          "hi": "चमकौर और सरहिंद में धर्म-रक्षा हेतु साहिबजादों और माता गुजरी जी का अमर बलिदान",
+          "pa": "ਚਮਕੌਰ ਦੀ ਜੰਗ ਅਤੇ ਸਰਹਿੰਦ ਦੀਆਂ ਖੂਨੀ ਦੀਵਾਰਾਂ ਵਿੱਚ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਲਾਸਾਨੀ ਸ਼ਹਾਦਤ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Khalsa Tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "The Shaheedi Saptah (Martyrdom Week, observed in late December / Poh month) commemorates the unmatched sacrifice in 1704 of the four sons (Chaar Sahibzade) of Guru Gobind Singh Ji and their grandmother Mata Gujri Ji. The elder Sahibzade, Baba Ajit Singh Ji (17) and Baba Jujhar Singh Ji (14), fell fighting valiantly against overwhelming Mughal forces at the Battle of Chamkaur. The younger Sahibzade, Baba Zorawar Singh Ji (9) and Baba Fateh Singh Ji (7), refused to renounce their faith despite extreme allurements and threats, and were bricked alive at Sirhind (Fatehgarh Sahib) by Wazir Khan. Their courage is celebrated as a pinnacle of moral conviction, fearlessness, and unyielding faith.",
+          "hi": "पौष मास के अंतिम सप्ताह में चमकौर की गढ़ी और सरहिंद की दीवारों में दशमेश पिता के चार साहिबजादों और माता गुजरी जी का बलिदान दिवस मनाया जाता है। बड़े साहिबजादे — बाबा अजीत सिंह (17 वर्ष) और बाबा जुझार सिंह (14 वर्ष) चमकौर के युद्ध में लाखों की सेना से लड़ते हुए शहीद हुए। छोटे साहिबजादे — बाबा जोरावर सिंह (9 वर्ष) और बाबा फतेह सिंह (7 वर्ष) ने किसी भी प्रलोभन या भय के आगे धर्म न छोड़ते हुए सरहिंद में जिंदा दीवार में चुने जाना स्वीकार किया। यह बलिदान विश्व इतिहास में अदम्य साहस और दृढ़ निष्ठा का अनुपम उदाहरण है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Historical record / Zafarnama",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Solemn remembrance during the week of Poh, sleeping on the floor without luxury as an act of humility and solidarity",
+            "Gurbani Kirtan and Katha recounting the Saka Chamkaur and Saka Sirhind",
+            "Visiting Fatehgarh Sahib and Chamkaur Sahib or attending local Gurdwara diwans",
+            "Serving warm Langar, tea, and roasted gram to seekers"
+          ],
+          "hi": [
+            "पौष के इस सप्ताह में जमीन पर विश्राम कर सादगी और शोक-सहिष्णुता का पालन",
+            "साका चमकौर और साका सरहिंद की अमर गाथा पर गुरबाणी कीर्तन और ढाडी प्रसंग",
+            "फतेहगढ़ साहिब और चमकौर साहिब के गुरुद्वारों में शीश नवाना",
+            "सात्विक लंगर और चाय-प्रसाद की सेवा"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh traditional practice",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Teach children and youth about the courage and moral backbone of the Sahibzade",
+            "Practice simplicity, humility, and steadfastness in values",
+            "Contribute to humanitarian and educational causes for children"
+          ],
+          "hi": [
+            "बच्चों और युवाओं को साहिबजादों की निर्भयता और चरित्र की शिक्षा दें",
+            "सादगी, संयम और सत्य पर अडिग रहने का संकल्प लें",
+            "बाल कल्याण और शिक्षा हेतु परोपकारी कार्यों में योगदान करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid lavish parties, loud celebrations, or vanity during the Shaheedi week",
+            "Do not compromise moral ethics under social pressure"
+          ],
+          "hi": [
+            "इस शोक और गौरव के सप्ताह में फिजूलखर्ची या उत्सवमय दिखावे से बचें",
+            "किसी भी दबाव में अपने नैतिक मूल्यों से समझौता न करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sikh Rehat Maryada guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Rumalla Sahib",
+            "Karah Parshad",
+            "Chaur Sahib",
+            "Solemn white/blue fabric",
+            "Incense"
+          ],
+          "hi": [
+            "रुमाला साहिब",
+            "कड़ाह प्रसाद",
+            "चौर साहिब",
+            "श्वेत/नीले वस्त्र",
+            "धूप"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਇਨ ਪੁਤ੍ਰਨ ਕੇ ਸੀਸ ਪਰ ਵਾਰ ਦੀਏ ਸੁਤ ਚਾਰ। ਚਾਰ ਮੂਏ ਤੋ ਕਿਆ ਭਯਾ ਜੀਵਤ ਕਈ ਹਜਾਰ॥",
+        "transliteration": "ina putrana ke sīsa para vāra dīe suta cāra, cāra mūe to kyā bhayā jīvata kaī hajāra",
+        "translation": {
+          "value": {
+            "en": "For the protection of these sons of the nation, I have sacrificed my four sons. What does it matter that four have died, when thousands of my spiritual children live on?",
+            "hi": "इन देश-कौम के पुत्रों के कल्याण हेतु मैंने अपने चार पुत्र न्योछावर कर दिए। यदि चार शहीद भी हो गए तो क्या हुआ, मेरे हजारों-लाखों खालसा पुत्र आज भी जीवित हैं।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Guru Gobind Singh Ji historic proclamation",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "guru-ravidas-jayanti",
+      "emoji": "☬",
+      "tradition": "sikh",
+      "name": {
+        "value": {
+          "en": "Guru Ravidas Jayanti",
+          "hi": "भगत रविदास जी की जयंती",
+          "pa": "ਭਗਤ ਰਵਿਦਾਸ ਜੀ ਦਾ ਪ੍ਰਕਾਸ਼ ਦਿਹਾੜਾ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji (41 Shabads of Bhagat Ravidas Ji)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Visionary Bhakti poet-saint who championed Begampura (the city of sorrowless equality)",
+          "hi": "बेगमपुरा (दुःख-विहीन समतावादी समाज) के प्रणेता महान संत-कवि",
+          "pa": "ਬੇਗ਼ਮਪੁਰਾ ਸ਼ਹਿਰ ਦੇ ਰਚਨਹਾਰ, ਮਹਾਨ ਭਗਤ ਸ੍ਰੀ ਰਵਿਦਾਸ ਜੀ"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhakti Movement / Sri Guru Granth Sahib Ji",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Guru Ravidas Jayanti (Prakash Parv), celebrated on Magha Purnima, honors Bhagat Ravidas Ji, the 14th-century revolutionary mystic poet-saint of the Bhakti movement whose 41 sublime hymns are enshrined in Sri Guru Granth Sahib Ji. Born in Varanasi into a cobbler family, He fearlessly demolished caste hierarchies, proclaiming that true nobility lies in pure devotion, compassionate action, and self-realization rather than birth. His visionary concept of 'Begampura' (a city without sorrow, oppression, taxes, or inequality) remains a timeless blueprint for universal human liberation.",
+          "hi": "माघ मास की पूर्णिमा को महान संत, समाज-सुधारक और भक्तिकाल के अमर कवि भगत रविदास जी का प्रकाश पर्व मनाया जाता है। उनके 41 पावन शबद श्री गुरु ग्रंथ साहिब जी में सुशोभित हैं। काशी में जन्म लेकर उन्होंने कर्म की पवित्रता (\"मन चंगा तो कठौती में गंगा\"), जाति-पाति के खंडन और \"बेगमपुरा\" (ऐसा समाज जहाँ कोई दुःख, कर या गैर-बराबरी न हो) का अमर संदेश दिया।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sri Guru Granth Sahib Ji / Bhakti Movement",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Nagar Kirtan processions carrying portraits and banis of Bhagat Ravidas Ji",
+            "Recitation of the 41 sacred shabads of Bhagat Ravidas Ji in Gurdwaras and temples",
+            "Special community Langars feeding all without distinction",
+            "Voluntary community service and cleaning drives honoring manual labor"
+          ],
+          "hi": [
+            "शोभा यात्रा और नगर कीर्तन का आयोजन",
+            "श्री गुरु ग्रंथ साहिब जी में दर्ज भगत रविदास जी के 41 पावन शबदों का गायन",
+            "समानता के भाव से विशाल लंगर का आयोजन",
+            "श्रम की महत्ता को नमन करते हुए स्वच्छता और सेवा कार्य"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional community practice",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Treat every individual with equal dignity and respect regardless of caste or occupation",
+            "Cultivate purity of mind ('Man changa to kathauti mein Ganga')",
+            "Read and reflect upon the shabads of Bhagat Ravidas Ji"
+          ],
+          "hi": [
+            "किसी भी व्यक्ति के साथ जाति या व्यवसाय के आधार पर भेदभाव न करें",
+            "मन की आंतरिक शुचिता और सात्विकता बनाए रखें",
+            "भगत रविदास जी के पदों का श्रद्धापूर्वक अध्ययन करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bhakti teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not practice untouchability or disrespect honest manual labor",
+            "Avoid arrogance based on social status, wealth, or lineage"
+          ],
+          "hi": [
+            "छुआछूत, जातिवाद या किसी के श्रम का अनादर न करें",
+            "कुल, जाति या धन के अहंकार से सर्वथा दूर रहें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurmat teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Rumalla Sahib",
+            "Karah Parshad",
+            "Fresh flowers & garland",
+            "Sandalwood & incense",
+            "Ghee lamp"
+          ],
+          "hi": [
+            "रुमाला साहिब",
+            "कड़ाह प्रसाद",
+            "ताजे पुष्प व माला",
+            "चंदन व धूप",
+            "घी का दीपक"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Gurdwara traditional essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ਬੇਗਮ ਪੁਰਾ ਸਹਰ ਕੋ ਨਾਉ। ਦੂਖੁ ਅੰਦੋਹੁ ਨਹੀ ਤਿਹਿ ਠਾਉ। ਨਾਂ ਤਸਵੀਸ ਖਿਰਾਜੁ ਨ ਮਾਲੁ। ਖਉਫੁ ਨ ਖਤਾ ਨ ਤਰਸੁ ਜਵਾਲੁ॥",
+        "transliteration": "begam purā sahara ko nāu, dūkhu aṃdohu nahī tihi ṭhāu, nāṃ tasavīsa khirāju na mālu, khaufu na khatā na tarasu javālu",
+        "translation": {
+          "value": {
+            "en": "Begampura, 'the city without sorrow', is the name of that place. There is no suffering or anxiety there. There are no taxes on goods or property; no fear, no blemishes, no downfall.",
+            "hi": "उस पावन स्थान का नाम \"बेगमपुरा\" (दुःख-रहित नगर) है। वहाँ किसी प्रकार का कष्ट या चिंता नहीं है। वहाँ न कोई कर (टैक्स) है, न संपत्ति का भय, न कोई अपराध और न ही कोई पतन।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Sri Guru Granth Sahib Ji (Ang 345, Bhagat Ravidas Ji, Rag Gauri)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
     }
   ]
 }
