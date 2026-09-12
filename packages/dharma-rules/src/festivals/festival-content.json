@@ -50,7 +50,7 @@
         "reviewRef": "council-verified-2026-09",
         "sourceRefs": [
           {
-            "sourceName": "Bhavishya Purana / Traditional practice",
+            "sourceName": "Bhavishya Purana (Uttara Parva)",
             "tier": 2,
             "usagePermitted": "public_domain"
           }
@@ -114,10 +114,12 @@
       "donts": {
         "value": {
           "en": [
-            "Avoid tying the rakhi during Bhadra kaal, considered inauspicious"
+            "Avoid tying the rakhi during Bhadra kaal, considered inauspicious",
+            "Avoid using broken (khandit) rice or damaged rakhi threads during the ritual"
           ],
           "hi": [
-            "भद्रा काल में रक्षा-सूत्र बांधने से बचें"
+            "भद्रा काल में रक्षा-सूत्र बांधने से बचें",
+            "पूजा में खंडित अक्षत (चावल) अथवा खंडित रक्षा-सूत्र का प्रयोग न करें"
           ]
         },
         "status": "council_reviewed_editorial",
@@ -5293,7 +5295,8 @@
             "रुमाला साहिब व चौर साहिब",
             "कड़ाह प्रसाद",
             "खांडा व कृपाण (न्याय व शक्ति का प्रतीक)",
-            "धूप, दीप व पुष्प"
+            "धूप व ताजे पुष्पों की माला",
+            "शुद्ध घी का दीपक"
           ]
         },
         "status": "council_reviewed_editorial",
@@ -5411,7 +5414,7 @@
         "reviewRef": "council-verified-2026-09",
         "sourceRefs": [
           {
-            "sourceName": "Sikh traditional practice",
+            "sourceName": "Sikh Rehat Maryada & historic tradition",
             "tier": 1,
             "usagePermitted": "public_domain"
           }
@@ -6366,7 +6369,7 @@
         "reviewRef": "council-verified-2026-09",
         "sourceRefs": [
           {
-            "sourceName": "Sikh traditional practice",
+            "sourceName": "Sikh historical commemoration & Gurdwara maryada",
             "tier": 1,
             "usagePermitted": "public_domain"
           }
@@ -11503,7 +11506,7 @@
       },
       "mantra": {
         "sanskrit": "ਅਨੰਦੁ ਭਇਆ ਮੇਰੀ ਮਾਏ ਸਤਿਗੁਰੂ ਮੈ ਪਾਇਆ ॥ ਸਤਿਗੁਰੁ ਤ ਪਾਇਆ ਸਹਜ ਸੇਤੀ ਮਨਿ ਵਜੀਆ ਵਾਧਾਈਆ ॥",
-        "transliteration": "anandu bha-i-aa mayree maa-ay satguroo mai paa-i-aa, satgur ta paa-i-aa sahj saytee man vajee-aa vaadhaa-ee-aa",
+        "transliteration": "ānandu bhaiā mērī māye satigurū mai pāiā, satiguru ta pāiā sahaja sētī mani vajīā vādhāīā",
         "translation": {
           "value": {
             "en": "I am in ecstasy, O my mother, for I have found the True Guru. I have found the True Guru with intuitive ease, and songs of celebration ring within my mind.",
@@ -11696,7 +11699,7 @@
       },
       "mantra": {
         "sanskrit": "ਸ੍ਰੀ ਹਰਿਕ੍ਰਿਸਨ ਧਿਆਈਐ ਜਿਸੁ ਡਿਠੇ ਸਭਿ ਦੁਖ ਜਾਇ ॥",
-        "transliteration": "sree har-krishan dhi-aa-ee-ai jis dithay sabh dukh jaa-ay",
+        "transliteration": "srī harikrishan dhiāīai jisu diṭhē sabhi dukh jāi",
         "translation": {
           "value": {
             "en": "Meditate on Sri Guru Har Krishan, by whose holy vision all sorrows and sufferings vanish.",
@@ -11891,7 +11894,7 @@
       },
       "mantra": {
         "sanskrit": "ਧੰਨੁ ਧੰਨੁ ਰਾਮਦਾਸ ਗੁਰੁ ਜਿਨਿ ਸਿਰਿਆ ਤਿਨੈ ਸਵਾਰਿਆ ॥ ਪੂਰੀ ਹੋਈ ਕਰਾਮਾਤਿ ਆਪਿ ਸਿਰਜਣਹਾਰੈ ਧਾਰਿਆ ॥",
-        "transliteration": "dhann dhann raamdaas gur jin siri-aa tinai savaari-aa, pooree ho-ee karaamaat aap sirjanhaarai dhaari-aa",
+        "transliteration": "dhannu dhannu rāmadāsa guru jini siriā tinai savāriā, pūrī hoī karāmāti āpi sirajaṇahārai dhāriā",
         "translation": {
           "value": {
             "en": "Blessed, blessed is Guru Ram Das; the Creator who created You has also adorned You. The miracle is complete; the Creator Himself has established You.",
@@ -12953,10 +12956,12 @@
       "donts": {
         "value": {
           "en": [
-            "Avoid discord, harsh arguments, and disrespect between spouses"
+            "Avoid discord, harsh arguments, and disrespect between spouses",
+            "Avoid solemnizing worldly human weddings on this tithi according to traditional Mithila and Awadh customs, dedicating the day to divine Sita-Rama worship"
           ],
           "hi": [
-            "पारिवारिक जीवन में कटुता, कलह अथवा एक-दूसरे के प्रति अविश्वास से बचें"
+            "पारिवारिक जीवन में कटुता, कलह अथवा एक-दूसरे के प्रति अविश्वास से बचें",
+            "मिथिला व अवध की लोक परंपरा अनुसार इस तिथि पर सांसारिक विवाह संस्कार करने से बचें तथा इसे केवल श्रीसीताराम विवाह उत्सव में लगाएं"
           ]
         },
         "status": "council_reviewed_editorial",
