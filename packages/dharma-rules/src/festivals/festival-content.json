@@ -6668,6 +6668,2710 @@
           }
         }
       }
+    },
+    {
+      "definitionKey": "vesak-buddha-purnima",
+      "emoji": "🪷",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Vesak (Buddha Purnima)",
+          "hi": "वैशाख पूर्णिमा (बुद्ध पूर्णिमा / बुद्ध जयंती)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Tipitaka / Mahavamsa / Buddhist Tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The triple-blessed day celebrating the Birth, Supreme Enlightenment, and Parinirvana of Gautama Buddha",
+          "hi": "तथागत भगवान बुद्ध के जन्म, संबोधि (ज्ञान-प्राप्ति) और महापरिनिर्वाण का पावन त्रिविध महापर्व"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada & Mahayana liturgical calendar",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Vesak (Buddha Purnima), celebrated on the full moon day of Vaisakha, is the most sacred day in Buddhism. It commemorates three momentous milestones in the life of Siddhartha Gautama: His auspicious birth in the gardens of Lumbini (circa 563 BCE), His supreme Awakening (Sammā-Sambodhi) beneath the Bodhi tree in Bodh Gaya at age 35, and His peaceful passing into Mahaparinirvana between the twin Sal trees in Kushinagar at age 80. The festival embodies peace, boundless compassion (Karunā), loving-kindness (Mettā), and the timeless path of the Middle Way (Majjhima Patipada).",
+          "hi": "वैशाख मास की पूर्णिमा को संपूर्ण विश्व में बुद्ध पूर्णिमा (वेसाक) का पावन महापर्व मनाया जाता है। यह दिन बौद्ध परंपरा में त्रिविध पावन है क्योंकि इसी दिन लुम्बिनी में राजकुमार सिद्धार्थ का जन्म हुआ, बोधगया में बोधिवृक्ष के नीचे उन्हें कैवल्य-ज्ञान (संबोधि) प्राप्त हुआ, और कुशीनगर में 80 वर्ष की आयु में महापरिनिर्वाण प्राप्त हुआ। यह पर्व सत्य, अहिंसा, करुणा, मैत्री और अष्टांगिक मार्ग का शाश्वत संदेश देता है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Tipitaka (Sutta Pitaka & Vinaya Pitaka)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Pre-dawn assembly at viharas and temples to hoist the international Buddhist flag",
+            "Chanting the Three Refuges (Tisaraṇa) and observing the Five or Eight Precepts (Uposatha Sila)",
+            "Bathing the infant Buddha statue with fragrant water and fresh blossoms",
+            "Offering lotus flowers, incense, and butter lamps at the shrine room",
+            "Circumambulating stupas (Pradakshina) in mindfulness while chanting Dhamma verses",
+            "Abhaya-dana (releasing birds or fish) and generous Dana (feeding the poor and monastics)"
+          ],
+          "hi": [
+            "प्रातःकाल बौद्ध विहारों में त्रिरत्न ध्वजारोहण व सामूहिक वंदना",
+            "त्रिशरण (बुद्धं, धम्मं, संघं शरणं गच्छामि) और पंचशील/अष्टशील का ग्रहण",
+            "सुगंधित जल व पुष्पों से बाल बुद्ध की प्रतिमा का पावन अभिषेक (बुद्ध स्नान)",
+            "मंदिरों व चैत्यों में कमल पुष्प, धूप और दीप प्रज्वलित कर दान-सेवा करना",
+            "स्तूपों व बोधिवृक्ष की शांतिपूर्वक प्रदक्षिणा और ध्यान साधना",
+            "अभयदान (जीवों को बंधनमुक्त करना) और संघ व निर्धनों को भोजन दान"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Buddhist monastic & lay observances",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Wear clean white or light-colored attire reflecting purity of mind",
+            "Practice Bhavana (Vipassana / Metta meditation) and quiet reflection",
+            "Engage in acts of charity, kindness, and reconciliatory forgiveness"
+          ],
+          "hi": [
+            "शुद्ध श्वेत अथवा सात्विक वस्त्र धारण करें",
+            "मैत्री भावना और विपश्यना ध्यान का अभ्यास करें",
+            "दया, क्षमा, करुणा और परोपकार के कार्य करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist lay ethics",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not consume alcohol, meat, or any intoxicants",
+            "Avoid anger, harsh speech, pride, and intentional harm to any sentient being"
+          ],
+          "hi": [
+            "मद्यपान, मांसाहार अथवा किसी भी प्रकार के नशे से बचें",
+            "क्रोध, कटु वचन, अहंकार व किसी भी जीव को कष्ट पहुंचाने से दूर रहें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist lay ethics",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Lotus or jasmine flowers",
+            "Incense sticks & burner",
+            "Brass or clay oil lamps / candles",
+            "Pure scented water in a clean vessel",
+            "White cloth for shrine offering"
+          ],
+          "hi": [
+            "कमल अथवा चमेली के ताजे पुष्प",
+            "धूपबत्ती व धूपदान",
+            "घी अथवा तेल के दीप / मोमबत्ती",
+            "शुद्ध सुगंधित जल व कलश",
+            "वेदी हेतु श्वेत रेशमी वस्त्र"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Buddhist Puja items",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "बुद्धं शरणं गच्छामि। धम्मं शरणं गच्छामि। संघं शरणं गच्छामि॥",
+        "transliteration": "buddhaṃ saraṇaṃ gacchāmi, dhammaṃ saraṇaṃ gacchāmi, saṅghaṃ saraṇaṃ gacchāmi",
+        "translation": {
+          "value": {
+            "en": "I go to the Buddha for refuge. I go to the Dhamma (Universal Truth) for refuge. I go to the Sangha (Spiritual Community) for refuge.",
+            "hi": "मैं भगवान बुद्ध की शरण लेता हूँ। मैं धर्म (परम सत्य) की शरण लेता हूँ। मैं संघ (साधकों के पवित्र समुदाय) की शरण लेता हूँ।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Khuddakapāṭha (Tisaraṇa / Three Refuges)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "asalha-puja",
+      "emoji": "☸️",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Asalha Puja (Dhamma Day)",
+          "hi": "आसाढ़ पूर्णिमा (धम्म दिवस / धर्मचक्र प्रवर्तन)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Samyutta Nikaya 56.11 (Dhammacakkappavattana Sutta)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Commemorating the Buddha’s First Sermon in Sarnath and the Turning of the Wheel of Dhamma",
+          "hi": "सारनाथ में भगवान बुद्ध के प्रथम उपदेश और धर्मचक्र प्रवर्तन का पावन दिवस"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Asalha Puja (Dhamma Day), celebrated on the full moon of the eighth lunar month (Ashadha), commemorates the historic day when Gautama Buddha delivered His very first sermon — the Dhammacakkappavattana Sutta (Setting in Motion the Wheel of the Dhamma) — to His former five ascetic companions at the Deer Park in Isipatana (Sarnath near Varanasi). This discourse revealed the Four Noble Truths (Catur-Arya-Satya) and the Noble Eightfold Path (Arya Ashtangika Marga). Upon hearing this teaching, Kondañña attained the first stage of enlightenment (Sotāpanna), establishing the Triple Gem (Buddha, Dhamma, Sangha) in the world.",
+          "hi": "आषाढ़ मास की पूर्णिमा को मनाया जाने वाला आसाढ़ पूजा (धम्म दिवस) वह पावन दिवस है जब भगवान बुद्ध ने वाराणसी के निकट सारनाथ के मृगदाव में अपने प्रथम पांच शिष्यों (पंचवर्गीय भिक्षुओं) को पहला उपदेश दिया था। इस \"धर्मचक्र प्रवर्तन सूत्र\" में चार आर्य सत्य और अष्टांगिक मार्ग का उद्घाटन हुआ। इसी दिन कौंडिन्य ने ज्ञान प्राप्त किया और विश्व में पहली बार \"त्रिरत्न\" (बुद्ध, धम्म, संघ) की पूर्ण स्थापना हुई।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Samyutta Nikaya / Mahavagga",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Chanting the entire Dhammacakkappavattana Sutta in Pali",
+            "Candlelit circumambulation (Wian Tian) around the main stupa or shrine at sunset",
+            "Dhamma discourses on the Four Noble Truths and the Middle Way",
+            "Offering new robes, incense, and lamps to monastics entering the Rains Retreat",
+            "Intensive meditation on non-extremism (avoidance of sensual indulgence and harsh asceticism)"
+          ],
+          "hi": [
+            "पाली भाषा में संपूर्ण \"धर्मचक्र प्रवर्तन सूत्र\" का सस्वर पाठ",
+            "सायंकाल मुख्य स्तूप या मंदिर की तीन बार दीप-प्रदक्षिणा (वियन तियान)",
+            "चार आर्य सत्यों व मध्यम मार्ग पर धर्म-देशना सुनना",
+            "वर्षावास में प्रवेश करने वाले भिक्षुओं को चीवर व पूजा सामग्री अर्पित करना",
+            "अतिवाद से मुक्त मध्यम मार्ग पर ध्यान साधना करना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada liturgical tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Study and contemplate the Four Noble Truths: Dukkha, Samudaya, Nirodha, Magga",
+            "Practice right speech, right action, and right livelihood",
+            "Make offerings of light and merit to monastic teachers"
+          ],
+          "hi": [
+            "चार आर्य सत्यों (दुःख, दुःख-समुदय, दुःख-निरोध, दुःख-निरोध-गामिनी प्रतिपदा) का मनन करें",
+            "सम्यक वाणी, सम्यक कर्म और सम्यक आजीविका का पालन करें",
+            "गुरुओं और संघ का आदर-सत्कार करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Dhammapada teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not engage in unwholesome speech, gossip, or extreme lifestyle habits",
+            "Avoid neglect of ethical vows on this holy Uposatha day"
+          ],
+          "hi": [
+            "व्यर्थ प्रलाप, कटु वचन अथवा किसी भी प्रकार के अनैतिक आचरण से बचें",
+            "साधना और शील के नियमों की उपेक्षा न करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya guidelines",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Eightfold Path Dharmachakra symbol / incense",
+            "Lotus blossoms & candles",
+            "Monastic robes (Civara) for Dana",
+            "Pure drinking water & herbal tea"
+          ],
+          "hi": [
+            "अष्टांगिक धर्मचक्र प्रतीक व सुगंधित धूप",
+            "कमल के पुष्प व मोमबत्ती/दीपक",
+            "दान हेतु भिक्षु चीवर वस्त्र",
+            "शुद्ध पेय जल व फल"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Vihara essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "द्वेमे भिक्खवे अन्ता पब्बजितेन न सेवितब्बा। कतमे द्वे? यो चायं कामेसु कामसुखल्लिकानुयोगो हीनो गम्मो... अयं खो सा भिक्खवे मज्झिमा पटिपदा॥",
+        "transliteration": "dveme bhikkhave antā pabbajitena na sevitabbā, katame dve? yo cāyaṃ kāmesu kāmasukhallikānuyogo hīno gammo... ayaṃ kho sā bhikkhave majjhimā paṭipadā",
+        "translation": {
+          "value": {
+            "en": "There are two extremes that should not be followed by one who has gone forth: devotion to sensual pleasures and devotion to self-mortification. The Middle Path (Majjhima Patipada) avoids both extremes, giving vision and knowledge, leading to peace, direct knowledge, Awakening, and Nibbana.",
+            "hi": "हे भिक्षुओं! प्रव्रजित को दो अतियों से बचना चाहिए: एक भोग-विलास की आसक्ति और दूसरी अत्यधिक काया-क्लेश। इन दोनों अतियों को छोड़कर तथागत द्वारा खोजा गया \"मध्यम मार्ग\" ही चक्षु देने वाला, ज्ञान देने वाला, शांति, संबोधि और निर्वाण की ओर ले जाने वाला है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Samyutta Nikaya 56.11 (Dhammacakkappavattana Sutta)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "magha-puja",
+      "emoji": "🪷",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Magha Puja (Sangha Day)",
+          "hi": "माघ पूर्णिमा (माघ पूजा / संघ दिवस)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Dīgha Nikāya / Dhammapada 183-185",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Celebrating the spontaneous gathering of 1,250 Arahants and the Ovāda Pātimokkha discourse",
+          "hi": "1,250 अर्हत भिक्षुओं के ऐतिहासिक सम्मेलन और ओवाद पातिमोक्ख (आदर्श आचार संहिता) का उत्सव"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Magha Puja (Fourfold Assembly Day), observed on the full moon of the third lunar month (Magha), commemorates four miraculous occurrences at Veluvana Bamboo Grove in Rajgir: 1,250 enlightened monks assembled spontaneously without prior appointment; all were ordained by the Buddha Himself (\"Ehi Bhikkhu\"); all were fully enlightened Arahants with direct spiritual attainments; and it was the full moon of Magha. On this day, the Buddha delivered the foundational Ovada Patimokkha, distilling the core ethical discipline of all Buddhas: avoiding all unwholesome deeds, cultivating all good, and purifying one's own mind.",
+          "hi": "माघ पूर्णिमा के दिन राजगीर के वेणुवन में एक अद्भुत घटना घटी थी: बिना किसी पूर्व सूचना के 1,250 प्रबुद्ध अर्हत भिक्षु स्वयं एकत्रित हुए, वे सभी भगवान बुद्ध द्वारा दीक्षित थे और सभी परम ज्ञानी थे। इस दिन भगवान बुद्ध ने \"ओवाद पातिमोक्ख\" का उपदेश देकर समस्त बुद्धों के उपदेश का सार प्रस्तुत किया: \"सब पापों से बचना, कुशल कर्मों का संचय करना और अपने चित्त को सर्वथा शुद्ध करना।\""
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Tipitaka (Mahavagga & Dhammapada Commentary)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Chanting the Ovāda Pātimokkha verses in unison",
+            "Evening candlelit procession holding three lotus flowers, three incense sticks, and a candle symbolizing the Triple Gem",
+            "Listening to sermons celebrating monastic brotherhood and Sangha unity",
+            "Observing silence and deep breath-awareness (Anapanasati) meditation",
+            "Offering robes, medicines, and food to the monastic community"
+          ],
+          "hi": [
+            "सामूहिक रूप से ओवाद पातिमोक्ख गाथाओं का गान",
+            "सायंकाल त्रिरत्न के प्रतीक रूप में 3 पुष्प, 3 अगरबत्ती और 1 दीप लेकर स्तूप प्रदक्षिणा",
+            "संघ की एकता और धर्म-अनुशासन पर उपदेश सुनना",
+            "आनापानसती (श्वास-प्रश्वास) ध्यान का सघन अभ्यास",
+            "भिक्षु संघ को औषधि, चीवर व आहार का दान"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Sangha day rituals",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Cease all unwholesome thoughts, words, and actions",
+            "Cultivate patience, forbearance (Khanti), and gentleness",
+            "Strengthen bonds of spiritual friendship (Kalyana-mittata)"
+          ],
+          "hi": [
+            "सभी प्रकार के अकुशल व हानिकारक विचारों व कर्मों का त्याग करें",
+            "धैर्य, तितिक्षा और चित्त की शांति बनाए रखें",
+            "सत्संगति और कल्याणमित्रों के साथ धर्म चर्चा करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Dhammapada teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not insult, slander, or cause harm to any monk or fellow practitioner",
+            "Avoid indulgence in worldly entertainments on this sacred contemplative night"
+          ],
+          "hi": [
+            "किसी की निंदा, उपहास या क्लेश उत्पन्न करने से बचें",
+            "विलासिता व प्रमाद में समय व्यर्थ न करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Ovada Patimokkha guidelines",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "3 Lotus flowers (for Buddha, Dhamma, Sangha)",
+            "3 Incense sticks",
+            "1 Pure beeswax candle",
+            "Medicinal herbs for monastic Dana"
+          ],
+          "hi": [
+            "3 कमल के पुष्प (त्रिरत्न हेतु)",
+            "3 सुगंधित धूपबत्तियां",
+            "1 शुद्ध मोमबत्ती या दीप",
+            "संघ दान हेतु औषधियां व फल"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Magha Puja essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "सब्बपापस्स अकरणं कुसलस्स उपसम्पदा। सचित्तपरियोदपनं एतं बुद्धान सासनं॥",
+        "transliteration": "sabbapāpassa akaraṇaṃ kusalassa upasampadā, sacittapariyodapanaṃ etaṃ buddhāna sāsanaṃ",
+        "translation": {
+          "value": {
+            "en": "To avoid all evil, to cultivate the good, and to purify one’s own mind — this is the teaching of all the Buddhas.",
+            "hi": "सभी पापों से बचना, समस्त पुण्य/कुशल कर्मों का संचय करना, और अपने मन को पूर्णतया शुद्ध रखना — यही सभी बुद्धों का शाश्वत उपदेश है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Dhammapada 183 (Ovāda Pātimokkha)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "vassa-begins-rains-retreat",
+      "emoji": "🌧️",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Vassa begins (Rains Retreat)",
+          "hi": "वर्षावास प्रारंभ (वस्सा)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya Pitaka (Mahavagga Vassupanayikakkhandhaka)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Three-month annual monastic retreat of intensive meditation and spiritual study during the monsoon",
+          "hi": "चातुर्मास में भिक्षुओं का तीन महीने का गहन ध्यान साधना व स्वाध्याय काल"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada monastic tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Vassa (derived from the Sanskrit Varsha, meaning rain) is the three-lunar-month annual retreat observed by Theravada monastics, starting the day after Asalha Puja (in Ashadha) and concluding with Pavarana (in Ashvina). Instituted by Gautama Buddha to prevent monastics from inadvertently trampling upon agricultural crops and newborn insect life during the rainy season, Vassa is dedicated to intense seclusion, meditation (Bhavana), scripture study, and Dhamma instruction. Lay disciples also embrace stricter vows, daily meditation, and increased Dana during this auspicious season.",
+          "hi": "आषाढ़ पूर्णिमा के अगले दिन से प्रारंभ होने वाला तीन महीने का \"वर्षावास\" बौद्ध भिक्षुओं की गहन साधना का पावन समय है। वर्षा ऋतु में छोटे-छोटे जीवों व फसलों की रक्षा के लिए तथागत ने भिक्षुओं को एक स्थान पर रहकर ध्यान, स्वाध्याय और उपदेश करने का नियम बनाया था। इस दौरान गृहस्थ भी विशेष शील, उपवास और दैनिक ध्यान का संकल्प लेते हैं।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya Pitaka",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Solemn entering-the-retreat vow ceremony (Vassupagamanā) by monastics in the Sima boundary",
+            "Offering of large carved rainy-season candles (Tian Pansa) designed to burn continuously throughout Vassa",
+            "Offering of bathing robes and rainy-season requisites to the temple",
+            "Lay commitment to personal spiritual resolutions (quitting alcohol, daily meditation, observing 5 precepts)",
+            "Daily chanting of Paritta suttas and evening Dhamma talks at viharas"
+          ],
+          "hi": [
+            "भिक्षुओं द्वारा वर्षावास में एक स्थान पर टिके रहने का औपचारिक संकल्प",
+            "मंदिरों में वर्षावास के विशाल अखंड दीपों (तियन पंसा) का प्रज्वलन",
+            "भिक्षुओं को वर्षा-स्नान वस्त्र और आवश्यक वस्तुओं का समर्पण",
+            "गृहस्थों द्वारा 3 माह हेतु विशेष संकल्प (नशा त्याग, नित्य ध्यान, शील पालन)",
+            "दैनिक परित्त सूत्रों का पाठ व सांध्य धर्म-चर्चा"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Monastic Vinaya traditions",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Take on a constructive personal Dhamma resolution for the 3-month duration",
+            "Practice daily sitting meditation and mindful breathing",
+            "Support local monasteries with regular nutritious food and monastic requisites"
+          ],
+          "hi": [
+            "वर्षावास की अवधि में किसी एक सात्विक नियम या साधना का दृढ़ संकल्प लें",
+            "नित्य कम से कम 20 मिनट ध्यान का अभ्यास करें",
+            "विहारों व संन्यासियों की सेवा-सुश्रूषा में सहयोग दें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Lay Vassa guidelines",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not break taken spiritual resolutions or lapse into heedlessness",
+            "Avoid harming nature, vegetation, and insect life during the fertile rains"
+          ],
+          "hi": [
+            "लिए गए आध्यात्मिक संकल्पों को बीच में न तोड़ें",
+            "वर्षा ऋतु में प्रकृति व सूक्ष्म जीवों की अहिंसा का विशेष ध्यान रखें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya ethics",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Vassa candle (large ceremonial beeswax candle)",
+            "Rain bathing robes for monks",
+            "Incense & fresh rain lilies",
+            "Umbrellas and herbal medicines for the Sangha"
+          ],
+          "hi": [
+            "अखंड वर्षावास दीप (विशाल मोमबत्ती/दीपक)",
+            "वर्षा चीवर वस्त्र",
+            "सुगंधित धूप व ताजे पुष्प",
+            "छत्र व संघ हेतु औषधियां"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Vassa offerings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "इमस्मिं विहारे इमं तेमासं वस्सं उपेमि। इदं वस्सं उपेमि॥",
+        "transliteration": "imasmiṃ vihāre imaṃ temāsaṃ vassaṃ upemi, idaṃ vassaṃ upemi",
+        "translation": {
+          "value": {
+            "en": "I enter the Rains Retreat in this monastery for these three months. I take up this Vassa.",
+            "hi": "मैं इस विहार में आगामी तीन मास के लिए वर्षावास में प्रवेश करता हूँ। मैं इस वर्षावास का संकल्प लेता हूँ।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Vinaya Pitaka (Vassupagamanā Gāthā)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "pavarana-end-of-vassa",
+      "emoji": "☸️",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Pavarana (End of Vassa)",
+          "hi": "पवारणा (वर्षावास समापन)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya Pitaka (Mahavagga Pavaranakkhandhaka)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The sacred ceremony of mutual invitation, reconciliation, and completion of the three-month Rains Retreat",
+          "hi": "वर्षावास की पूर्णता पर आपसी क्षमा-याचना, विनम्रता और संघ समन्वय का महापर्व"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada monastic tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Pavarana (literally \"to invite\") marks the formal conclusion of the three-month Vassa rains retreat on the full moon of Ashvina. Established by the Buddha, the Pavarana ceremony requires every monastic — regardless of seniority — to approach fellow monks and invite them to point out any breach of discipline or unskillful conduct they may have seen, heard, or suspected. It stands as a sublime monument to radical humility, open communication, spiritual transparency, and pure harmony in the Sangha.",
+          "hi": "आश्विन मास की पूर्णिमा को तीन माह के वर्षावास की समाप्ति पर \"पवारणा\" दिवस मनाया जाता है। तथागत द्वारा स्थापित इस परंपरा में प्रत्येक भिक्षु अपने साथी भिक्षुओं से विनम्रतापूर्वक प्रार्थना करता है कि यदि उन्होंने उनके किसी आचरण में कोई त्रुटि देखी, सुनी या शंका की हो, तो वे निसंकोच बताएं ताकि वे प्रायश्चित कर सकें। यह पर्व असीम विनम्रता, आत्म-शुद्धि और संघ की अखंड समरसता का प्रतीक है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya Pitaka",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Formal Pavarana invitation assembly inside the consecrated Sima hall",
+            "Releasing illuminated lantern boats on rivers and waterways to sweep away negativity",
+            "Lighting thousands of butter lamps and paper lanterns (Loy Krathong / Awk Phansa celebrations)",
+            "Grand Dana offering rejoicing in the successful completion of the retreat",
+            "Recitation of the Karaniya Metta Sutta dedicating merit to all beings"
+          ],
+          "hi": [
+            "सीमा भवन में भिक्षुओं द्वारा औपचारिक पवारणा आमंत्रण सभा",
+            "मन की मलिनताओं को बहाने हेतु नदियों में दीप-नावों (प्रदीप्त दीपों) का विसर्जन",
+            "मंदिरों में सहस्र दीपकों और आकाश-दीपों का प्रज्वलन",
+            "साधना की सफलता पर संघ को विशाल महादान",
+            "समस्त प्राणियों के कल्याण हेतु करणीय मेत्त सूत्र का पाठ"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada monastic liturgy",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Open your heart to constructive feedback and practice honest self-reflection",
+            "Seek forgiveness and extend unconditional forgiveness to others",
+            "Celebrate the spiritual growth achieved during the retreat period"
+          ],
+          "hi": [
+            "सद्भावपूर्वक अपनी कमियों को स्वीकार करने और आत्म-निरीक्षण का भाव रखें",
+            "दूसरों से क्षमा मांगें और सभी को हृदय से क्षमा करें",
+            "साधना की पूर्णता पर कृतज्ञता व्यक्त करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist ethics",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not harbor resentment, defensive pride, or hidden malice",
+            "Avoid breaking the joyful harmony of the Dhamma gathering"
+          ],
+          "hi": [
+            "अहंकार, द्वेष या मनमुटाव को मन में दबाकर न रखें",
+            "कलह या विवाद से सर्वथा दूर रहें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya guidelines",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Floating flower basket with candle and incense (Krathong)",
+            "Fresh jasmine garlands",
+            "Pure coconut oil & brass lamps",
+            "Honey and fruit juice offerings for monastics"
+          ],
+          "hi": [
+            "नदी में प्रवाहित करने हेतु पुष्प-दीप पात्र (क्राथोंग)",
+            "चमेली की ताजी मालाएं",
+            "शुद्ध तेल व पीतल के दीपक",
+            "भिक्षुओं हेतु शहद, फल व पेय पदार्थ"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Pavarana traditional offerings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "सङ्घं आवुसो पवारेमि दिट्ठेन वा सुतेन वा परिसङ्काय वा। वदन्तु मं आयस्सन्तो अनुकम्पं उपादाय, पस्सन्तो पटिक्करिस्सामि॥",
+        "transliteration": "saṅghaṃ āvuso pavāremi diṭṭhena vā sutena vā parisaṅkāya vā, vadantu maṃ āyasmanto anukampaṃ upādāya, passanto paṭikkarissāmi",
+        "translation": {
+          "value": {
+            "en": "Venerable sirs, I invite the Sangha to point out anything seen, heard, or suspected of my conduct. Out of compassion, please speak to me; seeing my fault, I shall make amends.",
+            "hi": "हे आयुष्मानों! मैं संघ को आमंत्रित करता हूँ कि मेरे किसी भी कार्य में जो आपने देखा हो, सुना हो या शंका की हो, अनुकम्पा करके मुझे बताएं; अपनी भूल को समझकर मैं उसका अवश्य प्रायश्चित करूंगा।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Vinaya Pitaka (Mahavagga Pavaranakkhandhaka)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "kathina",
+      "emoji": "🧡",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Kathina (Robe Offering Ceremony)",
+          "hi": "कठिन चीवर दान (कठिनोत्सव)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya Pitaka (Mahavagga Kathinakkhandhaka)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The annual month of supreme meritorious generosity: offering new robes to the monastic Sangha",
+          "hi": "संघ को नवीन चीवर दान कर असीम पुण्य अर्जित करने का महापर्व"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Theravada tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Kathina is the largest and most joyous alms-giving festival in Theravada Buddhism, held during the lunar month following Pavarana (Ashvina full moon to Kartika full moon). Instituted when thirty devout monks walking through rain to visit the Buddha arrived with drenched, tattered robes, the Buddha authorized lay devotees to offer raw cloth to the monastic community. The cloth is ceremonially cut, stitched, dyed, and presented to a worthy monk on the very same day using a wooden frame called a \"Kathina\" (meaning durable or unshakeable). It represents supreme dana and communal spiritual generosity.",
+          "hi": "पवारणा के बाद एक मास तक चलने वाला \"कठिन चीवर दान\" बौद्ध परंपरा का सबसे बड़ा पुण्य-पर्व है। जब तीस भिक्षु कीचड़ और वर्षा में भीगते हुए फटे वस्त्रों के साथ तथागत के दर्शन को पहुंचे, तब बुद्ध ने गृहस्थों को संघ हेतु नवीन वस्त्र दान करने की अनुमति दी थी। इस दिन भक्त कच्चा कपड़ा लाते हैं जिसे उसी दिन काटकर, सिलकर और रंगकर \"कठिन\" (काष्ठ के फ्रेम) पर तैयार कर भिक्षुओं को भेंट किया जाता है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya Pitaka",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Joyful Kathina procession (Dana Yatra) carrying raw cloth, robes, and monastery essentials",
+            "Formal presentation of the Kathina cloth to the Sangha assembly inside the Sima",
+            "Cutting, sewing, washing, and dyeing the robe within the span of a single daylight cycle",
+            "The Kathinatthara ceremony where the Sangha unanimously assigns the robe to a dedicated monk",
+            "Anumodana blessing chants dedicating the vast merit to all living beings"
+          ],
+          "hi": [
+            "भक्तों द्वारा गाजे-बाजे के साथ चीवर और सामग्री की भव्य शोभायात्रा",
+            "सीमा गृह में संघ को विधिपूर्वक कठिन वस्त्र का समर्पण",
+            "एक ही दिन के भीतर वस्त्र को काटना, सिलना, धोना और गेरुआ रंगना",
+            "संघ द्वारा सर्वसम्मति से किसी निष्ठावान भिक्षु को कठिन चीवर प्रदान करना",
+            "पुण्य-अनुमोदन मंत्रोच्चार द्वारा समस्त लोकों में मंगल भावना प्रसारित करना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Kathina observance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Cultivate a heart free from stinginess, delighting in unconditional generosity (Caga)",
+            "Participate actively in communal temple upkeep and seva",
+            "Rejoice in the merit (Mudita) of other donors and practitioners"
+          ],
+          "hi": [
+            "उदार मन से दान दें और त्याग की भावना को पुष्ट करें",
+            "विहार की सेवा और वस्त्र निर्माण में श्रमदान करें",
+            "अन्य दाताओं के पुण्य का भी हर्षपूर्वक अनुमोदन (मुदिता) करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist lay practice",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not offer dana with an attitude of ostentation, pride, or expectation of fame",
+            "Do not specify which individual monk must receive the communal Kathina robe"
+          ],
+          "hi": [
+            "अहंकार, दिखावे या यश की कामना से दान न करें",
+            "कठिन चीवर किसी विशेष व्यक्ति के लिए नहीं अपितु संपूर्ण संघ हेतु समर्पित करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vinaya guidelines",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Kathina cloth / Triple Robe set (Ticīvara)",
+            "Monastic needle, thread, and natural saffron/ochre dye",
+            "Eight monastic requisites (Atthaparikhara: bowl, razor, water strainer, etc.)",
+            "Money tree / wishing tree for monastery maintenance"
+          ],
+          "hi": [
+            "कठिन वस्त्र / त्रि-चीवर सेट",
+            "सुई, धागा व गेरुआ रंग",
+            "अष्ट-परिष्कार (पात्र, उस्तरा, जल-छलनी आदि आवश्यक वस्तुएं)",
+            "विहार सेवा हेतु द्रव्य व सामग्री"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Kathina requisites",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "इमं भन्ते कठिनदुस्सं सङ्घस्स ओणोजयाम। साधु नो भन्ते सङ्घो, इमं कठिनदुस्सं पटिग्गहेत्वा, कठिनेन अत्थरतु, अम्हाकं दीघरत्तं हिताय सुखाय॥",
+        "transliteration": "imaṃ bhante kaṭhinadussaṃ saṅghassa oṇojayāma, sādhu no bhante saṅgho, imaṃ kaṭhinadussaṃ paṭiggahetvā, kaṭhinena attharatu, amhākaṃ dīgharattaṃ hitāya sukhāya",
+        "translation": {
+          "value": {
+            "en": "Venerable sirs, we present this Kathina cloth to the Sangha. May the venerable Sangha accept this Kathina cloth and spread the Kathina for our long-term benefit and happiness.",
+            "hi": "हे भदंत! हम यह कठिन वस्त्र संघ को सादर समर्पित करते हैं। पूज्य संघ इस वस्त्र को स्वीकार करे और हमारे दीर्घकालिक हित व सुख के लिए कठिन संस्कार संपन्न करे।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Vinaya Pitaka Kathina offering formula",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "ullambana-ancestor-day",
+      "emoji": "🪔",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Ullambana (Ancestor Day / Ghost Festival)",
+          "hi": "उल्लम्बन (पितृ दिवस / मातृ-पितृ कल्याण पर्व)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Ullambana Sutra (Taishō Tripiṭaka 685)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Filial piety and boundless compassion: offering food and merit to liberate departed ancestors and suffering realms",
+          "hi": "मातृ-पितृ भक्ति व करुणा: पूर्वजों और दुःखी आत्माओं की मुक्ति हेतु संघ-दान का महापर्व"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Mahayana & Theravada traditions",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Ullambana (derived from Sanskrit Avalambana, meaning \"rescuing from upside-down hanging/agony\") is celebrated on the full moon of the seventh lunar month (Shravana/Bhadrapada). According to the Ullambana Sutra, when the Buddha’s chief disciple Maudgalyayana (Moggallana) saw with his divine eye that his deceased mother had been reborn into the realm of hungry ghosts (Pretas) due to past greed, he was unable to save her alone. The Buddha instructed him to make bountiful offerings of food, robes, and medicine to the assembled Sangha upon the completion of their summer retreat (Pavarana). The collective spiritual power of the Sangha instantly liberated his mother and countless suffering beings.",
+          "hi": "उल्लम्बन का अर्थ है \"घोर कष्टों और बंधन से मुक्ति दिलाना\"। यह पर्व श्रावण/भाद्रपद पूर्णिमा को मनाया जाता है। उल्लम्बन सूत्र के अनुसार जब महामौद्गल्यायन ने दिव्य दृष्टि से देखा कि उनकी माता पूर्व जन्म के लोभ के कारण प्रेत योनि में कष्ट पा रही हैं, तब तथागत ने उन्हें वर्षावास पूर्ण करने वाले संपूर्ण संघ को शुद्ध भोजन व सामग्री दान करने का मार्ग बताया। उस सामूहिक पुण्य के प्रभाव से उनकी माता प्रेत योनि से तत्काल मुक्त होकर स्वर्गलोक को प्राप्त हुईं।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Ullambana Sutra / Petavatthu",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Grand Ullambana food and fruit offering to the assembled monastic Sangha",
+            "Recitation of the Ullambana Sutra and Amitabha Buddha Sukhavati vows",
+            "Pattidana (formal dedication and transfer of merit) mentioning ancestors’ names",
+            "Lighting ancestral memorial lamps and releasing paper lotus lanterns on water",
+            "Feeding hungry beings and distributing grain and clothes to the needy"
+          ],
+          "hi": [
+            "समस्त संघ को सात्विक मिष्ठान, फल व आहार का समर्पण",
+            "उल्लम्बन सूत्र और सुखावती वंदना का पाठ",
+            "पूर्वजों के नाम का स्मरण करते हुए पुण्य-समर्पण (पत्तिदान)",
+            "पितरों की सद्गति हेतु दीप प्रज्वलित करना और जल में कमल-दीप प्रवाहित करना",
+            "दीन-दुखियों व असहायों को अन्न-वस्त्र दान"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Mahayana liturgical texts",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Cultivate profound filial piety and gratitude towards parents and teachers",
+            "Dedicate all wholesome deeds and meditations to departed ancestors",
+            "Feed animals and help the destitute selflessly"
+          ],
+          "hi": [
+            "माता-पिता, गुरुजनों और पूर्वजों के प्रति गहरी कृतज्ञता व्यक्त करें",
+            "अपने सभी शुभ कर्मों का पुण्य पितरों को समर्पित करें",
+            "पशु-पक्षियों और असहायों को भोजन कराएं"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist filial ethics",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not engage in unfilial disrespect or forget the immense kindness of parents",
+            "Avoid animal sacrifices or superstitious fear of the deceased"
+          ],
+          "hi": [
+            "माता-पिता का अनादर या उनकी उपेक्षा कभी न करें",
+            "अंधविश्वास अथवा बलि जैसी कुरीतियों से बचें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist ethical guidelines",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Seven-treasure fruit and food offering basket",
+            "Memorial name tablets / cards",
+            "Incense, lotus candles, and pure water",
+            "Medicines and robes for Sangha Dana"
+          ],
+          "hi": [
+            "सप्तविध फल व सात्विक भोज्य सामग्री",
+            "पितरों के नाम की स्मृति पट्टिका",
+            "धूप, कमल दीप व शुद्ध जल",
+            "संघ हेतु औषधियां व वस्त्र"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Ullambana altar essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "नमोऽमिताभबुद्धाय। इदं मे ञातीनं होतु, सुखिता होन्तु ञातयो॥",
+        "transliteration": "namo'mitābhabuddhāya, idaṃ me ñātīnaṃ hotu, sukhitā hontu ñātayo",
+        "translation": {
+          "value": {
+            "en": "Homage to Amitabha Buddha, the Buddha of Infinite Light. May this merit go to our relatives; may all departed relatives be happy and at peace.",
+            "hi": "अमित प्रकाश के स्वामी भगवान अमिताभ बुद्ध को नमन। यह पुण्य हमारे समस्त पितरों व संबंधियों को प्राप्त हो; वे सभी सुखी व शांत रहें।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Tirokudda Sutta (Khuddakapāṭha 7) & Pure Land liturgy",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "bodhi-day",
+      "emoji": "🌳",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Bodhi Day (Day of Awakening / Rohatsu)",
+          "hi": "बोधि दिवस (संबोधि दिवस / ज्ञानोदय पर्व)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Majjhima Nikaya 26 (Ariyapariyesana Sutta) / Mahavastu",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Commemorating Gautama Buddha’s Supreme Enlightenment under the Bodhi Tree in Bodh Gaya",
+          "hi": "बोधगया में बोधिवृक्ष के नीचे भगवान बुद्ध के परम कैवल्य (ज्ञानोदय) का पावन दिवस"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Mahayana & Zen tradition (8th day of 12th lunar month / Dec 8)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Bodhi Day commemorates the dawn when Siddhartha Gautama, having seated Himself in unwavering meditation beneath the Bodhi tree (Ficus religiosa) in Bodh Gaya, overcame the illusions and temptations of Mara, penetrated the Twelve Links of Dependent Origination (Pratītyasamutpāda), and attained complete, unexcelled Enlightenment (Anuttara Samyak Sambodhi). He emerged as the Buddha — the Awakened One. Bodhi Day celebrates the eradication of ignorance (Avidya) and the triumph of pure wisdom (Prajñā) and boundless compassion.",
+          "hi": "बोधि दिवस उस ऐतिहासिक भोर का स्मरण कराता है जब बोधगया में पवित्र बोधिवृक्ष के नीचे दृढ़ संकल्प के साथ ध्यानमग्न सिद्धार्थ गौतम ने मार (माया/अज्ञान) की सेना को परास्त कर \"प्रतीत्यसमुत्पाद\" के गूढ़ रहस्य को जाना और परम बुद्धत्व प्राप्त किया। इस दिन अंधकार पर ज्ञान की विजय हुई और संसार को दुःखों से मुक्ति का शाश्वत मार्ग मिला।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Ariyapariyesana Sutta / Lalitavistara",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "All-night silent Vipassana / Zazen meditation sitting until the morning star appears",
+            "Decorating the Bodhi tree (or ficus tree) with multi-colored lights representing the Buddhist flag (Blue, Yellow, Red, White, Orange)",
+            "Chanting the Heart Sutra (Prajñāpāramitā Hṛdaya) and Buddha’s Song of Victory (Dhammapada 153-154)",
+            "Eating rice and milk porridge (Kheer/Congee) reminiscent of the meal offered by Sujata",
+            "Lighting candles representing the light of wisdom dispelling the darkness of delusion"
+          ],
+          "hi": [
+            "भोर का तारा निकलने तक संपूर्ण रात्रि मौन ध्यान (विपश्यना/जाजेन) साधना",
+            "पंचशील ध्वज के रंगों (नीला, पीला, लाल, श्वेत, केसरिया) से बोधिवृक्ष या मंदिर को दीपों से सजाना",
+            "प्रज्ञापारमिता हृदय सूत्र और बुद्ध के विजय-गान (धम्मपद 153-154) का पाठ",
+            "सुजाता द्वारा दी गई खीर के स्मरण में खीर का प्रसाद ग्रहण व वितरण",
+            "अज्ञान के अंधकार को मिटाने हेतु ज्ञान-दीप प्रज्वलित करना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Zen & Mahayana Rohatsu traditions",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Commit to mindfulness, self-mastery, and regular daily meditation",
+            "Read and contemplate the Buddha's realization of Dependent Origination",
+            "Practice radical kindness towards all living beings"
+          ],
+          "hi": [
+            "नियमित ध्यान और आत्म-निरीक्षण का अभ्यास करें",
+            "प्रतीत्यसमुत्पाद और चार आर्य सत्यों का गहरा अध्ययन करें",
+            "समस्त प्राणियों के प्रति करुणा और दया का भाव रखें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist wisdom teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not succumb to mental dullness, sloth, or unmindful consumerism",
+            "Avoid doubts regarding the human potential for awakening and liberation"
+          ],
+          "hi": [
+            "आलस्य, प्रमाद और अज्ञानता में समय न गंवाएं",
+            "अपनी आंतरिक क्षमता और मुक्ति के प्रति संशय न रखें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Prajnaparamita teachings",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Bodhi tree leaf or branch representation",
+            "Sweet rice milk porridge (Sujata’s Kheer)",
+            "Five-colored Buddhist lights/lanterns",
+            "Incense, white lotuses, and singing bowl"
+          ],
+          "hi": [
+            "बोधिवृक्ष का पत्ता या प्रतीक चित्र",
+            "सुजाता की खीर (दूध-चावल का सात्विक प्रसाद)",
+            "पंचरंगी दीप व मोमबत्ती",
+            "धूप, श्वेत कमल व सिंगिंग बाउल (घंटी)"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Bodhi Day altar essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "गते गते पारगते पारसंगते बोधि स्वाहा॥ अनेजकजातिसंसारं सन्धाविस्सं अनिब्बिसं... दिट्ठोसी गहकारक पुन गेहं न काहसि॥",
+        "transliteration": "gate gate pāragate pārasaṃgate bodhi svāhā, anekajātisaṃsāraṃ sandhāvissaṃ anibbisaṃ... diṭṭhosi gahakāraka puna gehaṃ na kāhasi",
+        "translation": {
+          "value": {
+            "en": "Gone, gone, gone beyond, gone completely beyond to Awakening, Hail! (Heart Sutra). \"Through countless births in samsara I wandered, seeking the builder of this house and not finding him. House-builder, you are seen! You shall build no more house!\" (Dhammapada 153-154).",
+            "hi": "चले गए, पार चले गए, पूर्णतः पार होकर संबोधि को प्राप्त हुए, जय हो! \"अनेक जन्मों के इस संसार में मैं गृह-निर्माता (तृष्णा) को खोजता हुआ भटकता रहा। हे गृह-निर्माता! अब मैंने तुझे देख लिया है, तू अब पुनः कोई नया घर (बंधन) नहीं बना सकेगा!\""
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Prajñāpāramitā Hṛdaya & Dhammapada 153-154",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "parinirvana-day",
+      "emoji": "☸️",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Parinirvana Day (Nirvana Day)",
+          "hi": "महापरिनिर्वाण दिवस"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Dīgha Nikāya 16 (Mahāparinibbāna Sutta)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Contemplating the Buddha’s final passing into Nirvana, impermanence (Anicca), and His last words of wisdom",
+          "hi": "भगवान बुद्ध के महापरिनिर्वाण, अनित्यता (अनित्य बोध) और अंतिम अमर संदेश का चिंतन दिवस"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Mahayana & Theravada traditions (Feb 15 / Vaisakha)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Parinirvana Day commemorates the physical passing of Gautama Buddha at the age of eighty in the Sal grove of Upavattana in Kushinagar. Lying on His right side between twin flowering Sal trees, the Buddha answered the final questions of the wanderer Subhadda and uttered His immortal last words to His disciples: \"Handa dāni bhikkhave āmantayāmi vo, vayadhammā saṅkhārā appamādena sampādetha\" (All conditioned things are subject to decay; strive diligently for your own liberation). Parinirvana is not a day of grief, but a profound contemplation of impermanence (Anicca) and the unconditioned peace of Nirvana.",
+          "hi": "महापरिनिर्वाण दिवस भगवान बुद्ध के 80 वर्ष की आयु में कुशीनगर के सालवन में देहत्याग और निर्वाण में लीन होने का पावन दिवस है। दो साल वृक्षों के बीच दाईं करवट लेटे हुए तथागत ने अपने अंतिम शिष्य सुभद्र को ज्ञान दिया और संपूर्ण संघ को अपना अंतिम अमर संदेश दिया: \"सभी संस्कार (निर्मित वस्तुएं) विनाशधर्मी हैं; प्रमाद-रहित होकर निरंतर अपनी मुक्ति का प्रयास करो।\" यह शोक का नहीं, अपितु अनित्यता और निर्वाण के परम सत्य का चिंतन दिवस है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Dīgha Nikāya 16 (Mahāparinibbāna Sutta)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Reading and reciting the Mahāparinibbāna Sutta describing the Buddha’s last days",
+            "Silent Maranasati (mindfulness of death and impermanence) meditation",
+            "Pilgrimage or offerings to shrines depicting the reclining Buddha",
+            "Lighting white candles and incense in solemn reverence",
+            "Donating books of Dhamma and supporting the needy in honor of the Master’s legacy"
+          ],
+          "hi": [
+            "भगवान बुद्ध के अंतिम उपदेशों का वर्णन करने वाले \"महापरिनिर्वाण सूत्र\" का पाठ",
+            "मरणानुस्मृति (अनित्यता और जीवन की क्षणभंगुरता) का गहरा ध्यान",
+            "शयन मुद्रा में बुद्ध की प्रतिमा के समक्ष नमन व वंदना",
+            "श्वेत दीप व धूप प्रज्वलित कर आत्म-कल्याण का संकल्प",
+            "धर्म-ग्रंथों का दान व असहायों की सेवा"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Traditional Buddhist monastic liturgy",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Reflect upon the impermanence of all worldly phenomena and do not cling",
+            "Practice diligence (Appamāda) in everyday spiritual practice",
+            "Cultivate inner peace and serene acceptance of life’s natural transitions"
+          ],
+          "hi": [
+            "संसार के समस्त पदार्थों की अनित्यता का स्मरण कर आसक्ति का त्याग करें",
+            "अप्रमादी (सतत जागरूक) होकर साधना में तत्पर रहें",
+            "जीवन और मृत्यु के प्रति शांत व समता भाव विकसित करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist core philosophy",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not fall into sorrow, despondency, or morbid fear of death",
+            "Avoid procrastination in cultivating virtue and mental purification"
+          ],
+          "hi": [
+            "शोक, विलाप अथवा मृत्यु के भय में न डूबें",
+            "सद्गुणों के अभ्यास और चित्त शुद्धि को कल पर न टालें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Mahaparinibbana Sutta guidance",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Reclining Buddha image or representation",
+            "White Sal or lotus flowers",
+            "Sandalwood incense & oil lamp",
+            "Copy of the Mahāparinibbāna Sutta"
+          ],
+          "hi": [
+            "महापरिनिर्वाण (शयन मुद्रा) बुद्ध प्रतिमा",
+            "श्वेत साल पुष्प या श्वेत कमल",
+            "चंदन धूप व घी का दीपक",
+            "महापरिनिर्वाण सूत्र की पावन प्रति"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Parinirvana Day essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "हन्द दानि भिक्खवे आमन्तयामि वो, वयधम्मा सङ्खारा अप्पमादेन सम्पादेथ॥ अनिच्चा वत सङ्खारा उप्पादवयधम्मिनो। उप्पज्जित्वा निरुज्झन्ति तेसं वूपसमो सुखो॥",
+        "transliteration": "handa dāni bhikkhave āmantayāmi vo, vayadhammā saṅkhārā appamādena sampādetha, aniccā vata saṅkhārā uppādavayadhammino, uppajjitvā nirujjhanti tesaṃ vūpasamo sukho",
+        "translation": {
+          "value": {
+            "en": "Behold, O monastics, I advise you: all conditioned things are subject to decay. Strive on with diligence! Impermanent indeed are all compounded things; their nature is to arise and cease. Having arisen, they pass away; their complete cessation is supreme bliss.",
+            "hi": "हे भिक्षुओं! सुनो, मैं तुमसे कहता हूँ: सभी संस्कार (रचित वस्तुएं) क्षय होने वाली हैं। अप्रमाद (पूर्ण जागरूकता) के साथ अपना उद्धार करो! निश्चय ही सभी संस्कार अनित्य हैं; उनका स्वभाव उत्पन्न होना और नष्ट होना है। उत्पन्न होकर वे विलीन हो जाते हैं; उनका शांत हो जाना ही परम सुख (निर्वाण) है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Dīgha Nikāya 16 (Buddha’s Last Words) & Mahā-Sudassana Sutta",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "losar-tibetan-new-year",
+      "emoji": "☸️",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Losar (Tibetan New Year)",
+          "hi": "लोसार (तिब्बती नववर्ष)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Tibetan Buddhist Lunar Calendar (Phugpa tradition)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The auspicious Tibetan Buddhist festival of spiritual renewal, clearing negative obstacles, and hanging fresh prayer flags",
+          "hi": "तिब्बती बौद्ध परंपरा में आध्यात्मिक नवजीवन, बाधा-निवारण और शांति-प्रार्थना का महापर्व"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vajrayana tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Losar (from \"Lo\" meaning year and \"Sar\" meaning new) is the foremost festival in Tibetan Buddhism, celebrated for fifteen days with the main events over the first three days. Dating back to pre-Buddhist times and infused with sacred Vajrayana Buddhist practices by Guru Padmasambhava, Losar begins with clearing out past year’s negativity (Guthuk night), making elaborate shrine offerings (Derga, Chemar, Droma Dresi), hoisting new wind-horse prayer flags (Lungta), and seeking blessings from the Triple Gem, Dharmapalas, and spiritual teachers for universal harmony.",
+          "hi": "लोसार (तिब्बती भाषा में \"लो\" अर्थात वर्ष और \"सार\" अर्थात नया) तिब्बती बौद्ध धर्म का सबसे बड़ा नववर्ष उत्सव है। गुरु पद्मसंभव की पावन परंपरा के अनुसार, इस पर्व पर पुराने वर्ष की नकारात्मक ऊर्जाओं और बाधाओं का निवारण (गुथुक रात्रि) किया जाता है। नववर्ष की प्रातः चेमार और शुभ प्रसाद अर्पित कर नए लंगता (शांति प्रार्थना ध्वज) फहराए जाते हैं तथा समस्त लोकों के कल्याण व सुख-समृद्धि की मंगल कामना की जाती है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vajrayana liturgical tradition",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Cleansing the household and eating Guthuk soup containing nine auspicious ingredients on the 29th day",
+            "Offering Chemar (roasted barley flour and butter in a carved wooden box) and greeting \"Tashi Delek\" (auspicious blessings)",
+            "Hanging vibrant five-color Lungta prayer flags on mountain passes and rooftops for peace",
+            "Monastery Cham dances (sacred masked dances) purifying environmental obstacles",
+            "Circumambulating monasteries and offering white silk Khatag scarves to sacred images and Lamas"
+          ],
+          "hi": [
+            "29वें दिन घर की पूर्ण शुद्धि और 9 औषधीय सामग्री से निर्मित गुथुक सूप का सेवन",
+            "चेमार (सत्तू, मक्खन व शर्करा) अर्पित कर \"ताशी देलेक\" (शुभ व मंगलमय जीवन) की शुभकामनाएं देना",
+            "छतों और शिखरों पर पंचरंगी लंगता (प्रार्थना ध्वज) लगाना ताकि हवाओं से शांति फैले",
+            "विहारों में पवित्र चाम नृत्य (मुखौटा नृत्य) द्वारा अनिष्ट शक्तियों का शमन",
+            "स्तूपों की प्रदक्षिणा और गुरुओं व प्रतिमाओं को श्वेत खातक (रेशमी दुपट्टा) भेंट करना"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Tibetan Buddhist cultural observances",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Purge all old grievances and start the new year with an open, joyful heart",
+            "Chant the Mani mantra (Om Mani Padme Hum) cultivating limitless compassion",
+            "Offer hospitality, sweet rice (Droma Dresi), and butter tea to visitors"
+          ],
+          "hi": [
+            "पुरानी कड़वाहट भूलकर नए वर्ष का स्वागत निर्मल व प्रसन्न मन से करें",
+            "करुणा के अवतार अवलोकितेश्वर के महामंत्र \"ॐ मणि पद्मे हुँ\" का निरंतर जाप करें",
+            "अतिथियों का मीठे चावल व बटर टी से आदर-सत्कार करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Vajrayana ethics",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not use harsh words, argue, or break items on the first day of the new year",
+            "Avoid sweeping dust outward on the morning of New Year’s Day (symbolic of sweeping away good fortune)"
+          ],
+          "hi": [
+            "नववर्ष के प्रथम दिन क्रोध, कटु वचन या झगड़े से सर्वथा दूर रहें",
+            "प्रातःकाल घर से सौभाग्य बाहर जाने के प्रतीक रूप में झाड़ू न लगाएं"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Tibetan customs",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Chemar bo (carved wooden offering box with Tsampa and barley)",
+            "Khatag (white silk offering scarf)",
+            "New Lungta (five-color prayer flags)",
+            "Tibetan incense & butter lamps (Diyo)",
+            "Droma Dresi (sweet saffron rice with wild potentilla root)"
+          ],
+          "hi": [
+            "चेमार पात्र (मक्खन व सत्तू की पारंपरिक वेदी)",
+            "खातक (श्वेत रेशमी पावन दुपट्टा)",
+            "नए पंचरंगी लंगता शांति ध्वज",
+            "तिब्बती सुगंधित धूप व मक्खन के दीप",
+            "केसरिया मीठे चावल व सूखे मेवे"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Losar altar essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ मणिपद्मे हुँ। ताशी देलेक फुन्सूम त्सोक॥",
+        "transliteration": "oṃ maṇipadme huṃ, tashi delek phunsum tsok",
+        "translation": {
+          "value": {
+            "en": "Om, the jewel in the lotus, Hum! May all auspiciousness, prosperity, and spiritual perfection be with you (Tashi Delek Phunsum Tsok).",
+            "hi": "ॐ मणिपद्मे हुँ (पद्म में स्थित दिव्य मणि को नमन)। आपके जीवन में समस्त शुभ, समृद्धि, शांति और आध्यात्मिक पूर्णता का वास हो।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Avalokiteshvara Karuna Mantra & Traditional Tibetan Losar Blessing",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "sangha-day-loy-krathong",
+      "emoji": "🏮",
+      "tradition": "buddhist",
+      "name": {
+        "value": {
+          "en": "Sangha Day (Loy Krathong / Lantern Festival)",
+          "hi": "संघ दिवस (लोई क्राथोंग / दीप-प्रवाह पर्व)"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Anguttara Nikaya / Theravada Festival Calendar",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Floating illuminated baskets of light on waters and honoring the noble virtues of the Sangha",
+          "hi": "जल में दीप-पात्र प्रवाहित कर चित्त-मलिनताओं का विसर्जन और संघ की वंदना"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Southeast Asian Buddhist tradition (Kartika full moon)",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Sangha Day, celebrated in tandem with the magical lantern festival of Loy Krathong on the full moon of the twelfth lunar month (Kartika), is dedicated to honoring the Sangha — the noble community of spiritually enlightened practitioners who preserve and embody the Buddha’s Dhamma. Devotees craft delicate lotus-shaped baskets (Krathong) from banana leaves, adorned with incense, flowers, and glowing candles, floating them onto rivers to symbolize letting go of defilements (Kilesas), anger, and past regrets, while dedicating the luminous reflections to the sacred footprint of the Buddha and the Sangha.",
+          "hi": "कार्तिक पूर्णिमा की मनमोहक रात्रि को मनाया जाने वाला \"लोई क्राथोंग\" और संघ दिवस, तथागत के धर्म का प्रचार-प्रसार करने वाले पवित्र भिक्षु संघ के प्रति कृतज्ञता का पर्व है। इस रात्रि भक्त केले के पत्तों से सुंदर कमल-रूपी नाव (क्राथोंग) बनाते हैं, जिसमें ताजे पुष्प, धूप और दीप सजाकर नदियों व सरोवरों में प्रवाहित करते हैं। यह जल में दीप प्रवाहित करना मन के विकारों, क्रोध और संताप को विसर्जित कर अंतःकरण में ज्ञान का प्रकाश जगाने का पावन प्रतीक है।"
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist Southeast Asian liturgical history",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Chanting the Sanghanussati (Recollection of the Noble Virtues of the Sangha)",
+            "Crafting eco-friendly Krathongs with organic banana trunks, folded leaves, and blossoms",
+            "Making heartfelt aspirations (Adhitthana) and floating the lit Krathong onto gentle waters",
+            "Releasing sky lanterns (Khom Loi) filling the night sky with glowing stars of hope and peace",
+            "Offering medicine, robes, and warm lamps to local monastic viharas"
+          ],
+          "hi": [
+            "संघानुस्मृति (आर्य संघ के नौ पावन गुणों) का सस्वर पाठ",
+            "केले के तने व पत्तों से पर्यावरण-अनुकूल सुंदर दीप-पात्र (क्राथोंग) तैयार करना",
+            "शुभ संकल्प लेकर प्रदीप्त क्राथोंग को नदी में प्रवाहित करना",
+            "आकाश में दीप-गुब्बारे (खोई लोम) उड़ाकर शांति की प्रार्थना करना",
+            "विहारों में दीप-दान व संघ की सेवा"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Loy Krathong & Sangha day traditions",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Reflect upon the nine qualities of the Noble Sangha (Supatipanno, Ujupatipanno, etc.)",
+            "Consciously release resentment, hatred, and negative attachments into the water",
+            "Use purely biodegradable materials to protect water bodies and aquatic life"
+          ],
+          "hi": [
+            "संघ के श्रेष्ठ गुणों (सुप्रतिपन्न, ऋजुप्रतिपन्न आदि) का चिंतन करें",
+            "हृदय से समस्त राग-द्वेष और ईर्ष्या का विसर्जन करें",
+            "जल और पर्यावरण की शुचिता का ध्यान रखते हुए प्राकृतिक सामग्री का उपयोग करें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Buddhist lay ethics",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not use synthetic styrofoam, plastics, or toxic materials for floating lanterns",
+            "Avoid drunken revelry or disrespectful conduct near sacred waterways"
+          ],
+          "hi": [
+            "प्लास्टिक, थर्माकोल या जल को प्रदूषित करने वाली कृत्रिम सामग्री का प्रयोग न करें",
+            "नदियों व पवित्र स्थलों पर अभद्रता या मद्यपान से बचें"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Environmental & monastic guidelines",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Handmade organic Krathong (banana leaf basket)",
+            "Lotus blossoms, marigolds & orchid petals",
+            "Natural beeswax candle & 3 incense sticks",
+            "White robes or requisites for Sangha Dana"
+          ],
+          "hi": [
+            "केले के पत्तों से बना क्राथोंग (दीप-पात्र)",
+            "कमल, गेंदा व ताजी पुष्प पंखुड़ियां",
+            "शुद्ध मोमबत्ती व 3 सुगंधित अगरबत्तियां",
+            "संघ दान हेतु सात्विक सामग्री"
+          ]
+        },
+        "status": "council_reviewed_editorial",
+        "reviewRef": "council-verified-2026-09",
+        "sourceRefs": [
+          {
+            "sourceName": "Sangha day essentials",
+            "tier": 1,
+            "usagePermitted": "public_domain"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "सुपटिपन्नो भगवतो सावकसङ्घो, उजुपटिपन्नो भगवतो सावकसङ्घो, ञायपटिपन्नो भगवतो सावकसङ्घो... आहुनेय्यो पाहुनेय्यो दक्खिणेय्यो अञ्जलिकरणीयो, अनुत्तरं पुञ्ञक्खेत्तं लोकस्सा’ति॥",
+        "transliteration": "supaṭipanno bhagavato sāvakasaṅgho, ujupaṭipanno bhagavato sāvakasaṅgho, ñāyapaṭipanno bhagavato sāvakasaṅgho... āhuneyyo pāhuneyyo dakkhiṇeyyo añjalikaraṇīyo, anuttaraṃ puññakkhettaṃ lokassā'ti",
+        "translation": {
+          "value": {
+            "en": "The Sangha of the Blessed One’s disciples has practiced well; has practiced directly; has practiced correctly. Worthy of gifts, worthy of hospitality, worthy of offerings, worthy of reverential salutation with joined hands, the supreme field of merit for the world.",
+            "hi": "भगवान तथागत के श्रावकों का संघ सुमार्ग पर चलने वाला है, ऋजु (सीधे) मार्ग पर चलने वाला है, न्याय मार्ग पर चलने वाला है... यह संघ सत्कार के योग्य है, आतिथ्य के योग्य है, दक्षिणा के योग्य है, दोनों हाथ जोड़कर प्रणाम करने योग्य है, और संसार के लिए पुण्य का सर्वश्रेष्ठ क्षेत्र है।"
+          },
+          "status": "council_reviewed_editorial",
+          "reviewRef": "council-verified-2026-09",
+          "sourceRefs": [
+            {
+              "sourceName": "Anguttara Nikaya (Saṅghānussati / Recollection of the Sangha)",
+              "tier": 1,
+              "usagePermitted": "public_domain"
+            }
+          ],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "mahavir-jayanti",
+      "tradition": "jain",
+      "name": "Mahāvīr Jayantī",
+      "nameLocal": "महावीर जयन्ती",
+      "summary": "Birthday of Tīrthaṅkara Mahāvīra, the 24th and last Jina of the current cosmic half-cycle.",
+      "editorial": {
+        "hook": "The universe marked the descent of the final Tīrthaṅkara with a rain of celestial flowers.",
+        "body": "Born as Prince Vardhamāna in Kuṇḍagrāma (c. 599 BCE), Mahāvīra renounced royal life at age 30, practised twelve years of severe asceticism, and attained Kevala-jñāna — omniscience — on the banks of the Ṛjukūlā. His five great vows (Mahā-vratas: ahiṃsā, satya, asteya, brahmacarya, aparigraha) became the foundation of Jain monastic and lay ethics. Chaitra Śukla 13 (Śvetāmbara) or Chaitra Śukla 13 / Vaiśākha (Digambara) is observed with abhiṣeka of Mahāvīra images, charitable processions (ratha-yātrā), and recitation of the Uttarādhyayana Sūtra.",
+        "sections": [
+          {
+            "heading": "Five Mahā-vratas",
+            "content": "Ahiṃsā (non-violence), Satya (truthfulness), Asteya (non-stealing), Brahmacarya (celibacy), Aparigraha (non-possessiveness) — these five constitute the complete ethical framework Mahāvīra taught to monks and adapted for householders as the aṇu-vratas."
+          },
+          {
+            "heading": "Panch Kalyāṇaka",
+            "content": "Jain tradition celebrates five auspicious events in every Tīrthaṅkara's life: cyavana (conception), janma (birth), dīkṣā (renunciation), kevala-jñāna (omniscience), and nirvāṇa (liberation). Mahāvīr Jayantī specifically honours the janma-kalyāṇaka."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ, Ṇamō Siddhāṇaṁ, Ṇamō Āyariyāṇaṁ, Ṇamō Uvajjhāyāṇaṁ, Ṇamō lōē savva-sāhūṇaṁ",
+            "source": "Namaskāra Mahāmantra (Āgama)",
+            "translation": "I bow to the Arihants, the Siddhas, the Ācāryas, the Upādhyāyas, and all Sādhus in the world."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Abhiṣeka",
+            "steps": [
+              "Bathe the Mahāvīra image with water, milk, and sandalwood.",
+              "Offer flowers and rice (akṣata).",
+              "Perform āratī with camphor."
+            ]
+          },
+          {
+            "name": "Ratha-yātrā",
+            "steps": [
+              "Place the Mahāvīra mūrti on a decorated chariot.",
+              "Process through the community with devotional songs.",
+              "Conclude with community prayer and charitable giving."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Uttarādhyayana Sūtra, Lecture 23",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "akshaya-tritiya-jain",
+      "tradition": "jain",
+      "name": "Akṣaya Tṛtīyā (Jain)",
+      "nameLocal": "अक्षय तृतीया",
+      "summary": "Commemorates Ṛṣabhadeva (Ādinātha) breaking his 13-month fast with sugarcane juice — the first charitable offering of the cosmic cycle.",
+      "editorial": {
+        "hook": "When no one in the world knew how to offer food to a renunciant, King Śreyāṃsa remembered and poured sugarcane juice into Ādinātha's cupped palms.",
+        "body": "Ṛṣabhadeva, the first Tīrthaṅkara, wandered for over a year after renunciation because no being understood the protocol of giving food to a Jain monk (the strict rules of āhāra-dāna). On Vaiśākha Śukla 3, his grandson King Śreyāṃsa of Hastināpura offered sugarcane juice — the first act of dāna in this avasarpiṇī (descending) era. This act is considered imperishable (akṣaya), giving the day its name.",
+        "sections": [
+          {
+            "heading": "Varṣītapa Connection",
+            "content": "Many Jain ascetics and laypersons break the Varṣītapa (year-long alternate-day fasting) on Akṣaya Tṛtīyā, mirroring Ṛṣabhadeva's fast-breaking. The fast involves eating on one day and fasting completely the next, for an entire year."
+          },
+          {
+            "heading": "Ikṣu-rasa Dāna",
+            "content": "Offering sugarcane juice (ikṣu-rasa) on this day is considered supremely meritorious, recalling Śreyāṃsa's original offering to Ādinātha."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra (opening line)",
+            "translation": "I bow to the Arihants (Conquerors)."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Ikṣu-rasa Dāna",
+            "steps": [
+              "Prepare fresh sugarcane juice.",
+              "Offer it to Jain monks/nuns following āhāra-dāna protocol.",
+              "Distribute to community members."
+            ]
+          },
+          {
+            "name": "Varṣītapa Pāraṇā",
+            "steps": [
+              "Those completing the year-long fast break it with sugarcane juice.",
+              "Community gathers to honour the tapasvin (ascetic practitioner).",
+              "Perform special pūjā at the Jain temple."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Ādipurāṇa (account of Ṛṣabhadeva)",
+            "source": "Jinasena, Digambara canon"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "paryushana-parva-begins",
+      "tradition": "jain",
+      "name": "Paryuṣaṇā Parva",
+      "nameLocal": "पर्युषण पर्व",
+      "summary": "The most important annual Jain festival — an 8-day (Śvetāmbara) or 10-day (Digambara: Daśa-lakṣaṇa) period of intensified spiritual practice, fasting, and self-purification.",
+      "editorial": {
+        "hook": "For eight days the soul turns inward, shedding layers of karma like a serpent its skin.",
+        "body": "Paryuṣaṇā (literally \"coming together\" or \"abiding\") falls during the monsoon retreat (cāturmāsa) when monks stay in one place. Śvetāmbaras observe 8 days culminating in Saṃvatsarī (universal forgiveness day); Digambaras observe 10 days called Daśa-lakṣaṇa-dharma, each day dedicated to one of ten supreme virtues: uttama-kṣamā (forgiveness), mārdava (humility), ārjava (straightforwardness), śauca (purity), satya (truth), saṃyama (self-restraint), tapa (austerity), tyāga (renunciation), ākiñcanya (non-possessiveness), and brahmacarya (celibacy).",
+        "sections": [
+          {
+            "heading": "Kalpa Sūtra Recitation",
+            "content": "During Paryuṣaṇā, the Kalpa Sūtra — containing biographies of the 24 Tīrthaṅkaras, especially Mahāvīra — is publicly recited over several days in Śvetāmbara communities."
+          },
+          {
+            "heading": "Saṃvatsarī: Universal Forgiveness",
+            "content": "The final day features Kṣamāpanā — seeking and granting forgiveness from all beings. The phrase \"Micchāmi Dukkaḍaṁ\" (may my improper actions be forgiven) is exchanged universally."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Micchāmi Dukkaḍaṁ",
+            "source": "Prākṛta liturgical phrase",
+            "translation": "May all my improper actions be forgiven (without remainder)."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Daily Practice During Paryuṣaṇā",
+            "steps": [
+              "Undertake fasting (upavāsa) — complete or partial.",
+              "Attend pravacana (scriptural discourse) at the upāśraya.",
+              "Practice pratikramaṇa (confession and repentance) daily.",
+              "Minimise worldly activities and devote time to self-study (svādhyāya)."
+            ]
+          },
+          {
+            "name": "Saṃvatsarī Kṣamāpanā",
+            "steps": [
+              "On the final day, visit or contact every person in your life.",
+              "Say \"Micchāmi Dukkaḍaṁ\" and seek genuine forgiveness.",
+              "Grant forgiveness freely to all who ask."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Kalpa Sūtra (Bhadrabāhu)",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "samvatsari-paryushana-ends",
+      "tradition": "jain",
+      "name": "Saṃvatsarī",
+      "nameLocal": "संवत्सरी",
+      "summary": "The culminating day of Paryuṣaṇā — a day of universal forgiveness when every Jain seeks and grants pardon.",
+      "editorial": {
+        "hook": "\"Micchāmi Dukkaḍaṁ\" — three words that dissolve a year of accumulated grievance.",
+        "body": "Saṃvatsarī (literally \"annual\") is the most emotionally significant day in the Jain calendar. It closes the Paryuṣaṇā period with Kṣamāpanā — the practice of universal forgiveness. Every Jain contacts family, friends, colleagues, and even adversaries to say \"Micchāmi Dukkaḍaṁ\" (may my improper actions be forgiven). The practice extends beyond humans: forgiveness is sought from all living beings. Temples hold special pratikramaṇa ceremonies reviewing transgressions of the entire year.",
+        "sections": [
+          {
+            "heading": "Pratikramaṇa",
+            "content": "The Saṃvatsarī pratikramaṇa is the longest and most detailed of the year. It involves systematic confession of 18 categories of transgressions (pāpa-sthānaka), covering harm done through mind, speech, and body."
+          },
+          {
+            "heading": "Atthai Tapa",
+            "content": "Many devotees undertake an 8-day continuous fast (aṭṭhāī) through the entire Paryuṣaṇā, breaking it only on Saṃvatsarī with simple food."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Khāmemi savve jīvā, savve jīvā khamantu me; mittī me savva-bhūesu, veraṁ majjha na keṇa-i",
+            "source": "Prākṛta Kṣamāpanā verse",
+            "translation": "I forgive all beings, may all beings forgive me; I am friendly toward all, I bear enmity toward none."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Kṣamāpanā",
+            "steps": [
+              "Begin the day with the annual pratikramaṇa at the temple.",
+              "Contact every person you know — in person, by letter, or message.",
+              "Say \"Micchāmi Dukkaḍaṁ\" sincerely and accept the same from others.",
+              "End with community gathering and shared meal."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Āvaśyaka Sūtra (Pratikramaṇa section)",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "das-lakshana-dharma-begins",
+      "tradition": "jain",
+      "name": "Daśa-lakṣaṇa Dharma",
+      "nameLocal": "दश लक्षण धर्म",
+      "summary": "A 10-day Digambara festival celebrating the ten supreme virtues of the soul, observed during the monsoon retreat.",
+      "editorial": {
+        "hook": "Ten days, ten virtues, one path — the Digambara road to the soul's innate perfection.",
+        "body": "While Śvetāmbaras observe Paryuṣaṇā, Digambara Jains celebrate Daśa-lakṣaṇa-dharma — ten days each dedicated to one of the ten dharmas described in the Tattvārtha Sūtra: uttama-kṣamā (supreme forgiveness), mārdava (tenderness/humility), ārjava (straightforwardness), śauca (contentment/purity), satya (truth), saṃyama (self-restraint), tapa (austerity), tyāga (renunciation), ākiñcanya (non-attachment), and brahmacarya (celibacy). Each day features discourse on the respective virtue with practical contemplation exercises.",
+        "sections": [
+          {
+            "heading": "Tattvārtha Sūtra Foundation",
+            "content": "The ten virtues derive from Umāsvāti's Tattvārtha Sūtra (Chapter 9, Verse 6), the only text accepted by both Śvetāmbara and Digambara traditions as authoritative."
+          },
+          {
+            "heading": "Daily Contemplation",
+            "content": "Practitioners are encouraged to focus each day on the specific virtue — examining where they fall short and making practical commitments to embody it more fully."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ, Ṇamō Siddhāṇaṁ",
+            "source": "Namaskāra Mahāmantra (first two lines)",
+            "translation": "I bow to the Arihants, I bow to the Siddhas."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Daily Virtue Practice",
+            "steps": [
+              "Morning discourse on the day's virtue at the Digambara temple.",
+              "Personal reflection and journaling on embodying the virtue.",
+              "Evening āratī and community discussion."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Tattvārtha Sūtra, Chapter 9",
+            "source": "Umāsvāti"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "jain-new-year-pratipada",
+      "tradition": "jain",
+      "name": "Jain New Year (Pratipada)",
+      "nameLocal": "जैन नव वर्ष",
+      "summary": "The first day of the Jain calendar year, falling the day after Dīvālī, marking Mahāvīra's nirvāṇa anniversary and a fresh spiritual beginning.",
+      "editorial": {
+        "hook": "Where the world celebrates lights, the Jain calendar turns a new leaf in the luminance of Mahāvīra's liberation.",
+        "body": "Jain New Year (Vīra Nirvāṇa Saṃvat Pratipada) begins on Kārtika Śukla 1, the day after Mahāvīra's nirvāṇa on Dīvālī (Amāvasyā). Unlike the festive exuberance of the previous night, New Year's Day is contemplative — a time to set spiritual resolutions (praṇidhāna), review one's ethical commitments, and begin the year with renewed adherence to the aṇu-vratas (minor vows for householders).",
+        "sections": [
+          {
+            "heading": "Vīra Nirvāṇa Saṃvat",
+            "content": "The Jain calendar era counts from Mahāvīra's nirvāṇa (traditionally 527 BCE). The year is called Vīra Nirvāṇa Saṃvat, connecting every new year to the liberation of the last Tīrthaṅkara."
+          },
+          {
+            "heading": "Spiritual Resolutions",
+            "content": "Practitioners traditionally take or renew specific vows — dietary restrictions, periods of fasting, study commitments, or charitable pledges — for the coming year."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "New Year Observance",
+            "steps": [
+              "Visit the Jain temple for morning pūjā.",
+              "Listen to discourse on Mahāvīra's final teachings.",
+              "Set personal spiritual resolutions for the year.",
+              "Seek blessings from elders and monks."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Uttarādhyayana Sūtra, Lecture 30",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "jain-diwali-nirvana-ladnun",
+      "tradition": "jain",
+      "name": "Jain Dīvālī (Mahāvīra Nirvāṇa)",
+      "nameLocal": "जैन दीवाली / महावीर निर्वाण",
+      "summary": "Jain observance of Dīvālī commemorating Mahāvīra's attainment of nirvāṇa (mokṣa) at Pāvāpurī.",
+      "editorial": {
+        "hook": "The lamps of Dīvālī were first lit, say the Jains, to replace the light of Mahāvīra's omniscience that departed this world.",
+        "body": "On Kārtika Amāvasyā (the darkest night), Mahāvīra attained nirvāṇa at Pāvāpurī (modern Bihar). According to the Kalpa Sūtra, 18 kings of the gaṇa-rājyas (republican confederacies) lit lamps declaring: \"Since the light of intelligence has gone, let us make an illumination of material matter.\" This event, the Jain tradition holds, is the original Dīvālī. The observance is solemn rather than celebratory — marking liberation, not festivity.",
+        "sections": [
+          {
+            "heading": "Pāvāpurī Jalmandir",
+            "content": "The Jalmandir (water temple) at Pāvāpurī, Bihar, marks the traditional site of Mahāvīra's cremation and nirvāṇa. It remains the most sacred Jain pilgrimage site for this occasion."
+          },
+          {
+            "heading": "Nirvāṇa Lāḍū",
+            "content": "A special sweet offering (lāḍū) is prepared and distributed in some communities, symbolising the sweetness of liberation."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ, Ṇamō Siddhāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants, I bow to the Siddhas."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Nirvāṇa Commemoration",
+            "steps": [
+              "Light lamps at home and temple at dusk.",
+              "Recite the account of Mahāvīra's last sermon from Uttarādhyayana Sūtra.",
+              "Observe a period of silent meditation.",
+              "Perform nirvaṇa-pūjā at the temple."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Kalpa Sūtra (Mahāvīra Nirvāṇa section)",
+            "source": "Bhadrabāhu"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "kartik-purnima-jain",
+      "tradition": "jain",
+      "name": "Kārtik Pūrṇimā (Jain)",
+      "nameLocal": "कार्तिक पूर्णिमा",
+      "summary": "Marks the end of Cāturmāsa (monsoon retreat). Pilgrimage to Shatrunjaya and Sammeta Shikhar peaks is especially meritorious.",
+      "editorial": {
+        "hook": "As the rains recede, thousands of barefoot pilgrims ascend the sacred hills.",
+        "body": "Kārtik Pūrṇimā concludes the four-month monsoon retreat (cāturmāsa) during which Jain monks remain stationary. On this full moon, pilgrimage — especially to Shatrunjaya (Palitana, Gujarat) and Sammeta Shikhar (Jharkhand) — is considered supremely auspicious. Shatrunjaya, with its 863 temples atop twin hills, is believed to have been sanctified by Ṛṣabhadeva himself. Many devotees undertake the 99-yātrā vow: ascending the hill 99 times.",
+        "sections": [
+          {
+            "heading": "Shatrunjaya Pilgrimage",
+            "content": "The climb of 3,500 steps to the summit temples begins before dawn. Pilgrims fast, recite the Namaskāra Mantra, and perform elaborate pūjā at the Ādinātha shrine at the peak."
+          },
+          {
+            "heading": "Cāturmāsa Conclusion",
+            "content": "Monks resume their wandering life (vihāra) after Kārtik Pūrṇimā. Lay devotees bid farewell with special dāna (charitable giving) to the saṅgha."
+          }
+        ]
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Pilgrimage Observance",
+            "steps": [
+              "Undertake pilgrimage to a sacred Jain tīrtha if possible.",
+              "Observe upavāsa (fasting) for the day.",
+              "Perform special pūjā and abhiṣeka at the temple.",
+              "Offer dāna to departing monks/nuns."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Śatruñjaya Māhātmya",
+            "source": "Dhaneśvara Sūri"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "paryushana-day-2",
+      "tradition": "jain",
+      "name": "Paryuṣaṇā Day 2",
+      "nameLocal": "पर्युषण दिवस २",
+      "summary": "Second day of the Paryuṣaṇā period — continued fasting, scriptural study, and self-reflection.",
+      "editorial": {
+        "hook": "Each day deepens the inward turn.",
+        "body": "Day 2 continues the intensified spiritual discipline begun on Day 1. Devotees maintain their chosen fasting discipline, attend morning and evening discourse sessions, and practice sāmāyika (equanimity meditation). The Kalpa Sūtra recitation progresses through the lives of the Tīrthaṅkaras.",
+        "sections": []
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Daily Observance",
+            "steps": [
+              "Continue fasting discipline.",
+              "Attend pravacana (discourse).",
+              "Practice sāmāyika meditation."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Kalpa Sūtra (continued)",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "paryushana-day-3",
+      "tradition": "jain",
+      "name": "Paryuṣaṇā Day 3",
+      "nameLocal": "पर्युषण दिवस ३",
+      "summary": "Third day of Paryuṣaṇā — deepening practice with emphasis on tapas (austerity).",
+      "editorial": {
+        "hook": "Austerity is not punishment but purification.",
+        "body": "Day 3 often marks the beginning of more intensive fasting for those who started gradually. The discourse typically covers the nature of karma and its bondage mechanisms (āsrava and bandha), motivating practitioners to intensify their self-discipline.",
+        "sections": []
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Daily Observance",
+            "steps": [
+              "Continue or intensify fasting.",
+              "Attend discourse on karma theory.",
+              "Practice pratikramaṇa (repentance)."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Kalpa Sūtra (continued)",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "paryushana-day-4",
+      "tradition": "jain",
+      "name": "Paryuṣaṇā Day 4",
+      "nameLocal": "पर्युषण दिवस ४",
+      "summary": "Fourth day — midpoint of the 8-day observance, focus on saṃyama (self-restraint).",
+      "editorial": {
+        "hook": "At the midpoint, restraint becomes natural.",
+        "body": "Day 4 marks the midpoint of Śvetāmbara Paryuṣaṇā. Practitioners reflect on saṃyama (self-restraint) in its physical, verbal, and mental dimensions. Community support strengthens as the collective practice deepens.",
+        "sections": []
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Daily Observance",
+            "steps": [
+              "Maintain fasting and sāmāyika.",
+              "Reflect on the five saṃvara (stoppage of karma influx).",
+              "Attend community discourse."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Kalpa Sūtra (continued)",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "paryushana-day-5",
+      "tradition": "jain",
+      "name": "Paryuṣaṇā Day 5",
+      "nameLocal": "पर्युषण दिवस ५",
+      "summary": "Fifth day — the Kalpa Sūtra recitation reaches the birth narrative of Mahāvīra.",
+      "editorial": {
+        "hook": "Tonight the story of Mahāvīra's birth fills the hall with wonder.",
+        "body": "Day 5 is particularly significant as the Kalpa Sūtra recitation typically reaches the Janma-kalyāṇaka (birth narrative) of Mahāvīra. In many communities, this section is read with special ceremony, including the svāminī-vātsalya (communal meal honouring ascetics).",
+        "sections": []
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Janma Kalyāṇaka Recitation",
+            "steps": [
+              "Attend the special evening recitation of Mahāvīra's birth narrative.",
+              "Participate in svāminī-vātsalya if held.",
+              "Continue fasting and meditation."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Kalpa Sūtra (Janma-kalyāṇaka)",
+            "source": "Bhadrabāhu"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "paryushana-day-6",
+      "tradition": "jain",
+      "name": "Paryuṣaṇā Day 6",
+      "nameLocal": "पर्युषण दिवस ६",
+      "summary": "Sixth day — emphasis on nirjarā (shedding of karma) through sustained austerity.",
+      "editorial": {
+        "hook": "Accumulated karma begins to shed as practice deepens.",
+        "body": "Day 6 discourse typically focuses on nirjarā — the active shedding of karma through austerity, repentance, and meditation. Practitioners who have maintained continuous fasting experience heightened clarity and devotion.",
+        "sections": []
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Ṇamō Arihantāṇaṁ",
+            "source": "Namaskāra Mahāmantra",
+            "translation": "I bow to the Arihants."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Daily Observance",
+            "steps": [
+              "Continue austerities.",
+              "Attend discourse on nirjarā.",
+              "Practice extended meditation."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Kalpa Sūtra (continued)",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
+    },
+    {
+      "definitionKey": "paryushana-day-7",
+      "tradition": "jain",
+      "name": "Paryuṣaṇā Day 7",
+      "nameLocal": "पर्युषण दिवस ७",
+      "summary": "Seventh day — penultimate day, preparing the heart for tomorrow's universal forgiveness.",
+      "editorial": {
+        "hook": "Tomorrow brings forgiveness; today, prepare the heart.",
+        "body": "Day 7 is a day of intense preparation for Saṃvatsarī. Practitioners review their relationships, recall grievances given and received, and cultivate the mental state of unconditional forgiveness. Evening pratikramaṇa is especially detailed.",
+        "sections": []
+      },
+      "ritualContent": {
+        "mantras": [
+          {
+            "text": "Micchāmi Dukkaḍaṁ",
+            "source": "Prākṛta liturgical phrase",
+            "translation": "May my improper actions be forgiven."
+          }
+        ],
+        "rituals": [
+          {
+            "name": "Preparation for Saṃvatsarī",
+            "steps": [
+              "Review and list all persons to seek forgiveness from.",
+              "Attend extended evening pratikramaṇa.",
+              "Prepare for tomorrow's Kṣamāpanā."
+            ]
+          }
+        ],
+        "readings": [
+          {
+            "title": "Āvaśyaka Sūtra",
+            "source": "Śvetāmbara Āgama"
+          }
+        ]
+      }
     }
   ]
 }
