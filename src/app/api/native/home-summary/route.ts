@@ -4,6 +4,7 @@ import { ServerTimingCollector } from '@/lib/server-timing';
 
 import { mapHeroAssetToTheme, resolveHomeHeroTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getApiUser } from '@/lib/api-auth';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { ensureAuthProfile } from '@/lib/auth-profile';
 import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
 import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
@@ -603,7 +604,20 @@ export async function GET(request: NextRequest) {
 
   const observancePromise = settleOptionalSection(
     getOrMaterializeOccurrences({
-      supabase,
+      // Service-role, not the caller's own client: a never-before-requested
+      // (calendarProfile, location) bucket falls into isYearMaterialized's
+      // manifest/batch check inside this call, and both
+      // observance_materialisation_manifests and
+      // observance_materialisation_batches revoke all privileges from
+      // `authenticated` by design (server-side reads/writes only -- see
+      // their migrations). The user's own anon-key client got a genuine
+      // Postgres permission-denied error there, surfaced to native as
+      // `calendarStatus: 'unavailable'` for every first-ever request to an
+      // unseeded location -- not a timeout, not a client network issue.
+      // observance_occurrences itself (this function's other reads) is
+      // public, published content, not per-user data, so reading it via the
+      // admin client changes nothing about what's exposed.
+      supabase: createAdminClient(),
       fromDate: today,
       toDate: calendarTo,
       tradition,
