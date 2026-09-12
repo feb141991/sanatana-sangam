@@ -44,6 +44,16 @@ export interface DharmVeer {
   legacy?: string;
   legacyLocal?: string;
   legacyPa?: string;
+  /** Primary scriptural or historical source */
+  source?: string;
+  sourceLocal?: string;
+  sourcePa?: string;
+  /** Detailed canonical citations with book/chapter/parva references */
+  sourceCitations?: Array<{
+    sourceName: string;
+    sourceRef?: string;
+    tier?: number;
+  }>;
   /** Scene description for illustration — evokes their most iconic moment */
   illustrationPrompt?: string;
   quote?: {
@@ -58,7 +68,6 @@ export interface DharmVeer {
     text: string;
     attribution: string;
   };
-  source?: string;
   sourceClass?: 'canonical' | 'historical' | 'curated-tradition' | 'devotional-oral' | 'needs-review';
   reviewStatus?: 'approved' | 'needs_review';
   tags?: string[];
