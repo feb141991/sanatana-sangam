@@ -6,31 +6,36 @@
 
 ## What we decided
 
-Shoonaya.com uses a shared Next.js marketing shell with a configurable Notch Navbar, public
-feature and tradition pages, community storytelling, trust/source pages, and an Android beta
-gateway. The native app is the canonical product experience; the website is its public doorway.
+Shoonaya.com keeps the established standalone homepage and its full interactive content. The
+root route serves `public/landing.html`; only its opening hero is replaced when the marketing
+direction changes. Public feature, tradition, community, trust/source and Android beta pages
+remain in the shared Next.js marketing shell. The native app is the canonical product
+experience; the website is its public doorway.
 
 ## Why
 
-The previous root was a large standalone HTML document with its own visual system and client
-scripts. It could not reuse React navigation or scale cleanly into a coherent multi-page website.
-A route-group architecture makes navigation, metadata, accessibility, design tokens and product
-status consistent while keeping rich editorial content fast and indexable.
+The established homepage contains distinctive interactive material—including Gyan Chaupar,
+tradition panels, the lineage story, festival presentation, community, the complete feature
+catalogue, Kids Zone and FAQ. Reconstructing those sections lost product history and was outside
+the requested hero-only scope. The exact homepage therefore remains canonical for `/`, while
+new supporting pages use the route-group architecture.
 
 ## Constraints this creates
 
-- Marketing routes live in the `(marketing)` route group and share one shell.
+- `/` is served by `src/app/route.ts` from `public/landing.html`.
+- Homepage redesigns must preserve the established body content unless replacement is explicit.
+- Supporting marketing routes live in the `(marketing)` route group and share one shell.
 - Feature marketing paths use `/features/*` to avoid colliding with legacy application routes.
 - `/` remains the public website even when an authentication cookie exists.
 - Marketing imagery is separate from HTML copy and real product UI.
 - The public site may describe verified product capabilities but may not fabricate screenshots,
   availability, community scale or religious authority.
-- Existing PWA/browser routes remain transitional until retired through an explicit migration.
+- PWA install metadata and public PWA promotion remain disabled; native beta is the public CTA.
 
 ## What we explicitly rejected
 
-- Continuing to serve `public/landing.html` through a root route handler.
-- Recreating the React Notch Navbar in standalone HTML.
+- Reconstructing or replacing established homepage sections during a hero-only request.
+- Redirecting authenticated visitors away from the public root website.
 - Treating visual weight as permission for large unoptimised assets or autoplay effects.
 
 ---
