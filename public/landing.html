@@ -3491,9 +3491,101 @@
       }
       .download-phones,
       .download-note,
-      .festivals-grid,
       .cta-signin-link {
         display: none !important;
+      }
+      #gyan-chaupar,
+      #traditions,
+      #five-thousand,
+      #community,
+      #features,
+      #kids-zone,
+      #download,
+      #cta-section,
+      #faq {
+        display: none !important;
+      }
+      .homepage-discover {
+        padding: 88px 5vw 96px;
+        background: var(--cream);
+      }
+      .homepage-discover-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+      .homepage-discover-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 38px;
+      }
+      .homepage-discover-card {
+        min-height: 230px;
+        padding: 28px;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background: var(--warm-white);
+        color: var(--ink);
+        text-decoration: none;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.24s ease, border-color 0.24s ease;
+      }
+      .homepage-discover-card:hover,
+      .homepage-discover-card:focus-visible {
+        transform: translateY(-4px);
+        border-color: var(--saffron);
+        outline: none;
+      }
+      .homepage-discover-card-kicker {
+        color: var(--saffron-dk);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      .homepage-discover-card h3 {
+        margin: 26px 0 12px;
+        font-family: var(--fd);
+        font-size: 31px;
+        line-height: 1;
+      }
+      .homepage-discover-card p {
+        margin: 0;
+        color: var(--ink-mid);
+        font-size: 14px;
+        line-height: 1.65;
+      }
+      .homepage-discover-card span:last-child {
+        margin-top: auto;
+        padding-top: 24px;
+        color: var(--saffron-dk);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .calendar-state {
+        grid-column: 1 / -1;
+        min-height: 120px;
+        padding: 36px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: var(--warm-white);
+        color: var(--ink-mid);
+        text-align: center;
+        display: grid;
+        place-items: center;
+      }
+      .calendar-state a {
+        color: var(--saffron-dk);
+        font-weight: 700;
+      }
+      .calendar-source-note {
+        max-width: 1280px;
+        margin: 24px auto 0;
+        color: var(--ink-light);
+        font-size: 12px;
+        line-height: 1.6;
       }
       #splash-content {
         max-width: 1280px;
@@ -3715,6 +3807,20 @@
         .hero-nav-mobile {
           display: block;
         }
+        .homepage-discover-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 620px) {
+        .homepage-discover {
+          padding: 64px 20px 72px;
+        }
+        .homepage-discover-grid {
+          grid-template-columns: 1fr;
+        }
+        .homepage-discover-card {
+          min-height: 200px;
+        }
       }
       @media (prefers-reduced-motion: reduce) {
         *,
@@ -3735,22 +3841,22 @@
           <span>Shoonaya</span>
         </a>
         <div class="hero-nav-links">
-          <a href="#gyan-chaupar" onclick="event.preventDefault();openLandingSection('gyan-chaupar')">Play</a>
-          <a href="#traditions" onclick="event.preventDefault();openLandingSection('traditions')">Traditions</a>
-          <a href="#festivals" onclick="event.preventDefault();openLandingSection('festivals')">Festivals</a>
-          <a href="#community" onclick="event.preventDefault();openLandingSection('community')">Community</a>
-          <a href="#features" onclick="event.preventDefault();openLandingSection('features')">Features</a>
+          <a href="#discover" onclick="event.preventDefault();openLandingSection('discover')">Discover</a>
+          <a href="/traditions">Traditions</a>
+          <a href="#festivals" onclick="event.preventDefault();openLandingSection('festivals')">Calendar</a>
+          <a href="/community">Community</a>
+          <a href="/features">Features</a>
           <a href="/about">About</a>
         </div>
         <a class="hero-nav-beta" href="/beta/android">Join Android Beta →</a>
         <details class="hero-nav-mobile">
           <summary>Menu</summary>
           <div class="hero-nav-mobile-menu">
-            <a href="#gyan-chaupar" onclick="openLandingSection('gyan-chaupar')">Play</a>
-            <a href="#traditions" onclick="openLandingSection('traditions')">Traditions</a>
-            <a href="#festivals" onclick="openLandingSection('festivals')">Festivals</a>
-            <a href="#community" onclick="openLandingSection('community')">Community</a>
-            <a href="#features" onclick="openLandingSection('features')">Features</a>
+            <a href="#discover" onclick="openLandingSection('discover')">Discover</a>
+            <a href="/traditions">Traditions</a>
+            <a href="#festivals" onclick="openLandingSection('festivals')">Calendar</a>
+            <a href="/community">Community</a>
+            <a href="/features">Features</a>
             <a href="/about">About</a>
             <a href="/beta/android">Join Android Beta</a>
           </div>
@@ -4258,18 +4364,12 @@
           <span class="nav-logo-text">Shoonaya</span>
         </a>
         <ul class="nav-links">
-          <li>
-            <a
-              href="#gyan-chaupar"
-              style="color: var(--saffron); font-weight: 600"
-              >♟ Play</a
-            >
-          </li>
-          <li><a href="#traditions">Traditions</a></li>
-          <li><a href="#festivals">Festivals</a></li>
-          <li><a href="#community">Community</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#download">Android Beta</a></li>
+          <li><a href="#discover">Discover</a></li>
+          <li><a href="/traditions">Traditions</a></li>
+          <li><a href="#festivals">Calendar</a></li>
+          <li><a href="/community">Community</a></li>
+          <li><a href="/features">Features</a></li>
+          <li><a href="/about">About</a></li>
         </ul>
         <a class="nav-cta" href="/beta/android">Join Android Beta</a>
       </nav>
@@ -4289,6 +4389,42 @@
           <div class="stat-label">Source-Grounded Wisdom</div>
         </div>
       </div>
+      <section class="homepage-discover" id="discover">
+        <div class="homepage-discover-inner">
+          <div class="s-label reveal">Explore Shoonaya</div>
+          <div class="s-title reveal">One doorway. Many paths.</div>
+          <div class="s-sub reveal">
+            The homepage now gives you the essential view. Follow each path for
+            the complete story, experience and product detail.
+          </div>
+          <div class="homepage-discover-grid">
+            <a class="homepage-discover-card reveal" href="/traditions">
+              <span class="homepage-discover-card-kicker">Four traditions</span>
+              <h3>Traditions</h3>
+              <p>Explore how Hindu, Sikh, Buddhist and Jain paths are held with their own sources and context.</p>
+              <span>Explore traditions →</span>
+            </a>
+            <a class="homepage-discover-card reveal" href="/features">
+              <span class="homepage-discover-card-kicker">Inside the app</span>
+              <h3>Features</h3>
+              <p>Discover daily Sadhana, Japa, Pathshala, sacred places, family continuity and more.</p>
+              <span>See all features →</span>
+            </a>
+            <a class="homepage-discover-card reveal" href="/community">
+              <span class="homepage-discover-card-kicker">Global Sangam</span>
+              <h3>Community</h3>
+              <p>Learn how Shoonaya approaches local belonging, shared practice and family connection.</p>
+              <span>Meet the community →</span>
+            </a>
+            <a class="homepage-discover-card reveal" href="/about">
+              <span class="homepage-discover-card-kicker">Why Shoonaya</span>
+              <h3>Our story</h3>
+              <p>Read the purpose behind a modern digital home for living dharmic traditions.</p>
+              <span>About Shoonaya →</span>
+            </a>
+          </div>
+        </div>
+      </section>
       <section
         class="section"
         id="gyan-chaupar"
@@ -6230,10 +6366,17 @@
         <div class="s-label reveal">Sacred Calendar</div>
         <div class="s-title reveal">Upcoming Across Traditions</div>
         <div class="s-sub reveal">
-          Never miss a sacred day — personalised to your tradition, timezone,
-          and wherever you are in the world.
+          A reviewed public preview from Shoonaya's canonical calendar. The app
+          personalises sacred time to your tradition, profile and location.
         </div>
-        <div class="festivals-grid" id="festivals-grid"></div>
+        <div class="festivals-grid" id="festivals-grid">
+          <div class="calendar-state">Loading reviewed observances…</div>
+        </div>
+        <p class="calendar-source-note">
+          Public preview: legacy Ujjain calendar profile, Asia/Kolkata. Dates in
+          the app are profile- and location-qualified where applicable.
+          <a href="/features/sacred-calendar">How Shoonaya handles sacred time →</a>
+        </p>
       </section>
       <script>
         !(function () {
@@ -6691,9 +6834,111 @@
                 t.innerHTML =
                   '<p style="text-align:center;color:rgba(62,42,31,0.45);font-size:14px;grid-column:1/-1">All 2026 festivals have passed. New calendar coming soon.</p>';
           }
-          i();
-          var s = new Date(new Date().setHours(24, 0, 0, 0)) - new Date();
-          setTimeout(i, s);
+          // Rendering now comes from the canonical reviewed calendar API below.
+        })();
+      </script>
+      <script>
+        !(function loadCanonicalCalendarPreview() {
+          var grid = document.getElementById("festivals-grid");
+          if (!grid) return;
+
+          function escapeText(value) {
+            var node = document.createElement("span");
+            node.textContent = String(value || "");
+            return node.innerHTML;
+          }
+
+          function dayDistance(dateText) {
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return Math.round(
+              (new Date(dateText + "T00:00:00") - today) / 864e5,
+            );
+          }
+
+          function countdown(diff) {
+            if (diff === 0) return "Today";
+            if (diff === 1) return "Tomorrow";
+            return diff + " days";
+          }
+
+          function render(items) {
+            if (!items.length) {
+              grid.innerHTML =
+                '<div class="calendar-state">No reviewed public observances are available in the next 60 days. <a href="/features/sacred-calendar">Explore the Sacred Calendar</a></div>';
+              return;
+            }
+
+            grid.innerHTML = items
+              .map(function (item) {
+                var date = item.civilDate;
+                var diff = dayDistance(date);
+                var tradition = item.tradition || "all";
+                var color =
+                  tradition === "hindu"
+                    ? "var(--c-hindu)"
+                    : tradition === "sikh"
+                      ? "var(--c-sikh)"
+                      : tradition === "buddhist"
+                        ? "var(--c-buddhist)"
+                        : tradition === "jain"
+                          ? "var(--c-jain)"
+                          : "var(--gold)";
+                var dateLabel = new Date(date + "T00:00:00").toLocaleDateString(
+                  "en-GB",
+                  { day: "numeric", month: "short", year: "numeric" },
+                );
+                return (
+                  '<article class="festival-card" style="border-top:3px solid ' +
+                  color +
+                  '"><div class="festival-date-badge"><div class="dot" style="background:' +
+                  color +
+                  '"></div>' +
+                  escapeText(dateLabel) +
+                  '</div><div class="festival-name">' +
+                  escapeText(item.display_name) +
+                  '</div><div class="festival-deva">' +
+                  escapeText(tradition === "all" ? "All traditions" : tradition.charAt(0).toUpperCase() + tradition.slice(1)) +
+                  '</div><p class="festival-desc">' +
+                  escapeText(item.description) +
+                  '</p><div class="festival-countdown"><div><div class="days" style="color:' +
+                  color +
+                  '">' +
+                  escapeText(countdown(diff)) +
+                  '</div><div class="days-label">Reviewed occurrence</div></div><a class="festival-pill" href="/features/sacred-calendar">Calendar →</a></div></article>'
+                );
+              })
+              .join("");
+          }
+
+          grid.innerHTML = '<div class="calendar-state">Loading reviewed observances…</div>';
+          fetch(
+            "/api/calendar/upcoming?days=60&reviewed=1&tradition=all&calendar_profile=legacy-ujjain&tz=Asia%2FKolkata",
+            { headers: { Accept: "application/json" } },
+          )
+            .then(function (response) {
+              if (!response.ok) throw new Error("Calendar unavailable");
+              return response.json();
+            })
+            .then(function (payload) {
+              var candidates = Array.isArray(payload.displayObservances)
+                ? payload.displayObservances
+                : [];
+              var primary = candidates.filter(function (item) {
+                return (
+                  item &&
+                  item.status === "resolved" &&
+                  item.reviewStatus === "reviewed" &&
+                  item.civilDate &&
+                  !/-day-\d+$/.test(item.slug || "")
+                );
+              });
+              render(primary.slice(0, 3));
+            })
+            .catch(function () {
+              grid.innerHTML =
+                '<div class="calendar-state">The calendar preview could not load. <a href="/features/sacred-calendar">Explore the Sacred Calendar</a></div>';
+            });
         })();
       </script>
       <section class="section community-section" id="community">
@@ -9224,14 +9469,12 @@
             font-weight: 600;
           }
         </style>
-        <a href="#gyan-chaupar" class="drawer-highlight" onclick="closeDrawer()"
-          >♟ Play</a
-        >
-        <a href="#traditions" onclick="closeDrawer()">Traditions</a>
-        <a href="#festivals" onclick="closeDrawer()">Festivals</a>
-        <a href="#community" onclick="closeDrawer()">Community</a>
-        <a href="#features" onclick="closeDrawer()">Features</a>
-        <a href="#download" onclick="closeDrawer()">Android Beta</a>
+        <a href="#discover" class="drawer-highlight" onclick="closeDrawer()">Discover</a>
+        <a href="/traditions" onclick="closeDrawer()">Traditions</a>
+        <a href="#festivals" onclick="closeDrawer()">Calendar</a>
+        <a href="/community" onclick="closeDrawer()">Community</a>
+        <a href="/features" onclick="closeDrawer()">Features</a>
+        <a href="/about" onclick="closeDrawer()">About</a>
         <div
           style="
             height: 1px;

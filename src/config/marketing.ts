@@ -30,6 +30,7 @@ export type MarketingTradition = {
 
 export const marketingNavItems = [
   { label: "Discover", href: "/#discover" },
+  { label: "Calendar", href: "/features/sacred-calendar" },
   { label: "Features", href: "/features" },
   { label: "Traditions", href: "/traditions" },
   { label: "Community", href: "/community" },
