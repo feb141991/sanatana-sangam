@@ -17,6 +17,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 ### Architecture
 
 - [Native App Marketing Gateway](architecture/native-app-marketing-gateway.md) — Shoonaya.com is the premium multi-page public doorway; the native app is the canonical product experience
+- [Native Launch Before Platform Consolidation](architecture/native-launch-before-platform-consolidation.md) — Launch and stabilise iOS/Android before PWA retirement or a history-preserving monorepo migration
 - [Share Cards](architecture/share-cards.md) — Canvas rendering, card types, viral loop design
 - [Location Persistence](architecture/location-persistence.md) — Save GPS on most-visited screen (HomeDashboard), not profile page
 - [Ashrama Duty Persistence](architecture/ashrama-duty-persistence.md) — localStorage for grihastha, sessionStorage for other stages

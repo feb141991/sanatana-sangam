@@ -1,20 +1,17 @@
 # Google Cloud Platform (GCP Cloud Run) Setup & Migration Guide
 
-**Status as of 2026-09-03: not live, never successfully deployed.** Vercel
-is the sole production deployment (`.vercel/project.json`, the cron
-schedule in `vercel.json`). The `.github/workflows/deploy-gcp.yml`
-workflow described below has run automatically on every push to `main`
-since it was added and has failed at the very first step every single
-time (`gh run list --workflow=deploy-gcp.yml` — 10/10 checked failed in
-~10-13s): `google-github-actions/auth failed with: the GitHub Action
-workflow must specify exactly one of "workload_identity_provider" or
-"credentials_json"` — the `GCP_SA_KEY`/`GCP_PROJECT_ID` repository
-secrets referenced in Section 5 below were never actually added. This is
-a prepared-but-abandoned/never-completed migration attempt, not a second
-active environment. Treat everything below as a setup guide to follow if
-this migration is picked back up, not a description of current infra.
+**Status as of 2026-09-13: archived, not live, and never successfully
+deployed.** Vercel is the sole production deployment (`.vercel/project.json`
+and the cron schedule in `vercel.json`). The automatic GitHub Actions workflow
+was removed on 2026-09-13 so pushes to `main` no longer attempt a second,
+failing Cloud Run deployment. The `Dockerfile` and manual deployment notes
+below are retained only as historical contingency material. Reintroducing GCP
+requires an explicit infrastructure decision, a reviewed workflow, configured
+credentials, staging verification, and a planned cutover from Vercel.
 
-This repository is fully configured for automated deployment to **Google Cloud Run** using Next.js `standalone` mode and multi-stage Docker builds.
+This repository retains dormant building blocks for a possible future
+**Google Cloud Run** migration. It is not configured for automatic GCP
+deployment.
 
 ---
 
@@ -23,12 +20,12 @@ This repository is fully configured for automated deployment to **Google Cloud R
 - **`next.config.js`**: `output: 'standalone'` added.
 - **`Dockerfile`**: Multi-stage production image (<140MB) running Node 20 on Alpine.
 - **`.dockerignore`**: Optimizes build speeds by ignoring local artifacts & dev scripts.
-- **`.github/workflows/deploy-gcp.yml`**: GitHub Actions workflow for automatic CI/CD deployment on `git push origin main`.
+- **Former `.github/workflows/deploy-gcp.yml`**: Removed on 2026-09-13; there is no automatic GCP deployment.
 - **`scripts/deploy-gcp.sh`**: 1-command deployment script using `gcloud` CLI.
 
 ---
 
-## 2. Option A: Connecting GitHub Directly to GCP Cloud Run (Recommended — No CLI Needed)
+## 2. Archived Option A: Connecting GitHub Directly to GCP Cloud Run
 
 1. Open the [Google Cloud Console](https://console.cloud.google.com/).
 2. Create or select your Google Cloud Project (e.g. `shoonaya-production`).
@@ -77,7 +74,11 @@ Under **Cloud Run → Edit & Deploy New Revision → Variables & Secrets**, add 
 
 ---
 
-## 5. Option B: Deploying via GitHub Actions (`.github/workflows/deploy-gcp.yml`)
+## 5. Archived Option B: Deploying via GitHub Actions
+
+There is currently no GCP GitHub Actions workflow. The steps below are retained
+for historical context only and must not be followed without a new, reviewed
+infrastructure decision.
 
 If you prefer using GitHub Actions:
 1. Create a Service Account in GCP with `Cloud Run Admin` and `Storage Admin` roles.
@@ -85,7 +86,8 @@ If you prefer using GitHub Actions:
 3. In GitHub Repository → **Settings → Secrets and variables → Actions**, add:
    - `GCP_PROJECT_ID`: Your GCP Project ID
    - `GCP_SA_KEY`: The full JSON key content of your service account.
-4. Pushing to `main` will trigger `.github/workflows/deploy-gcp.yml`.
+4. Create and review a new staging-first workflow. A push to `main` must not
+   become an automatic production cutover.
 
 ---
 
