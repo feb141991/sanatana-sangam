@@ -53,6 +53,7 @@ interface ChannelDraft {
  */
 export interface DraftChannelCopyInput {
   channel: MarketingChannel;
+  campaignType?: "newsletter" | "festival_reminder" | "announcement";
   sourceSnapshot?: MarketingSourceSnapshot | null;
   strategyPrompt?: string | null;
 }
@@ -80,10 +81,33 @@ Guidelines:
 - Never invent fabricated scripture citations, mantras, or fake festival dates. Speak directly to human experience, sadhana, stillness, and spiritual homecoming.`
     : `Write general, warm, non-specific marketing copy for a dharmic-practice app. Do not invent any specific scripture quotation, mantra, festival date, deity name, or historical claim -- keep it to an invitation to practice, reflect, or explore the app, nothing that could be factually wrong.`;
 
-  const channelInstructions =
-    input.channel === "email"
-      ? `Produce a JSON object with exactly these keys: {"subject": "under 60 characters, compelling", "body": "100-160 words, structured into 2-3 short, emotionally resonant paragraphs", "cta_text": "2-4 words, action-oriented", "cta_url": "a relative or https://www.shoonaya.com path"}. Warm, inviting Shoonaya brand voice.`
-      : `Produce a JSON object with exactly this key: {"body": "under 300 characters, crisp, emotive, and WhatsApp-ready"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
+  let channelInstructions: string;
+  if (input.channel === "email") {
+    if (input.campaignType === "newsletter") {
+      channelInstructions = `Produce a JSON object with exactly these keys: {
+  "subject": "under 65 characters, poetic, spiritually resonant weekly digest title",
+  "body": "Formatted email newsletter in markdown with clear, elegant section headings (### and ####), 450-650 words, structured with:
+1. Sacred Reflection • The Week Concluded: A meaningful reflection on how the events of the past week concluded (e.g. Krishna Janmashtami, Aja Ekadashi, Bhadrapada Amavasya, early Paryushana contemplations), what spiritual seeds were planted, and how we carry that energy forward.
+2. Sacred Horizons • The Coming Days Ahead: Detailed preview of upcoming holy observances (e.g. Ganesh Chaturthi / Ganeshotsav, Samvatsari, Parivartini Ekadashi, Anant Chaturdashi), explaining their practical and spiritual significance for the modern seeker.
+3. Four Living Streams of Dharma • Wisdom from All Traditions: Dedicated, substantive paragraphs for EACH of the four traditions exploring what each tradition teaches at this juncture, accompanied by an authentic primary scripture verse/shloka with original script, Roman transliteration, and English translation:
+   - 🕉️ Sanatan Dharma: Bhagavad Gita or Ganesh Atharvashirsha shloka with translation and contemplation.
+   - 🤲 Jain Dharma: Samvatsari Pratikramana Sutra (Khāmemi savva-jīve...) and Michhāmi Dukkaḍaṃ reflection.
+   - ☬ Sikh Tradition (Gurmat): Sri Guru Granth Sahib Ji Gurbani shabad (e.g. Japji Sahib 'Sabhna jīā kā ik dātā...') with translation and contemplation.
+   - ☸️ Buddha Dhamma: Dhammapada verse (e.g. Verse 5 'Averena ca sammanti esa dhammo sanantano...') with translation and contemplation.
+4. Inner Anchor: Practical encouragement for daily japa, meditation, and quiet reflection with Shoonaya.",
+  "cta_text": "2-4 words, e.g. Open Shoonaya Sanctuary",
+  "cta_url": "https://www.shoonaya.com"
+}. Keep the tone deeply reverent, warm, unifying, and authentic to all 4 traditions.`;
+    } else {
+      channelInstructions = `Produce a JSON object with exactly these keys: {"subject": "under 60 characters, compelling", "body": "100-180 words, structured into 2-3 short, emotionally resonant paragraphs", "cta_text": "2-4 words, action-oriented", "cta_url": "a relative or https://www.shoonaya.com path"}. Warm, inviting Shoonaya brand voice.`;
+    }
+  } else {
+    if (input.campaignType === "newsletter") {
+      channelInstructions = `Produce a JSON object with exactly this key: {"body": "under 500 characters, crisp, emotive WhatsApp broadcast with bold headers and emojis covering: (1) Last week's concluded grace, (2) Coming festival alerts (Ganesh Chaturthi & Samvatsari), (3) Core shlokas/wisdom from Hindu, Jain, Sikh, and Buddhist traditions, and (4) Link to open Shoonaya"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
+    } else {
+      channelInstructions = `Produce a JSON object with exactly this key: {"body": "under 300 characters, crisp, emotive, and WhatsApp-ready"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
+    }
+  }
 
   const result = await generateWithProvider(
     {
@@ -164,6 +188,7 @@ export async function generateMarketingDraft(
     try {
       draft = await draftChannelCopy({
         channel,
+        campaignType: input.campaignType,
         sourceSnapshot,
         strategyPrompt: input.strategyPrompt
       });

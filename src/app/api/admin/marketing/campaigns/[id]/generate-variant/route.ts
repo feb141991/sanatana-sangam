@@ -66,6 +66,7 @@ export async function POST(
   try {
     const draft = await draftChannelCopy({
       channel,
+      campaignType: campaign.campaign_type,
       sourceSnapshot,
       strategyPrompt,
     });
