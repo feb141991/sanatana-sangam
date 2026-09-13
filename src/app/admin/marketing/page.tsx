@@ -25,6 +25,7 @@ export default function MarketingCampaignsPage() {
   const [error, setError] = useState<string | null>(null);
   const [useAiDraft, setUseAiDraft] = useState(false);
   const [aiChannels, setAiChannels] = useState<{ email: boolean; whatsapp: boolean }>({ email: true, whatsapp: false });
+  const [strategyPrompt, setStrategyPrompt] = useState("");
 
   const fetchCampaigns = async () => {
     setLoading(true);
@@ -80,6 +81,7 @@ export default function MarketingCampaignsPage() {
           campaign_type: campaignType,
           source_type: sourceType,
           source_occurrence_id: sourceType === "published_observance" ? selectedOccurrenceId : null,
+          strategy_prompt: strategyPrompt.trim() || undefined,
           ...(useAiDraft ? { channels } : {}),
         }),
       });
@@ -90,6 +92,7 @@ export default function MarketingCampaignsPage() {
       setShowCreateModal(false);
       setTitle("");
       setCampaignKey("");
+      setStrategyPrompt("");
       fetchCampaigns();
     } catch (err: any) {
       setError(err.message);
@@ -281,6 +284,22 @@ export default function MarketingCampaignsPage() {
                   </select>
                 </div>
               )}
+
+                            <div>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Strategic Creative Angle &amp; Emotional Hook (Optional)
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="e.g. Thousands of miles from home. Never a day away from your Dharma. Diaspora belonging, finding your infinity..."
+                  value={strategyPrompt}
+                  onChange={e => setStrategyPrompt(e.target.value)}
+                  className="w-full mt-1 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none focus:border-amber-600 resize-none"
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Guides the AI to write psychologically resonant copy tailored to this specific angle.
+                </p>
+              </div>
 
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">

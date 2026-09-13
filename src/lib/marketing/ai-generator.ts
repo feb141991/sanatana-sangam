@@ -18,6 +18,8 @@ export interface GenerateMarketingDraftInput {
   /** When set, the campaign is grounded on this occurrence -- generation fails
    * closed (produces nothing) unless it is currently publishable. */
   sourceOccurrenceId?: string | null;
+  /** Optional creative brief, theme, psychological hook, or emotional instructions. */
+  strategyPrompt?: string | null;
 }
 
 export type GenerateMarketingDraftResult =
@@ -49,10 +51,15 @@ interface ChannelDraft {
  * the model is instructed to stay non-specific rather than invent any scripture,
  * mantra, festival date, or historical claim.
  */
-async function draftChannelCopy(input: {
+export interface DraftChannelCopyInput {
   channel: MarketingChannel;
-  sourceSnapshot: MarketingSourceSnapshot | null;
-}): Promise<ChannelDraft & { modelUsed: string; provider: string }> {
+  sourceSnapshot?: MarketingSourceSnapshot | null;
+  strategyPrompt?: string | null;
+}
+
+export async function draftChannelCopy(
+  input: DraftChannelCopyInput
+): Promise<ChannelDraft & { modelUsed: string; provider: string }> {
   const groundingBlock = input.sourceSnapshot
     ? `You are writing about this SPECIFIC, ALREADY-VERIFIED occurrence. Treat every field below as a fixed fact you MUST NOT alter, contradict, or add to -- no additional dates, scripture verses, mantras, or claims beyond what is given here:
 Festival: ${input.sourceSnapshot.display_name ?? "unknown"}
@@ -60,22 +67,32 @@ Date: ${input.sourceSnapshot.date ?? "unknown"}
 Tradition: ${input.sourceSnapshot.tradition ?? "unknown"}
 Description: ${input.sourceSnapshot.description ?? ""}
 Verified source: ${input.sourceSnapshot.verified_source ?? ""}
-
+${input.strategyPrompt ? `\nStrategic Creative Angle / Emotional Guidance:\n${input.strategyPrompt}\n` : ""}
 You may write ONLY the surrounding marketing prose (subject line, an inviting lead-in, a call to action) -- never regenerate, translate, or paraphrase scripture, mantra syllables, or the festival's date/name itself; reproduce those verbatim from the fields above if you reference them at all.`
+    : input.strategyPrompt
+    ? `You are crafting marketing copy for Shoonaya grounded in this strategic creative brief and psychological angle:
+"""
+${input.strategyPrompt}
+"""
+Guidelines:
+- Tap into the universal emotional realities of diaspora, belonging, spiritual anchoring, and the busy modern seeker.
+- Tone: deeply respectful, warm, poetic yet urgent, elevating dharma beyond mere rituals into a living, daily sanctuary.
+- Never invent fabricated scripture citations, mantras, or fake festival dates. Speak directly to human experience, sadhana, stillness, and spiritual homecoming.`
     : `Write general, warm, non-specific marketing copy for a dharmic-practice app. Do not invent any specific scripture quotation, mantra, festival date, deity name, or historical claim -- keep it to an invitation to practice, reflect, or explore the app, nothing that could be factually wrong.`;
 
   const channelInstructions =
     input.channel === "email"
-      ? `Produce a JSON object with exactly these keys: {"subject": "under 60 characters", "body": "under 150 words", "cta_text": "2-4 words", "cta_url": "a relative or https://www.shoonaya.com path"}. Warm, inviting Shoonaya brand voice.`
-      : `Produce a JSON object with exactly this key: {"body": "under 300 characters, WhatsApp-appropriate"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
+      ? `Produce a JSON object with exactly these keys: {"subject": "under 60 characters, compelling", "body": "100-160 words, structured into 2-3 short, emotionally resonant paragraphs", "cta_text": "2-4 words, action-oriented", "cta_url": "a relative or https://www.shoonaya.com path"}. Warm, inviting Shoonaya brand voice.`
+      : `Produce a JSON object with exactly this key: {"body": "under 300 characters, crisp, emotive, and WhatsApp-ready"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
 
   const result = await generateWithProvider(
     {
       system:
-        "You are a careful marketing copywriter for Shoonaya, a dharmic spiritual-practice app spanning Hindu, Sikh, Buddhist, and Jain traditions. You must never fabricate or alter scripture, mantra, ritual claims, or calendar dates.",
-      user: `${groundingBlock}\n\n${channelInstructions}`
+        "You are a master marketing strategist and copywriter for Shoonaya, the global dharmic companion app spanning Hindu, Sikh, Buddhist, and Jain traditions. You craft poignant, spiritually elevated copy that bridges ancestral roots and modern daily life. You must never fabricate or alter scripture, mantra syllables, ritual claims, or calendar dates.",
+      user: `${groundingBlock}\n\n${channelInstructions}`,
+      reasoningEffort: "none"
     },
-    { responseFormat: "json" }
+    { responseFormat: "json", maxOutputTokens: 2500 }
   );
 
   const parsed = JSON.parse(extractJsonObject(result.text)) as ChannelDraft;
@@ -145,7 +162,11 @@ export async function generateMarketingDraft(
   for (const channel of input.channels) {
     let draft: ChannelDraft & { modelUsed: string; provider: string };
     try {
-      draft = await draftChannelCopy({ channel, sourceSnapshot });
+      draft = await draftChannelCopy({
+        channel,
+        sourceSnapshot,
+        strategyPrompt: input.strategyPrompt
+      });
     } catch (err: any) {
       return { ok: false, reason: `generation_failed_${channel}: ${err.message}` };
     }
@@ -169,9 +190,13 @@ export async function generateMarketingDraft(
         generation_provenance: {
           model_used: draft.modelUsed,
           provider: draft.provider,
-          generated_at: new Date().toISOString()
+          generated_at: new Date().toISOString(),
+          ...(input.strategyPrompt ? { strategy_prompt_used: true } : {})
         },
-        generation_metadata: { source_type: sourceType }
+        generation_metadata: {
+          source_type: sourceType,
+          ...(input.strategyPrompt ? { strategy_prompt: input.strategyPrompt } : {})
+        }
       });
       variants.push(variant);
     } catch (err: any) {

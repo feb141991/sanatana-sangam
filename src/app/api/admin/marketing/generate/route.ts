@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
     campaignType: body.campaign_type ?? "newsletter",
     channels,
     createdBy: `ai (triggered by ${admin.username})`,
-    sourceOccurrenceId: body.source_occurrence_id ?? null
+    sourceOccurrenceId: body.source_occurrence_id ?? null,
+    strategyPrompt: typeof body.strategy_prompt === "string" && body.strategy_prompt.trim() ? body.strategy_prompt.trim() : null
   });
 
   if (!result.ok) {

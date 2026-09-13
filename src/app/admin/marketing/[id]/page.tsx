@@ -5,7 +5,7 @@ import Link from "next/link";
 import { 
   ArrowLeft, ShieldCheck, Mail, MessageSquare, 
   Send, AlertTriangle, CheckCircle2, XCircle, 
-  Edit3, Save, RotateCcw
+  Edit3, Save, RotateCcw, Sparkles
 } from "lucide-react";
 
 function VariantProvenancePanel({ variant }: { variant: any }) {
@@ -54,6 +54,9 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   const [savingVariant, setSavingVariant] = useState(false);
   const [emailVariant, setEmailVariant] = useState<any>(null);
   const [whatsappVariant, setWhatsappVariant] = useState<any>(null);
+  const [aiRegenerating, setAiRegenerating] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [showAiRegenPanel, setShowAiRegenPanel] = useState(false);
   
   // Action Modals
   const [showDispatchConfirm, setShowDispatchConfirm] = useState(false);
@@ -109,6 +112,36 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   useEffect(() => {
     fetchCampaign();
   }, [id]);
+
+  const handleAiRegenerateVariant = async (channel: "email" | "whatsapp") => {
+    setAiRegenerating(true);
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/admin/marketing/campaigns/${id}/generate-variant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          channel,
+          strategy_prompt: aiPrompt.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to generate copy");
+
+      if (channel === "email" && data.variant) {
+        setEmailSubject(data.variant.subject ?? "");
+        setEmailBody(data.variant.body ?? "");
+      } else if (channel === "whatsapp" && data.variant) {
+        setWhatsappBody(data.variant.body ?? "");
+      }
+      fetchCampaign();
+      setShowAiRegenPanel(false);
+    } catch (err: any) {
+      setActionError(err.message);
+    } finally {
+      setAiRegenerating(false);
+    }
+  };
 
   const handleSaveVariant = async (channel: "email" | "whatsapp") => {
     setSavingVariant(true);
@@ -410,7 +443,44 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Editor */}
               <div className="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Email Draft Content</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Email Draft Content</h3>
+                  {(campaign.status === "draft" || campaign.status === "in_review") && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAiRegenPanel(!showAiRegenPanel)}
+                      className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 text-[11px] font-bold flex items-center gap-1.5 transition-colors"
+                    >
+                      <Sparkles size={13} /> {showAiRegenPanel ? "Close AI Writer" : "✨ AI Writer"}
+                    </button>
+                  )}
+                </div>
+
+                {showAiRegenPanel && (
+                  <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
+                    <label className="text-[10px] font-bold text-amber-900 uppercase tracking-wider block">
+                      Creative Angle / Custom Prompt for AI
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={aiPrompt}
+                      onChange={e => setAiPrompt(e.target.value)}
+                      placeholder="e.g. Focus on diaspora belonging: 'Thousands of miles from home. Never a day away from your Dharma.' Emphasize stillness..."
+                      className="w-full p-2.5 rounded-lg border border-amber-500/30 text-xs font-medium outline-none focus:border-amber-600 bg-white"
+                    />
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleAiRegenerateVariant("email")}
+                        disabled={aiRegenerating}
+                        className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 disabled:opacity-50"
+                      >
+                        <Sparkles size={13} className={aiRegenerating ? "animate-spin" : ""} />
+                        {aiRegenerating ? "Drafting Email..." : "Generate Email Copy"}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div>
                   <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase">Subject</label>
                   <input
@@ -460,7 +530,44 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Editor */}
               <div className="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">WhatsApp Broadcast Copy</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">WhatsApp Broadcast Copy</h3>
+                  {(campaign.status === "draft" || campaign.status === "in_review") && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAiRegenPanel(!showAiRegenPanel)}
+                      className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 text-[11px] font-bold flex items-center gap-1.5 transition-colors"
+                    >
+                      <Sparkles size={13} /> {showAiRegenPanel ? "Close AI Writer" : "✨ AI Writer"}
+                    </button>
+                  )}
+                </div>
+
+                {showAiRegenPanel && (
+                  <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
+                    <label className="text-[10px] font-bold text-amber-900 uppercase tracking-wider block">
+                      Creative Angle / Custom Prompt for AI
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={aiPrompt}
+                      onChange={e => setAiPrompt(e.target.value)}
+                      placeholder="e.g. Concise, punchy WhatsApp message on finding your infinity and daily dharma wherever life takes you..."
+                      className="w-full p-2.5 rounded-lg border border-amber-500/30 text-xs font-medium outline-none focus:border-amber-600 bg-white"
+                    />
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleAiRegenerateVariant("whatsapp")}
+                        disabled={aiRegenerating}
+                        className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 disabled:opacity-50"
+                      >
+                        <Sparkles size={13} className={aiRegenerating ? "animate-spin" : ""} />
+                        {aiRegenerating ? "Drafting WhatsApp..." : "Generate WhatsApp Copy"}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div>
                   <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase">Message Body</label>
                   <textarea
