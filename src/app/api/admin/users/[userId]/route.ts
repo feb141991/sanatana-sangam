@@ -487,6 +487,9 @@ export async function DELETE(
     admin.supabase.from("tirtha_saves").delete().eq("user_id", userId),
     admin.supabase.from("mood_logs").delete().eq("user_id", userId),
     admin.supabase.from("daily_reflections").delete().eq("user_id", userId),
+    admin.supabase.from("recommendations").delete().eq("user_id", userId),
+    admin.supabase.from("calendar_subscriptions").delete().eq("user_id", userId),
+    admin.supabase.from("apple_auth_tokens").delete().eq("user_id", userId),
 
     // Community and social
     admin.supabase.from("post_reactions").delete().eq("user_id", userId),
@@ -507,8 +510,12 @@ export async function DELETE(
 
   // 3. Purge Auth user record
   const { error: authDeleteError } = await admin.supabase.auth.admin.deleteUser(userId);
-  if (authDeleteError && !authDeleteError.message.includes("User not found")) {
-    console.warn("[admin/users/delete] Auth admin delete warning:", authDeleteError.message);
+  if (authDeleteError && !authDeleteError.message.toLowerCase().includes("user not found")) {
+    console.error("[admin/users/delete] Auth admin delete failed:", authDeleteError);
+    return NextResponse.json(
+      { error: `Failed to delete user from Supabase Auth: ${authDeleteError.message}` },
+      { status: 500 }
+    );
   }
 
   // 4. Hard delete profile row cleanly

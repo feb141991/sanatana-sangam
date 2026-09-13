@@ -128,6 +128,11 @@ async function hardDeleteAccount(userId: string): Promise<{ id: string; success:
 
   await deleteUserStorageObjects(admin, userId);
 
+  // Clean up non-cascading child references before auth delete
+  await admin.from("recommendations").delete().eq("user_id", userId);
+  await admin.from("calendar_subscriptions").delete().eq("user_id", userId);
+  await admin.from("apple_auth_tokens").delete().eq("user_id", userId);
+
   const { error: authDeleteError } = await admin.auth.admin.deleteUser(userId);
   if (authDeleteError) {
     const alreadyGone = /user not found/i.test(authDeleteError.message);
