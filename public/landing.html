@@ -3505,6 +3505,9 @@
       #faq {
         display: none !important;
       }
+      body.landing-gyan-open #gyan-chaupar {
+        display: block !important;
+      }
       .homepage-discover {
         padding: 88px 5vw 96px;
         background: var(--cream);
@@ -4037,9 +4040,10 @@
           <span>Shoonaya</span>
         </a>
         <div class="hero-nav-links">
-          <a href="#discover" onclick="event.preventDefault();openLandingSection('discover')">Discover</a>
+          <a href="/#discover">Discover</a>
           <a href="/traditions">Traditions</a>
-          <a href="#festivals" onclick="event.preventDefault();openLandingSection('festivals')">Calendar</a>
+          <a href="/features/sacred-calendar">Calendar</a>
+          <a href="/#gyan-chaupar">Chaupar</a>
           <a href="/community">Community</a>
           <a href="/features">Features</a>
           <a href="/about">About</a>
@@ -4048,9 +4052,10 @@
         <details class="hero-nav-mobile">
           <summary>Menu</summary>
           <div class="hero-nav-mobile-menu">
-            <a href="#discover" onclick="openLandingSection('discover')">Discover</a>
+            <a href="/#discover">Discover</a>
             <a href="/traditions">Traditions</a>
-            <a href="#festivals" onclick="openLandingSection('festivals')">Calendar</a>
+            <a href="/features/sacred-calendar">Calendar</a>
+            <a href="/#gyan-chaupar">Chaupar</a>
             <a href="/community">Community</a>
             <a href="/features">Features</a>
             <a href="/about">About</a>
@@ -4666,6 +4671,15 @@
               <h3>Features</h3>
               <p>Discover daily Sadhana, Japa, Pathshala, sacred places, family continuity and more.</p>
               <span>See all features →</span>
+            </a>
+            <a
+              class="homepage-discover-card reveal"
+              href="/#gyan-chaupar"
+            >
+              <span class="homepage-discover-card-kicker">Interactive learning</span>
+              <h3>Gyan Chaupar</h3>
+              <p>Play Shoonaya&apos;s wisdom board and explore the ideas behind its traditional ascent.</p>
+              <span>Play Gyan Chaupar →</span>
             </a>
             <a class="homepage-discover-card reveal" href="/community">
               <span class="homepage-discover-card-kicker">Global Sangam</span>
@@ -9455,6 +9469,9 @@
       function openLandingSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (!section) return;
+        if (sectionId === "gyan-chaupar") {
+          document.body.classList.add("landing-gyan-open");
+        }
         const alreadyOpen = document.body.classList.contains("landing-entered");
         if (!alreadyOpen) triggerExplore();
         window.setTimeout(
@@ -9463,6 +9480,16 @@
           },
           alreadyOpen ? 0 : 420,
         );
+      }
+      function openRequestedLandingSection() {
+        const sectionId = window.location.hash.slice(1);
+        if (sectionId === "discover" || sectionId === "gyan-chaupar") {
+          openLandingSection(sectionId);
+        }
+      }
+      window.addEventListener("hashchange", openRequestedLandingSection);
+      if (window.location.hash) {
+        window.setTimeout(openRequestedLandingSection, 0);
       }
       document.getElementById("splash").addEventListener(
         "wheel",
