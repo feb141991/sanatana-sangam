@@ -95,23 +95,37 @@ function isPresentString(value: string | null): value is string {
 }
 
 export async function GET(request: NextRequest) {
+  // Server-Timing + slow-request logging, matching the established pattern
+  // in /api/mandali/feed -- separates the auth step (getApiUser's live
+  // network round-trip to Supabase Auth) from the two DB round-trips below,
+  // to find out which is the actual source of a reported slow first load.
+  const startedAt = performance.now();
+  const authStartedAt = performance.now();
   const { user, error, supabase } = await getApiUser(request);
+  const authMs = performance.now() - authStartedAt;
 
   if (error || !user || !supabase) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401, headers: { "Server-Timing": `auth;dur=${authMs.toFixed(2)}, total;dur=${(performance.now() - startedAt).toFixed(2)}` } },
+    );
   }
 
   const DB_TIMEOUT = 4_000;
 
+  const profileStartedAt = performance.now();
   const { data: profileData } = await supabase
     .from("profiles")
     .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
     .eq("id", user.id)
     .maybeSingle();
+  const profileMs = performance.now() - profileStartedAt;
 
   const profile = profileData as ProfileRow | null;
   const timezone = profile?.timezone ?? "Asia/Kolkata";
   const today = localSpiritualDate(timezone, 4);
+
+  const batchStartedAt = performance.now();
 
   const [
     guidedResult,
@@ -181,6 +195,8 @@ export async function GET(request: NextRequest) {
       DB_TIMEOUT,
     ),
   ]);
+
+  const batchMs = performance.now() - batchStartedAt;
 
   const guidedPathProgress = guidedResult.data ?? [];
   const sadhanaRows = sadhanaResult.data ?? [];
@@ -435,7 +451,21 @@ export async function GET(request: NextRequest) {
     }
   };
 
+  const totalMs = performance.now() - startedAt;
+  if (totalMs >= 1_000) {
+    console.warn('[native/progress-summary][performance]', JSON.stringify({
+      authMs: Math.round(authMs * 100) / 100,
+      profileMs: Math.round(profileMs * 100) / 100,
+      batchMs: Math.round(batchMs * 100) / 100,
+      totalMs: Math.round(totalMs * 100) / 100,
+      release: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local',
+    }));
+  }
+
   return NextResponse.json(response, {
-    headers: { "Cache-Control": "private, no-store" },
+    headers: {
+      "Cache-Control": "private, no-store",
+      "Server-Timing": `auth;dur=${authMs.toFixed(2)}, profile;dur=${profileMs.toFixed(2)}, batch;dur=${batchMs.toFixed(2)}, total;dur=${totalMs.toFixed(2)}`,
+    },
   });
 }
