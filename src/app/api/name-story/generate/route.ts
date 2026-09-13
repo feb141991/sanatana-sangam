@@ -298,7 +298,7 @@ export async function POST(req: NextRequest) {
       {
         system: buildSystemPrompt(),
         user: buildUserPrompt(requestBody),
-        maxOutputTokens: 3072,
+        maxOutputTokens: 2048,
       },
       { responseFormat: 'json' }
     );
