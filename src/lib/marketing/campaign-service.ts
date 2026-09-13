@@ -55,6 +55,8 @@ export interface CreateCampaignParams {
   campaign_type?: "newsletter" | "festival_reminder" | "announcement";
   source_type?: MarketingSourceType;
   source_occurrence_id?: string | null;
+  target_tradition?: string | null;
+  target_sampradaya?: string | null;
   created_by: string;
 }
 
@@ -104,6 +106,8 @@ export async function createCampaign(supabase: any, params: CreateCampaignParams
     source_type: sourceType,
     source_occurrence_id: sourceOccurrenceId,
     source_verified_at: sourceVerifiedAt,
+    target_tradition: params.target_tradition ?? null,
+    target_sampradaya: params.target_sampradaya ?? null,
     status: "draft",
     created_by: params.created_by,
   };

@@ -18,6 +18,8 @@ export interface GenerateMarketingDraftInput {
   /** When set, the campaign is grounded on this occurrence -- generation fails
    * closed (produces nothing) unless it is currently publishable. */
   sourceOccurrenceId?: string | null;
+  targetTradition?: string | null;
+  targetSampradaya?: string | null;
   /** Optional creative brief, theme, psychological hook, or emotional instructions. */
   strategyPrompt?: string | null;
 }
@@ -56,6 +58,8 @@ export interface DraftChannelCopyInput {
   campaignType?: "newsletter" | "festival_reminder" | "announcement";
   sourceSnapshot?: MarketingSourceSnapshot | null;
   strategyPrompt?: string | null;
+  targetTradition?: string | null;
+  targetSampradaya?: string | null;
 }
 
 export async function draftChannelCopy(
@@ -68,7 +72,7 @@ Date: ${input.sourceSnapshot.date ?? "unknown"}
 Tradition: ${input.sourceSnapshot.tradition ?? "unknown"}
 Description: ${input.sourceSnapshot.description ?? ""}
 Verified source: ${input.sourceSnapshot.verified_source ?? ""}
-${input.strategyPrompt ? `\nStrategic Creative Angle / Emotional Guidance:\n${input.strategyPrompt}\n` : ""}
+${input.targetTradition ? `\nTarget Audience Tradition: ${input.targetTradition}${input.targetSampradaya ? ` (Subcategory/Path: ${input.targetSampradaya})` : ""}. Speak with authentic resonance for practitioners of this path without misrepresenting or excluding them.\n` : ""}${input.strategyPrompt ? `\nStrategic Creative Angle / Emotional Guidance:\n${input.strategyPrompt}\n` : ""}
 You may write ONLY the surrounding marketing prose (subject line, an inviting lead-in, a call to action) -- never regenerate, translate, or paraphrase scripture, mantra syllables, or the festival's date/name itself; reproduce those verbatim from the fields above if you reference them at all.`
     : input.strategyPrompt
     ? `You are crafting marketing copy for Shoonaya grounded in this strategic creative brief and psychological angle:
@@ -175,6 +179,8 @@ export async function generateMarketingDraft(
       campaign_type: input.campaignType,
       source_type: sourceType,
       source_occurrence_id: input.sourceOccurrenceId ?? null,
+      target_tradition: input.targetTradition ?? null,
+      target_sampradaya: input.targetSampradaya ?? null,
       created_by: input.createdBy
     });
   } catch (err: any) {

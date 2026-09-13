@@ -60,6 +60,42 @@ describe("Marketing Campaign Workflow & Approval Service", () => {
     expect(campaign.campaign_key).toBe("weekly-2026-w38");
   });
 
+  it("persists target_tradition and target_sampradaya when provided", async () => {
+    let insertedRow: any = null;
+    const mockSupabase = {
+      from: vi.fn().mockReturnValue({
+        insert: vi.fn((payload) => {
+          insertedRow = payload;
+          return {
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: {
+                  id: "c-targeted",
+                  ...payload,
+                },
+                error: null,
+              }),
+            }),
+          };
+        }),
+      }),
+    };
+
+    const campaign = await createCampaign(mockSupabase as any, {
+      campaign_key: "jain-paryushana-2026",
+      title: "Paryushana Reflection",
+      target_tradition: "jain",
+      target_sampradaya: "digambara",
+      created_by: "admin",
+    });
+
+    expect(insertedRow.target_tradition).toBe("jain");
+    expect(insertedRow.target_sampradaya).toBe("digambara");
+    expect(campaign.target_tradition).toBe("jain");
+    expect(campaign.target_sampradaya).toBe("digambara");
+  });
+
+
   it("invalidates approved status and resets to draft when an approved variant is edited", async () => {
     const updateSpy = vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: {}, error: null }) });
     const upsertSpy = vi.fn().mockReturnValue({

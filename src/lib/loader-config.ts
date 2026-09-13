@@ -126,6 +126,28 @@ export const LOADER_CONFIG: Record<TraditionKey, TraditionLoaderConfig> = {
     },
   },
 
+  none: {
+    symbol:      '✨',
+    accentColor: '#8B9E6E',
+    motionPreset: 'halo',
+    messages: {
+      splash: [
+        'Finding your inner stillness…',
+        'Opening a calm space…',
+        'Preparing your sacred journey…',
+      ],
+      page: [
+        'Finding today’s reflection…',
+        'Seeking universal wisdom…',
+        'Opening a moment of contemplation…',
+      ],
+      ai: [
+        'Dharma Mitra is reflecting for you…',
+        'Finding a meaningful reflection…',
+        'Contemplating your question…',
+      ],
+    },
+  },
   other: {
     symbol:      '∞',
     accentColor: '#C5A059',

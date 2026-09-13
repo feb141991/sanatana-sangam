@@ -313,6 +313,17 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             <div>
               <span className="text-[10px] font-mono text-[var(--text-muted)]">{campaign.campaign_key}</span>
               <h1 className="text-xl font-bold font-serif">{campaign.title}</h1>
+              <div className="flex items-center gap-2 mt-1">
+                {campaign.target_tradition ? (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20">
+                    🎯 Scoped Audience: {campaign.target_tradition.toUpperCase()}{campaign.target_sampradaya ? ` • ${campaign.target_sampradaya}` : ""}
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                    🎯 Scoped Audience: All Traditions (Universal)
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center gap-4 text-xs">

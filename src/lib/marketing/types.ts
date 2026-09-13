@@ -35,6 +35,8 @@ export interface MarketingCampaign {
   // (createCampaign / approveCampaign) -- never client-settable. Null means "not a
   // published_observance campaign" or "not yet (re-)verified."
   source_verified_at: string | null;
+  target_tradition?: string | null;
+  target_sampradaya?: string | null;
   created_by: string;
   approved_by: string | null;
   approved_at: string | null;

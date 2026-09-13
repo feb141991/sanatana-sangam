@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
       campaign_type: body.campaign_type ?? "newsletter",
       source_type: body.source_type ?? "manual",
       source_occurrence_id: body.source_occurrence_id ?? null,
+      target_tradition: body.target_tradition ?? null,
+      target_sampradaya: body.target_sampradaya ?? null,
       created_by: admin.username,
     });
 

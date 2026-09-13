@@ -26,6 +26,9 @@ export default function MarketingCampaignsPage() {
   const [useAiDraft, setUseAiDraft] = useState(false);
   const [aiChannels, setAiChannels] = useState<{ email: boolean; whatsapp: boolean }>({ email: true, whatsapp: false });
   const [strategyPrompt, setStrategyPrompt] = useState("");
+  const [targetTradition, setTargetTradition] = useState("");
+  const [targetSampradaya, setTargetSampradaya] = useState("");
+  const [traditionsList, setTraditionsList] = useState<any[]>([]);
 
   const fetchCampaigns = async () => {
     setLoading(true);
@@ -46,6 +49,13 @@ export default function MarketingCampaignsPage() {
   useEffect(() => {
     fetchCampaigns();
   }, [filterStatus]);
+
+  useEffect(() => {
+    fetch("/api/traditions")
+      .then(res => res.json())
+      .then(data => setTraditionsList(data.traditions ?? []))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (showCreateModal && sourceType === "published_observance") {
@@ -82,6 +92,8 @@ export default function MarketingCampaignsPage() {
           source_type: sourceType,
           source_occurrence_id: sourceType === "published_observance" ? selectedOccurrenceId : null,
           strategy_prompt: strategyPrompt.trim() || undefined,
+          target_tradition: targetTradition || null,
+          target_sampradaya: targetSampradaya || null,
           ...(useAiDraft ? { channels } : {}),
         }),
       });
@@ -93,6 +105,8 @@ export default function MarketingCampaignsPage() {
       setTitle("");
       setCampaignKey("");
       setStrategyPrompt("");
+      setTargetTradition("");
+      setTargetSampradaya("");
       fetchCampaigns();
     } catch (err: any) {
       setError(err.message);
@@ -186,6 +200,15 @@ export default function MarketingCampaignsPage() {
                       </span>
                       <span className="text-xs text-[var(--text-muted)] font-mono">{c.campaign_key}</span>
                       <span className="text-xs text-[var(--text-muted)]">• {c.campaign_type.replace("_", " ")}</span>
+                      {c.target_tradition ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-800 border border-amber-500/20">
+                          🎯 {c.target_tradition.toUpperCase()}{c.target_sampradaya ? ` • ${c.target_sampradaya}` : ""}
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                          🎯 All Traditions
+                        </span>
+                      )}
                     </div>
                     <h3 className="text-sm font-bold text-[var(--text-primary)] group-hover:text-amber-700 transition-colors">
                       {c.title}
@@ -237,6 +260,54 @@ export default function MarketingCampaignsPage() {
                   required
                   className="w-full mt-1 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold outline-none focus:border-amber-600"
                 />
+              </div>
+
+              {/* Audience Targeting */}
+              <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🎯 Target Tradition</span>
+                  </label>
+                  <select
+                    value={targetTradition}
+                    onChange={e => {
+                      setTargetTradition(e.target.value);
+                      setTargetSampradaya("");
+                    }}
+                    className="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium outline-none focus:border-amber-600 bg-white"
+                  >
+                    <option value="">All Traditions (Universal)</option>
+                    {traditionsList.map((t: any) => (
+                      <option key={t.key} value={t.key}>
+                        {t.emoji} {t.label_en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                    Focus / Subcategory
+                  </label>
+                  <select
+                    value={targetSampradaya}
+                    onChange={e => setTargetSampradaya(e.target.value)}
+                    disabled={!targetTradition}
+                    className="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium outline-none focus:border-amber-600 bg-white disabled:opacity-50"
+                  >
+                    <option value="">
+                      {targetTradition ? "All in this tradition" : "-- Select tradition --"}
+                    </option>
+                    {targetTradition &&
+                      (traditionsList.find((t: any) => t.key === targetTradition)?.subcategories || []).map(
+                        (sub: any) => (
+                          <option key={sub.key} value={sub.key}>
+                            {sub.label_en}
+                          </option>
+                        )
+                      )}
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

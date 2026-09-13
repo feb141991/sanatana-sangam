@@ -8,10 +8,11 @@ export interface AudienceScope {
   channel: MarketingChannel;
   campaignType: MarketingCampaign["campaign_type"];
   tradition?: string | null;
+  sampradaya?: string | null;
 }
 
 const CANDIDATE_COLUMNS =
-  "id, full_name, tradition, marketing_consent, email_newsletter, email_festivals, whatsapp_opt_in, whatsapp_number, unsubscribe_token, is_banned";
+  "id, full_name, tradition, sampradaya, marketing_consent, email_newsletter, email_festivals, whatsapp_opt_in, whatsapp_number, unsubscribe_token, is_banned";
 
 /**
  * Applies the same STATIC, SQL-expressible narrowing evaluateMarketingConsent
@@ -36,6 +37,9 @@ function candidateQuery(supabase: any, scope: AudienceScope, afterId: string | n
   }
   if (scope.tradition) {
     query = query.in("tradition", [scope.tradition, "all"]);
+  }
+  if (scope.sampradaya) {
+    query = query.eq("sampradaya", scope.sampradaya);
   }
 
   if (scope.channel === "email") {
@@ -103,7 +107,8 @@ export async function seedMarketingDispatches(
   for await (const page of iterateAudienceCandidates(supabase, {
     channel,
     campaignType: campaign.campaign_type,
-    tradition: null
+    tradition: campaign.target_tradition ?? null,
+    sampradaya: campaign.target_sampradaya ?? null
   })) {
     if (page.length === 0) continue;
 
@@ -150,7 +155,8 @@ export async function previewMarketingAudience(
   for await (const page of iterateAudienceCandidates(supabase, {
     channel,
     campaignType: campaign.campaign_type,
-    tradition: null
+    tradition: campaign.target_tradition ?? null,
+    sampradaya: campaign.target_sampradaya ?? null
   })) {
     for (const profile of page) {
       preview.total++;

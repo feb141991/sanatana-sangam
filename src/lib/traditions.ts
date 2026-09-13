@@ -1,13 +1,14 @@
 // ─── Shoonaya — Traditions, Sampradayas, Ishta Devatas, Greetings ──────
 // Covers Hindu, Sikh, Buddhist, Jain — all streams of Sanatan Dharma
 
-export type TraditionKey = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'other';
+export type TraditionKey = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'none' | 'other';
 
 export const TRADITIONS: { value: TraditionKey; label: string; emoji: string; desc: string }[] = [
   { value: 'hindu',    label: 'Hindu / Sanatani', emoji: '🕉️', desc: 'Vedic, Puranic and all Hindu sampradayas' },
   { value: 'sikh',     label: 'Sikh',             emoji: '☬',  desc: 'Sikh Dharma — Guru Granth Sahib' },
   { value: 'buddhist', label: 'Buddhist',          emoji: '☸️', desc: 'Dharma of the Buddha — all schools' },
   { value: 'jain',     label: 'Jain',              emoji: '🤲', desc: 'Jain Dharma — path of Mahavir' },
+  { value: 'none',     label: 'Universal / Exploring', emoji: '✨', desc: 'All streams of Dharma, Yoga & Inner Stillness' },
   { value: 'other',    label: 'Other / Exploring', emoji: '✨', desc: 'Curious — exploring Sanatan traditions' },
 ];
 
@@ -16,6 +17,7 @@ export const TRADITION_SIGNS: Record<TraditionKey, string> = {
   sikh: '☬',
   buddhist: '☸️',
   jain: '🤲',
+  none: '✨',
   other: '✨',
 };
 
@@ -52,8 +54,23 @@ export const SAMPRADAYAS_BY_TRADITION: Record<TraditionKey, { value: string; lab
     { value: 'sthanakvasi',  label: 'Sthanakvasi' },
     { value: 'other',        label: 'Other / Exploring' },
   ],
+  none: [
+    { value: 'universal_sanatan',     label: 'Universal Sanatan' },
+    { value: 'advaita_oneness',       label: 'Advaita & Non-Duality' },
+    { value: 'yoga_meditation',       label: 'Yoga & Meditation Seeker' },
+    { value: 'philosophical_inquirer',label: 'Philosophical Inquirer' },
+    { value: 'secular_cultural',      label: 'Secular & Cultural Dharmic' },
+    { value: 'sbnr',                  label: 'Spiritual but not Religious' },
+    { value: 'curious_explorer',      label: 'Curious Seeker / Exploring' },
+  ],
   other: [
-    { value: 'other',        label: 'Exploring / Interfaith' },
+    { value: 'universal_sanatan',     label: 'Universal Sanatan' },
+    { value: 'advaita_oneness',       label: 'Advaita & Non-Duality' },
+    { value: 'yoga_meditation',       label: 'Yoga & Meditation Seeker' },
+    { value: 'philosophical_inquirer',label: 'Philosophical Inquirer' },
+    { value: 'secular_cultural',      label: 'Secular & Cultural Dharmic' },
+    { value: 'sbnr',                  label: 'Spiritual but not Religious' },
+    { value: 'other',                 label: 'Other / Exploring' },
   ],
 };
 
@@ -90,6 +107,12 @@ export const ISHTA_DEVATAS_BY_TRADITION: Record<TraditionKey, { value: string; l
     { value: 'parshvanath', label: 'Bhagwan Parshvanath', emoji: '🌿' },
     { value: 'rishabhanatha', label: 'Adinath Rishabha', emoji: '✨' },
     { value: 'other',       label: 'Other',             emoji: '✨' },
+  ],
+  none: [
+    { value: 'universal', label: 'Universal Presence / Brahman', emoji: '✨' },
+    { value: 'atma',      label: 'Inner Self / Atman', emoji: '🧘' },
+    { value: 'shanti',    label: 'Peace / Stillness', emoji: '🕊️' },
+    { value: 'other',     label: 'Other', emoji: '✨' },
   ],
   other: [
     { value: 'other', label: 'Exploring', emoji: '✨' },
@@ -199,6 +222,7 @@ export function getSampradayaLabel(tradition?: string | null): string {
     case 'sikh':     return 'Sikh Panth';
     case 'buddhist': return 'Buddhist School';
     case 'jain':     return 'Jain Sect';
+    case 'none':     return 'Path / Focus';
     default:         return 'Sampradaya';
   }
 }
