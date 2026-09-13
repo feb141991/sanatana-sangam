@@ -106,7 +106,7 @@ export const TERMS_DATA: { global: TermsSection[]; appendices: RegionalAppendix[
           content: [
             'In accordance with the Information Technology Rules, we have appointed a Grievance Officer.',
             'Name: Nitya Sharma',
-            'Email: grievance@shoonaya.app',
+            'Email: info@shoonaya.com',
             'Timeline: We acknowledge complaints within 24 hours and resolve them within 15 days (or 36 hours for urgent content takedown requests).',
           ]
         },

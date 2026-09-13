@@ -1,6 +1,11 @@
 import Link from "next/link";
+import { Facebook, Instagram, Linkedin, Mail } from "lucide-react";
 
 import BrandMark from "@/components/BrandMark";
+import {
+  OFFICIAL_EMAIL,
+  OFFICIAL_SOCIAL_LINKS,
+} from "@/config/official-links";
 
 const footerGroups = [
   {
@@ -54,6 +59,42 @@ export function MarketingFooter() {
           >
             Join the Android beta
           </Link>
+          <div className="mt-6 flex flex-wrap items-center gap-2" aria-label="Shoonaya social media">
+            <a
+              href={OFFICIAL_SOCIAL_LINKS.instagram}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Shoonaya on Instagram"
+              className="flex size-11 items-center justify-center rounded-full border border-[var(--card-border)] text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+            >
+              <Instagram className="size-4" aria-hidden="true" />
+            </a>
+            <a
+              href={OFFICIAL_SOCIAL_LINKS.facebook}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Shoonaya on Facebook"
+              className="flex size-11 items-center justify-center rounded-full border border-[var(--card-border)] text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+            >
+              <Facebook className="size-4" aria-hidden="true" />
+            </a>
+            <a
+              href={OFFICIAL_SOCIAL_LINKS.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Shoonaya on LinkedIn"
+              className="flex size-11 items-center justify-center rounded-full border border-[var(--card-border)] text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+            >
+              <Linkedin className="size-4" aria-hidden="true" />
+            </a>
+            <a
+              href={`mailto:${OFFICIAL_EMAIL}`}
+              aria-label={`Email Shoonaya at ${OFFICIAL_EMAIL}`}
+              className="flex size-11 items-center justify-center rounded-full border border-[var(--card-border)] text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+            >
+              <Mail className="size-4" aria-hidden="true" />
+            </a>
+          </div>
         </div>
 
         {footerGroups.map((group) => (

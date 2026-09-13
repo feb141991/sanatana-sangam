@@ -105,7 +105,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           content: [
             'Shoonaya acts as a Data Fiduciary. You have the right to withdraw consent at any time.',
             'You may appoint a Consent Manager to manage your privacy settings on your behalf.',
-            'For any grievances, please contact our Grievance Officer at privacy@shoonaya.app.',
+            'For any grievances, please contact our Grievance Officer at info@shoonaya.com.',
           ]
         }
       ]
@@ -126,7 +126,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           title: 'Data Protection Officer',
           summary: 'Direct contact for privacy concerns.',
           content: [
-            'You can reach our Data Protection Representative for UK/EU at dpo@shoonaya.app.',
+            'You can reach our Data Protection Representative for UK/EU at info@shoonaya.com.',
           ]
         }
       ]

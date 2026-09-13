@@ -408,7 +408,7 @@ function buildEmailHtml(opts: {
   <tr><td align="center" style="border-top:1px solid ${accentBdr};opacity:0.5;padding-top:24px;">
     <div style="font-size:11px;color:rgba(250,246,239,0.28);line-height:1.7;">
       Shoonaya · Live Now<br>
-      Questions? Reply to this email or write to <a href="mailto:cyber.prince@outlook.com" style="color:${accent};text-decoration:none;opacity:0.7;">cyber.prince@outlook.com</a><br>
+      Questions? Reply to this email or write to <a href="mailto:info@shoonaya.com" style="color:${accent};text-decoration:none;opacity:0.7;">info@shoonaya.com</a><br>
       <a href="#" style="color:rgba(250,246,239,0.28);text-decoration:underline;">Unsubscribe from founding member communications</a>
     </div>
   </td></tr>

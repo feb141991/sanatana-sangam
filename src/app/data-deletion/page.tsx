@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { OFFICIAL_EMAIL } from '@/config/official-links';
 
 export const metadata: Metadata = {
   title: 'Data Deletion Request | Shoonaya',
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function DataDeletionPage() {
-  const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@sanatansangam.com';
+  const supportEmail = OFFICIAL_EMAIL;
 
   return (
     <main className="min-h-screen bg-[#FDF6E3] text-[#1A0F00] flex flex-col justify-between py-12 px-6 md:px-12 font-sans">

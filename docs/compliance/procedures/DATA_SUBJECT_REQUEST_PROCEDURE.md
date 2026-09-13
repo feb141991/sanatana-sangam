@@ -20,7 +20,7 @@ Shoonaya supports all statutory data subject rights under UK GDPR, EU GDPR, CCPA
 
 1. **Intake & Identity Verification**:
    - Requests submitted via in-app settings are automatically verified by JWT authentication.
-   - Requests submitted via email (`privacy@shoonaya.com`) require identity verification by sending a confirmation link to the registered email address.
+   - Requests submitted via email (`info@shoonaya.com`) require identity verification by sending a confirmation link to the registered email address.
 2. **Timeline Compliance**:
    - Standard requests completed within **30 calendar days** (statutory requirement).
    - Urgent erasure or security objections prioritized within **72 hours**.

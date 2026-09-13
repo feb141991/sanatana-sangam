@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PublicPageShell from "@/components/public/PublicPageShell";
+import { OFFICIAL_EMAIL } from "@/config/official-links";
 
 export const metadata: Metadata = {
   title: "Contact Shoonaya | Support & Partnerships",
@@ -11,47 +12,30 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() ?? "";
-  const isConfigured = Boolean(supportEmail);
+  const supportEmail = OFFICIAL_EMAIL;
 
   return (
     <PublicPageShell
       eyebrow="Contact"
       title="Support should be easy to find."
-      intro={
-        isConfigured
-          ? "If you need help with your account, a safety issue, or a product question, you can reach the team through the support address on this page."
-          : "If you need help with your account, a safety issue, or a product question, this is where support information should live. Support email configuration is missing."
-      }
-      asideTitle={isConfigured ? "Support Is Live" : "Configuration Needed"}
-      asideBody={
-        isConfigured
-          ? "This page exposes the public support route for account help, moderation concerns, and product questions."
-          : "Set NEXT_PUBLIC_SUPPORT_EMAIL in the environment to publish the support address on this page."
-      }
+      intro="If you need help with your account, a safety issue, or a product question, you can reach the Shoonaya team through the official address on this page."
+      asideTitle="Support Is Live"
+      asideBody="This is the official public contact for account help, moderation concerns, partnerships and product questions."
     >
       <section>
         <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">
           General Support
         </h2>
-        {supportEmail ? (
-          <p>
-            Reach the team at{" "}
-            <a
-              className="font-semibold text-[var(--brand-primary-strong)] hover:underline"
-              href={`mailto:${supportEmail}`}
-            >
-              {supportEmail}
-            </a>{" "}
-            for account help, access issues, or general questions.
-          </p>
-        ) : (
-          <p>
-            Support email is not configured yet. Add{" "}
-            <code>NEXT_PUBLIC_SUPPORT_EMAIL</code> to the environment so users
-            have a real support path.
-          </p>
-        )}
+        <p>
+          Reach the team at{" "}
+          <a
+            className="font-semibold text-[var(--brand-primary-strong)] hover:underline"
+            href={`mailto:${supportEmail}`}
+          >
+            {supportEmail}
+          </a>{" "}
+          for account help, access issues, or general questions.
+        </p>
       </section>
 
       <section>

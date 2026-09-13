@@ -34,7 +34,7 @@ interface NominatimResult {
 }
 
 const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
-const USER_AGENT     = 'Shoonaya-App/1.0 (contact@shoonaya.com)';
+const USER_AGENT     = 'Shoonaya-App/1.0 (info@shoonaya.com)';
 
 /**
  * Geocode a city name query → lat/lng + IANA timezone.
