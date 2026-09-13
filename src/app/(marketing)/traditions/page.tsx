@@ -17,7 +17,6 @@ export default function TraditionsPage() {
   return (
     <main>
       <MarketingPageHero
-        eyebrow="Many paths, held with care"
         title="Difference is part of belonging."
         intro="Shoonaya creates one shared home without presenting distinct traditions as interchangeable themes or claiming one practice is universal."
       />
