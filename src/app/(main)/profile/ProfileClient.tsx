@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle, Share2, Globe } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle, Share2, Globe, Mail } from 'lucide-react';
 
 import Link from 'next/link';
 import { Twitter, Link as LinkIcon } from 'lucide-react';
@@ -1565,7 +1565,7 @@ export default function ProfileClient({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium theme-muted mb-1.5">Connected email</p>
-                <p className="text-sm font-medium theme-ink break-all">{userEmail}</p>
+                <p className="text-sm font-medium theme-ink break-all">{userEmail || 'Email unavailable'}</p>
               </div>
               <button
                 onClick={signOut}
@@ -1575,7 +1575,23 @@ export default function ProfileClient({
                 <LogOut size={18} />
               </button>
             </div>
-            
+
+            <div className="pt-4 border-t border-[var(--card-border)] flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium theme-muted mb-1">Official communication</p>
+                <a href="mailto:info@shoonaya.com" className="text-sm font-medium text-[var(--brand-primary)] hover:underline">
+                  info@shoonaya.com
+                </a>
+              </div>
+              <a
+                href="mailto:info@shoonaya.com"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--card-bg-soft)] border border-[var(--card-border)] text-xs font-medium theme-ink hover:border-[var(--brand-primary)]"
+              >
+                <Mail size={14} className="text-[#C5A059]" />
+                Contact
+              </a>
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setInviteOpen(true)}

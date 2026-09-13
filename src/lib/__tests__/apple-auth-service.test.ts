@@ -18,11 +18,17 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 
 // ── Env setup (must happen before importing the service) ─────────────────────
-// Use a real EC P-256 key in PKCS#8 PEM format for JWT signing tests.
+// A real EC P-256 key in PKCS#8 PEM format for JWT signing tests, generated
+// via `openssl ecparam -genkey -name prime256v1 -noout | openssl pkcs8
+// -topk8 -nocrypt` -- the previous literal here was fabricated rather than
+// actually generated and wasn't a valid point on the curve, so ES256 signing
+// failed with "point is not on curve" the moment the key was ever used, not
+// something a syntactically-plausible-looking PEM string reveals by
+// inspection. Test-only key; never used for anything real.
 const TEST_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
-MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgevZzL1gdAFr88hD2
-cV779sognMT7gO9p10KSrSRb0mOhRANCAATw6bVTsL3y8MWIHEi5yXJz6aBvG5jZ
-nMcnRAB5/Ht2f7sM4rI5MHZkpOdPl8TBm+xyUlWbAFomT+WA3Vm1cD1j
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg0+6tBXul+mi/JmeF
+CPlM9L0Wzn5yvDlINWtpQ3uc1mihRANCAARcQXgR5QXWBE9lsHb7VtQGsyK6YhAZ
+w2vKwINm2YMClrXKBdOSKrn12gGYX3jOj/305DdcEHuVqoDlSA/p5onG
 -----END PRIVATE KEY-----`;
 
 before(() => {
