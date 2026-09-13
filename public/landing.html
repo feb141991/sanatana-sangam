@@ -3494,79 +3494,6 @@
       .cta-signin-link {
         display: none !important;
       }
-      #gyan-chaupar,
-      #traditions,
-      #five-thousand,
-      #community,
-      #features,
-      #kids-zone,
-      #download,
-      #cta-section,
-      #faq {
-        display: none !important;
-      }
-      body.landing-gyan-open #gyan-chaupar {
-        display: block !important;
-      }
-      .homepage-discover {
-        padding: 88px 5vw 96px;
-        background: var(--cream);
-      }
-      .homepage-discover-inner {
-        max-width: 1280px;
-        margin: 0 auto;
-      }
-      .homepage-discover-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 16px;
-        margin-top: 38px;
-      }
-      .homepage-discover-card {
-        min-height: 230px;
-        padding: 28px;
-        border: 1px solid var(--border);
-        border-radius: 28px;
-        background: var(--warm-white);
-        color: var(--ink);
-        text-decoration: none;
-        box-shadow: var(--shadow-sm);
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.24s ease, border-color 0.24s ease;
-      }
-      .homepage-discover-card:hover,
-      .homepage-discover-card:focus-visible {
-        transform: translateY(-4px);
-        border-color: var(--saffron);
-        outline: none;
-      }
-      .homepage-discover-card-kicker {
-        color: var(--saffron-dk);
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-      }
-      .homepage-discover-card h3 {
-        margin: 26px 0 12px;
-        font-family: var(--fd);
-        font-size: 31px;
-        line-height: 1;
-      }
-      .homepage-discover-card p {
-        margin: 0;
-        color: var(--ink-mid);
-        font-size: 14px;
-        line-height: 1.65;
-      }
-      .homepage-discover-card span:last-child {
-        margin-top: auto;
-        padding-top: 24px;
-        color: var(--saffron-dk);
-        font-size: 13px;
-        font-weight: 700;
-      }
       .calendar-state {
         grid-column: 1 / -1;
         min-height: 120px;
@@ -3990,9 +3917,6 @@
         .hero-nav-mobile {
           display: block;
         }
-        .homepage-discover-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
       }
       @media (max-width: 620px) {
         #splash-content {
@@ -4010,15 +3934,6 @@
         }
         .hero-observance-card {
           border-radius: 20px;
-        }
-        .homepage-discover {
-          padding: 64px 20px 72px;
-        }
-        .homepage-discover-grid {
-          grid-template-columns: 1fr;
-        }
-        .homepage-discover-card {
-          min-height: 200px;
         }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -4040,24 +3955,22 @@
           <span>Shoonaya</span>
         </a>
         <div class="hero-nav-links">
-          <a href="/#discover">Discover</a>
-          <a href="/traditions">Traditions</a>
-          <a href="/features/sacred-calendar">Calendar</a>
-          <a href="/#gyan-chaupar">Chaupar</a>
-          <a href="/community">Community</a>
-          <a href="/features">Features</a>
+          <a href="#gyan-chaupar" onclick="event.preventDefault();openLandingSection('gyan-chaupar')">Play</a>
+          <a href="#traditions" onclick="event.preventDefault();openLandingSection('traditions')">Traditions</a>
+          <a href="#festivals" onclick="event.preventDefault();openLandingSection('festivals')">Festivals</a>
+          <a href="#community" onclick="event.preventDefault();openLandingSection('community')">Community</a>
+          <a href="#features" onclick="event.preventDefault();openLandingSection('features')">Features</a>
           <a href="/about">About</a>
         </div>
         <a class="hero-nav-beta" href="/beta/android">Join Android Beta →</a>
         <details class="hero-nav-mobile">
           <summary>Menu</summary>
           <div class="hero-nav-mobile-menu">
-            <a href="/#discover">Discover</a>
-            <a href="/traditions">Traditions</a>
-            <a href="/features/sacred-calendar">Calendar</a>
-            <a href="/#gyan-chaupar">Chaupar</a>
-            <a href="/community">Community</a>
-            <a href="/features">Features</a>
+            <a href="#gyan-chaupar" onclick="openLandingSection('gyan-chaupar')">Play</a>
+            <a href="#traditions" onclick="openLandingSection('traditions')">Traditions</a>
+            <a href="#festivals" onclick="openLandingSection('festivals')">Festivals</a>
+            <a href="#community" onclick="openLandingSection('community')">Community</a>
+            <a href="#features" onclick="openLandingSection('features')">Features</a>
             <a href="/about">About</a>
             <a href="/beta/android">Join Android Beta</a>
           </div>
@@ -4651,51 +4564,6 @@
           <div class="stat-label">Source-Grounded Wisdom</div>
         </div>
       </div>
-      <section class="homepage-discover" id="discover">
-        <div class="homepage-discover-inner">
-          <div class="s-label reveal">Explore Shoonaya</div>
-          <div class="s-title reveal">One doorway. Many paths.</div>
-          <div class="s-sub reveal">
-            The homepage now gives you the essential view. Follow each path for
-            the complete story, experience and product detail.
-          </div>
-          <div class="homepage-discover-grid">
-            <a class="homepage-discover-card reveal" href="/traditions">
-              <span class="homepage-discover-card-kicker">Four traditions</span>
-              <h3>Traditions</h3>
-              <p>Explore how Hindu, Sikh, Buddhist and Jain paths are held with their own sources and context.</p>
-              <span>Explore traditions →</span>
-            </a>
-            <a class="homepage-discover-card reveal" href="/features">
-              <span class="homepage-discover-card-kicker">Inside the app</span>
-              <h3>Features</h3>
-              <p>Discover daily Sadhana, Japa, Pathshala, sacred places, family continuity and more.</p>
-              <span>See all features →</span>
-            </a>
-            <a
-              class="homepage-discover-card reveal"
-              href="/#gyan-chaupar"
-            >
-              <span class="homepage-discover-card-kicker">Interactive learning</span>
-              <h3>Gyan Chaupar</h3>
-              <p>Play Shoonaya&apos;s wisdom board and explore the ideas behind its traditional ascent.</p>
-              <span>Play Gyan Chaupar →</span>
-            </a>
-            <a class="homepage-discover-card reveal" href="/community">
-              <span class="homepage-discover-card-kicker">Global Sangam</span>
-              <h3>Community</h3>
-              <p>Learn how Shoonaya approaches local belonging, shared practice and family connection.</p>
-              <span>Meet the community →</span>
-            </a>
-            <a class="homepage-discover-card reveal" href="/about">
-              <span class="homepage-discover-card-kicker">Why Shoonaya</span>
-              <h3>Our story</h3>
-              <p>Read the purpose behind a modern digital home for living dharmic traditions.</p>
-              <span>About Shoonaya →</span>
-            </a>
-          </div>
-        </div>
-      </section>
       <section
         class="section"
         id="gyan-chaupar"
@@ -9469,9 +9337,6 @@
       function openLandingSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (!section) return;
-        if (sectionId === "gyan-chaupar") {
-          document.body.classList.add("landing-gyan-open");
-        }
         const alreadyOpen = document.body.classList.contains("landing-entered");
         if (!alreadyOpen) triggerExplore();
         window.setTimeout(
@@ -9483,7 +9348,7 @@
       }
       function openRequestedLandingSection() {
         const sectionId = window.location.hash.slice(1);
-        if (sectionId === "discover" || sectionId === "gyan-chaupar") {
+        if (document.getElementById(sectionId)) {
           openLandingSection(sectionId);
         }
       }
