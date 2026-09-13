@@ -71,9 +71,9 @@ export default function WebConsentManager({ gaMeasurementId, adsenseClient }: Pr
             </div>
           ) : (
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
-              <button className="min-h-11 rounded-xl border border-current/20 px-3 font-semibold" onClick={() => save({ analytics: false, advertising: false })}>Reject optional</button>
-              <button className="min-h-11 rounded-xl border border-current/20 px-3 font-semibold" onClick={() => setCustomizing(true)}>Customize</button>
-              <button className="min-h-11 rounded-xl bg-[#9a641e] px-3 font-semibold text-white" onClick={() => save({ analytics: true, advertising: true })}>Accept optional</button>
+              <button className="min-h-11 rounded-xl border border-current/20 px-3 font-semibold" onClick={() => save({ analytics: false, advertising: false })}>Keep both off</button>
+              <button className="min-h-11 rounded-xl border border-current/20 px-3 font-semibold" onClick={() => setCustomizing(true)}>Choose settings</button>
+              <button className="min-h-11 rounded-xl bg-[#9a641e] px-3 font-semibold text-white" onClick={() => save({ analytics: true, advertising: true })}>Allow analytics &amp; ads</button>
             </div>
           )}
         </div>
