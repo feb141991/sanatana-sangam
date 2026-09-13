@@ -3728,11 +3728,160 @@
         display: none;
       }
       .splash-value {
-        max-width: 650px;
-        margin: 0 0 30px;
+        max-width: 660px;
+        margin: 0 0 22px;
         color: var(--ink-mid);
         font-size: clamp(17px, 1.55vw, 22px);
         line-height: 1.55;
+      }
+      .hero-tradition-strip {
+        max-width: 680px;
+        margin: 0 0 20px;
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 650;
+        line-height: 1.6;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+      }
+      .hero-tradition-strip span[aria-hidden="true"] {
+        color: var(--saffron);
+      }
+      .hero-promise {
+        max-width: 680px;
+        margin: 0 0 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hero-promise span {
+        min-height: 40px;
+        padding: 9px 14px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: var(--warm-white);
+        color: var(--ink-mid);
+        font-size: 12px;
+        font-weight: 650;
+        display: inline-flex;
+        align-items: center;
+      }
+      .hero-positioning {
+        max-width: 680px;
+        margin: 0 0 28px;
+        color: var(--saffron-dk);
+        font-family: var(--fd);
+        font-size: 18px;
+        line-height: 1.4;
+      }
+      .hero-observance-rail {
+        position: absolute;
+        top: 51%;
+        right: 56px;
+        z-index: 3;
+        width: min(32vw, 390px);
+        transform: translateY(-44%);
+      }
+      .hero-observance-heading {
+        margin: 0 0 12px;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .hero-live-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--c-jain);
+        flex: 0 0 auto;
+      }
+      .hero-observance-stack {
+        min-height: 230px;
+        display: grid;
+        gap: 12px;
+      }
+      .hero-observance-card,
+      .hero-observance-empty {
+        min-height: 108px;
+        padding: 17px 18px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: var(--warm-white);
+        box-shadow: var(--shadow-sm);
+      }
+      .hero-observance-card {
+        color: var(--ink);
+        text-decoration: none;
+        display: grid;
+        grid-template-columns: 58px minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+        transition: transform 0.24s ease, border-color 0.24s ease;
+      }
+      .hero-observance-card:hover,
+      .hero-observance-card:focus-visible {
+        transform: translateY(-2px);
+        border-color: var(--saffron);
+        outline: none;
+      }
+      .hero-observance-date {
+        min-height: 58px;
+        border-radius: 17px;
+        background: var(--saffron-lt);
+        color: var(--saffron-dk);
+        font-size: 12px;
+        font-weight: 750;
+        line-height: 1.2;
+        text-align: center;
+        display: grid;
+        place-items: center;
+      }
+      .hero-observance-date strong {
+        display: block;
+        font-family: var(--fd);
+        font-size: 22px;
+        font-weight: 600;
+      }
+      .hero-observance-tradition {
+        margin-bottom: 4px;
+        color: var(--saffron-dk);
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      .hero-observance-card > span:last-child,
+      .hero-observance-tradition,
+      .hero-observance-name,
+      .hero-observance-meta {
+        min-width: 0;
+        display: block;
+      }
+      .hero-observance-name {
+        font-family: var(--fd);
+        font-size: 19px;
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+      }
+      .hero-observance-meta {
+        margin-top: 6px;
+        color: var(--ink-light);
+        font-size: 11px;
+      }
+      .hero-observance-empty {
+        color: var(--ink-mid);
+        font-size: 13px;
+        line-height: 1.55;
+        display: grid;
+        place-items: center;
+        text-align: center;
       }
       .splash-actions {
         justify-content: flex-start;
@@ -3777,6 +3926,22 @@
         color: var(--ink);
         box-shadow: 0 8px 28px rgba(62, 42, 31, 0.1);
       }
+      @media (max-width: 1180px) {
+        #splash-title,
+        .splash-value,
+        .hero-tradition-strip,
+        .hero-promise,
+        .hero-positioning {
+          max-width: 58vw;
+        }
+        #splash-title {
+          font-size: clamp(54px, 6.6vw, 86px);
+        }
+        .hero-observance-rail {
+          right: 34px;
+          width: min(34vw, 360px);
+        }
+      }
       @media (max-width: 900px) {
         #celebration-layer {
           display: none;
@@ -3790,6 +3955,21 @@
         }
         .splash-value {
           max-width: 600px;
+        }
+        #splash-title,
+        .splash-value,
+        .hero-tradition-strip,
+        .hero-promise,
+        .hero-positioning {
+          max-width: 680px;
+        }
+        .hero-observance-rail {
+          position: relative;
+          top: auto;
+          right: auto;
+          width: min(100%, 680px);
+          margin-top: 32px;
+          transform: none;
         }
         .hero-nav {
           left: 12px;
@@ -3812,6 +3992,22 @@
         }
       }
       @media (max-width: 620px) {
+        #splash-content {
+          padding-bottom: 132px;
+        }
+        .hero-tradition-strip {
+          gap: 5px 8px;
+          font-size: 13px;
+        }
+        .hero-promise {
+          display: grid;
+        }
+        .hero-promise span {
+          width: fit-content;
+        }
+        .hero-observance-card {
+          border-radius: 20px;
+        }
         .homepage-discover {
           padding: 64px 20px 72px;
         }
@@ -3887,8 +4083,23 @@
         <h1 id="splash-title">Ancient wisdom.<em>In your pocket.</em></h1>
         <h2 style="font-size: 20px; color: #c5a059; margin-bottom: 14px; font-weight: 500; font-family: var(--fb);">Shoonaya&apos;s purpose</h2>
         <p class="splash-value">
-          Daily sadhana, sacred calendar, scripture and community — shaped with
-          care for Hindu, Sikh, Buddhist and Jain paths, wherever you are.
+          Thousands of miles may separate you from the places, families and
+          communities you grew up around. Shoonaya keeps sacred time and daily
+          dharma close — wherever life takes you.
+        </p>
+        <div class="hero-tradition-strip" aria-label="Traditions in Shoonaya">
+          <span>🪔 Sanatan</span><span aria-hidden="true">•</span>
+          <span>ੴ Sikh</span><span aria-hidden="true">•</span>
+          <span>Jain</span><span aria-hidden="true">•</span>
+          <span>☸ Buddhist</span>
+        </div>
+        <div class="hero-promise" aria-label="Shoonaya helps you">
+          <span>Know what sacred day is approaching</span>
+          <span>Understand why it matters</span>
+          <span>Observe it wherever you are</span>
+        </div>
+        <p class="hero-positioning">
+          A global Dharmic companion. Dharma, wherever life takes you.
         </p>
         <p class="splash-data-note">
           Google sign-in uses only your basic account information &mdash; name,
@@ -4037,6 +4248,19 @@
             Join the Android beta →
           </button>
         </div>
+        <aside class="hero-observance-rail" aria-label="Upcoming reviewed observances">
+          <p class="hero-observance-heading">
+            <span class="hero-live-dot" aria-hidden="true"></span>
+            Live sacred calendar
+          </p>
+          <div
+            class="hero-observance-stack"
+            id="hero-observance-stack"
+            aria-live="polite"
+          >
+            <div class="hero-observance-empty">Loading reviewed observances…</div>
+          </div>
+        </aside>
       </div>
       <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
       <div id="splash-bottom">
@@ -4053,6 +4277,113 @@
         </button>
       </div>
     </div>
+    <script>
+      function loadShoonayaPublicCalendar() {
+        if (!window.shoonayaPublicCalendarPromise) {
+          window.shoonayaPublicCalendarPromise = fetch(
+            "/api/calendar/upcoming?days=60&reviewed=1&tradition=all&calendar_profile=legacy-ujjain&tz=Asia%2FKolkata",
+            { headers: { Accept: "application/json" } },
+          ).then(function (response) {
+            if (!response.ok) throw new Error("Calendar unavailable");
+            return response.json();
+          });
+        }
+        return window.shoonayaPublicCalendarPromise;
+      }
+
+      !(function loadHeroObservances() {
+        var stack = document.getElementById("hero-observance-stack");
+        if (!stack) return;
+
+        var traditionOrder = ["hindu", "sikh", "jain", "buddhist"];
+        var traditionLabels = {
+          hindu: "Sanatan",
+          sikh: "Sikh",
+          jain: "Jain",
+          buddhist: "Buddhist",
+        };
+        var activeIndex = 0;
+
+        function escapeText(value) {
+          var node = document.createElement("span");
+          node.textContent = String(value || "");
+          return node.innerHTML;
+        }
+
+        function render(items) {
+          var visible = items
+            .slice(activeIndex, activeIndex + 2)
+            .concat(items.slice(0, Math.max(0, activeIndex + 2 - items.length)));
+
+          stack.innerHTML = visible
+            .map(function (item) {
+              var date = new Date(item.civilDate + "T00:00:00");
+              var day = date.toLocaleDateString("en-GB", { day: "numeric" });
+              var month = date.toLocaleDateString("en-GB", { month: "short" });
+              var tradition = item.tradition || "all";
+              return (
+                '<a class="hero-observance-card" href="/features/sacred-calendar">' +
+                '<span class="hero-observance-date"><span><strong>' +
+                escapeText(day) +
+                "</strong>" +
+                escapeText(month) +
+                "</span></span>" +
+                '<span><span class="hero-observance-tradition">' +
+                escapeText(traditionLabels[tradition] || "Dharmic calendar") +
+                '</span><span class="hero-observance-name">' +
+                escapeText(item.display_name) +
+                '</span><span class="hero-observance-meta">Reviewed occurrence · Ujjain reference</span></span>' +
+                "</a>"
+              );
+            })
+            .join("");
+        }
+
+        loadShoonayaPublicCalendar()
+          .then(function (payload) {
+            var candidates = Array.isArray(payload.displayObservances)
+              ? payload.displayObservances
+              : [];
+            var reviewed = candidates.filter(function (item) {
+              return (
+                item &&
+                item.status === "resolved" &&
+                item.reviewStatus === "reviewed" &&
+                item.civilDate &&
+                traditionOrder.indexOf(item.tradition) !== -1
+              );
+            });
+            var upcomingByTradition = traditionOrder
+              .map(function (tradition) {
+                return reviewed.find(function (item) {
+                  return item.tradition === tradition;
+                });
+              })
+              .filter(Boolean);
+
+            if (!upcomingByTradition.length) {
+              stack.innerHTML =
+                '<div class="hero-observance-empty">No reviewed public observances are available in the next 60 days.</div>';
+              return;
+            }
+
+            render(upcomingByTradition);
+            if (
+              upcomingByTradition.length > 2 &&
+              !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ) {
+              window.setInterval(function () {
+                activeIndex = (activeIndex + 2) % upcomingByTradition.length;
+                render(upcomingByTradition);
+              }, 4800);
+            }
+          })
+          .catch(function () {
+            stack.innerHTML =
+              '<div class="hero-observance-empty">The live calendar could not load. <a href="/features/sacred-calendar">Explore the Sacred Calendar</a></div>';
+          });
+      })();
+    </script>
     <div
       id="pwa-ios-modal"
       style="
@@ -4299,80 +4630,6 @@
     </div>
     <div id="main-page" style="display: none">
       <div id="glyph-layer"></div>
-      <nav id="nav">
-        <button
-          id="nav-hamburger"
-          aria-label="Menu"
-          aria-controls="mobile-drawer"
-          aria-expanded="false"
-          style="
-            display: none;
-            color: var(--ink);
-            padding: 8px;
-            cursor: pointer;
-            background: 0 0;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            transition: background 0.2s;
-          "
-        >
-          <span
-            style="
-              display: block;
-              width: 20px;
-              height: 2px;
-              background: currentColor;
-              border-radius: 2px;
-              transition:
-                transform 0.25s,
-                opacity 0.25s;
-            "
-          ></span>
-          <span
-            style="
-              display: block;
-              width: 20px;
-              height: 2px;
-              background: currentColor;
-              border-radius: 2px;
-              transition:
-                transform 0.25s,
-                opacity 0.25s;
-            "
-          ></span>
-          <span
-            style="
-              display: block;
-              width: 20px;
-              height: 2px;
-              background: currentColor;
-              border-radius: 2px;
-              transition:
-                transform 0.25s,
-                opacity 0.25s;
-            "
-          ></span>
-        </button>
-        <a class="nav-logo" href="#">
-          <img
-            src="/icons/icon-192x192.png"
-            alt="Shoonaya"
-            class="nav-logo-mark"
-          />
-          <span class="nav-logo-text">Shoonaya</span>
-        </a>
-        <ul class="nav-links">
-          <li><a href="#discover">Discover</a></li>
-          <li><a href="/traditions">Traditions</a></li>
-          <li><a href="#festivals">Calendar</a></li>
-          <li><a href="/community">Community</a></li>
-          <li><a href="/features">Features</a></li>
-          <li><a href="/about">About</a></li>
-        </ul>
-        <a class="nav-cta" href="/beta/android">Join Android Beta</a>
-      </nav>
       <div class="stats-band reveal" id="shoonaya-content">
         <div class="stat-item">
           <div class="stat-num">Global</div>
@@ -6912,14 +7169,7 @@
           }
 
           grid.innerHTML = '<div class="calendar-state">Loading reviewed observances…</div>';
-          fetch(
-            "/api/calendar/upcoming?days=60&reviewed=1&tradition=all&calendar_profile=legacy-ujjain&tz=Asia%2FKolkata",
-            { headers: { Accept: "application/json" } },
-          )
-            .then(function (response) {
-              if (!response.ok) throw new Error("Calendar unavailable");
-              return response.json();
-            })
+          loadShoonayaPublicCalendar()
             .then(function (payload) {
               var candidates = Array.isArray(payload.displayObservances)
                 ? payload.displayObservances
