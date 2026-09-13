@@ -3500,6 +3500,114 @@
         padding: 120px 56px 128px;
         text-align: left;
       }
+      .hero-nav {
+        position: absolute;
+        top: 18px;
+        left: 24px;
+        right: 24px;
+        z-index: 4;
+        min-height: 64px;
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 8px 10px 8px 18px;
+        border: 1px solid rgba(200, 160, 110, 0.26);
+        border-radius: 26px;
+        background: rgba(255, 253, 248, 0.78);
+        box-shadow: 0 14px 44px rgba(62, 42, 31, 0.09);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+      .hero-nav-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font-family: var(--fd);
+        font-size: 21px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .hero-nav-brand img {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+      }
+      .hero-nav-links {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+      .hero-nav-links a,
+      .hero-nav-mobile a {
+        min-height: 44px;
+        padding: 11px 14px;
+        border-radius: 999px;
+        color: var(--ink-mid);
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+      }
+      .hero-nav-links a:hover,
+      .hero-nav-links a:focus-visible,
+      .hero-nav-mobile a:hover,
+      .hero-nav-mobile a:focus-visible {
+        background: var(--saffron-lt);
+        color: var(--ink);
+        outline: none;
+      }
+      .hero-nav-beta {
+        min-height: 46px;
+        padding: 12px 22px;
+        border-radius: 999px;
+        background: var(--saffron);
+        color: var(--warm-white);
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .hero-nav-mobile {
+        display: none;
+        position: relative;
+      }
+      .hero-nav-mobile summary {
+        min-width: 64px;
+        min-height: 44px;
+        border-radius: 999px;
+        cursor: pointer;
+        list-style: none;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .hero-nav-mobile summary::-webkit-details-marker {
+        display: none;
+      }
+      .hero-nav-mobile-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 210px;
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--warm-white);
+        box-shadow: 0 18px 50px rgba(62, 42, 31, 0.16);
+        display: grid;
+      }
       #countdown-pill {
         padding: 0 !important;
         border: 0 !important;
@@ -3591,6 +3699,22 @@
         .splash-value {
           max-width: 600px;
         }
+        .hero-nav {
+          left: 12px;
+          right: 12px;
+          min-height: 60px;
+          padding: 7px 8px 7px 14px;
+        }
+        .hero-nav-brand span {
+          display: none;
+        }
+        .hero-nav-links,
+        .hero-nav-beta {
+          display: none;
+        }
+        .hero-nav-mobile {
+          display: block;
+        }
       }
       @media (prefers-reduced-motion: reduce) {
         *,
@@ -3605,6 +3729,33 @@
   </head>
   <body>
     <div id="splash">
+      <nav class="hero-nav" aria-label="Homepage navigation">
+        <a class="hero-nav-brand" href="/" aria-label="Shoonaya home">
+          <img src="/icons/icon-192x192.png" alt="" />
+          <span>Shoonaya</span>
+        </a>
+        <div class="hero-nav-links">
+          <a href="#gyan-chaupar" onclick="event.preventDefault();openLandingSection('gyan-chaupar')">Play</a>
+          <a href="#traditions" onclick="event.preventDefault();openLandingSection('traditions')">Traditions</a>
+          <a href="#festivals" onclick="event.preventDefault();openLandingSection('festivals')">Festivals</a>
+          <a href="#community" onclick="event.preventDefault();openLandingSection('community')">Community</a>
+          <a href="#features" onclick="event.preventDefault();openLandingSection('features')">Features</a>
+          <a href="/about">About</a>
+        </div>
+        <a class="hero-nav-beta" href="/beta/android">Join Android Beta →</a>
+        <details class="hero-nav-mobile">
+          <summary>Menu</summary>
+          <div class="hero-nav-mobile-menu">
+            <a href="#gyan-chaupar" onclick="openLandingSection('gyan-chaupar')">Play</a>
+            <a href="#traditions" onclick="openLandingSection('traditions')">Traditions</a>
+            <a href="#festivals" onclick="openLandingSection('festivals')">Festivals</a>
+            <a href="#community" onclick="openLandingSection('community')">Community</a>
+            <a href="#features" onclick="openLandingSection('features')">Features</a>
+            <a href="/about">About</a>
+            <a href="/beta/android">Join Android Beta</a>
+          </div>
+        </details>
+      </nav>
       <canvas id="sky-canvas"></canvas>
       <div id="celebration-layer" aria-hidden="true"></div>
       <div id="splash-content">
@@ -8802,6 +8953,18 @@
         if (document.body.classList.contains("landing-entered")) return;
         const t = document.getElementById("explore-btn");
         t && t.click();
+      }
+      function openLandingSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+        const alreadyOpen = document.body.classList.contains("landing-entered");
+        if (!alreadyOpen) triggerExplore();
+        window.setTimeout(
+          function () {
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+          },
+          alreadyOpen ? 0 : 420,
+        );
       }
       document.getElementById("splash").addEventListener(
         "wheel",
