@@ -29,11 +29,11 @@ export type MarketingTradition = {
 };
 
 export const marketingNavItems = [
-  { label: "Discover", href: "/#discover" },
-  { label: "Calendar", href: "/features/sacred-calendar" },
-  { label: "Features", href: "/features" },
+  { label: "Play", href: "/play/gyan-chaupar" },
   { label: "Traditions", href: "/traditions" },
+  { label: "Festivals", href: "/features/sacred-calendar" },
   { label: "Community", href: "/community" },
+  { label: "Features", href: "/features" },
   { label: "About", href: "/about" },
 ] as const;
 
