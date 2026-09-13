@@ -3517,6 +3517,25 @@
         font-size: 12px;
         line-height: 1.6;
       }
+      body.landing-embed {
+        background: var(--cream);
+      }
+      body.landing-embed #splash,
+      body.landing-embed #main-page > * {
+        display: none !important;
+      }
+      body.landing-embed #main-page {
+        display: block !important;
+        opacity: 1 !important;
+      }
+      body.landing-embed.landing-embed-gyan-chaupar #gyan-chaupar,
+      body.landing-embed.landing-embed-traditions #traditions {
+        display: block !important;
+      }
+      body.landing-embed .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+      }
       #splash-content {
         max-width: 1280px;
         padding: 120px 56px 128px;
@@ -3948,6 +3967,14 @@
     </style>
   </head>
   <body>
+    <script>
+      !(function setLandingEmbedMode() {
+        var section = new URLSearchParams(window.location.search).get("embed");
+        if (section === "gyan-chaupar" || section === "traditions") {
+          document.body.classList.add("landing-embed", "landing-embed-" + section);
+        }
+      })();
+    </script>
     <div id="splash">
       <nav class="hero-nav" aria-label="Homepage navigation">
         <a class="hero-nav-brand" href="/" aria-label="Shoonaya home">
@@ -3955,8 +3982,8 @@
           <span>Shoonaya</span>
         </a>
         <div class="hero-nav-links">
-          <a href="#gyan-chaupar" onclick="event.preventDefault();openLandingSection('gyan-chaupar')">Play</a>
-          <a href="#traditions" onclick="event.preventDefault();openLandingSection('traditions')">Traditions</a>
+          <a href="/play/gyan-chaupar">Play</a>
+          <a href="/traditions">Traditions</a>
           <a href="#festivals" onclick="event.preventDefault();openLandingSection('festivals')">Festivals</a>
           <a href="#community" onclick="event.preventDefault();openLandingSection('community')">Community</a>
           <a href="#features" onclick="event.preventDefault();openLandingSection('features')">Features</a>
@@ -3966,8 +3993,8 @@
         <details class="hero-nav-mobile">
           <summary>Menu</summary>
           <div class="hero-nav-mobile-menu">
-            <a href="#gyan-chaupar" onclick="openLandingSection('gyan-chaupar')">Play</a>
-            <a href="#traditions" onclick="openLandingSection('traditions')">Traditions</a>
+            <a href="/play/gyan-chaupar">Play</a>
+            <a href="/traditions">Traditions</a>
             <a href="#festivals" onclick="openLandingSection('festivals')">Festivals</a>
             <a href="#community" onclick="openLandingSection('community')">Community</a>
             <a href="#features" onclick="openLandingSection('features')">Features</a>

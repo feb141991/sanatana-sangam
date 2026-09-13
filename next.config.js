@@ -73,8 +73,8 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://*.supabase.co https://img.icons8.com https://i.ytimg.com https://*.tile.openstreetmap.org https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://www.gstatic.com https://www.google-analytics.com",
               "media-src 'self' data: blob: https://*.supabase.co https://assets.mixkit.co https://commons.wikimedia.org https://upload.wikimedia.org",
-              "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net",
-              "frame-ancestors 'none'",
+              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net",
+              "frame-ancestors 'self'",
               "report-uri /api/csp-report",
             ].join('; ')
           }
