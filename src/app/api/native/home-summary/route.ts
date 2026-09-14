@@ -553,7 +553,7 @@ export async function GET(request: NextRequest) {
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
   const calendarTo = getHomeObservanceWindowEnd(today);
-  const tradition = profile?.tradition ?? 'hindu';
+  const tradition = profile?.tradition ?? 'all';
   const latitude = profile?.latitude ?? 23.1765;
   const longitude = profile?.longitude ?? 75.7885;
   const calendarScope = profile?.calendar_scope ?? null;
