@@ -350,6 +350,7 @@ async function loadCommentPreviews(
   admin: ReturnType<typeof createAdminClient>,
   postIds: string[],
   excludedAuthorIds?: Set<string>,
+  hiddenContentKeys?: Set<string>,
 ) {
   const empty = new Map<string, MandaliCommentPreview[]>();
   if (postIds.length === 0) return empty;
@@ -375,9 +376,11 @@ async function loadCommentPreviews(
     deleted_at: string | null;
   }>;
 
-  const visibleRows = excludedAuthorIds && excludedAuthorIds.size > 0
-    ? rows.filter((row) => !excludedAuthorIds.has(row.author_id))
-    : rows;
+  const visibleRows = rows.filter((row) => {
+    if (excludedAuthorIds && excludedAuthorIds.has(row.author_id)) return false;
+    if (hiddenContentKeys && hiddenContentKeys.has(`mandali_comment:${row.id}`)) return false;
+    return true;
+  });
 
   const authorMap = await loadSafeAuthors(visibleRows.map((row) => row.author_id));
   const byPost = new Map<string, MandaliCommentPreview[]>();
@@ -451,13 +454,14 @@ async function hydrateFeedPosts(
   rows: Post[],
   language?: string | null,
   excludedAuthorIds?: Set<string>,
+  hiddenContentKeys?: Set<string>,
 ): Promise<MandaliFeedPost[]> {
   if (rows.length === 0) return [];
   const postIds = rows.map((row) => row.id);
   const [hydrated, reactions, commentData, polls] = await Promise.all([
     hydratePosts(rows, language),
     loadViewerReactions(admin, userId, postIds),
-    loadCommentPreviews(admin, postIds, excludedAuthorIds),
+    loadCommentPreviews(admin, postIds, excludedAuthorIds, hiddenContentKeys),
     loadPostPolls(admin, userId, postIds, language),
   ]);
   return hydrated.map((post) => ({
@@ -490,7 +494,7 @@ export async function loadPostComments(userId: string, postId: string): Promise<
   if (error) throw error;
 
   const rows = (data ?? []) as PostComment[];
-  const visibleRows = rows.filter((row) => !safetyState.excludedAuthorIds.has(row.author_id));
+  const visibleRows = filterAuthoredItems(rows, 'mandali_comment', safetyState);
   return hydrateComments(visibleRows);
 }
 
@@ -571,7 +575,7 @@ export async function loadMandaliFeedPage(
 
   const postIdsForRsvp = pageRows.map((row) => row.id);
   const [posts, rsvpResult] = await Promise.all([
-    hydrateFeedPosts(admin, userId, pageRows, profile.app_language, safetyState.excludedAuthorIds),
+    hydrateFeedPosts(admin, userId, pageRows, profile.app_language, safetyState.excludedAuthorIds, safetyState.hiddenContentKeys),
     postIdsForRsvp.length
       ? admin.from('event_rsvps').select('id, post_id, user_id, status, created_at, updated_at').in('post_id', postIdsForRsvp)
       : Promise.resolve({ data: [] as EventRsvp[], error: null }),
@@ -585,7 +589,7 @@ export async function loadMandaliFeedPage(
     blendedQuery = applySafetyExclusions(blendedQuery as any, safetyState, 'mandali_post');
     const { data: blendedRows, error: blendError } = await blendedQuery.limit(15);
     if (blendError) throw blendError;
-    blendedPosts = await hydrateFeedPosts(admin, userId, (blendedRows ?? []) as Post[], profile.app_language, safetyState.excludedAuthorIds);
+    blendedPosts = await hydrateFeedPosts(admin, userId, (blendedRows ?? []) as Post[], profile.app_language, safetyState.excludedAuthorIds, safetyState.hiddenContentKeys);
   }
 
   if (rsvpResult.error) throw rsvpResult.error;

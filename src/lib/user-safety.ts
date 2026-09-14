@@ -10,6 +10,7 @@ export const REPORT_REASON_OPTIONS = [
 
 export const SAFETY_CONTENT_LABELS = {
   mandali_post: 'Mandali post',
+  mandali_comment: 'Mandali comment',
   ai_chat_response: 'AI response',
 } as const;
 

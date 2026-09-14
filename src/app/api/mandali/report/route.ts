@@ -69,12 +69,21 @@ export async function POST(request: NextRequest) {
   }
   const createdReport = created as unknown as { id?: string } | null;
 
-  // Immediately hide reported post for the reporting user so it drops from their feed
+  // Immediately hide reported post or comment for the reporting user so it drops from their view
   if (targetType === "post") {
     void (admin.from("user_hidden_content") as any).upsert(
       {
         user_id: user.id,
         content_type: "mandali_post",
+        content_id: targetId,
+      },
+      { onConflict: "user_id,content_type,content_id", ignoreDuplicates: true }
+    );
+  } else if (targetType === "comment") {
+    void (admin.from("user_hidden_content") as any).upsert(
+      {
+        user_id: user.id,
+        content_type: "mandali_comment",
         content_id: targetId,
       },
       { onConflict: "user_id,content_type,content_id", ignoreDuplicates: true }
