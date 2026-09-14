@@ -3,6 +3,7 @@ import 'server-only';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { filterAuthoredItems, filterProfileRows, getUserSafetyState, type UserSafetyState } from '@/lib/user-safety';
 import { decodeFeedCursor, encodeFeedCursor, formatIdListLiteral } from '@/lib/mandali-cursor';
+import { getDayOfYear } from '@/lib/sacred-texts';
 import type { MandaliCommentPreview, MandaliData, MandaliFeedPage, MandaliFeedPost, MandaliProfile, MandaliPublicIdentity } from '@/lib/mandali-contract';
 import type { EventRsvp, Post, PostComment, PostCommentWithAuthor, PostWithAuthor, Profile } from '@/types/database';
 
@@ -10,6 +11,105 @@ const BLEND_THRESHOLD = 5;
 const FEED_PAGE_DEFAULT_LIMIT = 20;
 const FEED_PAGE_MAX_LIMIT = 50;
 const COMMENT_PREVIEW_COUNT = 2;
+
+// Mandali conversation-starter prompts (product research: Hostelworld's
+// "Linkup" pattern -- give people a reason to post instead of a blank feed).
+// See supabase/migrations/*_create_mandali_prompts.sql and
+// scripts/seed-mandali-prompt-author.ts.
+const MANDALI_PROMPT_AUTHOR_ID = process.env.MANDALI_PROMPT_AUTHOR_ID;
+
+/**
+ * Materializes today's conversation-starter prompt as a real, pinned post --
+ * once per Mandali per day, the first time anyone reads that Mandali's feed
+ * that day. Deterministic selection (pool[dayIndex % pool.length], mirroring
+ * buildDailySacredText in src/lib/daily-sacred-text.ts) -- not AI-generated,
+ * so no job/queue table. Content is always English: posts have no
+ * per-viewer localization today (unlike ObservanceEntry's nameLocal/namePa),
+ * so this is a deliberate simplification, not an oversight.
+ *
+ * Write goes through the service-role admin client, never a user's own
+ * RLS-scoped one -- same reasoning as getOrMaterializeOccurrences in
+ * src/lib/calendar/resolve-occurrences.ts: posts' RLS insert policy
+ * (native_phase0_mandali_security.sql) requires auth.uid() = author_id,
+ * which a system-authored post can never satisfy under a user's own client.
+ *
+ * Best-effort: any failure here is logged and swallowed -- a prompt that
+ * fails to materialize must never break loading the rest of the feed. Small,
+ * accepted race window on true first-read concurrency (two readers hitting
+ * an empty Mandali in the same instant could each insert one) rather than
+ * adding a new unique constraint for a low-traffic feature.
+ *
+ * `mandali_prompts.tradition` exists for future scoping, but public.mandalis
+ * (supabase/schema.sql) has no tradition column of its own to match against
+ * -- a Mandali is a place-based circle, not a tradition-based one -- so this
+ * only ever selects the tradition-IS-NULL ("shown to everyone") slice of the
+ * pool for now.
+ */
+async function ensureTodaysMandaliPrompt(
+  admin: ReturnType<typeof createAdminClient>,
+  mandaliId: string,
+): Promise<void> {
+  if (!MANDALI_PROMPT_AUTHOR_ID) return;
+
+  try {
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    const { data: existing, error: existingError } = await admin
+      .from('posts')
+      .select('id')
+      .eq('mandali_id', mandaliId)
+      .eq('author_id', MANDALI_PROMPT_AUTHOR_ID)
+      .gte('created_at', todayStart.toISOString())
+      .limit(1)
+      .maybeSingle();
+    if (existingError) throw existingError;
+    if (existing) return;
+
+    const { data: pool, error: poolError } = await admin
+      .from('mandali_prompts')
+      .select('text_en')
+      .eq('active', true)
+      .is('tradition', null);
+    if (poolError) throw poolError;
+
+    const activePrompts = (pool ?? []) as { text_en: string }[];
+    if (activePrompts.length === 0) return;
+
+    const chosen = activePrompts[getDayOfYear() % activePrompts.length];
+
+    // Rotate, don't stack: unpin yesterday's prompt (if any) so is_pinned
+    // stays a "today's prompt" marker rather than accumulating one pinned
+    // row per day forever and slowly burying real conversation.
+    // `as never` here matches the existing workaround at
+    // /api/mandali/posts/route.ts's own posts .update() call -- the
+    // hand-maintained posts.Insert type (types/database.ts) requires every
+    // Row column including `id`, which no real caller ever supplies (the
+    // DB default generates it), so the strict type never actually matches
+    // a real insert/update payload here.
+    const { error: unpinError } = await admin
+      .from('posts')
+      .update({ is_pinned: false } as never)
+      .eq('mandali_id', mandaliId)
+      .eq('author_id', MANDALI_PROMPT_AUTHOR_ID)
+      .eq('is_pinned', true);
+    if (unpinError) throw unpinError;
+
+    const { error: insertError } = await admin.from('posts').insert({
+      author_id: MANDALI_PROMPT_AUTHOR_ID,
+      mandali_id: mandaliId,
+      content: chosen.text_en,
+      type: 'question',
+      is_pinned: true,
+    } as never);
+    if (insertError) throw insertError;
+  } catch (err) {
+    console.error(
+      'mandali-data-server: ensureTodaysMandaliPrompt failed:',
+      err instanceof Error ? err.message : String(err),
+    );
+  }
+}
 
 type SafeAuthor = Pick<Profile, 'id' | 'username' | 'avatar_url'>;
 
@@ -76,8 +176,16 @@ export async function loadMandaliDataForUser(userId: string): Promise<MandaliDat
     return { profile: profile as MandaliProfile, posts: [], comments: [], rsvps: [], members: [], blendedPosts: [] };
   }
 
+  await ensureTodaysMandaliPrompt(admin, mandaliId);
+
   const [{ data: postRows, error: postsError }, { data: memberRows, error: membersError }] = await Promise.all([
-    admin.from('posts').select('*').eq('mandali_id', mandaliId).order('created_at', { ascending: false }).limit(30),
+    admin
+      .from('posts')
+      .select('*')
+      .eq('mandali_id', mandaliId)
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(30),
     admin.from('profiles').select('id, username, avatar_url, seva_score').eq('mandali_id', mandaliId).order('seva_score', { ascending: false }).limit(50),
   ]);
   if (postsError) throw postsError;
@@ -285,13 +393,26 @@ export async function loadMandaliFeedPage(
     return { schemaVersion: 1, profile: profile as MandaliProfile, posts: [], blendedPosts: [], members: [], rsvps: [], nextCursor: null };
   }
 
+  if (isFirstPage) {
+    await ensureTodaysMandaliPrompt(admin, mandaliId);
+  }
+
   let postsQuery = admin
     .from('posts')
     .select('*')
     .eq('mandali_id', mandaliId)
+    .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
     .order('id', { ascending: false });
   postsQuery = applySafetyExclusions(postsQuery as any, safetyState, 'mandali_post');
+  if (!isFirstPage) {
+    // The (at most one) pinned prompt post only ever surfaces on page 1 --
+    // excluding it here keeps the (created_at, id) keyset predicate below
+    // valid. Without this, a pinned row sorts before newer non-pinned rows
+    // despite an older created_at, which the plain created_at/id comparison
+    // can't express and would silently corrupt pagination.
+    postsQuery = postsQuery.eq('is_pinned', false);
+  }
   if (decodedCursor) {
     // Keyset predicate for (created_at, id) < (cursor.createdAt, cursor.id),
     // expressed as PostgREST `.or()` since the JS client has no direct

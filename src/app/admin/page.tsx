@@ -22,7 +22,8 @@ import {
   Clock,
   ArrowRight,
   Globe,
-  Zap
+  Zap,
+  MessageCircle
 } from "lucide-react";
 import type { UrgentAlertItem } from "@/app/api/admin/alerts/route";
 import { AdminIcon } from "@/components/admin/AdminIcon";
@@ -519,6 +520,14 @@ export default function AdminOverviewPage() {
               value={stats.pendingDharmVeerReview.toLocaleString()}
               sublabel="Biographies pending verification"
               highlight={stats.pendingDharmVeerReview > 0}
+            />
+
+            <MetricCard
+              href="/admin/mandali-prompts"
+              icon={MessageCircle}
+              label="Mandali Prompts"
+              value="Manage"
+              sublabel="Daily conversation-starter prompt bank"
             />
 
             <MetricCard
