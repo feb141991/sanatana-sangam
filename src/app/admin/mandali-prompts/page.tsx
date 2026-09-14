@@ -9,12 +9,13 @@ type MandaliPrompt = {
   text_en: string;
   text_hi: string | null;
   text_pa: string | null;
+  observance_tag?: string | null;
   active: boolean;
   created_at: string;
   updated_at: string;
 };
 
-const EMPTY_DRAFT = { text_en: '', text_hi: '', text_pa: '' };
+const EMPTY_DRAFT = { text_en: '', text_hi: '', text_pa: '', observance_tag: '' };
 
 export default function MandaliPromptsPage() {
   const [loading, setLoading] = useState(true);
@@ -68,6 +69,7 @@ export default function MandaliPromptsPage() {
           text_en: draft.text_en,
           text_hi: draft.text_hi || null,
           text_pa: draft.text_pa || null,
+          observance_tag: draft.observance_tag || null,
         }),
       });
       const json = await res.json();

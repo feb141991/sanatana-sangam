@@ -8,9 +8,10 @@ import {
   getMandaliPromptDate,
   localizeMandaliPrompt,
   selectMandaliPromptForDate,
+  selectMandaliPromptForObservanceOrDate,
   type MandaliPromptText,
 } from '@/lib/mandali-prompts';
-import type { MandaliCommentPreview, MandaliData, MandaliFeedPage, MandaliFeedPost, MandaliProfile, MandaliPublicIdentity } from '@/lib/mandali-contract';
+import type { MandaliCommentPreview, MandaliData, MandaliFeedPage, MandaliFeedPost, MandaliPoll, MandaliProfile, MandaliPublicIdentity } from '@/lib/mandali-contract';
 import type { EventRsvp, Post, PostComment, PostCommentWithAuthor, PostWithAuthor, Profile } from '@/types/database';
 
 const BLEND_THRESHOLD = 5;
@@ -67,15 +68,41 @@ async function ensureTodaysMandaliPrompt(
     if (existingError) throw existingError;
 
     if (!existing) {
+      // Check for canonical primary observances for today to pick a calendar-aware prompt
+      const { data: occurrences } = await admin
+        .from('observance_occurrences')
+        .select('date, observance_definitions(slug, kind, name)')
+        .eq('date', promptDate)
+        .eq('publication_status', 'published')
+        .limit(5);
+
+      const observanceTags: string[] = [];
+      for (const occ of occurrences ?? []) {
+        const def = (occ as any).observance_definitions;
+        if (def?.slug) {
+          observanceTags.push(def.slug);
+          if (def.slug.includes('ekadashi')) observanceTags.push('ekadashi');
+          if (def.slug.includes('purnima')) observanceTags.push('purnima');
+          if (def.slug.includes('amavasya')) observanceTags.push('amavasya');
+          if (def.slug.includes('shivratri')) observanceTags.push('shivratri');
+          if (def.slug.includes('navratri')) observanceTags.push('navratri');
+        }
+        if (def?.kind) observanceTags.push(def.kind);
+      }
+
       const { data: pool, error: poolError } = await admin
         .from('mandali_prompts')
-        .select('id, text_en, text_hi, text_pa')
+        .select('id, text_en, text_hi, text_pa, observance_tag')
         .eq('active', true)
         .is('tradition', null)
         .order('id', { ascending: true });
       if (poolError) throw poolError;
 
-      const chosen = selectMandaliPromptForDate((pool ?? []) as MandaliPromptText[], promptDate);
+      const chosen = selectMandaliPromptForObservanceOrDate(
+        (pool ?? []) as MandaliPromptText[],
+        promptDate,
+        observanceTags
+      );
       if (!chosen) return;
 
       const { error: insertError } = await admin.from('posts').upsert({
@@ -363,6 +390,53 @@ async function loadCommentPreviews(admin: ReturnType<typeof createAdminClient>, 
   return byPost;
 }
 
+async function loadPostPolls(
+  _admin: ReturnType<typeof createAdminClient>,
+  userId: string,
+  postIds: string[],
+  language?: string | null
+): Promise<Map<string, MandaliPoll>> {
+  const result = new Map<string, MandaliPoll>();
+  if (postIds.length === 0) return result;
+
+  const pollAdmin = createMandaliPromptAdminClient();
+  const { data: polls, error: pollError } = await (pollAdmin as any)
+    .from('post_polls')
+    .select('id, post_id, question, post_poll_options(id, text_en, text_hi, text_pa, order_index, vote_count)')
+    .in('post_id', postIds);
+  if (pollError || !polls || polls.length === 0) return result;
+
+  const pollIds = (polls as Array<{ id: string }>).map((p) => p.id);
+  const { data: userVotes } = await (pollAdmin as any)
+    .from('post_poll_votes')
+    .select('poll_id, option_id')
+    .eq('user_id', userId)
+    .in('poll_id', pollIds);
+  const userVoteMap = new Map((userVotes ?? []).map((v: any) => [v.poll_id as string, v.option_id as string]));
+
+  for (const p of (polls as Array<{ id: string; post_id: string; question: string; post_poll_options?: any[] }>)) {
+    const rawOptions = ((p as any).post_poll_options ?? []) as Array<any>;
+    rawOptions.sort((a, b) => a.order_index - b.order_index);
+    const totalVotes = rawOptions.reduce((sum, opt) => sum + (opt.vote_count ?? 0), 0);
+    const options = rawOptions.map((opt) => {
+      let text = opt.text_en;
+      if (language === 'hi' && opt.text_hi?.trim()) text = opt.text_hi.trim();
+      else if (language === 'pa' && opt.text_pa?.trim()) text = opt.text_pa.trim();
+      const voteCount = opt.vote_count ?? 0;
+      const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+      return { id: opt.id, text, voteCount, percentage };
+    });
+    result.set(p.post_id, {
+      id: p.id,
+      question: p.question,
+      totalVotes,
+      userVotedOptionId: (userVoteMap.get(p.id) as string | undefined) ?? null,
+      options,
+    });
+  }
+  return result;
+}
+
 async function hydrateFeedPosts(
   admin: ReturnType<typeof createAdminClient>,
   userId: string,
@@ -371,15 +445,17 @@ async function hydrateFeedPosts(
 ): Promise<MandaliFeedPost[]> {
   if (rows.length === 0) return [];
   const postIds = rows.map((row) => row.id);
-  const [hydrated, reactions, commentData] = await Promise.all([
+  const [hydrated, reactions, commentData, polls] = await Promise.all([
     hydratePosts(rows, language),
     loadViewerReactions(admin, userId, postIds),
     loadCommentPreviews(admin, postIds),
+    loadPostPolls(admin, userId, postIds, language),
   ]);
   return hydrated.map((post) => ({
     ...post,
     viewerReaction: reactions.get(post.id) ?? null,
     commentPreview: commentData.get(post.id) ?? [],
+    poll: polls.get(post.id) ?? null,
   }));
 }
 
@@ -400,6 +476,7 @@ export async function loadPostComments(userId: string, postId: string): Promise<
     .from('post_comments')
     .select('*')
     .eq('post_id', postId)
+    .order('is_highlighted', { ascending: false })
     .order('created_at', { ascending: true });
   if (error) throw error;
 

@@ -17,23 +17,41 @@ export type MandaliProfile = (Profile & {
   neighbourhood?: string | null;
 }) | null;
 
+export type MandaliPollOption = {
+  id: string;
+  text: string;
+  voteCount: number;
+  percentage: number;
+};
+
+export type MandaliPoll = {
+  id: string;
+  question: string;
+  totalVotes: number;
+  userVotedOptionId: string | null;
+  options: MandaliPollOption[];
+};
+
 export type MandaliData = {
   profile: MandaliProfile;
-  posts: PostWithAuthor[];
+  posts: (PostWithAuthor & { poll?: MandaliPoll | null })[];
   comments: PostCommentWithAuthor[];
   rsvps: EventRsvp[];
   members: MandaliPublicIdentity[];
-  blendedPosts: PostWithAuthor[];
+  blendedPosts: (PostWithAuthor & { poll?: MandaliPoll | null })[];
 };
 
-export type MandaliCommentPreview = Pick<PostCommentWithAuthor, 'id' | 'author_id' | 'body' | 'created_at' | 'deleted_at' | 'profiles'>;
+export type MandaliCommentPreview = Pick<PostCommentWithAuthor, 'id' | 'author_id' | 'body' | 'created_at' | 'deleted_at' | 'profiles'> & {
+  is_highlighted?: boolean;
+  highlight_label?: string | null;
+  highlighted_at?: string | null;
+  highlighted_by?: string | null;
+};
 
 export type MandaliFeedPost = PostWithAuthor & {
   viewerReaction: string | null;
-  // Total comment count is already on PostWithAuthor as `comment_count`
-  // (the posts table's own trigger-maintained column, replies included) --
-  // not duplicated here.
   commentPreview: MandaliCommentPreview[];
+  poll?: MandaliPoll | null;
 };
 
 /**

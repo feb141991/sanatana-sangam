@@ -4,6 +4,7 @@ import {
   getMandaliPromptDate,
   localizeMandaliPrompt,
   selectMandaliPromptForDate,
+  selectMandaliPromptForObservanceOrDate,
   type MandaliPromptText,
 } from './mandali-prompts';
 
@@ -11,6 +12,7 @@ const PROMPTS: MandaliPromptText[] = [
   { id: 'c', text_en: 'Third', text_hi: 'तीसरा', text_pa: null },
   { id: 'a', text_en: 'First', text_hi: 'पहला', text_pa: 'ਪਹਿਲਾ' },
   { id: 'b', text_en: 'Second', text_hi: null, text_pa: null },
+  { id: 'ekadashi-1', text_en: 'Who is fasting for Ekadashi today?', text_hi: 'आज एकादशी का व्रत कौन रख रहा है?', text_pa: null, observance_tag: 'ekadashi' },
 ];
 
 describe('Mandali prompt rotation', () => {
@@ -36,5 +38,17 @@ describe('Mandali prompt rotation', () => {
     expect(localizeMandaliPrompt(PROMPTS[1], 'pa')).toBe('ਪਹਿਲਾ');
     expect(localizeMandaliPrompt(PROMPTS[2], 'hi')).toBe('Second');
     expect(localizeMandaliPrompt(PROMPTS[1], 'fr')).toBe('First');
+  });
+
+  it('prioritizes matching observance tag when an observance is active', () => {
+    const selected = selectMandaliPromptForObservanceOrDate(PROMPTS, '2026-09-14', ['ekadashi']);
+    expect(selected?.id).toBe('ekadashi-1');
+    expect(selected?.observance_tag).toBe('ekadashi');
+  });
+
+  it('falls back to general rotation when no observance matches', () => {
+    const selected = selectMandaliPromptForObservanceOrDate(PROMPTS, '2026-09-14', []);
+    expect(['a', 'b', 'c']).toContain(selected?.id);
+    expect(selected?.observance_tag).toBeUndefined();
   });
 });

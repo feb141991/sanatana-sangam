@@ -369,6 +369,7 @@ export interface Database {
           active: boolean;
           created_at: string;
           updated_at: string;
+          observance_tag: string | null;
         };
         Insert: {
           id?: string;
@@ -379,6 +380,7 @@ export interface Database {
           active?: boolean;
           created_at?: string;
           updated_at?: string;
+          observance_tag?: string | null;
         };
         Update: Partial<Database['public']['Tables']['mandali_prompts']['Insert']>;
         Relationships: [];
@@ -443,6 +445,62 @@ export interface Database {
           },
         ];
       };
+      post_polls: {
+        Row: {
+          id: string;
+          post_id: string;
+          question: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          post_id: string;
+          question: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['post_polls']['Insert']>;
+        Relationships: [];
+      };
+      post_poll_options: {
+        Row: {
+          id: string;
+          poll_id: string;
+          text_en: string;
+          text_hi: string | null;
+          text_pa: string | null;
+          order_index: number;
+          vote_count: number;
+        };
+        Insert: {
+          id?: string;
+          poll_id: string;
+          text_en: string;
+          text_hi?: string | null;
+          text_pa?: string | null;
+          order_index?: number;
+          vote_count?: number;
+        };
+        Update: Partial<Database['public']['Tables']['post_poll_options']['Insert']>;
+        Relationships: [];
+      };
+      post_poll_votes: {
+        Row: {
+          id: string;
+          poll_id: string;
+          option_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          poll_id: string;
+          option_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['post_poll_votes']['Insert']>;
+        Relationships: [];
+      };
       post_comments: {
         Row: {
           id: string;
@@ -454,6 +512,10 @@ export interface Database {
           updated_at?: string | null;
           deleted_at?: string | null;
           upvotes: number;
+          is_highlighted?: boolean;
+          highlight_label?: string | null;
+          highlighted_at?: string | null;
+          highlighted_by?: string | null;
         };
         Insert: Omit<Database['public']['Tables']['post_comments']['Row'], 'id' | 'created_at' | 'upvotes'>;
         Update: Partial<Database['public']['Tables']['post_comments']['Insert']>;
@@ -569,13 +631,13 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['forum_replies']['Insert']>;
       };
       post_upvotes: {
-        Row: { post_id: string; user_id: string; reaction_type: 'pranam' | 'love' | 'insightful'; created_at: string };
-        Insert: { post_id: string; user_id: string; reaction_type?: 'pranam' | 'love' | 'insightful'; created_at?: string };
+        Row: { post_id: string; user_id: string; reaction_type: 'pranam' | 'love' | 'insightful' | 'bhakti' | 'jnana' | 'chardi_kala' | 'shanti'; created_at: string };
+        Insert: { post_id: string; user_id: string; reaction_type?: 'pranam' | 'love' | 'insightful' | 'bhakti' | 'jnana' | 'chardi_kala' | 'shanti'; created_at?: string };
         Update: Partial<Database['public']['Tables']['post_upvotes']['Insert']>;
       };
       comment_upvotes: {
-        Row: { comment_id: string; user_id: string; reaction_type: 'pranam' | 'love' | 'insightful'; created_at: string };
-        Insert: { comment_id: string; user_id: string; reaction_type?: 'pranam' | 'love' | 'insightful'; created_at?: string };
+        Row: { comment_id: string; user_id: string; reaction_type: 'pranam' | 'love' | 'insightful' | 'bhakti' | 'jnana' | 'chardi_kala' | 'shanti'; created_at: string };
+        Insert: { comment_id: string; user_id: string; reaction_type?: 'pranam' | 'love' | 'insightful' | 'bhakti' | 'jnana' | 'chardi_kala' | 'shanti'; created_at?: string };
         Update: Partial<Database['public']['Tables']['comment_upvotes']['Insert']>;
       };
       thread_upvotes: {

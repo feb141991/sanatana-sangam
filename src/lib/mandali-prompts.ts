@@ -5,6 +5,7 @@ export type MandaliPromptText = {
   text_en: string;
   text_hi: string | null;
   text_pa: string | null;
+  observance_tag?: string | null;
 };
 
 export function normalizeMandaliPromptLanguage(value?: string | null): MandaliPromptLanguage {
@@ -26,6 +27,24 @@ export function selectMandaliPromptForDate(
   const epochDay = Math.floor(Date.parse(`${promptDate}T00:00:00.000Z`) / 86_400_000);
   if (!Number.isFinite(epochDay)) return null;
   return ordered[((epochDay % ordered.length) + ordered.length) % ordered.length];
+}
+
+export function selectMandaliPromptForObservanceOrDate(
+  prompts: MandaliPromptText[],
+  promptDate: string,
+  observanceTags: string[] = [],
+): MandaliPromptText | null {
+  if (prompts.length === 0) return null;
+
+  if (observanceTags.length > 0) {
+    const matching = prompts.filter((p) => p.observance_tag && observanceTags.includes(p.observance_tag));
+    if (matching.length > 0) {
+      return selectMandaliPromptForDate(matching, promptDate);
+    }
+  }
+
+  const generalPool = prompts.filter((p) => !p.observance_tag);
+  return selectMandaliPromptForDate(generalPool.length > 0 ? generalPool : prompts, promptDate);
 }
 
 export function localizeMandaliPrompt(

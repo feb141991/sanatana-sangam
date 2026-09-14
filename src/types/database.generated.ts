@@ -2849,6 +2849,7 @@ export type Database = {
           text_pa: string | null
           tradition: string | null
           updated_at: string
+          observance_tag: string | null
         }
         Insert: {
           active?: boolean
@@ -2859,6 +2860,7 @@ export type Database = {
           text_pa?: string | null
           tradition?: string | null
           updated_at?: string
+          observance_tag?: string | null
         }
         Update: {
           active?: boolean
@@ -2869,6 +2871,7 @@ export type Database = {
           text_pa?: string | null
           tradition?: string | null
           updated_at?: string
+          observance_tag?: string | null
         }
         Relationships: []
       }
@@ -4784,6 +4787,81 @@ export type Database = {
           },
         ]
       }
+      post_polls: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          question: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          question: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          question?: string
+        }
+        Relationships: []
+      }
+      post_poll_options: {
+        Row: {
+          id: string
+          order_index: number
+          poll_id: string
+          text_en: string
+          text_hi: string | null
+          text_pa: string | null
+          vote_count: number
+        }
+        Insert: {
+          id?: string
+          order_index?: number
+          poll_id: string
+          text_en: string
+          text_hi?: string | null
+          text_pa?: string | null
+          vote_count?: number
+        }
+        Update: {
+          id?: string
+          order_index?: number
+          poll_id?: string
+          text_en?: string
+          text_hi?: string | null
+          text_pa?: string | null
+          vote_count?: number
+        }
+        Relationships: []
+      }
+      post_poll_votes: {
+        Row: {
+          created_at: string
+          id: string
+          option_id: string
+          poll_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          option_id: string
+          poll_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          option_id?: string
+          poll_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           author_id: string
@@ -4795,6 +4873,10 @@ export type Database = {
           post_id: string
           updated_at: string | null
           upvotes: number
+          is_highlighted: boolean
+          highlight_label: string | null
+          highlighted_at: string | null
+          highlighted_by: string | null
         }
         Insert: {
           author_id: string
@@ -4806,6 +4888,10 @@ export type Database = {
           post_id: string
           updated_at?: string | null
           upvotes?: number
+          is_highlighted?: boolean
+          highlight_label?: string | null
+          highlighted_at?: string | null
+          highlighted_by?: string | null
         }
         Update: {
           author_id?: string

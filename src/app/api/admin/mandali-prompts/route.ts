@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   const supabase = createMandaliPromptAdminClient();
   const { data, error } = await supabase
     .from('mandali_prompts')
-    .select('id, text_en, text_hi, text_pa, tradition, active, created_at, updated_at')
+    .select('id, text_en, text_hi, text_pa, tradition, observance_tag, active, created_at, updated_at')
     .order('created_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -68,9 +68,10 @@ export async function POST(request: NextRequest) {
       text_hi: textHi,
       text_pa: textPa,
       tradition: null,
+      observance_tag: optionalText(body?.observance_tag),
       active: body?.active !== false,
     })
-    .select('id, text_en, text_hi, text_pa, tradition, active, created_at, updated_at')
+    .select('id, text_en, text_hi, text_pa, tradition, observance_tag, active, created_at, updated_at')
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -107,6 +108,9 @@ export async function PATCH(request: NextRequest) {
     const textHi = optionalText(body.text_hi);
     if (invalidLength(textHi)) return NextResponse.json({ error: `Prompt text must be ${PROMPT_TEXT_MAX_LENGTH} characters or fewer.` }, { status: 400 });
     patch.text_hi = textHi;
+  }
+  if ('observance_tag' in body) {
+    (patch as any).observance_tag = optionalText(body.observance_tag);
   }
   if ('text_pa' in body) {
     if (body.text_pa !== null && typeof body.text_pa !== 'string') {
@@ -145,7 +149,7 @@ export async function PATCH(request: NextRequest) {
     .from('mandali_prompts')
     .update(patch)
     .eq('id', id)
-    .select('id, text_en, text_hi, text_pa, tradition, active, created_at, updated_at')
+    .select('id, text_en, text_hi, text_pa, tradition, observance_tag, active, created_at, updated_at')
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
