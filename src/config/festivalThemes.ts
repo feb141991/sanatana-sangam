@@ -56,7 +56,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Soft Shiva artwork for Maha Shivaratri',
     objectPosition: '58% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['maha-shiv-aratri', 'maha-shivratri', 'mahashivratri'],
+    festivalSlugs: ['maha-shivaratri', 'maha-shiv-aratri', 'maha-shivratri', 'mahashivratri'],
     priority: 100,
   },
   {
@@ -126,7 +126,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional Lord Ganesha artwork',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['ganesh-chaturthi', 'vinayaka-chaturthi', 'ganesha-chaturthi', 'sankashti-chaturthi', 'angarki-chaturthi'],
+    festivalSlugs: ['ganesh-chaturthi', 'vinayaka-chaturthi', 'ganesha-chaturthi', 'sankashti-chaturthi', 'angarki-chaturthi', 'ganeshotsav-day-2', 'ganeshotsav-day-3', 'ganeshotsav-day-4', 'ganeshotsav-day-5', 'ganeshotsav-day-6', 'ganeshotsav-day-7', 'ganeshotsav-day-8', 'ganeshotsav-day-9', 'ganeshotsav-day-10'],
     priority: 120,
   },
   {
@@ -146,7 +146,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional Chhath Puja Surya Arghya artwork',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['chhath-puja', 'chhath', 'surya-shashthi'],
+    festivalSlugs: ['chhath-puja', 'chhath', 'surya-shashthi', 'chhath-nahay-khay', 'chhath-kharna', 'chhath-usha-arghya'],
     priority: 120,
   },
   {
@@ -406,7 +406,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional Varanasi ghats illuminated on Dev Deepawali night backdrop',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['kartik-purnima', 'dev-deepawali', 'tripurari-purnima'],
+    festivalSlugs: ['kartik-purnima', 'dev-deepawali', 'tripurari-purnima', 'guru-purnima', 'purnima-vrat', 'satyanarayan-vrat'],
     priority: 120,
   },
   {
@@ -416,7 +416,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional sacred Himalayan Chintpurni Devi Shakti Peetha shrine backdrop',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['chintpurni-mata-chaitra-navratri', 'chintpurni-mata-sharad-navratri', 'chintpurni-devi'],
+    festivalSlugs: ['chintpurni-mata-chaitra-navratri', 'chintpurni-mata-sharad-navratri', 'chintpurni-devi', 'chaitra-navratri-begins', 'navratri-begins', 'gupt-navratri-ashadha-begins', 'gupt-navratri-magha-begins', 'mangala-gauri-vrat'],
     priority: 120,
   },
   {
@@ -426,7 +426,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional sacred Vat tree with sacred threads and evening lamps backdrop',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['vat-savitri-vrat', 'vat-purnima', 'vat-savitri'],
+    festivalSlugs: ['vat-savitri-vrat', 'vat-savitri-amavasya', 'vat-savitri-purnima', 'vat-purnima', 'vat-savitri', 'mahalaya-amavasya', 'amavasya-vrat', 'somvati-amavasya'],
     priority: 120,
   },
   {
