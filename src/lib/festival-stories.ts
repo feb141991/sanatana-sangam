@@ -960,18 +960,126 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
   }
 ];
 
+const FESTIVAL_ALIASES: Record<string, string[]> = {
+  'Mahavir Jayanti': ['mahavir-jayanti', 'mahavira jayanti', 'bhagwan mahavir jayanti'],
+  'Paryushana Parva begins': [
+    'paryushana',
+    'paryushana parva',
+    'paryushana-parva-begins',
+    'paryushana day 2',
+    'paryushana day 3',
+    'paryushana day 4',
+    'paryushana day 5',
+    'paryushana day 6',
+    'paryushana day 7',
+    'paryushana-day-2',
+    'paryushana-day-3',
+    'paryushana-day-4',
+    'paryushana-day-5',
+    'paryushana-day-6',
+    'paryushana-day-7',
+  ],
+  'Samvatsari (Paryushana ends)': [
+    'samvatsari',
+    'samvatsari-paryushana-ends',
+    'samvatsari (universal forgiveness day)',
+    'universal forgiveness day',
+    'micchami dukkadam',
+    'kshamavani',
+  ],
+  'Akshaya Tritiya (Jain)': ['akshaya-tritiya-jain', 'akshaya tritiya jain', 'adinath parna'],
+  'Das Lakshana Dharma begins': [
+    'das-lakshana-dharma-begins',
+    'das lakshana',
+    'das lakshana parva',
+    'dasa lakshana',
+  ],
+  'Jain New Year (Pratipada)': [
+    'jain new year',
+    'jain-new-year-pratipada',
+    'jain new year (kartik pratipada)',
+    'gautama swami keval jnana',
+  ],
+  'Jain Diwali (Mahavira Nirvana)': [
+    'jain diwali',
+    'jain-diwali-nirvana-ladnun',
+    'jain diwali (nirvana ladnun)',
+    'mahavira nirvana',
+    'mahavir nirvana',
+  ],
+  'Kartik Purnima (Jain)': ['kartik-purnima-jain', 'shatrunjaya pheri', 'palitana pheri'],
+  'Vesak / Buddha Purnima': [
+    'vesak',
+    'vesak (buddha purnima)',
+    'vesak-buddha-purnima',
+    'buddha purnima',
+    'buddha jayanti',
+    'vesak day',
+  ],
+  'Magha Puja': ['magha-puja', 'magha puja (sangha day)', 'ovada patimokkha'],
+  'Asalha Puja': ['asalha-puja', 'asalha puja (dhamma day)', 'dhamma day', 'asalha'],
+  'Bodhi Day': ['bodhi-day', 'bodhi day (day of awakening / rohatsu)', 'rohatsu', 'day of awakening'],
+  'Parinirvana Day': ['parinirvana-day', 'parinirvana day (nirvana day)', 'nirvana day'],
+  'Vassa begins (Rains Retreat)': ['vassa-begins-rains-retreat', 'vassa', 'rains retreat', 'vassa begins'],
+  'Pavarana (End of Vassa)': ['pavarana-end-of-vassa', 'pavarana', 'end of vassa'],
+  'Kathina': ['kathina', 'kathina (robe offering ceremony)', 'kathina ceremony'],
+  'Ullambana (Ancestor Day)': [
+    'ullambana',
+    'ullambana-ancestor-day',
+    'ullambana (ancestor day / ghost festival)',
+    'ghost festival',
+    'obon',
+  ],
+  'Losar (Tibetan New Year)': ['losar-tibetan-new-year', 'losar', 'tibetan new year'],
+  'Sangha Day (Loy Krathong)': [
+    'sangha day',
+    'sangha-day-loy-krathong',
+    'sangha day (loy krathong / lantern festival)',
+    'loy krathong',
+    'lantern festival',
+  ],
+};
+
 /**
- * Look up a festival story by its name (case-insensitive, partial match allowed).
+ * Look up a festival story by its name or canonical alias (case-insensitive).
  * Returns null if no story exists for that festival.
  */
 export function getFestivalStory(festivalName: string): FestivalStory | null {
   const needle = festivalName.toLowerCase().trim();
-  return (
-    FESTIVAL_STORIES.find(
-      (s) =>
-        s.slug.toLowerCase() === needle ||
-        needle.includes(s.slug.toLowerCase()) ||
-        s.slug.toLowerCase().includes(needle),
-    ) ?? null
-  );
+
+  // 1. Direct match on slug
+  const directMatch = FESTIVAL_STORIES.find((s) => s.slug.toLowerCase() === needle);
+  if (directMatch) return directMatch;
+
+  // 2. Exact alias match
+  for (const [canonicalSlug, aliases] of Object.entries(FESTIVAL_ALIASES)) {
+    if (aliases.some((a) => a.toLowerCase() === needle)) {
+      const story = FESTIVAL_STORIES.find((s) => s.slug === canonicalSlug);
+      if (story) return story;
+    }
+  }
+
+  // 3. Fallback partial matching with tradition priority
+  const isJainQuery = needle.includes('jain');
+  const isBudQuery = needle.includes('buddhist') || needle.includes('buddha');
+
+  const candidates = FESTIVAL_STORIES.filter((s) => {
+    const slugLower = s.slug.toLowerCase();
+    return needle.includes(slugLower) || slugLower.includes(needle);
+  });
+
+  if (candidates.length === 1) return candidates[0];
+  if (candidates.length > 1) {
+    if (isJainQuery) {
+      const jain = candidates.find((s) => s.tradition === 'jain');
+      if (jain) return jain;
+    }
+    if (isBudQuery) {
+      const bud = candidates.find((s) => s.tradition === 'buddhist');
+      if (bud) return bud;
+    }
+    return candidates[0];
+  }
+
+  return null;
 }
