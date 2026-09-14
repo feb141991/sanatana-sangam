@@ -18,6 +18,11 @@ describe('chat-grounding', () => {
       const tokens = extractMeaningfulTokens('What why how when where who');
       expect(tokens).toEqual([]);
     });
+
+    it('keeps Om as a complete devotional token without matching it inside other words', () => {
+      expect(extractMeaningfulTokens('What is Om?')).toContain('om');
+      expect(extractMeaningfulTokens('How do I use my computer?')).toEqual(['use', 'computer']);
+    });
   });
 
   describe('matchDharmVeerFigure', () => {
@@ -50,11 +55,15 @@ describe('chat-grounding', () => {
       expect(hasDharmicIntent('What is Karma yoga?', ['karma', 'yoga'])).toBe(true);
       expect(hasDharmicIntent('Explain verse 2.47', ['verse'])).toBe(true);
       expect(hasDharmicIntent('Dhammapada teachings', ['dhammapada'])).toBe(true);
+      expect(hasDharmicIntent('What is Om?', ['om'])).toBe(true);
     });
 
     it('returns false for mundane or off-topic queries', () => {
       expect(hasDharmicIntent('What should I eat for breakfast?', ['eat', 'breakfast'])).toBe(false);
       expect(hasDharmicIntent('How is the weather today?', ['weather', 'today'])).toBe(false);
+      expect(hasDharmicIntent('How do I use my computer?', ['use', 'computer'])).toBe(false);
+      expect(hasDharmicIntent('What is the company policy?', ['company', 'policy'])).toBe(false);
+      expect(hasDharmicIntent('What changed in app version 2.47?', ['changed', 'app', 'version', '2.47'])).toBe(false);
     });
   });
 
@@ -113,14 +122,17 @@ describe('chat-grounding', () => {
       expect(res.documents.length).toBeGreaterThan(0);
     });
 
-    it("grounds Ramayana inquiries", async () => {
+    it("recognizes but withholds Ramayana inquiries until source audit approval", async () => {
       const res = await retrieveDharmaChatGrounding({
         message: "What is Rama's pledge of refuge in the Ramayana?",
         tradition: "hindu",
       });
-      expect(res.isGrounded).toBe(true);
+      expect(res.isGrounded).toBe(false);
       expect(res.corpus).toBe("valmiki_ramayana");
-      expect(res.documents.length).toBeGreaterThan(0);
+      expect(res.documents).toHaveLength(0);
+      expect(res.groundingPromptText).toContain('APPROVED SOURCE COVERAGE UNAVAILABLE');
+      expect(res.groundingPromptText).toContain('does not yet have a source-audited Ramayana passage');
+      expect(res.groundingPromptText).not.toContain('verified passages from authorized scriptures');
     });
 
     it("grounds Puranic Vrat Katha inquiries", async () => {
@@ -132,6 +144,8 @@ describe('chat-grounding', () => {
       expect(res.corpus).toBe("bhakti_katha");
       expect(res.documents.length).toBeGreaterThan(0);
       expect(res.documents[0].id).toContain("2.12");
+      expect(res.groundingPromptText).toContain('CURATED DEVOTIONAL STUDY MATERIAL');
+      expect(res.groundingPromptText).toContain('not a verbatim scripture translation');
     });
 
     it("grounds Satyanarayan Puranic Katha inquiries", async () => {
@@ -154,6 +168,38 @@ describe('chat-grounding', () => {
       expect(res.corpus).toBeNull();
       expect(res.documents).toHaveLength(0);
       expect(res.groundingPromptText).toBeNull();
+    });
+
+    it.each([
+      'How do I use my computer?',
+      'What is the company policy?',
+      'What changed in app version 2.47?',
+    ])('fails closed when a mundane word merely contains a Dharmic term: %s', async (message) => {
+      const res = await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
+      expect(res.isGrounded).toBe(false);
+      expect(res.corpus).toBeNull();
+      expect(res.documents).toHaveLength(0);
+    });
+
+    it('prioritizes an explicitly named Gita source over the saved Sikh tradition', async () => {
+      const res = await retrieveDharmaChatGrounding({
+        message: 'What does Krishna teach in Bhagavad Gita 2.47?',
+        tradition: 'sikh',
+      });
+      expect(res.isGrounded).toBe(true);
+      expect(res.corpus).toBe('pathshala_gita');
+      expect(res.documents[0].id).toContain('2.47');
+    });
+
+    it('prioritizes an explicitly named Ramayana source over the saved Jain tradition', async () => {
+      const res = await retrieveDharmaChatGrounding({
+        message: 'What does the Ramayana say about refuge?',
+        tradition: 'jain',
+      });
+      expect(res.isGrounded).toBe(false);
+      expect(res.corpus).toBe('valmiki_ramayana');
+      expect(res.documents).toHaveLength(0);
+      expect(res.groundingPromptText).toContain('APPROVED SOURCE COVERAGE UNAVAILABLE');
     });
 
     it('fails closed on empty messages', async () => {

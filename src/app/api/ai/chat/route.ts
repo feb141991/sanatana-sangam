@@ -582,7 +582,9 @@ User Question: ${message}
     const ragLatencyMs = Date.now() - ragStart;
 
     let effectiveSystemPrompt = systemPrompt;
-    if (grounding.isGrounded && grounding.groundingPromptText) {
+    // Append both retrieved grounding and fail-closed corpus policy notes. A
+    // source family can be recognized while still having zero approved chunks.
+    if (grounding.groundingPromptText) {
       effectiveSystemPrompt = `${systemPrompt}\n\n${grounding.groundingPromptText}`;
     }
 

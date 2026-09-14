@@ -100,6 +100,35 @@ const DHARMIC_CONCEPTS = new Set([
   'nirvana', 'eightfold', 'sangha', 'waheguru', 'hukam', 'naam', 'katha', 'vrat', 'upavas', 'puja', 'fasting', 'festival'
 ]);
 
+const GITA_TERMS = ['bhagavad gita', 'bhagavad', 'gita'];
+const UPANISHAD_TERMS = [
+  'upanishad', 'upanishads', 'vedanta', 'mandukya', 'katha upanishad', 'nachiketa',
+  'isha upanishad', 'ishavasya', 'kena upanishad', 'mundaka', 'prashna upanishad',
+  'chandogya', 'brihadaranyaka',
+];
+const RAMAYANA_TERMS = [
+  'ramayana', 'valmiki', 'sundara kanda', 'bala kanda', 'ayodhya kanda', 'yuddha kanda',
+];
+const SIKH_SCRIPTURE_TERMS = [
+  'gurbani', 'guru granth', 'japji', 'rehras', 'waheguru', 'shabad',
+];
+const BUDDHIST_SCRIPTURE_TERMS = [
+  'buddha', 'buddhism', 'dhamma', 'dhammapada', 'eightfold', 'nirvana',
+];
+const JAIN_SCRIPTURE_TERMS = [
+  'jain', 'jainism', 'tirthankara', 'tattvartha', 'saman suttam', 'anekantavada',
+  'navkar', 'namokar',
+];
+
+function includesTerm(text: string, term: string): boolean {
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`\\b${escaped}\\b`, 'i').test(text);
+}
+
+function includesAnyTerm(text: string, terms: readonly string[]): boolean {
+  return terms.some((term) => includesTerm(text, term));
+}
+
 export interface ChatGroundingResult {
   isGrounded: boolean;
   corpus: string | null;
@@ -112,7 +141,7 @@ export interface ChatGroundingResult {
  */
 export function extractMeaningfulTokens(text: string): string[] {
   const words = (text.toLowerCase().match(/[a-z0-9\u0900-\u097f]+(?:\.[a-z0-9\u0900-\u097f]+)*/g) || []);
-  return words.filter((w) => !STOPWORDS.has(w) && w.length > 2);
+  return words.filter((w) => !STOPWORDS.has(w) && (w.length > 2 || w === 'om'));
 }
 
 /**
@@ -137,37 +166,70 @@ export function matchDharmVeerFigure(text: string): string | null {
  * Checks if a query is asking for a narrative katha or puranic story
  */
 export function isKathaQuery(text: string): boolean {
-  const lower = text.toLowerCase();
-  return (
-    lower.includes("katha") ||
-    lower.includes("vrat katha") ||
-    lower.includes("satyanarayan") ||
-    lower.includes("purana") ||
-    lower.includes("puranic") ||
-    lower.includes("prahlada") ||
-    lower.includes("dhruva") ||
-    lower.includes("gajendra") ||
-    lower.includes("sudama") ||
-    lower.includes("veervati") ||
-    lower.includes("mahishasura mardini")
-  );
+  return includesAnyTerm(text, [
+    'katha', 'vrat katha', 'satyanarayan', 'purana', 'puranic', 'prahlada',
+    'dhruva', 'gajendra', 'sudama', 'veervati', 'mahishasura mardini',
+  ]);
 }
 
 export function isFestivalRuleQuery(text: string): boolean {
-  const lower = text.toLowerCase();
-  return FESTIVAL_TERMS.some((term) => lower.includes(term));
+  return includesAnyTerm(text, FESTIVAL_TERMS);
 }
 
 /**
  * Checks if a query contains Dharmic/philosophical inquiry intent
  */
 export function hasDharmicIntent(text: string, meaningfulTokens: string[]): boolean {
-  const lower = text.toLowerCase();
-  if (/\b\d+(?:[.:]\d+)+\b/.test(text)) return true; // verse reference e.g. 2.47
-  if (/\bchapter\s+\d+/i.test(text)) return true;
+  if (/\b(?:verse|chapter)\s+\d+(?:[.:]\d+)*\b/i.test(text)) return true;
   if (isFestivalRuleQuery(text) || isKathaQuery(text)) return true;
-  return meaningfulTokens.some((t) => DHARMIC_CONCEPTS.has(t)) ||
-         Array.from(DHARMIC_CONCEPTS).some((c) => lower.includes(c));
+  return meaningfulTokens.some((token) => DHARMIC_CONCEPTS.has(token));
+}
+
+function buildCorpusGroundingPrompt(targetCorpus: string, documents: RetrievalChunk[]): string {
+  const passages = documents
+    .map((doc) => {
+      const ref = doc.metadata?.chunkId ? ` (${doc.metadata.chunkId})` : '';
+      const sourceName = doc.metadata?.sourceName || 'Source';
+      return `- [${sourceName}${ref}]:\n${doc.content}`;
+    })
+    .join('\n\n');
+
+  // Corpus-level fallbacks are deliberate: older embedding indexes do not
+  // carry every manifest governance field on each document.
+  const hasPendingSource = targetCorpus === 'valmiki_ramayana' || documents.some(
+    (doc) => doc.metadata?.rightsStatus === 'restricted_or_pending'
+  );
+  const hasCuratedMaterial = targetCorpus === 'bhakti_katha' || documents.some((doc) =>
+    ['curated_lesson', 'narrative'].includes(doc.metadata?.sourceClass ?? '')
+  );
+
+  if (hasPendingSource) {
+    return [
+      '=== SOURCE-AUDIT-PENDING STUDY MATERIAL ===',
+      `The following explicitly requested Shoonaya study material (${targetCorpus}) has not yet been approved as canonical Pramana. Its source or rights audit remains pending:`,
+      passages,
+      '=== INSTRUCTIONS FOR DHARMA MITRA ===',
+      'Use this only as clearly labelled study context. Paraphrase with attribution to Shoonaya study notes; do not present it as a verified canonical quotation or imply source approval. State that source verification is pending. Do not invent quotations or claims beyond this material.',
+    ].join('\n');
+  }
+
+  if (hasCuratedMaterial) {
+    return [
+      '=== CURATED DEVOTIONAL STUDY MATERIAL ===',
+      `The following source-cleared Shoonaya curated material (${targetCorpus}) is a devotional retelling or study lesson, not a verbatim scripture translation:`,
+      passages,
+      '=== INSTRUCTIONS FOR DHARMA MITRA ===',
+      'Use this as a clearly labelled Shoonaya retelling or study lesson. Do not describe its wording as a direct scripture quotation. Cite the named story or traditional reference when present, and do not invent quotations or claims beyond this material.',
+    ].join('\n');
+  }
+
+  return [
+    '=== SOURCE-BACKED SCRIPTURAL PASSAGES (PRAMANA GROUNDING) ===',
+    `The following source-backed passages from the approved corpus (${targetCorpus}) directly address this topic:`,
+    passages,
+    '=== INSTRUCTIONS FOR DHARMA MITRA ===',
+    'Ground your answer in these passages. Cite the scripture and verse reference (for example, "[Bhagavad Gita 6.26]" or "[Isha Upanishad 1]") where helpful. Do not invent quotations outside these passages.',
+  ].join('\n');
 }
 
 /**
@@ -261,72 +323,44 @@ export async function retrieveDharmaChatGrounding(input: {
     return { isGrounded: false, corpus: null, documents: [], groundingPromptText: null };
   }
 
-  // 4. Tradition & Scripture Corpus Selection
+  // 4. Scripture named in the current message takes precedence over a saved
+  // profile tradition. Tradition is only a fallback when the user did not
+  // explicitly identify a source family in this question.
   let targetCorpus = 'pathshala_gita';
 
-  if (
-    input.tradition === 'sikh' ||
-    lower.includes('gurbani') ||
-    lower.includes('sikh') ||
-    lower.includes('guru granth') ||
-    lower.includes('japji') ||
-    lower.includes('rehras') ||
-    lower.includes('waheguru') ||
-    lower.includes('shabad')
-  ) {
-    targetCorpus = 'sikh_gurbani';
-  } else if (
-    input.tradition === 'buddhist' ||
-    lower.includes('buddha') ||
-    lower.includes('buddhism') ||
-    lower.includes('dhamma') ||
-    lower.includes('dhammapada') ||
-    lower.includes('eightfold') ||
-    lower.includes('nirvana')
-  ) {
-    targetCorpus = 'buddhist_dhamma';
-  } else if (
-    input.tradition === 'jain' ||
-    lower.includes('jain') ||
-    lower.includes('jainism') ||
-    lower.includes('tirthankara') ||
-    lower.includes('tattvartha') ||
-    lower.includes('saman suttam') ||
-    lower.includes('ahimsa') ||
-    lower.includes('anekantavada') ||
-    lower.includes('navkar') ||
-    lower.includes('namokar')
-  ) {
-    targetCorpus = 'jain_dharma';
-  } else if (
-    lower.includes('upanishad') ||
-    lower.includes('upanishads') ||
-    lower.includes('vedanta') ||
-    lower.includes('mandukya') ||
-    lower.includes('katha upanishad') ||
-    lower.includes('nachiketa') ||
-    lower.includes('isha upanishad') ||
-    lower.includes('ishavasya') ||
-    lower.includes('kena upanishad') ||
-    lower.includes('mundaka') ||
-    lower.includes('prashna upanishad') ||
-    lower.includes('chandogya') ||
-    lower.includes('brihadaranyaka') ||
-    lower.includes('atman') ||
-    lower.includes('brahman')
-  ) {
+  if (includesAnyTerm(lower, GITA_TERMS)) {
+    targetCorpus = 'pathshala_gita';
+  } else if (includesAnyTerm(lower, UPANISHAD_TERMS)) {
     targetCorpus = 'pathshala_upanishads';
-  } else if (
-    lower.includes('ramayana') ||
-    lower.includes('valmiki') ||
-    lower.includes('sundara kanda') ||
-    lower.includes('bala kanda') ||
-    lower.includes('ayodhya kanda') ||
-    lower.includes('yuddha kanda')
-  ) {
+  } else if (includesAnyTerm(lower, RAMAYANA_TERMS)) {
     targetCorpus = 'valmiki_ramayana';
+  } else if (includesAnyTerm(lower, SIKH_SCRIPTURE_TERMS)) {
+    targetCorpus = 'sikh_gurbani';
+  } else if (includesAnyTerm(lower, BUDDHIST_SCRIPTURE_TERMS)) {
+    targetCorpus = 'buddhist_dhamma';
+  } else if (includesAnyTerm(lower, JAIN_SCRIPTURE_TERMS)) {
+    targetCorpus = 'jain_dharma';
   } else if (kathaRequested) {
     targetCorpus = 'bhakti_katha';
+  } else if (input.tradition === 'sikh') {
+    targetCorpus = 'sikh_gurbani';
+  } else if (input.tradition === 'buddhist') {
+    targetCorpus = 'buddhist_dhamma';
+  } else if (input.tradition === 'jain') {
+    targetCorpus = 'jain_dharma';
+  }
+
+  if (targetCorpus === 'valmiki_ramayana') {
+    return {
+      isGrounded: false,
+      corpus: targetCorpus,
+      documents: [],
+      groundingPromptText: [
+        '=== APPROVED SOURCE COVERAGE UNAVAILABLE ===',
+        'The user explicitly asked about the Valmiki Ramayana, but Shoonaya does not yet have a source-audited Ramayana passage approved for Pramana grounding.',
+        'Do not provide or invent a quotation, verse reference, or definitive textual claim. Say briefly that approved source coverage is still being prepared, and offer general non-quoted guidance only if it can be clearly identified as general guidance.',
+      ].join('\n'),
+    };
   }
 
   try {
@@ -355,21 +389,7 @@ export async function retrieveDharmaChatGrounding(input: {
     }
 
     const topDocs = docs.slice(0, 3);
-    const passages = topDocs
-      .map((doc) => {
-        const ref = doc.metadata?.chunkId ? ` (${doc.metadata.chunkId})` : '';
-        const sourceName = doc.metadata?.sourceName || 'Scripture';
-        return `- [${sourceName}${ref}]:\n${doc.content}`;
-      })
-      .join('\n\n');
-
-    const promptText = [
-      '=== AUTHENTIC SCRIPTURAL PASSAGES (PRAMANA GROUNDING) ===',
-      `The following verified passages from authorized scriptures (${targetCorpus}) directly address this topic:`,
-      passages,
-      '=== INSTRUCTIONS FOR DHARMA MITRA ===',
-      'Naturally ground your answer in these authentic passages. Cite the scripture and verse reference (e.g. "[Bhagavad Gita 6.26]" or "[Isha Upanishad 1]") where helpful. Do NOT invent quotations outside these verified passages.',
-    ].join('\n');
+    const promptText = buildCorpusGroundingPrompt(targetCorpus, topDocs);
 
     return {
       isGrounded: true,

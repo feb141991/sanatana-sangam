@@ -95,10 +95,10 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 
 | Tradition | Current RAG Strength | Main Gap | Recommended Next Move |
 |---|---|---|---|
-| Hindu / Sanatan | Strongest because of Gita | Upanishads still curated/sample-scale; Yoga missing; Ramayana starter still source-audit pending | Finish Upanishads, clear Ramayana source audit, add Yoga Sutras |
-| Sikh | Early sample | Broader Gurbani/Nitnem rights and ingestion | Expand Gurbani after rights confirmation |
-| Buddhist | Data strong, product activation weaker | Runtime routing and prompt/eval maturity | Activate Buddhist Dhamma as proper tradition lane |
-| Jain | Data strong, rights/product maturity weaker | Permission clarity and routing | Activate Jain Dharma cautiously with visible provenance |
+| Hindu / Sanatan | Strongest because of Gita and the expanded Upanishad translation layer | Original Sanskrit is partial; Yoga missing; Ramayana starter remains source-audit pending and withheld | Clear Ramayana source audit, complete original-text provenance, add Yoga Sutras |
+| Sikh | Active sample lane | Broader Gurbani/Nitnem rights and ingestion | Expand Gurbani after rights confirmation |
+| Buddhist | Data and tradition routing active | Multilingual prompt/eval maturity | Strengthen Buddhist Dhamma evaluation |
+| Jain | Data and tradition routing active | Permission clarity and source-specific evaluation | Strengthen Jain Dharma evaluation with visible provenance |
 | Tamil / Regional | Mostly scaffold | No real indexed corpus yet | Keep in P4 until core traditions stabilize |
 
 ## Current Indexed Corpus Counts
@@ -106,11 +106,11 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 | Index | Corpus | Count | Notes |
 |---|---|---:|---|
 | `gita_index.json` | Bhagavad Gita | 701 | Strongest current production lane |
-| `upanishads_index.json` | Upanishads | 45 | Sample-scale curated passages across the 11 Principal Upanishad names |
+| `upanishads_index.json` | Upanishads | 297 | Production-scale translated study layer across 11 Principal Upanishad names; original Sanskrit coverage remains partial |
 | `gurbani_index.json` | Sikh Gurbani | 34 | Sample-scale |
 | `buddhist_dhamma_index.json` | Buddhist Dhamma | 109 | Production-scale index, still needs stronger activation |
 | `jain_dharma_index.json` | Jain Dharma | 107 | Production-scale index, still needs stronger activation |
-| `valmiki_ramayana_index.json` | Valmiki Ramayana | 15 | Source-audit pending metadata starter; not live-approved canonical text |
+| `valmiki_ramayana_index.json` | Valmiki Ramayana | 26 | Sample-scale source-audit-pending study index; recognized but withheld from Pramana grounding |
 
 ## Claiming Rules
 
@@ -143,11 +143,11 @@ Before any corpus moves beyond scaffold/sample status, confirm:
 | Corpus | Current Routing | Target |
 |---|---|---|
 | `pathshala_gita` | Active/default fallback | Keep active; strengthen metadata |
-| `pathshala_upanishads` | Explicit-target only | Keep explicit until coverage expands |
-| `sikh_gurbani` | Explicit-target only | Tradition-aware Sikh routing after rights/data expansion |
-| `buddhist_dhamma` | Explicit-target only | Tradition-aware Buddhist routing |
-| `jain_dharma` | Explicit-target only | Tradition-aware Jain routing |
-| `valmiki_ramayana` | Source-gated / blocked | Do not route until a verified Griffith/Gutenberg starter exists |
+| `pathshala_upanishads` | Active for explicit Upanishad terms | Keep active; disclose partial original-text coverage |
+| `sikh_gurbani` | Active for explicit terms and Sikh tradition fallback | Expand only after rights/data confirmation |
+| `buddhist_dhamma` | Active for explicit terms and Buddhist tradition fallback | Strengthen multilingual eval coverage |
+| `jain_dharma` | Active for explicit terms and Jain tradition fallback | Strengthen source-specific eval coverage |
+| `valmiki_ramayana` | Explicit requests recognized; retrieval withheld with a policy note | Keep withheld until a verified Griffith/Gutenberg starter is approved |
 
 ## Eval Coverage Matrix
 

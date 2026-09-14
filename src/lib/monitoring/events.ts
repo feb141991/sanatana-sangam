@@ -20,7 +20,8 @@ export interface MonitoringEvent {
   context?: Record<string, string | number | boolean | null>;
 }
 
-// Global in-memory sink for events (in production, this would pipe to Datadog/CloudWatch)
+// Fast in-process buffer for diagnostics. Durable telemetry is flushed to the
+// Supabase monitoring_events table and surfaced by the admin monitoring UI.
 export const _eventSink: MonitoringEvent[] = [];
 let _flushBuffer: MonitoringEvent[] = [];
 let _flushTimeout: NodeJS.Timeout | null = null;
@@ -56,8 +57,7 @@ export function emitEvent(event: Omit<MonitoringEvent, 'timestamp'>): void {
     timestamp: new Date().toISOString(),
   };
   
-  // In a real app, this would be an async fire-and-forget to a logging service.
-  // For the monitoring window, we keep a rolling buffer of 1000 events.
+  // Keep a rolling in-process buffer of 1000 events for immediate diagnostics.
   _eventSink.unshift(fullEvent);
   if (_eventSink.length > 1000) {
     _eventSink.pop();
