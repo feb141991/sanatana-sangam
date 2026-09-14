@@ -23,7 +23,8 @@ import {
   ArrowRight,
   Globe,
   Zap,
-  MessageCircle
+  MessageCircle,
+  Trophy
 } from "lucide-react";
 import type { UrgentAlertItem } from "@/app/api/admin/alerts/route";
 import { AdminIcon } from "@/components/admin/AdminIcon";
@@ -528,6 +529,14 @@ export default function AdminOverviewPage() {
               label="Mandali Prompts"
               value="Manage"
               sublabel="Daily conversation-starter prompt bank"
+            />
+
+            <MetricCard
+              href="/admin/festival-quiz"
+              icon={Trophy}
+              label="Festival Quiz Seasons"
+              value="Manage"
+              sublabel="Curated multi-day festival quiz question bank"
             />
 
             <MetricCard
