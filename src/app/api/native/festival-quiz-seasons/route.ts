@@ -87,12 +87,25 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Days until the earliest *resolved* day (not necessarily sequence 1 --
+    // a day with no matching observance_definitions row, per the current
+    // Navratri sub-day gap, simply never appears in `days` since it's
+    // derived from series.children, which only includes what the calendar
+    // engine actually resolved). null when nothing has a real date yet, or
+    // the earliest resolved day has already arrived (it's unlocked, not
+    // upcoming).
+    const firstResolved = days.find((d) => d.civilDate);
+    const daysUntilStart = firstResolved?.civilDate && firstResolved.civilDate > today
+      ? Math.round((new Date(`${firstResolved.civilDate}T00:00:00Z`).getTime() - new Date(`${today}T00:00:00Z`).getTime()) / 86_400_000)
+      : null;
+
     return {
       definitionKey: season.definition_key,
       title: season.title,
       status: series?.status ?? 'upcoming',
       currentDay: series?.currentDay ?? null,
       totalDays: series?.totalDays ?? days.length,
+      daysUntilStart,
       year,
       days,
     };
