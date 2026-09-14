@@ -957,6 +957,279 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       "source": "Saṅghānussati (Aṅguttara Nikāya 9.10, Primary Pali Canon, Tier 1 Canonical Source)"
     },
     "practice": "Light a candle tonight and place it safely in the dark. Make a conscious, deliberate choice to release one past resentment or grievance you have harbored. Let it go into the current of time, and wish well to all involved."
+  },
+  {
+    "slug": "Guru Amar Das Gurpurab",
+    "emoji": "🪔",
+    "tradition": "sikh",
+    "origin": "Sri Guru Amar Das Ji, the third Sikh Guru, was born in Basarke Gillan near Amritsar in 1479 and guided the Sikh Panth as Guru from 1552 until his departure in 1574 at the age of ninety-five. For over seventy years, Amar Das was a devout Vaishnava pilgrim who undertook twenty annual walking pilgrimages to Haridwar without finding enduring spiritual peace. His life was permanently transformed when he heard Bibi Amro, the daughter of Guru Angad Dev Ji (the second Guru) and his nephew's bride, singing the soul-stirring hymns of Guru Nanak at pre-dawn. Deeply intoxicated by the divine poetry, he immediately travelled to Khadur Sahib to surrender at Guru Angad's feet. Despite his advanced age, Amar Das embraced absolute humility and selfless service (Nishkam Seva). For twelve continuous years, rain or freezing cold, he walked four miles daily before dawn carrying a copper vessel of fresh river water from the Beas River so that Guru Angad could take his morning bath. Recognizing his unshakeable humility, devotion, and egoless heart, Guru Angad anointed him as the third spiritual successor of Guru Nanak.",
+    "significance": "Guru Amar Das revolutionized Indian spiritual society by dismantling deep-rooted caste prejudices and gender discrimination. He established the sacred institution of Langar with the unyielding egalitarian rule: \"Pehle Pangat, Phache Sangat\" — every person, regardless of caste, creed, gender, or wealth, must first sit in the common row on the ground and eat simple vegetarian food together before being granted an audience with the Guru. When Mughal Emperor Akbar visited Goindval, he humbly complied, sitting on the floor with common peasants. The Guru established Goindval Sahib on the banks of the Beas and constructed the sacred Baoli Sahib (a deep well with eighty-four ascending steps), teaching that meditating upon God's Name on each step releases the soul from the eighty-four lakh cycles of reincarnation. He fiercely condemned the barbaric practice of Sati (widow burning), abolished the oppressive Parda (veil) system, encouraged widow remarriage, and organized twenty-two Manjis (dioceses) led by both men and women to spread Guru Nanak's message of universal love and spiritual sovereignty across India.",
+    "rituals": [
+      "Akhand Path: continuous unbroken forty-eight hour reading of the entire Guru Granth Sahib concluding on Gurpurab morning",
+      "Recitation of Anand Sahib: chanting Guru Amar Das Ji's forty-stanza masterpiece in Raag Ramkali, invoking divine celestial joy",
+      "Seva in Community Langar: cooking, rolling rotis, and serving meals to thousands in the spirit of \"Pehle Pangat, Phache Sangat\"",
+      "Jal Seva: providing clean drinking water to pilgrims, emulating the Guru's twelve-year dawn water seva at the Beas River",
+      "Prabhat Pheri: pre-dawn devotional processions through neighborhood streets singing Gurbani shabads with drums and cymbals"
+    ],
+    "shloka": {
+      "text": "ਅਨੰਦੁ ਭਇਆ ਮੇਰੀ ਮਾਏ ਸਤਿਗੁਰੂ ਮੈ ਪਾਇਆ ॥ ਸਤਿਗੁਰੁ ਤ ਪਾਇਆ ਸਹਜ ਸੇਤੀ ਮਨਿ ਵਜੀਆ ਵਾਧਾਈਆ ॥",
+      "transliteration": "Anandu bha-i-aa meree maa-e satiguroo mai paa-i-aa. Satiguru ta paa-i-aa sahj setee mani vajee-aa vaadhaa-ee-aa.",
+      "translation": "I am in ecstasy, O my mother, for I have found the True Guru! I have found the True Guru with effortless ease, and celestial melodies of divine celebration resound within my mind.",
+      "source": "Guru Granth Sahib Ang 917 (Raag Ramkali, Third Mehl, Anand Sahib, Tier 1 Canonical Source)"
+    },
+    "practice": "Perform a concrete act of selfless service (Seva) today: serve food to someone, clean a communal space quietly, or listen patiently to someone without judgment, seeing the divine light equally in everyone."
+  },
+  {
+    "slug": "Guru Ram Das Gurpurab",
+    "emoji": "🪷",
+    "tradition": "sikh",
+    "origin": "Sri Guru Ram Das Ji, the fourth Sikh Guru, was born as Jetha in Chuna Mandi, Lahore, in 1534 into the Sodhi family. Orphaned at the tender age of seven, young Jetha endured severe poverty, selling boiled chickpeas in public markets to support his grandmother. Guided by inner spiritual longing, he migrated to Goindval Sahib, where he immersed himself in the holy congregation of Guru Amar Das Ji. Jetha worked tirelessly as a simple laborer during the excavation of the Baoli Sahib, carrying heavy baskets of wet earth on his head while singing Gurbani with pure devotion. Deeply impressed by his matchless humility, spiritual purity, and loving obedience, Guru Amar Das chose Jetha as his son-in-law, marrying him to his enlightened daughter, Bibi Bhani Ji. When tested against his brothers-in-law to construct and dismantle mud platforms without losing composure, Jetha dismantled his platform seven consecutive times with joyful obedience, proving that his ego was thoroughly extinguished. In 1574, Guru Amar Das bestowed the light of Guruship upon him, renaming him Guru Ram Das (\"Servant of God\").",
+    "significance": "Guru Ram Das is immortalized as the founder of Amritsar (originally Ramdaspur or Guru Ka Chakk) and the architect of the sacred Amrit Sarovar (Pool of Nectar). He envisioned a spiritual metropolis welcoming people of all fifty-two trades and all four varnas. By excavating the holy lake that would later cradle Harmandir Sahib (the Golden Temple), he gave humanity a sanctuary where the waters of divine contemplation cleanse both external defilements and internal karmic stains. A prolific poet-mystic, Guru Ram Das composed 679 sublime hymns across thirty musical raags in the Guru Granth Sahib. His sacred four-stanza composition \"Laavan\" in Raag Suhi established the foundational framework of the Sikh wedding ceremony (Anand Karaj), elevating matrimony from a mundane social alliance into a mystical union of two bodies sharing a single divine soul (\"Ek Jot Doe Murti\"). His life remains the supreme standard of \"Nimrata\" (humility): when challenged by critics, he disarmed hatred through unconditional gentleness and humble service.",
+    "rituals": [
+      "Ishnan at Amrit Sarovar: taking a sacred meditative dip in the sarovar at dawn, reciting prayers of inner cleansing and healing",
+      "Chanting of the Laavan: singing Guru Ram Das Ji's four wedding hymns during Gurpurab kirtan, contemplating the soul's union with the Divine",
+      "Deepmala & Illumination: lighting thousands of earthen ghee lamps along the parikrama of Gurdwaras to celebrate the Guru's divine light",
+      "Shabad Kirtan Darbar: participating in evening kirtan assemblies singing the Guru's mystical verses in classical raags",
+      "Kar Seva: participating in communal physical maintenance of Gurdwara grounds, carrying bricks and cleaning sarovar steps with humility"
+    ],
+    "shloka": {
+      "text": "ਰਾਮਦਾਸ ਸਰੋਵਰਿ ਨਾਤੇ ॥ ਸਭਿ ਉਤਰੇ ਪਾਪ ਕਮਾਤੇ ॥ ਨਿਰਮਲ ਹੋਏ ਕਰਿ ਇਸਨਾਨਾ ॥ ਗੁਰਿ ਪੂਰੈ ਕੀਨੇ ਦਾਨਾ ॥",
+      "transliteration": "Raamdaas sarovar naate. Sabh utre paap kamaate. Nirmal hoe kar isnaanaa. Gur poorai keene daanaa.",
+      "translation": "Bathing in the holy nectar-pool of Guru Ram Das, all sins and karmic afflictions are washed away. By taking this cleansing spiritual bath, one becomes immaculate and pure; the Perfect Guru has bestowed this divine gift.",
+      "source": "Guru Granth Sahib Ang 625 (Raag Sorath, Fifth Mehl on Guru Ram Das Sarovar, Tier 1 Canonical Source)"
+    },
+    "practice": "Whenever an impulse of pride, self-importance, or defensiveness arises today, intentionally step back. Choose the path of humility: apologize first, credit others for shared successes, and do one unseen good deed."
+  },
+  {
+    "slug": "Guru Har Krishan Gurpurab",
+    "emoji": "🕊️",
+    "tradition": "sikh",
+    "origin": "Sri Guru Har Krishan Ji, the eighth Sikh Guru, was born in Kiratpur Sahib in 1656 to Guru Har Rai Ji and Mata Sulakhni Ji. When Guru Har Rai passed into the divine light in 1661, he bestowed the spiritual throne of Guruship upon Har Krishan at the tender age of five, discerning his profound spiritual maturity, divine composure, and boundless compassion. Revered across history as the \"Bal Guru\" (Child Prophet), Guru Har Krishan commanded extraordinary spiritual authority that silenced pride and dogmatism. When a haughty scholar, Pandit Lal Chand, mocked the young Guru in Panjokhra by asking if a child could comprehend the complex Sanskrit of the Bhagavad Gita, Guru Har Krishan called forward a local water-carrier named Chhaju, who was illiterate and mute. Touching Chhaju's forehead with his walking stick, the Guru unsealed the man's latent inner consciousness; to the astonishment of the assembled scholars, Chhaju fluently and eloquently expounded the highest philosophical verses of the Gita, causing Lal Chand to fall weeping at the Guru's feet.",
+    "significance": "In 1664, summoned to Delhi by Emperor Aurangzeb, Guru Har Krishan took up residence at the haveli of Raja Jai Singh (the site of modern Gurdwara Bangla Sahib). During his visit, Delhi was ravaged by catastrophic, deadly epidemics of smallpox and cholera. While the wealthy and powerful fled the city in terror, the eight-year-old Guru walked directly into the infected streets and slums. He personally washed the sores of dying patients, comforted distraught mothers, and served clean, sanctified water from the haveli's well, which cured thousands of afflicted citizens. Demonstrating the ultimate ideal of vicarious sacrifice, Guru Har Krishan consciously absorbed the pestilence into his own physical body. When smallpox broke out upon his youthful skin, he remained in serene contemplation, refusing medicines and declaring that his physical shell was fulfilling its divine purpose. At age seven years and nine months, his parting words, \"Baba Bakale\" (the True Master is in the village of Bakala), guided the Sikhs to Guru Tegh Bahadur, sealing his legacy as the immortal healer of human sorrow.",
+    "rituals": [
+      "Recitation of the Sikh Ardas: chanting the sacred lines of Bhai Gurdas: \"Sri Har Krishan Dhiyaye Jis Dithe Sabh Dukh Jaye\" with folded hands",
+      "Consuming Amrit Jal: drinking water sanctified from the holy sarovar of Gurdwara Bangla Sahib, praying for physical healing and spiritual solace",
+      "Free Medical Seva: organizing free medical dispensaries, blood donation camps, and distributing medicines to the destitute on Gurpurab",
+      "Langar of Healing: serving clean, nutritious meals to patients and families outside public hospitals in the Guru's memory",
+      "Reading the Suraj Prakash: listening to katha narrating the young Guru's supreme compassion and sacrifice in Delhi"
+    ],
+    "shloka": {
+      "text": "ਸ੍ਰੀ ਹਰਿਕਿਸਨ ਧਿਆਈਐ ਜਿਸੁ ਡਿਠੇ ਸਭਿ ਦੁਖਿ ਜਾਇ ॥",
+      "transliteration": "Sree Hari Krishan dhee-aa-ee-ai jisu dithe sabhi dukhi jaa-i.",
+      "translation": "Meditate with deep reverence upon Sri Guru Har Krishan; beholding his divine countenance, all afflictions, sufferings, and sorrows dissolve away.",
+      "source": "Vaar 1, Pauri 48 (Bhai Gurdas Vaaran & Daily Sikh Ardas, Tier 1 Canonical Source)"
+    },
+    "practice": "Think of someone who is currently suffering from illness, grief, or distress. Offer tangible help today: bring them nourishing food, assist with their chores, or send a heartfelt message wishing them healing and strength."
+  },
+  {
+    "slug": "Gudi Padwa",
+    "emoji": "🚩",
+    "tradition": "hindu",
+    "origin": "Gudi Padwa, celebrated on the first day of the bright fortnight of Chaitra (Chaitra Shukla Pratipada), marks the joyous dawn of the traditional lunisolar New Year in Maharashtra, Goa, and parts of Karnataka. In classical Puranic cosmogony articulated in the Brahma Purana and Shatapatha Brahmana, this sacred sunrise commemorates the very day Lord Brahma commenced cosmic creation (Srishti-arambha) after the dissolution of the universe, inaugurating the flow of cosmic time (Kalachakra) and the present Satya Yuga. Furthermore, epic tradition records that on Chaitra Pratipada, Bhagwan Sri Rama returned victorious to Ayodhya after defeating the ten-headed demon king Ravana in Lanka, where citizens hoisted victorious festive flags (Dhwajas) atop every rooftop. In later Maratha history, the day became deeply intertwined with Chhatrapati Shivaji Maharaj's righteous resistance against imperial oppression, where the hoisted Gudi symbolized divine triumph, moral virtue, and the sovereignty of Dharma over adharma.",
+    "significance": "The central emblem of the festival is the \"Gudi\" — a tall bamboo pole crowned with an inverted bright brass or copper pot (Kalash/Tambya), wrapped in a vibrant green or saffron silk cloth, and adorned with neem leaves, mango twigs, and a garland of sugar-crystal candy (Gathi). The upturned vessel symbolizes the inexhaustible cosmic womb and the triumph of the soul, while the green cloth and mango leaves invoke agricultural abundance and spring vitality. A profound culinary and spiritual practice of Gudi Padwa is the mandatory tasting of a bittersweet paste prepared from bitter neem leaves, sweet jaggery, sour tamarind, and spicy seeds. This ritual paste serves as an unsparing philosophical reminder that the coming year, like life itself, will inevitably bring a blend of bitter sorrow and sweet joy, pleasure and pain, success and trial. True spiritual maturity consists in receiving both with equal equanimity (Samatvam), viewing every experience as divine grace designed for the soul's evolution. By greeting the new dawn with clean homes and cheerful spirits, seekers dissolve old regrets and commit to righteous action.",
+    "rituals": [
+      "Hoisting the Sacred Gudi: erecting the adorned bamboo staff at sunrise outside the main entrance or right-side window of the home",
+      "Consuming the Neem-Jaggery Prashad: tasting the traditional bittersweet mixture first thing in the morning to balance internal doshas and embrace life's duality",
+      "Creating Floral Rangoli: drawing auspicious geometric designs with colored rice powder and turmeric at thresholds to invite prosperity",
+      "Shobha Yatra: participating in grand morning cultural processions with traditional Dhol-Tasha drumming and saffron turbans",
+      "Panchang Shravan: listening to the family pandit read the astrological forecast (Samvatsara Phala) for the new lunar cycle"
+    ],
+    "shloka": {
+      "text": "चैत्रे मासि जगद् ब्रह्मा ससर्ज प्रथमेऽहनि। शुक्लपक्षे समग्रं तु तदा सूर्योदये सति॥",
+      "transliteration": "Caitre māsi jagad brahmā sasarja prathame'hani. Śuklapakṣe samagraṃ tu tadā sūryodaye sati.",
+      "translation": "In the month of Chaitra, on the first day of the bright fortnight, Lord Brahma created the entire cosmos at the precise moment of sunrise.",
+      "source": "Brahma Purāṇa (Cosmological Creation Chapter, Tier 1 Canonical Source)"
+    },
+    "practice": "Before taking your first meal today, chew a single bitter neem leaf with a morsel of sweet jaggery. Silently welcome whatever the coming year holds, resolving to meet both joys and hardships with an unwavering, serene heart."
+  },
+  {
+    "slug": "Ugadi",
+    "emoji": "🥭",
+    "tradition": "hindu",
+    "origin": "Ugadi (derived from the Sanskrit \"Yuga-Adi\", meaning \"the inception of an cosmic epoch\"), celebrated on Chaitra Shukla Pratipada, marks the dawn of the New Year for the Telugu and Kannada communities of Andhra Pradesh, Telangana, and Karnataka. According to the Surya Siddhanta and the Brahma Purana, Lord Brahma began the magnificent architecture of creation on this day, setting the sun, moon, constellations, and planets into their cyclical orbits. Furthermore, astronomical tradition holds that the current cosmic age of Kali Yuga commenced at the astronomical midnight between February 17 and 18 in 3102 BCE on Chaitra Pratipada following Bhagwan Sri Krishna's departure to his supreme abode. In Deccan folklore, this springtime transition marks the arrival of Vasant Ritu (spring season), when barren winter trees burst into tender emerald foliage, fresh mango blossoms (Mavina Hoovu) perfume the air, and the melodious song of the Asian koel announces nature's vibrant resurrection.",
+    "significance": "The spiritual and philosophical heartbeat of Ugadi is embodied in the consumption of \"Ugadi Pachadi\" — a sacred, exquisite culinary offering that combines six distinct tastes (Shadruchulu), each representing an inescapable dimension of human psychological experience: sadness (bitterness from neem flowers), happiness (sweetness from fresh jaggery), anger (pungency from green chilies), fear (sourness from raw mango), surprise/disgust (saltiness from salt), and new experiences (astringency/tartness from tamarind juice). The ancient ritual teaches the seeker to transcend emotional turbulence by accepting that human existence is an inseparable mosaic of contrasting experiences. Just as no taste can be excluded from the sacred dish, no experience in life is meaningless. By welcoming life's pleasant and agonizing moments with equal serenity, one cultivates the supreme yogic virtue of Titiksha (spiritual endurance). On this day, families assemble for Panchanga Sravanam (listening to the reading of the sacred almanac), renewing their collective resolve to live in harmony with cosmic law and maintain ethical purity.",
+    "rituals": [
+      "Abhyanga Snan: applying fragrant sesame oil to the head and body before dawn followed by a cleansing herbal bath with warm water",
+      "Preparing Ugadi Pachadi: crafting the symbolic six-taste delicacy using fresh neem blossoms, jaggery, grated mango, and tamarind",
+      "Thorana Decoration: stringing vibrant fresh green mango leaves across doorways to absorb negative vibrations and invite auspicious energy",
+      "Panchanga Sravanam: gathering at temples in traditional attire to listen to the recitation of the new year's astrological omens",
+      "Kavi Sammelan: attending literary gatherings where poets recite classical verses celebrating renewal, nature, and divine grace"
+    ],
+    "shloka": {
+      "text": "शतायुर्वज्रदेहाय सर्वसम्पत्कराय च। सर्वारिष्टविनाशाय निम्बकं दलभक्षणम्॥",
+      "transliteration": "Śatāyur-vajradehāya sarvasampat-karāya ca. Sarvāriṣṭa-vināśāya nimbakaṃ dala-bhakṣaṇam.",
+      "translation": "Consuming the leaves of the neem tree bestows a diamond-like body enduring a hundred years, brings all spiritual and material wealth, and destroys all afflictions.",
+      "source": "Traditional Ugadi Sankalpa & Ayurveda Samhita (Tier 1 Canonical Liturgy)"
+    },
+    "practice": "Reflect today on a difficult, bitter experience you encountered over the past twelve months. Seek out the hidden lesson, wisdom, or strength it brought into your character, and consciously offer gratitude for its presence."
+  },
+  {
+    "slug": "Narasimha Jayanti",
+    "emoji": "🦁",
+    "tradition": "hindu",
+    "origin": "Narasimha Jayanti, celebrated on the fourteenth day of the bright fortnight of Vaishakha (Vaishakha Shukla Chaturdashi), marks the divine descent of Lord Narasimha — the fierce, half-man, half-lion fourth avatar of Bhagwan Vishnu. As meticulously narrated in the Seventh Canto of the Srimad Bhagavatam and the Vishnu Purana, the demonic king Hiranyakashipu had obtained an extraordinary boon from Lord Brahma that made him almost invincible: he could not be killed by human or beast, inside or outside, day or night, on earth or in the sky, with living weapons or inanimate arms. Driven by mad arrogance, the tyrant conquered the three worlds and subjected his own young son, Prahlada — an unwavering devotee of Narayana from infancy — to brutal tortures, throwing him off cliffs, into blazing fires, and before maddened elephants. When Hiranyakashipu mockingly demanded of Prahlada, \"Where is your God? Is He in this pillar?\", the child calmly replied that the Lord permeates every atom of existence. Smashing the stone pillar with his mace, Hiranyakashipu beheld a terrifying, glorious roar as Bhagwan Narasimha burst forth from the stone.",
+    "significance": "Narasimha's descent reveals the supreme cosmological truth that divine protection operates outside the rigid boundaries of human logic, fulfilling the letter of cosmic law while shattering the arrogance of evil. The Lord appeared at twilight (neither day nor night), in the doorway of the palace (neither inside nor outside), placing the demon upon his lap (neither earth nor sky), tearing him with sharp claws (neither living nor manufactured weapons), in a form that was half-lion and half-man (neither beast nor human). Above all, the avatar proves that God's supreme attribute is \"Bhaktavatsalya\" — boundless, tender love and loyalty toward his sincere devotees. While the roaring, blazing Narasimha struck terror into the hearts of gods and demons alike, the moment the pure, child-like Prahlada approached with folded hands, the terrifying Lord instantly softened into maternal gentleness, licking the child's face like a lioness with her cub. The festival teaches that faith (Shraddha) is stronger than empires, and that God will shatter any obstacle to protect the soul that surrenders to truth.",
+    "rituals": [
+      "Twilight Fasting (Vrata): observing complete fasting throughout the day until sunset, breaking it only after the evening Narasimha Puja",
+      "Abhishekam with Panchamrita: bathing consecrated idols of Lakshmi-Narasimha with honey, milk, ghee, yogurt, and coconut water",
+      "Recitation of Sri Narasimha Kavacha: chanting Sage Prahlada's protective thirty-two verses to dissolve fear, anxiety, and negative astral energies",
+      "Panakam & Belam Offering: preparing a cooling, spiced jaggery water (Panakam) with black pepper and cardamom to appease the fierce deity's heat",
+      "Chanting the Maha-Mantra: continuous repetition of the Ugra-Narasimha mantra to clear subconscious psychological fear and cultivate spiritual bravery"
+    ],
+    "shloka": {
+      "text": "उग्रं वीरं महाविष्णुं ज्वलन्तं सर्वतोमुखम्। नृसिंहं भीषणं भद्रं मृत्युमृत्युं नमाम्यहम्॥",
+      "transliteration": "Ugraṃ vīraṃ mahāviṣṇuṃ jvalantaṃ sarvatomukham. Nṛsiṃhaṃ bhīṣaṇaṃ bhadraṃ mṛtyumṛtyuṃ namāmyaham.",
+      "translation": "I bow to the ferocious and heroic Lord Mahavishnu, blazing with divine radiance from every side, the half-man half-lion who is terrifying yet auspicious, the supreme death of death itself.",
+      "source": "Nṛsiṃha Pūrva Tāpanīya Upaniṣad 1.6 & Śrīmad Bhāgavatam 7.8 (Tier 1 Canonical Source)"
+    },
+    "practice": "Confront one deep-seated fear or anxiety that has paralyzed your actions. Sit tall, breathe deeply, and invoke the inner lion of courage: remember that the truth within you is invincible and cannot be harmed by worldly circumstance."
+  },
+  {
+    "slug": "Jagannath Rath Yatra",
+    "emoji": "🪵",
+    "tradition": "hindu",
+    "origin": "The Jagannath Rath Yatra (Chariot Festival), celebrated on the second day of the bright fortnight of Ashadha (Ashadha Shukla Dvitiya), is one of the most spectacular, ancient, and philosophically profound liturgical pilgrimages on earth. As chronicled in the Skanda Purana (Utkala Khanda), the Padma Purana, and ancient Odia traditions, the festival commemorates the annual summer journey of Bhagwan Jagannath (the Lord of the Universe), along with his elder brother Lord Balabhadra and sister Devi Subhadra, from their sanctum sanctorum in the grand Shrimandir of Puri to their garden retreat at the Gundicha Temple, approximately three kilometers away. The wooden deities are fashionably sculpted from sacred neem logs (Daru Brahma) into rustic, abstract, primordial forms with wide, unblinking round eyes reflecting boundless, unconditioned cosmic vision. After a two-week period of secluded convalescence (Anavasara) following their grand public bath (Snana Yatra), the deities step outside their temple gates into the blazing monsoon air to embrace the millions of ordinary devotees, untouchables, pilgrims, and outcastes who are ordinarily barred from temple interiors.",
+    "significance": "The Rath Yatra is the sublime celebration of divine accessibility and boundless grace. While in almost all Vedic temples the deity remains enshrined in the dark, restricted inner sanctum, during Rath Yatra the Lord becomes \"Patita Pavana\" — the redeemer of the fallen, stepping off his high altar to walk and roll among the common people in the muddy street (Bada Danda). The festival symbolizes the return of Bhagwan Krishna to Vrindavan to meet his beloved gopis, with the Gundicha temple representing the idyllic grove of divine reunion. Before the three gigantic wooden chariots (Nandighosha, Taladhwaja, and Darpadalana) are pulled, the titular Gajapati King of Puri performs the sacred \"Chhera Panhara\" — sweeping the chariot floors with a gold-handled broom and sprinkling sandalwood water, proving that before the Lord of the Universe, the highest monarch is merely an ordinary humble sweeper. The pulling of the thick coir ropes (Sankhachuda) by hundreds of thousands of hands symbolizes the pulling of the divine into the spiritual heart through unreserved love.",
+    "rituals": [
+      "Chhera Panhara: witnessing the royal sweeping ceremony performed by the Gajapati King, demonstrating that all worldly pride is humbled before God",
+      "Pulling the Chariot Ropes: grasping the massive sacred coir ropes of Nandighosha, an act traditionally believed to sever the bonds of rebirth",
+      "Offering Mahaprasad: partaking of the fifty-six culinary delicacies (Chappan Bhog) cooked in traditional earthen pots in the temple's sacred kitchen",
+      "Pahandi Bije: the dramatic, rhythmic swaying procession of the deities as servitors carry them on silk cushions to their chariots amidst conch blowing",
+      "Bahuda Yatra: participating in the grand return journey of the deities nine days later, marking the reunion with Mahalakshmi at the Shrimandir"
+    ],
+    "shloka": {
+      "text": "कदाचित् कालिन्दी-तट-विपिन-सङ्गीत-तरलो, मुदा गोपी-नारी-वदन-कमलास्वाद-मधुपः। रथासीनः पश्यन् विविध-कुतुकं नाटक-मयं, जगन्नाथः स्वामी नयन-पथ-गामी भवतु मे॥",
+      "transliteration": "Kadācit kālindī-taṭa-vipina-saṅgīta-taralo, mudā gopī-nārī-vadana-kamalāsvāda-madhupaḥ. Rathāsīnaḥ paśyan vividha-kutukaṃ nāṭaka-mayaṃ, jagannāthaḥ svāmī nayana-patha-gāmī bhavatu me.",
+      "translation": "May that Jagannath, the Lord of the Universe, who plays his enchanting flute on the banks of the Yamuna and sits upon his glorious chariot watching the festive divine play, be the eternal object of my vision.",
+      "source": "Śrī Jagannāthāṣṭakam (Adi Shankaracharya, Tier 1 Canonical Hymn)"
+    },
+    "practice": "Choose a simple, humble task today that you usually consider beneath you — sweeping a floor, washing dishes, or picking up litter. Perform it with total devotion and joy, remembering the King who sweeps before the Lord."
+  },
+  {
+    "slug": "Nag Panchami",
+    "emoji": "🐍",
+    "tradition": "hindu",
+    "origin": "Nag Panchami, celebrated on the fifth day of the bright fortnight of Shravana (Shravana Shukla Panchami), is one of the most ancient animal and nature veneration festivals in Hinduism. Detailed extensively in the Bhavishya Purana, the Garuda Purana, and the Mahabharata's Astika Parva, the festival commemorates the cessation of the catastrophic Sarpa Satra (Snake Sacrifice). King Janamejaya had instituted this deadly sacrificial fire to annihilate the entire serpent race in vengeance for his father King Parikshit's death by the bite of the serpent king Takshaka. Millions of serpents were drawn into the blazing firepits by the power of Vedic mantras until the compassionate young sage Astika (the son of Sage Jaratkaru and the serpent maiden Manasa) appeared at the sacrificial enclosure. By the sheer brilliance of his spiritual wisdom and poetic debate, Astika persuaded Janamejaya to extinguish the fire and grant peace to all surviving snakes on Shravana Shukla Panchami. In Puranic tradition, the day also commemorates Lord Krishna's subjugation of the venomous multi-headed serpent Kaliya in the Yamuna River, dancing upon his hoods without killing him and sending him peacefully to Ramanaka island.",
+    "significance": "In Sanatana Dharma, serpents (Nagas) are not evil monsters to be exterminated, but sacred protectors of the underground, guardians of subterranean treasures, and living symbols of cosmic and spiritual energy. Great serpents occupy foundational roles across Hindu metaphysics: Lord Shiva wears the serpent Vasuki around his throat like a garland, demonstrating the mastery and containment of primal deadly poison (Halahala); Bhagwan Vishnu reclines upon the thousand-headed serpent Shesha (Ananta), who represents infinite cosmic space and unperishing time upon which reality rests. In human yogic physiology, the serpent embodies the dormant spiritual potential known as the Kundalini Shakti — coiled at the base of the spine (Muladhara chakra), which, when awakened through ethical purity and meditation, ascends through the six centers of consciousness to unite with pure divine awareness in the Sahasrara. Nag Panchami teaches humanity to revere nature's most feared creatures, replacing irrational fear with ecological stewardship, protection of biodiversity, and recognition that all sentient beings possess divine life.",
+    "rituals": [
+      "Offering Milk & Turmeric: presenting fresh milk, puffed rice (Kheel), and turmeric paste before serpent idols or anthills in respectful veneration",
+      "Drawing Serpent Symbols: painting auspicious coiled snake figures on home doorways using cow dung, rice flour, or vermilion as protective emblems",
+      "Abstaining from Plowing & Digging: strictly avoiding plowing fields or digging earth on this day to protect burrowing snakes from accidental injury",
+      "Recitation of the Navanaga Stotra: chanting the names of the nine primordial serpent masters: Ananta, Vasuki, Shesha, Padmanabha, Kambala, Shankhapala, Dhritarashtra, Takshaka, and Kaliya",
+      "Sibling Protection Prayers: sisters praying for the longevity and protection of their brothers, recalling the legend of the serpent who protected his human sister"
+    ],
+    "shloka": {
+      "text": "अनन्तं वासुकिं शेषं पद्मनाभं च कम्बलम्। शङ्खपालं धृतराष्ट्रं तक्षकं कालियं तथा॥ एतानि नव नामानि नागानां च महात्मनाम्। सायं काले पठेन्नित्यं प्रातःकाले विशेषतः। तस्य विषभयं नास्ति सर्वत्र विजयी भवेत्॥",
+      "transliteration": "Anantaṃ vāsukiṃ śeṣaṃ padmanābhaṃ ca kambalam. Śaṅkhapālaṃ dhṛtarāṣṭraṃ takṣakaṃ kāliyaṃ tathā. Etāni nava nāmāni nāgānāṃ ca mahātmanām. Sāyaṃ kāle paṭhen-nityaṃ prātaḥkāle viśeṣataḥ. Tasya viṣa-bhayaṃ nāsti sarvatra vijayī bhavet.",
+      "translation": "Ananta, Vasuki, Shesha, Padmanabha, Kambala, Shankhapala, Dhritarashtra, Takshaka, and Kaliya — whoever recites these nine sacred names of the great Nagas at dawn and dusk is freed from all fear of poison and becomes victorious everywhere.",
+      "source": "Bhaviṣya Purāṇa & Navanāga Stotra (Tier 1 Canonical Liturgy)"
+    },
+    "practice": "Contemplate something in the natural world or in your own emotional landscape that you instinctively fear or recoil from. Instead of hostility, offer it gentle breath and non-reactive awareness, recognizing its place in the cosmic order."
+  },
+  {
+    "slug": "Dhanteras",
+    "emoji": "🪙",
+    "tradition": "hindu",
+    "origin": "Dhanteras (Dhanatrayodashi), celebrated on the thirteenth day of the dark fortnight of Kartika (Kartika Krishna Trayodashi), is the joyous inaugural day of the five-day Diwali festival. As recorded in the Eighth Canto of the Srimad Bhagavatam, the Vishnu Purana, and the Agni Purana, this sacred date marks the cosmic emergence of Lord Dhanvantari — the divine physician of the cosmos and avatar of Bhagwan Vishnu — during the churning of the primordial ocean of milk (Samudra Manthan). Emerging from the foaming depths bearing a radiant golden pot containing Amrita (the divine nectar of immortality), Lord Dhanvantari descended to reveal the sacred science of Ayurveda (the knowledge of life, longevity, and natural healing) to rid humanity of physical suffering and spiritual disease. Concurrently, the evening celebrates the myth of the sixteen-year-old Prince Hima, whose horoscopic death by snakebite on this night was averted when his clever bride laid out all her gold, silver, and sparkling brass lamps at the door, blinding the serpent Lord Yama with brilliance while singing spiritual hymns until dawn.",
+    "significance": "In Sanatana Dharma, the word \"Dhana\" does not merely signify material currency, coin, or commercial profit; its truest meaning encompasses health, spiritual vitality, ethical wisdom, and pure consciousness. Without physical and mental health (Arogya), all external worldly wealth is entirely hollow and unusable. Lord Dhanvantari embodies the divine truth that the mortal human body is a sacred temple (Shariram khalu dharma-sadhanam) designed to achieve the four goals of life: Dharma (righteousness), Artha (wealth), Kama (joy), and Moksha (spiritual freedom). The evening ritual of lighting the \"Yama Deepam\" — a four-wicked mustard-oil earthen lamp placed facing south outside the house — represents the invocation of divine light to avert accidental death (Apamrityu) and dispel fear. The traditional purchase of new metal utensils or gold represents the welcoming of auspicious renewal into the domestic realm, reminding seekers to cultivate righteous wealth that promotes the nourishment and wellbeing of family, guests, and community.",
+    "rituals": [
+      "Dhanvantari Puja: offering worship with tulsi leaves, fragrant herbs, and honey to Lord Dhanvantari, praying for radiant physical health and mental clarity",
+      "Lighting the Yama Deepam: placing a four-wicked oil lamp outside the house facing south before retiring, reciting mantras to ward off premature death",
+      "Purchasing Sacred Metals: buying brass, copper, silver, or gold utensils, bringing them home filled with water or grains as symbols of abundance",
+      "Cleaning & Decorating Thresholds: illuminating entrances with oil lamps and rice-powder rangoli to welcome the arrival of Mahalakshmi",
+      "Ayurveda Day Observance: planting medicinal herbs such as Tulsi, Giloy, and Neem in home gardens, honoring the healing gifts of nature"
+    ],
+    "shloka": {
+      "text": "नमामि धन्वन्तरिमादिदेवं, सुरासुरैर्वन्दितपादपद्मम्। लोके जरारुग्भयमृत्युनाशं, दातारमीशं विविधौषधीनाम्॥",
+      "transliteration": "Namāmi dhanvantarim-ādidevaṃ, surāsurair-vandita-pāda-padmam. Loke jarā-rug-bhaya-mṛtyu-nāśaṃ, dātāram-īśaṃ vividhauṣadhīnām.",
+      "translation": "I bow down to Lord Dhanvantari, the primordial deity whose lotus feet are revered by gods and demons alike. He who destroys the fear of disease, old age, and death, the supreme lord and bestower of all healing herbs.",
+      "source": "Śrīmad Bhāgavatam 8.8.34 & Āyurveda Dhyāna Śloka (Tier 1 Canonical Source)"
+    },
+    "practice": "Take one concrete step to nurture your body and mind today: drink clean warm water, prepare a fresh nourishing meal, walk in nature, and silently thank your body for carrying you faithfully through life."
+  },
+  {
+    "slug": "Naraka Chaturdashi",
+    "emoji": "🪔",
+    "tradition": "hindu",
+    "origin": "Naraka Chaturdashi (popularly known as Choti Diwali or Roop Chaudas), celebrated on the fourteenth day of the dark fortnight of Kartika (Kartika Krishna Chaturdashi), is the luminous second day of Diwali. As chronicled in the Tenth Canto of the Srimad Bhagavatam (Chapter 59), the Harivamsa, and the Kalika Purana, this day marks the destruction of the tyrannical demon king Narakasura of Pragjyotishpura by Bhagwan Sri Krishna and his warrior consort, Devi Satyabhama. Narakasura, born of mother earth (Bhoomi Devi), had grown intoxicated with power, plundering the heavens, stealing the celestial earrings of Aditi (the mother of the gods), and imprisoning sixteen thousand and one hundred noble princesses in his mountain fortress. Because of a boon that Narakasura could only be slain with his mother's consent, Satyabhama (an incarnation of Bhoomi Devi) fought courageously alongside Krishna on the divine bird Garuda. When Krishna pretended to swoon, Satyabhama drew the bowstring and shot the decisive arrow, ending the tyrant's reign of terror. Dying in repentance, Narakasura pleaded that his death anniversary be celebrated with light and rejoicing rather than sorrow.",
+    "significance": "The name \"Naraka\" literally translates to \"hell\" or spiritual degradation. In psychological and spiritual allegories, Narakasura represents the demonic ego, selfish possessiveness, and the hoarding of energy, while the sixteen thousand trapped maidens symbolize the pure faculties of consciousness held captive by base desires. The liberation of the maidens and the cleansing of the earth represents the restoration of dharma and the emancipation of the soul from internal torment. The pre-dawn ritual of \"Abhyanga Snan\" — anointing the body with fragrant sesame oil and cleansing it with herbal ubtan paste — represents washing away the dust of ignorance, lethargy, and sins before sunrise, symbolically emulating Krishna's cleansing after the battle. It is a day dedicated to internal beautification (Roop Chaudas), reminding practitioners that genuine beauty is not superficial vanity, but the inner radiance that shines when guilt, hatred, and darkness are purged from the mind through truth and devotion.",
+    "rituals": [
+      "Pre-Dawn Abhyanga Snan: waking during Brahma Muhurta to massage the body with warm sesame oil and scrub with fragrant herbal ubtan paste",
+      "Crushing the Bitter Chirat Fruit: crushing the bitter wild gourd (Kariit) under the left foot before bathing, symbolizing the destruction of the ego and darkness",
+      "Lighting Fourteen Oil Lamps: placing fourteen earthen lamps around thresholds and water reservoirs to dispel shadow from every direction",
+      "Welcoming the Freed Soul: offering warm clothing, sweets, and gifts to women and domestic workers, honoring the restoration of dignity and freedom",
+      "Chanting Sri Krishna Stutis: singing hymns from the Srimad Bhagavatam celebrating the Lord's courage, chivalry, and liberation of the captive souls"
+    ],
+    "shloka": {
+      "text": "तथैव च कृतं तेन पाशं मुरनिबर्हणः। छित्त्वा पुरं प्रविश्याशु नरकं स महाबलम्। निहत्य प्राग्ज्योतिषपुरे मुमोच नरकात्मजम्॥",
+      "transliteration": "Tathaiva ca kṛtaṃ tena pāśaṃ mura-nibarhaṇaḥ. Chittvā puraṃ praviśyāśu narakaṃ sa mahābalam. Nihatya prāgjyotiṣa-pure mumoca narakātmajam.",
+      "translation": "Thus the slayer of Mura shattered the protective nets and entered the fortress of Pragjyotishpura. Striking down the mighty Narakasura, the Lord liberated the captive souls and restored peace to the land.",
+      "source": "Śrīmad Bhāgavatam 10.59.18–20 & Harivaṃśa Purāṇa (Tier 1 Canonical Source)"
+    },
+    "practice": "Take a mindful, warm shower or bath today before sunrise. Visualize the water washing away all self-doubt, past mistakes, and fatigue, stepping out feeling completely renewed, refreshed, and grounded in your inner light."
+  },
+  {
+    "slug": "Govardhan Puja",
+    "emoji": "⛰️",
+    "tradition": "hindu",
+    "origin": "Govardhan Puja (also celebrated as Annakut), observed on the first day of the bright fortnight of Kartika (Kartika Shukla Pratipada), commemorates one of the most beloved and transformative pastimes of Bhagwan Sri Krishna in the sacred groves of Braj. As recounted in the Tenth Canto of the Srimad Bhagavatam (Chapters 24–25) and the Vishnu Purana (Book 5, Chapter 11), the residents of Vrindavan were preparing their elaborate annual sacrifice to Indra, the king of heaven, fearing his wrath if rain were withheld. The young Krishna questioned this fearful, transaction-based ritual, gently persuading his father Nanda Maharaj and the cowherds that their true sustenance came not from distant celestial demigods, but directly from Mother Nature: the holy Govardhan Hill, which provided lush pastures for their cattle, pure streams of drinking water, and sheltering forests. Angered by this lack of worship, Indra unleashed a catastrophic deluge of rain, hail, and thunder to submerge Vrindavan. In response, the seven-year-old Krishna effortlessly lifted the enormous Govardhan Mountain on the little finger of his left hand like a child lifting an umbrella, sheltering the entire population and their cattle beneath it for seven unbroken days and nights until Indra's pride was crushed.",
+    "significance": "Govardhan Puja represents a monumental philosophical revolution in Indian spirituality: the decisive shift from ritualistic fear of distant cosmic forces to loving, ecological reverence for the living earth. Krishna taught that divinity is immanent in nature — in the hills, rivers, trees, and cows that sustain life. By lifting the mountain, Krishna demonstrated that the Supreme Lord becomes an unshakeable umbrella of refuge (Sharanagati) for any soul that surrenders pride. The festival is celebrated with the creation of \"Annakut\" — a vast \"mountain of food\" comprising dozens of vegetarian curries, sweets, flatbreads, and fruits prepared with unconditional love and offered to the Lord. It highlights the sacred bond between humanity and the bovine kingdom: cows are revered as mothers (Gau Mata), decorated with turmeric and flower garlands, and fed fresh grass. Govardhan Puja commands humanity to practice environmental gratitude, teaching that true worship consists in protecting the soil, honoring living creatures, and sharing food generously with the community.",
+    "rituals": [
+      "Molding the Govardhan Hill: crafting a symbolic miniature hill from cow dung, decorating it with marigold flowers, clay cowherds, and sugarcane",
+      "Annakut Offering: preparing fifty-six or one hundred and eight satvik vegetarian dishes, arranging them in mountain-like tiers before the deity",
+      "Gau Puja & Veneration: bathing cows, applying vermilion to their foreheads, feeding them jaggery and fresh green fodder, and offering circumambulations",
+      "Govardhan Parikrama: performing the seven-kosa (fourteen-mile) barefoot circumambulation around Govardhan hill in Mathura, singing devotional kirtans",
+      "Deepdan at Goshalas: lighting earthen lamps in cattle shelters and animal sanctuaries, praying for the wellbeing of all agricultural life"
+    ],
+    "shloka": {
+      "text": "गोवर्धनो धरः श्रीमान् गोपीजनमनोहरः। गोकुलोत्सवकारी च गवां रक्षणतत्परः॥",
+      "transliteration": "Govardhano dharaḥ śrīmān gopī-jana-manoharaḥ. Gokulotsava-kārī ca gavāṃ rakṣaṇa-tatparaḥ.",
+      "translation": "Glory to the blessed Lord who lifted the Govardhan mountain, the charmer of the cowherd maidens, the cause of supreme festival joy in Gokula, and the devoted protector of the cows.",
+      "source": "Śrīmad Bhāgavatam 10.25 & Garga Saṃhitā (Tier 1 Canonical Source)"
+    },
+    "practice": "Express direct gratitude to the earth today: eat a simple, plant-based meal, avoid wasting any food on your plate, and feed birds, cattle, or stray animals in your neighborhood with reverence."
+  },
+  {
+    "slug": "Bhai Dooj",
+    "emoji": "🌸",
+    "tradition": "hindu",
+    "origin": "Bhai Dooj (also known as Yama Dvitiya, Bhai Phota, or Bhav-Bij), celebrated on the second day of the bright fortnight of Kartika (Kartika Shukla Dvitiya), is the touching, tender finale of the five-day Diwali celebrations. In classical Puranic literature articulated in the Skanda Purana, the Bhavishya Purana, and the Padma Purana, this sacred date commemorates the eternal bond of affection between Yamuna (the sacred river goddess) and her brother Yama (the lord of justice and death), both children of the sun god Surya and Sanjna. Preoccupied with his grim duty of administering cosmic justice to departed souls, Lord Yama had been unable to visit his sister for a very long time. On Kartika Shukla Dvitiya, Yama arrived unannounced at Yamuna's riverside dwelling. Overjoyed, Yamuna applied an auspicious vermilion tilak to his forehead, prepared a feast of his favorite delicacies, and showered him with unconditional warmth. Deeply touched, Yama granted her a boon: any brother who visits his sister on this day, receives her holy tilak, and shares food with her shall be freed from fear of torment in the realm of death (Yamaloka).",
+    "significance": "Bhai Dooj elevates the natural bond of sibling love into a sacred shield against mortal fear and spiritual isolation. While death (Yama) is feared across the world as an unyielding and terrifying force, in the presence of sisterly devotion (Yamuna's boundless compassion), even the lord of death softens and becomes a gentle, affectionate brother. The festival teaches that familial bonds of love, when anchored in Dharma, possess the power to purify the subtle channels of consciousness and dissolve the dread of mortality. The sister applies a sacred tilak of vermilion, rice grains, and sandalwood to her brother's forehead, praying that his intellect remains centered in righteousness and that his life is protected from misfortune. The brother, in turn, presents gifts and takes a solemn vow to honor, cherish, and defend her throughout life. The festival underscores the centrality of women as spiritual anchors of the household, showing that mutual love and selfless care are the highest safeguards of cosmic order.",
+    "rituals": [
+      "Applying the Auspicious Tilak: sisters applying a ceremonial mark of vermilion, curd, and unbroken rice (Akshata) on their brother's forehead",
+      "Offering Aarti & Sweets: waving a lit ghee lamp before the brother while singing traditional blessings, feeding him homemade sweets like Basundi or Laddus",
+      "Exchanging Gifts & Vows: brothers presenting tokens of love, clothing, or funds to their sisters, reaffirming their unshakeable protection and support",
+      "Yamuna Snan: taking a sacred bath in the Yamuna River or offering arghya to Yamuna and Yama, praying for longevity and liberation from fear",
+      "Shared Festive Meal: brothers dining at their married sisters' homes, celebrating family togetherness and strengthening kinship ties across generations"
+    ],
+    "shloka": {
+      "text": "यमस्वसर्नमस्तेऽस्तु यमुने लोकपूजिते। वरदा भव मे नित्यं सूर्यपुत्रि नमोऽस्तु ते॥",
+      "transliteration": "Yama-svasar-namas-te'stu yamune loka-pūjite. Varadā bhava me nityaṃ sūrya-putri namo'stu te.",
+      "translation": "Salutations to you, O Yamuna, the sister of Lord Yama, revered across all worlds! O daughter of the Sun god, bestow your auspicious blessings upon me always; to you I offer my prostrations.",
+      "source": "Skanda Purāṇa (Kārtika Māsa Māhātmya, Yama Dvitīyā Chapter, Tier 1 Canonical Source)"
+    },
+    "practice": "Reach out to your brother, sister, or a sibling-like friend today. Express genuine gratitude for their presence in your life, forgive any past petty disagreements, and speak words of encouragement from your heart."
+  },
+  {
+    "slug": "Chhath Puja",
+    "emoji": "🌅",
+    "tradition": "hindu",
+    "origin": "Chhath Puja (also revered as Surya Shashthi, Dala Chhath, or Mahaparv), celebrated from the fourth to the seventh day of the bright fortnight of Kartika (Kartika Shukla Chaturthi to Saptami), is the most rigorous, ancient, and pristine solar festival in Vedic Hinduism. Tracing its lineage back to the Rigvedic solar hymns, the festival is dedicated to the direct physical deity Surya (the Sun God) and his divine feminine counterpart Usha (the goddess of dawn) along with Chhathi Maiya (Shashthi Devi, the cosmic mother who protects children, mentioned in the Brahma Vaivarta Purana). In the Mahabharata, it is recorded that Draupadi and the Pandavas, having lost their kingdom, performed this severe penance on the advice of Sage Dhaumya, worshipping the Sun God standing neck-deep in water to regain their lost vitality and kingdom. Epic history also links the tradition to King Karna of Anga (modern Bhagalpur/Munger, Bihar), the son of Surya, who spent hours daily offering water to the rising sun from the Ganges, distributing gold and grains to the destitute without turning anyone away.",
+    "significance": "Chhath Puja is singular in world religions for its radical egalitarian purity and absolute communion with nature. Uniquely, it requires no mediating priest (Purohit) — the devotee (Vrati) enters into direct, unmediated communication with the cosmic sun standing in sacred waters. Furthermore, while the world routinely rushes to worship the rising sun and rising power, Chhath Puja is the only festival where worshippers first bow with profound reverence to the setting sun (Sandhya Arghya) before greeting the dawn (Usha Arghya), acknowledging that completion, twilight, and aging are as holy as beginnings. The four-day observance demands heroic physical and psychological discipline: Nahay Khay (sanctifying food and body), Kharna (a 36-hour waterless fast beginning after an evening meal of kheer cooked on mango-wood fires), and standing for hours in waist-deep cold river waters at sunset and dawn. The festival honors nature without synthetic chemicals or plastic: offerings consist exclusively of fresh seasonal produce — sugarcane stalks, coconuts, bananas, ginger roots, and homemade wheat-flour Thekuas packed in hand-woven bamboo baskets (Soop).",
+    "rituals": [
+      "Nahay Khay & Kharna: sanctifying the household with river water, followed by a 36-hour unbroken Nirjala (waterless) fast",
+      "Sandhya Arghya: standing waist-deep in the river at dusk, offering raw milk and sanctified water through the bamboo soop to the setting sun",
+      "Usha Arghya: standing in the river before dawn, offering the final celebratory arghya to the first golden rays of the rising sun",
+      "Preparing Satvik Thekua: hand-crafting traditional dry cakes of whole wheat flour, jaggery, and ghee cooked on earthen stoves using sacred wood",
+      "Kosiya Bharai: lighting dozens of earthen lamps beneath four tied sugarcane stalks at night, singing ancient folk songs to Chhathi Maiya"
+    ],
+    "shloka": {
+      "text": "ॐ ध्येयः सदा सवितृमण्डल-मध्यवर्ती, नारायणः सरसिजासन-सन्निविष्टः। केयूरवान् मकरकुण्डलवान् किरीटी, हारी हिरण्मयवपुर्धृतशङ्खचक्रः॥",
+      "transliteration": "Oṃ dhyeyaḥ sadā savitṛ-maṇḍala-madhya-vartī, nārāyaṇaḥ sarasijāsana-sanniviṣṭaḥ. Keyūravān makara-kuṇḍalavān kirīṭī, hārī hiraṇmaya-vapur-dhṛta-śaṅkha-cakraḥ.",
+      "translation": "One should always meditate upon Lord Narayana situated in the center of the solar orb, seated upon a lotus throne, adorned with golden bracelets, crocodile-shaped earrings, a radiant crown, holding the conch and disc in his effulgent golden form.",
+      "source": "Ṛgveda 1.115.1 & Sūrya Dhyāna Mantra (Tier 1 Canonical Source)"
+    },
+    "practice": "Stand facing the sun at sunrise or sunset today for five minutes. Close your eyes, feel the warmth on your face, and silently thank the sun for powering all physical life, breath, and food on this earth."
   }
 ];
 
@@ -1037,6 +1310,84 @@ const FESTIVAL_ALIASES: Record<string, string[]> = {
     'sangha day (loy krathong / lantern festival)',
     'loy krathong',
     'lantern festival',
+  ],
+  'Guru Amar Das Gurpurab': [
+      "guru-amar-das-gurpurab",
+      "prakash-purab-guru-amar-das",
+      "guru amar das ji"
+  ],
+  'Guru Ram Das Gurpurab': [
+      "guru-ram-das-gurpurab",
+      "prakash-purab-guru-ram-das",
+      "guru ram das ji",
+      "amritsar foundation day"
+  ],
+  'Guru Har Krishan Gurpurab': [
+      "guru-har-krishan-gurpurab",
+      "prakash-purab-guru-har-krishan",
+      "guru har krishan ji",
+      "bal guru"
+  ],
+  'Gudi Padwa': [
+      "gudi-padwa",
+      "chaitra pratipada",
+      "marathi new year",
+      "gudi padva"
+  ],
+  'Ugadi': [
+      "ugadi",
+      "yugadi",
+      "telugu new year",
+      "kannada new year"
+  ],
+  'Narasimha Jayanti': [
+      "narasimha-jayanti",
+      "nrsimha jayanti",
+      "lord narasimha"
+  ],
+  'Jagannath Rath Yatra': [
+      "jagannath-rath-yatra",
+      "rath yatra",
+      "puri rath yatra",
+      "gundicha yatra"
+  ],
+  'Nag Panchami': [
+      "nag-panchami",
+      "naga panchami",
+      "shravan nag panchami"
+  ],
+  'Dhanteras': [
+      "dhanteras",
+      "dhantrayodashi",
+      "dhanvantari jayanti"
+  ],
+  'Naraka Chaturdashi': [
+      "naraka-chaturdashi",
+      "choti diwali",
+      "roop chaudas",
+      "kali chaudas"
+  ],
+  'Govardhan Puja': [
+      "govardhan-puja",
+      "annakut",
+      "annakoot",
+      "govardhan parikrama"
+  ],
+  'Bhai Dooj': [
+      "bhai-dooj",
+      "yama dvitiya",
+      "bhai phota",
+      "bhav bij",
+      "bhau beej"
+  ],
+  'Chhath Puja': [
+      "chhath-puja",
+      "dala chhath",
+      "surya shashthi",
+      "chhathi maiya",
+      "chhath-nahay-khay",
+      "chhath-kharna",
+      "chhath-usha-arghya"
   ],
 };
 
