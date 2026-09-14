@@ -139,7 +139,12 @@ type HomeSummaryResponse = {
     accentColour: string;
     accentLight: string;
   };
-  panchang: {
+  // Omitted entirely (not `null`) when the request opted out of calendar
+  // computation via `?skipCalendar=true` -- see HomeSummaryCoordinator's
+  // 12h calendar-freshness window on the native client. An absent key is
+  // the client's signal to keep whatever calendar data it already has
+  // rather than treating this response as "confirmed empty".
+  panchang?: {
     href: string;
     tithiLabel: string;
     festivalLabel: string | null;
@@ -497,6 +502,15 @@ async function getCachedDharmVeerRoster(supabase: any, timeoutMs: number): Promi
 export async function GET(request: NextRequest) {
   const timings = new ServerTimingCollector();
   const degradedSections = new Set<string>();
+  // Native's HomeSummaryCoordinator sends this once the calendar deck it
+  // already has is still within its own 12h freshness window (independent
+  // of the 5-minute window for sadhana/practice fields) -- festival/vrat
+  // dates don't change minute to minute, so there's nothing to gain by
+  // recomputing and shipping them on every focus refetch. Every calendar
+  // query/computation below is skipped and `panchang` is omitted from the
+  // response entirely; everything else (profile, sadhana, sankalpa,
+  // dharmVeer) is computed exactly as always.
+  const skipCalendar = request.nextUrl.searchParams.get('skipCalendar') === 'true';
 
   const { user, error, supabase } = await timings.measure('auth', 'Authentication', async () => getApiUser(request));
 
@@ -558,18 +572,20 @@ export async function GET(request: NextRequest) {
   const longitude = profile?.longitude ?? 75.7885;
   const calendarScope = profile?.calendar_scope ?? null;
 
-  const calendarProfilePromise = profile?.calendar_profile
-    ? timings.measure('calendar_profile', 'Calendar Profile', async () =>
-        withTimeout<{ month_system: string | null }>(
-          supabase
-            .from('calendar_profiles')
-            .select('month_system')
-            .eq('slug', profile.calendar_profile)
-            .maybeSingle(),
-          DB_TIMEOUT,
+  const calendarProfilePromise = skipCalendar
+    ? Promise.resolve({ data: null })
+    : profile?.calendar_profile
+      ? timings.measure('calendar_profile', 'Calendar Profile', async () =>
+          withTimeout<{ month_system: string | null }>(
+            supabase
+              .from('calendar_profiles')
+              .select('month_system')
+              .eq('slug', profile.calendar_profile)
+              .maybeSingle(),
+            DB_TIMEOUT,
+          )
         )
-      )
-    : Promise.resolve({ data: null });
+      : Promise.resolve({ data: null });
 
   // Same fallback resolveRequestProfile() already uses elsewhere: an
   // authenticated Hindu-tradition user with no stated sampradaya resolves
@@ -584,50 +600,59 @@ export async function GET(request: NextRequest) {
   // Ekadashis) is marked under_review with civilDate: null instead of
   // showing the intended Smarta default.
   const targetTraditionSlug = profile?.sampradaya || (user && tradition === 'hindu' ? 'unspecified' : null);
-  const traditionProfilePromise = targetTraditionSlug
-    ? timings.measure('tradition_profile', 'Tradition Profile', async () =>
-        withTimeout<{ slug: string; ekadashi_method: string | null; janmashtami_method: string | null }>(
-          supabase
-            .from('tradition_profiles')
-            .select('slug, ekadashi_method, janmashtami_method')
-            .eq('slug', targetTraditionSlug)
-            .maybeSingle(),
-          DB_TIMEOUT,
+  const traditionProfilePromise = skipCalendar
+    ? Promise.resolve({ data: null })
+    : targetTraditionSlug
+      ? timings.measure('tradition_profile', 'Tradition Profile', async () =>
+          withTimeout<{ slug: string; ekadashi_method: string | null; janmashtami_method: string | null }>(
+            supabase
+              .from('tradition_profiles')
+              .select('slug, ekadashi_method, janmashtami_method')
+              .eq('slug', targetTraditionSlug)
+              .maybeSingle(),
+            DB_TIMEOUT,
+          )
         )
-      )
-    : Promise.resolve({ data: null });
+      : Promise.resolve({ data: null });
 
   const observanceCalendarProfile = profile?.calendar_profile ?? 'legacy-ujjain';
   const observanceLocation = resolveObservanceLocationBucket({
     saved: { lat: profile?.latitude ?? null, lon: profile?.longitude ?? null, tz: profile?.timezone ?? null },
   });
 
-  const observancePromise = settleOptionalSection(
-    getOrMaterializeOccurrences({
-      // Service-role, not the caller's own client: a never-before-requested
-      // (calendarProfile, location) bucket falls into isYearMaterialized's
-      // manifest/batch check inside this call, and both
-      // observance_materialisation_manifests and
-      // observance_materialisation_batches revoke all privileges from
-      // `authenticated` by design (server-side reads/writes only -- see
-      // their migrations). The user's own anon-key client got a genuine
-      // Postgres permission-denied error there, surfaced to native as
-      // `calendarStatus: 'unavailable'` for every first-ever request to an
-      // unseeded location -- not a timeout, not a client network issue.
-      // observance_occurrences itself (this function's other reads) is
-      // public, published content, not per-user data, so reading it via the
-      // admin client changes nothing about what's exposed.
-      supabase: createAdminClient(),
-      fromDate: today,
-      toDate: calendarTo,
-      tradition,
-      calendarScope,
-      calendarProfile: observanceCalendarProfile,
-      location: observanceLocation,
-    }),
-    DB_TIMEOUT,
-    { rows: [] as ObservanceRow[], materializationPending: true },
-  );
+  // When skipCalendar, this must resolve as 'ready' with an empty window --
+  // not the { materializationPending: true } fallback used for a genuine
+  // timeout/error below, which would incorrectly report calendarStatus:
+  // 'pending' (a "still computing, retry soon" signal) for a section that
+  // was never asked to compute at all.
+  const observancePromise = skipCalendar
+    ? Promise.resolve({ value: { rows: [] as ObservanceRow[], materializationPending: false }, status: 'ready' as const, durationMs: 0 })
+    : settleOptionalSection(
+        getOrMaterializeOccurrences({
+          // Service-role, not the caller's own client: a never-before-requested
+          // (calendarProfile, location) bucket falls into isYearMaterialized's
+          // manifest/batch check inside this call, and both
+          // observance_materialisation_manifests and
+          // observance_materialisation_batches revoke all privileges from
+          // `authenticated` by design (server-side reads/writes only -- see
+          // their migrations). The user's own anon-key client got a genuine
+          // Postgres permission-denied error there, surfaced to native as
+          // `calendarStatus: 'unavailable'` for every first-ever request to an
+          // unseeded location -- not a timeout, not a client network issue.
+          // observance_occurrences itself (this function's other reads) is
+          // public, published content, not per-user data, so reading it via the
+          // admin client changes nothing about what's exposed.
+          supabase: createAdminClient(),
+          fromDate: today,
+          toDate: calendarTo,
+          tradition,
+          calendarScope,
+          calendarProfile: observanceCalendarProfile,
+          location: observanceLocation,
+        }),
+        DB_TIMEOUT,
+        { rows: [] as ObservanceRow[], materializationPending: true },
+      );
 
   const [
     personalizedBatchResult,
@@ -776,20 +801,25 @@ export async function GET(request: NextRequest) {
     ? observanceSection.value.rows
     : [];
   const observanceRows: ObservanceRow[] = suppressGenericEkadashiWhenNamed(filterWithheldJoinedRows(rawObservanceData));
-  const batchSection = await settleOptionalSection(
-    attachMaterialisationBatches(
-      observanceRows,
-      undefined,
-      observanceCalendarProfile,
-      {
-        latitude: observanceLocation.lat,
-        longitude: observanceLocation.lon,
-        timezone: observanceLocation.tz,
-      },
-    ),
-    750,
-    observanceRows,
-  );
+  // observanceRows is already guaranteed [] when skipCalendar (observancePromise
+  // above never fetched anything), so attachMaterialisationBatches would have
+  // nothing to decorate anyway -- skip the query and its own DB round-trip too.
+  const batchSection = skipCalendar
+    ? { value: observanceRows as (ObservanceRow & { batch: null; batch_family_complete: boolean; requested_profile_family_incomplete: boolean; fixture_approval_complete: boolean })[], status: 'ready' as const, durationMs: 0 }
+    : await settleOptionalSection(
+        attachMaterialisationBatches(
+          observanceRows,
+          undefined,
+          observanceCalendarProfile,
+          {
+            latitude: observanceLocation.lat,
+            longitude: observanceLocation.lon,
+            timezone: observanceLocation.tz,
+          },
+        ),
+        750,
+        observanceRows,
+      );
   timings.record(
     'calendar_batches',
     batchSection.durationMs,
@@ -931,11 +961,16 @@ export async function GET(request: NextRequest) {
     console.error('[home-summary] calendar series composition failed:', error);
   }
   const storyLanguage = profile?.app_language === 'hi' || profile?.app_language === 'pa' ? profile.app_language : 'en';
-  const storySection = await settleOptionalSection(
-    getPublishedObservanceStoryCards(displaySeriesResults, storyLanguage, today),
-    500,
-    [] as HomeObservanceStoryCard[],
-  );
+  // displaySeriesResults is already guaranteed [] when skipCalendar (derived
+  // from occurrencesWithBatches, itself [] above) -- nothing for this query
+  // to actually look up, so skip its DB round-trip too.
+  const storySection = skipCalendar
+    ? { value: [] as HomeObservanceStoryCard[], status: 'ready' as const, durationMs: 0 }
+    : await settleOptionalSection(
+        getPublishedObservanceStoryCards(displaySeriesResults, storyLanguage, today),
+        500,
+        [] as HomeObservanceStoryCard[],
+      );
   timings.record(
     'calendar_stories',
     storySection.durationMs,
@@ -979,20 +1014,28 @@ export async function GET(request: NextRequest) {
       longitude,
     },
     sacredText: buildDailySacredText(profile, getDayOfYear()),
-    panchang: {
-      href: '/panchang',
-      tithiLabel: 'Today’s Panchang',
-      festivalLabel,
-      vratLabel,
-      viewedToday: Boolean(todaySadhana?.panchang_viewed),
-      observance,
-      upcomingObservances,
-      series,
-      storyCards,
-      calendarStatus,
-      calendarProfile: observanceCalendarProfile,
-      sampradaya: profile?.sampradaya ?? null,
-    },
+    // Omitted entirely (see the `panchang?:` doc comment on HomeSummaryResponse)
+    // when skipCalendar -- every input above is already the safe "nothing
+    // computed" shape in that case, so this object itself is cheap to build,
+    // it's just never sent.
+    ...(skipCalendar
+      ? {}
+      : {
+          panchang: {
+            href: '/panchang',
+            tithiLabel: 'Today’s Panchang',
+            festivalLabel,
+            vratLabel,
+            viewedToday: Boolean(todaySadhana?.panchang_viewed),
+            observance,
+            upcomingObservances,
+            series,
+            storyCards,
+            calendarStatus,
+            calendarProfile: observanceCalendarProfile,
+            sampradaya: profile?.sampradaya ?? null,
+          },
+        }),
     nextPractice: buildNextPractice(practices),
     practices,
     sankalpa: sankalpaRow
