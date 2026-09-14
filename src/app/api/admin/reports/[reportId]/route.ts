@@ -6,6 +6,7 @@ const REPORT_STATUSES = ['pending', 'reviewed', 'actioned', 'dismissed'] as cons
 const CONTENT_TABLE_BY_TYPE = {
   post: 'posts',
   mandali_post: 'posts',
+  comment: 'post_comments',
   kul_message: 'kul_messages',
 } as const;
 

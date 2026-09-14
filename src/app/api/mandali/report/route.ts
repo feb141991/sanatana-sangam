@@ -68,5 +68,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Could not submit report.' }, { status: 500 });
   }
   const createdReport = created as unknown as { id?: string } | null;
+
+  // Immediately hide reported post for the reporting user so it drops from their feed
+  if (targetType === "post") {
+    void (admin.from("user_hidden_content") as any).upsert(
+      {
+        user_id: user.id,
+        content_type: "mandali_post",
+        content_id: targetId,
+      },
+      { onConflict: "user_id,content_type,content_id", ignoreDuplicates: true }
+    );
+  }
   return NextResponse.json({ ok: true, duplicate: false, reportId: createdReport?.id ?? null });
 }
