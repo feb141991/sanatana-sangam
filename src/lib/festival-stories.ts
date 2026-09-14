@@ -321,23 +321,23 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
   },
   {
     "slug": "Karva Chauth",
-    "emoji": "🌙",
+    "emoji": "🌕",
     "tradition": "hindu",
-    "origin": "Karva Chauth is observed on the fourth day after the full moon of Kartika by married Hindu women, who fast from sunrise to moonrise for the longevity and well-being of their husbands. The legend of Queen Veeravati narrates how she broke her fast prematurely, saw an inauspicious omen, and her husband died — only to be revived when she observed the fast correctly the following year. The story of Satyavan and Savitri echoes this devotion to life over death.",
-    "significance": "At its deepest level, Karva Chauth is about the courage of love — a love that says \"I will sacrifice my comfort for your well-being.\" The fast is not about subservience; it is a voluntary, joyful act of devotion. The moon — which a wife first sees through a sieve and then sees her husband's face — represents the cooling, nourishing energy that sustains marriage. In modern practice, many couples observe the fast together as a mutual act of love.",
+    "origin": "In the Bhaviṣyottara Purāṇa and the Vana Parva of the Mahābhārata (Pativrata Mahātmya), the sacred observance of Karaka Chaturthi is chronicled through venerable tradition. When the Pandavas were enduring their twelve-year forest exile and Arjuna departed for Mount Indrakila to perform severe penance for divine celestial astras, Draupadi, stricken with anxiety over his safety and their perilous plight, sought the counsel of Lord Sri Krishna. Bhagavan Krishna revealed to her the sacred history of this vrata, explaining that in ancient times, Goddess Indrani had observed this very fast during the war between the Devas and Asuras to ensure the safety and triumph of Lord Indra. Krishna furthermore narrated the legendary chronicle of Queen Veeravati, the cherished and virtuous sister of seven loving brothers. Observing her first rigorous waterless fast (nirjala vrata) at her maternal palace during Kartik Krishna Chaturthi, she became overcome with acute hunger, thirst, and physical exhaustion as evening descended. Unable to bear their sister's visible agony, her affectionate brothers ascended a distant hill and suspended a luminous earthen lamp behind a circular woven bamboo sieve near a banyan tree, falsely assuring her that the moon had arisen over the horizon. Trusting their tender words, Veeravati offered oblations of water (arghya) and broke her fast with sweet morsels. Instantly, messengers arrived bearing the dreadful news that her husband, the king, had fallen mortally wounded and unconscious. Stricken with intense grief, Veeravati realized that the sacred ordinance had been prematurely violated before the genuine lunar darshan. Resolute in her faith, she tended her comatose husband with absolute selfless devotion, surviving on sparse water while seeking the grace of Goddess Parvati and Indrani. When the subsequent Kartik Krishna Chaturthi returned, she completed the entire vrata with scrupulous fidelity to scriptural injunctions, waiting for the authentic moonrise before offering arghya. Pleased by her unshakeable resolve and pure devotion, Goddess Parvati blessed her, instantly restoring the monarch to radiant vitality, vibrant health, and unbroken longevity.",
+    "significance": "Karva Chauth stands as a sublime celebration of marital devotion, mutual protection, and spiritual solidarity within Dharmic tradition. The earthen vessel (karva) with its distinct spout represents the sacred container of cosmic nectar (amrita), abundance, and household auspiciousness, while the circular sieve (chhalni) symbolizes sharp spiritual discernment—filtering out illusion, material pettiness, and negative passions to gaze directly upon the divine essence present in one's spouse. By beholding the luminous orb of Chandra Deva through the sieve and then casting a devoted glance upon the husband, the practitioner invokes the soothing, cooling, and peaceful radiance of the moon to pacify domestic discord and nurture enduring harmony. The ritual pre-dawn meal of sargi, lovingly prepared and bestowed by the mother-in-law, strengthens multi-generational bonds of mutual reverence and feminine solidarity across the family. Far beyond an outward austerity, the vrata represents conscious surrender, patience, and the elevation of household life into a sacred spiritual path under the compassionate protection of Goddess Parvati.",
     "rituals": [
-      "Fast from sunrise; eat sargi (pre-dawn meal) prepared by mother-in-law before sunrise",
-      "Dress in bridal finery — red or pink — wearing sindoor, bangles, and mehndi applied the night before",
-      "Join community puja with other women in the evening, passing the karva (clay pot of water) in a circle",
-      "At moonrise: see the moon through a sieve, then see husband's face through the same sieve, then break the fast with water offered by him"
+      "Pre-dawn consumption of the loving sargi meal prepared with dry fruits, fruits, and sweets before sunrise",
+      "Observance of complete waterless fasting (nirjala vrata) throughout the daytime hours in devotional silence",
+      "Evening group recitation of the Karva Chauth Vrata Katha, singing devotional songs and rotating the decorated thalis",
+      "Arghya offering to Chandra Deva upon moonrise through the sacred sieve, followed by receiving water and blessings from the husband"
     ],
     "shloka": {
-      "text": "करवाचौथ व्रत कथा सुनो, पति की आयु बढ़ाती हो।\nचाँद दर्शन से व्रत खुलता, सौभाग्य सदा पाती हो।।",
-      "transliteration": "Karvācauth vrata kathā suno, pati kī āyu baṛhātī ho,\ncānd darśan se vrata khulatā, saubhāgya sadā pātī ho.",
-      "translation": "Hear the Karva Chauth vrat story, which extends the husband's life; the fast breaks at the sight of the moon, may you always receive the blessing of a happy marriage.",
-      "source": "Karva Chauth Vrat Katha (traditional)"
+      "text": "नमः शिवायै शर्वाण्यै सौभाग्यं सन्ततिं शुभाम् । प्रयच्छ कान्तिं कल्याणं गृहाणार्घ्यं नमोऽस्तु ते ॥",
+      "transliteration": "Namaḥ śivāyai śarvāṇyai saubhāgyaṃ santatiṃ śubhām | Prayaccha kāntiṃ kalyāṇaṃ gṛhāṇārghyaṃ namo'stu te ||",
+      "translation": "Salutations to Goddess Shivaa and Sharvani! Grant auspicious fortune, blessed progeny, radiant brilliance, and well-being; accept this arghya offering, salutations unto You.",
+      "source": "Bhaviṣyottara Purāṇa, Karaka Caturthī Vrata"
     },
-    "practice": "Today, whatever your relationship status, fast from one form of consumption you take for granted — social media, news, snacking. Let the small sacrifice be an act of gratitude for what you have."
+    "practice": "Offer water to the rising moon with heartfelt prayers for family peace, marital harmony, and the longevity of loved ones."
   },
   {
     "slug": "Gita Jayanti",
@@ -1587,10 +1587,179 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       "source": "Padma Purāṇa, Uttara Khaṇḍa"
     },
     "practice": "Today, practice conscious restraint of one of your five senses. Whether by fasting from heavy food, observing periods of silence, or abstaining from negative media, redirect your attention inward toward divine peace."
+  },
+  {
+    "slug": "Vinayaka Chaturthi",
+    "emoji": "🐘",
+    "tradition": "hindu",
+    "origin": "Chronicled across the Upāsanā Khaṇḍa of the Gaṇeśa Purāṇa and the revered Mudgala Purāṇa, the sacred vrata of Vinayaka Chaturthi is observed on the fourth lunar day of the bright waxing fortnight (Shukla Paksha) of every Hindu month. The scriptures make a profound distinction between the waning Krishna Chaturthi (Sankashti), which concludes with evening moonrise arghya for the relief of accrued distress, and Shukla Chaturthi, which is consecrated to the midday worship (Madhyahna Puja) of Lord Ganesha. This midday hour commemorates the auspicious cosmic moment when the elephant-headed deity was created by Goddess Parvati from fragrant turmeric and sandalwood unguents and infused with divine breath to protect the inner sanctum of Mount Kailash. In the Mudgala Purāṇa, Sage Shaunaka and the assembly of rishis in Naimisharanya enquired how human beings could overcome insurmountable calamities and planetary afflictions. Sage Vyasa recounted the sacred katha of King Shurasena, who was deposed of his kingdom, royal treasury, and imperial authority by ruthless adversaries. Wandering destitute in the wilderness, the monarch met the venerable Sage Mudgala, who instructed him in the monthly Shukla Chaturthi vrata. The sage prescribed the complete Shodashopachara Puja—the sixteenfold classical Vedic worship—commencing with the purification of the mind and body at dawn. Fasting strictly from sunrise until the culmination of the midday archana, King Shurasena installed the sacred image of Ganesha, worshipped Him with twenty-one sacred names, offered fresh three-pronged Durva blades, fragrant red hibiscus blossoms (Japa kusuma), sacred Shami leaves, and freshly steamed modakas. Gracious upon his steadfast surrender, Lord Ganesha shattered all visible and invisible obstacles, vanquished the usurping armies, and reinstated the king to his throne with amplified wisdom, spiritual discernment, and unbroken righteousness, proving that sincere surrender on this tithi dispels every impending obstacle before it can manifest, establishing enduring victory through unshakeable adherence to dharma.",
+    "significance": "Vinayaka Chaturthi embodies the foundational Dharmic truth of commencing every noble action in harmony with cosmic law. As Prathama-Pujya—the first among all divine beings to be invoked in Vedic sacrifices, rituals, and new enterprises—Lord Ganesha governs the Muladhara Chakra, the bedrock energetic center supporting all spiritual awakening and material equilibrium. Worshipping Him on this waxing fourth tithi sharpens the intellect (buddhi), awakens intuitive discrimination (viveka), and dissolves impending obstacles before they can manifest in human life. It powerfully mitigates the malefic planetary transits of Ketu and Mercury, replacing confusion with mental focus and supreme spiritual clarity across every sphere of life. The esoteric anatomy of Ganesha carries profound philosophical meaning: His vast elephant head signifies cosmic wisdom and infinite receptive listening (shravana), His single tusk (Ekadanta) represents transcendent non-duality (Advaita), His curved trunk denotes adaptive discernment, and the modaka sweet held in His hand symbolizes the sweet bliss of Self-realization (Ananda). The symbolic offering of twenty-one blades of humble Durva grass—plants that thrive resiliently under all earthly conditions—teaches the seeker that the Supreme Lord is pleased not by ostentatious pride, but by humble simplicity, emotional purity, and single-minded surrender, ensuring that the devotee's endeavors bear the fruits of righteous prosperity and lasting spiritual peace.",
+    "rituals": [
+      "Morning purification followed by a solemn pledge (sankalpa) of fasting during the waxing Chaturthi",
+      "Midday (Madhyahna) sthapana and abhishekam of the murti using holy water, panchamrita, and fragrant sandalwood",
+      "Devotional archana offering twenty-one blades of sacred three-pronged Durva grass, Shami leaves, and vibrant red hibiscus flowers",
+      "Offering of twenty-one modakas or laddoos as naivedya, chanting the Ganapati Atharvashirsha, and partaking of sattvic prasad with pure devotion and heartfelt surrender"
+    ],
+    "shloka": {
+      "text": "वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ । निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा ॥",
+      "transliteration": "Vakratuṇḍa mahākāya sūryakoṭi samaprabha | Nirvighnaṃ kuru me deva sarvakāryeṣu sarvadā ||",
+      "translation": "O Lord of curved trunk and immense form, possessing the radiance of ten million suns, please make all my endeavors free of obstacles at all times.",
+      "source": "Gaṇeśa Purāṇa, Upāsanā Khaṇḍa"
+    },
+    "practice": "Dedicate the midday to Ganesha meditation, chant the Atharvashirsha, and distribute prasad among seekers."
+  },
+  {
+    "slug": "Nirjala Ekadashi",
+    "emoji": "🪷",
+    "tradition": "hindu",
+    "origin": "In the Bhaviṣyottara Purāṇa and the Padma Purāṇa (Uttara Khaṇḍa), the dialogue between Maharishi Veda Vyasa and the mighty Pandava Bhimasena—known as the Vyāsa-Bhīmasena Saṃvāda—records the sacred manifestation of Nirjala Ekadashi during Jyeshtha Shukla Paksha. The narrative recounts how Bhimasena, endowed with the blazing abdominal fire known as Vrika-agni, confessed his anguish to his grandfather. While his virtuous elder brother King Yudhishthira, mother Kunti, Arjuna, Nakula, Sahadeva, and Draupadi observed the twice-monthly Ekadashi fasts with serene equanimity, Bhima was physically incapable of enduring even momentary starvation without agonizing bodily distress, fearing that his inability to observe these lunar vows excluded him from spiritual liberation and the blessings of Vaikuntha. Moved by Bhima's earnest vulnerability and deep devotion, Sage Vyasa revealed the most profound concession within the sacred Dharmic scriptures. The sage proclaimed that if Bhima could observe total, unbroken abstinence from both food and even a single drop of water (nir-jala) for a solitary twenty-four-hour period—from sunrise on Jyeshtha Shukla Ekadashi until sunrise on Dwadashi—he would instantly earn the cumulative spiritual merits, karmic purification, and divine grace of all twenty-four Ekadashis of the entire lunar calendar year combined. Sage Vyasa specified with rigorous precision that during the fast, water may only be touched during the sacred Achamana rite for purifying the mouth—limited strictly to the quantity of a single mustard seed—and that should any water pass the throat beyond that ritual droplet, the vrata would be transgressed. Vyasa assured him that bathing in all the sacred tirthas across Kurukshetra or Prayaga during a solar eclipse does not equal one sixteenth part of the spiritual merit attained through this singular vrata. Inspired by this divine promise, Bhima undertook the formidable austerity in the blistering heat of summer with indomitable fortitude, earning this celebrated tithi its enduring names: Pandava Nirjala Ekadashi and Bhima Ekadashi, revered across generations as the supreme test of spiritual willpower.",
+    "significance": "Nirjala Ekadashi represents the supreme summit of yogic self-restraint, sensory mastery, and unconditional surrender to Bhagavan Sri Hari Vishnu. Falling in the scorching month of Jyeshtha, when thirst naturally tests human endurance to its ultimate limits, the voluntary abstention from water burns through dense layers of accumulated ego, past karmic transgressions, and physical attachment. In the Vaishnava tradition, it is venerated as the crown jewel of all lunar austerities, possessing the immense spiritual power to awaken divine love (bhakti) and grant liberation (moksha) from the cycle of rebirth. By directly confronting and conquering the primal instinct of thirst, the practitioner's consciousness shifts from bodily identification to the immortal Atman within. Devotees transform their personal thirst into an act of boundless universal compassion by actively distributing earthenware pots brimming with cool drinking water (jalakumbha), seasonal fruits, sweet melons, and umbrellas to weary travelers, pilgrims, and the needy. This supreme vrata purifies the internal energetic nadis, bestows mental serenity, burns away latent sins of lifetimes, and unites the soul with the eternal presence of Lord Vishnu in Vaikuntha.",
+    "rituals": [
+      "Strict vow of abstention from food and water from the sunrise of Jyeshtha Shukla Ekadashi to Dwadashi dawn",
+      "Continuous mental japa of the sacred Dvadasakshara mantra (Om Namo Bhagavate Vasudevaya) and Vishnu Sahasranama",
+      "Night-long vigil (jagaran) filled with devotional singing, katha recitation, and meditation upon Lord Vishnu",
+      "Dwadashi parana performed after donating earthen pots of cool water, grain, umbrellas, and dakshina to worthy seekers"
+    ],
+    "shloka": {
+      "text": "एकादश्यां निराहारः स्थित्वाहमपरेऽहनि । भोक्ष्ये पुण्डरीकाक्ष शरणं मे भवाच्युत ॥",
+      "transliteration": "Ekādaśyāṃ nirāhāraḥ sthitvāhamapare'hani | Bhokṣye puṇḍarīkākṣa śaraṇaṃ me bhavācyuta ||",
+      "translation": "Having fasted completely on this Ekadashi day, I shall partake of food on the morrow; O Lotus-eyed Lord, O Infallible Achyuta, be my supreme refuge.",
+      "source": "Padma Purāṇa, Uttara Khaṇḍa, Nirjalā Ekādaśī Māhātmya"
+    },
+    "practice": "Endure the fast with patient remembrance of Lord Vishnu, chant His names, and donate cool water vessels to the thirsty."
+  },
+  {
+    "slug": "Devshayani Ekadashi",
+    "emoji": "🌊",
+    "tradition": "hindu",
+    "origin": "Recorded in the Padma Purāṇa (Uttara Khaṇḍa) and the Bhaviṣyottara Purāṇa, Devshayani Ekadashi (also celebrated as Harisayana or Maha-Ekadashi) falls on the eleventh lunar day of the waxing fortnight of Ashadha. This majestic occasion marks the cosmic instant when Lord Sri Hari Vishnu enters His mystical four-month yogic slumber (Yoga Nidra) upon the thousand-hooded coils of Sheshanaga in the Kshira Sagara (Ocean of Milk), inaugurating the sacred monastic and household season of Chaturmas. In the dialogue between Lord Brahma and Sage Narada, and later reiterated by Lord Krishna to King Yudhishthira, the scripture relates the ancient history of King Mandhata of the Solar Dynasty. Despite Mandhata's flawless righteousness, benevolent governance, and devotion to his subjects, his kingdom was struck by three consecutive years of catastrophic drought and famine. Distressed by the misery of his starving people, the king journeyed deep into the wilderness until he reached the hermitage of Sage Angiras, the son of Brahma. The venerable sage revealed that during the reign of any king, subtle cosmic imbalances may arise, and that cosmic equilibrium could be perfectly restored through the communal observance of Ashadha Shukla Ekadashi. Sage Angiras instructed that on this day, the entire populace must unite in pure devotion, fasting from food and offering golden garments, yellow lotuses, and fragrant tulsi leaves to Lord Vishnu. Following the sage's injunctions, King Mandhata, his court, and his subjects observed the vrata with undivided faith and austere devotion. Torrential monsoon rains immediately poured from the heavens, reviving parched fields, ending the catastrophic famine, and restoring joy, vibrant health, and abundant prosperity to the entire realm. Sage Angiras blessed the monarch, declaring that whoever observes this sacred fast with pure devotion will forever enjoy divine protection and freedom from fear, granting peace to all their family members.",
+    "significance": "Devshayani Ekadashi inaugurates a sacred inward journey for seekers, renunciates, and householders alike. As the Supreme Sustainer reclines into cosmic meditation, spiritual practitioners consciously withdraw their outward-facing senses, dedicating the four monsoon months of Chaturmas to heightened sadhana, scriptural study, dietary discipline, and ethical contemplation. Worldly celebrations such as marriages are paused, shifting human awareness from external material expansion toward internal spiritual consolidation. In the Puranas, Lord Krishna explains that Yoga Nidra is not the unconscious sleep of Tamas, but the conscious withdrawal of the divine energy into self-contained bliss, holding all universal creation securely within His cosmic womb. To align with this divine rest, devotees undertake specific dietary vows during Chaturmas: abstaining from leafy greens in Shravana, curd in Bhadrapada, milk in Ashvina, and pulses in Kartika. Fasting on this day purifies the physical channels, quiets the restless fluctuations of the mind, and attracts the protective presence of Lord Vishnu into the practitioner's consciousness. It stands as an eternal reminder that true peace and enduring strength do not arise from unceasing worldly activity, but from sacred periods of introspective rest, prayer, and deep contemplation in the eternal presence of the Supreme Lord.",
+    "rituals": [
+      "Morning sanctification, offering of yellow garments, fragrant tulsi leaves, and sacred yellow lotuses to Vishnu",
+      "Solemn undertaking of Chaturmas vows, choosing specific spiritual austerities, dietary fasts, and daily scriptural study",
+      "Observance of unbroken fast throughout the day, chanting the sacred Vishnu Sahasranama and Narayana Kavacha",
+      "Evening aarti with ghee lamps, accompanied by singing prayers wishing Lord Vishnu peaceful cosmic slumber"
+    ],
+    "shloka": {
+      "text": "सुप्ते त्वयि जगन्नाथ जगत्सुप्तं भवेदिदम् । विबुद्धे त्वयि बुद्धं च प्रसन्नो मे भवाच्युत ॥",
+      "transliteration": "Supte tvayi jagannātha jagatsuptaṃ bhavedidam | Vibuddhe tvayi buddhaṃ ca prasanno me bhavācyuta ||",
+      "translation": "When You enter slumber, O Lord of the Universe, this entire cosmos slumbers; when You awaken, everything awakens; O Achyuta, be gracious unto me.",
+      "source": "Bhaviṣyottara Purāṇa, Hariśayana Vrata"
+    },
+    "practice": "Formulate a four-month spiritual vow (Chaturmas sankalpa) of prayer, dietary discipline, and daily scripture study."
+  },
+  {
+    "slug": "Devutthana Ekadashi",
+    "emoji": "🪔",
+    "tradition": "hindu",
+    "origin": "Recorded in the Skanda Purāṇa and the Padma Purāṇa, Devutthana Ekadashi (also revered as Prabodhini or Haribodhini Ekadashi) falls on the eleventh lunar day of the waxing fortnight of Kartik. This joyous festival commemorates the glorious conclusion of the four-month Chaturmas period, when Lord Sri Hari Vishnu awakens from His cosmic slumber (Yoga Nidra) upon the milky ocean, greeted by the thunderous blowing of the celestial Panchajanya conch, songs of the Gandharvas, and showers of divine blossoms from the Devas. The scriptures narrate that Lord Brahma, Lord Shiva, and the assembly of Maharishis gathered upon the shores of the Kshira Sagara, chanting the sacred awakening Vedic stutis to arouse the Lord for universal protection. The Puranic narrative intimately connects this day with the transcendent pastime of Vrinda, the devoted consort of Jalandhara, who attained eternal liberation and manifested as the sacred Tulsi plant (Ocimum sanctum). Honoring her unyielding purity, Bhagavan Vishnu decreed that no ritual worship, offering, or prayer would ever be complete without Tulsi leaves, ordaining that on Kartik Shukla Ekadashi, their holy marriage—Tulsi Vivah—would be solemnized by devotees in every household, uniting the sacred Shaligrama stone with the Tulsi plant. King Prithu and the ancient sages commemorated this divine union by erecting pavilions of sugarcane stalks, offering sweet delicacies and fresh autumn crops. This celestial union marks the departure of monsoon gloom, dissolves negative planetary influences, and joyfully inaugurates the auspicious wedding season for the entire Hindu community. The Padma Purāṇa relates that the merit of performing Tulsi Vivah on Prabodhini Ekadashi equals the fruit of performing countless Rajasuya sacrifices, purifying seven generations of the practitioner's ancestral lineage and granting them permanent residence in the eternal spiritual realm of Vaikuntha, surrounded by divine joy and boundless peace for all eternity.",
+    "significance": "Devutthana Ekadashi symbolizes the resurgence of divine consciousness, spiritual illumination, and moral vitality after months of disciplined inward contemplation. As Lord Vishnu opens His benevolent eyes upon the cosmos, the entire world is bathed in vitality, optimism, and auspicious harmony. The spiritual merits cultivated through the austerities of Chaturmas reach their joyful fruition on this holy tithi. In the Skanda Purāṇa, it is declared that offering even a single fresh Tulsi leaf to Lord Vishnu on Prabodhini Ekadashi yields greater spiritual merit than performing an Ashvamedha sacrifice or donating thousands of cows at holy tirthas. Solemnizing the wedding of Mother Tulsi and Lord Shaligrama transforms the domestic home into a sacred temple of Vaikuntha, purifying the family lineage, dispelling negative energies, and inviting prosperity (Kalyana) into all endeavors. The sugarcane mandap erected in courtyards, fashioned with five stalks, represents the sanctification of the five vital pranas and five sensory organs. The festival teaches that periods of quiet restraint are always rewarded by divine awakening, inspiring the devotee to renew their spiritual commitment with enthusiasm, joy, and profound gratitude for the Lord's unceasing protection throughout all realms and stages of existence.",
+    "rituals": [
+      "Elaborate ceremonial awakening of Lord Vishnu at dawn using sacred conch blasts and chanting Vedic awakening stutis",
+      "Consecration and decoration of the holy Tulsi plant with bridal garments, jewelry, sugarcane mandaps, and glowing lamps",
+      "Performance of the traditional Tulsi Vivah ritual with Shaligrama or Sri Krishna, offering seasonal autumn fruits and sweets",
+      "Illumination of the courtyard and home with rows of oil lamps (deepams), singing joyful devotional songs until midnight"
+    ],
+    "shloka": {
+      "text": "उत्तिष्ठोत्तिष्ठ गोविन्द त्यज निद्रां जगत्पते । त्वयि सुप्ते जगन्नाथ जगत्सुप्तं भवेदिदम् ॥",
+      "transliteration": "Uttiṣṭhottiṣṭha govinda tyaja nidrāṃ jagatpate | Tvayi supte jagannātha jagatsuptaṃ bhavedidam ||",
+      "translation": "Awaken, awaken, O Govinda! Relinquish slumber, O Lord of the Cosmos! For while You slumber, O Jagannatha, the entire world lies dormant.",
+      "source": "Skanda Purāṇa, Hari-Prabodhini Kathā"
+    },
+    "practice": "Decorate the Tulsi mandap with sugarcane stalks, illuminate deepams, and conduct the sacred Tulsi Vivah ceremony."
+  },
+  {
+    "slug": "Parivartini Ekadashi",
+    "emoji": "🌀",
+    "tradition": "hindu",
+    "origin": "In the Bhaviṣyottara Purāṇa, Lord Sri Krishna illuminates the sublime mystery of Parivartini Ekadashi (also revered as Parsva Ekadashi or Vamana Ekadashi) during Bhadrapada Shukla Paksha for King Yudhishthira. The Lord explains that during His four-month cosmic slumber upon the Kshira Sagara, He turns over from His left side to His right side on this sacred eleventh tithi, an event celebrated across the celestial realms as 'Parivartana' (the cosmic turning). Furthermore, this auspicious day commemorates the appearance of Lord Vamana, the dwarf-incarnation of Vishnu. In ancient times, when the Asura King Bali had conquered the three worlds through immense austerities and conducted a grand Ashvamedha sacrifice on the banks of the Narmada River, Lord Vamana arrived in the assembly as a young ascetic Brahmin, requesting merely three paces of land measured by His small feet. Despite the desperate warnings of his preceptor Sage Shukracharya, King Bali pledged the gift with unyielding integrity, declaring that to offer charity to the Supreme Lord Himself was the supreme crowning glory of his reign. Instantly expanding into the magnificent cosmic Trivikrama form, the Lord measured the earthly realm with His first step, the celestial heavens with His second step, and, having nowhere left to tread, accepted King Bali's own bowed head for the third step. Overwhelmed by Bali's total surrender, the Lord pressed him gently into the subterranean realm of Sutala, blessed him with celestial sovereignty surpassing heaven, and promised to reside forever as the loving guardian at Bali's palace gate. In the Srimad Bhagavatam, Lord Brahma and the assembled Devas sang celestial stutis praising King Bali's unsurpassed magnanimity, declaring that by surrendering his own body and pride, the demon king had conquered the Lord of the universe who is unconquerable by arms. The Lord affirmed that in the next Manvantara, Bali would be elevated to the exalted status of Indra, the glorious ruler of heaven, worshipped by Devas and Gandharvas alike.",
+    "significance": "Parivartini Ekadashi carries deep spiritual significance: it marks both the cosmic turning of Lord Vishnu and the inner turning of the human heart from egoic possession to unconditional surrender (Sharanagati). King Bali's pastime reveals that neither imperial power nor material wealth belongs to mortal beings; everything is a sacred trust under the feet of the Divine. By observing this strict fast, the seeker realigns fragmented desires, dissolves deep-rooted pride, and welcomes Lord Vamana into the center of consciousness. In the Bhaviṣyottara Purāṇa, Lord Krishna states that observing Parsva Ekadashi bestows the spiritual merit of performing the grand Rajasuya and Ashvamedha sacrifices combined, releasing the soul from the heaviest bonds of past karma. It offers profound psychological renewal at the exact midpoint of Chaturmas, reminding practitioners that true liberation is not gained through accumulating worldly empires, but by offering one's pride, intellect, and very identity at the feet of the Supreme Lord, thereby winning His eternal guardianship, unshakeable protection, and boundless grace forever.",
+    "rituals": [
+      "Morning bathing and installation of an image of Lord Vamana or Trivikrama with golden garments and flowers",
+      "Observance of a strict fast, dedicating speech and action to truthful reflection, mantra japa, and scriptural contemplation",
+      "Recitation of the Vamana Avatara Katha from the Srimad Bhagavatam, contemplating the virtues of humility and charity",
+      "Offering of yogurt, boiled rice, umbrellas, and sacred footwear to Brahmins and seekers in commemoration of Vamana Deva"
+    ],
+    "shloka": {
+      "text": "ॐ नमो भगवते वामनाय विष्णवे प्रभविष्णवे । नमस्ते विष्णवे नित्यं पद्मनाभाय शाश्वते ॥",
+      "transliteration": "Oṃ namo bhagavate vāmanāya viṣṇave prabhaviṣṇave | Namaste viṣṇave nityaṃ padmanābhāya śāśvate ||",
+      "translation": "Om, salutations unto the Supreme Lord Vamana, Vishnu, the all-pervading origin of all power; eternal salutations to Vishnu, Padmanabha, the Everlasting.",
+      "source": "Bhaviṣyottara Purāṇa, Pārśva Ekādaśī Māhātmya"
+    },
+    "practice": "Read the Vamana Charitra, practice humble surrender of ego, and donate umbrellas and food to those in need."
+  },
+  {
+    "slug": "Amalaki Ekadashi",
+    "emoji": "🌿",
+    "tradition": "hindu",
+    "origin": "Chronicled in the Brahmāṇḍa Purāṇa, the auspicious observance of Amalaki Ekadashi occurs during the waxing fortnight of Phalguna, anticipating the joyous festival of Holi. Sage Vasishtha narrates to King Mandhata that the sacred Amalaki (Indian gooseberry) tree was the very first botanical creation to manifest on earth, springing directly from the tears of ecstatic bliss shed by Lord Brahma during deep yogic contemplation at the dawn of creation. Sanctified by the presence of Lord Sri Hari Vishnu and Goddess Lakshmi in its branches, leaves, and roots, the tree is venerated as the living emblem of immortality and restorative grace. The scripture recounts the ancient legend of King Chitrasena of the kingdom of Vaidisha, who ruled with spotless righteousness alongside his pious citizens. On Phalguna Shukla Ekadashi, the king and his subjects gathered around a splendid Amalaki tree on the riverbank, adorning it with fragrant garlands, jewel-encrusted vessels, and incense, maintaining an unbroken night-long devotional vigil (jagaran) with continuous chanting of the Vishnu Sahasranama. During the night, an exhausted hunter, laden with forest game and starving from days of hunting, sought shelter near the temple grounds. Overcome by weariness, he lay down beneath the sacred tree, silently watching the holy rituals while unintentionally fasting and listening to the recitation of Vishnu's glories through all four watches (praharas) of the night. Through this spontaneous sat-sanga and sacred association, the hunter was cleansed of lifetimes of accrued karmic sins, subsequently taking rebirth as the noble, pious, and invincible King Vasuratha. The Brahmāṇḍa Purāṇa elaborates that King Vasuratha was later attacked in the dense forest by ruthless bandits while asleep under an Amalaki tree. As the bandits raised their daggers, a fiery effulgence burst forth from the king's heart in the form of a celestial goddess, slaying all the assailants and disappearing back into his chest. Upon awakening, a divine voice proclaimed from the sky that this miraculous protection was the direct reward of his past life's unintentional observance of Amalaki Ekadashi, proving the invincible power of sincere surrender.",
+    "significance": "Amalaki Ekadashi is celebrated as the sacred union of spiritual devotion and ecological reverence. In the Dharmic perspective, nature is not an inert resource for exploitation, but a living sanctuary animated by divine consciousness. The Amalaki fruit—revered in Ayurveda as the premier rasayana (rejuvenative elixir) that pacifies all three doshas and enhances vitality—symbolizes healing, vitality, and purity. Fasting on this day and worshipping the sacred tree cleanses the body of toxins, dispels hidden mental anxieties, and bestows the auspicious blessings of Goddess Mahalakshmi. King Chitrasena's prayer in the Purana declares that worshipping the Amalaki tree yields greater spiritual fruit than donating ten million cows in charity. The hunter's transformation reminds humanity that even unintended contact with holy surroundings, sincere sadhana, and the company of the righteous can dismantle lifetimes of accumulated darkness and alter the course of human destiny forever, guiding the seeking soul toward liberation.",
+    "rituals": [
+      "Purification at dawn, journeying to a sacred Amalaki tree or placing a twig near the household shrine",
+      "Abhishekam and ceremonial worship of the Amalaki tree using milk, honey, sandalwood paste, and fragrant flowers",
+      "Observance of a strict daytime fast, chanting the sacred names of Lord Vishnu and reading the Amalaki Mahatmya",
+      "Performing evening aarti beneath the tree with glowing ghee lamps, distributing sweet prasad made from amla or seasonal fruits"
+    ],
+    "shloka": {
+      "text": "अश्वत्थपूजने यत्स्यात् गवां कोटिप्रदानतः । तत्सर्वं लभते मर्त्यो ह्यामलीसेवनेन च ॥",
+      "transliteration": "Aśvatthapūjane yatsyāt gavāṃ koṭipradānataḥ | Tatsarvaṃ labhate martyo hyāmalīsevanena ca ||",
+      "translation": "Whatever merit is obtained through worshipping the sacred Ashvattha or donating ten million cows, all of that is attained by a mortal through the veneration of the Amalaki tree.",
+      "source": "Brahmāṇḍa Purāṇa, Āmalakī Vrata Kathā"
+    },
+    "practice": "Worship the sacred Amalaki tree with incense and deepams, chant Vishnu stutis, and consume a pure sattvic meal."
+  },
+  {
+    "slug": "Yogini Ekadashi",
+    "emoji": "🌸",
+    "tradition": "hindu",
+    "origin": "Recorded in the Padma Purāṇa (Uttara Khaṇḍa), Lord Sri Krishna narrates the compassionate history of Yogini Ekadashi—which occurs on the eleventh lunar tithi of the dark waning fortnight of Ashadha—to King Yudhishthira. The narrative tells of a celestial Yaksha gardener named Hemamali, who resided in the glorious Himalayan city of Alakapuri, serving King Kubera, the divine treasurer of the Devas. Hemamali's sacred daily duty was to gather pristine lotus blossoms from the holy Manasarovar lake for Kubera's morning worship of Lord Shiva. One morning, hopelessly enamored by his beautiful wife Swarupavati, Hemamali lingered in domestic delights, entirely forgetting his sacred obligation. Kubera waited in vain for the worship flowers; when the messengers revealed Hemamali's neglect, the king was seized with fury at the disruption of Shiva's puja. Kubera cursed Hemamali to immediately lose his celestial form, suffer from virulent leprosy, and wander the mortal realm in agonizing exile. Wandering for years through dense forests in hunger, thirst, and physical torment, Hemamali eventually arrived at the serene Himalayan hermitage of Maharishi Markandeya, whose aura shone like Brahma. Beholding the weeping Yaksha with decaying limbs prostrating before him, the compassionate sage used his divine vision to discern the cause of his suffering. Markandeya comforted him, revealing that no transgression is beyond divine mercy, and prescribed the strict observance of Ashadha Krishna Ekadashi, known as Yogini Ekadashi. Hemamali observed the vrata with unbroken sincerity, fasting and chanting the names of Hari; instantly, his diseased skin fell away, and he was restored to youthful celestial splendor. When Hemamali appeared once more in the celestial assembly of King Kubera, shining with spotless radiance and divine grace, the Lord of Wealth embraced him warmly, acknowledging that the purifying power of Yogini Ekadashi had entirely dissolved the severe curse. Kubera reinstated Hemamali to his sacred service of gathering Manasarovar lotuses for Lord Shiva, teaching that sincere repentance and strict lunar austerity possess the power to reverse even the most immutable planetary and karmic sentences, restoring wholeness, peace, and pure divine grace.",
+    "significance": "Yogini Ekadashi provides supreme solace to the burdened human heart, illustrating that no karmic mistake is beyond redemption when met with sincere repentance and disciplined spiritual surrender. In life, duties to the divine and to truth are easily displaced by sensory infatuation and temporary desires, creating karmic imbalances that manifest as psychological and physical suffering. Fasting on Yogini Ekadashi cleanses the subtle energy channels (nadis), dissolves deep-seated guilt, and eliminates the residual impressions of past negative deeds. In the Padma Purāṇa, it is revealed that observing this single vrata confers the spiritual merit of feeding eighty-eight thousand holy Brahmins, rescuing the soul from the ocean of worldly delusion. It stands as an eternal beacon of hope for spiritual seekers, demonstrating that divine grace does not seek to punish, but rather to heal, purify, and elevate the soul back to its pristine celestial nature in the holy presence of God.",
+    "rituals": [
+      "Morning bath with sacred water infused with herbs, followed by a sincere sankalpa of repentance and purification",
+      "Ceremonial archana to Lord Vishnu and Lord Shiva, offering white blossoms, sandalwood paste, and tulsi leaves",
+      "Observance of a complete fast from dawn until next morning's Dwadashi, avoiding grains, beans, and heavy foods",
+      "Continuous recitation of the Maha Mrityunjaya Mantra and Vishnu Sahasranama, praying for inner and outer healing"
+    ],
+    "shloka": {
+      "text": "योगिनीव्रतमाहात्म्यं सर्वपापप्रणाशनम् । महापातकयुक्तोऽपि मुच्यते नात्र संशयः ॥",
+      "transliteration": "Yoginīvratamāhātmyaṃ sarvapāpapraṇāśanam | Mahāpātukayukto'pi mucyate nātra saṃśayaḥ ||",
+      "translation": "The greatness of the Yogini Vrata is the destroyer of all sins; even one burdened with grave transgressions is liberated without any doubt.",
+      "source": "Padma Purāṇa, Uttara Khaṇḍa, Yoginī Ekādaśī Māhātmya"
+    },
+    "practice": "Observe fasting with humble self-reflection, pray for emotional and physical healing, and chant the names of Vishnu."
+  },
+  {
+    "slug": "Utpanna Ekadashi",
+    "emoji": "⚔️",
+    "tradition": "hindu",
+    "origin": "In the Padma Purāṇa (Uttara Khaṇḍa), Lord Sri Krishna unveils the primordial genesis of all Ekadashis to the Pandavas through the story of Utpanna Ekadashi, celebrated on the eleventh tithi of Margashirsha Krishna Paksha. In the ancient Satya Yuga, a terrifying Asura named Mura, the son of Talajangha, endowed with invincible boons, conquered the three worlds, driving Lord Indra and the Devas from the heavenly realms into hiding. The terrified Devas approached Lord Shiva, who directed them to seek the supreme shelter of Lord Sri Hari Vishnu in Vaikuntha. Hearing their plight, Bhagavan Vishnu engaged the demon armies in fierce combat that raged across countless celestial centuries. Overcoming Mura's generals, the Lord journeyed to the sacred cave named Himavati in Badrikashram to rest His physical form in cosmic Yoga Nidra. Scenting the Lord's presence, the demon Mura entered the cave, brandishing his golden mace to strike down the sleeping Vishnu. At that critical moment, a blazing female deity of supreme celestial beauty, radiating cosmic effulgence and wielding divine weapons, emerged directly from Vishnu's transcendent body. She confronted Mura with thunderous courage, shattering his weapons, crushing his demonic army, and striking him dead in battle. Awakening from His rest, Lord Vishnu was overjoyed by her devotion, asking who she was. When she revealed she had sprung from His own divine shakti to protect Him, Vishnu named her Ekadashi and decreed that because she originated (utpanna) from His body on this day, she would remain the most beloved of all days, granting liberation and freedom from all sins to all who fast in her honor. Lord Vishnu further proclaimed to the assembled Devas that no other observance in the three worlds—whether pilgrimages to the holy Ganga, charity of land and cows, or severe tapasya in mountain caves—equals the spiritual potency of fasting on Utpanna Ekadashi. The Lord declared that the devotee who observes this primary fast with unbroken love and vigilance will be freed from the dread of Yama and attain eternal fellowship in His supreme abode, free from all sorrow and earthly attachment.",
+    "significance": "Utpanna Ekadashi is the mother and origin of every subsequent Ekadashi observance throughout the calendar year. The narrative serves as a profound allegory of the spiritual life: when the soul is exhausted by perpetual warfare against inner demonic tendencies—lust, anger, greed, and ego—the Lord's divine shakti awakens from within the heart as spiritual vigilance (Ekadashi Devi) to protect and liberate the seeker. Esoterically, the word 'Ekadasha' signifies eleven—representing the eleventh faculty of the mind that must master the five organs of perception (jnanendriyas) and five organs of action (karmendriyas). Fasting on this initial Ekadashi purifies the mind, establishes spiritual momentum for the rest of the year, and awakens the dormant spiritual power within the consciousness. It reminds devotees that spiritual victory is never achieved by mere intellectual reasoning, but by the awakening of divine shakti through surrender, self-discipline, and holy contemplation, guiding the consciousness toward Vaikuntha.",
+    "rituals": [
+      "Commencement of the annual Ekadashi fasting cycle, beginning with an early morning purifying bath and prayer",
+      "Worship of Ekadashi Devi along with Lord Sri Hari Vishnu, offering fragrant incense, yellow cloth, and fresh tulsi",
+      "Observance of a rigorous fast from food, practicing silence (mauna) and inner vigilance against negative emotions",
+      "Recitation of the Utpanna Ekadashi Mahatmya, conducting evening aarti, and offering prayers for spiritual fortitude"
+    ],
+    "shloka": {
+      "text": "या स्मृता सर्वपापघ्नी सर्वकामप्रदायिनी । एकादशी ततो जाता मुक्तिदा भवसागरम् ॥",
+      "transliteration": "Yā smṛtā sarvapāpaghnī sarvakāmapradāyinī | Ekādaśī tato jātā muktidā bhavasāgaram ||",
+      "translation": "Remembered as the destroyer of all sins and the bestower of all righteous wishes, Ekadashi manifested thus to grant liberation across the worldly ocean.",
+      "source": "Padma Purāṇa, Uttara Khaṇḍa, Utpannā Ekādaśī Māhātmya"
+    },
+    "practice": "Initiate or reaffirm your commitment to lunar fasting, meditate upon Ekadashi Devi, and maintain holy vigil."
   }
 ];
 
 const FESTIVAL_ALIASES: Record<string, string[]> = {
+  "Karva Chauth": ["karva-chauth", "karwa-chauth", "karak-chaturthi"],
+  "Vinayaka Chaturthi": ["vinayaka-chaturthi", "varada-vinayaka-chaturthi"],
+  "Nirjala Ekadashi": ["nirjala-ekadashi", "bhima-ekadashi", "pandava-nirjala-ekadashi"],
+  "Devshayani Ekadashi": ["devshayani-ekadashi", "harisayana-ekadashi", "ashadha-shukla-ekadashi", "maha-ekadashi"],
+  "Devutthana Ekadashi": ["devutthana-ekadashi", "prabodhini-ekadashi", "haribodhini-ekadashi", "kartik-shukla-ekadashi"],
+  "Parivartini Ekadashi": ["parivartini-ekadashi", "parsva-ekadashi", "vamana-ekadashi", "bhadrapada-shukla-ekadashi"],
+  "Amalaki Ekadashi": ["amalaki-ekadashi", "amla-ekadashi", "phalguna-shukla-ekadashi"],
+  "Yogini Ekadashi": ["yogini-ekadashi", "ashadha-krishna-ekadashi"],
+  "Utpanna Ekadashi": ["utpanna-ekadashi", "utpatti-ekadashi", "margashirsha-krishna-ekadashi"],
   "Vat Savitri Vrat": ["vat-savitri-vrat", "vat-savitri-amavasya", "vat-savitri-purnima", "vat-savitri"],
   "Hartalika Teej": ["hartalika-teej", "teej", "hartalika-vrat"],
   "Mahalaya Amavasya": ["mahalaya-amavasya", "sarva-pitru-amavasya", "pitru-moksha-amavasya"],
@@ -1600,7 +1769,21 @@ const FESTIVAL_ALIASES: Record<string, string[]> = {
   "Sankashti Chaturthi": ["sankashti-chaturthi", "sankata-hara-chaturthi", "angarki-chaturthi"],
   "Shravan Somvar": ["shravan-somvar", "sawan-somwar", "shravana-somavara"],
   "Mangala Gauri Vrat": ["mangala-gauri-vrat", "mangala-gauri", "shravan-mangalvar"],
-  "Ekadashi": ["ekadashi", "ekadashi-vrat", "smarta-ekadashi", "vaishnava-ekadashi"],
+  "Ekadashi": [
+    "ekadashi",
+    "ekadashi-vrat",
+    "smarta-ekadashi",
+    "vaishnava-ekadashi",
+    "kamada-ekadashi",
+    "shravana-putrada-ekadashi",
+    "papmochani-ekadashi",
+    "apara-ekadashi",
+    "kamika-ekadashi",
+    "aja-ekadashi",
+    "rama-ekadashi",
+    "saphala-ekadashi",
+    "vijaya-ekadashi"
+  ],
   "Ganesh Chaturthi": [
     "ganesh-chaturthi",
     "vinayaka-chaturthi",

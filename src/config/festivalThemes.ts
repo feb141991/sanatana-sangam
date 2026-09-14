@@ -126,7 +126,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional Lord Ganesha artwork',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['ganesh-chaturthi', 'vinayaka-chaturthi', 'ganesha-chaturthi'],
+    festivalSlugs: ['ganesh-chaturthi', 'vinayaka-chaturthi', 'ganesha-chaturthi', 'sankashti-chaturthi', 'angarki-chaturthi'],
     priority: 120,
   },
   {
@@ -386,7 +386,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional Vaikunta Ekadashi golden gateway arch backdrop',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['vaikunta-ekadashi', 'mukkoti-ekadashi', 'swarga-vathil-ekadashi'],
+    festivalSlugs: ['vaikunta-ekadashi', 'mukkoti-ekadashi', 'swarga-vathil-ekadashi', 'ekadashi', 'ekadashi-vrat', 'nirjala-ekadashi', 'devshayani-ekadashi', 'devutthana-ekadashi', 'parivartini-ekadashi', 'amalaki-ekadashi', 'papmochani-ekadashi', 'apara-ekadashi', 'kamika-ekadashi', 'aja-ekadashi', 'rama-ekadashi', 'utpanna-ekadashi', 'saphala-ekadashi', 'vijaya-ekadashi', 'yogini-ekadashi', 'kamada-ekadashi', 'shravana-putrada-ekadashi'],
     priority: 120,
   },
   {
@@ -436,7 +436,7 @@ export const HOME_HERO_THEMES: HomeHeroTheme[] = [
     heroAlt: 'Devotional Pradosha Kaalam sacred Shiva Linga sanctum backdrop',
     objectPosition: '50% 25%',
     traditions: ['hindu'],
-    festivalSlugs: ['pradosh-vrat', 'shani-pradosh', 'soma-pradosh'],
+    festivalSlugs: ['pradosh-vrat', 'shani-pradosh', 'soma-pradosh', 'shravan-somvar', 'sawan-somwar'],
     priority: 120,
   },
   {
