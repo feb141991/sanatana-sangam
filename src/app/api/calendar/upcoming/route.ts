@@ -201,6 +201,18 @@ export async function GET(request: NextRequest) {
       return aDate.localeCompare(bDate);
     });
 
+    // Deduplicate: the query fetches from both the active calendarProfile and
+    // 'legacy-ujjain'. A festival present in both produces two identical
+    // slug+date entries. Keep only the first occurrence per slug+date pair
+    // (the active profile's row, which sorts ahead of the legacy one).
+    const seenSlugDates = new Set<string>();
+    const dedupedResults = formattedResults.filter((r) => {
+      const key = `${r.slug ?? ''}|${r.civilDate ?? r.reviewPlacementDate ?? ''}`;
+      if (seenSlugDates.has(key)) return false;
+      seenSlugDates.add(key);
+      return true;
+    });
+
     const displayObservances = selectDisplayObservances(formattedResults);
 
     const primaryContext = formattedResults.find(result => result.isPrimary) ?? formattedResults[0] ?? null;
@@ -233,7 +245,7 @@ export async function GET(request: NextRequest) {
     const response: UpcomingResponse = {
       from: fromStr,
       to: toStr,
-      observances: formattedResults,
+      observances: dedupedResults,
       displayObservances,
       series,
       storyCards,
