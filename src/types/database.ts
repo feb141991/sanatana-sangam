@@ -359,6 +359,30 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['mandalis']['Row'], 'created_at' | 'member_count'>;
         Update: Partial<Database['public']['Tables']['mandalis']['Insert']>;
       };
+      mandali_prompts: {
+        Row: {
+          id: string;
+          text_en: string;
+          text_hi: string | null;
+          text_pa: string | null;
+          tradition: string | null;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          text_en: string;
+          text_hi?: string | null;
+          text_pa?: string | null;
+          tradition?: string | null;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['mandali_prompts']['Insert']>;
+        Relationships: [];
+      };
       posts: {
         Row: {
           id: string;
@@ -373,9 +397,51 @@ export interface Database {
           is_pinned: boolean;
           event_date: string | null;
           event_location: string | null;
+          client_operation_id: string | null;
+          mandali_prompt_id: string | null;
+          mandali_prompt_date: string | null;
         };
-        Insert: Omit<Database['public']['Tables']['posts']['Row'], 'created_at' | 'updated_at' | 'upvotes' | 'comment_count'>;
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          author_id: string;
+          mandali_id?: string | null;
+          content: string;
+          type?: 'update' | 'event' | 'question' | 'announcement';
+          upvotes?: number;
+          comment_count?: number;
+          is_pinned?: boolean;
+          event_date?: string | null;
+          event_location?: string | null;
+          client_operation_id?: string | null;
+          mandali_prompt_id?: string | null;
+          mandali_prompt_date?: string | null;
+        };
         Update: Partial<Database['public']['Tables']['posts']['Insert']>;
+        Relationships: [
+          {
+            foreignKeyName: 'posts_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posts_mandali_id_fkey';
+            columns: ['mandali_id'];
+            isOneToOne: false;
+            referencedRelation: 'mandalis';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'posts_mandali_prompt_id_fkey';
+            columns: ['mandali_prompt_id'];
+            isOneToOne: false;
+            referencedRelation: 'mandali_prompts';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       post_comments: {
         Row: {
@@ -1092,7 +1158,11 @@ export type PostComment = Database['public']['Tables']['post_comments']['Row'];
 export type EventRsvp = Database['public']['Tables']['event_rsvps']['Row'];
 export type MalaSession = Database['public']['Tables']['mala_sessions']['Row'];
 export type CronLog = Database['public']['Tables']['cron_logs']['Row'];
-export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
+export type PostWithAuthor = Post & {
+  profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> & {
+    is_official: boolean;
+  };
+};
 export type ThreadWithAuthor = ForumThread & {
   profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'active_symbol_id'>;
   reactions?: Record<string, number>;

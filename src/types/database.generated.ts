@@ -2839,6 +2839,39 @@ export type Database = {
         }
         Relationships: []
       }
+      mandali_prompts: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          text_en: string
+          text_hi: string | null
+          text_pa: string | null
+          tradition: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          text_en: string
+          text_hi?: string | null
+          text_pa?: string | null
+          tradition?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          text_en?: string
+          text_hi?: string | null
+          text_pa?: string | null
+          tradition?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mantras: {
         Row: {
           audio_url: string | null
@@ -4862,6 +4895,7 @@ export type Database = {
       posts: {
         Row: {
           author_id: string
+          client_operation_id: string | null
           comment_count: number | null
           content: string
           created_at: string
@@ -4870,12 +4904,15 @@ export type Database = {
           id: string
           is_pinned: boolean | null
           mandali_id: string | null
+          mandali_prompt_date: string | null
+          mandali_prompt_id: string | null
           type: string | null
           updated_at: string
           upvotes: number | null
         }
         Insert: {
           author_id: string
+          client_operation_id?: string | null
           comment_count?: number | null
           content: string
           created_at?: string
@@ -4884,12 +4921,15 @@ export type Database = {
           id?: string
           is_pinned?: boolean | null
           mandali_id?: string | null
+          mandali_prompt_date?: string | null
+          mandali_prompt_id?: string | null
           type?: string | null
           updated_at?: string
           upvotes?: number | null
         }
         Update: {
           author_id?: string
+          client_operation_id?: string | null
           comment_count?: number | null
           content?: string
           created_at?: string
@@ -4898,6 +4938,8 @@ export type Database = {
           id?: string
           is_pinned?: boolean | null
           mandali_id?: string | null
+          mandali_prompt_date?: string | null
+          mandali_prompt_id?: string | null
           type?: string | null
           updated_at?: string
           upvotes?: number | null
@@ -4922,6 +4964,13 @@ export type Database = {
             columns: ["mandali_id"]
             isOneToOne: false
             referencedRelation: "mandalis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_mandali_prompt_id_fkey"
+            columns: ["mandali_prompt_id"]
+            isOneToOne: false
+            referencedRelation: "mandali_prompts"
             referencedColumns: ["id"]
           },
         ]

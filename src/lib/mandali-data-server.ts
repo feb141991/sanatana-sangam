@@ -1,9 +1,15 @@
 import 'server-only';
 
 import { createAdminClient } from '@/lib/supabase-admin';
+import { createMandaliPromptAdminClient } from '@/lib/mandali-prompt-admin';
 import { filterAuthoredItems, filterProfileRows, getUserSafetyState, type UserSafetyState } from '@/lib/user-safety';
 import { decodeFeedCursor, encodeFeedCursor, formatIdListLiteral } from '@/lib/mandali-cursor';
-import { getDayOfYear } from '@/lib/sacred-texts';
+import {
+  getMandaliPromptDate,
+  localizeMandaliPrompt,
+  selectMandaliPromptForDate,
+  type MandaliPromptText,
+} from '@/lib/mandali-prompts';
 import type { MandaliCommentPreview, MandaliData, MandaliFeedPage, MandaliFeedPost, MandaliProfile, MandaliPublicIdentity } from '@/lib/mandali-contract';
 import type { EventRsvp, Post, PostComment, PostCommentWithAuthor, PostWithAuthor, Profile } from '@/types/database';
 
@@ -20,12 +26,10 @@ const MANDALI_PROMPT_AUTHOR_ID = process.env.MANDALI_PROMPT_AUTHOR_ID;
 
 /**
  * Materializes today's conversation-starter prompt as a real, pinned post --
- * once per Mandali per day, the first time anyone reads that Mandali's feed
- * that day. Deterministic selection (pool[dayIndex % pool.length], mirroring
- * buildDailySacredText in src/lib/daily-sacred-text.ts) -- not AI-generated,
- * so no job/queue table. Content is always English: posts have no
- * per-viewer localization today (unlike ObservanceEntry's nameLocal/namePa),
- * so this is a deliberate simplification, not an oversight.
+ * once per Mandali per UTC day, the first time anyone reads that Mandali's
+ * feed that day. Selection is deterministic over an id-sorted curated pool;
+ * the stored post remains English while feed hydration supplies Hindi or
+ * Punjabi text for viewers who selected those app languages.
  *
  * Write goes through the service-role admin client, never a user's own
  * RLS-scoped one -- same reasoning as getOrMaterializeOccurrences in
@@ -34,10 +38,9 @@ const MANDALI_PROMPT_AUTHOR_ID = process.env.MANDALI_PROMPT_AUTHOR_ID;
  * which a system-authored post can never satisfy under a user's own client.
  *
  * Best-effort: any failure here is logged and swallowed -- a prompt that
- * fails to materialize must never break loading the rest of the feed. Small,
- * accepted race window on true first-read concurrency (two readers hitting
- * an empty Mandali in the same instant could each insert one) rather than
- * adding a new unique constraint for a low-traffic feature.
+ * fails to materialize must never break loading the rest of the feed. The
+ * database's (mandali_id, mandali_prompt_date) unique constraint closes the
+ * concurrent-first-read race rather than relying on this function's lookup.
  *
  * `mandali_prompts.tradition` exists for future scoping, but public.mandalis
  * (supabase/schema.sql) has no tradition column of its own to match against
@@ -46,63 +49,68 @@ const MANDALI_PROMPT_AUTHOR_ID = process.env.MANDALI_PROMPT_AUTHOR_ID;
  * pool for now.
  */
 async function ensureTodaysMandaliPrompt(
-  admin: ReturnType<typeof createAdminClient>,
   mandaliId: string,
 ): Promise<void> {
   if (!MANDALI_PROMPT_AUTHOR_ID) return;
 
   try {
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0);
+    const admin = createMandaliPromptAdminClient();
+    const promptDate = getMandaliPromptDate();
 
     const { data: existing, error: existingError } = await admin
       .from('posts')
       .select('id')
       .eq('mandali_id', mandaliId)
-      .eq('author_id', MANDALI_PROMPT_AUTHOR_ID)
-      .gte('created_at', todayStart.toISOString())
+      .eq('mandali_prompt_date', promptDate)
       .limit(1)
       .maybeSingle();
     if (existingError) throw existingError;
-    if (existing) return;
 
-    const { data: pool, error: poolError } = await admin
-      .from('mandali_prompts')
-      .select('text_en')
-      .eq('active', true)
-      .is('tradition', null);
-    if (poolError) throw poolError;
+    if (!existing) {
+      const { data: pool, error: poolError } = await admin
+        .from('mandali_prompts')
+        .select('id, text_en, text_hi, text_pa')
+        .eq('active', true)
+        .is('tradition', null)
+        .order('id', { ascending: true });
+      if (poolError) throw poolError;
 
-    const activePrompts = (pool ?? []) as { text_en: string }[];
-    if (activePrompts.length === 0) return;
+      const chosen = selectMandaliPromptForDate((pool ?? []) as MandaliPromptText[], promptDate);
+      if (!chosen) return;
 
-    const chosen = activePrompts[getDayOfYear() % activePrompts.length];
+      const { error: insertError } = await admin.from('posts').upsert({
+        author_id: MANDALI_PROMPT_AUTHOR_ID,
+        mandali_id: mandaliId,
+        content: chosen.text_en,
+        type: 'question',
+        is_pinned: true,
+        mandali_prompt_id: chosen.id,
+        mandali_prompt_date: promptDate,
+      }, {
+        onConflict: 'mandali_id,mandali_prompt_date',
+        ignoreDuplicates: true,
+      });
+      if (insertError) throw insertError;
+    }
 
-    // Rotate, don't stack: unpin yesterday's prompt (if any) so is_pinned
-    // stays a "today's prompt" marker rather than accumulating one pinned
-    // row per day forever and slowly burying real conversation.
-    // `as never` here matches the existing workaround at
-    // /api/mandali/posts/route.ts's own posts .update() call -- the
-    // hand-maintained posts.Insert type (types/database.ts) requires every
-    // Row column including `id`, which no real caller ever supplies (the
-    // DB default generates it), so the strict type never actually matches
-    // a real insert/update payload here.
+    const { data: current, error: currentError } = await admin
+      .from('posts')
+      .select('id')
+      .eq('mandali_id', mandaliId)
+      .eq('mandali_prompt_date', promptDate)
+      .single();
+    if (currentError) throw currentError;
+
+    // Rotate after today's row exists. Concurrent readers resolve to the
+    // same constrained row and therefore cannot unpin each other's result.
     const { error: unpinError } = await admin
       .from('posts')
-      .update({ is_pinned: false } as never)
+      .update({ is_pinned: false })
       .eq('mandali_id', mandaliId)
       .eq('author_id', MANDALI_PROMPT_AUTHOR_ID)
-      .eq('is_pinned', true);
+      .eq('is_pinned', true)
+      .neq('id', current.id);
     if (unpinError) throw unpinError;
-
-    const { error: insertError } = await admin.from('posts').insert({
-      author_id: MANDALI_PROMPT_AUTHOR_ID,
-      mandali_id: mandaliId,
-      content: chosen.text_en,
-      type: 'question',
-      is_pinned: true,
-    } as never);
-    if (insertError) throw insertError;
   } catch (err) {
     console.error(
       'mandali-data-server: ensureTodaysMandaliPrompt failed:',
@@ -113,13 +121,14 @@ async function ensureTodaysMandaliPrompt(
 
 type SafeAuthor = Pick<Profile, 'id' | 'username' | 'avatar_url'>;
 
-function authorRelation(author?: SafeAuthor): PostWithAuthor['profiles'] {
+function authorRelation(authorId: string, author?: SafeAuthor): PostWithAuthor['profiles'] {
   return {
     full_name: author?.username ?? 'Seeker',
     username: author?.username ?? 'seeker',
     avatar_url: author?.avatar_url ?? null,
     sampradaya: null,
     spiritual_level: null,
+    is_official: Boolean(MANDALI_PROMPT_AUTHOR_ID && authorId === MANDALI_PROMPT_AUTHOR_ID),
   };
 }
 
@@ -143,9 +152,36 @@ async function loadSafeAuthors(ids: string[]) {
   return new Map(rows.map((row) => [row.id, row]));
 }
 
-async function hydratePosts(rows: Post[]) {
+async function localizePromptPosts(rows: Post[], language?: string | null): Promise<Post[]> {
+  const promptIds = Array.from(new Set(rows.flatMap((row) => row.mandali_prompt_id ? [row.mandali_prompt_id] : [])));
+  if (promptIds.length === 0) return rows;
+
+  try {
+    const admin = createMandaliPromptAdminClient();
+    const { data, error } = await admin
+      .from('mandali_prompts')
+      .select('id, text_en, text_hi, text_pa')
+      .in('id', promptIds);
+    if (error) throw error;
+    const promptMap = new Map((data ?? []).map((prompt) => [prompt.id, prompt]));
+    return rows.map((row) => {
+      if (!row.mandali_prompt_id) return row;
+      const prompt = promptMap.get(row.mandali_prompt_id);
+      return prompt ? { ...row, content: localizeMandaliPrompt(prompt, language) } : row;
+    });
+  } catch (error) {
+    console.error(
+      'mandali-data-server: localizePromptPosts failed:',
+      error instanceof Error ? error.message : String(error),
+    );
+    return rows;
+  }
+}
+
+async function hydratePosts(rows: Post[], language?: string | null) {
+  const localizedRows = await localizePromptPosts(rows, language);
   const authorMap = await loadSafeAuthors(rows.map((row) => row.author_id));
-  return rows.map((row) => ({ ...row, profiles: authorRelation(authorMap.get(row.author_id)) }));
+  return localizedRows.map((row) => ({ ...row, profiles: authorRelation(row.author_id, authorMap.get(row.author_id)) }));
 }
 
 async function hydrateComments(rows: PostComment[]) {
@@ -176,7 +212,7 @@ export async function loadMandaliDataForUser(userId: string): Promise<MandaliDat
     return { profile: profile as MandaliProfile, posts: [], comments: [], rsvps: [], members: [], blendedPosts: [] };
   }
 
-  await ensureTodaysMandaliPrompt(admin, mandaliId);
+  await ensureTodaysMandaliPrompt(mandaliId);
 
   const [{ data: postRows, error: postsError }, { data: memberRows, error: membersError }] = await Promise.all([
     admin
@@ -196,7 +232,7 @@ export async function loadMandaliDataForUser(userId: string): Promise<MandaliDat
   const needsBlend = members.length < BLEND_THRESHOLD;
 
   const { data: blendedRows, error: blendError } = await (needsBlend
-      ? admin.from('posts').select('*').neq('mandali_id', mandaliId).order('created_at', { ascending: false }).limit(15)
+      ? admin.from('posts').select('*').neq('mandali_id', mandaliId).is('mandali_prompt_id', null).order('created_at', { ascending: false }).limit(15)
       : Promise.resolve({ data: [] as Post[], error: null }));
   if (blendError) throw blendError;
 
@@ -213,9 +249,9 @@ export async function loadMandaliDataForUser(userId: string): Promise<MandaliDat
   if (commentsError) throw commentsError;
   if (rsvpsError) throw rsvpsError;
   const [posts, comments, blendedPosts] = await Promise.all([
-    hydratePosts(filteredPostRows),
+    hydratePosts(filteredPostRows, profile.app_language),
     hydrateComments((commentRows ?? []) as PostComment[]),
-    hydratePosts(safeBlendedRows),
+    hydratePosts(safeBlendedRows, profile.app_language),
   ]);
 
   return {
@@ -331,11 +367,12 @@ async function hydrateFeedPosts(
   admin: ReturnType<typeof createAdminClient>,
   userId: string,
   rows: Post[],
+  language?: string | null,
 ): Promise<MandaliFeedPost[]> {
   if (rows.length === 0) return [];
   const postIds = rows.map((row) => row.id);
   const [hydrated, reactions, commentData] = await Promise.all([
-    hydratePosts(rows),
+    hydratePosts(rows, language),
     loadViewerReactions(admin, userId, postIds),
     loadCommentPreviews(admin, postIds),
   ]);
@@ -394,7 +431,7 @@ export async function loadMandaliFeedPage(
   }
 
   if (isFirstPage) {
-    await ensureTodaysMandaliPrompt(admin, mandaliId);
+    await ensureTodaysMandaliPrompt(mandaliId);
   }
 
   let postsQuery = admin
@@ -448,7 +485,7 @@ export async function loadMandaliFeedPage(
 
   const postIdsForRsvp = pageRows.map((row) => row.id);
   const [posts, rsvpResult] = await Promise.all([
-    hydrateFeedPosts(admin, userId, pageRows),
+    hydrateFeedPosts(admin, userId, pageRows, profile.app_language),
     postIdsForRsvp.length
       ? admin.from('event_rsvps').select('id, post_id, user_id, status, created_at, updated_at').in('post_id', postIdsForRsvp)
       : Promise.resolve({ data: [] as EventRsvp[], error: null }),
@@ -458,11 +495,11 @@ export async function loadMandaliFeedPage(
 
   let blendedPosts: MandaliFeedPost[] = [];
   if (isFirstPage && needsBlend) {
-    let blendedQuery = admin.from('posts').select('*').neq('mandali_id', mandaliId).order('created_at', { ascending: false });
+    let blendedQuery = admin.from('posts').select('*').neq('mandali_id', mandaliId).is('mandali_prompt_id', null).order('created_at', { ascending: false });
     blendedQuery = applySafetyExclusions(blendedQuery as any, safetyState, 'mandali_post');
     const { data: blendedRows, error: blendError } = await blendedQuery.limit(15);
     if (blendError) throw blendError;
-    blendedPosts = await hydrateFeedPosts(admin, userId, (blendedRows ?? []) as Post[]);
+    blendedPosts = await hydrateFeedPosts(admin, userId, (blendedRows ?? []) as Post[], profile.app_language);
   }
 
   if (rsvpResult.error) throw rsvpResult.error;

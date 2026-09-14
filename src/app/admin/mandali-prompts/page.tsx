@@ -9,18 +9,18 @@ type MandaliPrompt = {
   text_en: string;
   text_hi: string | null;
   text_pa: string | null;
-  tradition: string | null;
   active: boolean;
   created_at: string;
   updated_at: string;
 };
 
-const EMPTY_DRAFT = { text_en: '', text_hi: '', text_pa: '', tradition: '' };
+const EMPTY_DRAFT = { text_en: '', text_hi: '', text_pa: '' };
 
 export default function MandaliPromptsPage() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<MandaliPrompt[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [draft, setDraft] = useState(EMPTY_DRAFT);
@@ -28,6 +28,7 @@ export default function MandaliPromptsPage() {
 
   const fetchData = useCallback(async () => {
     try {
+      setError(null);
       const res = await fetch('/api/admin/mandali-prompts');
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Failed to fetch prompts');
@@ -58,6 +59,7 @@ export default function MandaliPromptsPage() {
     }
     setCreating(true);
     setError(null);
+    setStatus(null);
     try {
       const res = await fetch('/api/admin/mandali-prompts', {
         method: 'POST',
@@ -66,13 +68,13 @@ export default function MandaliPromptsPage() {
           text_en: draft.text_en,
           text_hi: draft.text_hi || null,
           text_pa: draft.text_pa || null,
-          tradition: draft.tradition || null,
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Failed to create prompt');
       setRows((prev) => [json, ...prev]);
       setDraft(EMPTY_DRAFT);
+      setStatus('Prompt added to the rotation.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create prompt');
     } finally {
@@ -85,6 +87,7 @@ export default function MandaliPromptsPage() {
     if (!patch) return;
     setBusyId(row.id);
     setError(null);
+    setStatus(null);
     try {
       const res = await fetch('/api/admin/mandali-prompts', {
         method: 'PATCH',
@@ -99,6 +102,7 @@ export default function MandaliPromptsPage() {
         delete next[row.id];
         return next;
       });
+      setStatus('Prompt saved.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save prompt');
     } finally {
@@ -109,6 +113,7 @@ export default function MandaliPromptsPage() {
   async function toggleActive(row: MandaliPrompt) {
     setBusyId(row.id);
     setError(null);
+    setStatus(null);
     try {
       const res = await fetch('/api/admin/mandali-prompts', {
         method: 'PATCH',
@@ -118,6 +123,7 @@ export default function MandaliPromptsPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Failed to update prompt');
       setRows((prev) => prev.map((r) => (r.id === row.id ? json : r)));
+      setStatus(row.active ? 'Prompt deactivated.' : 'Prompt activated.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update prompt');
     } finally {
@@ -129,6 +135,7 @@ export default function MandaliPromptsPage() {
     if (!window.confirm(`Delete this prompt? "${row.text_en.slice(0, 60)}..."`)) return;
     setBusyId(row.id);
     setError(null);
+    setStatus(null);
     try {
       const res = await fetch('/api/admin/mandali-prompts', {
         method: 'DELETE',
@@ -138,6 +145,7 @@ export default function MandaliPromptsPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Failed to delete prompt');
       setRows((prev) => prev.filter((r) => r.id !== row.id));
+      setStatus('Unused prompt deleted.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete prompt');
     } finally {
@@ -147,16 +155,16 @@ export default function MandaliPromptsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[var(--card-border)] px-6 py-4">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
+            <Link href="/admin" aria-label="Back to admin" className="p-2 rounded-xl hover:bg-[var(--surface-soft)] text-[var(--brand-muted)] transition-colors">
               <ArrowLeft size={20} />
             </Link>
             <div>
               <h1 className="text-xl font-bold font-serif theme-ink">Mandali Conversation-Starter Prompts</h1>
               <p className="text-[10px] text-[var(--brand-muted)] uppercase tracking-[0.2em] font-bold">
-                Curated prompt bank, rotated daily as a pinned post
+                Curated evergreen prompts for community conversation
               </p>
             </div>
           </div>
@@ -168,55 +176,67 @@ export default function MandaliPromptsPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
         <p className="text-xs text-[var(--brand-muted)] leading-relaxed max-w-2xl">
-          Every Mandali sees one active prompt per day, picked deterministically by day-of-year
-          from this pool and pinned to the top of its feed (src/lib/mandali-data-server.ts). Hindi
-          and Punjabi are optional -- a missing translation simply falls back to English for that
-          viewer. Deactivating a prompt removes it from tomorrow&apos;s rotation; it does not delete any
-          post already made from it.
+          Every Mandali sees one active prompt per UTC day. Hindi and Punjabi are shown according
+          to each viewer&apos;s app language, with English as the fallback. Use evergreen questions here;
+          festival and calendar-specific prompts require verified calendar eligibility and are not
+          part of this release. Deactivating a prompt removes it from future rotation without deleting
+          discussions already created from it.
         </p>
 
         {error && (
-          <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium">{error}</div>
+          <div role="alert" className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium">{error}</div>
+        )}
+        {status && (
+          <div role="status" aria-live="polite" className="p-4 rounded-2xl bg-emerald-500/10 text-emerald-700 text-sm font-medium">
+            {status}
+          </div>
         )}
 
-        <div className="glass-panel rounded-[2rem] border border-black/5 bg-white/40 p-6 space-y-3">
+        <div className="glass-panel rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-6 space-y-3">
           <h3 className="font-bold theme-ink flex items-center gap-2">
             <Plus size={16} /> Add a prompt
           </h3>
+          <label htmlFor="new-prompt-en" className="block text-xs font-bold text-[var(--brand-muted)]">English <span aria-hidden="true">*</span></label>
           <textarea
+            id="new-prompt-en"
             value={draft.text_en}
             onChange={(e) => setDraft((d) => ({ ...d, text_en: e.target.value }))}
-            placeholder="English (required) -- e.g. Who's observing Ekadashi this week?"
-            className="w-full rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-sm theme-ink"
+            placeholder="What helped you make time for your practice today?"
+            maxLength={500}
+            required
+            className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-3 py-2 text-sm theme-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
             rows={2}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <textarea
-              value={draft.text_hi}
-              onChange={(e) => setDraft((d) => ({ ...d, text_hi: e.target.value }))}
-              placeholder="Hindi (optional)"
-              className="w-full rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-sm theme-ink"
-              rows={2}
-            />
-            <textarea
-              value={draft.text_pa}
-              onChange={(e) => setDraft((d) => ({ ...d, text_pa: e.target.value }))}
-              placeholder="Punjabi (optional)"
-              className="w-full rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-sm theme-ink"
-              rows={2}
-            />
+            <div className="space-y-1.5">
+              <label htmlFor="new-prompt-hi" className="block text-xs font-bold text-[var(--brand-muted)]">Hindi <span className="font-normal">(optional)</span></label>
+              <textarea
+                id="new-prompt-hi"
+                value={draft.text_hi}
+                onChange={(e) => setDraft((d) => ({ ...d, text_hi: e.target.value }))}
+                maxLength={500}
+                className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-3 py-2 text-sm theme-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+                rows={2}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="new-prompt-pa" className="block text-xs font-bold text-[var(--brand-muted)]">Punjabi <span className="font-normal">(optional)</span></label>
+              <textarea
+                id="new-prompt-pa"
+                value={draft.text_pa}
+                onChange={(e) => setDraft((d) => ({ ...d, text_pa: e.target.value }))}
+                maxLength={500}
+                className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-3 py-2 text-sm theme-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+                rows={2}
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <input
-              value={draft.tradition}
-              onChange={(e) => setDraft((d) => ({ ...d, tradition: e.target.value }))}
-              placeholder="Tradition scope (optional -- blank = shown to every Mandali)"
-              className="flex-1 rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-sm theme-ink"
-            />
+          <div className="flex items-center justify-end gap-3">
             <button
+              type="button"
               onClick={createPrompt}
               disabled={creating}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-colors disabled:opacity-50"
+              className="min-h-11 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Add
             </button>
@@ -228,7 +248,7 @@ export default function MandaliPromptsPage() {
             <Loader2 size={16} className="animate-spin" /> Loading prompts...
           </div>
         ) : rows.length === 0 ? (
-          <div className="p-12 text-center text-[var(--brand-muted)] glass-panel rounded-[2rem] border border-black/5 bg-white/40">
+          <div className="p-12 text-center text-[var(--brand-muted)] glass-panel rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)]">
             No prompts yet -- add one above.
           </div>
         ) : (
@@ -236,38 +256,38 @@ export default function MandaliPromptsPage() {
             const dirty = Boolean(edits[row.id]);
             const busy = busyId === row.id;
             return (
-              <div key={row.id} className="glass-panel rounded-[2rem] border border-black/5 bg-white/40 p-6 space-y-3">
-                <div className="flex items-start justify-between gap-4">
+              <div key={row.id} className="glass-panel rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-6 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="flex items-center gap-2">
                     <MessageCircle size={16} className="text-[var(--brand-muted)]" />
                     <span className={`text-[10px] uppercase tracking-widest font-bold ${row.active ? 'text-emerald-600' : 'text-[var(--brand-muted)]'}`}>
                       {row.active ? 'Active' : 'Inactive'}
                     </span>
-                    {row.tradition && (
-                      <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)]">
-                        · {row.tradition}
-                      </span>
-                    )}
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex flex-wrap items-center justify-end gap-2 shrink-0">
                     <button
+                      type="button"
                       onClick={() => toggleActive(row)}
                       disabled={busy}
-                      className="px-3 py-1.5 rounded-xl bg-black/5 text-[10px] font-bold text-[var(--brand-muted)] hover:bg-black/10 transition-colors disabled:opacity-50"
+                      className="min-h-11 px-3 py-1.5 rounded-xl bg-[var(--surface-soft)] text-sm font-bold text-[var(--brand-muted)] hover:opacity-80 transition-opacity disabled:opacity-50"
                     >
                       {row.active ? 'Deactivate' : 'Activate'}
                     </button>
                     <button
+                      type="button"
                       onClick={() => saveRow(row)}
                       disabled={!dirty || busy}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 text-[10px] font-bold hover:bg-emerald-500 hover:text-white transition-colors disabled:opacity-50"
+                      className="min-h-11 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--brand-primary-soft)] text-[var(--brand-primary)] text-sm font-bold hover:opacity-80 transition-opacity disabled:opacity-50"
                     >
                       <Save size={12} /> Save
                     </button>
                     <button
+                      type="button"
+                      aria-label={`Delete prompt: ${row.text_en}`}
+                      title="Delete unused prompt"
                       onClick={() => deleteRow(row)}
                       disabled={busy}
-                      className="p-1.5 rounded-xl bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition-colors disabled:opacity-50"
+                      className="min-h-11 min-w-11 inline-flex items-center justify-center p-1.5 rounded-xl bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition-colors disabled:opacity-50"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -275,30 +295,36 @@ export default function MandaliPromptsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <p className="text-[10px] font-bold text-[var(--brand-muted)]">EN</p>
+                  <label htmlFor={`prompt-${row.id}-en`} className="block text-[10px] font-bold text-[var(--brand-muted)]">English</label>
                   <textarea
+                    id={`prompt-${row.id}-en`}
                     value={String(fieldFor(row, 'text_en') ?? '')}
                     onChange={(e) => setField(row.id, 'text_en', e.target.value)}
-                    className="w-full rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-sm theme-ink"
+                    maxLength={500}
+                    className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-3 py-2 text-sm theme-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
                     rows={2}
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <p className="text-[10px] font-bold text-[var(--brand-muted)]">HI</p>
+                    <label htmlFor={`prompt-${row.id}-hi`} className="block text-[10px] font-bold text-[var(--brand-muted)]">Hindi</label>
                     <textarea
+                      id={`prompt-${row.id}-hi`}
                       value={String(fieldFor(row, 'text_hi') ?? '')}
                       onChange={(e) => setField(row.id, 'text_hi', e.target.value)}
-                      className="w-full rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-sm theme-ink"
+                      maxLength={500}
+                      className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-3 py-2 text-sm theme-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
                       rows={2}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <p className="text-[10px] font-bold text-[var(--brand-muted)]">PA</p>
+                    <label htmlFor={`prompt-${row.id}-pa`} className="block text-[10px] font-bold text-[var(--brand-muted)]">Punjabi</label>
                     <textarea
+                      id={`prompt-${row.id}-pa`}
                       value={String(fieldFor(row, 'text_pa') ?? '')}
                       onChange={(e) => setField(row.id, 'text_pa', e.target.value)}
-                      className="w-full rounded-xl border border-black/10 bg-white/60 px-3 py-2 text-sm theme-ink"
+                      maxLength={500}
+                      className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-3 py-2 text-sm theme-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
                       rows={2}
                     />
                   </div>

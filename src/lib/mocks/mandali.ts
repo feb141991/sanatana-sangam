@@ -124,12 +124,16 @@ const basePosts: PostWithAuthor[] = [
     is_pinned: false,
     event_date: '2026-04-13T10:00:00.000Z',
     event_location: 'Shree Krishna Mandir',
+    client_operation_id: null,
+    mandali_prompt_id: null,
+    mandali_prompt_date: null,
     profiles: {
       full_name: 'Meera Patel',
       username: 'meera',
       avatar_url: null,
       sampradaya: 'shaiva',
       spiritual_level: 'jigyasu',
+      is_official: false,
     },
   },
 ];
@@ -172,12 +176,16 @@ const baseBlendedPosts: PostWithAuthor[] = [
     is_pinned: false,
     event_date: null,
     event_location: null,
+    client_operation_id: null,
+    mandali_prompt_id: null,
+    mandali_prompt_date: null,
     profiles: {
       full_name: 'Raghav',
       username: 'raghav',
       avatar_url: null,
       sampradaya: 'advaita',
       spiritual_level: 'sadhaka',
+      is_official: false,
     },
   },
 ];
@@ -260,12 +268,16 @@ export async function createMockMandaliPost(userId: string, payload: {
     is_pinned: false,
     event_date: payload.eventDate || null,
     event_location: payload.eventLoc || null,
+    client_operation_id: null,
+    mandali_prompt_id: null,
+    mandali_prompt_date: null,
     profiles: {
       full_name: 'You',
       username: 'you',
       avatar_url: null,
       sampradaya: 'vaishnava',
       spiritual_level: 'sadhaka',
+      is_official: false,
     },
   });
 }

@@ -1,0 +1,40 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+  getMandaliPromptDate,
+  localizeMandaliPrompt,
+  selectMandaliPromptForDate,
+  type MandaliPromptText,
+} from './mandali-prompts';
+
+const PROMPTS: MandaliPromptText[] = [
+  { id: 'c', text_en: 'Third', text_hi: 'तीसरा', text_pa: null },
+  { id: 'a', text_en: 'First', text_hi: 'पहला', text_pa: 'ਪਹਿਲਾ' },
+  { id: 'b', text_en: 'Second', text_hi: null, text_pa: null },
+];
+
+describe('Mandali prompt rotation', () => {
+  it('uses an explicit UTC date boundary', () => {
+    expect(getMandaliPromptDate(new Date('2026-09-14T23:59:59.999Z'))).toBe('2026-09-14');
+    expect(getMandaliPromptDate(new Date('2026-09-15T00:00:00.000Z'))).toBe('2026-09-15');
+  });
+
+  it('selects deterministically regardless of database row order', () => {
+    const date = '2026-09-14';
+    expect(selectMandaliPromptForDate(PROMPTS, date)?.id).toBe(
+      selectMandaliPromptForDate([...PROMPTS].reverse(), date)?.id,
+    );
+  });
+
+  it('returns null for an empty pool or invalid date', () => {
+    expect(selectMandaliPromptForDate([], '2026-09-14')).toBeNull();
+    expect(selectMandaliPromptForDate(PROMPTS, 'invalid')).toBeNull();
+  });
+
+  it('uses the viewer language and falls back to English', () => {
+    expect(localizeMandaliPrompt(PROMPTS[1], 'hi')).toBe('पहला');
+    expect(localizeMandaliPrompt(PROMPTS[1], 'pa')).toBe('ਪਹਿਲਾ');
+    expect(localizeMandaliPrompt(PROMPTS[2], 'hi')).toBe('Second');
+    expect(localizeMandaliPrompt(PROMPTS[1], 'fr')).toBe('First');
+  });
+});
