@@ -10,6 +10,7 @@ import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
 import { getFallbackFestivalCalendar } from '@/lib/festivals';
 import { dharamVeerRetriever, festivalRulesRetriever } from '@/lib/ai/retrieval';
+import { retrieveDharmaChatGrounding } from '@/lib/ai/chat-grounding';
 import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 import { classifyChatIntent, getConversationalResponse } from '@/lib/ai/chat-intent';
 
@@ -571,12 +572,26 @@ User Question: ${message}
   // ── Path: Sarvam / Pramana (primary & sole provider) ──────────────────────
   try {
     const userMessage = buildPramanaUserMessage(history, message);
+
+    // Dynamic tradition-aware Pramana scripture, hero, & festival RAG grounding
+    const ragStart = Date.now();
+    const grounding = await retrieveDharmaChatGrounding({
+      message,
+      tradition,
+    });
+    const ragLatencyMs = Date.now() - ragStart;
+
+    let effectiveSystemPrompt = systemPrompt;
+    if (grounding.isGrounded && grounding.groundingPromptText) {
+      effectiveSystemPrompt = `${systemPrompt}\n\n${grounding.groundingPromptText}`;
+    }
+
     const result = await generateWithProvider(
       // Backstop against the model ignoring the "keep it short" system
       // instruction — 500 tokens (~350-400 words) still leaves real room
       // for an explicitly-requested deep answer, but stops runaway replies.
       {
-        system: systemPrompt,
+        system: effectiveSystemPrompt,
         user: userMessage,
         maxOutputTokens: 500,
         // Ordinary chat needs a direct answer, not hidden reasoning. Sarvam's
@@ -595,7 +610,14 @@ User Question: ${message}
       latency_ms: Date.now() - startTime,
       provider: result.provider ?? 'sarvam-hosted',
       model: result.modelUsed ?? 'sarvam',
-      context: { status: 'generated', output_length: result.text.length },
+      context: {
+        status: 'generated',
+        output_length: result.text.length,
+        rag_grounded: grounding.isGrounded,
+        rag_corpus: grounding.corpus,
+        chunks_count: grounding.documents.length,
+        rag_latency_ms: ragLatencyMs,
+      },
     });
 
     return new Response(textAsStream(result.text), {

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const MANIFESTS_DIR = path.join(process.cwd(), 'python/ai_pipeline/corpus/manifests');
+const MANIFESTS_DIR = path.join(__dirname, '../python/ai_pipeline/corpus/manifests');
 const VALID_RIGHTS = new Set([
   'public_domain',
   'rights_cleared',

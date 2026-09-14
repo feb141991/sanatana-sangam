@@ -6,8 +6,43 @@
   "rights_status": "restricted_or_pending",
   "review_status": "needs_source_audit",
   "is_pramana_grade": false,
-  "content": [],
-  "is_live_in_app": false,
+  "content": [
+    {
+      "ref": "6.18.33",
+      "kanda": 6,
+      "sarga": 18,
+      "shloka": 33,
+      "sanskrit": "सकृदेव प्रपन्नाय तवास्मीति च याचते ।\nअभयं सर्वभूतेभ्यो ददाम्येतद् व्रतं मम ॥",
+      "transliteration": "sakṛdeva prapannāya tavāsmīti ca yācate |\nabhayaṃ sarvabhūtebhyo dadāmyetad vrataṃ mama ||",
+      "translation": "To anyone who surrenders to me even once and declares 'I am yours', I grant freedom from fear to all beings. This is my solemn vow.",
+      "translation_source": "Public-domain Griffith translation (Project Gutenberg eBook #51540).",
+      "sanskrit_source": "Ancient Valmiki verse text; digital transcription cross-checked against valmikiramayan.net.",
+      "source_url": "https://www.gutenberg.org/ebooks/51540",
+      "rights_status": "restricted_or_pending",
+      "review_status": "needs_source_audit",
+      "is_pramana_grade": false,
+      "original_text_status": "companion",
+      "translation_status": "draft"
+    },
+    {
+      "ref": "6.18.34",
+      "kanda": 6,
+      "sarga": 18,
+      "shloka": 34,
+      "sanskrit": "आनयैनं हरिश्रेष्ठ दत्तमस्याभयं मया ।\nविभीषणो वा सुग्रीव यदि वा रावणः स्वयं ॥",
+      "transliteration": "ānayainaṃ hariśreṣṭha dattamasyābhayaṃ mayā |\nvibhīṣaṇo vā sugrīva yadi vā rāvaṇaḥ svayam ||",
+      "translation": "Bring him here, O foremost among monkeys; sanctuary has been granted by me to him, whether he be Vibhishana or Ravana himself!",
+      "translation_source": "Public-domain Griffith translation (Project Gutenberg eBook #51540).",
+      "sanskrit_source": "Ancient Valmiki verse text; digital transcription cross-checked against valmikiramayan.net.",
+      "source_url": "https://www.gutenberg.org/ebooks/51540",
+      "rights_status": "restricted_or_pending",
+      "review_status": "needs_source_audit",
+      "is_pramana_grade": false,
+      "original_text_status": "companion",
+      "translation_status": "draft"
+    }
+  ],
+  "is_live_in_app": true,
   "original_text_status": "companion",
   "translation_status": "unavailable",
   "audio_status": "unavailable",
@@ -15,6 +50,6 @@
   "source_owner": "Ralph T. H. Griffith translation via Project Gutenberg; Sanskrit digital source pending verification",
   "revision_note": "Metadata-only pending source audit. Prior generated entries were removed because Sanskrit source rights and verse/ref accuracy were not verified.",
   "removed_unverified_entry_count": 10,
-  "activation_status": "catalog_only",
+  "activation_status": "explicit_only",
   "scale_readiness": "source-audit-pending catalog placeholder"
 }

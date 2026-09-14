@@ -12,46 +12,249 @@
   "is_live_in_app": true,
   "content": [
     {
-      "ref": "3.1.6",
-      "sanskrit": "नायमात्मा प्रवचनेन लभ्यो न मेधया न बहुना श्रुतेन । यमेवैष वृणुते तेन लभ्यस्तस्यैष आत्मा विवृणुते तनूं स्वाम् ॥",
-      "transliteration": "nāyamātmā pravacanena labhyo na medhayā na bahunā śrutena | yamevaiṣa vṛṇute tena labhyastasyaiṣa ātmā vivṛṇute tanūṁ svām ||",
-      "text": "The Atman cannot be attained by the study of the Vedas, nor by intellect, nor by much hearing. He alone can be attained whom the Self chooses. To him the Self reveals its own form."
+      "ref": "1.1",
+      "text": "Brahma arose as the first of the gods —\n\nThe maker of all, the protector of the world.\n\nHe told the knowledge of Brahma ( brahma-vidya ), the founda-\ntion of all knowledge,\n\nTo Atharva[n], his eldest son."
     },
     {
-      "ref": "1.1.1",
-      "sanskrit": "ब्रह्मा देवानां प्रथमः संबभूव विश्वस्य कर्ता भुवनस्य गोप्ता ।",
-      "transliteration": "brahmā devānāṁ prathamaḥ saṁbabhūva viśvasya kartā bhuvanasya goptā |",
-      "text": "Brahma was born first among the gods, the maker of all, the protector of the world."
+      "ref": "1.2",
+      "text": "What Brahma taught to Atharvan,\n\nEven that knowledge of Brahma, Atharvan told in ancient\ntime to Angir.\n\nHe told it to Bharadvaja Satyavaha;\n\nBharadvaja, to Angiras — both the higher and the lower [know-\nledge].\n\nSaunaka’s quest for the clue to an understanding\nof the world"
     },
     {
-      "ref": "1.1.3",
-      "sanskrit": "द्वे विद्ये वेदितव्ये इति ह स्म यद्ब्रह्मविदो वदन्ति परा चैवापरा च ॥",
-      "transliteration": "dve vidye veditavye iti ha sma yadbrahmavido vadanti parā caivāparā ca ||",
-      "text": "There are two forms of knowledge to be known, as the knowers of Brahman are wont to say — the higher and the lower."
+      "ref": "1.3",
+      "text": "Saunaka, verily, indeed, a great householder, approached\nAngiras according to rule, and asked : ‘ Through understand-\ning of what, pray, does all this world become understood, Sir?’ 1\n\nTwo kinds of knowledge : the traditions of religion, and\nthe knowledge of the eternal"
     },
     {
-      "ref": "1.1.5",
-      "sanskrit": "यत्तदद्रेश्यमग्राह्यमगोत्रमवर्णमचक्षुःश्रोत्रं तदपाणिपादम् ।",
-      "transliteration": "yattadadreśyamagrāhyamgotramvarṇamacakṣuḥśrotraṁ tadapāṇipādam |",
-      "text": "That which cannot be seen or grasped, which has no family or caste, which has neither eyes nor ears, neither hands nor feet — the eternal, all-pervading, omnipresent, subtle — that is the Unchanging, which the wise behold as the source of all beings."
+      "ref": "1.4",
+      "text": "To him then he said : ‘There are two knowledges to be\nknown — as indeed the knowers of Brahma are wont to say2:\na higher (para) and also a lower (apara).\n\n1 The very same knowledge which Yajhavalkva declared to Maitreyl, Brih. 2. 4.\n5 (end).\n\n2 Cf. Maitri 6. 22.\n\nMUNDAKA UPANISHAD [-i.a.i"
     },
     {
-      "ref": "1.2.12",
-      "sanskrit": "परीक्ष्य लोकान् कर्मचितान् ब्राह्मणो निर्वेदमायात् नास्त्यकृतः कृतेन ।",
-      "transliteration": "parīkṣya lokān karmacitān brāhmaṇo nirvedamāyāt nāstyakṛtaḥ kṛtena |",
-      "text": "Having examined the worlds built by karma, a Brahmana should arrive at indifference. What is not made cannot be attained by what is made."
+      "ref": "1.5",
+      "text": "Of these, the lower is the Rig-Veda, the Yajur-Veda, the\nSama-Veda, the Atharva-Veda,\n\nPronunciation (siksa), Ritual ( kalpa ), Grammar ( vyakarana ),\nDefinition ( nirukta ), Metrics ( chandas ), and Astrology\n(Jy oil's a)}\n\nNow, the higher is that whereby that Imperishable ( aksara )\nis apprehended.\n\nThe imperishable source of all things"
     },
     {
-      "ref": "2.1.1",
-      "sanskrit": "तदेतत्सत्यं यथा सुदीप्तात्पावकाद्विस्फुलिङ्गाः सहस्रशः प्रभवन्ते सरूपाः ।",
-      "transliteration": "tdetatsatyaṁ yathā sudīptātpāvakādvisphuliṅgāḥ sahasraśaḥ prabhavante sarūpāḥ |",
-      "text": "This is the truth: as from a blazing fire sparks of the same nature issue forth by the thousands, so from the imperishable Brahman, diverse living beings come forth and return to Him."
+      "ref": "1.6",
+      "text": "That which is invisible, ungraspable, without family, without\n\ncaste ( a-varna ) —\n\nWithout sight or hearing is It, without hand or foot,\n\nEternal, all-pervading, omnipresent, exceedingly subtile;\n\nThat is the Imperishable, which the wise j perceive as the\nsource of beings."
     },
     {
-      "ref": "2.2.4",
-      "sanskrit": "ब्रह्मैवेदं विश्वमिदं वरिष्ठम् ।",
-      "transliteration": "brahmaivedam viśvamidaṁ variṣṭham |",
-      "text": "Brahman alone is this universe — this most excellent (Brahman)."
+      "ref": "1.7",
+      "text": "As a spider emits and draws in [its thread],\n\nAs herbs arise on the earth,\n\nAs the hairs of the head and body from a living person,\n\nSo from the Imperishable arises everything here."
+    },
+    {
+      "ref": "1.8",
+      "text": "By austerity ( tapas ) Brahma becomes built up.\n\nFrom that, food is produced;\n\nFrom food — life-breath, mind, truth,\n\nThe worlds, immortality too in works."
+    },
+    {
+      "ref": "1.9",
+      "text": "He who is all-knowing, all- wise,\n\nWhose austerity consists of knowledge —\n\nFrom Him are produced the Brahma here,\n\n[Namely] name and form,2 and food.\n\nSecond Khanda\n\nAll the ceremonies of religion scrupulously to be practised."
+    },
+    {
+      "ref": "2.1",
+      "text": "This is the truth : —\n\nThe works which the sages ( kavi ) saw in the sacred sayings\n( mantra , i.e. Vedic hymns)\n\nAre manifoldly spread forth in the triad [of the Vedas].\nFollow them ( acaratha ) constantly, ye lovers of truth ( satya -\nkdma ) !\n\nThis is your path to the world of good deeds.\n\n1 The six subsidiary Vedangas, ‘ Limbs-of-the-Vedas,’ later elaborated as\nexplanatory of the Vedas.\n\n2 A Sanskrit idiom for the modern term ‘individuality.’\n\nI. 2. 2-]\n\nMUNDAICA UPANISHAD"
+    },
+    {
+      "ref": "2.2",
+      "text": "When the flame flickers,\n\nAfter the oblation fire has been kindled,\n\nThen, between the two portions of melted butter, his oblations\nOne should throw — an offering made with faith ( sraddha )."
+    },
+    {
+      "ref": "2.3",
+      "text": "If one’s Agnihotra sacrifice is not followed by the sacri-\nfice of the new moon and of the full moon, by the four-months\nsacrifice, by the harvest sacrifice, if it is unattended by guests,\nor not offered at all, or without the ceremony to all the gods,\nor not according to rule, it destroys his seven worlds."
+    },
+    {
+      "ref": "2.4",
+      "text": "The Black {kali), and the Terrible, and the Swift-as-Thought,\nThe Very-red, and the Very-smoky-colored,\n\nThe Scintillating, and the All-formed,1 divine one,\n\nAre the seven so-called flickering tongues [of flame].2\n\nRewards of ceremonial observances"
+    },
+    {
+      "ref": "2.5",
+      "text": "If one performs sacrifices when these are shining,\n\nOffering the oblations at the proper time, too,\n\nThese (flames) as rays of the sun lead him\n\nTo where is resident the one lord {pall) of the gods."
+    },
+    {
+      "ref": "2.6",
+      "text": "Saying to him “ Come 1 Come ! ” the splendid offerings\nCarry the sacrificer with the rays of the sun,\n\nAddressing pleasant speech, praising, and saying :\n\n“ This is your meritorious ( punya ) Brahma-world, gained by\ngood works.”\n\nSacrificial forms ineffective against rebirth"
+    },
+    {
+      "ref": "2.7",
+      "text": "Unsafe boats, however, are these sacrificial forms,\n\nThe eighteen,3 in which is expressed the lower work.\n\nThe fools who approve that as the better,\n\nGo again to old age and death.\n\nThe consequences of ignorance"
+    },
+    {
+      "ref": "2.8",
+      "text": "Those abiding in the midst of ignorance,\n\nSelf-wise, thinking themselves learned,\n\nHard smitten, go around deluded,\n\nLike blind men led by one who is himself blind.4\n\n1 A variant reading is vilva-ruci, 4 All-gleaming.’\n\n2 Cf. ‘the seven-rayed Fire’ in RV. 1. 146. 1. Seven was an early sacrosanct\nnumber.\n\n3 That is, the four Vedas, each including Samhita, Brahmana, and Sutra, and in\naddition the six Vedangas which are enumerated at Mund. 1. 1. 5.\n\n4 With slight variation = Katha 2. 5. and Maitri 7. 9.\n\nMUNDAKA UPANISHAD [-1-2.13"
+    },
+    {
+      "ref": "2.9",
+      "text": "Manifoldly living in ignorance,\n\nThey think to themselves, childishly : “ We have accomplished\nour aim 1”\n\nSince doers of deeds ( karmin ) do not understand, because of\npassion ( raga ),\n\nTherefore, when their worlds are exhausted, they sink down\nwretched.\n\nto. Thinking sacrifice and merit is the chiefest thing,\n\nNaught better do they know — deluded !\n\nHaving had enjoyment on the top of the heaven won by good\nworks,\n\nThey re-enter this world, or a lower.\n\nBut unstriving, retiring knowers, without sacrifice, reach\nthe eternal Person\n\n1 1 . They who practise austerity ( tapas ) and faith ( sraddha ) in the\nforest,\n\nThe peaceful ( sduta ) knowers who live on alms,\n\nDepart passionless ( vi-raga ) through the door of the sun,\n\nTo where is that immortal Person (Purusha), e’en the im-\nperishable Spirit (Atman).\n\nThis knowledge of Brahma to be sought properly from\na qualified teacher"
+    },
+    {
+      "ref": "2.12",
+      "text": "Having scrutinized the worlds that are built up by work, a\n\nBrahman\n\nShould arrive at indifference. The [world] that was not made 1\nis not [won] by what is done.\n\nFor the sake of this knowledge let him go, fuel in hand,2\nTo a spiritual teacher (guru) who is learned in the scriptures\nand established on Brahma."
+    },
+    {
+      "ref": "2.13",
+      "text": "Such a knowing [teacher], unto one who has approached\n\nproperly,\n\nWhose thought is tranquilized, who has reached peace,\nTeaches in its very truth that knowledge of Brahma\nWhereby one knows the Imperishable, the Person, the True.\n\n1 Cf. ‘the uncreated Brahma-world/ Chand. 8. 13.\n\n2 The token of pupilship.\n\n369 B b\n\n2.I.I-]\n\nMUNDAKA UPANISHAD\n\nSECOND MUNDAKA\n\nThe Doctrine of Brahma-Atman\n\nFirst Khanda\n\nThe Imperishable, the source and the goal of all beings\n\ni. This is the truth : —\n\nAs, from a well-blazing fire, sparks\nBy the thousand issue forth of like form,\n\nSo from the Imperishable, my friend, beings manifold\nAre produced, and thither also go.\n\nThe supreme Person"
+    },
+    {
+      "ref": "2.2",
+      "text": "Heavenly ( diiya ), formless ( a-murtta ) is the Person (Purusha).\nHe is without and within, unborn,\n\nBreathless ( a-prana ), mindless {a-manas), pure ( subhra ),\nHigher than the high Imperishable.\n\nThe source of the human person and of the cosmic elements"
+    },
+    {
+      "ref": "2.3",
+      "text": "From Him is produced breath {prana),\n\nMind ( manas ), and all the senses ( indriya ),\n\nSpace {kha), wind, light, water,\n\nAnd earth, the supporter ol all.\n\nThe macrocosmic Person"
+    },
+    {
+      "ref": "2.4",
+      "text": "Fire is His head ; His eyes, the moon and sun ;\n\nThe regions of space, His ears ; His voice, the revealed Vedas ;\nWind, His breath {prana); His heart, the whole world. Out of\nHis feet,\n\nThe earth. Truly, He is the Inner Soul (Atman) of all.\n\nThe source of the world and of the individual"
+    },
+    {
+      "ref": "2.5",
+      "text": "From Him [proceeds] fire, whose fuel is the sun ;\n\nFrom the moon (Soma), rain ; herbs, on the earth.\n\nThe male pours seed in the female.\n\nMany creatures are produced from the Person (Purusha).\n\nThe source of all religious rites"
+    },
+    {
+      "ref": "2.6",
+      "text": "From Him the Rig Verses, the Saman Chant, the sacrificial\n\nformulas {yajus), the initiation rite {diksa).\n\n37°\n\nMUNDAKA UPANISHAD [-2.1. to\n\nAnd all the sacrifices, ceremonies, and sacrificial gifts ( daksina ),\n\nThe year too, and the sacrificer, the worlds\n\nWhere the moon (Soma) shines brightly, and where the sun.1\n\nThe source of all forms of existence"
+    },
+    {
+      "ref": "2.7",
+      "text": "From Him, too, gods are manifoldly produced,\n\nThe celestials (Sadhyas), men, cattle, birds,\n\nThe in-breath and the out-breath ( prandpanau ), rice and\nbarley, austerity (/ apas ),\n\nFaith ( sraddha ), truth, chastity, and the law ( vidhi ).\n\nThe source of the activity of the senses"
+    },
+    {
+      "ref": "2.8",
+      "text": "From Him come forth the seven life-breaths ( prana ),2\nThe seven flames, their fuel, the seven oblations,\n\nThese seven worlds, wherein do move\n\nThe life-breaths that dwell in the secret place [of the heart],\nplaced seven and seven.\n\nThe source of the world— the Inner Soul of things"
+    },
+    {
+      "ref": "2.9",
+      "text": "From Him, the seas and the mountains all.\n\nFrom Him roll rivers of every kind.\n\nAnd from Him all herbs, the essence, too,\n\nWhereby that Inner Soul (antaralman) dwells in beings.\n\nThe pantheistic Person found in the heart"
+    },
+    {
+      "ref": "2.10",
+      "text": "The Person (Purusha) himself is everything here:\n\nWork ( karman ) and austerity {/apas) and Brahma, beyond\ndeath.\n\nHe who knows That, set in the secret place [of the heart] —\nHe here on earth, my friend, rends asunder the knot of ignorance.\n\n1 That is, the world of the fathers, and the world of the gods, respectively ;\ndescribed in Chand. 5. 10.\n\n2 Sankara explains these seven prana as the seven organs of sense in the head\n(i. e. two eyes, two ears, two nostrils, and the mouth). They are compared to\nseven different sacrificial oblations. The enlightenments produced by their activity\nare the flames of the sacrifice ; the objects which supply their action, the fuel.\nEach sense moves in an appropriate world of its own ; but they are all co-ordinated\nby the mind ( manas ), which is located in the heart. These same seven flames are\nprobably referred to in Pra£na 3. 5, end. Compare the seven flames of the regular\nsacrifices named at Mund. I. 2. 4.\n\n37 1\n\nb b 2\n\nSecond Khanda\n\nThe pantheistic Brahma"
+    },
+    {
+      "ref": "3.1",
+      "text": "Manifest, [yet] hidden; called ‘Moving-in-secret’;\n\nThe great abode! Therein is placed that\n\nWhich moves and breathes and winks.\n\nWhat that is, know as Being (sacf) and Non-being ( a-sad ),\nAs the object of desire, higher than understanding,\n\nAs what is the best of creatures !"
+    },
+    {
+      "ref": "3.2",
+      "text": "That which is flaming, which is subtler than the subtle,\n\nOn which the worlds are set, and their inhabitants —\n\nThat is the imperishable Brahma.\n\nIt is life (prana), and It is speech and mind.\n\nThat is the real. It is immortal.\n\nIt is [a mark] to be penetrated. Penetrate It, my friend!\n\nA target to be penetrated by meditation on ‘ Om 1"
+    },
+    {
+      "ref": "3.3",
+      "text": "Taking as a bow the great weapon of the Upanishad,\n\nOne should put upon it an arrow sharpened by meditation.\nStretching it with a thought directed to the essence of That,\nPenetrate 1 that Imperishable as the mark, my friend."
+    },
+    {
+      "ref": "3.4",
+      "text": "The mystic syllable Om (pranava) is the bow. The arrow\nis the soul (d/man).\n\nBrahma is said to be the mark ( laksya ).\n\nBy the undistracted man is It to be penetrated.\n\nOne should come to be in It, as the arrow [in the mark].\n\nThe immortal Soul, the one warp of the world and\nof the individual"
+    },
+    {
+      "ref": "3.5",
+      "text": "He on whom the sky, the earth, and the atmosphere\n\nAre woven, and the mind, together with all the life-breaths\n(prana),\n\nHim alone know as the one Soul (Atman). Other\nWords dismiss. He is the bridge to immortality.\n\n1 With a double meaning, doubtless, in accordance with the great thought of\nmetaphysical knowledge which is here being expounded. Besides being derivable\nfrom \\/vyadk, ‘to penetrate,’ viddhi means also ‘know.’\n\n37®\n\nMUNDAKA UPANISHAD\n\n[-2. 2. I I\n\nThe great Soul to be found in the heart"
+    },
+    {
+      "ref": "3.6",
+      "text": "Where the arteries are brought together\nLike the spokes in the hub of a wheel —\n\nTherein he moves about,\n\nBecoming manifold.\n\nOm ! — Thus meditate upon the Soul (Atman).\n\nSuccess to you in crossing to the farther shore beyond darkness!"
+    },
+    {
+      "ref": "3.7",
+      "text": "He who is all-knowing, all-wise,\n\nWhose is this greatness on the earth —\n\nHe is in the divine Brahma city 1\n\nAnd in the heaven established ! The Soul (Atman) !\nConsisting of mind, leader of the life-breaths and of the\nbody,\n\nHe is established on food, controlling 2 the heart.\n\nBy this knowledge the wise perceive\nThe blissful Immortal that gleams forth.\n\nDeliverance gained through vision of Him"
+    },
+    {
+      "ref": "3.8",
+      "text": "The knot of the heart is loosened,\n\nAll doubts are cut off,\n\nAnd one’s deeds ( karman ) cease\n\nWhen He is seen — both the higher and the lower.\n\nThe self-luminous light of the world"
+    },
+    {
+      "ref": "3.9",
+      "text": "In the highest golden sheath\n\nIs Brahma, without stain, without parts.\n\nBrilliant is It, the light of lights —\n\nThat which knowers of the Soul (Atman) do know !"
+    },
+    {
+      "ref": "3.10",
+      "text": "The sun shines not there, nor the moon and stars;\n\nThese lightnings shine not, much less this [earthly] fire !\n\nAfter Him, as He shines, doth everything shine.\n\nThis whole world is illumined with His light.3\n\nThe omnipresent Brahma"
+    },
+    {
+      "ref": "3.11",
+      "text": "Brahma, indeed, is this immortal. Brahma before,\n\nBrahma behind, to right and to left.\n\nStretched forth below and above,\n\nBrahma, indeed, is this whole world, this widest extent.\n\n1 That is, ‘ in the body,’ as in Chand. 8. 1. 1.\n\n2 From sam-ni-^dha, with the same meaning as in Prasna 3. 4.\n\n3 This stanza = Katha 5. 15 and Svet. 6. 14.\n\n3-i-H\n\nMUNDAKA UPANISHAD\n\nTHIRD MUNDAKA\nThe Way to Brahma\n\nFirst Rwanda\n\nRecognition of the Great Companion, the supreme salvation"
+    },
+    {
+      "ref": "4.1",
+      "text": "Two birds, fast bound companions,\n\nClasp close the self-same tree.\n\nOf these two, the one eats sweet fruit;\n\nThe other looks on without eating.1"
+    },
+    {
+      "ref": "4.2",
+      "text": "On the self-same tree a person, sunken,\n\nGrieves for his impotence, deluded ;\n\nWhen he sees the other, the Lord (is), contented,\n\nAnd his greatness, he becomes freed from sorrow.2"
+    },
+    {
+      "ref": "4.3",
+      "text": "When a seer sees the brilliant\n\nMaker, Lord, Person, the Brahma-source,\n\nThen, being a knower, shaking off good and evil,3\nStainless, he attains supreme identity ( sdmya ) [with Him].\n\nDelight in the Soul, the life of all things"
+    },
+    {
+      "ref": "4.4",
+      "text": "Truly, it is Life (Prana) that shines forth in all things!\nUnderstanding this, one becomes a knower. There is no\n\nsuperior speaker.\n\nHaving delight in the Soul (Atman), having pleasure in the\nSoul,4 doing the rites,\n\nSuch a one is the best of Brahma-knowers.\n\nThe pure Soul obtainable by true methods"
+    },
+    {
+      "ref": "4.5",
+      "text": "This Soul (Atman) is obtainable by truth, by austerity ( tapas ),\nBy proper knowledge (jhana ), by the student’s life of chastity\n\n( brahmacarya ) constantly [practised].\n\nWithin the body, consisting of light, pure is He\nWhom the ascetics (yaii), with imperfections done away,\nbehold.\n\n1 This stanza is quoted from RV. 1. 164. 20 ; repeated at &vet. 4. 6. Compare\nalso Katha 3. 1.\n\n2 Repeated at 5 vet. 4. 7.\n\n3 The first three lines of this stanza are quoted at Maitri 6. 18.\n\n4 As in Chand. 7. 25. 2.\n\nMUNDAKA UPANISHAD\n\n[-3-2.2"
+    },
+    {
+      "ref": "4.6",
+      "text": "Truth alone conquers, not falsehood.\n\nBy truth is laid out the path leading to the gods ( devayana )\nBy which the sages whose desire is satisfied ascend\nTo where is the highest repository of truth.\n\nThe universal inner Soul"
+    },
+    {
+      "ref": "4.7",
+      "text": "Vast, heavenly, of unthinkable form,\n\nAnd more minute than the minute, It shines forth.\n\nIt is farther than the far, yet here near at hand,\n\nSet down in the secret place [of the heart], even here among\nthose who behold [It].\n\nObtainable by contemplation, purified, from sense"
+    },
+    {
+      "ref": "4.8",
+      "text": "Not by sight is It grasped, not even by speech,\n\nNot by any other sense-organs ( dev a ), austerity, or work.\n\nBy the peace of knowledge ( jnana-prasada ), one’s nature\npurified —\n\nIn that way, however, by meditating, one does behold Him\nwho is without parts."
+    },
+    {
+      "ref": "4.9",
+      "text": "That subtile Soul (Atman) is to be known by thought ( cetas )\nWherein the senses [prana) fivefoldly have entered.\n\nThe whole of men’s thinking is interwoven with the senses.\nWhen that is purified, the Soul (Atman) shines forth.\n\nThe acquiring power of thought"
+    },
+    {
+      "ref": "4.10",
+      "text": "Whatever world a man of purified nature makes clear in mind,\nAnd whatever desires he desires for himself —\n\nThat world he wins, those desires too.\n\nTherefore he who is desirous of welfare should praise the\nknower of the Soul (Atman).\n\nSecond Khanda\n\nDesires as the cause of rebirth"
+    },
+    {
+      "ref": "5.1",
+      "text": "He knows that Supreme Brahma-abode,\n\nFounded on which the whole world shines radiantly.\n\nThey who, being without desire, worship the Person (Purusha)\nAnd are wise, pass beyond the seed [snkra) [of rebirth] here."
+    },
+    {
+      "ref": "5.2",
+      "text": "He who in fancy forms desires,\n\nBecause of his desires is born [again] here and there.\n\nBut of him whose desire is satisfied, who is a perfected soul\n\n( krtatman ),\n\nAll desires even here on earth vanish away.\n\nMUNDAKA UPAXISHAD\n\n3- a. 3-]\n\nThe Soul (Atman) known only by revelation to His own elect"
+    },
+    {
+      "ref": "5.3",
+      "text": "This Soul (Atman) is not to be obtained by instruction,\n\nNor by intellect, nor by much learning.\n\nHe is to be obtained only by the one -whom He chooses ;\n\nTo such a one that Soul (Atman) reveals His own person\n( tanum svam )}\n\nCertain indispensable conditions, pre-eminently knowledge"
+    },
+    {
+      "ref": "5.4",
+      "text": "This Soul (Atman) is not to be obtained by one destitute of\n\nfortitude,\n\nNor through heedlessness, nor through a false notion of\nausterity ( lapas ).\n\nBut he who strives by these means, provided he knows —\n\nInto his Brahma-abode this Soul (Atman) enters.\n\nIn tranquil union with the Soul of all is liberation from\ndeath and from all distinctions of individuality"
+    },
+    {
+      "ref": "5.5",
+      "text": "Attaining Him, the seers (rst) who are satisfied with knowledge,\nWho are perfected souls ( krtatman ), from passion free (viia-\n\nraga), tranquil —\n\nAttaining Him who is the universally omnipresent, those wise,\nDevout souls ( yuktdtman ) into the All itself do enter."
+    },
+    {
+      "ref": "5.6",
+      "text": "They who have ascertained the meaning of the Vedanta-\n\nknowledge,\n\nAscetics ( yati ) with natures purified .through the application of\nrenunciation ( samnyasa-yoga ) —\n\nThey in the Brahma-worlds at the end of time\nAre all liberated beyond death."
+    },
+    {
+      "ref": "5.7",
+      "text": "Gone are the fifteen parts according to their station,\n\nEven all the sense-organs ( deva ) in their corresponding\ndivinities !\n\nOne’s deeds ( karmari ) and the self that consists of understand-\ning ( yijnana-maya diman ) —\n\nAll become unified in the supreme Imperishable."
+    },
+    {
+      "ref": "5.8",
+      "text": "As the flowing rivers in the oceap\nDisappear, quitting name and form,3\n\nSo the knower, being liberated from name and form,\n\nGoes unto the heavenly Person, higher than the high.\n\n1 This stanza recurs at Katha 2. 23.\n\n2 That is, of the microcosm back into the macrocosm. Cf. Prasna 6. 5.\n\n3 The Sanskrit idiom for ‘ individuality.’\n\nMUNDAKA UPANISHAD [-3.2.11\n\nThe rewards and the requisite conditions of this knowledge\n\nof Brahma"
+    },
+    {
+      "ref": "5.9",
+      "text": "He, verily, who knows that supreme Brahma, becomes\nvery Brahma.1 In his family no one ignorant of Brahma\narises. He crosses over sorrow. He crosses over sin (pap-man).\nLiberated from the knots of the heart, he becomes immortal."
+    },
+    {
+      "ref": "5.10",
+      "text": "This very [doctrine] has been declared in the verse : —\nThey who do the rites, who are learned in the Vedas, who\n\nare intent on Brahma,\n\nThey who, possessing faith ( sraddhayan ), make oblation of\nthemselves, even of the one seer —\n\nTo them indeed one may declare this knowledge of Brahma,\nWhen, however, the Mundaka-vow 3 has been performed by\nthem according to rule.’"
+    },
+    {
+      "ref": "5.11",
+      "text": "This is the truth. The seer (rsi) Angiras declared it in\nancient time. One who has not performed the vow does not\nread this.\n\nAdoration to the highest seers !\n\nAdoration to the highest seers !\n\n1 In the title to his Latin translation, ‘ Oupnekhat,’ Anquetil Duperron set this\nsentence evidently as the summary of the contents of the Upanishads : ‘ Quisquis\nDeum intelligit, Deus fit,' ‘ whoever knows God, becomes God.’\n\n2 Identified with Prana, ‘Life,’ in Pra£na 2. 11. The reference, then, is\nprobably to the mystical Pranagnihotra sacrifice, in which ‘ breath ’ is symbolically\nsacrificed for an Agnihotra ceremony.\n\n3 Sankara explains this as ‘ carrying fire on the head — a well-known Vedic vow\namong followers of the Atharva-Veda.’ But it is more likely to be * shaving the\nhead,’ as Buddhist monks did later. This preliminary requisite to the study of\nthe Upanishad doubtless gave it the title ‘ The Shaveling Upanishad,’ or ‘ The\nUpanishad of the Tonsured.’"
     }
-  ]
+  ],
+  "scale_readiness": "Expanded canon (61 verses)"
 }
