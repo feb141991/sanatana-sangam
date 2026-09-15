@@ -24,7 +24,8 @@ import {
   Globe,
   Zap,
   MessageCircle,
-  Trophy
+  Trophy,
+  BookOpen
 } from "lucide-react";
 import type { UrgentAlertItem } from "@/app/api/admin/alerts/route";
 import { AdminIcon } from "@/components/admin/AdminIcon";
@@ -497,12 +498,20 @@ export default function AdminOverviewPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Dedicated Calendar Governance Card */}
             <MetricCard
-              href="/admin/observance-content"
+              href="/admin/calendar-evidence"
               icon={Calendar}
-              label="Calendar & Observances"
-              value={calendarFindingsCount > 0 ? `${calendarFindingsCount} Discrepancies` : "Verified Live"}
-              sublabel="Masa, Tithi, & festival dates governance"
+              label="Calendar Evidence"
+              value={calendarFindingsCount > 0 ? `${calendarFindingsCount} Integrity Alerts` : "Review Evidence"}
+              sublabel="Official date evidence and fixture review"
               highlight={calendarFindingsCount > 0}
+            />
+
+            <MetricCard
+              href="/admin/observance-content"
+              icon={BookOpen}
+              label="Observance & Festival Content"
+              value="Editorial Studio"
+              sublabel="Review, approve & publish sacred stories & rituals"
             />
 
             <MetricCard
