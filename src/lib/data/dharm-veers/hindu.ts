@@ -208,23 +208,46 @@ export const HINDU_VEERS: DharmVeer[] = [
     era: 'Satya Yuga',
     eraLocal: 'सत्य युग',
     tradition: 'hindu',
-    region: 'Multan (Ancient)',
-    regionLocal: 'मुल्तान',
+    region: 'Multan (Ancient India)',
+    regionLocal: 'मुल्तान / प्राचीन भारत',
     emoji: '🙏',
-    tagline: 'The demon-prince whose unshakeable faith in Narayana brought God out of a pillar.',
-    taglineLocal: 'दैत्य-राजकुमार जिसका नारायण में अटूट विश्वास भगवान को एक खंभे से बाहर ले आया।',
-    journey: 'Born to the tyrant demon king Hiranyakashipu, Prahlad was devoted to Lord Vishnu from the womb. Despite his father\'s horrific attempts to assassinate him, Prahlad\'s faith never wavered.',
-    journeyLocal: 'हिरण्यकशिपु के यहाँ जन्मे प्रह्लाद भगवान विष्णु के भक्त थे। उनके पिता के अत्याचारों के बावजूद, उनका विश्वास कभी नहीं डगमगाया।',
-    trial: 'Thrown from cliffs, trampled by elephants, and burned in fire, his trial was maintaining pure love for God while facing death from his own father.',
-    trialLocal: 'खाई में फेंके जाने और आग में जलाए जाने पर भी उन्होंने भगवान के लिए अपना शुद्ध प्रेम बनाए रखा।',
-    teaching: 'God is everywhere, in the pillar and in the rustling leaf.',
-    teachingLocal: 'भगवान हर जगह है, खंभे में भी और सरसराते पत्ते में भी।',
-    moral: 'Faith is the ultimate shield against tyranny.',
-    moralLocal: 'विश्वास अत्याचार के खिलाफ अंतिम ढाल है।',
-    source: 'Bhagavata Purana',
+    tagline: 'The child-saint whose unshakeable faith and pure vision of the Divine in all existence shattered demonic tyranny and invoked Lord Narasimha.',
+    taglineLocal: 'बाल-संत जिनकी अटूट भक्ति और सर्वत्र ईश्वर-दर्शन ने दानवी अहंकार को तोड़ा और भगवान नृसिंह को प्रकट किया।',
+    journey: 'Prahlada was born in the golden age of Satya Yuga into the fierce Asura dynasty as the son of the cosmic tyrant Hiranyakashipu and Queen Kayadhu. While his father performed severe penances to extract invulnerability boons from Brahma, celestial conflicts erupted, and the pregnant Kayadhu was given refuge in the hermitage of the divine sage Narada. Within the womb, the unborn child listened to Narada’s continuous discourses on supreme metaphysics, the vanity of worldly dominion, and unyielding surrender to Lord Narayana. Consequently, Prahlada emerged into the earthly realm not with the predatory arrogance of a demon prince, but as a paramahamsa—a realized soul anchored in unblemished devotion from his first breath.\n\nAs he grew, Hiranyakashipu placed Prahlada under the tutelage of Shanda and Amarka, the royal preceptors, commanding them to instruct the heir in worldly diplomacy, military coercion, and ruthless statecraft. Yet whenever summoned before the imperial court and asked what he had learned of greatest value, the young prince calmly declared that true wisdom consists in abandoning the illusion of ego and taking solitary refuge in the imperishable Lord of the universe. Frustrated by the preceptors\' failure, Hiranyakashipu demanded to know who had subverted his son\'s mind. Prahlada answered with gentle fearlessness that Narayana is the teacher of all creation, dwelling equally in the heart of the oppressor and the oppressed. In secret moments between school lessons, Prahlada gathered the sons of the demons, singing the holy names and explaining that youth, wealth, and empires are transient as ocean foam, while divine love alone rescues the soul from the sea of mortal sorrow.',
+    journeyLocal: 'सत्य युग में भक्त प्रह्लाद का जन्म दैत्यराज हिरण्यकशिपु और महारानी कयाधु के यहाँ असुर कुल में हुआ था। जब उनके पिता ब्रह्मा जी से अजेयता का वरदान प्राप्त करने के लिए कठोर तपस्या में लीन थे, तब देवराज इंद्र ने दैत्य-राजधानी पर आक्रमण कर दिया। देवर्षि नारद ने गर्भवती कयाधु की रक्षा की और उन्हें अपने आश्रम में आश्रय दिया। आश्रम में रहते हुए, माता के गर्भ में स्थित बालक प्रह्लाद ने देवर्षि नारद के मुख से भगवान नारायण की महिमा, आत्म-ज्ञान और नश्वर संसार की असारता का दिव्य उपदेश सुना। इसी कारण, असुर कुल में जन्म लेने के उपरांत भी प्रह्लाद जन्मजात परमहंस और भगवान विष्णु के अनन्य प्रेमी बने।\n\nजब प्रह्लाद बड़े हुए, तो हिरण्यकशिपु ने उन्हें दैत्य-गुरु शुक्राचार्य के पुत्रों, शंड और अमर्क के पास राजनीति, कूटनीति और असुर-धर्म की शिक्षा लेने भेजा। किंतु जब भी राजा अपने पुत्र को गोद में बिठाकर पूछते कि तुमने अब तक क्या सबसे उत्तम ज्ञान सीखा, तो प्रह्लाद निर्भय होकर कहते कि मिथ्या अहंकार और सांसारिक आसक्तियों को त्यागकर सर्वव्यापी भगवान नारायण की शरण लेना ही जीवन का परम कल्याण है। जब हिरण्यकशिपु ने क्रोधित होकर पूछा कि तुम्हें यह शिक्षा किसने दी, तो प्रह्लाद ने शांत भाव से उत्तर दिया कि भगवान विष्णु ही संपूर्ण जगत के गुरु हैं, जो मित्र और शत्रु दोनों के हृदय में समान रूप से वास करते हैं। पाठशाला में जब शिक्षक बाहर जाते, तो प्रह्लाद साथी असुर बालकों को एकत्रित कर संकीर्तन करते और समझाते कि मानव जन्म दुर्लभ है, यौवन और संपदा जल के बुलबुले के समान हैं, इसलिए बचपन से ही श्रीहरि की भक्ति में रम जाना चाहिए।',
+    trial: 'Enraged that his own flesh dared to worship his eternal foe, Hiranyakashipu ordered the child put to death through escalating cruelties. Executioners struck him with razor-sharp celestial weapons, yet as Prahlada remembered Vishnu residing within the metal and his own flesh, the blades splintered harmlessly. Deadly venomous serpents, including Takshaka and Kuhaka, were unleashed to bite him, but their fangs fractured against his unyielding skin. Massive imperial elephants were ordered to gore and trample the boy, but their tusks buckled against his chest as Prahlada stood lost in serene contemplation of Janarddana. The king had him bound in iron chains, thrown from dizzying mountain precipices, cast into boiling oil cauldrons, fed lethal poisons, and sealed beneath crushing boulders in the depths of the ocean, yet the waters parted and the rocks floated aside as his devotion dissolved all physical peril.\n\nThe supreme trial arrived when the king’s sorceress sister, Holika, who possessed a celestial shawl impervious to flames, sat with Prahlada upon a blazing inferno to burn him alive. Through divine justice, a sudden wind swept the shawl from Holika, consuming her in the fire while leaving Prahlada unharmed, amidst fragrant showers of celestial blossoms. Finally, roaring in fury before his entire court, Hiranyakashipu pointed his sword at an ornate stone pillar, demanding: ‘If your Vishnu is everywhere, is he present in this stone?’ Striking the pillar with his mace, the stone shattered with a cosmic roar, and Lord Narasimha—the half-man, half-lion manifestation—burst forth at twilight, tearing the tyrant upon the palace threshold to preserve cosmic balance and vindicate his devotee’s unshakable trust.',
+    trialLocal: 'अपने ही पुत्र द्वारा परम शत्रु विष्णु की आराधना से कुपित होकर हिरण्यकशिपु ने प्रह्लाद की हत्या के अनेक क्रूर षड्यंत्र रचे। सैनिकों ने उन पर तीक्ष्ण त्रिशूलों और खड्गों से प्रहार किया, किंतु प्रह्लाद ने जब सर्वत्र नारायण को देखा, तो अस्त्र-शस्त्र तिनके के समान टूट गए। तक्षक और कुहक जैसे काल-सर्पों से उन्हें डसवाया गया, पर विषैले नागों के दांत कुंद हो गए। मदमस्त दिग्गजों को उन्हें कुचलने के लिए छोड़ा गया, पर हाथियों के दांत प्रह्लाद की छाती से टकराकर टूट गए। उन्हें ऊंचे पर्वतों से नीचे गहरी खाइयों में फेंका गया, खौलते तेल के कड़ाहों में डाला गया, हलाहल विष पिलाया गया, और भारी शिलाओं से बांधकर अथाह समुद्र में डुबो दिया गया; किंतु हर बार भगवान के स्मरण मात्र से समुद्र शांत हो गया और शिलाएं तैरने लगीं।\n\nचरम परीक्षा तब आई जब हिरण्यकशिपु की बहन होलिका, जिसे अग्नि से न जलने का वरदान प्राप्त था, अपनी दिव्य ओढ़नी ओढ़कर प्रह्लाद को गोद में लेकर धधकती चिता में बैठ गई। ईश्वर की लीला से तीव्र वायु चली, वह रक्षा-ओढ़नी होलिका के तन से उड़कर प्रह्लाद पर आ गई; होलिका भस्म हो गई और प्रह्लाद नारायण का नाम जपते हुए पुष्पों की भांति अग्नि से निष्कलंक बाहर निकल आए। अंततः, क्रोधोन्मत्त होकर हिरण्यकशिपु ने राजसभा के एक विशाल पाषाण-स्तंभ की ओर संकेत करते हुए ललकारा: \'यदि तेरा विष्णु सर्वत्र है, तो क्या इस खंभे में भी है?\' जैसे ही उसने अपनी गदा से खंभे पर प्रहार किया, एक भीषण गर्जना के साथ स्तंभ को चीरते हुए संध्याकाल में नर-सिंह रूप में भगवान प्रकट हुए और राजमहल की देहरी पर उस अत्याचारी का वध कर अपने नन्हे भक्त के विश्वास को अमर कर दिया।',
+    teaching: 'Prahlada taught the sublime doctrine of omnipresence and Sharanagati (unconditional surrender). The Divine is not distant or confined to ethereal realms; Narayana permeates every particle of existence, living equally within the stone pillar, the executioner\'s sword, and the devotee’s heart. Hatred and tyranny are self-limiting illusions born of ego, whereas steady devotion dissolves fear, transcending all physical danger. Prahlada revealed that true spirituality demands moral courage: the willingness to stand alone against overwhelming worldly authority with gentleness, compassion, and unwavering fidelity to truth.',
+    teachingLocal: 'भक्त प्रह्लाद ने जगत को सर्वव्यापकता और शरणागति का अनुपम दर्शन सिखाया। ईश्वर किसी सुदूर लोक में नहीं, अपितु सृष्टि के कण-कण में—पाषाण स्तंभ, तलवार की धार, और भक्त के हृदय में समान रूप से विराजमान हैं। अहंकार और द्वेष नश्वर हैं, जबकि निष्काम भक्ति और प्रेम समस्त सांसारिक भयों को भस्म कर देते हैं। प्रह्लाद ने दिखाया कि धर्म का मार्ग किसी बाह्य सत्ता के भय से नहीं, बल्कि आंतरिक सत्य और करुणा के अटूट विश्वास से प्रशस्त होता है।',
+    moral: 'No worldly tyranny, however invincible it appears, can overcome a soul anchored in righteous truth and unshakeable faith. When one sees the divine presence in all beings, fear vanishes and the cosmic order itself moves to protect the righteous seeker.',
+    moralLocal: 'जब मनुष्य का हृदय सत्य और ईश्वरीय चेतना में स्थिर होता है, तो संसार का कोई भी क्रूर अत्याचार उसका बाल भी बांका नहीं कर सकता। धर्म की रक्षा करने वाले की रक्षा स्वयं संपूर्ण ब्रह्मांडीय शक्ति करती है।',
+    legacy: 'Prahlada remains the supreme exemplar of Navadha Bhakti (the ninefold devotional path) and the immortal archetype of righteous courage in the face of family tyranny. His steadfastness directly inspired the emergence of the Narasimha Avatara and the celebratory bonfire of the festival of Holi, marking the triumph of faith over cruelty. Succeeded to the throne of the Daityas, Prahlada governed as a saintly king, establishing justice and demonstrating that spiritual nobility is determined by virtue and devotion rather than lineage or birth.',
+    legacyLocal: 'भक्त प्रह्लाद नवधा भक्ति के सर्वोपरि आदर्श और विपरीत परिस्थितियों में अडिग आस्था के शाश्वत प्रतीक हैं। उनकी इस पवित्र कथा से ही भगवान नृसिंह का प्राकट्य हुआ और बुराई पर अच्छाई की विजय के रूप में पावन \'होली\' का पर्व प्रारंभ हुआ। हिरण्यकशिपु के उद्धार के पश्चात वे दैत्यों के धर्मात्मा सम्राट बने और यह सिद्ध किया कि मनुष्य कुल या जन्म से नहीं, बल्कि अपने आचरण, शील और भक्ति से महान बनता है।',
+    source: 'Srimad Bhagavata Purana (Skandha 7, Ch. 4–10), Vishnu Purana (Book I, Ch. 17–20)',
+    sourceLocal: 'श्रीमद्भागवत महापुराण (सप्तम स्कंध, अध्याय ४-१०), विष्णु पुराण (प्रथम अंश, अध्याय १७-२०)',
+    sourceCitations: [
+      {
+        sourceName: 'Srimad Bhagavata Purana',
+        sourceRef: 'Skandha 7, Chapters 4–10 (Prahlada Charitra & Narasimha Avatara)',
+        tier: 1
+      },
+      {
+        sourceName: 'Vishnu Purana',
+        sourceRef: 'Book I, Chapters 17–20 (Legend of Prahlada, trans. H. H. Wilson)',
+        tier: 1
+      }
+    ],
+    quote: {
+      text: 'Daityas, as truly as Vishnu is present in your weapons and in my body, so truly shall those weapons fail to harm me.',
+      attribution: 'Bhakta Prahlad — Vishnu Purana 1.17'
+    },
+    quoteLocal: {
+      text: 'यथा च सर्वभूतेषु सर्वव्यापी जगन्मयः। तथा मे दनुजाः सर्वे शस्त्राण्यायान्तु संक्षयम्॥',
+      attribution: 'भक्त प्रह्लाद (विष्णु पुराण १.१७)'
+    },
     sourceClass: 'canonical',
     reviewStatus: 'approved',
-    tags: ['bhakti', 'faith', 'vishnu']
+    tags: ['bhakti', 'faith', 'vishnu', 'avatar', 'narasimha']
   },
   {
     id: 'dhruv',
