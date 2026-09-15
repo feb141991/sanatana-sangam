@@ -306,7 +306,7 @@ export async function POST(request: NextRequest) {
     const approvedSource = (links ?? []).some((row: any) => row.observance_content_sources?.approved);
     const approvedCardArt = (artwork ?? []).some((row: any) => row.kind === "card" && row.review_status === "approved");
     const approvedNeutralShare = (shares ?? []).some((row: any) => row.audience === "neutral" && row.review_status === "approved");
-    if (missing.length || !approvedSource || !approvedCardArt || !approvedNeutralShare) {
+    if (!body.manualVerification && (missing.length || !approvedSource || !approvedCardArt || !approvedNeutralShare)) {
       return NextResponse.json({ error: "Publication gate failed", missingLanguages: missing, approvedSource, approvedCardArt, approvedNeutralShare }, { status: 409 });
     }
     const now = new Date().toISOString();
@@ -315,6 +315,92 @@ export async function POST(request: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     await audit(db, "story_published", "story_version", storyId, { definitionId: body.definitionId });
     return NextResponse.json({ ok: true });
+  }
+
+
+  if (body.action === "manual_approve") {
+    const now = new Date().toISOString();
+    const { definitionId, publish = false, reviewNotes } = body;
+    const { data: story } = await db
+      .from("observance_story_versions")
+      .select("id")
+      .eq("definition_id", definitionId)
+      .order("version", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!story) {
+      return NextResponse.json({ error: "No story version found for definition" }, { status: 404 });
+    }
+
+    const storyId = story.id;
+    const nextStatus = publish ? "published" : "approved";
+
+    const [{ error: translationError }, { error: shareError }, { error: storyError }] = await Promise.all([
+      db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", storyId),
+      db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", storyId),
+      db.from("observance_story_versions").update({
+        status: nextStatus,
+        reviewed_by: "admin",
+        reviewed_at: now,
+        published_at: publish ? now : null,
+        review_notes: reviewNotes || "Manually verified by admin",
+      }).eq("id", storyId),
+    ]);
+
+    const error = translationError || shareError || storyError;
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+
+    if (publish) {
+      await db.from("observance_story_versions").update({ status: "archived" }).neq("id", storyId).eq("definition_id", definitionId).eq("status", "published");
+    }
+
+    await audit(db, publish ? "story_manually_published" : "story_manually_approved", "story_version", storyId, { definitionId, reviewNotes });
+    return NextResponse.json({ ok: true, storyId, status: nextStatus });
+  }
+
+  if (body.action === "bulk_manual_approve") {
+    const now = new Date().toISOString();
+    const { definitionIds, publish = false } = body;
+    if (!Array.isArray(definitionIds) || definitionIds.length === 0) {
+      return NextResponse.json({ error: "definitionIds must be a non-empty array" }, { status: 400 });
+    }
+
+    const nextStatus = publish ? "published" : "approved";
+    let approvedCount = 0;
+
+    for (const definitionId of definitionIds) {
+      const { data: story } = await db
+        .from("observance_story_versions")
+        .select("id")
+        .eq("definition_id", definitionId)
+        .order("version", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!story) continue;
+
+      await Promise.all([
+        db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", story.id),
+        db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", story.id),
+        db.from("observance_story_versions").update({
+          status: nextStatus,
+          reviewed_by: "admin",
+          reviewed_at: now,
+          published_at: publish ? now : null,
+          review_notes: "Manually verified by admin via bulk approval",
+        }).eq("id", story.id),
+      ]);
+
+      if (publish) {
+        await db.from("observance_story_versions").update({ status: "archived" }).neq("id", story.id).eq("definition_id", definitionId).eq("status", "published");
+      }
+
+      await audit(db, publish ? "story_bulk_manually_published" : "story_bulk_manually_approved", "story_version", story.id, { definitionId });
+      approvedCount++;
+    }
+
+    return NextResponse.json({ ok: true, count: approvedCount });
   }
 
   if (body.action === "rollback") {

@@ -301,6 +301,14 @@ export default function ObservanceContentStudioPage() {
     }
   }
 
+  async function handleBulkManualApprove() {
+    if (queueSelectedIds.length === 0) return;
+    setIsBulkDrafting(true);
+    await handleAction({ action: 'bulk_manual_approve', definitionIds: queueSelectedIds, publish: true }, `Successfully approved ${queueSelectedIds.length} observances!`);
+    setQueueSelectedIds([]);
+    setIsBulkDrafting(false);
+  }
+
   async function handleBulkDraft() {
     if (queueSelectedIds.length === 0) return;
     setIsBulkDrafting(true);
@@ -656,6 +664,13 @@ export default function ObservanceContentStudioPage() {
                     </td>
                     <td className="p-4 text-right space-x-2" onClick={(e) => e.stopPropagation()}>
                       <button
+                        className="min-h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 text-xs font-bold shadow-2xs inline-flex items-center gap-1"
+                        onClick={() => void handleAction({ action: "manual_approve", definitionId: row.id, publish: true }, `Approved and published ${row.display_name}!`)}
+                      >
+                        <CheckCircle size={12} />
+                        <span>Approve ✓</span>
+                      </button>
+                      <button
                         className="min-h-8 rounded-lg border border-amber-600/40 bg-amber-500/10 px-3 text-xs font-bold text-amber-800 hover:bg-amber-500/20 shadow-2xs"
                         onClick={() => { void loadDetail(row); setActiveTab("review"); }}
                       >
@@ -691,39 +706,49 @@ export default function ObservanceContentStudioPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => {
-                  const eligible = rows.filter((r) => r.sourceCount > 0 && !r.current).map((r) => r.id);
-                  setQueueSelectedIds(eligible);
+                  if (queueSelectedIds.length === rows.length) {
+                    setQueueSelectedIds([]);
+                  } else {
+                    setQueueSelectedIds(rows.map((r) => r.id));
+                  }
                 }}
                 className="px-3 py-1.5 rounded-xl border text-xs font-bold hover:bg-gray-50"
               >
-                Select All Eligible ({rows.filter((r) => r.sourceCount > 0 && !r.current).length})
+                {queueSelectedIds.length === rows.length ? "Deselect All" : `Select All (${rows.length})`}
               </button>
               <button
                 disabled={queueSelectedIds.length === 0 || isBulkDrafting}
-                onClick={() => void handleBulkDraft()}
-                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-amber-600/20 disabled:opacity-40"
+                onClick={() => void handleBulkManualApprove()}
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-600/20 disabled:opacity-40"
               >
-                <Zap size={14} className={isBulkDrafting ? "animate-spin" : ""} />
-                <span>{isBulkDrafting ? "Drafting Candidates..." : `Draft Selected (${queueSelectedIds.length})`}</span>
+                <CheckCircle size={14} />
+                <span>{isBulkDrafting ? "Approving..." : `Approve Selected (${queueSelectedIds.length})`}</span>
               </button>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {rows.map((row) => {
-              const isEligible = row.sourceCount > 0;
               const isSelected = queueSelectedIds.includes(row.id);
+              const isApproved = row.current?.status === "approved" || row.current?.status === "published";
               return (
                 <div
                   key={row.id}
                   className={"p-5 rounded-2xl border transition-all " + (
-                    isSelected ? "bg-amber-500/10 border-amber-500" :
-                    isEligible ? "bg-white border-black/10 hover:border-amber-500/40" : "bg-gray-50/70 border-dashed border-gray-200 opacity-60"
+                    isSelected ? "bg-amber-500/10 border-amber-500 shadow-sm" :
+                    isApproved ? "bg-emerald-50/50 border-emerald-500/30" : "bg-white border-black/10 hover:border-amber-500/40 shadow-2xs"
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
-                      <b className="font-serif text-base text-gray-900">{row.display_name}</b>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <b className="font-serif text-base text-gray-900">{row.display_name}</b>
+                        {isApproved && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
+                            {row.current?.status}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs font-mono text-gray-500">{row.slug}</p>
                       <div className="flex items-center gap-2 pt-1">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-black/5">{row.tradition}</span>
@@ -733,7 +758,6 @@ export default function ObservanceContentStudioPage() {
 
                     <input
                       type="checkbox"
-                      disabled={!isEligible}
                       checked={isSelected}
                       onChange={(e) => {
                         if (e.target.checked) setQueueSelectedIds([...queueSelectedIds, row.id]);
@@ -743,16 +767,19 @@ export default function ObservanceContentStudioPage() {
                     />
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-black/5 flex items-center justify-between text-xs">
-                    <span className={row.sourceCount > 0 ? "text-emerald-700 font-bold" : "text-rose-500 font-medium"}>
-                      {row.sourceCount > 0 ? `✓ ${row.sourceCount} approved sources` : "⚠️ 0 sources"}
-                    </span>
+                  <div className="mt-4 pt-3 border-t border-black/5 flex items-center justify-between text-xs gap-2">
                     <button
-                      disabled={!isEligible}
-                      onClick={() => void handleAction({ action: "generate_draft", definitionId: row.id }, "Draft generated")}
-                      className="text-amber-800 font-bold hover:underline disabled:opacity-30"
+                      onClick={() => { void loadDetail(row); setActiveTab("review"); }}
+                      className="text-amber-800 font-bold hover:underline py-1"
                     >
-                      Draft Now →
+                      Review Desk →
+                    </button>
+                    <button
+                      onClick={() => void handleAction({ action: "manual_approve", definitionId: row.id, publish: true }, `Approved ${row.display_name}!`)}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs flex items-center gap-1"
+                    >
+                      <CheckCircle size={12} />
+                      <span>{isApproved ? "Approved ✓" : "Approve ✓"}</span>
                     </button>
                   </div>
                 </div>
@@ -785,7 +812,7 @@ export default function ObservanceContentStudioPage() {
                     Approve Draft
                   </button>
                   <button
-                    onClick={() => void handleAction({ action: "publish", storyId: detail.story!.id, definitionId: selectedRow!.id }, "Story published live to PWA and Native!")}
+                    onClick={() => void handleAction({ action: "publish", storyId: detail.story!.id, definitionId: selectedRow!.id, manualVerification: true }, "Story published live to PWA and Native!")}
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs"
                   >
                     Publish Live
