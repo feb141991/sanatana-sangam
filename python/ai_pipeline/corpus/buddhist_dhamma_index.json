@@ -2,7 +2,9 @@
   "metadata": {
     "manifest_count": 1,
     "document_count": 109,
-    "scale_readiness": "Production-scale"
+    "scale_readiness": "Production-scale",
+    "rights_status": "restricted_or_pending",
+    "review_status": "needs_source_audit"
   },
   "idf": {
     "even": 3.6210388241125804,
