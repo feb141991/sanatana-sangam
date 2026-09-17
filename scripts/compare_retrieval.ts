@@ -47,13 +47,15 @@ async function main() {
 
   let md = '# Bhagavad Gita Retrieval Comparison Report\n\n';
   md += 'This report compares the traditional **Heuristic Retriever**, the sparse TF-IDF **Embedding-Backed Retriever**, and the new **Dense (real neural embedding) Retriever** on the 6 Gita eval cases.\n\n';
-  md += '> **Caveat on the Dense column below**: these 6 cases construct the query as a bare reference string (`Bhagavad Gita 2.47`, no verse content). That is a fair test for the *sparse* retriever, whose doc-time index deliberately repeats the reference tokens 10x specifically so a bare-reference query matches by shared vocabulary. It is **not** a fair test of dense retrieval quality: a sentence embedding model has no way to distinguish "2.47" from "2.20" from a bare number with no semantic content, so the Dense column below tends to converge on whichever verses happen to be generically closest to "a Bhagavad Gita verse reference" (observed: chapter 4 verses 20-22 dominate almost every row here) rather than the cited verse. This is expected, not a bug -- exact-citation lookup should stay on direct manifest/ID lookup (already available via the heuristic retriever) regardless of whether dense embeddings ship; dense embeddings target natural-language queries, tested properly in the Paraphrase Queries section below.\n\n';
+  md += '> **Note on the Dense column below**: these 6 cases construct the query as a bare reference string (`Bhagavad Gita 2.47`, no verse content). Bare numeric references carry almost no semantic content, so a raw dense-embedding cosine match cannot reliably distinguish "2.47" from "2.20" (confirmed during plan step 5 cutover testing -- even richly-worded citation queries like "explain what Gita 2.47 teaches about detachment" missed the cited verse under a naive dense-only search). `PramanaDenseEmbeddingRetriever` (retrieval.ts) now detects this pattern up front and delegates straight to the heuristic/manifest retriever instead of running a dense query -- which is why the Dense column below matches the Heuristic column exactly, at heuristic latency. Dense semantic matching is tested properly, without that delegation, in the Paraphrase Queries section below.\n\n';
   md += '| Case ID | Query Text | Heuristic Retrieved Chunks (Base Score) | Sparse Retrieved Chunks (Cosine) | Dense Retrieved Chunks (Cosine) | Latency (Heur / Sparse / Dense) |\n';
   md += '| :--- | :--- | :--- | :--- | :--- | :--- |\n';
 
   console.log('================================================================================');
   console.log('📊 RETRIEVAL ADAPTER COMPARISON REPORT: HEURISTIC VS EMBEDDING-BACKED');
-  console.log('   (Dense column below is a bare-reference query, not a fair dense test -- see Paraphrase Queries section)');
+  console.log('   (Dense column below: PramanaDenseEmbeddingRetriever detects the bare chapter.verse');
+  console.log('    reference in these 6 queries and delegates to the heuristic retriever -- see');
+  console.log('    Paraphrase Queries section for an actual test of dense semantic matching)');
   console.log('================================================================================\n');
 
   for (const c of cases) {
@@ -141,6 +143,7 @@ async function main() {
   md += '1. **Exact Target Hit (exact-reference cases)**: The sparse embedding-backed retriever matched the exact target verse as the top-1 result across the 6 eval queries above, which construct their query text directly from the chunk reference (e.g. `Bhagavad Gita 2.47`) -- an easy case for TF-IDF, since the reference tokens themselves are highly discriminating.\n';
   md += '2. **Nearby Verse Relevance (Neighbor Augmentation)**: For queries matching a primary scripture verse, the retriever automatically augmented the context with the immediate preceding and succeeding verses of the same chapter.\n';
   md += '3. **Paraphrase queries**: see the table above for per-case rank/score of the expected verse under both retrievers -- this is where sparse TF-IDF and dense embeddings are expected to diverge, since paraphrases by design share little vocabulary with the target verse.\n';
+  md += '4. **Citation-query delegation**: as of plan step 5\'s cutover, the Dense retriever detects a bare chapter.verse reference and delegates to the heuristic/manifest retriever rather than running a dense query against it -- exact-citation lookup is a task dense embeddings cannot do reliably (see the note above the table), so it deliberately does not try.\n';
 
   fs.writeFileSync(path.join(process.cwd(), 'gita_retrieval_comparison.md'), md, 'utf-8');
   console.log('================================================================================');

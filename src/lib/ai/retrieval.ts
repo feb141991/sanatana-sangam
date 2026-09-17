@@ -725,9 +725,15 @@ export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<Ret
   }
 }
 
-// Register the four multi-corpus retrievers
-PramanaRetrieverSelector.register('pathshala_gita', new PramanaGitaEmbeddingRetriever(gitaManifestRetriever));
-PramanaRetrieverSelector.register('pathshala_upanishads', new PramanaUpanishadsEmbeddingRetriever(upanishadsManifestRetriever));
+// pathshala_gita / pathshala_upanishads are registered further down (after
+// PramanaDenseEmbeddingRetriever is defined) with the dense retrievers -- see
+// the cutover note there. PramanaGitaEmbeddingRetriever and
+// PramanaUpanishadsEmbeddingRetriever (the sparse TF-IDF retrievers, defined
+// above) are deliberately left unregistered but present: an instant one-line
+// rollback (swap the two `new PramanaDenseEmbeddingRetriever(...)` calls below
+// back to `new PramanaGitaEmbeddingRetriever(gitaManifestRetriever)` /
+// `new PramanaUpanishadsEmbeddingRetriever(upanishadsManifestRetriever)`) if
+// the dense path misbehaves in production.
 
 /**
  * Real dense-embedding retriever (query-time embedQuery(), not TF-IDF),
@@ -772,15 +778,32 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     return dot; // both vectors are already L2-normalized at embed time
   }
 
-  async retrieve(query: PramanaRetrievalQuery): Promise<PramanaRetrievalResult<RetrievalChunkMetadata>> {
-    const index = this.loadIndex();
-    if (!index) {
-      return this.fallbackRetriever.retrieve(query);
-    }
+  // Matches chat-grounding.ts's own hasVersePattern check. An explicit chapter.verse
+  // reference ("Gita 2.47", "what does verse 18.66 mean") is not a task dense
+  // embeddings can do: a chapter/verse number carries almost no semantic content, so
+  // the model can't distinguish "2.47" from "2.20" and returns generically-similar
+  // unrelated verses instead -- confirmed by direct testing at cutover time (plan
+  // step 5): even richly-worded citation queries like "Can you explain what Bhagavad
+  // Gita 2.47 teaches about detachment from results?" missed the cited verse
+  // entirely. The manifest/heuristic retriever already solves exact-citation lookup
+  // precisely via direct reference-segment matching (see parseReferenceSegments),
+  // robust to whatever prose surrounds the reference -- route there instead of
+  // running a dense query that's guaranteed to be wrong.
+  private static readonly VERSE_REFERENCE_PATTERN = /\b\d+(?:[.:]\d+)+\b/;
 
+  async retrieve(query: PramanaRetrievalQuery): Promise<PramanaRetrievalResult<RetrievalChunkMetadata>> {
     const queryText = query.text.trim();
     if (!queryText) {
       return { documents: [] };
+    }
+
+    if (PramanaDenseEmbeddingRetriever.VERSE_REFERENCE_PATTERN.test(queryText)) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    const index = this.loadIndex();
+    if (!index) {
+      return this.fallbackRetriever.retrieve(query);
     }
 
     const { embedQuery } = await import('./embedding-model');
@@ -879,18 +902,30 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
   }
 }
 
-PramanaRetrieverSelector.register('pathshala_gita_dense', new PramanaDenseEmbeddingRetriever(
+const gitaDenseRetriever = new PramanaDenseEmbeddingRetriever(
   gitaManifestRetriever,
   path.join(process.cwd(), 'python/ai_pipeline/corpus/gita_index_dense.json'),
   'Bhagavad Gita',
   'Sanatana Dharma'
-));
-PramanaRetrieverSelector.register('pathshala_upanishads_dense', new PramanaDenseEmbeddingRetriever(
+);
+const upanishadsDenseRetriever = new PramanaDenseEmbeddingRetriever(
   upanishadsManifestRetriever,
   path.join(process.cwd(), 'python/ai_pipeline/corpus/upanishads_index_dense.json'),
   'Upanishads',
   'Sanatana Dharma'
-));
+);
+
+// Cutover (plan step 5): pathshala_gita/pathshala_upanishads, the corpus keys every
+// live caller (chat grounding, Pathshala explain) actually resolves through
+// SimpleCorpusSelector/explicit corpus filters, now serve dense retrieval. Verified
+// first via scripts/compare_retrieval.ts and scripts/compare_upanishads_retrieval.ts
+// (step 3) and re-tuned thresholds against real score data (step 4). The
+// `_dense`-suffixed keys stay registered too, so both comparison scripts keep working
+// unchanged for future regression checks.
+PramanaRetrieverSelector.register('pathshala_gita', gitaDenseRetriever);
+PramanaRetrieverSelector.register('pathshala_upanishads', upanishadsDenseRetriever);
+PramanaRetrieverSelector.register('pathshala_gita_dense', gitaDenseRetriever);
+PramanaRetrieverSelector.register('pathshala_upanishads_dense', upanishadsDenseRetriever);
 
 PramanaRetrieverSelector.register('bhakti_katha', new PramanaManifestRetriever({
   prefix: 'katha_chapter',

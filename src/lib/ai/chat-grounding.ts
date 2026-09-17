@@ -383,27 +383,28 @@ export async function retrieveDharmaChatGrounding(input: {
     }
 
     const topScore = docs[0]?.score ?? 0;
-    // Relevance check: verse pattern requires 0.15+, topical text query requires 0.05+
+    // Relevance check: verse pattern requires 0.15+, topical text query requires
+    // 0.05+ for the still-sparse corpora, 0.3+ for the now dense-routed ones.
     //
-    // These values are tuned for the sparse TF-IDF score distribution that every
-    // corpus (Gita, Upanishads, Gurbani, Buddhist, Jain, etc.) currently returns
-    // through retrievePathshalaContext -- do NOT carry them over unchanged once a
-    // corpus is cut over to PramanaDenseEmbeddingRetriever (retrieval.ts). Dense
-    // cosine scores run on a fundamentally different scale: real-data analysis
-    // (plan step 4) found off-topic negative-control queries ("capital of
-    // France", "chocolate cake recipe") scoring up to ~0.21 on pure noise against
-    // both the dense Gita and Upanishads indexes -- well above this 0.04 sparse
-    // floor. A dense-routed corpus needs its own topical-query gate, recommended
-    // around >=0.3 (comfortably above the ~0.21 noise ceiling observed, with a
-    // deliberate lean toward false-negative/ungrounded-fallback over false-
-    // positive grounding, since this gate is what allows citing scripture at
-    // all). hasVersePattern queries need separate treatment entirely: a bare
-    // verse reference ("Gita 2.47") carries almost no semantic content, so dense
-    // retrieval cannot judge citation validity the way sparse's reference-token
-    // matching does -- that path should route to direct manifest/ID lookup
-    // instead of this score gate. Not yet applied: no corpus is dense-routed here
-    // today, so changing this now would misconfigure every corpus still on sparse.
-    const isRelevant = hasVersePattern ? topScore >= 0.15 : topScore >= 0.04;
+    // pathshala_gita/pathshala_upanishads were cut over to PramanaDenseEmbeddingRetriever
+    // (retrieval.ts, plan step 5); every other corpus (Gurbani, Buddhist, Jain, etc.)
+    // still returns sparse TF-IDF scores through retrievePathshalaContext, so the
+    // 0.04 floor stays correct for them and must not be raised. Dense cosine scores
+    // run on a fundamentally different scale: real-data analysis (plan step 4) found
+    // off-topic negative-control queries ("capital of France", "chocolate cake
+    // recipe") scoring up to ~0.21 on pure noise against both dense indexes -- well
+    // above the sparse-tuned 0.04 floor, which would let noise through ungated on a
+    // dense-routed corpus. 0.3 sits with a deliberate lean toward false-negative/
+    // ungrounded-fallback over false-positive grounding, since this gate is what
+    // allows citing scripture at all. hasVersePattern queries need no branching here:
+    // PramanaDenseEmbeddingRetriever itself now detects a bare chapter.verse
+    // reference and routes to the manifest/heuristic retriever before ever running a
+    // dense query, so hasVersePattern's topScore is a manifest-lookup score (0.6-1.0
+    // range) regardless of which corpus -- the existing 0.15 floor already covers it.
+    const isDenseRoutedCorpus = targetCorpus === 'pathshala_gita' || targetCorpus === 'pathshala_upanishads';
+    const isRelevant = hasVersePattern
+      ? topScore >= 0.15
+      : topScore >= (isDenseRoutedCorpus ? 0.3 : 0.04);
 
     if (!isRelevant) {
       return { isGrounded: false, corpus: targetCorpus, documents: [], groundingPromptText: null };

@@ -44,15 +44,25 @@ async function main() {
   console.log('📊 STRICT EVALUATION: HEURISTIC VS EMBEDDING-BACKED (UPANISHADS)');
   console.log('================================================================================\n');
 
-  // Dense results are tracked and reported separately from `failed` -- this
-  // script's exit code stays tied to the currently-live sparse retriever
-  // only. Dense failures here are informational (plan step 3/4: proving
-  // quality and re-tuning thresholds), not a CI-breaking regression, since
-  // nothing dense is registered under a live corpus key yet.
+  // Dense results are tracked and reported separately from `failed`. Note: as
+  // of plan step 5's cutover, PramanaDenseEmbeddingRetriever IS what
+  // pathshala_upanishads actually serves in production now -- this script
+  // still gates its exit code on the sparse retriever's assertions because
+  // these strict per-chunk cases specifically test literal excerpt-to-source
+  // matching (a full Hindi/Sanskrit/English quote as the query, expecting the
+  // exact source verse back), a task dense structurally underperforms at for
+  // the same reason it can't do bare chapter.verse citation lookup: a literal
+  // quote shares vocabulary with its own source by construction, which is
+  // exactly what TF-IDF is built to exploit and a sentence embedding is not.
+  // Dense's real, meaningful quality bar is the naturalLanguageCases below
+  // (genuine natural-language questions, not literal quotes) -- see that
+  // section's own pass rate for the actual production-relevant signal.
   let failed = false;
   let denseFailed = false;
   let denseTotal = 0;
   let densePassed = 0;
+  let denseNaturalTotal = 0;
+  let denseNaturalPassed = 0;
   const reportRows: string[] = [];
 
   // Shared assertion logic so the dense path is checked against the exact
@@ -219,6 +229,7 @@ async function main() {
     let denseProvider = 'n/a';
     if (dense) {
       denseTotal++;
+      denseNaturalTotal++;
       const resDense = await dense.retrieve({ text: check.query, filters: { source: 'Upanishads' }, topK: 5 });
       denseRefs = resDense.documents.map(d => `${d.metadata?.docId}_${d.metadata?.chunkId} (${d.score?.toFixed(2) || 'N/A'})`);
       denseProvider = resDense.provider ?? 'fallback';
@@ -228,6 +239,7 @@ async function main() {
       const denseNatural = checkNaturalCase(resDense.documents as any[], check);
       if (denseNatural.passed) {
         densePassed++;
+        denseNaturalPassed++;
       } else {
         denseFailed = true;
         for (const r of denseNatural.reasons) console.log(`   ⚠️  dense mismatch: ${r}`);
@@ -246,7 +258,7 @@ async function main() {
     '',
     'This report includes explicit eval assertions and natural-language assertions without title/doc_id filters.',
     dense
-      ? `Dense retriever: ${densePassed}/${denseTotal} cases passed strict assertions (informational only -- not yet registered under a live corpus key).`
+      ? `Dense retriever (live under pathshala_upanishads as of plan step 5): ${densePassed}/${denseTotal} cases passed strict assertions overall; ${denseNaturalPassed}/${denseNaturalTotal} on the natural-language cases specifically (the production-relevant signal -- the remaining strict cases are literal excerpt-to-source quote matching, a task dense structurally underperforms at for the same reason it can't do bare citation lookup, so this script's exit code still gates on the sparse retriever's assertions for those).`
       : 'Dense index not found -- dense columns are empty. Run `npx tsx scripts/build-dense-embeddings.mts` first.',
     '',
     '| Case ID | Query | Sparse Provider | Sparse Retrieved | Dense Provider | Dense Retrieved |',
@@ -257,7 +269,7 @@ async function main() {
   fs.writeFileSync(path.join(process.cwd(), 'upanishads_retrieval_comparison.md'), report, 'utf-8');
 
   if (dense) {
-    console.log(`\n📊 Dense retriever: ${densePassed}/${denseTotal} cases passed strict assertions${denseFailed ? ' (informational -- not gating exit code)' : ''}.`);
+    console.log(`\n📊 Dense retriever (live under pathshala_upanishads): ${densePassed}/${denseTotal} overall, ${denseNaturalPassed}/${denseNaturalTotal} on natural-language cases${denseFailed ? ' (strict literal-quote cases informational -- not gating exit code)' : ''}.`);
   }
 
   if (failed) {
