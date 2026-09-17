@@ -88,6 +88,15 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     iconName: "Terminal",
   },
   {
+    id: "rag-retrieval",
+    path: "/admin/rag-retrieval",
+    title: "RAG Retrieval Quality",
+    shortTitle: "RAG Retrieval",
+    description: "Gita & Upanishads dense-embedding cutover telemetry, thresholds & sparse-vs-dense comparison reports",
+    group: "operations",
+    iconName: "Search",
+  },
+  {
     id: "crons",
     path: "/admin/crons",
     title: "Cron Health & Automations",
