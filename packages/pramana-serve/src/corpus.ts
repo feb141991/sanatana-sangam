@@ -197,7 +197,15 @@ export class SimpleCorpusSelector implements PramanaCorpusSelector {
     if (corpusFilter === 'bhakti_katha') return 'bhakti_katha';
     if (corpusFilter === 'pathshala_upanishads') return 'pathshala_upanishads';
     if (corpusFilter === 'pathshala_gita') return 'pathshala_gita';
-    if (corpusFilter === 'valmiki_ramayana' || text.includes('valmiki ramayana') || text.includes('ramayana') || text.includes('bala kanda') || source.includes('valmiki ramayana') || source.includes('ramayana') || source.includes('bala kanda')) {
+    // valmiki_ramayana is explicit-only (registry description: "Source-audit
+    // pending explicit-only starter slice") -- reachable ONLY via an explicit
+    // corpus filter, never by keyword match on generic query/source text. A
+    // caller with no explicit corpus falls through to the rules below, same
+    // as any other unmapped query. Keyword auto-routing here used to bypass
+    // every source-audit-pending gate downstream (chat-grounding.ts's own
+    // hardcoded Ramayana block never applied to this selector's callers,
+    // e.g. runPathshalaExplain, which had no equivalent guard at all).
+    if (corpusFilter === 'valmiki_ramayana') {
       return 'valmiki_ramayana';
     }
 

@@ -22,7 +22,10 @@ export {
   type PramanaCorpusTarget,
   PramanaRetrieverSelector,
   type PramanaContextSerializerOptions,
-  serializePramanaContext
+  serializePramanaContext,
+  hasPendingSourceContent,
+  buildPendingSourceNotice,
+  PENDING_SOURCE_INSTRUCTIONS
 } from "./retrieval";
 export { type PramanaGatewayMetadata } from "./gateway-metadata";
 export * from './corpus';

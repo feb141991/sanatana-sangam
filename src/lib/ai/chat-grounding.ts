@@ -4,6 +4,7 @@ import {
   retrievePathshalaContext,
   type RetrievalChunk,
 } from '@/lib/ai/retrieval';
+import { hasPendingSourceContent } from '@sangam/pramana-serve';
 
 // Common English function words filtered out when extracting topical tokens
 const STOPWORDS = new Set([
@@ -194,11 +195,12 @@ function buildCorpusGroundingPrompt(targetCorpus: string, documents: RetrievalCh
     })
     .join('\n\n');
 
-  // Corpus-level fallbacks are deliberate: older embedding indexes do not
-  // carry every manifest governance field on each document.
-  const hasPendingSource = targetCorpus === 'valmiki_ramayana' || documents.some(
-    (doc) => doc.metadata?.rightsStatus === 'restricted_or_pending'
-  );
+  // Corpus-level fallback is deliberate defense-in-depth: even if Ramayana's
+  // index metadata were ever reset, this still catches it. The metadata check
+  // itself is shared with context-builder.ts's Pathshala-explain builders
+  // (hasPendingSourceContent) so this governance decision can't silently
+  // diverge between the chat path and the explain path again.
+  const hasPendingSource = targetCorpus === 'valmiki_ramayana' || hasPendingSourceContent(documents);
   const hasCuratedMaterial = targetCorpus === 'bhakti_katha' || documents.some((doc) =>
     ['curated_lesson', 'narrative'].includes(doc.metadata?.sourceClass ?? '')
   );

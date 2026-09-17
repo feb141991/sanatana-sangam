@@ -60,6 +60,34 @@ export interface PramanaContextSerializerOptions {
   suffix?: string;
 }
 
+/**
+ * True when any retrieved document's rights status is source-audit-pending
+ * (or the document simply has no rights status at all -- the same code path
+ * that let Buddhist/Jain documents fall through to retrieval.ts's
+ * 'public_domain' default without this ever tripping). Prompt builders that
+ * skip this check present unverified content as if it were approved canon --
+ * this is the one place that decision is made, so every builder shares it
+ * rather than re-deriving (or forgetting) it per corpus.
+ */
+export function hasPendingSourceContent(
+  documents: readonly PramanaRetrievalDocument<any>[]
+): boolean {
+  return documents.some((doc) => {
+    const status = doc.metadata?.rightsStatus;
+    return !status || status === 'restricted_or_pending';
+  });
+}
+
+export function buildPendingSourceNotice(corpusLabel: string): string {
+  return [
+    '=== SOURCE-AUDIT-PENDING STUDY MATERIAL ===',
+    `The following explicitly requested Shoonaya study material (${corpusLabel}) has not yet been approved as canonical Pramana. Its source or rights audit remains pending:`,
+  ].join('\n');
+}
+
+export const PENDING_SOURCE_INSTRUCTIONS =
+  'Use this only as clearly labelled study context. Paraphrase with attribution to Shoonaya study notes; do not present it as a verified canonical quotation or imply source approval. State that source verification is pending. Do not invent quotations or claims beyond this material.';
+
 export function serializePramanaContext(
   documents: readonly PramanaRetrievalDocument<any>[],
   options?: PramanaContextSerializerOptions

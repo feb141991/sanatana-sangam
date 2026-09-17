@@ -1,7 +1,42 @@
 import { getLanguageInstruction, normalizeContentLanguage } from '@/lib/language-runtime';
 import type { AIPromptSpec, MeaningGenerateInput, PathshalaExplainInput } from '@/lib/ai/contracts';
-import { serializePramanaContext } from '@sangam/pramana-serve';
+import {
+  serializePramanaContext,
+  hasPendingSourceContent,
+  buildPendingSourceNotice,
+  PENDING_SOURCE_INSTRUCTIONS,
+} from '@sangam/pramana-serve';
 import type { SafeUserSummaryContext } from '@sangam/pramana-core';
+
+/**
+ * Shared by every *ExplainPrompt builder below. Without this, a corpus whose
+ * retrieved documents are source-audit-pending (or simply have no rights
+ * status set -- see hasPendingSourceContent) would be dumped into the prompt
+ * with the same unqualified "ground your explanation in these sources"
+ * instruction as fully-verified content, presenting it with a confidence its
+ * source doesn't warrant. This mirrors chat-grounding.ts's
+ * buildCorpusGroundingPrompt so the same governance decision can't silently
+ * diverge between the chat path and the Pathshala-explain path again --
+ * this was the root cause of the Ramayana / Buddhist / Jain content being
+ * explainable via Pathshala with no pending-source disclosure at all, even
+ * after chat-grounding.ts was fixed to label them correctly.
+ */
+function buildPassagesText(
+  chunks: PathshalaExplainInput['retrievedChunks'],
+  corpusLabel: string,
+  groundedSuffix: string
+): string {
+  if (!chunks || chunks.length === 0) return '';
+  if (hasPendingSourceContent(chunks)) {
+    return '\n' + [
+      buildPendingSourceNotice(corpusLabel),
+      serializePramanaContext(chunks, { prefix: '' }),
+      '=== INSTRUCTIONS ===',
+      PENDING_SOURCE_INSTRUCTIONS,
+    ].join('\n');
+  }
+  return '\n' + serializePramanaContext(chunks, { suffix: groundedSuffix });
+}
 
 function getUserSummaryContextNote(ctx?: SafeUserSummaryContext): string {
   if (!ctx) return '';
@@ -63,11 +98,11 @@ export function buildPathshalaExplainPrompt(input: PathshalaExplainInput): {
   const langNote = getLanguageInstruction(input.language);
   const origText = input.originalText || input.sanskrit || '';
 
-  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? '\n' + serializePramanaContext(input.retrievedChunks, {
-        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the verse accurately and provide authentic teachings.'
-      })
-    : '';
+  const passagesText = buildPassagesText(
+    input.retrievedChunks,
+    'scripture verse',
+    '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the verse accurately and provide authentic teachings.'
+  );
 
   return {
     teacher: commentary.name,
@@ -112,11 +147,11 @@ export function buildDevotionalStoryExplainPrompt(input: PathshalaExplainInput):
   const commentary = getCommentary(input.tradition || 'Bhakti');
   const langNote = getLanguageInstruction(input.language);
 
-  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? '\n' + serializePramanaContext(input.retrievedChunks, {
-        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the story accurately and provide authentic teachings.'
-      })
-    : '';
+  const passagesText = buildPassagesText(
+    input.retrievedChunks,
+    'devotional story (Katha)',
+    '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the story accurately and provide authentic teachings.'
+  );
 
   return {
     teacher: commentary.name,
@@ -159,11 +194,11 @@ export function buildMoralStoryExplainPrompt(input: PathshalaExplainInput): {
 } {
   const langNote = getLanguageInstruction(input.language);
 
-  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? '\n' + serializePramanaContext(input.retrievedChunks, {
-        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the moral fable accurately and provide authentic conduct advice.'
-      })
-    : '';
+  const passagesText = buildPassagesText(
+    input.retrievedChunks,
+    'Panchatantra moral fable',
+    '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the moral fable accurately and provide authentic conduct advice.'
+  );
 
   return {
     teacher: 'Vishnu Sharma',
@@ -229,11 +264,11 @@ export function buildUpanishadsExplainPrompt(input: PathshalaExplainInput): {
   const commentary = getCommentary(input.tradition || 'Advaita');
   const langNote = getLanguageInstruction(input.language);
 
-  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? '\n' + serializePramanaContext(input.retrievedChunks, {
-        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the Upanishadic passage accurately and provide authentic teachings.'
-      })
-    : '';
+  const passagesText = buildPassagesText(
+    input.retrievedChunks,
+    'Upanishadic passage',
+    '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the Upanishadic passage accurately and provide authentic teachings.'
+  );
 
   return {
     teacher: commentary.name,
@@ -280,11 +315,11 @@ export function buildGurbaniShabadExplainPrompt(input: PathshalaExplainInput): {
   const commentary = getCommentary(input.tradition || 'Sikh');
   const langNote = getLanguageInstruction(input.language);
 
-  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? '\n' + serializePramanaContext(input.retrievedChunks, {
-        suffix: '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the Gurbani passage accurately and provide authentic teachings.'
-      })
-    : '';
+  const passagesText = buildPassagesText(
+    input.retrievedChunks,
+    'Gurbani Shabad',
+    '\n=========================================================\nUse the above retrieved context passages to ground your explanation. Focus on these sources where relevant to explain the Gurbani passage accurately and provide authentic teachings.'
+  );
 
   const origText = input.originalText || input.sanskrit || '';
 
@@ -336,11 +371,11 @@ export function buildBuddhistSutraExplainPrompt(input: PathshalaExplainInput): {
   const commentary = COMMENTARY.buddhist;
   const langNote = getLanguageInstruction(input.language);
 
-  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? '\n' + serializePramanaContext(input.retrievedChunks, {
-        suffix: '\n=========================================================\nUse the above retrieved Dhamma passages to ground your explanation. Focus on these sources to explain the teaching with authentic Buddhist understanding.'
-      })
-    : '';
+  const passagesText = buildPassagesText(
+    input.retrievedChunks,
+    'Buddhist Dhamma teaching',
+    '\n=========================================================\nUse the above retrieved Dhamma passages to ground your explanation. Focus on these sources to explain the teaching with authentic Buddhist understanding.'
+  );
 
   return {
     teacher: commentary.name,
@@ -391,11 +426,11 @@ export function buildJainSutraExplainPrompt(input: PathshalaExplainInput): {
   const commentary = COMMENTARY.jain;
   const langNote = getLanguageInstruction(input.language);
 
-  const passagesText = input.retrievedChunks && input.retrievedChunks.length > 0
-    ? '\n' + serializePramanaContext(input.retrievedChunks, {
-        suffix: '\n=========================================================\nUse the above retrieved Jain Dharma passages to ground your explanation. Focus on these sources to explain the teaching with authentic Jain understanding.'
-      })
-    : '';
+  const passagesText = buildPassagesText(
+    input.retrievedChunks,
+    'Jain Dharma teaching',
+    '\n=========================================================\nUse the above retrieved Jain Dharma passages to ground your explanation. Focus on these sources to explain the teaching with authentic Jain understanding.'
+  );
 
   return {
     teacher: commentary.name,
