@@ -1,6 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import type { PramanaRetrievalDocument, PramanaRetriever, PramanaRetrievalQuery, PramanaRetrievalResult } from '@sangam/pramana-serve';
+import {
+  PramanaRetrieverSelector,
+  SimpleCorpusSelector,
+  hasPendingSourceContent,
+  type PramanaRetrievalDocument,
+  type PramanaRetriever,
+  type PramanaRetrievalQuery,
+  type PramanaRetrievalResult,
+} from '@sangam/pramana-serve';
+import { emitEvent } from '@/lib/monitoring/events';
 
 export type RetrievalChunkMetadata = {
   chunkId: string;
@@ -60,8 +69,6 @@ function isDharamVeerIndexData(value: unknown): value is DharamVeerIndexData {
     value.documents.every(isDharamVeerIndexDocument)
   );
 }
-
-import { PramanaRetrieverSelector, SimpleCorpusSelector } from '@sangam/pramana-serve';
 
 export interface PramanaManifestRetrieverOptions {
   prefix: string;
@@ -1129,6 +1136,7 @@ export async function retrievePathshalaContext(input: {
     // Registered and explicit-only
   }
 
+  const start = Date.now();
   const retriever = PramanaRetrieverSelector.select(corpusId);
   const res = await retriever.retrieve({
     text: `${input.title ?? ''} ${input.source ?? ''}`.trim(),
@@ -1139,7 +1147,31 @@ export async function retrievePathshalaContext(input: {
       corpus: corpusId || null,
     }
   });
-  return res.documents as RetrievalChunk[];
+  const documents = res.documents as RetrievalChunk[];
+
+  // The one shared instrumentation point for both the chat and Pathshala-
+  // explain paths (both call this function). Neither the Ramayana ranking
+  // bug (near-tied top scores from a tokenizer mismatch) nor the Buddhist/
+  // Jain mislabeling (missing rightsStatus) left any trace here before this
+  // -- there was no way to notice either in production short of manually
+  // re-deriving them, which is how both were actually found. top_score and
+  // pending_source are exactly the two signals that would have surfaced them.
+  emitEvent({
+    severity: 'P3',
+    domain: 'ai',
+    route: 'ai/retrieval/pathshala_context',
+    provider: res.provider,
+    latency_ms: Date.now() - start,
+    context: {
+      corpus: corpusId,
+      explicit_corpus: input.corpus != null,
+      chunks_count: documents.length,
+      top_score: documents[0]?.score ?? null,
+      pending_source: hasPendingSourceContent(documents),
+    },
+  });
+
+  return documents;
 }
 
 
