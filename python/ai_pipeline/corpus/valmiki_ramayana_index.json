@@ -3,7 +3,11 @@
     "manifest_count": 6,
     "document_count": 26,
     "scale_readiness": "Sample-scale",
-    "is_live_in_app": true
+    "is_live_in_app": true,
+    "activation_status": "explicit_only",
+    "source_class": "curated_lesson",
+    "rights_status": "restricted_or_pending",
+    "review_status": "needs_source_audit"
   },
   "idf": {
     "वाग्विदां": 3.6026896854443837,

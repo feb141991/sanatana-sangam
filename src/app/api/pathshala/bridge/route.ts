@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
 import { runPathshalaBridge } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 
@@ -13,12 +13,12 @@ function extractBridge(raw: string) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   // Require authentication — bridge is included in free plan but not open to the internet.
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // getApiUser supports native Bearer tokens and PWA cookie sessions.
+  const { user, error: authError } = await getApiUser(req);
   if (!user) {
-    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+    return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
   }
 
   const {

@@ -1,8 +1,7 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
 import { runPathshalaRecommend } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
-import { createAdminClient } from '@/lib/supabase-admin';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
 
 function extractReason(raw: string) {
@@ -15,12 +14,25 @@ function extractReason(raw: string) {
   }
 }
 
-export async function POST(req: Request) {
+function isCompletedPathRow(value: unknown): value is { path_id: string } {
+  return typeof value === 'object'
+    && value !== null
+    && 'path_id' in value
+    && typeof value.path_id === 'string';
+}
+
+function readMood(value: unknown): string | undefined {
+  if (typeof value !== 'object' || value === null || !('mood' in value)) return undefined;
+  return typeof value.mood === 'string' ? value.mood : undefined;
+}
+
+export async function POST(req: NextRequest) {
   // Auth guard — use the server-verified user, never trust client-provided userId.
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  // Reuse the authenticated client so native Bearer and PWA cookie callers
+  // receive the same RLS-protected behavior.
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
   }
 
   const {
@@ -36,22 +48,21 @@ export async function POST(req: Request) {
   }
 
   const startTime = Date.now();
-  const adminClient = createAdminClient();
 
   try {
     // 1. Fetch completed paths
-    const { data: progressData, error: progressError } = await adminClient
+    const { data: progressData, error: progressError } = await supabase
       .from('guided_path_progress')
       .select('path_id, status')
       .eq('user_id', userId)
       .eq('status', 'completed');
 
-    const completedPathIds = !progressError && progressData 
-      ? (progressData as any[]).map(p => p.path_id) 
+    const completedPathIds = !progressError && Array.isArray(progressData)
+      ? progressData.filter(isCompletedPathRow).map((progress) => progress.path_id)
       : [];
 
     // 2. Fetch current mood (latest)
-    const { data: moodData } = await adminClient
+    const { data: moodData } = await supabase
       .from('user_mood_checkins')
       .select('mood')
       .eq('user_id', userId)
@@ -59,7 +70,7 @@ export async function POST(req: Request) {
       .limit(1)
       .maybeSingle();
       
-    const currentMood = (moodData as any)?.mood || undefined;
+    const currentMood = readMood(moodData);
 
     // 3. Algorithm to select the path
     const traditionPaths = SEED_PATHS.filter(p => p.tradition === tradition);
