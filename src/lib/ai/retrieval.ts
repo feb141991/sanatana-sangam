@@ -806,9 +806,17 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     const topDocItem = docsWithScores[0];
     augmentedDocs.push(topDocItem);
 
-    // Placeholder threshold (TODO: re-tune per plan step 4) -- neighbor
-    // splice, guarded by doc id so a multi-book corpus (Upanishads) never
-    // pulls in a different book's adjacent verse.
+    // Neighbor splice, guarded by doc id so a multi-book corpus (Upanishads)
+    // never pulls in a different book's adjacent verse. Threshold re-tuned
+    // (plan step 4) against real dense-score data: off-topic negative
+    // controls ("capital of France", "chocolate cake recipe") topped out
+    // at ~0.21 across both corpora, while confidently-correct top-1 hits on
+    // real natural-language/paraphrase queries (e.g. "give up everything
+    // and surrender to God" -> Gita 18.66) consistently scored >=0.54. 0.5
+    // sits just below that cluster with a wide margin above the noise
+    // floor, so splicing only fires when the top result is a genuine,
+    // confident match worth pulling surrounding verses for -- not a
+    // TF-IDF-derived guess ported over unchanged.
     if (topDocItem.score >= 0.5) {
       const topDoc = topDocItem.doc;
       const refParts = String(topDoc.ref).split('.');
@@ -827,9 +835,14 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
       }
     }
 
-    // Placeholder threshold (TODO: re-tune per plan step 4) -- tail inclusion.
+    // Tail inclusion. Re-tuned (plan step 4) from a 0.3 placeholder to 0.35:
+    // same real-data analysis showed the negative-control noise ceiling at
+    // ~0.21, so 0.3 left only ~0.09 of margin. 0.35 keeps a full topically-
+    // related cluster (e.g. multiple duty/action verses for a karma-yoga
+    // paraphrase query, several scoring 0.4-0.55) while adding real headroom
+    // above pure noise.
     for (const item of docsWithScores.slice(1)) {
-      if (!augmentedDocs.some((x) => x.doc.id === item.doc.id) && item.score >= 0.3) {
+      if (!augmentedDocs.some((x) => x.doc.id === item.doc.id) && item.score >= 0.35) {
         augmentedDocs.push(item);
       }
     }
