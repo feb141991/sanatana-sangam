@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { PramanaManifestRetriever, PramanaUpanishadsEmbeddingRetriever } from '../src/lib/ai/retrieval';
+import { PramanaManifestRetriever, PramanaUpanishadsEmbeddingRetriever, PramanaDenseEmbeddingRetriever } from '../src/lib/ai/retrieval';
 
 async function main() {
   const datasetPath = path.join(process.cwd(), 'python/ai_pipeline/datasets/evals/pathshala_upanishads.sample.jsonl');
@@ -35,13 +35,60 @@ async function main() {
   });
 
   const embedding = new PramanaUpanishadsEmbeddingRetriever(heuristic);
+  const denseIndexPath = path.join(process.cwd(), 'python/ai_pipeline/corpus/upanishads_index_dense.json');
+  const dense = fs.existsSync(denseIndexPath)
+    ? new PramanaDenseEmbeddingRetriever(heuristic, denseIndexPath, 'Upanishads', 'Sanatana Dharma')
+    : null;
 
   console.log('================================================================================');
   console.log('📊 STRICT EVALUATION: HEURISTIC VS EMBEDDING-BACKED (UPANISHADS)');
   console.log('================================================================================\n');
 
+  // Dense results are tracked and reported separately from `failed` -- this
+  // script's exit code stays tied to the currently-live sparse retriever
+  // only. Dense failures here are informational (plan step 3/4: proving
+  // quality and re-tuning thresholds), not a CI-breaking regression, since
+  // nothing dense is registered under a live corpus key yet.
   let failed = false;
+  let denseFailed = false;
+  let denseTotal = 0;
+  let densePassed = 0;
   const reportRows: string[] = [];
+
+  // Shared assertion logic so the dense path is checked against the exact
+  // same expectations as the sparse path, not a hand-copied approximation.
+  function checkStrictCase(
+    docs: any[],
+    provider: string | undefined,
+    expectedProvider: string,
+    hasTokens: boolean,
+    mustCiteDocs: string[],
+    chunkId: string | undefined,
+    docId: string | undefined
+  ): { passed: boolean; reasons: string[] } {
+    const reasons: string[] = [];
+    if (docs.length === 0) {
+      reasons.push('No documents returned.');
+      return { passed: false, reasons };
+    }
+    if (hasTokens && provider !== expectedProvider) {
+      reasons.push(`Provider must be ${expectedProvider}, got ${provider}.`);
+    }
+    if (mustCiteDocs.length > 0) {
+      const top1DocId = docs[0].metadata?.docId;
+      if (!mustCiteDocs.includes(top1DocId)) {
+        reasons.push(`Expected doc ID from ${JSON.stringify(mustCiteDocs)} to be top-1, got ${top1DocId}.`);
+      }
+      if (!docs.some((d) => mustCiteDocs.includes(d.metadata?.docId))) {
+        reasons.push('Expected doc ID not in top-k results.');
+      }
+    }
+    if (chunkId) {
+      const foundChunk = docs.some((d) => d.metadata?.chunkId === chunkId && d.metadata?.docId === docId);
+      if (!foundChunk) reasons.push(`Expected specific chunk ${docId}_${chunkId} was not retrieved.`);
+    }
+    return { passed: reasons.length === 0, reasons };
+  }
 
   for (const c of cases) {
     const chunkId = c.prompt.chunk_id;
@@ -60,42 +107,33 @@ async function main() {
     });
 
     const embedRefs = resEmbed.documents.map(d => `${d.metadata?.docId}_${d.metadata?.chunkId} (${d.score?.toFixed(2) || 'N/A'})`);
-    console.log(`   [Embedding] Provider: ${resEmbed.provider}`);
-    console.log(`               Retrieved: ${embedRefs.join(', ') || 'NONE'}`);
-    reportRows.push(`| ${c.case_id} | ${queryText.replace(/\|/g, '\\|')} | ${resEmbed.provider ?? 'fallback'} | ${embedRefs.join('<br>') || 'NONE'} |`);
+    console.log(`   [Sparse]  Provider: ${resEmbed.provider}`);
+    console.log(`             Retrieved: ${embedRefs.join(', ') || 'NONE'}`);
 
-    if (resEmbed.documents.length === 0) {
-      console.error(`   ❌ FAILED: No documents returned.`);
-      failed = true;
-      continue;
-    }
+    const sparseResult = checkStrictCase(resEmbed.documents as any[], resEmbed.provider, 'embedding-index', hasTokens, mustCiteDocs, chunkId, docId);
+    for (const r of sparseResult.reasons) console.error(`   ❌ FAILED [sparse]: ${r}`);
+    if (!sparseResult.passed) failed = true;
 
-    if (hasTokens && resEmbed.provider !== 'embedding-index') {
-      console.error(`   ❌ FAILED: Provider must be embedding-index, got ${resEmbed.provider}. Fallback used despite tokens existing!`);
-      failed = true;
-    }
+    let denseRefs: string[] = [];
+    let denseProvider = 'n/a';
+    if (dense) {
+      denseTotal++;
+      const resDense = await dense.retrieve({ text: queryText, filters: { source: 'Upanishads', title: docId } });
+      denseRefs = resDense.documents.map(d => `${d.metadata?.docId}_${d.metadata?.chunkId} (${d.score?.toFixed(2) || 'N/A'})`);
+      denseProvider = resDense.provider ?? 'fallback';
+      console.log(`   [Dense]   Provider: ${denseProvider}`);
+      console.log(`             Retrieved: ${denseRefs.join(', ') || 'NONE'}`);
 
-    if (mustCiteDocs.length > 0) {
-      const top1DocId = resEmbed.documents[0].metadata?.docId;
-      if (!mustCiteDocs.includes(top1DocId)) {
-        console.error(`   ❌ FAILED: Expected doc ID from ${JSON.stringify(mustCiteDocs)} to be top-1, but got ${top1DocId}`);
-        failed = true;
-      }
-      
-      const foundAny = resEmbed.documents.some(d => mustCiteDocs.includes(d.metadata?.docId));
-      if (!foundAny) {
-        console.error(`   ❌ FAILED: Expected doc ID not in top-k results.`);
-        failed = true;
+      const denseResult = checkStrictCase(resDense.documents as any[], resDense.provider, 'dense-embedding-index', hasTokens, mustCiteDocs, chunkId, docId);
+      if (denseResult.passed) {
+        densePassed++;
+      } else {
+        denseFailed = true;
+        for (const r of denseResult.reasons) console.log(`   ⚠️  dense mismatch: ${r}`);
       }
     }
 
-    if (chunkId) {
-      const foundChunk = resEmbed.documents.some(d => d.metadata?.chunkId === chunkId && d.metadata?.docId === docId);
-      if (!foundChunk) {
-        console.error(`   ❌ FAILED: Expected specific chunk ${docId}_${chunkId} was not retrieved.`);
-        failed = true;
-      }
-    }
+    reportRows.push(`| ${c.case_id} | ${queryText.replace(/\|/g, '\\|')} | ${resEmbed.provider ?? 'fallback'} | ${embedRefs.join('<br>') || 'NONE'} | ${denseProvider} | ${denseRefs.join('<br>') || 'NONE'} |`);
 
     console.log('--------------------------------------------------------------------------------');
   }
@@ -137,6 +175,25 @@ async function main() {
   console.log('📊 NATURAL-LANGUAGE RETRIEVAL ASSERTIONS (NO TITLE/DOC_ID FILTERS)');
   console.log('================================================================================\n');
 
+  function checkNaturalCase(docs: any[], check: typeof naturalLanguageCases[number]): { passed: boolean; reasons: string[] } {
+    const reasons: string[] = [];
+    if (docs.length === 0) {
+      reasons.push('No documents returned.');
+      return { passed: false, reasons };
+    }
+    const top1DocId = docs[0].metadata?.docId;
+    if ('expectedTop1DocId' in check && check.expectedTop1DocId && top1DocId !== check.expectedTop1DocId) {
+      reasons.push(`Expected top-1 doc ${check.expectedTop1DocId}, got ${top1DocId}.`);
+    }
+    if ('expectedTopKDocIds' in check && check.expectedTopKDocIds?.length) {
+      const foundDoc = docs.some((d) => check.expectedTopKDocIds.includes(d.metadata?.docId || ''));
+      if (!foundDoc) reasons.push(`Expected one of ${JSON.stringify(check.expectedTopKDocIds)} in top-k.`);
+    }
+    const foundChunk = docs.some((d) => check.expectedTopKChunkIds.includes(d.metadata?.chunkId || ''));
+    if (!foundChunk) reasons.push(`Expected one of chunks ${JSON.stringify(check.expectedTopKChunkIds)} in top-k.`);
+    return { passed: reasons.length === 0, reasons };
+  }
+
   for (const check of naturalLanguageCases) {
     console.log(`📖 Natural Case: ${check.caseId} ("${check.query}")`);
     const result = await embedding.retrieve({
@@ -146,39 +203,38 @@ async function main() {
     });
 
     const refs = result.documents.map(d => `${d.metadata?.docId}_${d.metadata?.chunkId} (${d.score?.toFixed(2) || 'N/A'})`);
-    console.log(`   [Embedding] Provider: ${result.provider}`);
-    console.log(`               Retrieved: ${refs.join(', ') || 'NONE'}`);
-    reportRows.push(`| ${check.caseId} | ${check.query.replace(/\|/g, '\\|')} | ${result.provider ?? 'fallback'} | ${refs.join('<br>') || 'NONE'} |`);
+    console.log(`   [Sparse]  Provider: ${result.provider}`);
+    console.log(`             Retrieved: ${refs.join(', ') || 'NONE'}`);
 
     if (result.provider !== 'embedding-index') {
       console.error(`   ❌ FAILED: Natural-language case must use embedding-index, got ${result.provider}.`);
       failed = true;
     }
-    if (result.documents.length === 0) {
-      console.error('   ❌ FAILED: No documents returned.');
-      failed = true;
-      continue;
-    }
 
-    const top1DocId = result.documents[0].metadata?.docId;
-    if ('expectedTop1DocId' in check && check.expectedTop1DocId && top1DocId !== check.expectedTop1DocId) {
-      console.error(`   ❌ FAILED: Expected top-1 doc ${check.expectedTop1DocId}, got ${top1DocId}.`);
-      failed = true;
-    }
+    const sparseNatural = checkNaturalCase(result.documents as any[], check);
+    for (const r of sparseNatural.reasons) console.error(`   ❌ FAILED [sparse]: ${r}`);
+    if (!sparseNatural.passed) failed = true;
 
-    if ('expectedTopKDocIds' in check && check.expectedTopKDocIds?.length) {
-      const foundDoc = result.documents.some(d => check.expectedTopKDocIds.includes(d.metadata?.docId || ''));
-      if (!foundDoc) {
-        console.error(`   ❌ FAILED: Expected one of ${JSON.stringify(check.expectedTopKDocIds)} in top-k.`);
-        failed = true;
+    let denseRefs: string[] = [];
+    let denseProvider = 'n/a';
+    if (dense) {
+      denseTotal++;
+      const resDense = await dense.retrieve({ text: check.query, filters: { source: 'Upanishads' }, topK: 5 });
+      denseRefs = resDense.documents.map(d => `${d.metadata?.docId}_${d.metadata?.chunkId} (${d.score?.toFixed(2) || 'N/A'})`);
+      denseProvider = resDense.provider ?? 'fallback';
+      console.log(`   [Dense]   Provider: ${denseProvider}`);
+      console.log(`             Retrieved: ${denseRefs.join(', ') || 'NONE'}`);
+
+      const denseNatural = checkNaturalCase(resDense.documents as any[], check);
+      if (denseNatural.passed) {
+        densePassed++;
+      } else {
+        denseFailed = true;
+        for (const r of denseNatural.reasons) console.log(`   ⚠️  dense mismatch: ${r}`);
       }
     }
 
-    const foundChunk = result.documents.some(d => check.expectedTopKChunkIds.includes(d.metadata?.chunkId || ''));
-    if (!foundChunk) {
-      console.error(`   ❌ FAILED: Expected one of chunks ${JSON.stringify(check.expectedTopKChunkIds)} in top-k.`);
-      failed = true;
-    }
+    reportRows.push(`| ${check.caseId} | ${check.query.replace(/\|/g, '\\|')} | ${result.provider ?? 'fallback'} | ${refs.join('<br>') || 'NONE'} | ${denseProvider} | ${denseRefs.join('<br>') || 'NONE'} |`);
 
     console.log('--------------------------------------------------------------------------------');
   }
@@ -189,13 +245,20 @@ async function main() {
     'Generated by `scripts/compare_upanishads_retrieval.ts`.',
     '',
     'This report includes explicit eval assertions and natural-language assertions without title/doc_id filters.',
+    dense
+      ? `Dense retriever: ${densePassed}/${denseTotal} cases passed strict assertions (informational only -- not yet registered under a live corpus key).`
+      : 'Dense index not found -- dense columns are empty. Run `npx tsx scripts/build-dense-embeddings.mts` first.',
     '',
-    '| Case ID | Query | Provider | Retrieved |',
-    '|---|---|---|---|',
+    '| Case ID | Query | Sparse Provider | Sparse Retrieved | Dense Provider | Dense Retrieved |',
+    '|---|---|---|---|---|---|',
     ...reportRows,
     ''
   ].join('\n');
   fs.writeFileSync(path.join(process.cwd(), 'upanishads_retrieval_comparison.md'), report, 'utf-8');
+
+  if (dense) {
+    console.log(`\n📊 Dense retriever: ${densePassed}/${denseTotal} cases passed strict assertions${denseFailed ? ' (informational -- not gating exit code)' : ''}.`);
+  }
 
   if (failed) {
     console.error('❌ Eval Script Failed due to one or more strict assertions!');
