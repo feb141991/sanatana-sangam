@@ -729,6 +729,156 @@ export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<Ret
 PramanaRetrieverSelector.register('pathshala_gita', new PramanaGitaEmbeddingRetriever(gitaManifestRetriever));
 PramanaRetrieverSelector.register('pathshala_upanishads', new PramanaUpanishadsEmbeddingRetriever(upanishadsManifestRetriever));
 
+/**
+ * Real dense-embedding retriever (query-time embedQuery(), not TF-IDF),
+ * built alongside -- not replacing -- the sparse retrievers above. Not yet
+ * used by any live corpus key: registered under 'pathshala_gita_dense' /
+ * 'pathshala_upanishads_dense' so scripts/compare_retrieval.ts and
+ * scripts/compare_upanishads_retrieval.ts can prove quality improvement
+ * before any cutover (plan step 3), and the score thresholds below are
+ * placeholders pending step 4's empirical re-tuning against real dense-score
+ * distributions, not the TF-IDF-tuned 0.4/0.1 values the sparse retrievers
+ * above use -- dense cosine scores have a different distribution shape.
+ */
+export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
+  private fallbackRetriever: PramanaManifestRetriever;
+  private indexPath: string;
+  private sourceName: string;
+  private tradition: string;
+  private indexData: any = null;
+
+  constructor(fallbackRetriever: PramanaManifestRetriever, indexPath: string, sourceName: string, tradition: string) {
+    this.fallbackRetriever = fallbackRetriever;
+    this.indexPath = indexPath;
+    this.sourceName = sourceName;
+    this.tradition = tradition;
+  }
+
+  private loadIndex() {
+    if (this.indexData) return this.indexData;
+    if (!fs.existsSync(this.indexPath)) return null;
+    try {
+      const data = fs.readFileSync(this.indexPath, 'utf-8');
+      this.indexData = JSON.parse(data);
+      return this.indexData;
+    } catch {
+      return null;
+    }
+  }
+
+  private static cosine(a: number[], b: number[]): number {
+    let dot = 0;
+    for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+    return dot; // both vectors are already L2-normalized at embed time
+  }
+
+  async retrieve(query: PramanaRetrievalQuery): Promise<PramanaRetrievalResult<RetrievalChunkMetadata>> {
+    const index = this.loadIndex();
+    if (!index) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    const queryText = query.text.trim();
+    if (!queryText) {
+      return { documents: [] };
+    }
+
+    const { embedQuery } = await import('./embedding-model');
+    const queryVector = await embedQuery(queryText);
+
+    const docsWithScores: Array<{ doc: any; score: number }> = [];
+    for (const doc of index.documents) {
+      const score = PramanaDenseEmbeddingRetriever.cosine(queryVector, doc.vector);
+      if (score > 0) {
+        docsWithScores.push({ doc, score });
+      }
+    }
+
+    if (docsWithScores.length === 0) {
+      return this.fallbackRetriever.retrieve(query);
+    }
+
+    docsWithScores.sort((a, b) => b.score - a.score);
+
+    const limit = query.topK || 5;
+    const augmentedDocs: Array<{ doc: any; score: number }> = [];
+
+    const topDocItem = docsWithScores[0];
+    augmentedDocs.push(topDocItem);
+
+    // Placeholder threshold (TODO: re-tune per plan step 4) -- neighbor
+    // splice, guarded by doc id so a multi-book corpus (Upanishads) never
+    // pulls in a different book's adjacent verse.
+    if (topDocItem.score >= 0.5) {
+      const topDoc = topDocItem.doc;
+      const refParts = String(topDoc.ref).split('.');
+      if (refParts.length >= 2) {
+        const ch = parseInt(refParts[0], 10);
+        const v = parseInt(refParts[1], 10);
+        const prevRef = `${ch}.${v - 1}`;
+        const nextRef = `${ch}.${v + 1}`;
+        const sameDoc = (d: any) => (d.upanishad ?? d.chapter) === (topDoc.upanishad ?? topDoc.chapter);
+
+        const prevDoc = index.documents.find((d: any) => d.ref === prevRef && sameDoc(d));
+        const nextDoc = index.documents.find((d: any) => d.ref === nextRef && sameDoc(d));
+
+        if (prevDoc) augmentedDocs.push({ doc: prevDoc, score: topDocItem.score - 0.1 });
+        if (nextDoc) augmentedDocs.push({ doc: nextDoc, score: topDocItem.score - 0.12 });
+      }
+    }
+
+    // Placeholder threshold (TODO: re-tune per plan step 4) -- tail inclusion.
+    for (const item of docsWithScores.slice(1)) {
+      if (!augmentedDocs.some((x) => x.doc.id === item.doc.id) && item.score >= 0.3) {
+        augmentedDocs.push(item);
+      }
+    }
+
+    const topDocs = augmentedDocs.slice(0, limit);
+
+    const documents: RetrievalChunk[] = topDocs.map((item) => {
+      const doc = item.doc;
+      const textContent = [
+        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : '',
+        doc.transliteration ? `Transliteration: ${doc.transliteration}` : '',
+        doc.text ? `Translation: ${doc.text}` : ''
+      ].filter(Boolean).join('\n');
+
+      return {
+        id: doc.id,
+        content: textContent,
+        score: item.score,
+        metadata: {
+          chunkId: doc.ref,
+          docId: doc.id.split('_').slice(0, -1).join('_'),
+          tradition: this.tradition,
+          sourceName: this.sourceName,
+          sourceClass: 'scripture',
+          rightsStatus: 'public_domain'
+        }
+      };
+    });
+
+    return {
+      documents,
+      provider: 'dense-embedding-index'
+    };
+  }
+}
+
+PramanaRetrieverSelector.register('pathshala_gita_dense', new PramanaDenseEmbeddingRetriever(
+  gitaManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/gita_index_dense.json'),
+  'Bhagavad Gita',
+  'Sanatana Dharma'
+));
+PramanaRetrieverSelector.register('pathshala_upanishads_dense', new PramanaDenseEmbeddingRetriever(
+  upanishadsManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/upanishads_index_dense.json'),
+  'Upanishads',
+  'Sanatana Dharma'
+));
+
 PramanaRetrieverSelector.register('bhakti_katha', new PramanaManifestRetriever({
   prefix: 'katha_chapter',
   sourceName: 'Puranic Katha',

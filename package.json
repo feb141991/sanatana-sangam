@@ -7,6 +7,8 @@
   ],
   "scripts": {
     "audit:notifications": "npx tsx scripts/audit-notification-topology.ts",
+    "audit:festival-stories": "npx tsx scripts/audit-festival-story-claims.ts",
+    "audit:festival-content-provenance": "npx tsx scripts/audit-festival-content-provenance.mts",
     "verify:content-jobs-shadow": "bash scripts/shadow/verify-content-generation-jobs-shadow.sh",
     "dev": "next dev -p 3001",
     "build": "next build",
@@ -79,6 +81,7 @@
     "test:client-errors": "npx tsx --test src/lib/client-error-contract.test.ts"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.0",
     "@react-three/drei": "^9.121.5",
     "@react-three/fiber": "^8.17.14",
     "@sangam/pathshala-engine": "*",
