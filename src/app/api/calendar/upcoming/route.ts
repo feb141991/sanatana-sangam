@@ -103,31 +103,13 @@ export async function GET(request: NextRequest) {
     if (calendarScope === 'major_only') {
       occurrencesQuery = occurrencesQuery.in('observance_definitions.kind', ['major', 'vrat']);
     }
+    occurrencesQuery = occurrencesQuery.order('date', { ascending: true });
 
-    const { data: occurrencesData, error: occError } = await timings.measure(
-      'occurrences_query', 'Occurrences Query', () => occurrencesQuery.order('date', { ascending: true })
-    );
-
-    if (occError) {
-      console.error('[API Calendar Upcoming] Occurrences error:', occError);
-      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
-    }
-
-    let occurrencesWithBatches = occurrencesData || [];
-    try {
-      occurrencesWithBatches = await timings.measure('batch_enrichment', 'Materialisation Batch Enrichment', () =>
-        attachMaterialisationBatches(
-          occurrencesWithBatches,
-          undefined,
-          calendarProfile,
-          resolved.context.effectiveCalculationLocation,
-        )
-      );
-    } catch (error) {
-      console.warn('[API Calendar Upcoming] Batch enrichment unavailable; serving core occurrences:', error);
-    }
-
-    // Query unresolved items from the review queue
+    // Query unresolved items from the review queue. Built (not executed) here
+    // so it can run concurrently with occurrencesQuery below -- its filters
+    // (calendarProfile, tradition, calendarScope) are already resolved above
+    // and don't depend on the occurrences result, so there's no reason to
+    // wait for it.
     let queueQuery = supabase
       .from('observance_review_queue')
       .select(`
@@ -172,14 +154,37 @@ export async function GET(request: NextRequest) {
       queueQuery = queueQuery.in('observance_definitions.kind', ['major', 'vrat']);
     }
 
-    const { data: queueResult, error: queueError } = await timings.measure(
-      'review_queue', 'Review Queue Query', () => queueQuery
-    );
-    let queueData = queueResult || [];
+    const [
+      { data: occurrencesData, error: occError },
+      { data: queueResult, error: queueError },
+    ] = await Promise.all([
+      timings.measure('occurrences_query', 'Occurrences Query', () => occurrencesQuery),
+      timings.measure('review_queue', 'Review Queue Query', () => queueQuery),
+    ]);
 
+    if (occError) {
+      console.error('[API Calendar Upcoming] Occurrences error:', occError);
+      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
+    }
+
+    let queueData = queueResult || [];
     if (queueError) {
       console.warn('[API Calendar Upcoming] Review queue unavailable; omitting pending-review items:', queueError);
       queueData = [];
+    }
+
+    let occurrencesWithBatches = occurrencesData || [];
+    try {
+      occurrencesWithBatches = await timings.measure('batch_enrichment', 'Materialisation Batch Enrichment', () =>
+        attachMaterialisationBatches(
+          occurrencesWithBatches,
+          undefined,
+          calendarProfile,
+          resolved.context.effectiveCalculationLocation,
+        )
+      );
+    } catch (error) {
+      console.warn('[API Calendar Upcoming] Batch enrichment unavailable; serving core occurrences:', error);
     }
 
     const formatStartedAt = performance.now();

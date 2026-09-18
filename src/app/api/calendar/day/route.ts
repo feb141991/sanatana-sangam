@@ -68,21 +68,10 @@ export async function GET(request: NextRequest) {
       occurrencesQuery = occurrencesQuery.in('observance_definitions.tradition', [tradition, 'all']);
     }
 
-    const { data: occurrencesData, error: occError } = await occurrencesQuery;
-
-    if (occError) {
-      console.error('[API Calendar Day] Occurrences error:', occError);
-      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
-    }
-
-    const occurrencesWithBatches = await attachMaterialisationBatches(
-      occurrencesData || [],
-      undefined,
-      calendarProfile,
-      resolved.context.effectiveCalculationLocation,
-    );
-
-    // Query unresolved items from the review queue
+    // Query unresolved items from the review queue. Built (not executed) here
+    // so it can run concurrently with occurrencesQuery below -- its filters
+    // (calendarProfile, tradition) are already resolved above and don't
+    // depend on the occurrences result, so there's no reason to wait for it.
     let queueQuery = supabase
       .from('observance_review_queue')
       .select(`
@@ -128,12 +117,27 @@ export async function GET(request: NextRequest) {
       queueQuery = queueQuery.in('observance_definitions.tradition', [tradition, 'all']);
     }
 
-    const { data: queueData, error: queueError } = await queueQuery;
+    const [
+      { data: occurrencesData, error: occError },
+      { data: queueData, error: queueError },
+    ] = await Promise.all([occurrencesQuery, queueQuery]);
+
+    if (occError) {
+      console.error('[API Calendar Day] Occurrences error:', occError);
+      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
+    }
 
     if (queueError) {
       console.error('[API Calendar Day] Review queue error:', queueError);
       return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
     }
+
+    const occurrencesWithBatches = await attachMaterialisationBatches(
+      occurrencesData || [],
+      undefined,
+      calendarProfile,
+      resolved.context.effectiveCalculationLocation,
+    );
 
     const formattedResults = formatOccurrencesToResults(
       occurrencesWithBatches,
