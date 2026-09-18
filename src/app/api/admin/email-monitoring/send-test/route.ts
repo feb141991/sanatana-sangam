@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 
+// Pure fetch-proxy to Resend, no DB/Node dependency. Auth is enforced
+// centrally by middleware (ADMIN_COOKIE check) before this handler ever
+// runs, and middleware always runs on Edge Runtime already, so this is
+// unaffected either way.
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {

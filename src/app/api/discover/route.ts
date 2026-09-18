@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
+// createServerSupabaseClient is built on @supabase/ssr + next/headers cookies,
+// both Edge-supported. Note: the DB query itself still has to reach the
+// Dublin database regardless of where this function executes, so the win
+// here is smaller than for the pure-static routes -- mainly helps the
+// non-DB parts of a cache-miss request (this route is already public-cached
+// at s-maxage=3600, so most requests never reach the function at all).
+export const runtime = 'edge';
+
 export async function GET(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();

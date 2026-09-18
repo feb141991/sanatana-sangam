@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API } from '@/lib/config';
 
+// Pure fetch-proxy to an external geocoding API, no DB/Node dependency --
+// runs at the nearest edge PoP instead of being routed to the single Node
+// region (dub1) for every call, and closer to the external API too.
+export const runtime = 'edge';
+
 export async function GET(req: NextRequest) {
   const lat = req.nextUrl.searchParams.get('lat');
   const lon = req.nextUrl.searchParams.get('lon');

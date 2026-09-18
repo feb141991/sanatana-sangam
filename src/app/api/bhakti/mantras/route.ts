@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MANTRAS } from '@/data/mantras';
 
+// Pure static-data filter, no DB/Node dependency -- runs at the nearest edge
+// PoP instead of being routed to the single Node region (dub1) for every call.
+export const runtime = 'edge';
+
 /**
  * GET /api/bhakti/mantras?tradition=hindu
  *
