@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeQuizPayload } from './route';
+import { normalizeQuizPayload } from '@/lib/quiz-normalizer';
 
 describe('normalizeQuizPayload', () => {
   it('normalizes standard valid payload', () => {
