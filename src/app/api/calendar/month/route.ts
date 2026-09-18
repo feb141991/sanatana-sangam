@@ -168,15 +168,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response, {
       status: 200,
       headers: {
-                // PRIVACY: must be `private`. This response is personalised -- when
-        // `calendar_profile` or `tradition` is absent from the query string the
-        // route reads them from the SIGNED-IN USER's profile row. Two users
-        // requesting the identical URL therefore get different bodies, so a
-        // shared CDN cache keyed on the URL alone would serve one user's
-        // calendar selection to another. `private` keeps it in the browser cache
-        // only. Making this `public` again would require every selection input
-        // to be an explicit URL parameter.
-        'Cache-Control': 'private, max-age=3600, stale-while-revalidate=86400',
+        // PRIVACY: `private` for signed-in requests, `public` for guests. This
+        // response is personalised when a user is signed in -- `resolveRequestProfile`
+        // unconditionally reads calendar_profile/tradition/sampradaya/location off the
+        // SIGNED-IN USER's profile row, so two authenticated users requesting the
+        // identical URL can get different bodies; a shared CDN cache keyed on the URL
+        // alone would serve one user's calendar selection to another. `resolved.isAuthenticated`
+        // is exactly the signal that distinguishes the two cases (see its doc comment
+        // in request-profile.ts). For a guest, every input is an explicit query
+        // parameter -- no cookie/profile state -- so the response is a pure function
+        // of the URL and is safe for the edge/CDN to cache and serve to other guests.
+        'Cache-Control': resolved.isAuthenticated
+          ? 'private, max-age=3600, stale-while-revalidate=86400'
+          : 'public, s-maxage=3600, stale-while-revalidate=86400',
       },
     });
   } catch (err) {
