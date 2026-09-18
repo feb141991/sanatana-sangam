@@ -59,6 +59,77 @@ function extractJsonBlock(raw: string): string {
   return raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
 }
 
+export interface NormalizedQuiz {
+  question: string;
+  options: string[];
+  answerIndex: number;
+  explanation: string;
+  fact: string;
+  source: string;
+}
+
+export function normalizeQuizPayload(rawQuiz: any): NormalizedQuiz | null {
+  if (!rawQuiz || typeof rawQuiz !== 'object') return null;
+
+  const question = typeof rawQuiz.question === 'string' ? rawQuiz.question.trim() : '';
+  if (!question) return null;
+
+  let options: string[] = [];
+  if (Array.isArray(rawQuiz.options)) {
+    options = rawQuiz.options
+      .map((opt: any) => (typeof opt === 'string' ? opt.trim() : String(opt || '').trim()))
+      .filter(Boolean);
+  } else if (rawQuiz.options && typeof rawQuiz.options === 'object') {
+    // Handle object representation like { A: '...', B: '...', C: '...', D: '...' }
+    options = Object.values(rawQuiz.options)
+      .map((opt: any) => (typeof opt === 'string' ? opt.trim() : String(opt || '').trim()))
+      .filter(Boolean);
+  }
+
+  if (options.length < 4) return null;
+  if (options.length > 4) options = options.slice(0, 4);
+
+  // Normalize answer index: handles answerIndex, answer_index, correct_index, answer, etc.
+  const rawIdx =
+    rawQuiz.answerIndex ??
+    rawQuiz.answer_index ??
+    rawQuiz.correctIndex ??
+    rawQuiz.correct_index ??
+    rawQuiz.answer;
+
+  let answerIndex: number | null = null;
+  if (typeof rawIdx === 'number' && Number.isInteger(rawIdx)) {
+    if (rawIdx >= 0 && rawIdx <= 3) {
+      answerIndex = rawIdx;
+    } else if (rawIdx === 4) {
+      // 1-indexed (1..4)
+      answerIndex = 3;
+    }
+  } else if (typeof rawIdx === 'string') {
+    const s = rawIdx.trim().toUpperCase();
+    if (['0', '1', '2', '3'].includes(s)) {
+      answerIndex = parseInt(s, 10);
+    } else if (['A', 'B', 'C', 'D'].includes(s)) {
+      answerIndex = { A: 0, B: 1, C: 2, D: 3 }[s]!;
+    } else if (s === '4') {
+      answerIndex = 3;
+    }
+  }
+
+  if (answerIndex === null || answerIndex < 0 || answerIndex > 3) {
+    return null;
+  }
+
+  return {
+    question,
+    options,
+    answerIndex,
+    explanation: typeof rawQuiz.explanation === 'string' ? rawQuiz.explanation.trim() : '',
+    fact: typeof rawQuiz.fact === 'string' ? rawQuiz.fact.trim() : '',
+    source: typeof rawQuiz.source === 'string' ? rawQuiz.source.trim() : '',
+  };
+}
+
 const TRADITIONS = ['hindu', 'sikh', 'buddhist', 'jain'];
 const LANGUAGES = ['en', 'hi', 'pa'];
 
@@ -211,22 +282,16 @@ async function handleGenerateDaily(req: NextRequest) {
         );
 
         const cleaned = extractJsonBlock(result.text);
-        let quiz: { question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string };
+        let rawParsed: any;
 
         try {
-          quiz = JSON.parse(cleaned);
+          rawParsed = JSON.parse(cleaned);
         } catch {
           throw new Error('Parse failed');
         }
 
-        if (
-          typeof quiz.question !== 'string' ||
-          !Array.isArray(quiz.options) ||
-          quiz.options.length !== 4 ||
-          typeof quiz.answerIndex !== 'number' ||
-          quiz.answerIndex < 0 ||
-          quiz.answerIndex > 3
-        ) {
+        const quiz = normalizeQuizPayload(rawParsed);
+        if (!quiz) {
           throw new Error('Validation failed');
         }
 
@@ -289,7 +354,12 @@ async function handleGenerateDaily(req: NextRequest) {
           results.push({ tradition, language, date: jobDate, status: 'failed', error: finalError });
         }
 
-        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: jobDate, seededFallback: true } });
+        if (finalStatus === 'failed') {
+          emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: jobDate, seededFallback: false, fatal: true } });
+        } else {
+          // Fallback seeding successfully preserved user experience; record as P3 warning
+          emitError('ai', err, 'P3', { route: '/api/quiz/generate-daily', context: { tradition, language, date: jobDate, seededFallback: true } });
+        }
       } finally {
         const persistedStatus = getQuizJobTerminalState(finalStatus, job.attempt_count, job.max_attempts);
         const retryable = persistedStatus === 'pending';
