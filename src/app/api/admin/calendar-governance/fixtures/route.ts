@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 import { ADMIN_COOKIE, verifyAdminCookieAuth, verifyAdminToken } from '@/lib/admin-auth';
 import { computeEngineHint } from '@/lib/calendar/fixture-engine-hint';
+import { validateFixtureCorrection } from '@/lib/calendar/fixture-correction';
 
 // Untyped for the same reason as dharm-veer-review: golden_fixtures is a new
 // table this repo's hand-written Database type doesn't model yet, and the
@@ -162,6 +163,7 @@ export async function POST(request: NextRequest) {
         const wasApproved = existing.approved === true;
         const transition = wasApproved ? 're_confirmed' : 'newly_approved';
         const updatePayload: Record<string, unknown> = {
+          updated_at: nowIso,
           approved: true,
           reviewed_by: adminUsername,
           reviewed_at: nowIso,
@@ -278,6 +280,7 @@ export async function POST(request: NextRequest) {
     // effective_from was already there untouched, same as review_notes'
     // history isn't erased either.
     const updatePayload: Record<string, unknown> = {
+      updated_at: nowIso,
       approved: willApprove,
       reviewed_by: adminUsername,
       reviewed_at: nowIso,
@@ -335,6 +338,10 @@ export async function POST(request: NextRequest) {
   // action === 'update': content edit. Only these fields may change here --
   // caseId/festivalId/year/location/profile are identity, not editable content.
   const patch = body?.patch ?? {};
+  if (body?.evidenceCorrection === true) {
+    const validationError = validateFixtureCorrection(patch, body?.expectedUpdatedAt);
+    if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
+  }
   const allowedKeys = ['expected', 'tolerance', 'source', 'reasoning'] as const;
   const update: Record<string, unknown> = {};
   for (const k of allowedKeys) {
@@ -348,12 +355,17 @@ export async function POST(request: NextRequest) {
   // OLD citation/date did not sign off on this one.
   const wasApproved = existing.approved === true;
   update.approved = false;
+  update.updated_at = nowIso;
   update.reviewed_by = null;
   update.reviewed_at = null;
   update.review_notes = `Content edited by ${adminUsername}; approval reset, pending re-review.`;
 
-  const { error: updateError } = await supabase.from('golden_fixtures').update(update).eq('case_id', caseId);
+  const expectedUpdatedAt = typeof body?.expectedUpdatedAt === 'string' ? body.expectedUpdatedAt : null;
+  let updateQuery = supabase.from('golden_fixtures').update(update).eq('case_id', caseId);
+  if (expectedUpdatedAt) updateQuery = updateQuery.eq('updated_at', expectedUpdatedAt);
+  const { data: changed, error: updateError } = await updateQuery.select('case_id').maybeSingle();
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+  if (!changed) return NextResponse.json({ error: 'Fixture changed during editing. Refresh and review the latest version.' }, { status: 409 });
 
   // Record audit log entry for content update
   try {
@@ -367,7 +379,7 @@ export async function POST(request: NextRequest) {
       new_approved: false,
       review_notes: `Content edited by ${adminUsername}; approval reset, pending re-review.`,
       diff: {
-        changed_fields: Object.keys(update).filter(k => !['approved', 'reviewed_by', 'reviewed_at', 'review_notes'].includes(k)),
+        changed_fields: Object.keys(update).filter(k => !['approved', 'updated_at', 'reviewed_by', 'reviewed_at', 'review_notes'].includes(k)),
         previous_expected: existing.expected ?? null,
         new_expected: update.expected ?? existing.expected ?? null,
         previous_source: existing.source ?? null,

@@ -7,8 +7,9 @@
  * Each story surfaces in a tappable card on HomeDashboard when the festival
  * is ≤ 3 days away on Home.
  *
- * Each narrative is written to the ~500 words sweet spot with authentic,
- * canonical primary sources and verified citations.
+ * Citation strings are editorial provenance metadata, not proof of textual
+ * verification. A source should only be called verified when a separate
+ * evidence review has confirmed the exact text, locator, and translation.
  *
  * Content per festival:
  *  - origin      : In-depth historical / scriptural background (~150-200 words)
@@ -95,7 +96,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       "text": "ॐ नमः शिवाय",
       "transliteration": "Om Namaḥ Śivāya",
       "translation": "I bow to Shiva — to that which is auspicious, the source and dissolution of all.",
-      "source": "Krishna Yajurveda, Taittiriya Samhita 4.5.8"
+      "source": "Pañcākṣarī mantra; compare Śrī Rudram, Taittirīya Saṃhitā 4.5.8 (namaḥ śivāya ca śivatarāya ca)"
     },
     "practice": "Tonight, keep at least one prahara (3 hours) in stillness. Sit with a lamp or a single candle. Let the darkness outside be an invitation to find the light within."
   },
@@ -135,7 +136,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       "text": "रामाय रामभद्राय रामचन्द्राय वेधसे।\nरघुनाथाय नाथाय सीतायाः पतये नमः।।",
       "transliteration": "Rāmāya Rāmabhadrāya Rāmachandrāya vedhase,\nRaghunāthāya nāthāya Sītāyāḥ pataye namaḥ.",
       "translation": "I bow to Rama, to the auspicious Rama, to Ramachandra the creator; to the lord of the Raghu clan, to the master, to the husband of Sita.",
-      "source": "Valmiki Ramayana"
+      "source": "Śrī Rāma Rakṣā Stotra 27"
     },
     "practice": "Today, chose one act of integrity — something you have been postponing because it is uncomfortable. Do it as your personal offering to the spirit of Maryada."
   },
@@ -235,7 +236,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       "text": "कृष्णाय वासुदेवाय हरये परमात्मने।\nप्रणतक्लेशनाशाय गोविन्दाय नमो नमः।।",
       "transliteration": "Kṛṣṇāya Vāsudevāya Haraye paramātmane,\nPraṇatakleshhanāśāya Govindāya namo namaḥ.",
       "translation": "Salutations to Krishna, son of Vasudeva, the remover of obstacles; to the Supreme Soul who destroys the sorrow of those who bow to him — I bow again and again to Govinda.",
-      "source": "Vishnu Purana"
+      "source": "Śrī Kṛṣṇa Caturviṃśati Stotram 26"
     },
     "practice": "Tonight at midnight, sit in silence for five minutes. Imagine the prison walls of whatever constrains you most right now — and then imagine a door opening, a light. Something divine is always being born."
   },
@@ -315,7 +316,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       "text": "या श्रीः स्वयं सुकृतिनां भवनेष्वलक्ष्मीः\nपापात्मनां कृतधियां हृदयेषु बुद्धिः।\nश्रद्धा सतां कुलजनप्रभवस्य लज्जा\nतां त्वां नताः स्म परिपालय देवि विश्वम्।।",
       "transliteration": "Yā śrīḥ svayaṃ sukṛtināṃ bhavaneṣvalakṣmīḥ\npāpātmanāṃ kṛtadhiyāṃ hṛdayeṣu buddhiḥ,\nśraddhā satāṃ kulajanaprabhavasya lajjā\ntāṃ tvāṃ natāḥ sma paripālaya devi viśvam.",
       "translation": "She who is Shri (prosperity) in the homes of the virtuous, Alakshmi (misfortune) to the wicked, wisdom in the hearts of the learned, faith in the noble, and dignity in the well-born — to that Devi we bow; protect the world.",
-      "source": "Shri Suktam (Rigvedic hymn)"
+      "source": "Devī Māhātmya 4.5 (Mārkaṇḍeya Purāṇa)"
     },
     "practice": "Tonight, light one diya in the darkest corner of your home — a closet, a forgotten room. Then light one in your mind: spend five minutes with a quality in yourself you have been neglecting."
   },
@@ -1424,7 +1425,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
     "slug": "Mahalaya Amavasya",
     "emoji": "🕊️",
     "tradition": "hindu",
-    "origin": "Mahalaya Amavasya, also revered across India as Sarva Pitru Amavasya, is the sacred concluding day of the sixteen-day fortnight dedicated to honoring the ancestors (Pitru Paksha). Falling on the new moon of the lunar month of Ashvina (or Bhadrapada in the Purnimanta calendar, corresponding to September–October), this solemn day provides an open cosmic portal where offerings of water, sesame seeds, and food reach departed souls across generations. The canonical importance of Mahalaya Amavasya is expounded in the Garuda Purana (Saroddhara, Chapter 11), the Markandeya Purana, the Vishnu Dharma Shastra, and the Mahabharata. According to the Mahabharata, when the great warrior Karna fell in the Kurukshetra war and ascended to the heavenly realms, his soul was offered golden vessels filled with precious jewels and gold instead of nourishing food. When Karna asked Indra why he was being given wealth rather than food, Indra explained that during his earthly life, Karna had donated untold millions in gold and jewels, but had never offered a single libation of water (tarpana) or grain (anna-daana) in memory of his ancestors, having been unaware of his true lineage as the firstborn son of Kunti. Lord Indra granted Karna a special sixteen-day reprieve to return to the earthly plane, where Karna performed devout tarpana, offering water and sesame seeds to his ancestors and feeding the hungry, before ascending back to eternal peace. The Vishnu Dharma Shastra explains that during Pitru Paksha, departed souls assume a subtle, ethereal form (Vayu-rupa) and travel near the earth, longing for the spiritual moisture of black sesame seeds and pure water offered with filial devotion. In the Ramayana, Lord Sri Rama performed Pitru Tarpana at Gaya during His forest exile to grant eternal peace to King Dasharatha. Scriptures declare that Mahalaya Amavasya is the universal day of redemption for all souls: even if one does not know the exact death anniversary (tithi) of a deceased parent, grandparent, or ancestor, performing Shraddha on Sarva Pitru Amavasya satisfies all departed souls in the lineage.",
+    "origin": "Mahalaya Amavasya, also revered across India as Sarva Pitru Amavasya, is the sacred concluding day of the sixteen-day fortnight dedicated to honoring the ancestors (Pitru Paksha). Falling on the new moon of Ashvina in the purnimanta calendar (Bhadrapada in the amanta calendar, corresponding to September–October), this solemn day provides an open cosmic portal where offerings of water, sesame seeds, and food reach departed souls across generations. The canonical importance of Mahalaya Amavasya is expounded in the Garuda Purana (Saroddhara, Chapter 11), the Markandeya Purana, the Vishnu Dharma Shastra, and the Mahabharata. According to the Mahabharata, when the great warrior Karna fell in the Kurukshetra war and ascended to the heavenly realms, his soul was offered golden vessels filled with precious jewels and gold instead of nourishing food. When Karna asked Indra why he was being given wealth rather than food, Indra explained that during his earthly life, Karna had donated untold millions in gold and jewels, but had never offered a single libation of water (tarpana) or grain (anna-daana) in memory of his ancestors, having been unaware of his true lineage as the firstborn son of Kunti. Lord Indra granted Karna a special sixteen-day reprieve to return to the earthly plane, where Karna performed devout tarpana, offering water and sesame seeds to his ancestors and feeding the hungry, before ascending back to eternal peace. The Vishnu Dharma Shastra explains that during Pitru Paksha, departed souls assume a subtle, ethereal form (Vayu-rupa) and travel near the earth, longing for the spiritual moisture of black sesame seeds and pure water offered with filial devotion. In the Ramayana, Lord Sri Rama performed Pitru Tarpana at Gaya during His forest exile to grant eternal peace to King Dasharatha. Scriptures declare that Mahalaya Amavasya is the universal day of redemption for all souls: even if one does not know the exact death anniversary (tithi) of a deceased parent, grandparent, or ancestor, performing Shraddha on Sarva Pitru Amavasya satisfies all departed souls in the lineage.",
     "significance": "In Sanatana Dharma, human existence is bound by three cosmic debts (Rinas): Deva Rina (debt to the gods), Rishi Rina (debt to the sages), and Pitru Rina (debt to the biological and spiritual ancestors who gave us our physical bodies, cultural heritage, and life opportunities). Mahalaya Amavasya is the supreme spiritual vehicle for discharging Pitru Rina with profound gratitude, reverence, and filial love. The Puranas teach that the offerings of black sesame seeds (tila), kusha grass, pure water, and rice balls (pinda) are transformed through Vedic mantras into subtle spiritual energy that relieves departed souls of karmic distress, enabling them to progress peacefully in higher realms. Metaphysically, Mahalaya Amavasya cleanses ancestral karma, removes spiritual blockages (Pitru Dosha), and invokes the boundless blessings of peace, lineage continuity, and prosperity upon living generations, while transitioning the cosmic atmosphere directly into the radiant dawn of Devi Navratri (Mahalaya Bodhon) starting the following morning.",
     "rituals": [
       "Performing early morning Tarpanam using pure water, black sesame seeds (Til), and sacred Kusha grass on the right index finger along a holy riverbank or at home",
@@ -1966,7 +1967,7 @@ const FESTIVAL_ALIASES: Record<string, string[]> = {
  * Look up a festival story by its name or canonical alias (case-insensitive).
  * Returns null if no story exists for that festival.
  */
-export function getFestivalStory(festivalName: string): FestivalStory | null {
+export function getFestivalStory(festivalName: string, fallbackName?: string | null): FestivalStory | null {
   const needle = festivalName.toLowerCase().trim();
 
   // 1. Direct match on slug
@@ -2001,6 +2002,10 @@ export function getFestivalStory(festivalName: string): FestivalStory | null {
       if (bud) return bud;
     }
     return candidates[0];
+  }
+
+  if (fallbackName && fallbackName.toLowerCase().trim() !== needle) {
+    return getFestivalStory(fallbackName);
   }
 
   return null;

@@ -1,10 +1,13 @@
 /**
- * Eval: recurring tithi-based vrats (Ekadashi / Pradosh / Sankashti).
+ * Eval: every launch-included recurring tithi-based vrat.
  *
- * Read-only. Generates dates from the calendar engine (panchang-derived) for the
- * current + next year, prints upcoming dates + named-observance overlaps, and
- * asserts per-year counts and max spacing so a regression (missed "skipped"
- * tithi or a doubled tithi) fails loudly. Writes nothing to the database.
+ * Read-only. Generates rule-layer candidates from the corrected/legacy masa
+ * gate for the current + next year, prints upcoming dates + named-observance
+ * overlaps, and asserts per-year counts and max spacing so a regression
+ * (missed "skipped" tithi or a doubled tithi) fails loudly. The condition
+ * evaluator's unresolved/review-queue behavior is tested separately; using the
+ * production entry point here would conflate candidate cardinality with
+ * deliberate publication withholding. Writes nothing to the database.
  *
  * Run: node scripts/eval-recurring-vrats.mjs
  */
@@ -15,21 +18,34 @@ const ENTRY = '__recurring_vrats_eval.ts';
 const BUNDLE = '__recurring_vrats_eval.cjs';
 
 const entry = `
-import { calculateObservancesForYear } from './src/lib/calendar/engine';
+import { calculateObservancesForYearMasaGated } from './src/lib/calendar/engine';
 import { CANONICAL_RULES } from './src/lib/calendar/rules';
 
-const recurringSlugs = CANONICAL_RULES.filter(r => r.rule_family === 'lunar_tithi_recurring').map(r => r.slug);
+const recurringRules = CANONICAL_RULES.filter(
+  r => r.rule_family === 'lunar_tithi_recurring' && r.launch_status === 'included'
+);
+const recurringSlugs = recurringRules.map(r => r.slug);
 const thisYear = new Date().getUTCFullYear();
 const years = [thisYear, thisYear + 1];
-const all = years.flatMap(y => calculateObservancesForYear(y));
+const all = years.flatMap(y => calculateObservancesForYearMasaGated(y));
 const today = new Date().toISOString().slice(0, 10);
 const namedDates = new Set(all.filter(o => !recurringSlugs.includes(o.slug)).map(o => o.date));
 
 const EXPECT: Record<string, { min: number; max: number; maxGap: number }> = {
   'ekadashi': { min: 22, max: 27, maxGap: 17 },
   'pradosh-vrat': { min: 22, max: 27, maxGap: 17 },
+  'purnima-vrat': { min: 11, max: 13, maxGap: 33 },
+  'amavasya-vrat': { min: 11, max: 13, maxGap: 33 },
+  // These are deferred today. Keeping their contracts here makes a future
+  // launch-status flip fail closed unless the evaluator also produces them.
+  'vinayaka-chaturthi': { min: 11, max: 13, maxGap: 33 },
   'sankashti-chaturthi': { min: 11, max: 13, maxGap: 32 },
 };
+
+const missingExpectations = recurringSlugs.filter(slug => !EXPECT[slug]);
+if (missingExpectations.length > 0) {
+  throw new Error('Missing recurring-vrat expectations: ' + missingExpectations.join(', '));
+}
 
 let failures = 0;
 function assert(cond: boolean, msg: string) {

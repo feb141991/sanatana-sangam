@@ -182,7 +182,9 @@ export function CalendarSection({
       {/* ── Festival Story Sheet ───────────────────────────────────────────── */}
       <AnimatePresence>
         {(() => {
-          const _activeStory = activeStoryFestival ? getFestivalStory(activeStoryFestival.name) : null;
+          const _activeStory = activeStoryFestival
+            ? getFestivalStory(activeStoryFestival.slug ?? activeStoryFestival.name, activeStoryFestival.name)
+            : null;
           const _activeDays  = activeStoryFestival ? daysFromNow(activeStoryFestival.date) : null;
           return activeStoryFestival && _activeStory ? (
             <motion.div

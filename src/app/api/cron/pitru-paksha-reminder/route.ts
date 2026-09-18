@@ -8,9 +8,8 @@ import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha'
 // ─── Pitru Paksha Morning Reminder ───────────────────────────────────────────
 // Schedule: 0 3 * * * (3 AM UTC = 8:30 AM IST — before the Shraddha window)
 //
-// Fires every morning at 3 AM UTC. During Pitru Paksha (Sept 19–Oct 4 2026),
-// sends ancestor-remembrance notifications to Hindu users only. On other days
-// the handler returns immediately with no DB writes.
+// Fires every morning at 3 AM UTC. During the astronomically derived local
+// Pitru Paksha window, sends ancestor-remembrance notifications to Hindu users.
 //
 // notification_key "pitru-paksha:<date>" prevents duplicate sends per day.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,12 +22,6 @@ export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  // Check if today is Pitru Paksha before doing any DB work
-  const pitruInfo = getPitruPakshaDay(new Date());
-  if (!pitruInfo) {
-    return NextResponse.json({ message: 'Not in Pitru Paksha window — nothing to do', sent: 0 });
   }
 
   const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -47,7 +40,7 @@ export async function GET(request: Request) {
     // Only target Hindu (and null/unset tradition) users
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end')
+      .select('id, full_name, tradition, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end')
       .or('tradition.eq.hindu,tradition.is.null');
 
     if (usersError) {
@@ -57,26 +50,31 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No Hindu users found', sent: 0 });
     }
 
-    const copy = getPitruPakshaBannerCopy(pitruInfo);
-
-    const eligibleUsers = users.filter((user) => {
+    const eligibleUsers = users.flatMap((user) => {
       const tz = resolveTimeZone((user as any).timezone);
-      return canSendInLocalWindow(
+      const latitude = (user as any).latitude as number | null;
+      const longitude = (user as any).longitude as number | null;
+      if (latitude == null || longitude == null) return [];
+      if (!canSendInLocalWindow(
         now,
         tz,
         targetLocalHour,
         (user as any).notification_quiet_hours_start ?? null,
         (user as any).notification_quiet_hours_end ?? null
-      );
+      )) return [];
+
+      const localDate = getLocalDateIso(now, tz);
+      const pitruInfo = getPitruPakshaDay(localDate, { lat: latitude, lon: longitude, tz });
+      return pitruInfo ? [{ user, localDate, pitruInfo }] : [];
     });
 
     if (eligibleUsers.length === 0) {
       return NextResponse.json({ message: 'No users in 8 AM window', sent: 0 });
     }
 
-    const notifications = eligibleUsers.map((u) => {
-      const tz        = resolveTimeZone((u as any).timezone);
-      const localDate = getLocalDateIso(now, tz);
+    const notifications = eligibleUsers.map(({ user: u, localDate, pitruInfo }) => {
+      const tz = resolveTimeZone((u as any).timezone);
+      const copy = getPitruPakshaBannerCopy(pitruInfo);
 
       return {
         user_id:          u.id,
@@ -123,24 +121,39 @@ export async function GET(request: Request) {
 
     const baseUrl   = new URL(request.url).origin;
     const actionUrl = new URL('/home', baseUrl).toString();
-    const pushResult = await sendPushNotification({
-      userIds: insertedIds,
-      title:   pitruInfo.isMahalaya ? '🪔 Mahalaya Amavasya — today' : `☽ ${copy.title}`,
-      body:    copy.subtitle,
-      url:     actionUrl,
-      data:    { type: 'festival' },
-    }, { 
-      type: 'pitru_paksha',
-      notificationKeysByUserId,
-      notificationIdsByUserId,
-    });
+    const insertedIdSet = new Set(insertedIds);
+    const pushGroups = new Map<string, typeof eligibleUsers>();
+    for (const eligible of eligibleUsers) {
+      if (!insertedIdSet.has(eligible.user.id)) continue;
+      const key = `${eligible.pitruInfo.day}:${eligible.pitruInfo.isMahalaya}`;
+      pushGroups.set(key, [...(pushGroups.get(key) ?? []), eligible]);
+    }
+
+    let pushTargets = 0;
+    for (const group of pushGroups.values()) {
+      const info = group[0].pitruInfo;
+      const groupCopy = getPitruPakshaBannerCopy(info);
+      const userIds = group.map(({ user }) => user.id);
+      const pushResult = await sendPushNotification({
+        userIds,
+        title: info.isMahalaya ? '🪔 Mahalaya Amavasya — today' : `☽ ${groupCopy.title}`,
+        body: groupCopy.subtitle,
+        url: actionUrl,
+        data: { type: 'festival' },
+      }, {
+        type: 'pitru_paksha',
+        notificationKeysByUserId: Object.fromEntries(userIds.map((id) => [id, notificationKeysByUserId[id]])),
+        notificationIdsByUserId: Object.fromEntries(userIds.map((id) => [id, notificationIdsByUserId[id]])),
+      });
+      pushTargets += pushResult.sent;
+    }
 
     return NextResponse.json({
       message:      'Pitru Paksha reminders sent',
-      day:          pitruInfo.day,
-      isMahalaya:   pitruInfo.isMahalaya,
+      local_days:   [...new Set(eligibleUsers.map(({ pitruInfo }) => pitruInfo.day))],
+      mahalaya:     eligibleUsers.some(({ pitruInfo }) => pitruInfo.isMahalaya),
       reminded:     totalInserted,
-      push_targets: pushResult.sent,
+      push_targets: pushTargets,
     });
   } catch (error) {
     console.error('[pitru-paksha-reminder] cron crashed:', error);

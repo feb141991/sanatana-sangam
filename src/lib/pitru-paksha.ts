@@ -1,136 +1,159 @@
 /**
- * ─────────────────────────────────────────────────────────────────────────────
- * Pitru Paksha — 16-day ancestor-remembrance period
- * ─────────────────────────────────────────────────────────────────────────────
+ * Pitru Paksha — the Bhadrapada kṛṣṇa-pakṣa ancestor-remembrance period.
  *
- * Pitru Paksha ("fortnight of ancestors") falls in the dark fortnight of
- * Bhadrapada, when the Sun is in Virgo. During this period — concluded by
- * Mahalaya Amavasya — Hindus perform Shraddha rituals, offer Pinda daan, and
- * pray for departed ancestors to attain peace.
- *
- * 2026 dates: September 19 (Mahalaya Pratipada) → October 4 (Mahalaya Amavasya)
- *
- * The detection is date-range based (not astronomy-computed) for predictability.
- * A new constant should be added each year alongside the festival calendar refresh.
- * ─────────────────────────────────────────────────────────────────────────────
+ * Dates are derived at local sunrise from the same corrected lunar-month engine
+ * used by the canonical calendar. There is deliberately no Gregorian lookup
+ * table: the helper therefore continues to work in future years and follows
+ * the user's observance location.
  */
+import {
+  getLunarMonth,
+  getSunriseForDateStr,
+  offsetCivilDateStr,
+  type LocationInput,
+} from '@sangam/panchang-engine';
+import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 
 export interface PitruPakshaDay {
-  /** YYYY-MM-DD — same as today's date when we're in the period */
+  /** YYYY-MM-DD in the observance location. */
   date: string;
-  /** Day number within the fortnight (1 = Pratipada, 15/16 = Mahalaya Amavasya) */
+  /** Civil-day position within this year's astronomically derived window. */
   day: number;
-  /** Total days in this year's Pitru Paksha window */
+  /** Number of civil days in the window (normally 15, but tithi growth/loss can vary it). */
   totalDays: number;
-  /** True only on Mahalaya Amavasya — the most auspicious day */
+  /** True only on the final sunrise-qualified Amavasya day. */
   isMahalaya: boolean;
-  /** Tithi name for this day (approximate) */
+  /** Sunrise tithi for this civil day. */
   tithiName: string;
 }
 
-/** Pitru Paksha windows by year — add each year when calendar is refreshed */
-const PITRU_PAKSHA_WINDOWS: Array<{
-  year: number;
-  start: string; // inclusive, YYYY-MM-DD
-  end:   string; // inclusive (Mahalaya Amavasya)
-}> = [
-  { year: 2026, start: '2026-09-19', end: '2026-10-04' },
-];
+export type PitruPakshaLocation = LocationInput;
 
-/** Approximate tithi names for each day of the fortnight */
-const TITHI_NAMES = [
-  'Pratipada',
-  'Dwitiya',
-  'Tritiya',
-  'Chaturthi',
-  'Panchami',
-  'Shashthi',
-  'Saptami',
-  'Ashtami',
-  'Navami',
-  'Dashami',
-  'Ekadashi',
-  'Dwadashi',
-  'Trayodashi',
-  'Chaturdashi',
-  'Mahalaya Amavasya',
-  'Mahalaya Amavasya', // 16-day fallback
-];
+const DEFAULT_LOCATION: PitruPakshaLocation = REFERENCE_LOCATION_UJJAIN;
+const MAX_BOUNDARY_SEARCH_DAYS = 18;
 
-/**
- * Returns Pitru Paksha context if the given date falls within the period,
- * null otherwise.
- */
-export function getPitruPakshaDay(date: Date = new Date()): PitruPakshaDay | null {
-  const iso = date.toISOString().split('T')[0];
+type DayClassification = {
+  inPeriod: boolean;
+  tithiIndex: number;
+  tithiName: string;
+};
 
-  for (const window of PITRU_PAKSHA_WINDOWS) {
-    if (iso >= window.start && iso <= window.end) {
-      const startMs = new Date(window.start).getTime();
-      const endMs   = new Date(window.end).getTime();
-      const dayMs   = 1000 * 60 * 60 * 24;
-      const totalDays = Math.round((endMs - startMs) / dayMs) + 1;
-      const day       = Math.round((new Date(iso).getTime() - startMs) / dayMs) + 1;
-      const isMahalaya = iso === window.end;
+const classificationCache = new Map<string, DayClassification>();
 
-      return {
-        date:       iso,
-        day,
-        totalDays,
-        isMahalaya,
-        tithiName:  TITHI_NAMES[Math.min(day - 1, TITHI_NAMES.length - 1)],
-      };
-    }
-  }
-
-  return null;
+function locationKey(location: PitruPakshaLocation): string {
+  return `${location.lat}:${location.lon}:${location.tz}`;
 }
 
-/** Returns true if today is within any Pitru Paksha window. */
-export function isInPitruPaksha(date: Date = new Date()): boolean {
-  return getPitruPakshaDay(date) !== null;
+function civilDateInTimeZone(date: Date, timeZone: string): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  return `${value('year')}-${value('month')}-${value('day')}`;
+}
+
+function classifyCivilDay(dateStr: string, location: PitruPakshaLocation): DayClassification {
+  const key = `${dateStr}:${locationKey(location)}`;
+  const cached = classificationCache.get(key);
+  if (cached) return cached;
+
+  const { sunrise } = getSunriseForDateStr(dateStr, location);
+  const lunarMonth = getLunarMonth(sunrise, 'amanta');
+  const panchang = calculatePanchang(sunrise, location.lat, location.lon, location.tz);
+  const inPeriod =
+    lunarMonth.ok &&
+    lunarMonth.monthName === 'Bhadrapada' &&
+    !lunarMonth.isAdhika &&
+    lunarMonth.paksha === 'krishna' &&
+    panchang.tithiIndex >= 16;
+
+  const result = {
+    inPeriod,
+    tithiIndex: panchang.tithiIndex,
+    tithiName: panchang.tithi,
+  };
+  classificationCache.set(key, result);
+  return result;
+}
+
+function findBoundary(
+  dateStr: string,
+  location: PitruPakshaLocation,
+  direction: -1 | 1,
+): string {
+  let boundary = dateStr;
+  for (let offset = 1; offset <= MAX_BOUNDARY_SEARCH_DAYS; offset++) {
+    const candidate = offsetCivilDateStr(dateStr, direction * offset);
+    if (!classifyCivilDay(candidate, location).inPeriod) break;
+    boundary = candidate;
+  }
+  return boundary;
+}
+
+function civilDayDistance(start: string, end: string): number {
+  const startMs = Date.parse(`${start}T00:00:00Z`);
+  const endMs = Date.parse(`${end}T00:00:00Z`);
+  return Math.round((endMs - startMs) / 86_400_000);
+}
+
+/**
+ * Returns Pitru Paksha context for a Date or YYYY-MM-DD civil date.
+ * Passing a string is preferred when the caller already owns a selected civil
+ * date because it avoids converting that date through the runtime timezone.
+ */
+export function getPitruPakshaDay(
+  date: Date | string = new Date(),
+  location: PitruPakshaLocation = DEFAULT_LOCATION,
+): PitruPakshaDay | null {
+  const dateStr = typeof date === 'string' ? date : civilDateInTimeZone(date, location.tz);
+  const classification = classifyCivilDay(dateStr, location);
+  if (!classification.inPeriod) return null;
+
+  const start = findBoundary(dateStr, location, -1);
+  const end = findBoundary(dateStr, location, 1);
+  return {
+    date: dateStr,
+    day: civilDayDistance(start, dateStr) + 1,
+    totalDays: civilDayDistance(start, end) + 1,
+    isMahalaya: dateStr === end,
+    tithiName: dateStr === end ? 'Mahalaya Amavasya' : classification.tithiName,
+  };
+}
+
+export function isInPitruPaksha(
+  date: Date | string = new Date(),
+  location: PitruPakshaLocation = DEFAULT_LOCATION,
+): boolean {
+  return getPitruPakshaDay(date, location) !== null;
 }
 
 /** Banner copy for each day (rotates through ancestor-focused themes). */
 export function getPitruPakshaBannerCopy(info: PitruPakshaDay): { title: string; subtitle: string } {
   if (info.isMahalaya) {
     return {
-      title:    'Mahalaya Amavasya',
+      title: 'Mahalaya Amavasya',
       subtitle: 'The most auspicious day of Pitru Paksha — offer tarpan and Pinda daan to all ancestors today.',
     };
   }
 
   const copies: Array<{ title: string; subtitle: string }> = [
     {
-      title:    `Pitru Paksha — Day ${info.day}`,
-      subtitle: 'The ancestors are near. Offer water (tarpan) at sunrise today in their memory.',
+      title: `Pitru Paksha — Day ${info.day}`,
+      subtitle: 'A sacred time to remember your ancestors with gratitude and prayer.',
     },
     {
-      title:    `${info.tithiName} of Pitru Paksha`,
-      subtitle: 'Cook a simple, saatvik meal today. Offer the first portion to a crow — believed to carry it to the ancestors.',
+      title: `Pitru Paksha — ${info.tithiName}`,
+      subtitle: 'Offer water, sesame, or a quiet prayer in honour of those who came before you.',
     },
     {
-      title:    'Remember Your Lineage',
-      subtitle: 'Light a lamp (diya) tonight for those who came before you. Their blessings protect the family.',
-    },
-    {
-      title:    'Shraaddha Practice',
-      subtitle: 'Donate food, clothing, or money in the name of your ancestors today. Their peace is your peace.',
-    },
-    {
-      title:    `Day ${info.day} of Pitru Paksha`,
-      subtitle: 'Chant "Om Pitru Devaya Namaha" 108 times. Invite peace for departed souls across all generations.',
-    },
-    {
-      title:    'Pitru Tarpan',
-      subtitle: 'Place water mixed with sesame seeds (til) in your palms at sunrise and offer it southward — the direction of the ancestors.',
-    },
-    {
-      title:    'The Fortnight of Gratitude',
-      subtitle: 'Whatever you have inherited — strength, values, love — carries the fingerprints of ancestors. Honour that today.',
+      title: `Pitru Paksha — Day ${info.day} of ${info.totalDays}`,
+      subtitle: 'May your remembrance bring peace to your ancestors and blessings to your family.',
     },
   ];
 
-  // Rotate by day so each day gets a distinct copy
   return copies[(info.day - 1) % copies.length];
 }

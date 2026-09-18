@@ -815,12 +815,13 @@ export default function HomeDashboard({
         description: obs.description || '',
         type: obs.kind as import('@/lib/festivals').Festival['type'],
         tradition: (obs.tradition || 'all') as import('@/lib/festivals').Festival['tradition'],
+        slug: obs.slug,
         route_kind: obs.route_kind as string,
         route_slug: obs.route_slug
       }));
 
   const activeFestivalStories = apiFestivals
-    .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysFromNow(f.date) }))
+    .map(f => ({ festival: f, story: getFestivalStory(f.slug ?? f.name, f.name), daysLeft: daysFromNow(f.date) }))
     .filter(x => x.story && x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= HOME_OBSERVANCE_WINDOW_DAYS);
 
   const activeVratFestivals = apiFestivals
@@ -857,7 +858,7 @@ export default function HomeDashboard({
 
   const pitruPakshaDay = (() => {
     if (tradition && tradition !== 'hindu' && tradition !== 'all') return null;
-    return getPitruPakshaDay(selectedDate);
+    return getPitruPakshaDay(fmtDate(selectedDate, 'yyyy-MM-dd'), resolvedLoc);
   })();
   const pitruPakshaCopy = pitruPakshaDay ? getPitruPakshaBannerCopy(pitruPakshaDay) : null;
 
@@ -1223,7 +1224,9 @@ export default function HomeDashboard({
       {/* ── Festival Story Sheet ── */}
       <AnimatePresence>
         {(() => {
-          const _activeStory = activeStoryFestival ? getFestivalStory(activeStoryFestival.name) : null;
+          const _activeStory = activeStoryFestival
+            ? getFestivalStory(activeStoryFestival.slug ?? activeStoryFestival.name, activeStoryFestival.name)
+            : null;
           const _activeDays  = activeStoryFestival ? daysFromNow(activeStoryFestival.date) : null;
           return activeStoryFestival && _activeStory ? (
           <motion.div

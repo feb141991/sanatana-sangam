@@ -9,8 +9,8 @@ import festivalContentJson from '../festival-content.json';
 import rulesJson from '../rules.json';
 
 describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication', () => {
-  const data = festivalContentJson as { version: string; festivals: any[] };
-  const rules = rulesJson as any[];
+  const data = festivalContentJson;
+  const rules = rulesJson;
 
   it('1. covers 100% of the 116 rules in rules.json (114 unique slugs)', () => {
     const contentSlugs = new Set(data.festivals.map(f => f.definitionKey));
@@ -21,7 +21,7 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
     }
   });
 
-  it('2. verifies bilingual editorial integrity (EN & HI) for every festival', () => {
+  it('2. retains bilingual drafts while withholding every field pending durable provenance', () => {
     for (const f of data.festivals) {
       expect(f.name?.value?.en, `Missing EN name for ${f.definitionKey}`).toBeDefined();
       expect(f.name?.value?.hi, `Missing HI name for ${f.definitionKey}`).toBeDefined();
@@ -38,16 +38,33 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
       expect(f.donts?.value?.en?.length, `Expected donts for ${f.definitionKey}`).toBeGreaterThanOrEqual(1);
 
       expect(f.pujaItems?.value?.en?.length, `Expected >= 3 pujaItems for ${f.definitionKey}`).toBeGreaterThanOrEqual(3);
+
+      for (const [fieldName, field] of Object.entries({
+        name: f.name,
+        tagline: f.tagline,
+        significance: f.significance,
+        rituals: f.rituals,
+        dos: f.dos,
+        donts: f.donts,
+        pujaItems: f.pujaItems,
+      })) {
+        expect(field.status, `${f.definitionKey}.${fieldName} must remain withheld`).toBe('pending_source');
+        expect(field.sourceRefs, `${f.definitionKey}.${fieldName} carries unverified source metadata`).toEqual([]);
+        expect('reviewRef' in field, `${f.definitionKey}.${fieldName} carries an unsupported review claim`).toBe(false);
+      }
     }
   });
 
-  it('3. verifies authentic mantra and translations for every festival', () => {
+  it('3. retains structurally complete mantra drafts without claiming authenticity', () => {
     for (const f of data.festivals) {
       expect(f.mantra, `Expected mantra for ${f.definitionKey}`).toBeDefined();
       expect(f.mantra.sanskrit.length, `Mantra text too short for ${f.definitionKey}`).toBeGreaterThan(5);
       expect(f.mantra.transliteration.length, `Transliteration too short for ${f.definitionKey}`).toBeGreaterThan(5);
       expect(f.mantra.translation?.value?.en?.length, `Mantra EN translation too short for ${f.definitionKey}`).toBeGreaterThan(10);
       expect(f.mantra.translation?.value?.hi?.length, `Mantra HI translation too short for ${f.definitionKey}`).toBeGreaterThan(10);
+      expect(f.mantra.translation.status, `${f.definitionKey} mantra must remain withheld`).toBe('pending_source');
+      expect(f.mantra.translation.sourceRefs, `${f.definitionKey} mantra carries unverified source metadata`).toEqual([]);
+      expect('reviewRef' in f.mantra.translation, `${f.definitionKey} mantra carries an unsupported review claim`).toBe(false);
     }
   });
 

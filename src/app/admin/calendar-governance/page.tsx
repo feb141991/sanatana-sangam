@@ -122,8 +122,10 @@ export default function CalendarGovernancePage() {
   const targetFindingId = searchParams.get('findingId') || searchParams.get('finding');
   const targetSlug = searchParams.get('slug');
   const targetYear = searchParams.get('year');
+  const targetCaseId = searchParams.get('caseId');
 
   const [tab, setTab] = useState<Tab>(() => {
+    if (targetCaseId) return 'fixtures';
     if (urlTab === 'integrity' || targetFindingId || targetSlug) return 'integrity';
     if (urlTab && ['coverage', 'fixtures', 'review-queue', 'integrity', 'activity'].includes(urlTab)) return urlTab;
     return 'coverage';
@@ -136,12 +138,14 @@ export default function CalendarGovernancePage() {
   } | null>(null);
 
   useEffect(() => {
-    if (urlTab === 'integrity' || targetFindingId || targetSlug) {
+    if (targetCaseId) {
+      setTab('fixtures');
+    } else if (urlTab === 'integrity' || targetFindingId || targetSlug) {
       setTab('integrity');
     } else if (urlTab && ['coverage', 'fixtures', 'review-queue', 'integrity', 'activity'].includes(urlTab)) {
       setTab(urlTab);
     }
-  }, [urlTab, targetFindingId, targetSlug]);
+  }, [urlTab, targetFindingId, targetSlug, targetCaseId]);
 
   const addToast = useCallback((t: ToastFeedback) => {
     setToasts(prev => [t, ...prev.slice(0, 4)]);
@@ -166,6 +170,7 @@ export default function CalendarGovernancePage() {
             </Link>
             <div>
               <h1 className="text-xl font-bold font-serif theme-ink">Calendar Governance</h1>
+              <Link href="/admin/calendar-evidence" className="mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--brand-primary)] underline focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]">Compare official calendar evidence</Link>
               <p className="text-[10px] text-[var(--brand-muted)] uppercase tracking-[0.2em] font-bold">
                 Golden Fixtures · Review Queue · Activity Log · Coverage
               </p>
@@ -210,7 +215,7 @@ export default function CalendarGovernancePage() {
 
       <div className="max-w-6xl mx-auto px-6 py-10">
         {tab === 'coverage' && <CoverageSection onSelectFilter={navigateToFixtures} />}
-        {tab === 'fixtures' && <FixturesSection initialFilter={governanceFilter} onToast={addToast} />}
+        {tab === 'fixtures' && <FixturesSection initialFilter={governanceFilter} initialCaseId={targetCaseId} onToast={addToast} />}
         {tab === 'review-queue' && <ReviewQueueSection onToast={addToast} />}
         {tab === 'integrity' && <IntegritySection targetFindingId={targetFindingId} targetSlug={targetSlug} targetYear={targetYear} onToast={addToast} onInspectFixture={(slug) => { setGovernanceFilter({ tradition: undefined, filterType: 'all' }); setTab('fixtures'); }} />}
         {tab === 'activity' && <ActivitySection />}
@@ -609,15 +614,17 @@ function CategoryRail({ rows, sel, onSelect }: {
 
 function FixturesSection({
   initialFilter,
+  initialCaseId,
   onToast,
 }: {
   initialFilter?: { tradition?: string; filterType?: SourceFilter } | null;
+  initialCaseId?: string | null;
   onToast?: (t: ToastFeedback) => void;
 }) {
   const [rows, setRows] = useState<GoldenFixtureRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>(initialFilter?.filterType ?? 'needs_review');
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>(initialCaseId ? 'all' : initialFilter?.filterType ?? 'needs_review');
   const [categorySel, setCategorySel] = useState<CategorySel>(
     initialFilter?.tradition ? { tradition: initialFilter.tradition, kind: null } : null
   );
@@ -626,7 +633,7 @@ function FixturesSection({
   // year's rows across all months; a specific month with year=0 shows that
   // month across every year.
   const currentYear = new Date().getFullYear();
-  const [yearFilter, setYearFilter] = useState(currentYear);
+  const [yearFilter, setYearFilter] = useState(initialCaseId ? 0 : currentYear);
   const [monthFilter, setMonthFilter] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -694,11 +701,12 @@ function FixturesSection({
 
   const yearMonthFiltered = useMemo(() => {
     return categoryFiltered.filter(f => {
+      if (initialCaseId && f.case_id !== initialCaseId) return false;
       if (yearFilter !== 0 && f.year !== yearFilter) return false;
       if (monthFilter !== 0 && rowMonth(f) !== monthFilter) return false;
       return true;
     });
-  }, [categoryFiltered, yearFilter, monthFilter]);
+  }, [categoryFiltered, yearFilter, monthFilter, initialCaseId]);
 
   const filtered = useMemo(() => {
     if (sourceFilter === 'needs_review') return yearMonthFiltered.filter(f => isRealFixture(f) && !f.approved);
@@ -908,6 +916,7 @@ function FixturesSection({
       {!loading && <CategoryRail rows={rows} sel={categorySel} onSelect={handleSelectCategory} />}
 
       <div className="flex-1 min-w-0 space-y-4">
+        {initialCaseId && <div className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-3 text-sm theme-ink">Showing linked fixture {initialCaseId}. <Link href="/admin/calendar-governance?tab=fixtures" className="ml-2 text-[var(--brand-primary)] underline">View all fixtures</Link></div>}
         <div className="flex items-center gap-2 flex-wrap">
           <FilterPill active={sourceFilter === 'needs_review'} onClick={() => setSourceFilter('needs_review')} label={`Needs review (${counts.needs_review})`} />
           <FilterPill active={sourceFilter === 'real'}         onClick={() => setSourceFilter('real')}         label={`Sourced (${counts.real})`} />

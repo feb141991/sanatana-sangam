@@ -48,6 +48,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Nav and Footer Branding](decisions/nav-footer-branding.md) — river-light-horizontal.png is canonical; no text fallbacks
 - [Nitya Karma Error Boundaries](decisions/nitya-karma-error-boundaries.md) — Route-level error.tsx on /insights and /plans; reset() + Go Back recovery; never a single parent boundary
 - [Calendar Launch Governance](decisions/calendar-launch-governance.md) — Neutral launch defaults, unresolved-date withholding, profile-selected variants, and deferred scholarly scope
+- [Festival Content Provenance Gate](decisions/festival-content-provenance-gate.md) — Backend-owned drafts remain withheld until exact sources, rights, and durable human review evidence exist
 
 ## How to add entries
 

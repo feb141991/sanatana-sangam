@@ -25,6 +25,7 @@
  * oracle, not a database.
  */
 import { describe, it, expect } from 'vitest';
+import rules from '../../../../packages/dharma-rules/src/festivals/rules.json';
 import {
   batchIdentityKey,
   commitOccurrencesWithBatches,
@@ -92,6 +93,29 @@ function makeClient(opts: {
     from(table: string) {
       if (table === 'observance_materialisation_batches') {
         return {
+          select: (columns?: string) => {
+            const predicates: Array<(row: Row) => boolean> = [];
+            const query = {
+              eq(column: string, value: unknown) {
+                predicates.push((row) => row[column] === value);
+                return query;
+              },
+              in(column: string, values: unknown[]) {
+                predicates.push((row) => values.includes(row[column]));
+                return query;
+              },
+              then<TResult1 = { data: Row[]; error: null }, TResult2 = never>(
+                onfulfilled?: ((value: { data: Row[]; error: null }) => TResult1 | PromiseLike<TResult1>) | null,
+                onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
+              ) {
+                const rows = [...batches.values()].filter((row) =>
+                  predicates.every((predicate) => predicate(row))
+                );
+                return Promise.resolve({ data: project(rows, columns), error: null }).then(onfulfilled, onrejected);
+              },
+            };
+            return query;
+          },
           upsert: (row: Row) => ({
             select: () => ({
               single: async () => {
@@ -117,6 +141,13 @@ function makeClient(opts: {
                   );
                 }
                 batches.set(k, merged);
+              }
+              return { error: null };
+            },
+            in: async (column: string, values: unknown[]) => {
+              for (const [key, batch] of batches) {
+                if (!values.includes(batch[column])) continue;
+                batches.set(key, { ...batch, ...patch });
               }
               return { error: null };
             },
@@ -223,6 +254,9 @@ const DEFS = [
   // occurrence. The commit fixture must therefore model the definition catalog,
   // not only definitions that happen to insert rows in this launch year.
   { id: 'def-yogini', slug: 'yogini-ekadashi' },
+  { id: 'def-ekadashi', slug: 'ekadashi' },
+  { id: 'def-pradosh', slug: 'pradosh-vrat' },
+  { id: 'def-purnima', slug: 'purnima-vrat' },
 ];
 
 /**
@@ -233,19 +267,12 @@ const DEFS = [
  * against DEFS would have asserted a property it could not exercise -- which is
  * why the test below refuses to run unless it observes real suppression.
  */
-const DEFS_WITH_RECURRING = [
-  ...DEFS,
-  { id: 'def-ekadashi', slug: 'ekadashi' },
-  { id: 'def-pradosh', slug: 'pradosh-vrat' },
-  { id: 'def-purnima', slug: 'purnima-vrat' },
-  { id: 'def-amavasya', slug: 'amavasya-vrat' },
-  { id: 'def-shivaratri', slug: 'maha-shivaratri' },
-  { id: 'def-ganesh', slug: 'ganesh-chaturthi' },
-  { id: 'def-navratri', slug: 'navratri-begins' },
-  { id: 'def-dussehra', slug: 'dussehra' },
-  { id: 'def-guru-purnima', slug: 'guru-purnima' },
-  { id: 'def-raksha', slug: 'raksha-bandhan' },
-];
+const DEFS_WITH_RECURRING = rules.map((rule) => ({
+  id: `def-${rule.slug}`,
+  slug: rule.slug,
+  display_name: rule.display_name,
+  kind: rule.kind,
+}));
 
 // ---------------------------------------------------------------------------
 
@@ -516,7 +543,10 @@ describe('materializeOccurrencesForYears — commit mode', () => {
     });
 
     const suppressed = (result as any).summary?.[2026]?.suppressedOverlap ?? 0;
-    expect(suppressed, 'no suppression happened, so this test proves nothing').toBeGreaterThan(0);
+    expect(
+      suppressed,
+      `no suppression happened, so this test proves nothing: ${JSON.stringify((result as any).summary?.[2026])}`,
+    ).toBeGreaterThan(0);
 
     const partial = [...c.batches.values()].filter(b => b.status !== 'complete');
     expect(
