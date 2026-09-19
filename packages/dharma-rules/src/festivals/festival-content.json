@@ -14890,6 +14890,139 @@
           }
         }
       }
+    },
+    {
+      "definitionKey": "radha-ashtami",
+      "emoji": "🌸",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Radha Ashtami",
+          "hi": "राधा अष्टमी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The divine appearance of Srimati Radharani, the embodiment of devotion",
+          "hi": "भक्तिस्वरूपा श्री राधारानी का पावन प्राकट्योत्सव"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Radha Ashtami celebrates the appearance of Srimati Radharani, the supreme hladini shakti (divine pleasure potency) of Lord Krishna, exactly fifteen days after Janmashtami on Bhadrapada Shukla Ashtami. In Braj, She appeared on a golden lotus in the Yamuna at Raval and was raised by King Vrishabhanu and Queen Kirtida at Barsana. Devotees honor Her as the ultimate personification of selfless love and unalloyed devotion.",
+          "hi": "भाद्रपद मास के शुक्ल पक्ष की अष्टमी तिथि को मध्याह्न काल में श्री राधारानी का प्राकट्य रावल एवं बरसाना धाम में हुआ। भगवान श्री कृष्ण के प्राकट्य (जन्माष्टमी) के ठीक 15 दिन बाद यह पावन पर्व मनाया जाता है। श्री राधा जी भगवान श्री कृष्ण की आह्लादिनी शक्ति और प्रेम-भक्ति की सर्वोच्च अधिष्ठात्री हैं।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Fasting until midday (Madhyahna 12:00 PM)",
+            "Panchamrita and floral abhishekam of Sri Radha-Krishna deities at noon",
+            "Offering fresh blue lotus flowers, fragrant garlands, and Chappan Bhog",
+            "Chanting Radha Kripa Kataksha Stotra and Radha Sahasranama"
+          ],
+          "hi": [
+            "दोपहर मध्याह्न (12:00 बजे) तक उपवास या फलाहार का पालन",
+            "मध्याह्न वेला में श्री राधा-कृष्ण विग्रह का पंचामृत एवं सुगंधित पुष्पों से महाभिषेक",
+            "नीलकमल, मालती पुष्प, सुंदर नवीन वस्त्र एवं छप्पन भोग का अर्पण",
+            "श्री राधा कृपा कटाक्ष स्तोत्र, सहस्रनाम व युगल संकीर्तन का पाठ"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Chant the holy names of Radha and Krishna with devotion",
+            "Perform or attend the midday Mahabhisheka and aarti",
+            "Break the fast after noon with anukalpa prasad"
+          ],
+          "hi": [
+            "राधे-कृष्ण महामंत्र और युगल नाम संकीर्तन करें",
+            "मध्याह्न काल में महाभिषेक और आरती में सम्मिलित हों",
+            "मध्याह्न आरती के उपरांत अनुकल्प प्रसाद से व्रत पूर्ण करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not consume grains before the midday abhisheka and puja",
+            "Avoid critical speech or disharmony, especially in sacred spaces"
+          ],
+          "hi": [
+            "मध्याह्न पूजा व अभिषेक से पूर्व अन्न ग्रहण न करें",
+            "किसी भी प्रकार की कटु वाणी अथवा कलह से दूर रहें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Radha-Krishna deity or portrait",
+            "Panchamrita (milk, curd, ghee, honey, sugar candy)",
+            "Blue and yellow lotus or fresh fragrant flowers",
+            "Ghee lamp and sandalwood paste",
+            "Chappan Bhog or sweet milk offerings"
+          ],
+          "hi": [
+            "श्री राधा-कृष्ण का विग्रह या चित्र",
+            "पंचामृत (दूध, दही, घी, शहद, मिश्री)",
+            "कमल व ताजे सुगंधित पुष्प",
+            "शुद्ध घी का दीपक व चंदन",
+            "मावे की मिठाई, खीर व भोग सामग्री"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "तप्तकाञ्चनगौराङ्गि राधे वृन्दावनेश्वरि। वृषभानुसुते देवि प्रणमामि हरिप्रिये॥",
+        "transliteration": "taptakāñcanagaurāṅgi rādhe vṛndāvaneśvari, vṛṣabhānusute devi praṇamāmi haripriye",
+        "translation": {
+          "value": {
+            "en": "I offer my respectful obeisances unto Srimati Radharani, whose bodily complexion is like molten gold, who is the Queen of Vrindavan, the beloved daughter of King Vrishabhanu, and the dearest to Lord Hari.",
+            "hi": "तपे हुए सुवर्ण के समान गौर वर्ण वाली, श्री वृन्दावन की स्वामिनी, महाराज वृषभानु की राजदुलारी और श्री हरि की परम प्रिया श्री राधारानी को मैं प्रणाम करता हूँ।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
     }
   ]
 }

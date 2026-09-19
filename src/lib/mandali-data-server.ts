@@ -71,7 +71,7 @@ async function ensureTodaysMandaliPrompt(
       // Check for canonical primary observances for today to pick a calendar-aware prompt
       const { data: occurrences } = await admin
         .from('observance_occurrences')
-        .select('date, observance_definitions(slug, kind, name)')
+        .select('date, observance_definitions(slug, kind, display_name)')
         .eq('date', promptDate)
         .eq('publication_status', 'published')
         .limit(5);
