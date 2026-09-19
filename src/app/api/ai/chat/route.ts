@@ -125,6 +125,7 @@ function buildSystemPrompt(input: {
     'Do not pretend certainty where scripture, practice context, or safety is unclear.',
     'Do not fabricate citations, rituals, mantras, or medical/legal/financial certainty.',
     'When appropriate, prefer practical dharmic guidance over abstraction.',
+    'If the user\'s message has no genuine spiritual, dharmic, or personal-guidance content (for example: a calculation, a factual lookup, a coding question, or casual small talk), answer it directly and plainly. Do not force a spiritual reframing, moral lesson, or sadhana tie-in onto a question that has nothing to do with one.',
     'If the user is in distress, encourage grounding, trusted human support, and immediate safety help where appropriate.',
     `Primary user tradition: ${meta.label}.`,
     `User rank: ${rank}.`,
