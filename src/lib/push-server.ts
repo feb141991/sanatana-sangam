@@ -121,13 +121,27 @@ type TokenRow = { user_id: string; token: string };
 
 // --- Channel 1: Expo push (native app) ---------------------------------------
 
+type ExpoSendResult = {
+  sentUserIds: Set<string>;
+  // Never attempted -- e.g. no registered push token. Distinct from
+  // failedUserIds: a caller (notification-dispatch) should treat this as a
+  // terminal, non-retryable outcome (there's nothing that a retry would
+  // change), not accumulate retry_count against it.
+  skippedUserIds: Set<string>;
+  // Attempted and Expo reported (or the request itself threw) an error --
+  // this is the only category a caller should retry.
+  failedUserIds: Set<string>;
+};
+
 async function sendViaExpo(
   targetUserIds: string[],
   message: PushMessage,
   messageType: string,
   options: SendPushOptions | undefined
-): Promise<Set<string>> {
+): Promise<ExpoSendResult> {
   const sentUserIds = new Set<string>();
+  const skippedUserIds = new Set<string>();
+  const failedUserIds = new Set<string>();
   const supabase = createServiceRoleSupabaseClient();
 
   const { data: tokenRows, error: tokenError } = await supabase
@@ -149,7 +163,8 @@ async function sendViaExpo(
       notificationIdsByUserId: options?.notificationIdsByUserId,
       metadata: { url: message.url ?? null, ...options?.metadata },
     }));
-    return sentUserIds;
+    for (const userId of targetUserIds) failedUserIds.add(userId);
+    return { sentUserIds, skippedUserIds, failedUserIds };
   }
 
   const tokensByUser = new Map<string, string[]>();
@@ -161,6 +176,7 @@ async function sendViaExpo(
 
   const usersWithNoToken = targetUserIds.filter((id) => !tokensByUser.has(id));
   if (usersWithNoToken.length > 0) {
+    for (const userId of usersWithNoToken) skippedUserIds.add(userId);
     await recordNotificationDeliveryBatch(buildAuditRows({
       userIds: usersWithNoToken,
       type: messageType,
@@ -174,7 +190,7 @@ async function sendViaExpo(
   }
 
   const usersWithTokens = targetUserIds.filter((id) => tokensByUser.has(id));
-  if (usersWithTokens.length === 0) return sentUserIds;
+  if (usersWithTokens.length === 0) return { sentUserIds, skippedUserIds, failedUserIds };
 
   const outbox: Array<{ userId: string; token: string; message: Record<string, unknown> }> = [];
   for (const userId of usersWithTokens) {
@@ -287,6 +303,7 @@ async function sendViaExpo(
       sentUserIdsList.push(userId);
       sentUserIds.add(userId);
     } else {
+      failedUserIds.add(userId);
       const key = `${outcome.errorCode ?? 'unknown'}::${outcome.errorMessage ?? ''}`;
       const list = failedByError.get(key) ?? [];
       list.push(userId);
@@ -323,7 +340,7 @@ async function sendViaExpo(
     }));
   }
 
-  return sentUserIds;
+  return { sentUserIds, skippedUserIds, failedUserIds };
 }
 
 // --- Public entry point --------------------------------------------------------
@@ -335,7 +352,10 @@ export async function sendPushNotification(message: PushMessage, options?: SendP
   const dryRun = Boolean(options?.dryRun || safetyState.isDryRun);
 
   if (targetUserIds.length === 0) {
-    return { attempted: 0, sent: 0, skipped: 0, dryRun, disabled: false, configured: true };
+    return {
+      attempted: 0, sent: 0, skipped: 0, dryRun, disabled: false, configured: true,
+      sentUserIds: [] as string[], skippedUserIds: [] as string[], failedUserIds: [] as string[],
+    };
   }
 
   if (dryRun || safetyState.skipDelivery) {
@@ -357,6 +377,9 @@ export async function sendPushNotification(message: PushMessage, options?: SendP
       },
     }));
 
+    // A caller (notification-dispatch) treats skippedUserIds as a terminal,
+    // non-retryable outcome -- dry-run/disabled sends belong there, not in
+    // failedUserIds, since sending is deliberately suppressed, not broken.
     return {
       attempted: targetUserIds.length,
       sent: 0,
@@ -365,17 +388,23 @@ export async function sendPushNotification(message: PushMessage, options?: SendP
       disabled: safetyState.isDisabled,
       configured: true,
       reason: dryRun ? 'dry run' : safetyState.disabledReason,
+      sentUserIds: [] as string[],
+      skippedUserIds: targetUserIds,
+      failedUserIds: [] as string[],
     };
   }
 
-  const expoSent = await sendViaExpo(targetUserIds, message, messageType, options);
+  const expoResult = await sendViaExpo(targetUserIds, message, messageType, options);
 
   return {
     attempted: targetUserIds.length,
-    sent: expoSent.size,
-    skipped: targetUserIds.length - expoSent.size,
+    sent: expoResult.sentUserIds.size,
+    skipped: targetUserIds.length - expoResult.sentUserIds.size,
     dryRun: false,
     disabled: false,
     configured: true,
+    sentUserIds: Array.from(expoResult.sentUserIds),
+    skippedUserIds: Array.from(expoResult.skippedUserIds),
+    failedUserIds: Array.from(expoResult.failedUserIds),
   };
 }

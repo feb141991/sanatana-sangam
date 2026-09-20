@@ -229,51 +229,118 @@ export async function GET(request: Request) {
       }
     }
 
-    // ── 5. Send pushes with per-row error isolation ────────────────────────────
+    // ── 5. Send pushes, grouped by identical content, with per-group error isolation ──
+    // Rows sharing (notification_type, title, body, actionUrl) get one batched
+    // push call instead of one per row -- this replaces what was previously up
+    // to 200 sequential HTTP round-trips to the push provider on every
+    // 10-minute run. sanskar_milestone rows are deliberately excluded from
+    // grouping and always sent one-by-one: their push `data` payload carries
+    // per-event sanskara_id/kul_member_id that a shared batch `data` object
+    // can't represent (getScheduledNotificationActionPath falls back to a
+    // generic, non-unique '/kul/sanskara' path when metadata.action_url is
+    // absent, so "the actionUrl is always unique" can't be relied on to keep
+    // these out of a shared group automatically). Volume for this type is
+    // near-zero, so there's no meaningful cost to the simpler, safer path.
     const succeededIds: string[] = [];
     const failedRows: Array<{ id: string; retry_count: number; error: string }> = [];
 
+    type EligibleRow = (typeof eligibleRows)[number];
+    const pushGroups = new Map<string, EligibleRow[]>();
+    const soloRows: EligibleRow[] = [];
+
     for (const row of eligibleRows) {
-      try {
-        const meta = (row.metadata ?? {}) as Record<string, any>;
-        const notifType = row.notification_type ?? "generic";
-        const actionPath = getScheduledNotificationActionPath(row);
-        const actionUrl = new URL(actionPath, new URL(request.url).origin).toString();
-
-        await sendPushNotification({
-          userIds: [row.user_id],
-          title:   row.title,
-          body:    row.body,
-          url:     actionUrl,
-          data: getScheduledNotificationPushData(row),
-        });
-
-        succeededIds.push(row.id);
-        dispatchAuditEvents.push({
-          userId: row.user_id,
-          notificationKey: row.notification_key,
-          notificationType: row.notification_type,
-          decision: "sent",
-          reason: null,
-          provider: "expo",
-        });
-      } catch (err: any) {
-        const nextRetry = (row.retry_count ?? 0) + 1;
-        const errorMsg = err?.message || "Push dispatch failed";
-        failedRows.push({
-          id:          row.id,
-          retry_count: nextRetry,
-          error:       errorMsg,
-        });
-        dispatchAuditEvents.push({
-          userId: row.user_id,
-          notificationKey: row.notification_key,
-          notificationType: row.notification_type,
-          decision: "failed",
-          reason: errorMsg,
-          provider: "expo",
-        });
+      const notifType = row.notification_type ?? "generic";
+      if (notifType === "sanskar_milestone") {
+        soloRows.push(row);
+        continue;
       }
+      const actionPath = getScheduledNotificationActionPath(row);
+      const groupKey = `${notifType} ${row.title} ${row.body} ${actionPath}`;
+      const group = pushGroups.get(groupKey);
+      if (group) group.push(row);
+      else pushGroups.set(groupKey, [row]);
+    }
+
+    async function dispatchRowGroup(rows: EligibleRow[], data: Record<string, string>) {
+      if (rows.length === 0) return;
+      const first = rows[0];
+      const notifType = first.notification_type ?? "generic";
+      const actionPath = getScheduledNotificationActionPath(first);
+      const actionUrl = new URL(actionPath, new URL(request.url).origin).toString();
+      const notificationKeysByUserId: Record<string, string> = {};
+      const notificationIdsByUserId: Record<string, string> = {};
+      for (const row of rows) {
+        notificationKeysByUserId[row.user_id] = row.notification_key;
+        notificationIdsByUserId[row.user_id] = row.id;
+      }
+
+      try {
+        const result = await sendPushNotification({
+          userIds: rows.map((r) => r.user_id),
+          title:   first.title,
+          body:    first.body,
+          url:     actionUrl,
+          data,
+        }, {
+          type: notifType,
+          notificationKeysByUserId,
+          notificationIdsByUserId,
+        });
+
+        const sentSet = new Set(result.sentUserIds);
+        const skippedSet = new Set(result.skippedUserIds);
+
+        for (const row of rows) {
+          if (sentSet.has(row.user_id)) {
+            succeededIds.push(row.id);
+            dispatchAuditEvents.push({
+              userId: row.user_id, notificationKey: row.notification_key,
+              notificationType: row.notification_type, decision: "sent", reason: null, provider: "expo",
+            });
+          } else if (skippedSet.has(row.user_id)) {
+            // No registered push token -- the in-app bell notification was
+            // already saved in step 4, so there's nothing a retry would fix.
+            // Terminal, non-retrying outcome via the same skippedRows path
+            // (and its existing batched status update) as an eligibility skip.
+            skippedRows.push({ id: row.id, reason: "no_push_token" });
+            dispatchAuditEvents.push({
+              userId: row.user_id, notificationKey: row.notification_key,
+              notificationType: row.notification_type, decision: "skipped", reason: "no_push_token", provider: "expo",
+            });
+          } else {
+            // Genuine Expo error (or, defensively, any user_id the result
+            // didn't classify at all) -- the only category that should retry.
+            const nextRetry = (row.retry_count ?? 0) + 1;
+            failedRows.push({ id: row.id, retry_count: nextRetry, error: "Push dispatch failed" });
+            dispatchAuditEvents.push({
+              userId: row.user_id, notificationKey: row.notification_key,
+              notificationType: row.notification_type, decision: "failed", reason: "Push dispatch failed", provider: "expo",
+            });
+          }
+        }
+      } catch (err: any) {
+        // The whole group failed before any per-user classification was
+        // possible (network-layer crash, etc.) -- isolate this to just this
+        // group's own rows, matching the original per-row isolation guarantee.
+        const errorMsg = err?.message || "Push dispatch failed";
+        for (const row of rows) {
+          const nextRetry = (row.retry_count ?? 0) + 1;
+          failedRows.push({ id: row.id, retry_count: nextRetry, error: errorMsg });
+          dispatchAuditEvents.push({
+            userId: row.user_id, notificationKey: row.notification_key,
+            notificationType: row.notification_type, decision: "failed", reason: errorMsg, provider: "expo",
+          });
+        }
+      }
+    }
+
+    for (const rows of pushGroups.values()) {
+      const notifType = rows[0].notification_type ?? "generic";
+      await dispatchRowGroup(rows, { type: notifType });
+    }
+
+    for (const row of soloRows) {
+      await dispatchRowGroup([row], getScheduledNotificationPushData(row));
     }
 
     // ── 6. Update succeeded rows to status='sent' in batches of 100 ─────────
