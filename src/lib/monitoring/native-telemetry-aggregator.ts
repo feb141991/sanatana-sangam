@@ -37,11 +37,24 @@ function adminClient() {
   );
 }
 
+// Upper bound for the distinct-user dedupe query -- generous for this
+// table's expected volume (a single background beacon per install per
+// hour), without an unbounded scan.
+const DISTINCT_USERS_SCAN_LIMIT = 5000;
+
 export async function fetchNativeTelemetryMonitoringMetrics(): Promise<NativeTelemetryMonitoringMetrics> {
   const supabase = adminClient();
   const now = Date.now();
   const oneHourAgo = new Date(now - 60 * 60 * 1000).toISOString();
   const twentyFourHoursAgo = new Date(now - 24 * 60 * 60 * 1000).toISOString();
+
+  const emptyMetrics: NativeTelemetryMonitoringMetrics = {
+    submissions_1h: 0,
+    submissions_24h: 0,
+    submissions_lifetime: 0,
+    distinct_authenticated_users_24h: 0,
+    recent: [],
+  };
 
   const { data: rows, error } = await supabase
     .from('native_startup_telemetry_summaries')
@@ -51,37 +64,39 @@ export async function fetchNativeTelemetryMonitoringMetrics(): Promise<NativeTel
 
   if (error) {
     console.error('[native-telemetry-aggregator] fetch failed', error.message);
-    return {
-      submissions_1h: 0,
-      submissions_24h: 0,
-      submissions_lifetime: 0,
-      distinct_authenticated_users_24h: 0,
-      recent: [],
-    };
+    return emptyMetrics;
   }
 
   const recent = (rows ?? []) as NativeTelemetrySummaryRow[];
 
-  const { count: lifetimeCount } = await supabase
-    .from('native_startup_telemetry_summaries')
-    .select('id', { count: 'exact', head: true });
+  // Real range-scoped counts against the full table, not derived from the
+  // capped `recent` list above -- deriving 1h/24h counts (or the distinct-
+  // user set) from a top-100-overall query silently under-reports once
+  // daily submissions exceed 100, with no error or signal that it happened.
+  const [oneHourResult, twentyFourHourResult, lifetimeResult, usersResult] = await Promise.all([
+    supabase.from('native_startup_telemetry_summaries')
+      .select('id', { count: 'exact', head: true })
+      .gte('received_at', oneHourAgo),
+    supabase.from('native_startup_telemetry_summaries')
+      .select('id', { count: 'exact', head: true })
+      .gte('received_at', twentyFourHoursAgo),
+    supabase.from('native_startup_telemetry_summaries')
+      .select('id', { count: 'exact', head: true }),
+    supabase.from('native_startup_telemetry_summaries')
+      .select('user_id')
+      .gte('received_at', twentyFourHoursAgo)
+      .not('user_id', 'is', null)
+      .limit(DISTINCT_USERS_SCAN_LIMIT),
+  ]);
 
-  let submissions1h = 0;
-  let submissions24h = 0;
-  const distinctUsers24h = new Set<string>();
-
-  for (const row of recent) {
-    if (row.received_at >= twentyFourHoursAgo) {
-      submissions24h += 1;
-      if (row.user_id) distinctUsers24h.add(row.user_id);
-      if (row.received_at >= oneHourAgo) submissions1h += 1;
-    }
-  }
+  const distinctUsers24h = new Set(
+    ((usersResult.data ?? []) as Array<{ user_id: string }>).map((r) => r.user_id)
+  );
 
   return {
-    submissions_1h: submissions1h,
-    submissions_24h: submissions24h,
-    submissions_lifetime: lifetimeCount ?? recent.length,
+    submissions_1h: oneHourResult.count ?? 0,
+    submissions_24h: twentyFourHourResult.count ?? 0,
+    submissions_lifetime: lifetimeResult.count ?? recent.length,
     distinct_authenticated_users_24h: distinctUsers24h.size,
     recent,
   };
