@@ -86,6 +86,18 @@ function sanitiseHistory(history: unknown): ChatHistoryMessage[] {
   });
 }
 
+function inferConversationLanguage(history: ChatHistoryMessage[], fallback: string): string {
+  if (fallback !== 'en') return fallback;
+  if (!history || history.length === 0) return fallback;
+
+  for (let i = history.length - 1; i >= 0; i--) {
+    const text = history[i]?.text ?? '';
+    if (/[\u0A00-\u0A7F]/.test(text)) return 'pa';
+    if (/[\u0900-\u097F]/.test(text)) return 'hi';
+  }
+  return fallback;
+}
+
 async function recordAiChatEvent(
   supabase: SupabaseClient,
   userId: string
@@ -401,7 +413,8 @@ export async function POST(req: NextRequest) {
   const spiritualDate         = localSpiritualDate(timeZone, 4);
   const intent = classifyChatIntent(message);
   if (intent !== 'question') {
-    return new Response(textAsStream(getConversationalResponse(intent, tradition, responseLanguage)), {
+    const effectiveConversationalLanguage = inferConversationLanguage(history, responseLanguage);
+    return new Response(textAsStream(getConversationalResponse(intent, tradition, effectiveConversationalLanguage)), {
       headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
     });
   }
