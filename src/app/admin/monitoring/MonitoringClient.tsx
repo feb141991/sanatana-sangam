@@ -24,6 +24,7 @@ import PushMonitoringSection from "./PushMonitoringSection";
 import EmailMonitoringSection from "./EmailMonitoringSection";
 import { Mail } from "lucide-react";
 import ClientErrorMonitoringSection from "./ClientErrorMonitoringSection";
+import NativeStartupTelemetrySection from "./NativeStartupTelemetrySection";
 import ApiMonitoringSection, { API_CATALOG } from "./ApiMonitoringSection";
 import { resolveContentReport } from "./actions";
 
@@ -531,6 +532,18 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         </button>
 
         <button
+          onClick={() => handleTabChange("native_perf")}
+          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
+            activeTab === "native_perf"
+              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
+              : "border-transparent text-gray-500 hover:text-gray-900"
+          )}
+        >
+          <Cpu size={14} />
+          <span>Native Startup Performance</span>
+        </button>
+
+        <button
           onClick={() => handleTabChange("ai_reports")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
             activeTab === "ai_reports"
@@ -697,6 +710,11 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
           <ClientErrorMonitoringSection targetFingerprint={targetFingerprint} />
         </div>
+      )}
+
+      {/* ─── TAB: NATIVE STARTUP PERFORMANCE ───────────────────────────────── */}
+      {activeTab === "native_perf" && (
+        <NativeStartupTelemetrySection />
       )}
 
       {/* ─── TAB 4: AI CHAT & CONTENT REPORTS (WITH FULL Q&A COMPARISON) ──── */}
