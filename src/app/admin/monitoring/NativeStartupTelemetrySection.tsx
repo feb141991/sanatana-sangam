@@ -29,15 +29,24 @@ interface SummaryRow {
 }
 
 interface Metrics {
-  submissions_1h: number;
-  submissions_24h: number;
-  submissions_lifetime: number;
-  distinct_authenticated_users_24h: number;
+  submissions_1h: number | null;
+  submissions_24h: number | null;
+  submissions_lifetime: number | null;
+  distinct_authenticated_users_24h: number | null;
   recent: SummaryRow[];
+  recent_fetch_error: boolean;
 }
 
 function ms(value: number): string {
   return `${Math.round(value)}ms`;
+}
+
+// F07 (docs/PERFORMANCE_RESEARCH_AND_EXECUTION_PLAN.md, native repo),
+// external-review follow-up: a failed count query previously defaulted to
+// 0 (`?? 0`), indistinguishable from a genuine "no submissions" period.
+// null now means "unavailable," rendered as such rather than as zero.
+function countDisplay(value: number | null): string {
+  return value === null ? 'Unavailable' : String(value);
 }
 
 export default function NativeStartupTelemetrySection() {
@@ -105,7 +114,7 @@ export default function NativeStartupTelemetrySection() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Last 1 Hour</span>
             <Clock size={14} className="text-amber-500" />
           </div>
-          <div className="text-2xl font-bold font-serif theme-ink">{data?.submissions_1h ?? 0}</div>
+          <div className={`text-2xl font-bold font-serif ${data && data.submissions_1h === null ? 'text-rose-500' : 'theme-ink'}`}>{data ? countDisplay(data.submissions_1h) : 0}</div>
           <p className="text-[10px] text-[var(--brand-muted)] mt-0.5">Summaries received</p>
         </div>
 
@@ -114,7 +123,7 @@ export default function NativeStartupTelemetrySection() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Last 24 Hours</span>
             <Activity size={14} className="text-indigo-500" />
           </div>
-          <div className="text-2xl font-bold font-serif theme-ink">{data?.submissions_24h ?? 0}</div>
+          <div className={`text-2xl font-bold font-serif ${data && data.submissions_24h === null ? 'text-rose-500' : 'theme-ink'}`}>{data ? countDisplay(data.submissions_24h) : 0}</div>
           <p className="text-[10px] text-[var(--brand-muted)] mt-0.5">Summaries received</p>
         </div>
 
@@ -123,7 +132,7 @@ export default function NativeStartupTelemetrySection() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Distinct Users</span>
             <Users size={14} className="text-emerald-500" />
           </div>
-          <div className="text-2xl font-bold font-serif theme-ink">{data?.distinct_authenticated_users_24h ?? 0}</div>
+          <div className={`text-2xl font-bold font-serif ${data && data.distinct_authenticated_users_24h === null ? 'text-rose-500' : 'theme-ink'}`}>{data ? countDisplay(data.distinct_authenticated_users_24h) : 0}</div>
           <p className="text-[10px] text-[var(--brand-muted)] mt-0.5">Authenticated, last 24h (guests are anonymous, not counted)</p>
         </div>
 
@@ -132,10 +141,16 @@ export default function NativeStartupTelemetrySection() {
             <span className="text-[11px] font-bold uppercase tracking-wider">Lifetime</span>
             <Gauge size={14} className="text-gray-400" />
           </div>
-          <div className="text-2xl font-bold font-serif theme-ink">{data?.submissions_lifetime ?? 0}</div>
+          <div className={`text-2xl font-bold font-serif ${data && data.submissions_lifetime === null ? 'text-rose-500' : 'theme-ink'}`}>{data ? countDisplay(data.submissions_lifetime) : 0}</div>
           <p className="text-[10px] text-[var(--brand-muted)] mt-0.5">Total summaries (30-day retention)</p>
         </div>
       </div>
+
+      {data?.recent_fetch_error && (
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900">
+          The recent-submissions list failed to load; the counts above are independent of it and may still be accurate.
+        </div>
+      )}
 
       <div className="space-y-2">
         {(data?.recent ?? []).length === 0 && !loading && (
