@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -15,13 +15,9 @@ export async function GET(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   const authMs = performance.now() - authStartedAt;
   if (!user || !supabase) {
-    return NextResponse.json(
-      { error: authError?.message ?? 'Unauthenticated' },
-      {
-        status: 401,
-        headers: { 'Server-Timing': `auth;dur=${authMs.toFixed(2)}, total;dur=${(performance.now() - startedAt).toFixed(2)}` },
-      },
-    );
+    return getApiAuthFailureResponse(authError, {
+      'Server-Timing': `auth;dur=${authMs.toFixed(2)}, total;dur=${(performance.now() - startedAt).toFixed(2)}`,
+    });
   }
 
   const rpcStartedAt = performance.now();

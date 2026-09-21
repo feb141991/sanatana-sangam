@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { filterProfileRows, getUserSafetyState } from '@/lib/user-safety';
 
@@ -28,8 +28,8 @@ type NearbyCandidate = { id: string; username: string; avatar_url: string | null
 type CityCandidate = Pick<NearbyCandidate, 'id' | 'username' | 'avatar_url'>;
 
 export async function GET(request: NextRequest) {
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
 
   const admin = createAdminClient();
   const [{ data: owner, error: ownerError }, safety] = await Promise.all([

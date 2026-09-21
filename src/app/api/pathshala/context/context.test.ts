@@ -2,7 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
 const getApiUser = vi.fn();
-vi.mock('@/lib/api-auth', () => ({ getApiUser: (...args: unknown[]) => getApiUser(...args) }));
+vi.mock('@/lib/api-auth', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/api-auth')>(),
+  getApiUser: (...args: unknown[]) => getApiUser(...args),
+}));
 
 import { GET } from './route';
 
@@ -52,7 +55,11 @@ describe('GET /api/pathshala/context', () => {
   beforeEach(() => getApiUser.mockReset());
 
   it('returns 401 when the bearer session cannot be verified', async () => {
-    getApiUser.mockResolvedValue({ user: null, error: new Error('Unauthorized'), supabase: null });
+    getApiUser.mockResolvedValue({
+      user: null,
+      error: Object.assign(new Error('Unauthorized'), { status: 401, code: 'AUTH_REQUIRED' }),
+      supabase: null,
+    });
 
     const response = await GET(new NextRequest('http://localhost/api/pathshala/context'));
 

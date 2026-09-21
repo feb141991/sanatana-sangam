@@ -3,7 +3,7 @@ import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
 import { ServerTimingCollector } from '@/lib/server-timing';
 
 import { mapHeroAssetToTheme, resolveHomeHeroTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { ensureAuthProfile } from '@/lib/auth-profile';
 import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
@@ -515,7 +515,7 @@ export async function GET(request: NextRequest) {
   const { user, error, supabase } = await timings.measure('auth', 'Authentication', async () => getApiUser(request));
 
   if (error || !user || !supabase) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   const DB_TIMEOUT = 4_000;

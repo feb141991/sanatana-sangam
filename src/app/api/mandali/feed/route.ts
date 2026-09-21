@@ -1,23 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { loadMandaliDataForUser, loadMandaliFeedPage } from '@/lib/mandali-data-server';
 
 export async function GET(request: NextRequest) {
   const startedAt = performance.now();
   const authStartedAt = performance.now();
-  const { user } = await getApiUser(request);
+  const { user, error } = await getApiUser(request);
   const authMs = performance.now() - authStartedAt;
   if (!user) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      {
-        status: 401,
-        headers: {
-          'Cache-Control': 'private, no-store',
-          'Server-Timing': `auth;dur=${authMs.toFixed(2)}, total;dur=${(performance.now() - startedAt).toFixed(2)}`,
-        },
-      },
-    );
+    return getApiAuthFailureResponse(error, {
+      'Cache-Control': 'private, no-store',
+      'Server-Timing': `auth;dur=${authMs.toFixed(2)}, total;dur=${(performance.now() - startedAt).toFixed(2)}`,
+    });
   }
 
   const { searchParams } = new URL(request.url);

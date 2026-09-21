@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getApiUser } from "@/lib/api-auth";
+import { getApiAuthFailureResponse, getApiUser } from "@/lib/api-auth";
+import { ensureAuthProfile } from "@/lib/auth-profile";
 import { countCompletedNativeNityaSteps } from "@/lib/native-nitya-karma";
 import { localSpiritualDate } from "@/lib/sacred-time";
 import { SACRED_RELICS } from "@/lib/relics";
@@ -105,23 +106,46 @@ export async function GET(request: NextRequest) {
   const authMs = performance.now() - authStartedAt;
 
   if (error || !user || !supabase) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401, headers: { "Server-Timing": `auth;dur=${authMs.toFixed(2)}, total;dur=${(performance.now() - startedAt).toFixed(2)}` } },
-    );
+    return getApiAuthFailureResponse(error, {
+      "Server-Timing": `auth;dur=${authMs.toFixed(2)}, total;dur=${(performance.now() - startedAt).toFixed(2)}`,
+    });
   }
 
   const DB_TIMEOUT = 4_000;
 
   const profileStartedAt = performance.now();
-  const { data: profileData } = await supabase
+  const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
     .eq("id", user.id)
     .maybeSingle();
   const profileMs = performance.now() - profileStartedAt;
 
+  if (profileError) {
+    console.error('[progress-summary][profile-read-unavailable]', {
+      userId: user.id.slice(0, 8),
+      code: profileError.code,
+    });
+    return NextResponse.json(
+      { error: 'Profile temporarily unavailable', code: 'PROFILE_UNAVAILABLE' },
+      { status: 503, headers: { 'Cache-Control': 'private, no-store', 'Retry-After': '5' } },
+    );
+  }
+
   const profile = profileData as ProfileRow | null;
+  // A valid auth session must remain usable even if an old auth trigger or
+  // OAuth callback failed to create its profile row. Home already applies the
+  // same repair. Defaults below keep this response renderable while the repair
+  // creates the row for subsequent requests.
+  if (!profile) {
+    const repaired = await ensureAuthProfile(user, supabase);
+    if (!repaired) {
+      return NextResponse.json(
+        { error: 'Profile temporarily unavailable', code: 'PROFILE_UNAVAILABLE' },
+        { status: 503, headers: { 'Cache-Control': 'private, no-store', 'Retry-After': '5' } },
+      );
+    }
+  }
   const timezone = profile?.timezone ?? "Asia/Kolkata";
   const today = localSpiritualDate(timezone, 4);
 
@@ -388,7 +412,7 @@ export async function GET(request: NextRequest) {
 
   const response = {
     profile: {
-      id: profile?.id,
+      id: profile?.id ?? user.id,
       fullName: profile?.full_name ?? "",
       username: profile?.username ?? "",
       avatarUrl: profile?.avatar_url ?? null,

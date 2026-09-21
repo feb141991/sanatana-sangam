@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { checkDurableRateLimit, clientIp, rejectLargeRequest } from '@/lib/api-security';
 import { parseNativeTelemetryPayload } from '@/lib/native-telemetry-contract';
+import { getApiAuthFailureResponse } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
     });
     const { data, error } = await bearerClient.auth.getUser(token);
     if (error || !data?.user) {
-      return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+      return getApiAuthFailureResponse(error);
     }
     userId = data.user.id;
   }

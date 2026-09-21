@@ -3,10 +3,17 @@ import { NextRequest } from "next/server";
 import { GET } from "./route";
 
 const getApiUser = vi.fn();
-vi.mock("@/lib/api-auth", () => ({ getApiUser: (...a: unknown[]) => getApiUser(...a) }));
+vi.mock("@/lib/api-auth", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/api-auth")>(),
+  getApiUser: (...a: unknown[]) => getApiUser(...a),
+}));
+
+const ensureAuthProfile = vi.fn();
+vi.mock("@/lib/auth-profile", () => ({ ensureAuthProfile: (...a: unknown[]) => ensureAuthProfile(...a) }));
 
 describe("GET /api/native/progress-summary - Truthful Profile Completion Model", () => {
   let profileRow: Record<string, unknown> | null = null;
+  let profileReadError: { code: string; message: string } | null = null;
   let sadhanaRows: Record<string, unknown>[] = [];
 
   const mockSupabase = {
@@ -15,7 +22,7 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
         return {
           select: () => ({
             eq: () => ({
-              maybeSingle: async () => ({ data: profileRow, error: null }),
+              maybeSingle: async () => ({ data: profileRow, error: profileReadError }),
             }),
           }),
         };
@@ -44,15 +51,86 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
 
   beforeEach(() => {
     getApiUser.mockReset();
+    ensureAuthProfile.mockReset();
+    ensureAuthProfile.mockResolvedValue({ onboarding_completed: false });
     profileRow = null;
+    profileReadError = null;
     sadhanaRows = [];
   });
 
   it("returns 401 Unauthorized when unauthenticated", async () => {
-    getApiUser.mockResolvedValue({ user: null, error: new Error("Unauthorized"), supabase: null });
+    getApiUser.mockResolvedValue({
+      user: null,
+      error: Object.assign(new Error("Unauthorized"), { status: 401, code: "AUTH_REQUIRED" }),
+      supabase: null,
+    });
     const req = new NextRequest("http://localhost:3000/api/native/progress-summary");
     const res = await GET(req);
     expect(res.status).toBe(401);
+  });
+
+  it("returns 503 when authentication verification is temporarily unavailable", async () => {
+    getApiUser.mockResolvedValue({
+      user: null,
+      error: Object.assign(new Error("Authentication temporarily unavailable"), {
+        status: 503,
+        code: "AUTH_UNAVAILABLE",
+      }),
+      supabase: null,
+    });
+
+    const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
+    expect(res.status).toBe(503);
+    expect(res.headers.get("Retry-After")).toBe("5");
+    expect(await res.json()).toEqual({
+      error: "Authentication temporarily unavailable",
+      code: "AUTH_UNAVAILABLE",
+    });
+  });
+
+  it("repairs a missing profile and preserves the authenticated owner contract", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-missing-profile" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+
+    expect(ensureAuthProfile).toHaveBeenCalledWith(
+      { id: "user-missing-profile" },
+      mockSupabase,
+    );
+    expect(body.profile.id).toBe("user-missing-profile");
+  });
+
+  it("does not attempt repair or replace cacheable data when the profile read fails", async () => {
+    profileReadError = { code: "57014", message: "statement timeout" };
+    getApiUser.mockResolvedValue({
+      user: { id: "user-profile-timeout" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
+    expect(res.status).toBe(503);
+    expect(ensureAuthProfile).not.toHaveBeenCalled();
+    expect(await res.json()).toMatchObject({ code: "PROFILE_UNAVAILABLE" });
+  });
+
+  it("returns 503 when a confirmed missing profile cannot be repaired", async () => {
+    ensureAuthProfile.mockResolvedValue(null);
+    getApiUser.mockResolvedValue({
+      user: { id: "user-repair-failed" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ code: "PROFILE_UNAVAILABLE" });
   });
 
   it("marks coreProfile complete and emits tradition-aware suggestions for Hindu profile with optional fields missing", async () => {

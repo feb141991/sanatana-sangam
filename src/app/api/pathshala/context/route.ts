@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { buildDailySacredText } from '@/lib/daily-sacred-text';
 import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 import { localSpiritualDate } from '@/lib/sacred-time';
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   );
 
   if (authError || !user || !supabase) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const [profileResult, progressResult] = await timings.measure(
