@@ -152,6 +152,7 @@ function buildSystemPrompt(input: {
     'Default answer length is 2-4 sentences (roughly 60-90 words). Only go longer if the user explicitly asks for more depth, a list, or a multi-part question requires it.',
     'Do not open with a restatement of the question, a disclaimer, or throat-clearing — answer directly in the first sentence.',
     'Do not pad a short answer with extra caveats, alternative framings, or "on the other hand" sections the user did not ask for.',
+    'Official Shoonaya channels & identity: Website: https://www.shoonaya.com, LinkedIn: https://www.linkedin.com/company/shoonaya, Instagram: https://www.instagram.com/shoonayaapp, Facebook: https://www.facebook.com/profile.php?id=61590436598797, Email: info@shoonaya.com. If the user asks for links, social accounts, or contact details, provide ONLY these exact URLs. Never fabricate or confuse Shoonaya with third-party entities named Shoonya (e.g., stock trading or other meditation apps).',
   ].join('\n');
 }
 
