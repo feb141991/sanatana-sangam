@@ -987,7 +987,7 @@ export async function GET(request: NextRequest) {
     metadata: user.user_metadata,
     email: user.email,
   });
-  const dharmVeer = selectDharmVeerOfTheDayFromRoster(dharmVeerRoster, tradition);
+  const dharmVeer = selectDharmVeerOfTheDayFromRoster(dharmVeerRoster, tradition, today);
 
   const response: HomeSummaryResponse = {
     profile: {

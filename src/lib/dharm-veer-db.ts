@@ -100,11 +100,21 @@ function hasUsableDbRoster(rows: DailyRow[]): boolean {
 export function selectDharmVeerOfTheDayFromRoster(
   roster: DharmVeer[],
   userTradition?: string | null,
+  dateOrDateStr?: string | Date
 ): DharmVeer {
   const effectiveRoster = roster.length > 0 ? roster : fallbackRoster();
   const epoch = new Date('2024-01-01T00:00:00.000Z').getTime();
-  const istNow = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
-  const dayN = Math.floor((istNow.getTime() - epoch) / (1000 * 60 * 60 * 24));
+  let dayN: number;
+
+  if (typeof dateOrDateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateOrDateStr)) {
+    const target = new Date(`${dateOrDateStr}T12:00:00.000Z`).getTime();
+    dayN = Math.floor((target - epoch) / (1000 * 60 * 60 * 24));
+  } else if (dateOrDateStr instanceof Date) {
+    dayN = Math.floor((dateOrDateStr.getTime() - epoch) / (1000 * 60 * 60 * 24));
+  } else {
+    const istNow = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+    dayN = Math.floor((istNow.getTime() - epoch) / (1000 * 60 * 60 * 24));
+  }
 
   if (!userTradition) {
     return effectiveRoster[dayN % effectiveRoster.length];
