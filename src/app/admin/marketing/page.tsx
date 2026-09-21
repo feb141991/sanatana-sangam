@@ -134,6 +134,13 @@ export default function MarketingCampaignsPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/admin/marketing/social"
+              className="px-4 py-2.5 rounded-xl border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)] text-xs font-bold flex items-center gap-2"
+            >
+              <MessageSquare size={14} /> Social Publishing Studio
+            </Link>
+
             <button
               onClick={() => fetchCampaigns()}
               className="p-2.5 rounded-xl border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)] text-xs font-semibold flex items-center gap-2"
