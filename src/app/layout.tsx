@@ -135,16 +135,16 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Shoonaya App | Find Your Infinity",
+    title: "Shoonaya — Ancient Wisdom. In Your Pocket.",
     description:
-      "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.",
+      "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions. Available on iOS & Android.",
     siteName: "Shoonaya",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://www.shoonaya.com/og-image.png?v=2",
         width: 1200,
         height: 630,
-        alt: "Shoonaya — Find Your Infinity. Daily Dharma, Panchang & Community for Hindu, Sikh, Buddhist and Jain traditions.",
+        alt: "Shoonaya — Your Sacred Dharmic Companion for Hindu, Sikh, Buddhist and Jain traditions.",
       },
     ],
     type: "website",
@@ -152,10 +152,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shoonaya App | Find Your Infinity",
+    title: "Shoonaya — Ancient Wisdom. In Your Pocket.",
     description:
-      "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.",
-    images: ["/og-image.png"],
+      "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions. Available on iOS & Android.",
+    images: ["https://www.shoonaya.com/og-image.png?v=2"],
+  },
+  itunes: {
+    appId: "6793055966",
   },
 };
 
