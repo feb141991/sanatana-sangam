@@ -84,11 +84,20 @@ export async function verifyAdminToken(token: string): Promise<{ username: strin
 
 export function adminCookieHeader(token: string, maxAge = SESSION_DURATION_S): string {
   const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
-  return `${ADMIN_COOKIE}=${token}; HttpOnly${secure}; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
+  // Lax, not Strict: the social publishing OAuth connect/callback routes
+  // (src/app/api/admin/marketing/social/oauth/**) depend on this cookie
+  // being sent on the top-level redirect back from Meta/LinkedIn's OAuth
+  // dialog, which is a cross-site navigation -- Strict cookies are
+  // stripped on exactly that request, which surfaced as a real
+  // "Admin authentication required" failure on first live test. Lax still
+  // blocks the cookie on cross-site POSTs/subresource loads (the actual
+  // CSRF threat model for a session cookie), it only additionally allows
+  // top-level GET navigations like this OAuth return.
+  return `${ADMIN_COOKIE}=${token}; HttpOnly${secure}; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
 }
 
 export function adminClearCookieHeader(): string {
-  return `${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0`;
+  return `${ADMIN_COOKIE}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`;
 }
 
 /**
