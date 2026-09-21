@@ -5,6 +5,7 @@ import AppProviders from "@/components/providers/AppProviders";
 import AuthSessionGuard from "@/components/providers/AuthSessionGuard";
 import WebConsentManager from "@/components/privacy/WebConsentManager";
 import ClientErrorReporter from "@/components/monitoring/ClientErrorReporter";
+import { OrganizationJsonLd } from "@/components/seo/JsonLd";
 import {
   Inter,
   Cormorant_Garamond,
@@ -213,6 +214,7 @@ export default function RootLayout({
       </head>
       <body className="zenith-120fps">
         <AppProviders>
+          <OrganizationJsonLd />
           <ClientErrorReporter />
           <AuthSessionGuard />
           {children}

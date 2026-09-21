@@ -24,6 +24,14 @@ Shoonaya welcomes AI assistants, search engines, and answer engines to crawl pub
 
 The festival dates are calculated using an astronomy-backed rule engine. Dates are calculated for the current Gregorian year using Ujjain as the reference meridian (23.1765°N, 75.7885°E).
 
+## Official Channels & Identity
+
+- [Official Website](https://www.shoonaya.com/)
+- [LinkedIn](https://www.linkedin.com/company/shoonaya)
+- [Instagram](https://www.instagram.com/shoonayaapp)
+- [Facebook](https://www.facebook.com/profile.php?id=61590436598797)
+- [Contact Email](mailto:info@shoonaya.com)
+
 ## Key URLs
 
 - [Home](https://www.shoonaya.com/)

@@ -1,3 +1,4 @@
+import { OFFICIAL_SOCIAL_LINKS } from "@/config/official-links";
 import React from 'react';
 import type { GeoModel } from '@/lib/seo/geo-model';
 import type { PanchangData } from '@/lib/panchang';
@@ -54,10 +55,16 @@ export function GeoArticleJsonLd({ geo, url }: { geo: GeoModel; url: string }) {
   articleSchema.publisher = {
     "@type": "Organization",
     "name": "Shoonaya",
+    "url": "https://www.shoonaya.com",
     "logo": {
       "@type": "ImageObject",
       "url": "https://www.shoonaya.com/icons/icon-512x512.png"
-    }
+    },
+    "sameAs": [
+      OFFICIAL_SOCIAL_LINKS.linkedin,
+      OFFICIAL_SOCIAL_LINKS.instagram,
+      OFFICIAL_SOCIAL_LINKS.facebook,
+    ],
   };
 
   if (geo.reviewedBy) {
@@ -147,4 +154,33 @@ export function PanchangJsonLd({
   }
 
   return <JsonLd data={panchangSchema} />;
+}
+
+export function OrganizationJsonLd() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.shoonaya.com/#organization",
+        "name": "Shoonaya",
+        "url": "https://www.shoonaya.com",
+        "logo": "https://www.shoonaya.com/icons/icon-512x512.png",
+        "description": "Shoonaya is a spiritual companion application for Sanatan Dharma, Hindu, Sikh, Buddhist, and Jain traditions.",
+        "sameAs": [
+          OFFICIAL_SOCIAL_LINKS.linkedin,
+          OFFICIAL_SOCIAL_LINKS.instagram,
+          OFFICIAL_SOCIAL_LINKS.facebook,
+        ],
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.shoonaya.com/#website",
+        "url": "https://www.shoonaya.com",
+        "name": "Shoonaya",
+        "publisher": { "@id": "https://www.shoonaya.com/#organization" },
+      },
+    ],
+  };
+  return <JsonLd data={schema} />;
 }
