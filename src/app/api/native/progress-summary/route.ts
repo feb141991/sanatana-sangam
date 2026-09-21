@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const profile = profileData as ProfileRow | null;
+  let profile = profileData as ProfileRow | null;
   // A valid auth session must remain usable even if an old auth trigger or
   // OAuth callback failed to create its profile row. Home already applies the
   // same repair. Defaults below keep this response renderable while the repair
@@ -144,6 +144,14 @@ export async function GET(request: NextRequest) {
         { error: 'Profile temporarily unavailable', code: 'PROFILE_UNAVAILABLE' },
         { status: 503, headers: { 'Cache-Control': 'private, no-store', 'Retry-After': '5' } },
       );
+    }
+    const { data: refetched } = await supabase
+      .from("profiles")
+      .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (refetched) {
+      profile = refetched as ProfileRow;
     }
   }
   const timezone = profile?.timezone ?? "Asia/Kolkata";
@@ -476,7 +484,7 @@ export async function GET(request: NextRequest) {
   };
 
   const totalMs = performance.now() - startedAt;
-  if (totalMs >= 1_000) {
+  if (totalMs >= 1_000 || batchMs >= 200 || profileMs >= 200) {
     console.warn('[native/progress-summary][performance]', JSON.stringify({
       authMs: Math.round(authMs * 100) / 100,
       profileMs: Math.round(profileMs * 100) / 100,
