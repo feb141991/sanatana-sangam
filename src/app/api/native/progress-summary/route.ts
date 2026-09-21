@@ -145,11 +145,21 @@ export async function GET(request: NextRequest) {
         { status: 503, headers: { 'Cache-Control': 'private, no-store', 'Retry-After': '5' } },
       );
     }
-    const { data: refetched } = await supabase
+    const { data: refetched, error: refetchError } = await supabase
       .from("profiles")
       .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
       .eq("id", user.id)
       .maybeSingle();
+    if (refetchError) {
+      console.error('[progress-summary][profile-refetch-unavailable]', {
+        userId: user.id.slice(0, 8),
+        code: refetchError.code,
+      });
+      return NextResponse.json(
+        { error: 'Profile temporarily unavailable', code: 'PROFILE_UNAVAILABLE' },
+        { status: 503, headers: { 'Cache-Control': 'private, no-store', 'Retry-After': '5' } },
+      );
+    }
     if (refetched) {
       profile = refetched as ProfileRow;
     }

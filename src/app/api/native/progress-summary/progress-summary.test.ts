@@ -14,6 +14,8 @@ vi.mock("@/lib/auth-profile", () => ({ ensureAuthProfile: (...a: unknown[]) => e
 describe("GET /api/native/progress-summary - Truthful Profile Completion Model", () => {
   let profileRow: Record<string, unknown> | null = null;
   let profileReadError: { code: string; message: string } | null = null;
+  let profileRefetchError: { code: string; message: string } | null = null;
+  let profileReadCount = 0;
   let sadhanaRows: Record<string, unknown>[] = [];
 
   const mockSupabase = {
@@ -22,7 +24,13 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
         return {
           select: () => ({
             eq: () => ({
-              maybeSingle: async () => ({ data: profileRow, error: profileReadError }),
+              maybeSingle: async () => {
+                profileReadCount += 1;
+                return {
+                  data: profileRow,
+                  error: profileReadCount > 1 ? profileRefetchError : profileReadError,
+                };
+              },
             }),
           }),
         };
@@ -55,6 +63,8 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
     ensureAuthProfile.mockResolvedValue({ onboarding_completed: false });
     profileRow = null;
     profileReadError = null;
+    profileRefetchError = null;
+    profileReadCount = 0;
     sadhanaRows = [];
   });
 
@@ -124,6 +134,19 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
     ensureAuthProfile.mockResolvedValue(null);
     getApiUser.mockResolvedValue({
       user: { id: "user-repair-failed" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ code: "PROFILE_UNAVAILABLE" });
+  });
+
+  it("returns 503 when the repaired profile cannot be re-read", async () => {
+    profileRefetchError = { code: "57014", message: "statement timeout" };
+    getApiUser.mockResolvedValue({
+      user: { id: "user-refetch-timeout" },
       error: null,
       supabase: mockSupabase,
     });
