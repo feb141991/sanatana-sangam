@@ -1,7 +1,8 @@
 import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { classifyApiAuthFailure } from "@/lib/api-auth-status";
 
 // Deliberately untyped (no `<Database>` generic) — matching every other
 // working Supabase client factory in this repo (`createClient()` in
@@ -23,6 +24,28 @@ function getBearerToken(req: NextRequest) {
   return match?.[1] ?? null;
 }
 
+export function getApiAuthFailureResponse(error: unknown, headers?: HeadersInit) {
+  const failure = classifyApiAuthFailure(error);
+  const responseHeaders = new Headers(headers);
+  responseHeaders.set('Cache-Control', 'no-store');
+  if (failure.status === 503) responseHeaders.set('Retry-After', '5');
+  return NextResponse.json({ error: failure.message, code: failure.code }, {
+    status: failure.status,
+    headers: responseHeaders,
+  });
+}
+
+function authFailure(req: NextRequest, error: unknown): ApiUserResult {
+  const failure = classifyApiAuthFailure(error);
+  // Never log JWTs, headers, user details or provider error messages.
+  console.warn('[api-auth]', { path: req.nextUrl.pathname, status: failure.status, code: failure.code });
+  return {
+    user: null,
+    error: Object.assign(new Error(failure.message), { status: failure.status, code: failure.code }),
+    supabase: null,
+  };
+}
+
 /**
  * Resolves the authenticated user for an API route.
  *
@@ -39,6 +62,8 @@ function getBearerToken(req: NextRequest) {
  */
 export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
   const token = getBearerToken(req);
+
+  try {
 
   // 1. Fast path: Native callers with Bearer token
   if (token) {
@@ -63,15 +88,10 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
       return { user: bearerResult.data.user, error: null, supabase: bearerClient };
     }
 
-    return {
-      user: null,
-      error: bearerResult.error ?? new Error("Unauthorized"),
-      supabase: null,
-    };
+    return authFailure(req, bearerResult.error);
   }
 
   // 2. Fallback path: Web callers with cookie session
-  try {
     const cookieClient = await createServerSupabaseClient();
     const cookieResult = await cookieClient.auth.getUser();
 
@@ -79,16 +99,8 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
       return { user: cookieResult.data.user, error: null, supabase: cookieClient };
     }
 
-    return {
-      user: null,
-      error: cookieResult.error ?? new Error("Unauthorized"),
-      supabase: null,
-    };
-  } catch (err: any) {
-    return {
-      user: null,
-      error: err instanceof Error ? err : new Error("Unauthorized"),
-      supabase: null,
-    };
+    return authFailure(req, cookieResult.error);
+  } catch (err: unknown) {
+    return authFailure(req, err);
   }
 }
