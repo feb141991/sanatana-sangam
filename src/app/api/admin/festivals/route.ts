@@ -12,34 +12,6 @@ import { resolveVratSlug } from '@/lib/vrat-data';
 import type { Database } from '@/types/database';
 import type { Json } from '@/types/database';
 
-type FestivalRow = Pick<
-  Database['public']['Tables']['festivals']['Row'],
-  | 'id'
-  | 'name'
-  | 'date'
-  | 'emoji'
-  | 'description'
-  | 'type'
-  | 'tradition'
-  | 'year'
-  | 'source_name'
-  | 'source_kind'
-  | 'review_status'
-  | 'verification_status'
-  | 'verification_confidence'
-  | 'verification_note'
-  | 'suggested_date'
-  | 'verification_run_at'
-  | 'verification_type'
-> & {
-  // These fields come from the joined observance_occurrences / observance_definitions
-  // via mapOccurrenceToFestival; they're present in the JSON response even though they
-  // are not columns on the 'festivals' table itself.
-  audit_status?: string | null;
-  route_kind?: string | null;
-  route_slug?: string | null;
-};
-
 type FestivalAdminStats = {
   total: number;
   reviewed: number;
@@ -55,25 +27,12 @@ type FestivalAdminStats = {
   lastVerificationRunAt: string | null;
 };
 
-const FESTIVAL_SELECT_FULL = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, verification_type';
-const FESTIVAL_SELECT_LEGACY = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status';
-
 type ReviewActionBody = {
   occurrenceId?: unknown;
   date?: unknown;
   reviewNotes?: unknown;
   sourceName?: unknown;
 };
-
-function isMissingVerificationColumn(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error ?? '');
-  return /verification_status|verification_confidence|verification_note|suggested_date|verification_run_at|verification_type/i.test(message);
-}
-
-function isMissingObservanceModel(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error ?? '');
-  return /observance_occurrences|observance_definitions/i.test(message);
-}
 
 function buildFestivalAdminStats(festivals: Festival[]): FestivalAdminStats {
   const unsafeObservanceRoutes = festivals.filter((festival) => {
@@ -129,58 +88,20 @@ export async function GET(request: NextRequest) {
       .select('year')
       .order('year', { ascending: true });
 
-    if (!occYears.error) {
-      yearsData = (occYears.data ?? []) as Array<{ year: number }>;
-      const occRows = await admin.supabase
-        .from('observance_occurrences')
-        .select('*, observance_definitions(*)')
-        .eq('year', requestedYear)
-        .order('date', { ascending: true });
+    if (occYears.error) throw occYears.error;
 
-      if (occRows.error) throw occRows.error;
+    yearsData = (occYears.data ?? []) as Array<{ year: number }>;
+    const occRows = await admin.supabase
+      .from('observance_occurrences')
+      .select('*, observance_definitions(*)')
+      .eq('year', requestedYear)
+      .order('date', { ascending: true });
 
-      const dbFestivals = (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row));
-      festivals = dbFestivals.length > 0 ? dbFestivals : getFallbackFestivalCalendar(requestedYear);
-      if (dbFestivals.length === 0) source = 'fallback';
-    } else {
-      if (!isMissingObservanceModel(occYears.error)) {
-        throw occYears.error;
-      }
+    if (occRows.error) throw occRows.error;
 
-      const legacyYears = await admin.supabase
-        .from('festivals')
-        .select('year')
-        .order('year', { ascending: true });
-      if (legacyYears.error) throw legacyYears.error;
-      yearsData = (legacyYears.data ?? []) as Array<{ year: number }>;
-
-      let rows: FestivalRow[] | null = null;
-      const primary = await admin.supabase
-        .from('festivals')
-        .select(FESTIVAL_SELECT_FULL)
-        .eq('year', requestedYear)
-        .order('date', { ascending: true });
-
-      if (primary.error && isMissingVerificationColumn(primary.error)) {
-        const legacy = await admin.supabase
-          .from('festivals')
-          .select(FESTIVAL_SELECT_LEGACY)
-          .eq('year', requestedYear)
-          .order('date', { ascending: true });
-        if (legacy.error) throw legacy.error;
-        rows = (legacy.data ?? []) as FestivalRow[];
-      } else if (primary.error) {
-        throw primary.error;
-      } else {
-        rows = (primary.data ?? []) as FestivalRow[];
-      }
-
-      const dbFestivals = (rows ?? []).map((row) =>
-        attachFestivalTrust(row as FestivalSourceRow)
-      );
-      festivals = dbFestivals.length > 0 ? dbFestivals : getFallbackFestivalCalendar(requestedYear);
-      if (dbFestivals.length === 0) source = 'fallback';
-    }
+    const dbFestivals = (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row));
+    festivals = dbFestivals.length > 0 ? dbFestivals : getFallbackFestivalCalendar(requestedYear);
+    if (dbFestivals.length === 0) source = 'fallback';
 
     const currentYear = new Date().getFullYear();
     const baseYears = Array.from({ length: 16 }, (_, i) => currentYear - 5 + i);

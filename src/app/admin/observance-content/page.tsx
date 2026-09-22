@@ -18,6 +18,17 @@ type Row = {
   display_name: string;
   tradition: string;
   kind: string;
+  category?: "festival" | "series_child" | "recurring_tithi";
+  seriesKey?: string;
+  seriesName?: string;
+  isSeriesAnchor?: boolean;
+  isSeriesChild?: boolean;
+  seriesChildrenSlugs?: string[];
+  seriesChildrenIds?: string[];
+  sequence?: number;
+  launchStatus?: "included" | "deferred";
+  hasDateConflict?: boolean;
+  allDates?: string[];
   current: { id: string; version: number; status: string; updated_at: string } | null;
   publishedVersion: { id: string; version: number; status: string; published_at: string } | null;
   sourceCount: number;
@@ -113,6 +124,8 @@ export default function ObservanceContentStudioPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [kindFilter, setKindFilter] = useState("all");
   const [quickFilter, setQuickFilter] = useState("all");
+  const [categoryTab, setCategoryTab] = useState<"all" | "primary" | "series" | "monthly">("primary");
+  const [expandedSeries, setExpandedSeries] = useState<Record<string, boolean>>({});
 
   const [sortField, setSortField] = useState<SortField>("nextDate");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
@@ -234,6 +247,19 @@ export default function ObservanceContentStudioPage() {
 
       if (traditionFilter !== "all" && row.tradition !== traditionFilter) return false;
       if (kindFilter !== "all" && row.kind !== kindFilter) return false;
+
+      // Category tab filtering
+      if (categoryTab === "primary") {
+        // Show primary festivals and series anchors, but hide repetitive series children and recurring tithis
+        if (row.category === "series_child" && !row.isSeriesAnchor) return false;
+        if (row.category === "recurring_tithi") return false;
+      } else if (categoryTab === "series") {
+        // Show only series anchors and multiday items
+        if (!row.isSeriesAnchor && row.category !== "series_child") return false;
+      } else if (categoryTab === "monthly") {
+        // Show only recurring vrats/tithis
+        if (row.category !== "recurring_tithi") return false;
+      }
 
       const status = row.current?.status ?? "missing";
       if (statusFilter === "published" && status !== "published") return false;
@@ -465,6 +491,32 @@ export default function ObservanceContentStudioPage() {
             </button>
           </section>
 
+          {/* Category Tabs: Deduplication & Fast Approval */}
+          <div className="flex items-center gap-2 p-1.5 bg-gray-100/80 rounded-2xl border border-black/5 text-xs font-bold">
+            {[
+              { id: "primary", label: "🌟 Primary Festivals (~45)", desc: "Clean, deduplicated main annual festivals" },
+              { id: "series", label: "🪔 Series & Multiday (5 Series)", desc: "Ganeshotsav, Paryushana, Navratri, Chhath, Diwali" },
+              { id: "monthly", label: "🌙 Monthly Recurring Vrats (4 Cycles)", desc: "Ekadashi, Purnima, Amavasya, Pradosh" },
+              { id: "all", label: "📋 All Observances (125)", desc: "Complete catalogue view" },
+            ].map((tab) => {
+              const isActive = categoryTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setCategoryTab(tab.id as any)}
+                  className={"px-4 py-2 rounded-xl transition-all flex items-center gap-2 " + (
+                    isActive
+                      ? "bg-white text-amber-900 shadow-sm font-extrabold"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
+                  )}
+                  title={tab.desc}
+                >
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* Filters Area */}
           <div className="space-y-3 bg-white p-5 rounded-2xl border shadow-2xs">
             {/* Row 1: Search & Tradition */}
@@ -624,8 +676,25 @@ export default function ObservanceContentStudioPage() {
                     className={"border-b border-black/5 transition-colors cursor-pointer hover:bg-amber-500/5 " + (selectedRow?.id === row.id ? "bg-amber-500/10" : "")}
                   >
                     <td className="p-4">
-                      <b className="text-gray-900 font-serif text-base">{row.display_name}</b>
-                      <p className="text-xs opacity-60 font-mono">{row.slug}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <b className="text-gray-900 font-serif text-base">{row.display_name}</b>
+                        {row.isSeriesAnchor && (
+                          <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 text-[10px] font-extrabold uppercase tracking-wide">
+                            {row.seriesName} • Series Anchor ({row.seriesChildrenSlugs?.length || 0} Days)
+                          </span>
+                        )}
+                        {row.isSeriesChild && !row.isSeriesAnchor && (
+                          <span className="px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-700 text-[10px] font-semibold">
+                            Day {row.sequence} of {row.seriesName}
+                          </span>
+                        )}
+                        {row.category === "recurring_tithi" && (
+                          <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-bold">
+                            Monthly Cycle
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs opacity-60 font-mono mt-0.5">{row.slug}</p>
                     </td>
                     <td className="p-4 capitalize font-semibold text-gray-700">{row.tradition}</td>
                     <td className="p-4 text-xs font-mono">
@@ -663,6 +732,20 @@ export default function ObservanceContentStudioPage() {
                       )}
                     </td>
                     <td className="p-4 text-right space-x-2" onClick={(e) => e.stopPropagation()}>
+                      {row.isSeriesAnchor && row.seriesChildrenIds && row.seriesChildrenIds.length > 0 && (
+                        <button
+                          className="min-h-8 rounded-lg bg-purple-700 hover:bg-purple-800 text-white px-3 text-xs font-extrabold shadow-2xs inline-flex items-center gap-1.5"
+                          title="Approve all sub-days in this series in one click"
+                          onClick={() => void handleAction({
+                            action: "approve_series",
+                            seriesKey: row.seriesKey,
+                            definitionIds: row.seriesChildrenIds
+                          }, `Successfully approved all sub-days in ${row.seriesName}!`)}
+                        >
+                          <CheckSquare size={13} />
+                          <span>Approve Series ({row.seriesChildrenIds.length}) ✓</span>
+                        </button>
+                      )}
                       <button
                         className="min-h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 text-xs font-bold shadow-2xs inline-flex items-center gap-1"
                         onClick={() => void handleAction({ action: "manual_approve", definitionId: row.id, publish: true }, `Approved and published ${row.display_name}!`)}

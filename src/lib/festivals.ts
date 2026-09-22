@@ -155,17 +155,13 @@ export function buildFestivalCalendarMeta(
 }
 
 export function attachFestivalTrust(row: FestivalSourceRow): Festival & Pick<FestivalSourceRow, 'source_name' | 'source_kind' | 'review_status'> {
-  const staticMatch = FESTIVALS_2026.find(
-    (entry) => entry.name === row.name && entry.date === row.date
-  );
-
   return {
     name: row.name,
     date: row.date,
     emoji: row.emoji ?? '🪔',
     description: row.description,
     type: row.type,
-    tradition: row.tradition ?? staticMatch?.tradition ?? 'all',
+    tradition: row.tradition ?? 'all',
     source_name: row.source_name ?? null,
     source_kind: row.source_kind ?? null,
     review_status: row.review_status ?? null,
@@ -175,7 +171,7 @@ export function attachFestivalTrust(row: FestivalSourceRow): Festival & Pick<Fes
     suggested_date: row.suggested_date ?? null,
     verification_run_at: row.verification_run_at ?? null,
     verification_type: row.verification_type ?? null,
-    year: row.year ?? staticMatch?.year ?? (row.date ? new Date(row.date).getFullYear() : undefined),
+    year: row.year ?? (row.date ? new Date(row.date).getFullYear() : undefined),
     slug: row.slug ?? null,
   };
 }

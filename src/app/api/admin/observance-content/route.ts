@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     db.from("observance_content_sources").select("id, definition_id, approved"),
     db.from("observance_artwork").select("id, story_version_id, review_status"),
     db.from("observance_share_templates").select("id, story_version_id, language, audience, review_status"),
-    db.from("observance_occurrences").select("definition_id, date").eq("publication_status", "published").order("date"),
+    db.from("observance_occurrences").select("definition_id, date, calendar_profile, computed_latitude, computed_longitude").eq("publication_status", "published").order("date"),
   ]);
 
   const migrationError = [versionsResult, sourcesResult, artworkResult, sharesResult].find((result) => result.error)?.error;
@@ -112,14 +112,164 @@ export async function GET(request: NextRequest) {
   const shares = sharesResult.data;
   const occurrences = occurrencesResult.data;
 
+  // Series definitions configuration for hierarchical grouping
+  const SERIES_REGISTRY: Record<string, { name: string; anchorSlug: string; children: { slug: string; sequence: number }[] }> = {
+    "ganeshotsav": {
+      name: "Ganeshotsav",
+      anchorSlug: "ganesh-chaturthi",
+      children: [
+        { slug: "ganesh-chaturthi", sequence: 1 },
+        { slug: "ganeshotsav-day-2", sequence: 2 },
+        { slug: "ganeshotsav-day-3", sequence: 3 },
+        { slug: "ganeshotsav-day-4", sequence: 4 },
+        { slug: "ganeshotsav-day-5", sequence: 5 },
+        { slug: "ganeshotsav-day-6", sequence: 6 },
+        { slug: "ganeshotsav-day-7", sequence: 7 },
+        { slug: "ganeshotsav-day-8", sequence: 8 },
+        { slug: "ganeshotsav-day-9", sequence: 9 },
+        { slug: "ganeshotsav-day-10", sequence: 10 },
+        { slug: "anant-chaturdashi-ganesh-visarjan", sequence: 11 },
+      ],
+    },
+    "paryushana-parva": {
+      name: "Paryushana Parva",
+      anchorSlug: "paryushana-parva-begins",
+      children: [
+        { slug: "paryushana-parva-begins", sequence: 1 },
+        { slug: "paryushana-day-2", sequence: 2 },
+        { slug: "paryushana-day-3", sequence: 3 },
+        { slug: "paryushana-day-4", sequence: 4 },
+        { slug: "paryushana-day-5", sequence: 5 },
+        { slug: "paryushana-day-6", sequence: 6 },
+        { slug: "paryushana-day-7", sequence: 7 },
+        { slug: "samvatsari-paryushana-ends", sequence: 8 },
+      ],
+    },
+    "chhath-puja-four-days": {
+      name: "Chhath Puja",
+      anchorSlug: "chhath-puja",
+      children: [
+        { slug: "chhath-nahay-khay", sequence: 1 },
+        { slug: "chhath-kharna", sequence: 2 },
+        { slug: "chhath-puja", sequence: 3 },
+        { slug: "chhath-usha-arghya", sequence: 4 },
+      ],
+    },
+    "sharad-navratri": {
+      name: "Sharad Navratri",
+      anchorSlug: "navratri-begins",
+      children: [
+        { slug: "navratri-begins", sequence: 1 },
+        { slug: "navratri-day-1-shailaputri", sequence: 1 },
+        { slug: "navratri-day-2-brahmacharini", sequence: 2 },
+        { slug: "navratri-day-3-chandraghanta", sequence: 3 },
+        { slug: "navratri-day-4-kushmanda", sequence: 4 },
+        { slug: "navratri-day-5-skandamata", sequence: 5 },
+        { slug: "navratri-day-6-katyayani", sequence: 6 },
+        { slug: "navratri-day-7-kalaratri", sequence: 7 },
+        { slug: "durga-ashtami", sequence: 8 },
+        { slug: "maha-navami", sequence: 9 },
+      ],
+    },
+    "diwali-five-days": {
+      name: "Diwali 5-Day Festive Cycle",
+      anchorSlug: "diwali",
+      children: [
+        { slug: "dhanteras", sequence: 1 },
+        { slug: "naraka-chaturdashi", sequence: 2 },
+        { slug: "diwali", sequence: 3 },
+        { slug: "govardhan-puja", sequence: 4 },
+        { slug: "bhai-dooj", sequence: 5 },
+      ],
+    },
+  };
+
+  const RECURRING_TITHI_SLUGS = new Set([
+    "ekadashi",
+    "purnima-vrat",
+    "amavasya-vrat",
+    "pradosh-vrat",
+    "vinayaka-chaturthi",
+    "sankashti-chaturthi",
+    "shravan-somvar",
+    "mangala-gauri-vrat",
+  ]);
+
+  // Pre-index definitions by slug for lookup
+  const defBySlug = new Map<string, any>((definitions ?? []).map((d: any) => [d.slug, d]));
+
   const rows = (definitions ?? []).map((definition: any) => {
+    const slug = definition.slug;
     const relatedVersions = (versions ?? []).filter((row: any) => row.definition_id === definition.id).sort((a: any, b: any) => b.version - a.version);
     const current = relatedVersions[0] ?? null;
     const publishedVersion = relatedVersions.find((row: any) => row.status === "published") ?? null;
-    const dates = (occurrences ?? []).filter((row: any) => row.definition_id === definition.id).map((row: any) => row.date as string);
+
+    // Prioritize canonical reference location (Ujjain or Indian standard) to prevent local civil dates from foreign timezones
+    const defOccs = (occurrences ?? []).filter((row: any) => row.definition_id === definition.id);
+    const refOccs = defOccs.filter((o: any) =>
+      (o.computed_latitude && Math.abs(o.computed_latitude - 23.1765) < 0.1 && Math.abs(o.computed_longitude - 75.7885) < 0.1) ||
+      o.calendar_profile === "legacy-ujjain" ||
+      o.calendar_profile === "north_indian_purnimanta"
+    );
+    const usableOccs = refOccs.length > 0 ? refOccs : defOccs;
+    const dates: string[] = Array.from(new Set<string>(usableOccs.map((row: any) => row.date as string))).sort();
     const today = new Date().toISOString().slice(0, 10);
+
+    // Identify series membership
+    let seriesKey: string | undefined;
+    let seriesName: string | undefined;
+    let isSeriesAnchor = false;
+    let isSeriesChild = false;
+    let sequence: number | undefined;
+    let seriesChildrenSlugs: string[] | undefined;
+    let seriesChildrenIds: string[] | undefined;
+
+    for (const [key, cfg] of Object.entries(SERIES_REGISTRY)) {
+      if (cfg.anchorSlug === slug) {
+        seriesKey = key;
+        seriesName = cfg.name;
+        isSeriesAnchor = true;
+        seriesChildrenSlugs = cfg.children.map((c) => c.slug);
+        seriesChildrenIds = cfg.children
+          .map((c) => defBySlug.get(c.slug)?.id)
+          .filter(Boolean) as string[];
+        break;
+      }
+      const childMatch = cfg.children.find((c) => c.slug === slug);
+      if (childMatch) {
+        seriesKey = key;
+        seriesName = cfg.name;
+        isSeriesChild = true;
+        sequence = childMatch.sequence;
+        break;
+      }
+    }
+
+    // Determine category
+    let category: "festival" | "series_child" | "recurring_tithi" = "festival";
+    if (RECURRING_TITHI_SLUGS.has(slug)) {
+      category = "recurring_tithi";
+    } else if (isSeriesChild && !isSeriesAnchor) {
+      category = "series_child";
+    }
+
+    const launchStatus: "included" | "deferred" = dates.length > 0 ? "included" : "deferred";
+    const dates2026 = dates.filter((d) => d.startsWith("2026"));
+    const hasDateConflict = category !== "recurring_tithi" && dates2026.length > 1;
+
     return {
       ...definition,
+      category,
+      seriesKey,
+      seriesName,
+      isSeriesAnchor,
+      isSeriesChild,
+      seriesChildrenSlugs,
+      seriesChildrenIds,
+      sequence,
+      launchStatus,
+      hasDateConflict,
+      allDates: dates,
       current,
       publishedVersion,
       sourceCount: (sources ?? []).filter((row: any) => row.definition_id === definition.id && row.approved).length,
@@ -359,7 +509,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, storyId, status: nextStatus });
   }
 
-  if (body.action === "bulk_manual_approve") {
+  if (body.action === "approve_series") {
+    body.publish = true;
+  }
+
+  if (body.action === "bulk_manual_approve" || body.action === "approve_series") {
     const now = new Date().toISOString();
     const { definitionIds, publish = false } = body;
     if (!Array.isArray(definitionIds) || definitionIds.length === 0) {

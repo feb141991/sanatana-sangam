@@ -5,34 +5,6 @@ import { verifyFestivalDatesWithAI, buildAIUpdatePayload, type VerificationRepor
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import type { Database } from '@/types/database';
 
-type LegacyFestivalRow = Pick<
-  Database['public']['Tables']['festivals']['Row'],
-  | 'id'
-  | 'name'
-  | 'date'
-  | 'emoji'
-  | 'description'
-  | 'type'
-  | 'tradition'
-  | 'year'
-  | 'source_name'
-  | 'source_kind'
-  | 'review_status'
-  | 'verification_status'
-  | 'verification_confidence'
-  | 'verification_note'
-  | 'suggested_date'
-  | 'verification_run_at'
-  | 'verification_type'
->;
-
-const LEGACY_FESTIVAL_SELECT = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, verification_type';
-
-function isMissingObservanceModel(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error ?? '');
-  return /observance_occurrences|observance_definitions/i.test(message);
-}
-
 export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
@@ -60,29 +32,13 @@ export async function GET(request: Request) {
     let dbRows: any[] = [];
     let usingOccurrenceModel = false;
 
-    if (!occRows.error) {
-      usingOccurrenceModel = true;
-      dbRows = occRows.data ?? [];
-      if (dbRows.length > 0) {
-        festivals = dbRows.map((row: any) => mapOccurrenceToFestival(row));
-      } else {
-        usedFallback = true;
-      }
-    } else if (isMissingObservanceModel(occRows.error)) {
-      const legacyRows = await supabase
-        .from('festivals')
-        .select(LEGACY_FESTIVAL_SELECT)
-        .eq('year', year)
-        .order('date', { ascending: true });
-      if (legacyRows.error) throw legacyRows.error;
-      dbRows = (legacyRows.data ?? []) as LegacyFestivalRow[];
-      if (dbRows.length > 0) {
-        festivals = dbRows.map((row) => attachFestivalTrust(row as FestivalSourceRow));
-      } else {
-        usedFallback = true;
-      }
+    if (occRows.error) throw occRows.error;
+    usingOccurrenceModel = true;
+    dbRows = occRows.data ?? [];
+    if (dbRows.length > 0) {
+      festivals = dbRows.map((row: any) => mapOccurrenceToFestival(row));
     } else {
-      throw occRows.error;
+      usedFallback = true;
     }
 
     report = await verifyFestivalDatesWithAI(festivals, year);
