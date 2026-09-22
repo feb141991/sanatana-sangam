@@ -7,9 +7,37 @@ interface RouteSummary {
   route: string;
   opens: number;
   cacheHitRate: number;
+  // Absent on a payload from a pre-Stage-0 app build -- default to 0/{}
+  // rather than treat a missing field as a parse failure (docs/
+  // PERFORMANCE_RESEARCH_AND_EXECUTION_PLAN.md, native repo schema v2).
+  staleOpens?: number;
+  staleReportingOpens?: number;
   avgDurationMs: number;
   p95DurationMs: number;
   refreshFailures: number;
+  failureReasons?: Record<string, number>;
+  failuresWithCachedData?: number;
+}
+
+interface DuplicateRequestSummary {
+  route: string;
+  avoided: number;
+  detected: number;
+}
+
+interface InteractionTimingSummary {
+  name: string;
+  samples: number;
+  avgDurationMs: number;
+  p95DurationMs: number;
+}
+
+interface LoaderExposureSummary {
+  route: string;
+  shown: number;
+  shownWithUsableData: number;
+  avgDurationMs: number;
+  p95DurationMs: number;
 }
 
 interface SummaryRow {
@@ -24,6 +52,9 @@ interface SummaryRow {
     routes: RouteSummary[];
     outbox: Array<{ feature: string; success: number; retry: number; permanentFailure: number }>;
     serverTimings: Array<{ route: string; samples: number; sections: Array<{ name: string; avgDurationMs: number; p95DurationMs: number }> }>;
+    duplicateRequests?: DuplicateRequestSummary[];
+    interactionTimings?: InteractionTimingSummary[];
+    loaderExposure?: LoaderExposureSummary[];
     totalEvents: number;
   };
 }
@@ -179,7 +210,7 @@ export default function NativeStartupTelemetrySection() {
               </button>
 
               {expanded && (
-                <div className="p-4 space-y-3">
+                <div className="p-4 space-y-4">
                   {row.summary.routes.length === 0 ? (
                     <p className="text-[11px] text-[var(--brand-muted)]">No route-open events in this summary.</p>
                   ) : (
@@ -189,24 +220,131 @@ export default function NativeStartupTelemetrySection() {
                           <th className="pb-1.5 pr-3">Route</th>
                           <th className="pb-1.5 pr-3">Opens</th>
                           <th className="pb-1.5 pr-3">Cache Hit</th>
+                          <th className="pb-1.5 pr-3">Stale</th>
                           <th className="pb-1.5 pr-3">Avg</th>
                           <th className="pb-1.5 pr-3">p95</th>
-                          <th className="pb-1.5">Refresh Failures</th>
+                          <th className="pb-1.5 pr-3">Refresh Failures</th>
+                          <th className="pb-1.5">Failure Reasons</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {row.summary.routes.map((r) => (
-                          <tr key={r.route} className="border-t border-black/5">
-                            <td className="py-1.5 pr-3 font-mono theme-ink">{r.route}</td>
-                            <td className="py-1.5 pr-3">{r.opens}</td>
-                            <td className="py-1.5 pr-3">{Math.round(r.cacheHitRate * 100)}%</td>
-                            <td className="py-1.5 pr-3">{ms(r.avgDurationMs)}</td>
-                            <td className="py-1.5 pr-3">{ms(r.p95DurationMs)}</td>
-                            <td className="py-1.5">{r.refreshFailures}</td>
-                          </tr>
-                        ))}
+                        {row.summary.routes.map((r) => {
+                          const reasons = Object.entries(r.failureReasons ?? {}).filter(([, count]) => count > 0);
+                          return (
+                            <tr key={r.route} className="border-t border-black/5">
+                              <td className="py-1.5 pr-3 font-mono theme-ink">{r.route}</td>
+                              <td className="py-1.5 pr-3">{r.opens}</td>
+                              <td className="py-1.5 pr-3">{Math.round(r.cacheHitRate * 100)}%</td>
+                              <td className="py-1.5 pr-3">
+                                {(r.staleReportingOpens ?? 0) > 0 ? `${r.staleOpens ?? 0}/${r.staleReportingOpens}` : "—"}
+                              </td>
+                              <td className="py-1.5 pr-3">{ms(r.avgDurationMs)}</td>
+                              <td className="py-1.5 pr-3">{ms(r.p95DurationMs)}</td>
+                              <td className="py-1.5 pr-3">
+                                {r.refreshFailures}
+                                {(r.failuresWithCachedData ?? 0) > 0 && (
+                                  <span className="text-[var(--brand-muted)]"> ({r.failuresWithCachedData} kept stale content)</span>
+                                )}
+                              </td>
+                              <td className="py-1.5">
+                                {reasons.length === 0 ? "—" : reasons.map(([reason, count]) => `${reason}:${count}`).join(", ")}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
+                  )}
+
+                  {(row.summary.loaderExposure ?? []).length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-muted)] mb-1.5">
+                        Loader Exposure
+                      </p>
+                      <table className="w-full text-[11px]">
+                        <thead>
+                          <tr className="text-left text-[var(--brand-muted)] uppercase tracking-wider text-[10px]">
+                            <th className="pb-1.5 pr-3">Route</th>
+                            <th className="pb-1.5 pr-3">Shown</th>
+                            <th className="pb-1.5 pr-3">Shown w/ Usable Data</th>
+                            <th className="pb-1.5 pr-3">Avg</th>
+                            <th className="pb-1.5">p95</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(row.summary.loaderExposure ?? []).map((l) => (
+                            <tr key={l.route} className="border-t border-black/5">
+                              <td className="py-1.5 pr-3 font-mono theme-ink">{l.route}</td>
+                              <td className="py-1.5 pr-3">{l.shown}</td>
+                              <td className={`py-1.5 pr-3 font-bold ${l.shownWithUsableData > 0 ? "text-rose-600" : ""}`}>
+                                {l.shownWithUsableData}
+                                {l.shownWithUsableData > 0 && " ⚠"}
+                              </td>
+                              <td className="py-1.5 pr-3">{ms(l.avgDurationMs)}</td>
+                              <td className="py-1.5">{ms(l.p95DurationMs)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <p className="text-[10px] text-[var(--brand-muted)] mt-1">
+                        &quot;Shown w/ Usable Data&quot; should be 0 -- any non-zero count is a measured case of a
+                        full-screen loader hiding content that was already available.
+                      </p>
+                    </div>
+                  )}
+
+                  {(row.summary.duplicateRequests ?? []).length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-muted)] mb-1.5">
+                        Duplicate Requests
+                      </p>
+                      <table className="w-full text-[11px]">
+                        <thead>
+                          <tr className="text-left text-[var(--brand-muted)] uppercase tracking-wider text-[10px]">
+                            <th className="pb-1.5 pr-3">Route</th>
+                            <th className="pb-1.5 pr-3">Avoided</th>
+                            <th className="pb-1.5">Detected (un-deduped)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(row.summary.duplicateRequests ?? []).map((d) => (
+                            <tr key={d.route} className="border-t border-black/5">
+                              <td className="py-1.5 pr-3 font-mono theme-ink">{d.route}</td>
+                              <td className="py-1.5 pr-3">{d.avoided}</td>
+                              <td className={`py-1.5 ${d.detected > 0 ? "text-rose-600 font-bold" : ""}`}>{d.detected}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {(row.summary.interactionTimings ?? []).length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-muted)] mb-1.5">
+                        Interaction Timings
+                      </p>
+                      <table className="w-full text-[11px]">
+                        <thead>
+                          <tr className="text-left text-[var(--brand-muted)] uppercase tracking-wider text-[10px]">
+                            <th className="pb-1.5 pr-3">Interaction</th>
+                            <th className="pb-1.5 pr-3">Samples</th>
+                            <th className="pb-1.5 pr-3">Avg</th>
+                            <th className="pb-1.5">p95</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(row.summary.interactionTimings ?? []).map((i) => (
+                            <tr key={i.name} className="border-t border-black/5">
+                              <td className="py-1.5 pr-3 font-mono theme-ink">{i.name}</td>
+                              <td className="py-1.5 pr-3">{i.samples}</td>
+                              <td className="py-1.5 pr-3">{ms(i.avgDurationMs)}</td>
+                              <td className="py-1.5">{ms(i.p95DurationMs)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               )}
