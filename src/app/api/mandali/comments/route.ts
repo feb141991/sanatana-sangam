@@ -3,21 +3,40 @@ import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { rejectLargeRequest, rateLimitByIp } from '@/lib/api-security';
 import { parseMandaliCommentInput, parseMandaliCommentEditInput, parseMandaliCommentDeleteInput } from '@/lib/mandali-write-contract';
-import { loadPostComments } from '@/lib/mandali-data-server';
+import { loadPostComments, loadSingleComment } from '@/lib/mandali-data-server';
 import { createAdminClient } from '@/lib/supabase-admin';
 
-// Full comment thread for one post -- the "expand" path in the paginated
-// Mandali feed DTO, which ships only a 2-comment preview per post upfront.
+// Bounded, keyset-paginated comment thread for one post -- the "expand"
+// path in the paginated Mandali feed DTO, which ships only a 2-comment
+// preview per post upfront. Pass `commentId` instead of paginating to
+// look up exactly one comment (the realtime-new-comment enrichment path
+// in app/(tabs)/mandali.tsx uses this instead of re-fetching the thread).
 export async function GET(request: NextRequest) {
   const { user } = await getApiUser(request);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const postId = new URL(request.url).searchParams.get('postId');
+  const url = new URL(request.url);
+  const postId = url.searchParams.get('postId');
   if (!postId) return NextResponse.json({ error: 'postId is required.' }, { status: 400 });
 
+  const commentId = url.searchParams.get('commentId');
+  if (commentId) {
+    try {
+      const comment = await loadSingleComment(user.id, postId, commentId);
+      return NextResponse.json({ comment });
+    } catch (error) {
+      console.error('[mandali/comments GET] single-comment lookup failed', error instanceof Error ? error.message : 'unknown error');
+      return NextResponse.json({ error: 'Could not load comment.' }, { status: 500 });
+    }
+  }
+
+  const cursor = url.searchParams.get('cursor');
+  const limitParam = url.searchParams.get('limit');
+  const limit = limitParam ? Number(limitParam) : undefined;
+
   try {
-    const comments = await loadPostComments(user.id, postId);
-    return NextResponse.json({ comments });
+    const page = await loadPostComments(user.id, postId, { cursor, limit });
+    return NextResponse.json(page);
   } catch (error) {
     console.error('[mandali/comments GET] failed', error instanceof Error ? error.message : 'unknown error');
     return NextResponse.json({ error: 'Could not load comments.' }, { status: 500 });

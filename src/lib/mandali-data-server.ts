@@ -18,6 +18,12 @@ const BLEND_THRESHOLD = 5;
 const FEED_PAGE_DEFAULT_LIMIT = 20;
 const FEED_PAGE_MAX_LIMIT = 50;
 const COMMENT_PREVIEW_COUNT = 2;
+const COMMENT_PAGE_DEFAULT_LIMIT = 30;
+const COMMENT_PAGE_MAX_LIMIT = 100;
+// Highlighted comments are rare (moderator/author picks) and always shown
+// in full regardless of page -- this only guards against a pathological
+// number of them, not a normal thread's worth.
+const COMMENT_HIGHLIGHTED_CAP = 20;
 
 // Mandali conversation-starter prompts (product research: Hostelworld's
 // "Linkup" pattern -- give people a reason to post instead of a blank feed).
@@ -481,21 +487,118 @@ async function hydrateFeedPosts(
  * so a blocked/muted author's comments are excluded here even though the
  * legacy loadMandaliDataForUser path never filtered comments at all.
  */
-export async function loadPostComments(userId: string, postId: string): Promise<PostCommentWithAuthor[]> {
+export type PostCommentsPage = {
+  comments: PostCommentWithAuthor[];
+  nextCursor: string | null;
+};
+
+/**
+ * Bounded, keyset-paginated comment thread for one post -- was previously
+ * a single unbounded `select('*')` (no limit at all), meaning a post with
+ * a large thread paid for every comment on every "expand" tap, and a
+ * realtime new-comment event that re-fetched the thread (see
+ * loadSingleComment below for why that no longer happens) paid the same
+ * unbounded cost. Splits into two parts, same pattern
+ * loadMandaliFeedPage uses for its pinned-prompt post:
+ *
+ * - Highlighted comments: rare, always shown in full, not part of the
+ *   cursor's keyset (fetched only on the first page -- re-including them
+ *   on a later page would duplicate them, same reasoning as the feed's
+ *   pinned post).
+ * - Everything else: ascending keyset pagination on (created_at, id),
+ *   reusing the feed's cursor codec (it is a generic (createdAt, id)
+ *   tuple encoder, not feed-specific despite the name).
+ */
+export async function loadPostComments(
+  userId: string,
+  postId: string,
+  { cursor, limit }: { cursor?: string | null; limit?: number } = {},
+): Promise<PostCommentsPage> {
+  const admin = createAdminClient();
+  const safetyState = await getUserSafetyState(admin, userId);
+  const pageSize = Math.min(Math.max(limit ?? COMMENT_PAGE_DEFAULT_LIMIT, 1), COMMENT_PAGE_MAX_LIMIT);
+  const decodedCursor = cursor ? decodeFeedCursor(cursor) : null;
+  const isFirstPage = !decodedCursor;
+
+  const highlightedPromise = isFirstPage
+    ? admin
+        .from('post_comments')
+        .select('*')
+        .eq('post_id', postId)
+        .eq('is_highlighted', true)
+        .order('created_at', { ascending: true })
+        .limit(COMMENT_HIGHLIGHTED_CAP)
+    : Promise.resolve({ data: [] as PostComment[], error: null });
+
+  let regularQuery = admin
+    .from('post_comments')
+    .select('*')
+    .eq('post_id', postId)
+    .eq('is_highlighted', false)
+    .order('created_at', { ascending: true })
+    .order('id', { ascending: true });
+  if (decodedCursor) {
+    // Ascending keyset predicate for (created_at, id) > (cursor.createdAt,
+    // cursor.id) -- the thread reads oldest-first, unlike the feed's
+    // newest-first descending cursor, so this is the mirror-image
+    // comparison of loadMandaliFeedPage's `.lt.`/`.lt.` predicate.
+    regularQuery = regularQuery.or(
+      `created_at.gt.${decodedCursor.createdAt},and(created_at.eq.${decodedCursor.createdAt},id.gt.${decodedCursor.id})`,
+    );
+  }
+  // Fetch one extra row to know whether a next page exists without a
+  // separate count query -- same trick loadMandaliFeedPage uses.
+  regularQuery = regularQuery.limit(pageSize + 1);
+
+  const [{ data: highlightedRows, error: highlightedError }, { data: regularRows, error: regularError }] =
+    await Promise.all([highlightedPromise, regularQuery]);
+  if (highlightedError) throw highlightedError;
+  if (regularError) throw regularError;
+
+  const allRegular = (regularRows ?? []) as PostComment[];
+  const hasMore = allRegular.length > pageSize;
+  const pageRegular = hasMore ? allRegular.slice(0, pageSize) : allRegular;
+  const lastRow = pageRegular[pageRegular.length - 1];
+  const nextCursor = hasMore && lastRow ? encodeFeedCursor(lastRow.created_at, lastRow.id) : null;
+
+  const combinedRows = [...((highlightedRows ?? []) as PostComment[]), ...pageRegular];
+  const visibleRows = filterAuthoredItems(combinedRows, 'mandali_comment', safetyState);
+  const comments = await hydrateComments(visibleRows);
+  return { comments, nextCursor };
+}
+
+/**
+ * Looks up exactly one comment, author-hydrated and safety-filtered the
+ * same way loadPostComments' rows are. Exists so a realtime INSERT event
+ * (see app/(tabs)/mandali.tsx's handleCommentRealtimeChange) can enrich
+ * the one new comment it actually needs instead of re-fetching the whole
+ * thread just to find it -- the fix for the "realtime events refetch the
+ * entire thread" gap. Returns null for a genuinely missing comment or one
+ * filtered out by the viewer's safety state (blocked/hidden), which the
+ * caller must treat as "nothing to add," not an error.
+ */
+export async function loadSingleComment(
+  userId: string,
+  postId: string,
+  commentId: string,
+): Promise<PostCommentWithAuthor | null> {
   const admin = createAdminClient();
   const safetyState = await getUserSafetyState(admin, userId);
 
   const { data, error } = await admin
     .from('post_comments')
     .select('*')
+    .eq('id', commentId)
     .eq('post_id', postId)
-    .order('is_highlighted', { ascending: false })
-    .order('created_at', { ascending: true });
+    .maybeSingle();
   if (error) throw error;
+  if (!data) return null;
 
-  const rows = (data ?? []) as PostComment[];
-  const visibleRows = filterAuthoredItems(rows, 'mandali_comment', safetyState);
-  return hydrateComments(visibleRows);
+  const [visible] = filterAuthoredItems([data as PostComment], 'mandali_comment', safetyState);
+  if (!visible) return null;
+
+  const [hydrated] = await hydrateComments([visible]);
+  return hydrated ?? null;
 }
 
 export async function loadMandaliFeedPage(
