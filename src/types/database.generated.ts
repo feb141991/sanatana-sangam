@@ -3673,6 +3673,132 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_candidates: {
+        Row: {
+          id: string
+          user_id: string
+          event_type: string
+          event_id: string
+          event_instance: string
+          local_date: string
+          audience_variant: string
+          scheduled_for: string
+          expires_at: string
+          priority: number
+          title: string
+          body: string
+          action_url: string
+          language: string
+          timezone: string
+          tradition: string | null
+          calendar_profile: string | null
+          source_status: string
+          source_refs: Json
+          metadata: Json
+          status: string
+          decision_reason: string | null
+          resolved_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          event_type: string
+          event_id: string
+          event_instance?: string
+          local_date: string
+          audience_variant?: string
+          scheduled_for: string
+          expires_at: string
+          priority?: number
+          title: string
+          body: string
+          action_url: string
+          language?: string
+          timezone?: string
+          tradition?: string | null
+          calendar_profile?: string | null
+          source_status?: string
+          source_refs?: Json
+          metadata?: Json
+          status?: string
+          decision_reason?: string | null
+          resolved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          event_type?: string
+          event_id?: string
+          event_instance?: string
+          local_date?: string
+          audience_variant?: string
+          scheduled_for?: string
+          expires_at?: string
+          priority?: number
+          title?: string
+          body?: string
+          action_url?: string
+          language?: string
+          timezone?: string
+          tradition?: string | null
+          calendar_profile?: string | null
+          source_status?: string
+          source_refs?: Json
+          metadata?: Json
+          status?: string
+          decision_reason?: string | null
+          resolved_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_resolver_events: {
+        Row: {
+          id: string
+          candidate_id: string
+          user_id: string
+          event_type: string
+          decision: string
+          reason: string
+          winning_candidate_id: string | null
+          policy_version: string
+          metadata: Json
+          resolved_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          user_id: string
+          event_type: string
+          decision: string
+          reason: string
+          winning_candidate_id?: string | null
+          policy_version?: string
+          metadata?: Json
+          resolved_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          user_id?: string
+          event_type?: string
+          decision?: string
+          reason?: string
+          winning_candidate_id?: string | null
+          policy_version?: string
+          metadata?: Json
+          resolved_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       notification_schedule: {
         Row: {
           body: string

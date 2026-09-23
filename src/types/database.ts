@@ -1249,3 +1249,8 @@ export type VratObservation = Database['public']['Tables']['vrat_observations'][
 
 export type PushTokenEvent = Database['public']['Tables']['push_token_events']['Row'];
 export type NotificationDispatchEvent = Database['public']['Tables']['notification_dispatch_events']['Row'];
+
+export type NotificationCandidate = Database['public']['Tables']['notification_candidates']['Row'];
+export type NotificationCandidateInsert = Database['public']['Tables']['notification_candidates']['Insert'];
+export type NotificationResolverEvent = Database['public']['Tables']['notification_resolver_events']['Row'];
+export type NotificationResolverEventInsert = Database['public']['Tables']['notification_resolver_events']['Insert'];
