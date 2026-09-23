@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getApiUser } from "@/lib/api-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { isValidObservanceReminderTime, sanitizeObservanceLeadDays } from "@/lib/observance-preferences";
 
 export const runtime = "nodejs";
 
@@ -12,6 +13,8 @@ const EDITABLE_TEXT_FIELDS = new Set(["full_name", "sampradaya", "ishta_devata",
 const EDITABLE_LANGUAGE_FIELDS = new Set(["app_language", "meaning_language", "transliteration_language"]);
 const EDITABLE_BOOLEAN_FIELDS = new Set([
   "wants_festival_reminders",
+  "wants_vrat_reminders",
+  "wants_tithi_reminders",
   "wants_shloka_reminders",
   "wants_nitya_reminders",
   "wants_community_notifications",
@@ -180,6 +183,22 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: field + " must be a boolean" }, { status: 400 });
       }
       updates[field] = value;
+    }
+
+    if ("observance_reminder_lead_days" in rawBody) {
+      const sanitized = sanitizeObservanceLeadDays(rawBody.observance_reminder_lead_days);
+      if (sanitized === null) {
+        return NextResponse.json({ error: "observance_reminder_lead_days must be an array of non-negative integers (0-30)" }, { status: 400 });
+      }
+      updates.observance_reminder_lead_days = sanitized;
+    }
+
+    if ("observance_reminder_time" in rawBody) {
+      const value = rawBody.observance_reminder_time;
+      if (!isValidObservanceReminderTime(value)) {
+        return NextResponse.json({ error: "observance_reminder_time must be in HH:MM 24-hour format" }, { status: 400 });
+      }
+      updates.observance_reminder_time = value;
     }
 
     if ("date_of_birth" in rawBody) {

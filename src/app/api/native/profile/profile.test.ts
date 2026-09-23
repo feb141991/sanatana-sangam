@@ -311,4 +311,54 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     }));
     expect(res5.status).toBe(400);
   });
+
+  it("accepts valid observance preferences (vrats, tithis, lead days, reminder time)", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "usr_obs_123" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const req = new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({
+        wants_vrat_reminders: true,
+        wants_tithi_reminders: false,
+        observance_reminder_lead_days: [0, 1, 7],
+        observance_reminder_time: "07:30",
+      }),
+    });
+
+    const res = await PATCH(req);
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toMatchObject({
+      wants_vrat_reminders: true,
+      wants_tithi_reminders: false,
+      observance_reminder_lead_days: [0, 1, 7],
+      observance_reminder_time: "07:30",
+    });
+    expect(updatedUserFilter).toBe("usr_obs_123");
+  });
+
+  it("rejects invalid observance reminder time or lead days with 400", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "usr_obs_123" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    // Invalid time
+    const res1 = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ observance_reminder_time: "25:00" }),
+    }));
+    expect(res1.status).toBe(400);
+
+    // Invalid lead days (non-array)
+    const res2 = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ observance_reminder_lead_days: "invalid" }),
+    }));
+    expect(res2.status).toBe(400);
+  });
 });

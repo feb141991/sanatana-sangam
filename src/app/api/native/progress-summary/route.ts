@@ -25,6 +25,10 @@ type ProfileRow = {
   active_symbol_id: string | null;
   seva_score: number | null;
   wants_festival_reminders: boolean | null;
+  wants_vrat_reminders?: boolean | null;
+  wants_tithi_reminders?: boolean | null;
+  observance_reminder_lead_days?: number[] | null;
+  observance_reminder_time?: string | null;
   wants_shloka_reminders: boolean | null;
   wants_nitya_reminders: boolean | null;
   wants_community_notifications: boolean | null;
@@ -91,6 +95,22 @@ function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: num
   ]);
 }
 
+// Reliability plan item 7 ("bound Profile summary history"): the
+// malaHistoryResult query below is capped at 1000 rows -- necessary so a
+// heavy practitioner's request doesn't transfer and JS-aggregate an
+// unbounded row set on every load, but that cap means
+// `malaHistory.length` silently undercounts totalSessions for anyone past
+// it. A `count: 'exact', head: true` query gets the true total cheaply
+// (no rows transferred, index-covered on user_id) without needing the
+// row-level SUM/mode aggregates a fully DB-side fix for totalBeads/
+// totalRounds/topMantra would require.
+function withTimeoutCount(promise: PromiseLike<{ count: number | null }>, timeoutMs: number): Promise<{ count: number | null }> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<{ count: null }>((resolve) => setTimeout(() => resolve({ count: null }), timeoutMs)),
+  ]);
+}
+
 function isPresentString(value: string | null): value is string {
   return Boolean(value);
 }
@@ -116,7 +136,7 @@ export async function GET(request: NextRequest) {
   const profileStartedAt = performance.now();
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
+    .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, observance_reminder_lead_days, observance_reminder_time, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
     .eq("id", user.id)
     .maybeSingle();
   const profileMs = performance.now() - profileStartedAt;
@@ -147,7 +167,7 @@ export async function GET(request: NextRequest) {
     }
     const { data: refetched, error: refetchError } = await supabase
       .from("profiles")
-      .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
+      .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, observance_reminder_lead_days, observance_reminder_time, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
       .eq("id", user.id)
       .maybeSingle();
     if (refetchError) {
@@ -176,6 +196,7 @@ export async function GET(request: NextRequest) {
     nityaStreakResult,
     malaResult,
     malaHistoryResult,
+    malaCountResult,
     pathshalaStateResult,
   ] = await Promise.all([
     withTimeout<GuidedPathProgressRow[]>(
@@ -229,6 +250,13 @@ export async function GET(request: NextRequest) {
         .limit(1000),
       DB_TIMEOUT,
     ),
+    withTimeoutCount(
+      supabase
+        .from("mala_sessions")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id),
+      DB_TIMEOUT,
+    ),
     withTimeout<PathshalaStateRow[]>(
       supabase
         .from("pathshala_user_state")
@@ -247,6 +275,11 @@ export async function GET(request: NextRequest) {
   const nityaBestStreak = nityaStreakResult.data?.longest_streak ?? 0;
   const malaRows = malaResult.data ?? [];
   const malaHistory = malaHistoryResult.data ?? [];
+  // The true total, not capped at malaHistory's 1000-row limit -- falls
+  // back to the (possibly-capped) array length only if the count query
+  // itself timed out, so this never reports fewer sessions than the rows
+  // actually in hand.
+  const malaTotalSessions = malaCountResult.count ?? malaHistory.length;
   const pathshalaStateRows = pathshalaStateResult.data ?? [];
   const hasMeaningfulPracticeHistory =
     malaHistory.length > 0
@@ -484,7 +517,7 @@ export async function GET(request: NextRequest) {
         totalBeads,
         totalRounds,
         totalMinutes: Math.round(totalSeconds / 60),
-        totalSessions: malaHistory.length,
+        totalSessions: malaTotalSessions,
         topMantra,
         nityaDays,
         pathshalaEntriesOpened,

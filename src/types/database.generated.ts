@@ -5761,6 +5761,10 @@ export type Database = {
           wants_evening_reminder: boolean | null
           wants_family_notifications: boolean
           wants_festival_reminders: boolean
+          wants_vrat_reminders: boolean
+          wants_tithi_reminders: boolean
+          observance_reminder_lead_days: number[]
+          observance_reminder_time: string
           wants_madhyahn_reminder: boolean | null
           wants_nitya_reminders: boolean
           wants_shloka_reminders: boolean
@@ -5870,6 +5874,10 @@ export type Database = {
           wants_evening_reminder?: boolean | null
           wants_family_notifications?: boolean
           wants_festival_reminders?: boolean
+          wants_vrat_reminders?: boolean
+          wants_tithi_reminders?: boolean
+          observance_reminder_lead_days?: number[]
+          observance_reminder_time?: string
           wants_madhyahn_reminder?: boolean | null
           wants_nitya_reminders?: boolean
           wants_shloka_reminders?: boolean
@@ -5979,6 +5987,10 @@ export type Database = {
           wants_evening_reminder?: boolean | null
           wants_family_notifications?: boolean
           wants_festival_reminders?: boolean
+          wants_vrat_reminders?: boolean
+          wants_tithi_reminders?: boolean
+          observance_reminder_lead_days?: number[]
+          observance_reminder_time?: string
           wants_madhyahn_reminder?: boolean | null
           wants_nitya_reminders?: boolean
           wants_shloka_reminders?: boolean
