@@ -59,21 +59,15 @@ export type ResolutionResult = {
 };
 
 /**
- * Resolves the priority class of a candidate based on explicit metadata
- * or canonical event type categorization.
+ * Resolve priority only from the server-owned event type. Candidate metadata
+ * is producer-supplied and must never grant a budget exemption.
  */
 export function resolvePriorityClass(candidate: NotificationCandidate): NotificationPriorityClass {
-  const meta = (candidate.metadata ?? {}) as Record<string, any>;
+  return resolvePriorityClassForEventType(candidate.event_type);
+}
 
-  if (meta.priority_class && meta.priority_class in PRIORITY_CLASS_ORDER) {
-    return meta.priority_class as NotificationPriorityClass;
-  }
-
-  if (meta.budget_class === 'explicit_observance' || meta.budget_exempt === true) {
-    return 'reviewed_observance';
-  }
-
-  const eventType = candidate.event_type.toLowerCase();
+export function resolvePriorityClassForEventType(rawEventType: string): NotificationPriorityClass {
+  const eventType = rawEventType.toLowerCase();
 
   // 1. Transactional / Account safety
   if (['security', 'account', 'moderation', 'auth', 'transactional', 'critical_alert'].includes(eventType)) {
@@ -96,7 +90,7 @@ export function resolvePriorityClass(candidate: NotificationCandidate): Notifica
   }
 
   // 6. Routine engagement
-  if (['routine_engagement', 'mood_checkin', 'mood', 'japa', 'shloka', 'streak', 'streak_nudge', 'daily_checkin'].includes(eventType)) {
+  if (['routine_engagement', 'mood_checkin', 'mood', 'japa', 'shloka', 'sattvic', 'dharm_veer', 'quiz', 'streak', 'streak_nudge', 'daily_checkin'].includes(eventType)) {
     return 'routine_engagement';
   }
 
