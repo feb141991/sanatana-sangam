@@ -3698,6 +3698,7 @@ export type Database = {
           status: string
           decision_reason: string | null
           resolved_at: string | null
+          claimed_at: string | null
           created_at: string
           updated_at: string
         }
@@ -3725,6 +3726,7 @@ export type Database = {
           status?: string
           decision_reason?: string | null
           resolved_at?: string | null
+          claimed_at?: string | null
           created_at?: string
           updated_at?: string
         }
