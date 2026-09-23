@@ -1,7 +1,7 @@
 # Observance-First Notification Delivery
 
-**Date:** 2026-09-23  
-**Session context:** Updating the central notification resolver plan and beginning its observance pilot  
+**Date:** 2026-09-23
+**Session context:** Updating the central notification resolver plan and beginning its observance pilot
 **Category:** architecture
 
 ## What we decided
