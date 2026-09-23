@@ -18,6 +18,26 @@ type ApiUserResult =
   | { user: User; error: null; supabase: SupabaseClient }
   | { user: null; error: Error; supabase: null };
 
+// Reliability plan item 7: getApiUser is the auth entry point for nearly
+// every route in this app and previously had no timeout at all on either
+// auth.getUser() call -- a slow/hanging auth-provider network round trip
+// would hang the whole request rather than failing fast. Matches the
+// DB_TIMEOUT convention already used in /api/native/progress-summary. A
+// timeout here throws a plain Error with no .status/.name/.code, which
+// classifyApiAuthFailure's default branch correctly reads as
+// AUTH_UNAVAILABLE (503, retryable) rather than AUTH_REQUIRED (401) --
+// a slow dependency is not evidence of bad credentials.
+const AUTH_TIMEOUT_MS = 4_000;
+
+function withAuthTimeout<T>(promise: Promise<T>): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error('Auth check timed out')), AUTH_TIMEOUT_MS);
+    }),
+  ]);
+}
+
 function getBearerToken(req: NextRequest) {
   const header = req.headers.get("authorization");
   const match = header?.match(/^Bearer\s+(.+)$/i);
@@ -83,7 +103,7 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
       }
     );
 
-    const bearerResult = await bearerClient.auth.getUser(token);
+    const bearerResult = await withAuthTimeout(bearerClient.auth.getUser(token));
     if (bearerResult.data?.user) {
       return { user: bearerResult.data.user, error: null, supabase: bearerClient };
     }
@@ -93,7 +113,7 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
 
   // 2. Fallback path: Web callers with cookie session
     const cookieClient = await createServerSupabaseClient();
-    const cookieResult = await cookieClient.auth.getUser();
+    const cookieResult = await withAuthTimeout(cookieClient.auth.getUser());
 
     if (cookieResult.data?.user) {
       return { user: cookieResult.data.user, error: null, supabase: cookieClient };

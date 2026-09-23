@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { after } from 'next/server';
+
 import { createAdminClient } from '@/lib/supabase-admin';
 import { createMandaliPromptAdminClient } from '@/lib/mandali-prompt-admin';
 import { filterAuthoredItems, filterProfileRows, getUserSafetyState, type UserSafetyState } from '@/lib/user-safety';
@@ -48,6 +50,15 @@ const MANDALI_PROMPT_AUTHOR_ID = process.env.MANDALI_PROMPT_AUTHOR_ID;
  * fails to materialize must never break loading the rest of the feed. The
  * database's (mandali_id, mandali_prompt_date) unique constraint closes the
  * concurrent-first-read race rather than relying on this function's lookup.
+ *
+ * Off the feed's critical path (reliability plan item 7): both call sites
+ * below schedule this via next/server's `after()` instead of awaiting it
+ * before the posts query, since a cold cache-miss day's worst case here is
+ * up to 6 sequential DB round trips. The existing unique-constraint/best-
+ * effort design already tolerated the *concurrent*-first-reader race; this
+ * just extends the same tolerance to the *very first* reader of the day --
+ * they may not see today's prompt in their own response, only on the next
+ * feed read once materialization has finished in the background.
  *
  * `mandali_prompts.tradition` exists for future scoping, but public.mandalis
  * (supabase/schema.sql) has no tradition column of its own to match against
@@ -245,7 +256,7 @@ export async function loadMandaliDataForUser(userId: string): Promise<MandaliDat
     return { profile: profile as MandaliProfile, posts: [], comments: [], rsvps: [], members: [], blendedPosts: [] };
   }
 
-  await ensureTodaysMandaliPrompt(mandaliId);
+  after(() => ensureTodaysMandaliPrompt(mandaliId));
 
   const [{ data: postRows, error: postsError }, { data: memberRows, error: membersError }] = await Promise.all([
     admin
@@ -624,7 +635,7 @@ export async function loadMandaliFeedPage(
   }
 
   if (isFirstPage) {
-    await ensureTodaysMandaliPrompt(mandaliId);
+    after(() => ensureTodaysMandaliPrompt(mandaliId));
   }
 
   let postsQuery = admin
