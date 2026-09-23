@@ -96,7 +96,7 @@ export function resolvePriorityClass(candidate: NotificationCandidate): Notifica
   }
 
   // 6. Routine engagement
-  if (['routine_engagement', 'mood_checkin', 'streak', 'streak_nudge', 'daily_checkin'].includes(eventType)) {
+  if (['routine_engagement', 'mood_checkin', 'mood', 'japa', 'shloka', 'streak', 'streak_nudge', 'daily_checkin'].includes(eventType)) {
     return 'routine_engagement';
   }
 
