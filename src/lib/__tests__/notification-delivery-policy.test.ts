@@ -43,4 +43,74 @@ describe("notification delivery policy", () => {
       kul_member_id: "member-1",
     });
   });
+
+  it("skips festival/vrat/tithi when user preferences are explicitly false", () => {
+    const festivalRow = {
+      notification_type: "festival",
+      notification_key: "observance-v1:diwali:d7:2026-11-08:general",
+    };
+    expect(getNotificationPreferenceSkipReason(festivalRow, { wants_festival_reminders: false }))
+      .toBe("festival_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(festivalRow, { wants_festival_reminders: true }))
+      .toBeNull();
+
+    const vratRow = {
+      notification_type: "vrat",
+      notification_key: "observance-v1:ekadashi:d1:2026-11-02:general",
+    };
+    expect(getNotificationPreferenceSkipReason(vratRow, { wants_vrat_reminders: false }))
+      .toBe("vrat_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(vratRow, { wants_vrat_reminders: true }))
+      .toBeNull();
+
+    const tithiRow = {
+      notification_type: "tithi",
+      notification_key: "tithi:ekadashi:today",
+    };
+    expect(getNotificationPreferenceSkipReason(tithiRow, { wants_tithi_reminders: false }))
+      .toBe("tithi_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(tithiRow, { wants_tithi_reminders: true }))
+      .toBeNull();
+  });
+
+  it("extracts push data for observance notifications", () => {
+    const festivalRow = {
+      notification_type: "festival",
+      notification_key: "observance-v1:diwali:d7:2026-11-08:general",
+      metadata: {
+        occurrence_id: "occ-123",
+        slug: "diwali",
+        category: "festival",
+        days_away: 7,
+      },
+    };
+    expect(getScheduledNotificationPushData(festivalRow)).toEqual({
+      type: "festival",
+      notification_key: "observance-v1:diwali:d7:2026-11-08:general",
+      festival_id: "occ-123",
+      slug: "diwali",
+      category: "festival",
+      days_away: "7",
+    });
+
+    const vratRow = {
+      notification_type: "vrat",
+      notification_key: "observance-v1:ekadashi:d1:2026-11-02:general",
+      metadata: {
+        occurrence_id: "occ-456",
+        slug: "ekadashi",
+        category: "vrat",
+        days_away: 1,
+      },
+    };
+    expect(getScheduledNotificationPushData(vratRow)).toEqual({
+      type: "vrat",
+      notification_key: "observance-v1:ekadashi:d1:2026-11-02:general",
+      festival_id: "occ-456",
+      vrat_id: "occ-456",
+      slug: "ekadashi",
+      category: "vrat",
+      days_away: "1",
+    });
+  });
 });

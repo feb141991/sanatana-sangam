@@ -1,3 +1,4 @@
+import { getObservancePipelineMode } from '@/lib/observance-pipeline-mode';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
@@ -64,6 +65,22 @@ export async function GET(request: Request) {
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
   const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('festival', request);
+
+  const pipelineMode = getObservancePipelineMode('festival');
+  if (pipelineMode === 'schedule') {
+    return NextResponse.json({
+      message: 'Pipeline mode is schedule; festival reminders handled by scheduled dispatcher',
+      sent: 0,
+      pipelineMode: 'schedule',
+    });
+  }
+  if (pipelineMode === 'disabled') {
+    return NextResponse.json({
+      message: 'Festival reminders disabled via pipeline mode',
+      sent: 0,
+      pipelineMode: 'disabled',
+    });
+  }
 
   try {
     const baseUrl = new URL(request.url).origin;

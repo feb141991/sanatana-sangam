@@ -126,10 +126,23 @@ export async function GET(request: Request) {
 
     // ── 3. Re-verify user eligibility at dispatch time ─────────────────────────
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
-    const { data: profiles, error: profileErr } = await supabase
+    let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications")
+      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders")
       .in("id", userIds);
+
+    if (profileErr && (profileErr as any).code === "42703") {
+      const fallbackRes = await supabase
+        .from("profiles")
+        .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders")
+        .in("id", userIds);
+      profiles = (fallbackRes.data ?? []).map((p: any) => ({
+        ...p,
+        wants_vrat_reminders: p.wants_festival_reminders,
+        wants_tithi_reminders: p.wants_festival_reminders,
+      }));
+      profileErr = fallbackRes.error;
+    }
 
     if (profileErr) {
       console.error("[notification-dispatch] Profile lookup error:", profileErr);

@@ -1,3 +1,4 @@
+import { getObservancePipelineMode } from '@/lib/observance-pipeline-mode';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
@@ -38,15 +39,39 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
   const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('tithi', request);
 
+  const pipelineMode = getObservancePipelineMode('tithi');
+  if (pipelineMode === 'schedule') {
+    return NextResponse.json({
+      message: 'Pipeline mode is schedule; tithi reminders handled by scheduled dispatcher',
+      sent: 0,
+      pipelineMode: 'schedule',
+    });
+  }
+  if (pipelineMode === 'disabled') {
+    return NextResponse.json({
+      message: 'Tithi reminders disabled via pipeline mode',
+      sent: 0,
+      pipelineMode: 'disabled',
+    });
+  }
+
   try {
     const baseUrl    = new URL(request.url).origin;
     const actionPath = '/panchang';
     const actionUrl  = new URL(actionPath, baseUrl).toString();
     const now        = new Date();
 
-    const { data: users, error: usersError } = await supabase
+    let { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, tradition, timezone, latitude, longitude, wants_festival_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
+      .select('id, tradition, timezone, latitude, longitude, wants_festival_reminders, wants_tithi_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
+
+    if (usersError && (usersError as any).code === '42703') {
+      const fallbackRes = await supabase
+        .from('profiles')
+        .select('id, tradition, timezone, latitude, longitude, wants_festival_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
+      users = fallbackRes.data;
+      usersError = fallbackRes.error;
+    }
 
     if (usersError) {
       console.error('Tithi cron users query failed:', usersError);
@@ -59,7 +84,7 @@ export async function GET(request: Request) {
 
     // ── Filter: morning window + opt-in ─────────────────────────────────────
     const windowUsers = users.filter((user) => {
-      if ((user as any).wants_festival_reminders === false) return false; // respect global preference
+      if ((user as any).wants_tithi_reminders === false || (user as any).wants_festival_reminders === false) return false; // respect global preference
       const tz = resolveTimeZone((user as any).timezone);
       return canSendInLocalWindow(
         now, tz, TARGET_LOCAL_HOUR,
