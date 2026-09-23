@@ -5865,6 +5865,7 @@ export type Database = {
           onesignal_player_id: string | null
           pro_activated_at: string | null
           pro_note: string | null
+          dharm_veer_reminder_enabled: boolean | null
           quiz_reminder_enabled: boolean | null
           quiz_reminder_time: string | null
           rashi: string | null
@@ -5978,6 +5979,7 @@ export type Database = {
           onesignal_player_id?: string | null
           pro_activated_at?: string | null
           pro_note?: string | null
+          dharm_veer_reminder_enabled?: boolean | null
           quiz_reminder_enabled?: boolean | null
           quiz_reminder_time?: string | null
           rashi?: string | null

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getApiUser, getApiAuthFailureResponse } from '@/lib/api-auth';
 import type { ProfileUpdate } from '@/lib/api/profile';
 
 type PushPreferencePayload = {
   japa_reminder_enabled?: boolean;
   japa_reminder_time?: string;
+  dharm_veer_reminder_enabled?: boolean;
   quiz_reminder_enabled?: boolean;
   quiz_reminder_time?: string;
   nitya_reminder_enabled?: boolean;
@@ -34,12 +35,45 @@ function isTimeValue(value: unknown): value is string {
   return typeof value === 'string' && /^\d{2}:\d{2}$/.test(value);
 }
 
-export async function PATCH(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export async function GET(req: NextRequest) {
+  const { user, error: authError, supabase } = await getApiUser(req);
 
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !supabase) {
+    return authError ? getApiAuthFailureResponse(authError) : NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(`
+        japa_reminder_enabled,
+        japa_reminder_time,
+        dharm_veer_reminder_enabled,
+        quiz_reminder_enabled,
+        quiz_reminder_time,
+        nitya_reminder_enabled,
+        nitya_reminder_time,
+        wants_madhyahn_reminder,
+        madhyahn_reminder_time,
+        wants_evening_reminder,
+        evening_reminder_time
+      `)
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    return NextResponse.json({ preferences: data ?? {} });
+  } catch (err) {
+    console.error('[push/preferences/GET] Failed:', err);
+    return NextResponse.json({ error: 'Failed to fetch preferences' }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  const { user, error: authError, supabase } = await getApiUser(req);
+
+  if (!user || !supabase) {
+    return authError ? getApiAuthFailureResponse(authError) : NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
@@ -55,6 +89,13 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: 'japa_reminder_enabled must be a boolean' }, { status: 400 });
       }
       updates.japa_reminder_enabled = rawBody.japa_reminder_enabled;
+    }
+
+    if ('dharm_veer_reminder_enabled' in rawBody) {
+      if (typeof rawBody.dharm_veer_reminder_enabled !== 'boolean') {
+        return NextResponse.json({ error: 'dharm_veer_reminder_enabled must be a boolean' }, { status: 400 });
+      }
+      updates.dharm_veer_reminder_enabled = rawBody.dharm_veer_reminder_enabled;
     }
 
     if ('quiz_reminder_enabled' in rawBody) {
