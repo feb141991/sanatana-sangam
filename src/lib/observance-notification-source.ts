@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Json } from '@/types/database';
 import { filterWithheldJoinedRows } from './calendar/withheld';
 import { mapOccurrenceToFestival, type Festival } from '@/lib/festivals';
 
@@ -7,6 +8,12 @@ export type ReviewedObservanceKind = 'major' | 'regional' | 'vrat';
 export type ReviewedObservance = Festival & {
   slug: string | null;
   sourceEligible: true;
+  reviewStatus?: string;
+  verificationStatus?: string;
+  publicationStatus?: string;
+  auditStatus?: string;
+  finalDateSource?: string | null;
+  sourceRefs?: Json[];
 };
 
 export type ObservanceNotificationAudience = 'general' | 'female';
@@ -68,20 +75,36 @@ export function isReviewedNotificationObservance(row: any, allowedKinds: Set<Rev
 export async function fetchReviewedObservancesForNotifications(
   supabase: SupabaseClient,
   allowedKinds: ReviewedObservanceKind[],
+  dateRange?: { fromDate: string; toDate: string },
 ): Promise<{ observances: ReviewedObservance[]; error: Error | null }> {
-  const { data, error } = await supabase
-    .from('observance_occurrences')
-    .select('*, observance_definitions(*)')
-    .eq('review_status', 'reviewed')
-    .eq('verification_status', 'verified')
-    .eq('audit_status', 'completed')
-    .neq('final_date_source', 'fallback')
-    // Fail closed: only 'published' is eligible. This holds even if an admin
-    // sets review/verification/audit to their approving values, because the
-    // database now knows the row is disputed and no longer relies on nobody
-    // having got round to approving it.
-    .eq('publication_status', 'published')
-    .order('date', { ascending: true });
+  const PAGE_SIZE = 500;
+  const data: any[] = [];
+  for (let offset = 0; ; offset += PAGE_SIZE) {
+    let query = supabase
+      .from('observance_occurrences')
+      .select('*, observance_definitions(*)')
+      .eq('review_status', 'reviewed')
+      .eq('verification_status', 'verified')
+      .eq('audit_status', 'completed')
+      .neq('final_date_source', 'fallback')
+      // Fail closed: only published rows can produce notification candidates.
+      .eq('publication_status', 'published');
+    if (dateRange) {
+      // `manual_date_override` is the effective date when present. Include it
+      // explicitly so bounded cron reads do not miss reviewed override rows.
+      query = query.or(
+        `and(date.gte.${dateRange.fromDate},date.lte.${dateRange.toDate}),and(manual_date_override.gte.${dateRange.fromDate},manual_date_override.lte.${dateRange.toDate})`,
+      );
+    }
+    const { data: page, error } = await query
+      .order('date', { ascending: true })
+      .order('id', { ascending: true })
+      .range(offset, offset + PAGE_SIZE - 1);
+    if (error) return { observances: [], error: new Error(error.message) };
+    const rows = page ?? [];
+    data.push(...rows);
+    if (rows.length < PAGE_SIZE) break;
+  }
 
   // The reviewed+verified+completed filter above already excludes today's
   // disputed rows -- but only by accident, because nobody has approved them yet.
@@ -89,17 +112,19 @@ export async function fetchReviewedObservancesForNotifications(
   // one at any time and it would immediately become notification-eligible.
   // A push notification cannot be recalled, so the protection is made explicit.
 
-  if (error) {
-    return { observances: [], error: new Error(error.message) };
-  }
-
   const kindSet = new Set(allowedKinds);
-  const observances = filterWithheldJoinedRows(data ?? [])
+  const observances = filterWithheldJoinedRows(data)
     .filter((row) => isReviewedNotificationObservance(row, kindSet))
     .map((row) => ({
       ...mapOccurrenceToFestival(row),
       slug: row.observance_definitions?.slug ?? null,
       sourceEligible: true as const,
+      reviewStatus: row.review_status,
+      verificationStatus: row.verification_status,
+      publicationStatus: row.publication_status,
+      auditStatus: row.audit_status,
+      finalDateSource: row.final_date_source ?? null,
+      sourceRefs: Array.isArray(row.source_refs) ? row.source_refs : [],
     }));
 
   return { observances, error: null };

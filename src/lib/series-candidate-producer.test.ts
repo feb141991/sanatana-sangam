@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { produceSeriesCandidates } from './series-candidate-producer';
-import type { ClientObservanceResult } from './calendar/observance-formatter';
+import { produceSeriesCandidates, type ReviewedSeriesOccurrence } from './series-candidate-producer';
 
 describe('series-candidate-producer', () => {
   const origEnv = process.env;
@@ -14,32 +13,19 @@ describe('series-candidate-producer', () => {
     process.env = origEnv;
   });
 
-  const mockChild: ClientObservanceResult = ({
+  const mockChild: ReviewedSeriesOccurrence = {
     status: 'resolved',
-    id: 'occ-navratri-d1',
     slug: 'navratri-day-1-shailaputri',
-    name: 'Navratri Day 1 — Shailaputri',
     civilDate: '2026-10-11',
-    occurrenceDate: '2026-10-11',
-    reviewPlacementDate: '2026-10-11',
     calendarProfile: 'legacy-ujjain',
     publicationStatus: 'published',
     reviewStatus: 'reviewed',
     verificationStatus: 'verified',
-    verificationConfidence: 'high',
+    auditStatus: 'completed',
     finalDateSource: 'calculation_engine_reviewed',
-    sourceRefs: [
-      {
-        sourceName: 'Rashtriya Panchang',
-        pageOrSection: 'Pratipada',
-        tier: 1,
-        usagePermitted: 'academic_citation',
-      },
-    ],
-    versions: { panchangaCore: '1.0', calendarProfile: '1.0', ruleEngine: '1.0', rule: '1.0' },
-    profile: { calendar: 'legacy-ujjain', tradition: 'hindu' },
-    location: { label: 'Ujjain', tz: 'Asia/Kolkata', lat: 23.1765, lon: 75.7885 },
-  }) as any;
+    sourceRefs: [{ sourceName: 'Reviewed canonical occurrence fixture', tier: 1 }],
+    tradition: 'hindu',
+  };
 
   it('defaults to disabled when env var is unset', () => {
     const res = produceSeriesCandidates({
@@ -67,11 +53,13 @@ describe('series-candidate-producer', () => {
     const candidate = res.candidates[0];
     expect(candidate.user_id).toBe('usr-1');
     expect(candidate.event_type).toBe('observance_series');
-    expect(candidate.priority_rank).toBe(2);
-    expect(candidate.numeric_priority).toBe(20);
-    expect(candidate.candidate_key).toBe('observance_series:navratri-day-1-shailaputri:sharad-navratri:2026-10-11:general');
+    expect(candidate.priority).toBe(20);
+    expect(candidate.event_id).toBe('navratri-day-1-shailaputri');
+    expect(candidate.event_instance).toBe('sharad-navratri');
+    expect(candidate.local_date).toBe('2026-10-11');
+    expect(candidate.scheduled_for).toBe('2026-10-11T01:30:00.000Z');
     expect(candidate.title).toContain('Sharad Navratri');
-    expect(candidate.metadata?.sourceCount).toBe(1);
+    expect(candidate.metadata).toMatchObject({ sourceCount: 9, timezone: 'Asia/Kolkata' });
   });
 
   it('suppresses candidate if user opted out of festival reminders', () => {

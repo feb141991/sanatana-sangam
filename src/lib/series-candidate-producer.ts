@@ -11,49 +11,94 @@
  * 5. Default-off via getCandidateTypePipelineMode('observance_series').
  */
 
-import { deriveCandidateNotificationKey } from './notification-candidate-key';
 import { getCandidateTypePipelineMode } from './notification-candidate-pipeline-mode';
-import type { NotificationCandidateRow } from './notification-resolver';
+import type { Json, NotificationCandidateInsert } from '@/types/database';
+import { zonedTimeToUtcIso } from './marketing/social/schedule-time';
 import {
   SERIES_DEFINITIONS,
   type SeriesDefinition,
 } from './calendar/observance-series';
 import seriesContentJson from '@sangam/dharma-rules/src/festivals/series-content.json';
-import type { ClientObservanceResult } from './calendar/observance-formatter';
 
-const SERIES_CONTENT = seriesContentJson as any;
+type LocalizedField<T> = {
+  value?: { en?: T };
+  en?: T;
+  status?: string;
+  sourceRefs?: Json[];
+};
+
+type SeriesContentFile = {
+  series: Array<{
+    definitionKey: string;
+    name?: LocalizedField<string>;
+    children?: Array<{
+      slug: string;
+      sequence: number;
+      canonicalTitle?: LocalizedField<string>;
+      deityOrTheme?: LocalizedField<string>;
+      rituals?: LocalizedField<string[]>;
+      significance?: LocalizedField<string>;
+    }>;
+  }>;
+};
+
+const SERIES_CONTENT = seriesContentJson as SeriesContentFile;
+
+function getSourceBackedField<T>(field: LocalizedField<T> | undefined): { value: T; refs: Json[] } | null {
+  if (field?.status !== 'source_backed' || !Array.isArray(field.sourceRefs) || field.sourceRefs.length === 0) return null;
+  const value = field.value?.en ?? field.en;
+  return value === undefined ? null : { value, refs: field.sourceRefs };
+}
+
+export interface ReviewedSeriesOccurrence {
+  id?: string | null;
+  slug: string;
+  civilDate: string | null;
+  status: string;
+  reviewStatus: string;
+  publicationStatus: string | null;
+  verificationStatus: string | null;
+  auditStatus: string | null;
+  finalDateSource: string | null;
+  sourceRefs: Json[];
+  calendarProfile: string | null;
+  tradition: string | null;
+}
 
 // Map children by slug for O(1) canonical lookup
 const CONTENT_BY_SLUG = new Map<string, {
   seriesName: string;
+  seriesNameRefs: Json[];
   seriesKey: string;
   sequence: number;
   totalDays: number;
   canonicalTitle: string;
-  deityOrTheme?: string;
-  rituals?: string[];
-  significance?: string;
+  canonicalTitleRefs: Json[];
+  deityOrTheme?: { value: string; refs: Json[] };
+  rituals?: { value: string[]; refs: Json[] };
+  significance?: { value: string; refs: Json[] };
 }>();
 
-for (const s of (SERIES_CONTENT.series as any[])) {
+for (const s of SERIES_CONTENT.series) {
   const def = SERIES_DEFINITIONS.find(d => d.definitionKey === s.definitionKey);
-  const totalDays = def ? def.children.length : (s.children?.length ?? 0);
-  const seriesName = s.name?.value?.en || s.name?.en || def?.name || 'Observance Series';
+  const seriesNameField = getSourceBackedField(s.name);
+  const totalDays = def?.children.length ?? s.children?.length ?? 0;
+  if (!seriesNameField) continue;
   for (const child of (s.children || [])) {
-    const canonicalTitle = child.canonicalTitle?.value?.en || child.canonicalTitle?.en || child.title || child.slug;
-    const deityOrTheme = child.deityOrTheme?.value?.en || child.deityOrTheme?.en;
-    const rituals = child.rituals?.value?.en || child.rituals?.en;
-    const significance = child.significance?.value?.en || child.significance?.en;
+    const canonicalTitleField = getSourceBackedField(child.canonicalTitle);
+    if (!canonicalTitleField) continue;
 
     CONTENT_BY_SLUG.set(child.slug, {
-      seriesName,
+      seriesName: seriesNameField.value,
+      seriesNameRefs: seriesNameField.refs,
       seriesKey: s.definitionKey,
       sequence: child.sequence,
       totalDays,
-      canonicalTitle,
-      deityOrTheme,
-      rituals,
-      significance,
+      canonicalTitle: canonicalTitleField.value,
+      canonicalTitleRefs: canonicalTitleField.refs,
+      deityOrTheme: getSourceBackedField(child.deityOrTheme) ?? undefined,
+      rituals: getSourceBackedField(child.rituals) ?? undefined,
+      significance: getSourceBackedField(child.significance) ?? undefined,
     });
   }
 }
@@ -62,13 +107,12 @@ export interface SeriesCandidateContext {
   targetDate: string; // YYYY-MM-DD
   userId: string;
   userTimezone: string;
-  userLanguage?: string;
   wantsFestivalReminders?: boolean;
-  childOccurrences: ClientObservanceResult[];
+  childOccurrences: ReviewedSeriesOccurrence[];
 }
 
 export interface SeriesCandidateResult {
-  candidates: NotificationCandidateRow[];
+  candidates: NotificationCandidateInsert[];
   diagnostics: string[];
 }
 
@@ -102,11 +146,11 @@ export function produceSeriesCandidates(
     };
   }
 
-  const candidates: NotificationCandidateRow[] = [];
+  const candidates: NotificationCandidateInsert[] = [];
   const diagnostics: string[] = [];
 
   for (const child of childOccurrences) {
-    const date = child.civilDate || child.date;
+    const date = child.civilDate;
     if (date !== targetDate) continue;
 
     // Check if this occurrence is a member of any canonical series
@@ -116,12 +160,13 @@ export function produceSeriesCandidates(
     }
 
     // Rule: Send only published, reviewed daily children
-    const childAny = child as any;
     if (
       child.status !== 'resolved' ||
-      childAny.reviewStatus === 'under_review' ||
-      childAny.reviewStatus === 'disputed' ||
-      childAny.publicationStatus === 'withheld' ||
+      child.reviewStatus !== 'reviewed' ||
+      child.verificationStatus !== 'verified' ||
+      child.publicationStatus !== 'published' ||
+      child.auditStatus !== 'completed' ||
+      child.finalDateSource === 'fallback' ||
       !date
     ) {
       diagnostics.push(`child_${child.slug}_not_published_or_reviewed`);
@@ -134,48 +179,55 @@ export function produceSeriesCandidates(
       continue;
     }
 
-    let body = content.significance;
-    if (!body) {
-      if (content.deityOrTheme && content.rituals && content.rituals.length > 0) {
-        body = `Honoring ${content.deityOrTheme}. Ritual observances: ${content.rituals.slice(0, 2).join(' and ')}.`;
-      } else if (content.deityOrTheme) {
-        body = `Sacred day honoring ${content.deityOrTheme}.`;
-      } else {
-        body = `Day ${content.sequence} of ${content.seriesName}.`;
-      }
-    }
+    const body = content.significance?.value
+      ?? (content.deityOrTheme && content.rituals
+        ? `Honoring ${content.deityOrTheme.value}. Ritual observances: ${content.rituals.value.slice(0, 2).join(' and ')}.`
+        : content.deityOrTheme
+          ? `Sacred day honoring ${content.deityOrTheme.value}.`
+          : `Day ${content.sequence} of ${content.seriesName}.`);
+    const contentRefs = [
+      ...content.seriesNameRefs,
+      ...content.canonicalTitleRefs,
+      ...(content.significance?.refs ?? []),
+      ...(content.deityOrTheme?.refs ?? []),
+      ...(content.rituals?.refs ?? []),
+    ];
+    const sourceRefs = [...new Map([...child.sourceRefs, ...contentRefs].map((ref) => [JSON.stringify(ref), ref])).values()];
 
-    const candidateKey = deriveCandidateNotificationKey({
+    // Default morning delivery for daily series child: 07:00 local time
+    let scheduledIso: string;
+    try {
+      scheduledIso = zonedTimeToUtcIso(targetDate, '07:00', userTimezone);
+    } catch {
+      diagnostics.push(`child_${child.slug}_invalid_timezone_or_local_schedule`);
+      continue;
+    }
+    const expiresAt = new Date(new Date(scheduledIso).getTime() + 24 * 60 * 60 * 1000).toISOString();
+
+    candidates.push({
+      user_id: userId,
       event_type: 'observance_series',
       event_id: child.slug,
       event_instance: content.seriesKey,
       local_date: targetDate,
       audience_variant: 'general',
-    });
-
-    // Default morning delivery for daily series child: 07:00 local time
-    const scheduledIso = `${targetDate}T07:00:00`;
-
-    candidates.push({
-      user_id: userId,
-      candidate_key: candidateKey,
-      event_type: 'observance_series',
-      event_date: targetDate,
-      priority_rank: 2, // time_sensitive_event
-      numeric_priority: 20,
-      category: 'calendar',
+      priority: 20,
       title: `${content.seriesName}: ${content.canonicalTitle}`,
       body,
       action_url: `/festivals/${child.slug}`,
-      channel: 'push',
       scheduled_for: scheduledIso,
-      sound: 'festival_bell',
+      expires_at: expiresAt,
+      timezone: userTimezone,
+      tradition: child.tradition,
+      calendar_profile: child.calendarProfile,
+      source_status: 'verified',
+      source_refs: sourceRefs,
       metadata: {
         seriesKey: content.seriesKey,
         childSlug: child.slug,
         sequence: content.sequence,
         totalDays: content.totalDays,
-        sourceCount: child.sourceRefs.length,
+        sourceCount: sourceRefs.length,
         timezone: userTimezone,
       },
     });

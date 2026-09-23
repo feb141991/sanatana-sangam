@@ -5,7 +5,7 @@
 - Backend / PWA: `Sanatan Sangam/Shoonaya`
 - Native Mobile: `shoonaya-mobile` (Clean, untouched)  
 **Database**: Supabase Linked Project `mnbwodcswxoojndytngu` (AWS pooler)  
-**Status**: All Migrations Applied (174/174), Candidates & Producers Implemented, Admin Dashboard & Release Gates Verified.
+**Status (reviewed 2026-09-23)**: Producer logic and admin monitoring are implemented locally. Only observance-series generation has a scheduled route, and it is gated off unless both global resolver and per-type candidate mode are enabled. Parana, Pradosha, and Sankranti have no scheduled producer integration. Migration history is **not synchronized** (duplicate local version and remote-only versions remain).
 
 ---
 
@@ -13,22 +13,25 @@
 
 This milestone delivers **Prompt 7 (Time-Sensitive Ritual & Series Candidates)** and **Prompt 8 (Admin Dashboard & Release Gate)** under strict adherence to Shoonaya's Two-Repository Contract Ownership, Spiritual Content Integrity, Calendar Governance, and Database Safety standards:
 
-1. **Prompt 7 Candidate Producers**:
+1. **Prompt 7 Candidate Producer Logic (not end-to-end delivery)**:
    - **Observance Series**: Multi-day series (Navratri, Deepavali) consuming verified `@sangam/dharma-rules` series definitions and editorial content, requiring published and reviewed child occurrences and authentic scripture citations.
-   - **Ekadashi Parana**: Fast-breaking morning window on Dwadashi qualified by local astronomical sunrise and Hari Vasara end time, failing closed on polar latitudes (`|lat| > 60`) or inverted windows.
-   - **Pradosha Kala**: Twilight worship window (canonical 90 minutes: `sunset - 45m` to `sunset + 45m`) based on Skanda Purana and Shiva Purana, failing closed on polar/high latitudes.
-   - **Solar Sankranti**: Solar transit ingress and Punya Kala snana/dana ritual windows based on Surya Siddhanta and Dharma Sindhu.
-   - **Default-Off Safety**: All 4 candidate types default to `'disabled'` via `getCandidateTypePipelineMode()`.
+   - A cron route now generates and persists observance-series candidates. It is explicit-opt-in only (`wants_festival_reminders === true`), reads profiles and reviewed occurrences in bounded pages, and is restricted to the default calendar profile because the existing series-completeness gate only validates that profile.
+   - Parana, Pradosha, and Sankranti producer modules still have no scheduled call sites and do not generate production candidates.
+   - Each producer now returns the database `notification_candidates` insert shape and requires explicit candidate mode; `legacy` does not emit candidates.
+   - Parana requires Hari Vasara end and source references. Pradosha requires explicit reviewed twilight boundaries and source references; it no longer invents a 90-minute window. Sankranti requires explicit reviewed Punya Kala boundaries and source references; it no longer derives a generic 6.4-hour interval from transit time.
+   - Series delivery time is converted from 07:00 in the user's IANA timezone to a UTC instant. It requires resolved, published, reviewed, verified, completed, non-fallback occurrences with source references.
+   - Parana/Pradosha/Sankranti additionally require valid latitude and reviewed boundaries/source references, and reject latitudes above 60° absolute. These guards do not establish ritual correctness; an authoritative reviewed timing feed and scheduled producer integration are still required before enabling those types.
+   - All four types default to `'disabled'` via `getCandidateTypePipelineMode()`.
 
 2. **Prompt 8 Admin Monitoring & Release Gates**:
-   - **Operational Stats Endpoint**: `/api/admin/notification-resolver-stats` returning live queue metrics, 24h & 7d throughput, top suppression reasons, duplicate prevention counts, stale leases, and pipeline mode snapshots.
+   - **Operational Stats Endpoint**: `/api/admin/notification-resolver-stats` returning live queue counts, retained candidate-state counts, 24h & 7d audit throughput, top suppression reasons, stale leases, and pipeline mode snapshots. Audit rows are keyset-paginated; failed reads return an error instead of partial-looking metrics.
    - **Preview Simulation Endpoint**: `/api/admin/notification-resolver/preview` providing read-only dry-run simulation across active candidates without mutating database records or dispatching push tickets.
    - **Admin UI Component**: `NotificationResolverSection.tsx` integrated as a first-class tab in the Admin Monitoring Hub (`/admin/monitoring?tab=resolver`).
    - **Static CI Architectural Gate**: `scripts/ci/check-no-direct-push-in-producers.ts` (`npm run check:producer-isolation`) verifying that candidate producers never directly import push dispatch libraries.
 
-3. **Database Migrations Reconciled**:
-   - 174/174 local migration files in `supabase/migrations` applied, registered, and verified in `supabase_migrations.schema_migrations`.
-   - Zero pending or unapplied migrations remain.
+3. **Migration State**:
+   - The earlier claim that 174/174 files are synchronized is withdrawn. The linked CLI audit found two local files with version `20260914140000`, which cannot be represented as two distinct remote versions, plus remote-only migration versions.
+   - No migration-history repair or production database write was performed as part of this code fix.
 
 ---
 
@@ -36,16 +39,16 @@ This milestone delivers **Prompt 7 (Time-Sensitive Ritual & Series Candidates)**
 
 | Candidate Producer | Event Type | Priority Class | Score | Canonical Key Format | Scripture / Source Authority |
 |---|---|---|---|---|---|
-| **Series Producer** | `observance_series` | `reviewed_observance` | 20 | `observance_series:${childSlug}:${seriesKey}:${date}:general` | `@sangam/dharma-rules` series-content.json, Rashtriya Panchang |
+| **Series Producer** | `observance_series` | `reviewed_observance` | 20 | `observance_series:${childSlug}:${seriesKey}:${date}:general` | Source-backed series content plus reviewed occurrence references |
 | **Parana Producer** | `ekadashi_parana` | `approved_ritual_window` | 30 | `ekadashi_parana:${slug}:parana:${date}:general` | Padma Purana, Hari-bhakti-vilasa (Dwadashi Parana) |
-| **Pradosha Kala** | `pradosha_kala` | `approved_ritual_window` | 30 | `pradosha_kala:${slug}:twilight:${date}:general` | Skanda Purana (Pradosha Mahatmya), Shiva Purana |
-| **Sankranti Producer** | `sankranti` | `approved_ritual_window` | 30 | `sankranti:${slug}:punyakala:${date}:general` | Surya Siddhanta, Dharma Sindhu (Punya Kala snana/dana) |
+| **Pradosha Kala** | `pradosha_kala` | `approved_ritual_window` | 30 | `pradosha_kala:${slug}:twilight:${date}:general` | Explicit reviewed twilight-window references supplied by the caller |
+| **Sankranti Producer** | `sankranti` | `approved_ritual_window` | 30 | `sankranti:${slug}:punyakala:${date}:general` | Explicit reviewed Punya Kala references supplied by the caller |
 
 ### Fail-Closed Governance Invariants:
-1. **Polar & High-Latitude Safety**: Any latitude where `|lat| > 60` or where sunrise/sunset calculations are undefined or ambiguous immediately fails closed with zero candidates generated and diagnostics logged.
-2. **Inverted Window Protection**: Any window where `start_time >= end_time` or Hari Vasara end time is invalid is immediately rejected (`status: 'needs_review'`).
-3. **Publication Status**: Series child occurrences must be `status === 'resolved'` and carry authentic source references (zero unsourced claims).
-4. **Devotee Opt-Out**: Explicit preference flags (`wantsVratReminders === false`, `wantsPradoshaReminders === false`, `wantsSankrantiReminders === false`, `wantsFestivalReminders === false`) immediately suppress candidates.
+1. **Location and ritual windows**: Parana, Pradosha, and Sankranti candidate functions require a valid latitude, reject `|lat| > 60`, and reject missing, invalid, or inverted reviewed boundaries. They do not calculate these boundaries themselves.
+2. **Series publication**: Series children must be resolved, reviewed, verified, published, audit-complete, not fallback-dated, and carry source references. Every generated series notification is also limited to profiles explicitly opting in to festival reminders.
+3. **Completeness gate**: A database error while checking the full series siblings now fails the cron run; it cannot be interpreted as “complete” and produce a candidate.
+4. **Global/per-type gates**: The cron exits before reading user data or writing candidates unless the resolver global flag is on and `observance_series` is set to `candidate`.
 
 ---
 
@@ -55,7 +58,7 @@ This milestone delivers **Prompt 7 (Time-Sensitive Ritual & Series Candidates)**
 - **Authentication**: `verifyAdminCookieAuth(request)` and `requireAdminAccess()`.
 - **Response Structure**:
   - `governance`: Global kill switch status, snapshot of all pipeline modes.
-  - `queue`: Current pending, resolving, stale leases count (`claimed_at < NOW() - 10m`), and lifetime resolution totals.
+  - `queue`: Current pending/resolving counts, stale leases (`claimed_at < NOW() - 10m`), and retained candidate-state counts (subject to row retention; these are not lifetime totals).
   - `last24h`: Total evaluated, accepted, suppressed, deferred, expired, cancelled, rates (%), top suppression reasons sorted by count, type distribution.
   - `last7d`: 7-day throughput and rates.
 
@@ -69,7 +72,7 @@ This milestone delivers **Prompt 7 (Time-Sensitive Ritual & Series Candidates)**
 - Features:
   - Global Kill Switch status banner with live pulse.
   - Stale lease warning badge.
-  - 4 Key Operational Cards: Pending/Resolving Queue, 24h Acceptance Rate, 24h Suppressions, Lifetime Volume.
+  - 4 Key Operational Cards: Pending/Resolving Queue, 24h Acceptance Rate, 24h Suppressions, retained accepted/suppressed counts.
   - Per-Candidate-Type Pipeline Mode Matrix with visual status badges.
   - 24-Hour Policy Suppression Analysis bar charts.
   - Interactive Preview & Dry-Run simulation controls and candidates queue table.
@@ -122,8 +125,11 @@ Each candidate type supports three discrete operational modes:
 | `NOTIFICATION_CANDIDATE_MODE_PRADOSHA_KALA` | `candidate` \| `legacy` \| `disabled` | `disabled` | Pradosha Kala twilight window |
 | `NOTIFICATION_CANDIDATE_MODE_SANKRANTI` | `candidate` \| `legacy` \| `disabled` | `disabled` | Solar Sankranti Punya Kala |
 
-### Instant Rollback Procedure
-If any candidate producer generates unexpected volume or high suppression rates:
+### Candidate Mode Guard
+The pure producer functions emit a row only when that type is explicitly in `candidate` mode. `legacy` and `disabled` return no candidate. This is a function-level guard, not a live rollout control until a scheduled producer calls these functions.
+
+### Rollback Procedure (after scheduler integration)
+If an integrated candidate producer generates unexpected volume or high suppression rates:
 1. Set the specific type variable to `disabled` (e.g. `NOTIFICATION_CANDIDATE_MODE_PRADOSHA_KALA=disabled`).
 2. Candidate producers will immediately exit with `status: 'suppressed'`, generating 0 candidates.
 3. If necessary, trigger global kill switch `NOTIFICATION_RESOLVER_ENABLED=false` to pause all promotions.
@@ -131,11 +137,11 @@ If any candidate producer generates unexpected volume or high suppression rates:
 
 ---
 
-## 6. Migration Status & Reconciliation
+## 6. Migration Status & Reconciliation (Open)
 
 - **Local Migrations**: 174 files in `supabase/migrations`.
-- **Database Migrations Table**: 186 entries in `supabase_migrations.schema_migrations` (174 matching local migrations + 12 historical remote aliases).
-- **Unapplied Migrations**: **0** (All DDL/DML applied and verified).
+- **Database Migrations Table**: 186 entries were reported in the earlier audit.
+- Those counts do not prove synchronization. Two local files share `20260914140000`, and the linked migration list has remote-only versions. A truthful `0 pending` claim is not available until migration history is reconciled. Do not blindly rename or reapply production migrations.
 
 ---
 
@@ -154,6 +160,8 @@ All tests across candidate producers, central resolver, pipelines, and admin API
 | `src/lib/notification-resolver-pipeline.test.ts` | 6 | 0 | 0 | 10ms |
 | `src/app/api/admin/notification-resolver/__tests__/preview-route.test.ts` | 2 | 0 | 0 | 5ms |
 | `src/app/api/admin/notification-resolver-stats/__tests__/route.test.ts` | 2 | 0 | 0 | 6ms |
-| **Total** | **51** | **0** | **0** | **264ms** |
+| **Total at original Prompt 7/8 implementation** | **51** | **0** | **0** | **264ms** |
+
+Follow-up verification covers 115 focused notification tests across 20 files, a full TypeScript check, and the producer-isolation gate. These checks validate producer logic, default-off cron gating, and admin endpoint behavior; they do not prove production scheduling, push delivery, ritual correctness, or migration synchronization.
 
 **TypeScript Compiler (`npx tsc --noEmit -p tsconfig.json`)**: **0 errors** across all project files.

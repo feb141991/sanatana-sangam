@@ -56,7 +56,8 @@ export async function fetchIncompleteSeriesOccurrenceIds(
     .gte('date', fromStr)
     .lte('date', toStr);
 
-  if (error || !data || data.length === 0) return new Set();
+  if (error) throw new Error(`Failed to load observance series siblings: ${error.message}`);
+  if (!data || data.length === 0) return new Set();
 
   const withBatches = await attachMaterialisationBatches(
     data,

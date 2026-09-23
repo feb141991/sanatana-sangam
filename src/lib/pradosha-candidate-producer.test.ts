@@ -36,6 +36,28 @@ describe('pradosha-candidate-producer', () => {
     expect(res.diagnostics[0]).toContain('disabled');
   });
 
+  it('rejects legacy mode and missing timing boundaries', () => {
+    process.env.NOTIFICATION_CANDIDATE_MODE_PRADOSHA_KALA = 'legacy';
+    const context: PradoshaCandidateContext = {
+      userId: 'user-pradosha-legacy',
+      userTimezone: 'Asia/Kolkata',
+      latitude: 19.076,
+      window: {
+        observanceSlug: 'pradosh-vrat',
+        observanceName: 'Pradosha Vrat',
+        localDate: '2026-10-08',
+        sunset: '2026-10-08T12:45:00Z',
+      },
+    };
+    expect(producePradoshaCandidate(context).diagnostics).toContain('pradosha_kala_pipeline_mode_legacy');
+
+    process.env.NOTIFICATION_CANDIDATE_MODE_PRADOSHA_KALA = 'candidate';
+    const result = producePradoshaCandidate(context);
+    expect(result.candidate).toBeNull();
+    expect(result.status).toBe('needs_review');
+    expect(result.diagnostics).toContain('missing_reviewed_twilight_boundaries');
+  });
+
   it('produces candidate when mode is candidate with valid sunset twilight window', () => {
     process.env.NOTIFICATION_CANDIDATE_MODE_PRADOSHA_KALA = 'candidate';
 
@@ -49,6 +71,9 @@ describe('pradosha-candidate-producer', () => {
         observanceName: 'Shani Pradosh Vrat',
         localDate: '2026-10-24',
         sunset: '2026-10-24T12:15:00Z', // 17:45 IST
+        twilightStart: '2026-10-24T11:30:00Z',
+        twilightEnd: '2026-10-24T13:00:00Z',
+        sourceRefs: [{ sourceName: 'Reviewed twilight window fixture', tier: 1 }],
       },
     };
 
@@ -57,13 +82,14 @@ describe('pradosha-candidate-producer', () => {
     expect(res.candidate).not.toBeNull();
 
     const cand = res.candidate!;
-    expect(cand.notification_key).toBe('pradosha_kala:shani-pradosh:twilight:2026-10-24:general');
     expect(cand.event_type).toBe('pradosha_kala');
-    expect(cand.priority_class).toBe('approved_ritual_window');
-    expect(cand.priority_score).toBe(30);
+    expect(cand.event_id).toBe('shani-pradosh');
+    expect(cand.event_instance).toBe('twilight');
+    expect(cand.local_date).toBe('2026-10-24');
+    expect(cand.priority).toBe(30);
     expect(cand.title).toBe('Shani Pradosh Vrat - Pradosha Kala');
     expect(cand.body).toContain('Pradosha Kala puja window');
-    expect(cand.data?.canonical_source).toBe('Skanda Purana & Shiva Purana');
+    expect(cand.source_refs).toEqual([{ sourceName: 'Reviewed twilight window fixture', tier: 1 }]);
 
     // Sunset was 12:15 UTC (17:45 IST).
     // Twilight start = 12:15 - 45m = 11:30 UTC (17:00 IST)
@@ -88,6 +114,7 @@ describe('pradosha-candidate-producer', () => {
         sunset: '2026-11-06T12:10:00Z',
         twilightStart: '2026-11-06T11:30:00Z',
         twilightEnd: '2026-11-06T12:50:00Z',
+        sourceRefs: [{ sourceName: 'Reviewed twilight window fixture', tier: 1 }],
       },
     };
 
@@ -141,6 +168,26 @@ describe('pradosha-candidate-producer', () => {
     expect(res.diagnostics[0]).toContain('polar/high-latitude');
   });
 
+  it('fails closed when location latitude is missing', () => {
+    process.env.NOTIFICATION_CANDIDATE_MODE_PRADOSHA_KALA = 'candidate';
+    const res = producePradoshaCandidate({
+      userId: 'user-pradosha-no-lat',
+      userTimezone: 'Asia/Kolkata',
+      window: {
+        observanceSlug: 'pradosh-vrat',
+        observanceName: 'Pradosha Vrat',
+        localDate: '2026-10-08',
+        sunset: '2026-10-08T12:45:00Z',
+        twilightStart: '2026-10-08T12:00:00Z',
+        twilightEnd: '2026-10-08T13:30:00Z',
+        sourceRefs: [{ sourceName: 'Reviewed fixture', tier: 1 }],
+      },
+    });
+    expect(res.candidate).toBeNull();
+    expect(res.status).toBe('needs_review');
+    expect(res.diagnostics).toContain('missing_or_invalid_location_latitude');
+  });
+
   it('fails closed when twilight window is inverted or invalid', () => {
     process.env.NOTIFICATION_CANDIDATE_MODE_PRADOSHA_KALA = 'candidate';
 
@@ -156,6 +203,7 @@ describe('pradosha-candidate-producer', () => {
         sunset: '2026-10-08T12:45:00Z',
         twilightStart: '2026-10-08T13:00:00Z',
         twilightEnd: '2026-10-08T12:00:00Z', // start > end
+        sourceRefs: [{ sourceName: 'Reviewed twilight window fixture', tier: 1 }],
       },
     };
 

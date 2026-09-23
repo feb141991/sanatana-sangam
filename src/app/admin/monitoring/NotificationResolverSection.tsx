@@ -23,11 +23,11 @@ interface StatsData {
     pending: number;
     resolving: number;
     staleLeases: number;
-    lifetimeAccepted: number;
-    lifetimeSuppressed: number;
-    lifetimeDeferred: number;
-    lifetimeExpired: number;
-    lifetimeCancelled: number;
+    retainedAccepted: number;
+    retainedSuppressed: number;
+    retainedDeferred: number;
+    retainedExpired: number;
+    retainedCancelled: number;
   };
   last24h: {
     totalEvaluated: number;
@@ -36,7 +36,6 @@ interface StatsData {
     deferred: number;
     expired: number;
     cancelled: number;
-    duplicatesPrevented: number;
     rates: {
       acceptedPct: number;
       suppressedPct: number;
@@ -211,7 +210,7 @@ export default function NotificationResolverSection() {
             </div>
             <div>
               <h2 className="text-base font-bold text-gray-900">Central Notification Candidate Resolver & Release Gate</h2>
-              <p className="text-xs text-gray-500">Autonomous deterministic priority mediation, engagement budgets, and candidate promotion.</p>
+                <p className="text-xs text-gray-500">Deterministic notification candidate review, policy budgets, and promotion status.</p>
             </div>
           </div>
         </div>
@@ -295,20 +294,20 @@ export default function NotificationResolverSection() {
             {stats?.last24h.suppressed ?? 0}
           </div>
           <div className="text-[11px] text-gray-400">
-            {stats?.last24h.duplicatesPrevented ?? 0} duplicates prevented · {stats?.last24h.deferred ?? 0} deferred
+            {stats?.last24h.deferred ?? 0} deferred
           </div>
         </div>
 
         <div className="bg-white p-4 rounded-2xl border border-black/5 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Lifetime Accepted</span>
+            <span>Retained Accepted</span>
             <Sparkles size={14} className="text-amber-500" />
           </div>
           <div className="text-2xl font-black text-gray-900">
-            {stats?.queue.lifetimeAccepted ?? 0}
+            {stats?.queue.retainedAccepted ?? 0}
           </div>
           <div className="text-[11px] text-gray-400">
-            {stats?.queue.lifetimeSuppressed ?? 0} lifetime suppressed · 90d retention
+            {stats?.queue.retainedSuppressed ?? 0} retained suppressed
           </div>
         </div>
       </div>

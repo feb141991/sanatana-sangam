@@ -9,6 +9,94 @@ import {
 
 export const dynamic = 'force-dynamic';
 
+const AUDIT_PAGE_SIZE = 500;
+
+interface AuditWindowStats {
+  total: number;
+  accepted: number;
+  suppressed: number;
+  deferred: number;
+  expired: number;
+  cancelled: number;
+  reasons: Record<string, number>;
+  types: Record<string, number>;
+}
+
+interface AuditEventRow {
+  id: string;
+  resolved_at: string;
+  decision: string;
+  reason: string | null;
+  event_type: string | null;
+}
+
+function isAuditEventRow(value: unknown): value is AuditEventRow {
+  if (typeof value !== 'object' || value === null) return false;
+  const row = value as Record<string, unknown>;
+  return typeof row.id === 'string'
+    && typeof row.resolved_at === 'string'
+    && typeof row.decision === 'string'
+    && (typeof row.reason === 'string' || row.reason === null)
+    && (typeof row.event_type === 'string' || row.event_type === null);
+}
+
+function emptyAuditWindowStats(): AuditWindowStats {
+  return {
+    total: 0, accepted: 0, suppressed: 0, deferred: 0, expired: 0, cancelled: 0,
+    reasons: {}, types: {},
+  };
+}
+
+function addAuditEvent(stats: AuditWindowStats, event: AuditEventRow) {
+  stats.total++;
+  if (event.decision === 'accepted') stats.accepted++;
+  else if (event.decision === 'suppressed') stats.suppressed++;
+  else if (event.decision === 'deferred') stats.deferred++;
+  else if (event.decision === 'expired') stats.expired++;
+  else if (event.decision === 'cancelled') stats.cancelled++;
+  if (event.reason) stats.reasons[event.reason] = (stats.reasons[event.reason] ?? 0) + 1;
+  if (event.event_type) stats.types[event.event_type] = (stats.types[event.event_type] ?? 0) + 1;
+}
+
+async function readAuditWindows(
+  supabase: ReturnType<typeof createAdminClient>,
+  since24h: string,
+  since7d: string,
+  until: string,
+) {
+  const last24h = emptyAuditWindowStats();
+  const last7d = emptyAuditWindowStats();
+  const since24hMs = Date.parse(since24h);
+  let cursor: { resolvedAt: string; id: string } | null = null;
+  for (;;) {
+    let query = supabase
+      .from('notification_resolver_events')
+      .select('id, resolved_at, decision, reason, event_type')
+      .gte('resolved_at', since7d)
+      .lte('resolved_at', until);
+    if (cursor) {
+      // Stable keyset pagination avoids offset-page drift while new audit rows
+      // are appended during this request.
+      query = query.or(`resolved_at.gt.${cursor.resolvedAt},and(resolved_at.eq.${cursor.resolvedAt},id.gt.${cursor.id})`);
+    }
+    const { data, error } = await query
+      .order('resolved_at', { ascending: true })
+      .order('id', { ascending: true })
+      .limit(AUDIT_PAGE_SIZE);
+    if (error) throw new Error(`Failed to load resolver audit window: ${error.message}`);
+    const page: unknown[] = Array.isArray(data) ? data : [];
+    for (const value of page) {
+      if (!isAuditEventRow(value)) throw new Error('Resolver audit query returned an invalid row shape');
+      const event = value;
+      addAuditEvent(last7d, event);
+      if (Date.parse(event.resolved_at) >= since24hMs) addAuditEvent(last24h, event);
+    }
+    if (page.length < AUDIT_PAGE_SIZE) return { last24h, last7d };
+    const last = page[page.length - 1] as AuditEventRow;
+    cursor = { resolvedAt: last.resolved_at, id: last.id };
+  }
+}
+
 export async function GET(request: NextRequest) {
   const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
@@ -17,7 +105,7 @@ export async function GET(request: NextRequest) {
   if ('response' in admin) return admin.response;
 
   try {
-    const supabase = createAdminClient() as any;
+    const supabase = createAdminClient();
     const now = new Date();
     const oneDayAgoIso = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
     const sevenDaysAgoIso = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -44,72 +132,25 @@ export async function GET(request: NextRequest) {
       supabase.from('notification_candidates').select('id', { count: 'exact', head: true }).eq('status', 'cancelled'),
     ]);
 
-    // 2. 24-hour audit events
-    const { data: audit24h, error: audit24hError } = await supabase
-      .from('notification_resolver_events')
-      .select('decision, reason, event_type')
-      .gte('resolved_at', oneDayAgoIso);
+    const countErrors = [pendingRes, resolvingRes, staleLeasesRes, acceptedRes, suppressedRes, deferredRes, expiredRes, cancelledRes]
+      .flatMap((result) => result.error ? [result.error.message] : []);
+    if (countErrors.length > 0) throw new Error(`Failed to load resolver queue counts: ${countErrors.join('; ')}`);
 
-    // 3. 7-day audit events
-    const { data: audit7d, error: audit7dError } = await supabase
-      .from('notification_resolver_events')
-      .select('decision, reason')
-      .gte('resolved_at', sevenDaysAgoIso);
-
-    if (audit24hError) {
-      console.warn('[notification-resolver-stats] audit24hError:', audit24hError.message);
-    }
-    if (audit7dError) {
-      console.warn('[notification-resolver-stats] audit7dError:', audit7dError.message);
-    }
+    // Paginate every matching audit row. PostgREST caps a single response, so
+    // aggregating one page would silently under-report at production volume.
+    const { last24h: audit24h, last7d: audit7d } = await readAuditWindows(
+      supabase,
+      oneDayAgoIso,
+      sevenDaysAgoIso,
+      now.toISOString(),
+    );
 
     // Process 24h metrics
-    const events24h = Array.isArray(audit24h) ? audit24h : [];
-    const total24h = events24h.length;
-    let accepted24h = 0;
-    let suppressed24h = 0;
-    let deferred24h = 0;
-    let expired24h = 0;
-    let cancelled24h = 0;
-    let duplicates24h = 0;
-    const reasons24h: Record<string, number> = {};
-    const typeDistribution24h: Record<string, number> = {};
-
-    for (const ev of events24h) {
-      if (ev.decision === 'accepted') accepted24h++;
-      else if (ev.decision === 'suppressed') suppressed24h++;
-      else if (ev.decision === 'deferred') deferred24h++;
-      else if (ev.decision === 'expired') expired24h++;
-      else if (ev.decision === 'cancelled') cancelled24h++;
-
-      if (ev.reason) {
-        reasons24h[ev.reason] = (reasons24h[ev.reason] ?? 0) + 1;
-        if (ev.reason.includes('duplicate') || ev.reason.includes('deduplicat')) {
-          duplicates24h++;
-        }
-      }
-
-      if (ev.event_type) {
-        typeDistribution24h[ev.event_type] = (typeDistribution24h[ev.event_type] ?? 0) + 1;
-      }
-    }
-
-    // Process 7d metrics
-    const events7d = Array.isArray(audit7d) ? audit7d : [];
-    const total7d = events7d.length;
-    let accepted7d = 0;
-    let suppressed7d = 0;
-    let deferred7d = 0;
-    let expired7d = 0;
-    let cancelled7d = 0;
-
-    for (const ev of events7d) {
-      if (ev.decision === 'accepted') accepted7d++;
-      else if (ev.decision === 'suppressed') suppressed7d++;
-      else if (ev.decision === 'deferred') deferred7d++;
-      else if (ev.decision === 'expired') expired7d++;
-      else if (ev.decision === 'cancelled') cancelled7d++;
-    }
+    const { total: total24h, accepted: accepted24h, suppressed: suppressed24h,
+      deferred: deferred24h, expired: expired24h, cancelled: cancelled24h,
+      reasons: reasons24h, types: typeDistribution24h } = audit24h;
+    const { total: total7d, accepted: accepted7d, suppressed: suppressed7d,
+      deferred: deferred7d, expired: expired7d, cancelled: cancelled7d } = audit7d;
 
     const rates24h = {
       acceptedPct: total24h > 0 ? Math.round((accepted24h / total24h) * 100) : 0,
@@ -141,11 +182,11 @@ export async function GET(request: NextRequest) {
         pending: pendingRes.count ?? 0,
         resolving: resolvingRes.count ?? 0,
         staleLeases: staleLeasesRes.count ?? 0,
-        lifetimeAccepted: acceptedRes.count ?? 0,
-        lifetimeSuppressed: suppressedRes.count ?? 0,
-        lifetimeDeferred: deferredRes.count ?? 0,
-        lifetimeExpired: expiredRes.count ?? 0,
-        lifetimeCancelled: cancelledRes.count ?? 0,
+        retainedAccepted: acceptedRes.count ?? 0,
+        retainedSuppressed: suppressedRes.count ?? 0,
+        retainedDeferred: deferredRes.count ?? 0,
+        retainedExpired: expiredRes.count ?? 0,
+        retainedCancelled: cancelledRes.count ?? 0,
       },
       last24h: {
         totalEvaluated: total24h,
@@ -154,7 +195,6 @@ export async function GET(request: NextRequest) {
         deferred: deferred24h,
         expired: expired24h,
         cancelled: cancelled24h,
-        duplicatesPrevented: duplicates24h,
         rates: rates24h,
         topSuppressionReasons,
         typeDistribution: typeDistribution24h,

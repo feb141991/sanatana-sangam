@@ -51,6 +51,7 @@ describe('sankranti-candidate-producer', () => {
         transitInstant: '2026-01-14T09:15:00Z',
         punyaKalaStart: '2026-01-14T09:15:00Z',
         punyaKalaEnd: '2026-01-14T12:30:00Z',
+        sourceRefs: [{ sourceName: 'Reviewed Punya Kala window fixture', tier: 1 }],
       },
     };
 
@@ -59,20 +60,21 @@ describe('sankranti-candidate-producer', () => {
     expect(res.candidate).not.toBeNull();
 
     const cand = res.candidate!;
-    expect(cand.notification_key).toBe('sankranti:makar-sankranti:punyakala:2026-01-14:general');
     expect(cand.event_type).toBe('sankranti');
-    expect(cand.priority_class).toBe('approved_ritual_window');
-    expect(cand.priority_score).toBe(30);
+    expect(cand.event_id).toBe('makar-sankranti');
+    expect(cand.event_instance).toBe('punyakala');
+    expect(cand.local_date).toBe('2026-01-14');
+    expect(cand.priority).toBe(30);
     expect(cand.title).toBe('Makar Sankranti - Punya Kala');
     expect(cand.body).toContain('Punya Kala auspicious window for Snana and Dana');
-    expect(cand.data?.canonical_source).toBe('Surya Siddhanta & Dharma Sindhu');
+    expect(cand.source_refs).toEqual([{ sourceName: 'Reviewed Punya Kala window fixture', tier: 1 }]);
 
     // Start: 09:15 UTC -> scheduled 15m before -> 09:00 UTC
     expect(cand.scheduled_for).toBe('2026-01-14T09:00:00.000Z');
     expect(cand.expires_at).toBe('2026-01-14T12:30:00.000Z');
   });
 
-  it('derives canonical punya kala if only transit instant is provided', () => {
+  it('fails closed when only a transit instant is provided', () => {
     process.env.NOTIFICATION_CANDIDATE_MODE_SANKRANTI = 'candidate';
 
     const context: SankrantiCandidateContext = {
@@ -89,12 +91,28 @@ describe('sankranti-candidate-producer', () => {
     };
 
     const res = produceSankrantiCandidate(context);
-    expect(res.status).toBe('resolved');
-    expect(res.candidate).not.toBeNull();
-    // Scheduled 15m before transit: 03:45 UTC
-    expect(res.candidate?.scheduled_for).toBe('2026-04-14T03:45:00.000Z');
-    // Standard 384 min (6.4h) window: 04:00 + 6h24m = 10:24 UTC
-    expect(res.candidate?.expires_at).toBe('2026-04-14T10:24:00.000Z');
+    expect(res.status).toBe('needs_review');
+    expect(res.candidate).toBeNull();
+    expect(res.diagnostics).toContain('missing or incomplete reviewed punya kala boundaries');
+  });
+
+  it('fails closed when location latitude is missing', () => {
+    process.env.NOTIFICATION_CANDIDATE_MODE_SANKRANTI = 'candidate';
+    const res = produceSankrantiCandidate({
+      userId: 'user-sankranti-no-lat',
+      userTimezone: 'Asia/Kolkata',
+      window: {
+        sankrantiSlug: 'makar-sankranti',
+        sankrantiName: 'Makar Sankranti',
+        localDate: '2026-01-14',
+        punyaKalaStart: '2026-01-14T09:15:00Z',
+        punyaKalaEnd: '2026-01-14T12:30:00Z',
+        sourceRefs: [{ sourceName: 'Reviewed fixture', tier: 1 }],
+      },
+    });
+    expect(res.candidate).toBeNull();
+    expect(res.status).toBe('needs_review');
+    expect(res.diagnostics).toContain('missing_or_invalid_location_latitude');
   });
 
   it('suppresses candidate if user opted out of sankranti/observance reminders', () => {
@@ -116,6 +134,17 @@ describe('sankranti-candidate-producer', () => {
     expect(res.candidate).toBeNull();
     expect(res.status).toBe('suppressed');
     expect(res.diagnostics[0]).toContain('opted out');
+  });
+
+  it('rejects legacy pipeline mode', () => {
+    process.env.NOTIFICATION_CANDIDATE_MODE_SANKRANTI = 'legacy';
+    const res = produceSankrantiCandidate({
+      userId: 'user-sankranti-legacy',
+      userTimezone: 'Asia/Kolkata',
+      window: { sankrantiSlug: 'makar', sankrantiName: 'Makar Sankranti', localDate: '2026-01-14' },
+    });
+    expect(res.candidate).toBeNull();
+    expect(res.diagnostics).toContain('sankranti_pipeline_mode_legacy');
   });
 
   it('fails closed when latitude is polar or high-latitude (|lat| > 60)', () => {

@@ -4,19 +4,18 @@
  * Prompt 7: Ekadashi Parana Fast-Breaking Window Candidate Producer.
  *
  * Governance & Integrity Rules:
- * 1. Consumes an approved, profile/location-qualified Parana window on Dwadashi.
- * 2. Schedules relative to the actual approved opening (sunrise / Hari Vasara end), NOT a fixed morning hour.
+ * 1. Consumes an explicit reviewed, profile/location-qualified Parana window on Dwadashi.
+ * 2. Validates the supplied window against sunrise, Hari Vasara end and Dwadashi end; it does not derive ritual boundaries.
  * 3. Fails closed with zero candidates and diagnostics on:
- *    - Missing or ambiguous Hari Vasara end
+ *    - Missing or ambiguous reviewed window boundaries or source references
  *    - Polar / high-latitude conditions (|lat| > 60 or sunrise undefined)
  *    - Invalid or inverted parana window (start >= end)
  * 4. Default-off via getCandidateTypePipelineMode('ekadashi_parana').
  * 5. Priority: approved_ritual_window (rank 3, numeric 30, 100% budget-exempt).
  */
 
-import { deriveCandidateNotificationKey } from './notification-candidate-key';
 import { getCandidateTypePipelineMode } from './notification-candidate-pipeline-mode';
-import type { NotificationCandidateRow } from './notification-resolver';
+import type { Json, NotificationCandidateInsert } from '@/types/database';
 
 export interface ParanaWindowInput {
   ekadashiSlug: string;
@@ -27,6 +26,9 @@ export interface ParanaWindowInput {
   sunrise: Date | string;
   dwadashiEnd: Date | string;
   hariVasaraEnd?: Date | string | null;
+  paranaStart?: Date | string | null;
+  paranaEnd?: Date | string | null;
+  sourceRefs?: Json[];
 }
 
 export interface ParanaCandidateContext {
@@ -39,7 +41,7 @@ export interface ParanaCandidateContext {
 }
 
 export interface ParanaCandidateResult {
-  candidate: NotificationCandidateRow | null;
+  candidate: NotificationCandidateInsert | null;
   status: 'resolved' | 'needs_review' | 'suppressed';
   diagnostics: string[];
 }
@@ -60,6 +62,15 @@ function formatTimeString(d: Date, tz: string): string {
     }).format(d);
   } catch {
     return d.toISOString().slice(11, 16);
+  }
+}
+
+function hasValidTimeZone(timeZone: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en', { timeZone });
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -95,9 +106,15 @@ export function produceParanaCandidate(
       diagnostics: ['missing_required_parana_context'],
     };
   }
+  if (!hasValidTimeZone(userTimezone)) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['invalid_user_timezone'] };
+  }
 
+  if (latitude == null || !Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['missing_or_invalid_location_latitude'] };
+  }
   // High-latitude / polar check: latitudes > 60 fail closed
-  if (latitude != null && Math.abs(latitude) > 60) {
+  if (Math.abs(latitude) > 60) {
     return {
       candidate: null,
       status: 'needs_review',
@@ -115,27 +132,24 @@ export function produceParanaCandidate(
     };
   }
 
-  // Determine Parana start:
-  // Must NOT break during Hari Vasara (first quarter of Dwadashi).
-  // If Hari Vasara ends after sunrise, Parana begins after Hari Vasara ends.
-  let paranaStart = sunriseDate;
-  if (window.hariVasaraEnd) {
-    const hariVasaraDate = parseUtcDate(window.hariVasaraEnd);
-    if (!hariVasaraDate) {
-      return {
-        candidate: null,
-        status: 'needs_review',
-        diagnostics: ['ambiguous_hari_vasara_boundary'],
-      };
-    }
-    if (hariVasaraDate > sunriseDate) {
-      paranaStart = hariVasaraDate;
-    }
+  if (window.hariVasaraEnd == null || window.paranaStart == null || window.paranaEnd == null) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['missing_reviewed_parana_boundaries'] };
+  }
+  if (!window.sourceRefs?.length) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['missing_reviewed_parana_source_refs'] };
+  }
+  const hariVasaraDate = parseUtcDate(window.hariVasaraEnd);
+  const paranaStart = parseUtcDate(window.paranaStart);
+  const paranaEnd = parseUtcDate(window.paranaEnd);
+  if (!hariVasaraDate || !paranaStart || !paranaEnd) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['invalid_reviewed_parana_boundaries'] };
   }
 
-  // Parana must conclude before Dwadashi tithi ends, or max 4 hours after sunrise
-  const maxMorningWindow = new Date(sunriseDate.getTime() + 4 * 60 * 60 * 1000);
-  const paranaEnd = dwadashiEndDate < maxMorningWindow ? dwadashiEndDate : maxMorningWindow;
+  // The caller must supply a reviewed window; this module validates it rather
+  // than deriving tradition-specific ritual boundaries.
+  if (paranaStart < sunriseDate || paranaStart < hariVasaraDate || paranaEnd > dwadashiEndDate) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['parana_window_conflicts_with_sunrise_hari_vasara_or_dwadashi'] };
+  }
 
   // Sanity check: parana start must be strictly before parana end
   if (paranaStart >= paranaEnd) {
@@ -146,44 +160,28 @@ export function produceParanaCandidate(
     };
   }
 
-  // Minimum 15-minute window required
-  const windowMinutes = (paranaEnd.getTime() - paranaStart.getTime()) / (60 * 1000);
-  if (windowMinutes < 15) {
-    return {
-      candidate: null,
-      status: 'needs_review',
-      diagnostics: [`parana_window_too_narrow_${Math.round(windowMinutes)}m`],
-    };
-  }
-
   const startTimeStr = formatTimeString(paranaStart, userTimezone);
   const endTimeStr = formatTimeString(paranaEnd, userTimezone);
 
-  const candidateKey = deriveCandidateNotificationKey({
+  // Schedule notification 15 minutes before parana start so devotee can prepare
+  const alertScheduledTime = new Date(Math.max(sunriseDate.getTime(), paranaStart.getTime() - 15 * 60 * 1000));
+
+  const candidate: NotificationCandidateInsert = {
+    user_id: userId,
     event_type: 'ekadashi_parana',
     event_id: window.ekadashiSlug,
     event_instance: 'parana',
     local_date: window.dwadashiDate,
     audience_variant: 'general',
-  });
-
-  // Schedule notification 15 minutes before parana start so devotee can prepare
-  const alertScheduledTime = new Date(Math.max(sunriseDate.getTime(), paranaStart.getTime() - 15 * 60 * 1000));
-
-  const candidate: NotificationCandidateRow = {
-    user_id: userId,
-    candidate_key: candidateKey,
-    event_type: 'ekadashi_parana',
-    event_date: window.dwadashiDate,
-    priority_rank: 3, // approved_ritual_window
-    numeric_priority: 30,
-    category: 'sadhana',
+    priority: 30,
     title: `${window.ekadashiName} Parana Window`,
     body: `Fast breaking window: ${startTimeStr} – ${endTimeStr}. Break your fast within this sacred period.`,
     action_url: `/vrat/${window.ekadashiSlug}`,
-    channel: 'push',
     scheduled_for: alertScheduledTime.toISOString(),
-    sound: 'temple_bell',
+    expires_at: paranaEnd.toISOString(),
+    timezone: userTimezone,
+    source_status: 'verified',
+    source_refs: window.sourceRefs,
     metadata: {
       ekadashiDate: window.ekadashiDate,
       dwadashiDate: window.dwadashiDate,

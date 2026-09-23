@@ -5,20 +5,18 @@
  *
  * Governance & Integrity Rules:
  * 1. Consumes an approved, profile/location-qualified Pradosha Vratam observance.
- * 2. Derives twilight window from local sunset (canonical 90m window: sunset - 45m to sunset + 45m).
+ * 2. Consumes explicit reviewed twilight boundaries; it does not infer a generic duration from sunset.
  * 3. Fails closed with zero candidates and diagnostics on:
  *    - Missing or invalid sunset instant
  *    - Polar / high-latitude conditions (|lat| > 60 or undefined sunset)
  *    - Inverted twilight window (start >= end)
  * 4. Default-off via getCandidateTypePipelineMode('pradosha_kala').
  * 5. Priority: approved_ritual_window (rank 3, numeric 30, 100% budget-exempt).
- * 6. Spiritual Content Integrity: Skanda Purana (Shankara Samhita, Pradosha Vrata Mahatmya)
- *    and Shiva Purana canonical twilight worship of Bhagavan Shiva.
+ * 6. Timing source references must be supplied with the reviewed boundaries.
  */
 
-import { deriveCandidateNotificationKey } from './notification-candidate-key';
 import { getCandidateTypePipelineMode } from './notification-candidate-pipeline-mode';
-import type { NotificationCandidateRow } from './notification-resolver';
+import type { Json, NotificationCandidateInsert } from '@/types/database';
 
 export interface PradoshaTwilightInput {
   observanceSlug: string;
@@ -27,6 +25,7 @@ export interface PradoshaTwilightInput {
   sunset: Date | string;
   twilightStart?: Date | string | null;
   twilightEnd?: Date | string | null;
+  sourceRefs?: Json[];
 }
 
 export interface PradoshaCandidateContext {
@@ -40,7 +39,7 @@ export interface PradoshaCandidateContext {
 }
 
 export interface PradoshaCandidateResult {
-  candidate: NotificationCandidateRow | null;
+  candidate: NotificationCandidateInsert | null;
   status: 'resolved' | 'needs_review' | 'suppressed';
   diagnostics: string[];
 }
@@ -64,15 +63,24 @@ function formatTimeString(d: Date, tz: string): string {
   }
 }
 
+function hasValidTimeZone(timeZone: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en', { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function producePradoshaCandidate(
   context: PradoshaCandidateContext,
 ): PradoshaCandidateResult {
   const mode = getCandidateTypePipelineMode('pradosha_kala');
-  if (mode === 'disabled') {
+  if (mode !== 'candidate') {
     return {
       candidate: null,
       status: 'suppressed',
-      diagnostics: ['pradosha_kala pipeline mode is disabled'],
+      diagnostics: [`pradosha_kala_pipeline_mode_${mode}`],
     };
   }
 
@@ -86,9 +94,15 @@ export function producePradoshaCandidate(
       diagnostics: ['user opted out of pradosha/vrat reminders'],
     };
   }
+  if (!userId || !userTimezone || !window || !hasValidTimeZone(userTimezone)) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['missing_context_or_invalid_timezone'] };
+  }
+  if (latitude == null || !Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['missing_or_invalid_location_latitude'] };
+  }
 
   // 2. High-latitude / polar check fail-closed
-  if (latitude !== undefined && latitude !== null && Math.abs(latitude) > 60) {
+  if (Math.abs(latitude) > 60) {
     return {
       candidate: null,
       status: 'needs_review',
@@ -123,9 +137,7 @@ export function producePradoshaCandidate(
     startDate = parsedStart;
     endDate = parsedEnd;
   } else {
-    // Canonical 90-minute window: 45m before sunset to 45m after sunset
-    startDate = new Date(sunsetDate.getTime() - 45 * 60_000);
-    endDate = new Date(sunsetDate.getTime() + 45 * 60_000);
+    return { candidate: null, status: 'needs_review', diagnostics: ['missing_reviewed_twilight_boundaries'] };
   }
 
   if (startDate.getTime() >= endDate.getTime()) {
@@ -135,16 +147,14 @@ export function producePradoshaCandidate(
       diagnostics: [`inverted or zero-length twilight window (start: ${startDate.toISOString()} >= end: ${endDate.toISOString()})`],
     };
   }
+  if (sunsetDate < startDate || sunsetDate > endDate) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['reviewed_twilight_boundaries_do_not_contain_sunset'] };
+  }
+  if (!window.sourceRefs?.length) {
+    return { candidate: null, status: 'needs_review', diagnostics: ['missing_reviewed_twilight_source_refs'] };
+  }
 
   // 5. Build candidate notification
-  const notificationKey = deriveCandidateNotificationKey({
-    event_type: 'pradosha_kala',
-    event_id: window.observanceSlug,
-    event_instance: 'twilight',
-    local_date: window.localDate,
-    audience_variant: 'general',
-  });
-
   const formattedStart = formatTimeString(startDate, userTimezone);
   const formattedEnd = formatTimeString(endDate, userTimezone);
 
@@ -152,29 +162,29 @@ export function producePradoshaCandidate(
   // or at start if already close
   const scheduledTime = new Date(startDate.getTime() - 15 * 60_000);
 
-  const candidate: NotificationCandidateRow = {
-    id: `cand_pradosha_${window.observanceSlug}_${window.localDate}`,
+  const candidate: NotificationCandidateInsert = {
     user_id: userId,
-    notification_key: notificationKey,
     event_type: 'pradosha_kala',
+    event_id: window.observanceSlug,
+    event_instance: 'twilight',
+    local_date: window.localDate,
+    audience_variant: 'general',
     title: `${window.observanceName} - Pradosha Kala`,
     body: `Pradosha Kala puja window is from ${formattedStart} to ${formattedEnd}. Dedicated twilight worship of Bhagavan Shiva.`,
     scheduled_for: scheduledTime.toISOString(),
     expires_at: endDate.toISOString(),
-    priority_class: 'approved_ritual_window',
-    priority_score: 30,
-    status: 'pending',
-    channel: 'push',
-    data: {
+    priority: 30,
+    action_url: `/festivals/${window.observanceSlug}`,
+    timezone: userTimezone,
+    source_status: 'verified',
+    source_refs: window.sourceRefs,
+    metadata: {
       slug: window.observanceSlug,
       name: window.observanceName,
       local_date: window.localDate,
       sunset: sunsetDate.toISOString(),
       twilight_start: startDate.toISOString(),
       twilight_end: endDate.toISOString(),
-      canonical_source: 'Skanda Purana & Shiva Purana',
-      tradition: 'Shaiva / Smartha',
-      deep_link: `/festivals/${window.observanceSlug}`,
     },
   };
 

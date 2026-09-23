@@ -129,6 +129,10 @@ export interface ClientObservanceResult {
   diagnostics: string[];
   sourceRefs: SourceReference[];
   reviewStatus: string;
+  publicationStatus?: string | null;
+  verificationStatus?: string | null;
+  auditStatus?: string | null;
+  finalDateSource?: string | null;
   isPrimary: boolean;
 }
 
@@ -347,6 +351,10 @@ export function formatOccurrencesToResults(
       diagnostics: diagnosticsList,
       sourceRefs: (row.source_refs as any) || [],
       reviewStatus: row.review_status || 'reviewed',
+      publicationStatus: row.publication_status ?? null,
+      verificationStatus: row.verification_status ?? null,
+      auditStatus: row.audit_status ?? null,
+      finalDateSource: row.final_date_source ?? null,
       isPrimary: false, // will resolve below
     }, row.year ?? String(row.date ?? "").slice(0, 4), row.series_instance_key);
   }
