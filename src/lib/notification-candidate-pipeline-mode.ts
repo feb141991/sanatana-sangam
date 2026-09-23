@@ -8,6 +8,17 @@
 
 export type CandidatePipelineMode = 'legacy' | 'candidate' | 'disabled';
 export type RoutineReminderType = 'japa' | 'shloka' | 'mood' | 'sattvic' | 'nitya';
+export type TimeSensitiveCandidateType = 'observance_series' | 'ekadashi_parana' | 'pradosha_kala' | 'sankranti';
+
+export const ALL_ROUTINE_TYPES: RoutineReminderType[] = ['japa', 'shloka', 'mood', 'sattvic', 'nitya'];
+export const ALL_TIME_SENSITIVE_TYPES: TimeSensitiveCandidateType[] = ['observance_series', 'ekadashi_parana', 'pradosha_kala', 'sankranti'];
+export const ALL_CANDIDATE_TYPES = [
+  'observance',
+  'dharm_veer',
+  'quiz',
+  ...ALL_ROUTINE_TYPES,
+  ...ALL_TIME_SENSITIVE_TYPES,
+] as const;
 
 /**
  * Returns whether the central notification candidate resolver is globally enabled.
@@ -21,7 +32,7 @@ export function isCandidateResolverGloballyEnabled(): boolean {
  * Returns the pipeline mode for a specific candidate event type.
  *
  * Resolution order:
- * 1. Specific env override: `NOTIFICATION_CANDIDATE_MODE_<UPPER_SNAKE_EVENT_TYPE>`
+ * 1. Specific env override: `NOTIFICATION_CANDIDATE_MODE_${UPPER_SNAKE_EVENT_TYPE}`
  * 2. Defaults to 'disabled' for safety.
  */
 export function getCandidateTypePipelineMode(eventType: string): CandidatePipelineMode {
@@ -42,7 +53,7 @@ export function getCandidateTypePipelineMode(eventType: string): CandidatePipeli
 /**
  * Returns the pipeline mode for an existing routine reminder being migrated.
  * Resolution order:
- * 1. Env override: `NOTIFICATION_ROUTINE_MODE_<UPPER_SNAKE_TYPE>`
+ * 1. Env override: `NOTIFICATION_ROUTINE_MODE_${UPPER_SNAKE_TYPE}`
  * 2. Defaults to 'legacy' to preserve existing behavior until cutover.
  */
 export function getRoutinePipelineMode(routineType: RoutineReminderType): CandidatePipelineMode {
@@ -67,4 +78,30 @@ export function getRoutinePipelineMode(routineType: RoutineReminderType): Candid
 export function shouldProcessCandidateType(eventType: string): boolean {
   if (!isCandidateResolverGloballyEnabled()) return false;
   return getCandidateTypePipelineMode(eventType) === 'candidate';
+}
+
+/**
+ * Returns a snapshot of all active pipeline modes across candidate and routine types.
+ * Useful for admin monitoring and release gate inspection.
+ */
+export function getAllPipelineModesSnapshot(): {
+  globallyEnabled: boolean;
+  routineModes: Record<RoutineReminderType, CandidatePipelineMode>;
+  candidateModes: Record<string, CandidatePipelineMode>;
+} {
+  const routineModes = {} as Record<RoutineReminderType, CandidatePipelineMode>;
+  for (const t of ALL_ROUTINE_TYPES) {
+    routineModes[t] = getRoutinePipelineMode(t);
+  }
+
+  const candidateModes: Record<string, CandidatePipelineMode> = {};
+  for (const t of ALL_CANDIDATE_TYPES) {
+    candidateModes[t] = getCandidateTypePipelineMode(t);
+  }
+
+  return {
+    globallyEnabled: isCandidateResolverGloballyEnabled(),
+    routineModes,
+    candidateModes,
+  };
 }

@@ -21,6 +21,7 @@ import {
 import type { generateHealthReport } from "@/lib/monitoring/aggregation";
 import type { MonitoringEvent } from "@/lib/monitoring/events";
 import PushMonitoringSection from "./PushMonitoringSection";
+import NotificationResolverSection from "./NotificationResolverSection";
 import EmailMonitoringSection from "./EmailMonitoringSection";
 import { Mail } from "lucide-react";
 import ClientErrorMonitoringSection from "./ClientErrorMonitoringSection";
@@ -92,6 +93,13 @@ const SECTION_INFO: Record<string, InfoModalData> = {
     cadence: "Real-time on devotee device reconnection",
     description: "Tracks offline Japa mala rounds and morning sadhana checklists recorded on devotee devices when disconnected. Ensures seamless reconciliation into karmic ledgers.",
     adminAction: "If offline backlog surges, check network latency or client schema version alignment in mobile app releases.",
+  },
+  resolver: {
+    title: "Central Notification Candidate Resolver & Release Gate",
+    sourceTable: "notification_candidates & notification_resolver_events",
+    cadence: "Continuous cron / on-demand evaluation",
+    description: "Mediates all ritual, observance, and routine candidates through deterministic priority classes and devotional engagement budgets. Fails closed with zero-drift safety.",
+    adminAction: "Inspect suppression breakdown, pipeline modes, and run dry-run simulations before cutover.",
   },
   push: {
     title: "Push Notification Delivery Gateway",
@@ -505,6 +513,18 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Mail size={14} />
           <span>Email & Auth Deliverability</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange("resolver")}
+          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
+            activeTab === "resolver"
+              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
+              : "border-transparent text-gray-500 hover:text-gray-900"
+          )}
+        >
+          <Layers size={14} />
+          <span>Candidate Resolver & Gate</span>
         </button>
 
         <button

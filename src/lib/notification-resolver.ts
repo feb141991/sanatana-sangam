@@ -3,6 +3,41 @@ import type {
   NotificationResolverEventInsert,
 } from '@/types/database';
 
+export interface NotificationCandidateRow {
+  id?: string;
+  user_id: string;
+  candidate_key?: string;
+  notification_key?: string;
+  event_type: string;
+  event_id?: string;
+  event_instance?: string;
+  event_date?: string;
+  local_date?: string;
+  audience_variant?: string;
+  priority?: number;
+  priority_rank?: number;
+  numeric_priority?: number;
+  priority_score?: number;
+  priority_class?: NotificationPriorityClass;
+  title: string;
+  body: string;
+  action_url?: string;
+  channel?: string;
+  scheduled_for: string;
+  expires_at?: string;
+  sound?: string;
+  status?: string;
+  category?: string;
+  language?: string;
+  timezone?: string;
+  tradition?: string | null;
+  calendar_profile?: string | null;
+  source_status?: string;
+  source_refs?: any;
+  data?: Record<string, any> | null;
+  metadata?: Record<string, any> | null;
+}
+
 export type NotificationPriorityClass =
   | 'transactional_safety'     // Priority 1: Security, account, moderation, transactional safety (outside budget)
   | 'explicit_user_requested'  // Priority 2: Explicit user-requested observance or ritual reminder (outside budget)
@@ -81,12 +116,12 @@ export function resolvePriorityClassForEventType(rawEventType: string): Notifica
   }
 
   // 3. Approved ritual window
-  if (['brahma_muhurta', 'sandhya', 'nitya_madhyahn', 'nitya_sandhya', 'ritual_window', 'pradosha_window', 'nitya'].includes(eventType)) {
+  if (['brahma_muhurta', 'sandhya', 'nitya_madhyahn', 'nitya_sandhya', 'ritual_window', 'pradosha_window', 'pradosha_kala', 'ekadashi_parana', 'nitya'].includes(eventType)) {
     return 'approved_ritual_window';
   }
 
   // 4. Reviewed observance
-  if (['observance', 'festival', 'vrat', 'tithi'].includes(eventType)) {
+  if (['observance', 'festival', 'vrat', 'tithi', 'observance_series', 'sankranti'].includes(eventType)) {
     return 'reviewed_observance';
   }
 

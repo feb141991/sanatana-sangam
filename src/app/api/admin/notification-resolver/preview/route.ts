@@ -5,8 +5,10 @@ import { createAdminClient } from '@/lib/supabase-admin';
 import { executeCandidateResolverPipeline } from '@/lib/notification-resolver-pipeline';
 import {
   isCandidateResolverGloballyEnabled,
-  getCandidateTypePipelineMode,
+  getAllPipelineModesSnapshot,
 } from '@/lib/notification-candidate-pipeline-mode';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const authError = await verifyAdminCookieAuth(request);
@@ -63,13 +65,7 @@ export async function GET(request: NextRequest) {
 
     const pipelineConfig = {
       globallyEnabled: isCandidateResolverGloballyEnabled(),
-      modes: {
-        dharm_veer: getCandidateTypePipelineMode('dharm_veer'),
-        quiz: getCandidateTypePipelineMode('quiz'),
-        streak: getCandidateTypePipelineMode('streak'),
-        mood: getCandidateTypePipelineMode('mood'),
-        observance: getCandidateTypePipelineMode('observance'),
-      },
+      modes: getAllPipelineModesSnapshot(),
     };
 
     const queueStats = {

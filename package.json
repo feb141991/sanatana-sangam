@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "check:producer-isolation": "npx tsx scripts/ci/check-no-direct-push-in-producers.ts",
     "audit:notifications": "npx tsx scripts/audit-notification-topology.ts",
     "audit:festival-stories": "npx tsx scripts/audit-festival-story-claims.ts",
     "audit:festival-content-provenance": "npx tsx scripts/audit-festival-content-provenance.mts",
