@@ -1,10 +1,11 @@
-# Prompt 5C Mood Check-In Routine Reminder Migration: 14-Day Shadow Parity Audit
+# Prompt 5C Mood Check-In Routine Reminder: 14-Day Fixture Simulation
+
+> Evidence scope: deterministic simulation over synthetic profiles, dates, and hard-coded legacy expectations. The legacy route is not executed and no live database rows, deployed cron runs, or production candidate outcomes are compared. Matching fixture expectations does not establish production parity or cutover readiness.
 
 ## Executive Summary
-This audit proves **100% eligibility parity** between the legacy mood reminder routes and the central notification candidate producer across **140 slot evaluations** (5 global timezones × 5 devotee profiles × 14 consecutive calendar dates × 2 daily slots: midday & evening).
+The candidate producer matched the fixture's explicitly coded eligibility expectations for **140 slot evaluations** (5 synthetic profiles × 14 dates × 2 slots). This is a bounded fixture result, not a comparison against the running legacy routes.
 
-It further documents the **intentional difference** governed by the central resolver:
-Under the legacy architecture, devotees could receive both a 12:00 PM midday reminder and an 18:00 PM evening reminder on the same date. Under the central resolver's **1 routine engagement per devotee/date** budget policy, once Midday check-in is delivered, the Evening nudge is gracefully suppressed (`routine_engagement_cap_reached`), eliminating notification fatigue while ensuring the devotee receives their daily check-in. If Midday was skipped (e.g. for day-sleepers / night-shift workers whose quiet hours cover noon), the Evening candidate is accepted!
+It also exercises resolver budgeting with sequential midday/evening fixtures. The synthetic comparison is evaluated at each candidate's own scheduled instant in its profile timezone; this does not model deployed cron timing or actual user delivery.
 
 ---
 
@@ -23,13 +24,13 @@ Under the legacy architecture, devotees could receive both a 12:00 PM midday rem
 
 ---
 
-## 2. Parity & Production Verification Results
+## 2. Fixture Scenario Results (Not Production Verification)
 
-| Dimension | Total Evaluated | Legacy Eligible | Candidates Produced | Parity Match |
+| Dimension | Total Evaluated | Fixture Expected Eligible | Candidates Produced | Fixture Match |
 |---|---|---|---|---|
-| **Midday Slot (12:00)** | 70 | 42 | 42 | **100% (70/70)** |
-| **Evening Slot (18:00)** | 70 | 42 | 42 | **100% (70/70)** |
-| **Combined Total** | **140** | **84** | **84** | **100% (140/140)** |
+| **Midday Slot (12:00)** | 70 | 42 | 42 | **100%** |
+| **Evening Slot (18:00)** | 70 | 42 | 42 | **100%** |
+| **Combined Total** | **140** | **84** | **84** | **100%** |
 
 ### Suppression Analysis:
 1. **Account Deletion Safety**: 28/28 evaluations (14 midday + 14 evening) suppressed for Los Angeles devotee (`is_deleting: true`).
@@ -46,19 +47,21 @@ Under the legacy architecture, devotees could receive both a 12:00 PM midday rem
 | Scenario | Candidate Generated | Resolver Decision | Reason | Intentional Architecture Benefit |
 |---|---|---|---|---|
 | **Midday Candidate (Kolkata/Auckland/NY)** | Midday 12:00 | **Accepted** | `routine_engagement_accepted` | Devotee receives midday scripture & mood reflection. |
-| **Evening Candidate (Same Day, Midday Delivered)** | Evening 18:00 | **Suppressed** | `routine_engagement_cap_reached` | **Prevents double-nudging**. In legacy, users received two generic mood notifications on the same day. Central resolver caps routine nudges at 1/day. |
+| **Evening Candidate (Same Day, Midday Delivered)** | Evening 18:00 local | **Suppressed** | `routine_engagement_cap_reached` | The pure resolver enforces the one-routine-candidate fixture policy. |
 | **Evening Candidate (London Shift-Worker)** | Evening 18:00 | **Accepted** | `routine_engagement_accepted` | Because midday was suppressed by quiet hours, the daily routine budget remained open, allowing the evening reflection to reach the devotee when awake. |
 
 ### Quantified Results:
 - **Total Midday Candidates Evaluated**: 42
-  - **Accepted**: 42 (100%)
+  - **Accepted**: 42
 - **Total Evening Candidates Evaluated**: 42
-  - **Accepted**: 14 (London shift-worker scenario where midday was skipped due to day-sleeping quiet hours)
-  - **Suppressed**: 28 (`routine_engagement_cap_reached` because midday reflection was already delivered for that date)
+  - **Accepted**: 14 (fixture accepts where the midday candidate was skipped)
+  - **Suppressed**: 28 (`routine_engagement_cap_reached`)
+  - **Expired**: 0
+  - **Deferred**: 0
 
 ---
 
-## 4. Pipeline Exclusivity Proof
+## 4. Pipeline Mode Source Contract (Not Deployment Evidence)
 
 Each cron route independently enforces:
 ```typescript
@@ -72,4 +75,4 @@ const pipelineMode = getRoutinePipelineMode('mood');
 
 ## 5. Audit Conclusion
 
-The Mood routine check-in reminder producer migration achieves **100% eligibility parity**, enforces robust quiet-hours and account-deletion safety, respects all spiritual traditions, and safely arbitrates through the Central Notification Resolver without duplicate delivery.
+The synthetic fixture checks matched their coded eligibility expectations and exercised the pure resolver budget behavior. Runtime legacy parity, database persistence, cron exclusivity in deployment, push delivery, receipts, and cutover readiness remain unverified.

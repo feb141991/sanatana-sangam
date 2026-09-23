@@ -10,7 +10,7 @@ interface SimulatedDevotee extends DevoteeProfileForMood {
 }
 
 async function run() {
-  console.log('=== Running Prompt 5C Mood Check-In Migration 14-Day Shadow Parity Audit ===');
+  console.log('=== Running Prompt 5C Mood Check-In 14-Day Fixture Simulation ===');
 
   const testDevotees: SimulatedDevotee[] = [
     {
@@ -135,15 +135,22 @@ async function run() {
   // Verify eligibility parity
   const totalEvaluations = records.length; // 5 devotees * 14 days * 2 slots = 140
   const parityMatches = records.filter((r) => r.parityMatch).length;
+  const middayFixture = records.filter((r) => r.slot === 'midday');
+  const eveningFixture = records.filter((r) => r.slot === 'evening');
+  const fixtureMatchPercent = (rows: EvaluationRecord[]) =>
+    rows.length === 0 ? 100 : Math.round((rows.filter((row) => row.parityMatch).length / rows.length) * 100);
 
-  console.log(`Parity Verification: ${parityMatches}/${totalEvaluations} decisions match (100% eligibility parity).`);
+  console.log(`Fixture expectation matches: ${parityMatches}/${totalEvaluations}. This does not establish live legacy parity.`);
 
   // Evaluate sequential reality:
   // 1. At 12:00 noon: midday candidate is resolved against morning history.
   // 2. At 18:00 evening: evening candidate is resolved against midday history.
   let middayAcceptedCount = 0;
+  let eveningAcceptedCount = 0;
   let eveningAcceptedWhenMiddaySkipped = 0;
   let eveningSuppressedByBudget = 0;
+  let eveningExpired = 0;
+  let eveningDeferred = 0;
 
   for (const date of dates) {
     for (const devotee of testDevotees) {
@@ -162,7 +169,7 @@ async function run() {
         const middayRes = resolveCandidates({
           candidates: [middayCand],
           history: [],
-          now: new Date(`${date}T06:30:00Z`),
+          now: new Date(middayCand.scheduled_for),
         });
         if (middayRes.accepted.length > 0) {
           middayAcceptedCount++;
@@ -188,33 +195,49 @@ async function run() {
         const eveningRes = resolveCandidates({
           candidates: [eveningCand],
           history,
-          now: new Date(`${date}T18:00:00Z`),
+          // Evaluate each profile at its own requested local send instant.
+          // A fixed UTC clock misclassifies users east/west of UTC as expired or premature.
+          now: new Date(eveningCand.scheduled_for),
           allowDeferrals: false, // Window closes at night
         });
 
         if (eveningRes.accepted.length > 0) {
+          eveningAcceptedCount++;
           eveningAcceptedWhenMiddaySkipped++;
         } else if (eveningRes.suppressed.length > 0) {
           eveningSuppressedByBudget++;
+        } else if (eveningRes.expired.length > 0) {
+          eveningExpired++;
+        } else if (eveningRes.deferred.length > 0) {
+          eveningDeferred++;
         }
       }
     }
+  }
+
+  const eveningCandidateCount = eveningFixture.filter((row) => row.candidate !== null).length;
+  const eveningOutcomeCount = eveningAcceptedCount + eveningSuppressedByBudget + eveningExpired + eveningDeferred;
+  if (eveningOutcomeCount !== eveningCandidateCount) {
+    throw new Error(`Evening resolver accounting mismatch: ${eveningOutcomeCount} outcomes for ${eveningCandidateCount} candidates`);
   }
 
   console.log('Central Resolver Results for Mood Candidates:');
   console.log(`- Midday Accepted: ${middayAcceptedCount}`);
   console.log(`- Evening Accepted (when midday was skipped): ${eveningAcceptedWhenMiddaySkipped}`);
   console.log(`- Evening Suppressed by Routine Budget (preventing double-nudge): ${eveningSuppressedByBudget}`);
+  console.log(`- Evening Expired: ${eveningExpired}`);
+  console.log(`- Evening Deferred: ${eveningDeferred}`);
 
   // Build report markdown
   const reportPath = resolve(__dirname, '../docs/notifications/MOOD_14DAY_SHADOW_PARITY_REPORT.md');
-  const reportMarkdown = `# Prompt 5C Mood Check-In Routine Reminder Migration: 14-Day Shadow Parity Audit
+  const reportMarkdown = `# Prompt 5C Mood Check-In Routine Reminder: 14-Day Fixture Simulation
+
+> Evidence scope: deterministic simulation over synthetic profiles, dates, and hard-coded legacy expectations. The legacy route is not executed and no live database rows, deployed cron runs, or production candidate outcomes are compared. Matching fixture expectations does not establish production parity or cutover readiness.
 
 ## Executive Summary
-This audit proves **100% eligibility parity** between the legacy mood reminder routes and the central notification candidate producer across **140 slot evaluations** (5 global timezones × 5 devotee profiles × 14 consecutive calendar dates × 2 daily slots: midday & evening).
+The candidate producer matched the fixture's explicitly coded eligibility expectations for **140 slot evaluations** (5 synthetic profiles × 14 dates × 2 slots). This is a bounded fixture result, not a comparison against the running legacy routes.
 
-It further documents the **intentional difference** governed by the central resolver:
-Under the legacy architecture, devotees could receive both a 12:00 PM midday reminder and an 18:00 PM evening reminder on the same date. Under the central resolver's **1 routine engagement per devotee/date** budget policy, once Midday check-in is delivered, the Evening nudge is gracefully suppressed (\`routine_engagement_cap_reached\`), eliminating notification fatigue while ensuring the devotee receives their daily check-in. If Midday was skipped (e.g. for day-sleepers / night-shift workers whose quiet hours cover noon), the Evening candidate is accepted!
+It also exercises resolver budgeting with sequential midday/evening fixtures. The synthetic comparison is evaluated at each candidate's own scheduled instant in its profile timezone; this does not model deployed cron timing or actual user delivery.
 
 ---
 
@@ -233,13 +256,13 @@ Under the legacy architecture, devotees could receive both a 12:00 PM midday rem
 
 ---
 
-## 2. Parity & Production Verification Results
+## 2. Fixture Scenario Results (Not Production Verification)
 
-| Dimension | Total Evaluated | Legacy Eligible | Candidates Produced | Parity Match |
+| Dimension | Total Evaluated | Fixture Expected Eligible | Candidates Produced | Fixture Match |
 |---|---|---|---|---|
-| **Midday Slot (12:00)** | 70 | 42 | 42 | **100% (70/70)** |
-| **Evening Slot (18:00)** | 70 | 42 | 42 | **100% (70/70)** |
-| **Combined Total** | **140** | **84** | **84** | **100% (140/140)** |
+| **Midday Slot (12:00)** | ${middayFixture.length} | ${middayFixture.filter((row) => row.legacyEligible).length} | ${middayFixture.filter((row) => row.candidateProduced).length} | **${fixtureMatchPercent(middayFixture)}%** |
+| **Evening Slot (18:00)** | ${eveningFixture.length} | ${eveningFixture.filter((row) => row.legacyEligible).length} | ${eveningCandidateCount} | **${fixtureMatchPercent(eveningFixture)}%** |
+| **Combined Total** | **${totalEvaluations}** | **${records.filter((row) => row.legacyEligible).length}** | **${records.filter((row) => row.candidateProduced).length}** | **${fixtureMatchPercent(records)}%** |
 
 ### Suppression Analysis:
 1. **Account Deletion Safety**: 28/28 evaluations (14 midday + 14 evening) suppressed for Los Angeles devotee (\`is_deleting: true\`).
@@ -256,19 +279,21 @@ Under the legacy architecture, devotees could receive both a 12:00 PM midday rem
 | Scenario | Candidate Generated | Resolver Decision | Reason | Intentional Architecture Benefit |
 |---|---|---|---|---|
 | **Midday Candidate (Kolkata/Auckland/NY)** | Midday 12:00 | **Accepted** | \`routine_engagement_accepted\` | Devotee receives midday scripture & mood reflection. |
-| **Evening Candidate (Same Day, Midday Delivered)** | Evening 18:00 | **Suppressed** | \`routine_engagement_cap_reached\` | **Prevents double-nudging**. In legacy, users received two generic mood notifications on the same day. Central resolver caps routine nudges at 1/day. |
+| **Evening Candidate (Same Day, Midday Delivered)** | Evening 18:00 local | **Suppressed** | \`routine_engagement_cap_reached\` | The pure resolver enforces the one-routine-candidate fixture policy. |
 | **Evening Candidate (London Shift-Worker)** | Evening 18:00 | **Accepted** | \`routine_engagement_accepted\` | Because midday was suppressed by quiet hours, the daily routine budget remained open, allowing the evening reflection to reach the devotee when awake. |
 
 ### Quantified Results:
-- **Total Midday Candidates Evaluated**: 42
-  - **Accepted**: 42 (100%)
-- **Total Evening Candidates Evaluated**: 42
-  - **Accepted**: 14 (London shift-worker scenario where midday was skipped due to day-sleeping quiet hours)
-  - **Suppressed**: 28 (\`routine_engagement_cap_reached\` because midday reflection was already delivered for that date)
+- **Total Midday Candidates Evaluated**: ${middayFixture.filter((row) => row.candidateProduced).length}
+  - **Accepted**: ${middayAcceptedCount}
+- **Total Evening Candidates Evaluated**: ${eveningCandidateCount}
+  - **Accepted**: ${eveningAcceptedWhenMiddaySkipped} (fixture accepts where the midday candidate was skipped)
+  - **Suppressed**: ${eveningSuppressedByBudget} (\`routine_engagement_cap_reached\`)
+  - **Expired**: ${eveningExpired}
+  - **Deferred**: ${eveningDeferred}
 
 ---
 
-## 4. Pipeline Exclusivity Proof
+## 4. Pipeline Mode Source Contract (Not Deployment Evidence)
 
 Each cron route independently enforces:
 \`\`\`typescript
@@ -282,12 +307,12 @@ const pipelineMode = getRoutinePipelineMode('mood');
 
 ## 5. Audit Conclusion
 
-The Mood routine check-in reminder producer migration achieves **100% eligibility parity**, enforces robust quiet-hours and account-deletion safety, respects all spiritual traditions, and safely arbitrates through the Central Notification Resolver without duplicate delivery.
+The synthetic fixture checks matched their coded eligibility expectations and exercised the pure resolver budget behavior. Runtime legacy parity, database persistence, cron exclusivity in deployment, push delivery, receipts, and cutover readiness remain unverified.
 `;
 
   writeFileSync(reportPath, reportMarkdown, 'utf-8');
   console.log(`Report written to ${reportPath}`);
-  console.log('=== MOOD 14-DAY SHADOW PARITY AUDIT COMPLETE: 100% PASSING ===');
+  console.log('=== MOOD 14-DAY FIXTURE SIMULATION COMPLETE ===');
 }
 
 run().catch((err) => {

@@ -67,6 +67,16 @@ The source implementation includes these safety corrections:
 - Fixture parity reports are labelled simulations, not live shadow parity. O4 and all
   production cutover checks remain open until real shadow evidence is collected.
 
+### Follow-up verification note (2026-09-23)
+
+The local source changes are committed in `e608407`; this does not establish deployment or
+database application. A read-only `supabase migration list --linked` attempt reached the
+linked database but failed PostgreSQL password authentication (`SQLSTATE 28P01`). Therefore
+the remote applied state of the four earlier migrations, as well as the two Prompt 6
+migrations, is **unverified in this review**. Do not infer either applied or unapplied from
+that failed command or from a pasted status summary. Refresh the database credential and
+rerun the migration list before making a production cutover decision.
+
 Continue treating the rest of this runbook as the required staged review and cutover
 sequence. Source presence is not approval to apply migrations, deploy, enable a mode, or
 send production notifications.

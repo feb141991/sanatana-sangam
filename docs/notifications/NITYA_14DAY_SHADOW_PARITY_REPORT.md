@@ -1,7 +1,9 @@
-# Prompt 5E Nitya Karma Reminder Migration: 14-Day Shadow Parity Audit
+# Prompt 5E Nitya Karma Reminder: 14-Day Fixture Simulation
+
+> Evidence scope: deterministic simulation over synthetic profiles, dates, and hard-coded legacy expectations. The legacy routes are not executed and no live database rows, deployed cron runs, or production candidate outcomes are compared. Matching fixture expectations does not establish production parity or cutover readiness.
 
 ## Executive Summary
-This audit proves **100% eligibility parity** between the legacy Nitya reminder producers (`/api/cron/nitya-reminder`, `/api/cron/nitya-reminder-madhyahn`, `/api/cron/nitya-reminder-sandhya`) and the central notification candidate architecture across **210 slot-evaluations** (5 global timezones × 5 devotee profiles × 14 consecutive calendar dates × 3 ritual slots: Morning, Madhyahn, Sandhya).
+The candidate producers matched the fixture's explicitly coded eligibility expectations across **210 slot evaluations** (5 synthetic profiles × 14 dates × 3 ritual slots). This is a bounded fixture result, not a comparison against running legacy routes.
 
 All produced candidates route precisely to canonical `/nitya-karma`, map to `approved_ritual_window` (Priority 30), and achieve **100% acceptance** as sacred budget-exempt windows under the central resolver.
 
@@ -24,9 +26,9 @@ All produced candidates route precisely to canonical `/nitya-karma`, map to `app
 
 ---
 
-## 2. Parity & Production Verification Results
+## 2. Fixture Scenario Results (Not Production Verification)
 
-| Devotee Profile | Slot | Days Evaluated | Legacy Eligible | Candidates Produced | Parity Match |
+| Devotee Profile | Slot | Days Evaluated | Fixture Expected Eligible | Candidates Produced | Fixture Match |
 |---|---|---|---|---|---|
 | **Kolkata Full-Day** | Morning | 14 | 14 | 14 | **100% (14/14)** |
 | **Kolkata Full-Day** | Madhyahn | 14 | 14 | 14 | **100% (14/14)** |
@@ -80,7 +82,7 @@ Nitya Karma reminders are classified as **`approved_ritual_window`** (Priority 3
 
 ---
 
-## 4. Pipeline Exclusivity Proof
+## 4. Pipeline Mode Source Contract (Not Deployment Evidence)
 
 Each Nitya cron route independently enforces:
 ```typescript
@@ -94,4 +96,4 @@ const pipelineMode = getRoutinePipelineMode('nitya');
 
 ## 5. Audit Conclusion
 
-The Nitya Karma reminder producers (Morning, Madhyahn, Sandhya) migration achieves **100% eligibility parity**, enforces robust rhythm mode and quiet-hours safety, respects tradition reflection copy, and passes all Central Resolver budget requirements as budget-exempt sacred ritual windows.
+The synthetic fixture checks matched their coded eligibility expectations and exercised pure candidate/resolver behavior. Runtime legacy parity, database persistence, cron exclusivity in deployment, push delivery, receipts, and cutover readiness remain unverified.

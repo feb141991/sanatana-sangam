@@ -1,7 +1,9 @@
-# Prompt 5D Sattvic Mode Evening Reminder Migration: 14-Day Shadow Parity Audit
+# Prompt 5D Sattvic Mode Evening Reminder: 14-Day Fixture Simulation
+
+> Evidence scope: deterministic simulation over synthetic profiles, dates, and hard-coded legacy expectations. The legacy route is not executed and no live database rows, deployed cron runs, or production candidate outcomes are compared. Matching fixture expectations does not establish production parity or cutover readiness.
 
 ## Executive Summary
-This audit proves **100% eligibility parity** between the legacy `/api/cron/sattvic-reminder` route and the central notification candidate architecture across **70 devotee-days** (5 global timezones × 5 devotee profiles × 14 consecutive calendar dates).
+The candidate producer matched the fixture's explicitly coded eligibility expectations across **70 profile-days** (5 synthetic profiles × 14 dates). This is a bounded fixture result, not a comparison against the running legacy route.
 
 All 28 generated candidates successfully route to canonical `/bhakti/zen`, enforce tradition-tailored Sandhyā reflection copy, respect quiet-hours boundaries, and achieve **100% acceptance** under the central resolver's routine engagement budget.
 
@@ -21,9 +23,9 @@ All 28 generated candidates successfully route to canonical `/bhakti/zen`, enfor
 
 ---
 
-## 2. Parity & Production Verification Results
+## 2. Fixture Scenario Results (Not Production Verification)
 
-| Dimension | Total Evaluated | Legacy Eligible | Candidates Produced | Parity Match |
+| Dimension | Total Evaluated | Fixture Expected Eligible | Candidates Produced | Fixture Match |
 |---|---|---|---|---|
 | **Kolkata Opted-In** | 14 | 14 | 14 | **100% (14/14)** |
 | **London Opted-Out** | 14 | 0 | 0 | **100% (14/14)** |
@@ -56,7 +58,7 @@ All eligible candidates cleanly fit within the routine engagement budget (maximu
 
 ---
 
-## 4. Pipeline Exclusivity Proof
+## 4. Pipeline Mode Source Contract (Not Deployment Evidence)
 
 The cron route independently enforces:
 ```typescript
@@ -70,4 +72,4 @@ const pipelineMode = getRoutinePipelineMode('sattvic');
 
 ## 5. Audit Conclusion
 
-The Sattvic Mode evening reminder producer migration achieves **100% eligibility parity**, enforces robust quiet-hours and preference safety, respects tradition Sandhyā reflection copy, and passes all Central Resolver budget requirements.
+The synthetic fixture checks matched their coded eligibility expectations and exercised the pure resolver behavior. Runtime legacy parity, database persistence, cron exclusivity in deployment, push delivery, receipts, and cutover readiness remain unverified.

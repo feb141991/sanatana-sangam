@@ -10,7 +10,7 @@ interface SimulatedDevotee extends DevoteeProfileForSattvic {
 }
 
 async function run() {
-  console.log('=== Running Prompt 5D Sattvic Mode Migration 14-Day Shadow Parity Audit ===');
+  console.log('=== Running Prompt 5D Sattvic Mode 14-Day Fixture Simulation ===');
 
   const testDevotees: SimulatedDevotee[] = [
     {
@@ -139,7 +139,7 @@ async function run() {
   const totalEvaluations = records.length; // 5 devotees * 14 days = 70
   const parityMatches = records.filter((r) => r.parityMatch).length;
 
-  console.log(`Parity Verification: ${parityMatches}/${totalEvaluations} decisions match (100% eligibility parity).`);
+  console.log(`Fixture expectation matches: ${parityMatches}/${totalEvaluations}. This does not establish live legacy parity.`);
 
   // Evaluate candidate acceptance through central resolver
   const candidatesToResolve = records.filter((r) => r.candidate !== null).map((r) => r.candidate!);
@@ -164,10 +164,12 @@ async function run() {
 
   // Build report markdown
   const reportPath = resolve(__dirname, '../docs/notifications/SATTVIC_14DAY_SHADOW_PARITY_REPORT.md');
-  const reportMarkdown = `# Prompt 5D Sattvic Mode Evening Reminder Migration: 14-Day Shadow Parity Audit
+  const reportMarkdown = `# Prompt 5D Sattvic Mode Evening Reminder: 14-Day Fixture Simulation
+
+> Evidence scope: deterministic simulation over synthetic profiles, dates, and hard-coded legacy expectations. The legacy route is not executed and no live database rows, deployed cron runs, or production candidate outcomes are compared. Matching fixture expectations does not establish production parity or cutover readiness.
 
 ## Executive Summary
-This audit proves **100% eligibility parity** between the legacy \`/api/cron/sattvic-reminder\` route and the central notification candidate architecture across **70 devotee-days** (5 global timezones × 5 devotee profiles × 14 consecutive calendar dates).
+The candidate producer matched the fixture's explicitly coded eligibility expectations across **70 profile-days** (5 synthetic profiles × 14 dates). This is a bounded fixture result, not a comparison against the running legacy route.
 
 All 28 generated candidates successfully route to canonical \`/bhakti/zen\`, enforce tradition-tailored Sandhyā reflection copy, respect quiet-hours boundaries, and achieve **100% acceptance** under the central resolver's routine engagement budget.
 
@@ -187,9 +189,9 @@ All 28 generated candidates successfully route to canonical \`/bhakti/zen\`, enf
 
 ---
 
-## 2. Parity & Production Verification Results
+## 2. Fixture Scenario Results (Not Production Verification)
 
-| Dimension | Total Evaluated | Legacy Eligible | Candidates Produced | Parity Match |
+| Dimension | Total Evaluated | Fixture Expected Eligible | Candidates Produced | Fixture Match |
 |---|---|---|---|---|
 | **Kolkata Opted-In** | 14 | 14 | 14 | **100% (14/14)** |
 | **London Opted-Out** | 14 | 0 | 0 | **100% (14/14)** |
@@ -222,7 +224,7 @@ All eligible candidates cleanly fit within the routine engagement budget (maximu
 
 ---
 
-## 4. Pipeline Exclusivity Proof
+## 4. Pipeline Mode Source Contract (Not Deployment Evidence)
 
 The cron route independently enforces:
 \`\`\`typescript
@@ -236,12 +238,12 @@ const pipelineMode = getRoutinePipelineMode('sattvic');
 
 ## 5. Audit Conclusion
 
-The Sattvic Mode evening reminder producer migration achieves **100% eligibility parity**, enforces robust quiet-hours and preference safety, respects tradition Sandhyā reflection copy, and passes all Central Resolver budget requirements.
+The synthetic fixture checks matched their coded eligibility expectations and exercised the pure resolver behavior. Runtime legacy parity, database persistence, cron exclusivity in deployment, push delivery, receipts, and cutover readiness remain unverified.
 `;
 
   writeFileSync(reportPath, reportMarkdown, 'utf-8');
   console.log(`Report written to ${reportPath}`);
-  console.log('=== SATTVIC 14-DAY SHADOW PARITY AUDIT COMPLETE: 100% PASSING ===');
+  console.log('=== SATTVIC 14-DAY FIXTURE SIMULATION COMPLETE ===');
 }
 
 run().catch((err) => {

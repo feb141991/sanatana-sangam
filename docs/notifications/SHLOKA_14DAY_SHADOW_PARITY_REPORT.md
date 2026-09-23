@@ -1,8 +1,9 @@
-# Prompt 5B: Shloka / Streak Rescue Routine Reminder 14-Day Shadow Parity Report
+# Prompt 5B: Shloka / Streak Rescue Routine Reminder 14-Day Fixture Simulation
+
+> Evidence scope: deterministic simulation over synthetic profiles, dates, and hard-coded legacy expectations. The legacy route is not executed and no live database rows, deployed cron runs, or production candidate outcomes are compared. Matching fixture expectations does not establish production parity or cutover readiness.
 
 ## 1. Executive Summary
-This audit validates the migration of the Shloka / streak rescue reminder from the legacy direct-send cron to the central notification candidate architecture.
-Evaluated across **5 global timezones** over a **14-day evaluation window** (2026-11-01 to 2026-11-14, 70 devotee-days).
+The candidate producer matched the fixture's explicitly coded eligibility expectations across **70 profile-days** (5 synthetic profiles × 14 dates). This is a bounded fixture result, not a comparison against the running legacy route.
 
 - **Cohort Evaluated**: 5 representative devotees across varying traditions, habits, and preferences:
   1. `devotee-kolkata-incomplete` (`Asia/Kolkata`, UTC+5:30) — Incomplete shloka read, 2-day streak.
@@ -13,16 +14,16 @@ Evaluated across **5 global timezones** over a **14-day evaluation window** (202
 
 ---
 
-## 2. Parity & Invariant Matrix
+## 2. Fixture Scenario & Invariant Matrix (Not Production Verification)
 
 | Evaluation Dimension | Legacy Pipeline | Candidate Pipeline | Parity Status | Evidence & Notes |
 |---|---|---|---|---|
-| **Eligibility Decision** | 35 eligible / 35 skipped | 35 eligible / 35 skipped | **100% IDENTICAL** | Exact decision match on all 70 devotee-days. |
-| **Activity Suppression** | Skipped when `last_shloka_date=today` | Skipped when `last_shloka_date=today` | **100% IDENTICAL** | Zero reminders sent or generated for devotees who already read today. |
-| **Preference Respect** | Suppressed if `wants_shloka_reminders=false` | Suppressed if `wants_shloka_reminders=false` | **100% IDENTICAL** | 14/14 days suppressed for opted-out Los Angeles user. |
-| **Canonical Route** | `/home?focus=shloka` | `/home?focus=shloka` | **100% IDENTICAL** | 100% of links route to `/home?focus=shloka`. |
+| **Eligibility Decision** | 35 fixture-expected eligible / 35 fixture-expected skipped | 35 produced / 35 not produced | **Fixture match** | Matches the hard-coded expectations for these 70 synthetic profile-days only. |
+| **Activity Suppression** | Fixture expects skip when `last_shloka_date=today` | Candidate function skips that fixture | **Fixture behavior** | No production sends are measured here. |
+| **Preference Respect** | Fixture expects suppression if `wants_shloka_reminders=false` | Candidate function suppresses that fixture | **Fixture behavior** | Synthetic opted-out case only. |
+| **Canonical Route** | Expected `/home?focus=shloka` | Candidate route `/home?focus=shloka` | **Fixture behavior** | The candidate URL is checked; app tap routing is not exercised. |
 | **Spiritual Copy Integrity** | Loss-pressure ("Don't break streak! 🔥") | Devotional serene ("Continue sadhana 🙏") | **IMPROVED** | Guilt and panic phrasing eliminated; dignified devotion copy only. |
-| **Pipeline Exclusivity** | Direct push + Bell write | Candidate row insertion only | **INTENTIONAL** | Mode check guarantees legacy and candidate never execute simultaneously. |
+| **Pipeline Exclusivity** | Not executed here | Candidate generation function only | **Not assessed** | Deployment configuration and simultaneous cron execution were not tested. |
 | **Quiet Hours Protection** | Blind send at cron runtime | Defers past quiet hours | **IMPROVED** | Auckland 19:00 reminder safely shifted to 07:00 local time. |
 | **Central Resolver Cap** | Uncapped / ad-hoc | 1 routine notification/day | **ENFORCED** | All 35 candidates accepted under 1 routine/day cap. |
 
@@ -30,7 +31,7 @@ Evaluated across **5 global timezones** over a **14-day evaluation window** (202
 
 ## 3. Cohort Breakdown by Devotee
 
-| Devotee ID | Timezone | Activity Profile | Total Days | Legacy Eligible | Candidate Produced | Resolver Accepted |
+| Devotee ID | Timezone | Activity Profile | Total Days | Fixture Expected Eligible | Candidate Produced | Resolver Accepted |
 |---|---|---|---|---|---|---|
 | `devotee-kolkata-incomplete` | `Asia/Kolkata` | Incomplete (0/14) | 14 | 14 | 14 | 14 |
 | `devotee-london-active` | `Europe/London` | Completed (14/14) | 14 | 0 | 0 | 0 |
@@ -62,4 +63,4 @@ Pipeline mode configuration in `src/lib/notification-candidate-pipeline-mode.ts`
   - Test/Preview: `'candidate'` (Enqueues to `notification_candidates`, suppresses push & bell).
   - Kill Switch: `'disabled'` (Halts all Shloka reminder execution).
 
-**Status**: 14-day shadow parity audit passed with zero regressions. Ready for founder review.
+**Status**: Fixture scenario comparison completed. Runtime legacy parity, database persistence, deployed cron exclusivity, push delivery, receipts, and cutover readiness remain unverified.

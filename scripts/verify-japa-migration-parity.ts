@@ -10,7 +10,7 @@ interface SimulatedDevotee extends DevoteeProfileForJapa {
 }
 
 async function run() {
-  console.log('=== Running Prompt 5A Japa Migration 14-Day Shadow Parity Audit ===');
+  console.log('=== Running Prompt 5A Japa Migration 14-Day Fixture Simulation ===');
 
   const testDevotees: SimulatedDevotee[] = [
     {
