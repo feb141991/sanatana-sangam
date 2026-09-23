@@ -27,7 +27,7 @@ CREATE POLICY "Admins read notification templates"
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND (role = 'admin' OR is_super_admin = true)
+      WHERE id = auth.uid() AND is_admin = true
     )
   );
 
@@ -38,12 +38,12 @@ CREATE POLICY "Admins update notification templates"
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND (role = 'admin' OR is_super_admin = true)
+      WHERE id = auth.uid() AND is_admin = true
     )
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.profiles 
-      WHERE id = auth.uid() AND (role = 'admin' OR is_super_admin = true)
+      WHERE id = auth.uid() AND is_admin = true
     )
   );
