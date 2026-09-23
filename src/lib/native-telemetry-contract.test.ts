@@ -95,3 +95,43 @@ test('rejects a route summary with a non-numeric staleOpens rather than silently
   (payload.summary.routes[0] as unknown as Record<string, unknown>).staleOpens = 'not-a-number';
   assert.equal(parseNativeTelemetryPayload(payload), null);
 });
+
+test('accepts a schema-v3 payload with a populated firstUsefulFrame', () => {
+  const payload = structuredClone(basePayload) as any;
+  payload.schemaVersion = 3;
+  payload.summary.firstUsefulFrame = {
+    samples: 12, avgMs: 850, p50Ms: 700, p75Ms: 950, p95Ms: 1800, emergencyFallbackCount: 1,
+  };
+
+  const parsed = parseNativeTelemetryPayload(payload);
+  assert.ok(parsed);
+  assert.deepEqual(parsed.summary.firstUsefulFrame, {
+    samples: 12, avgMs: 850, p50Ms: 700, p75Ms: 950, p95Ms: 1800, emergencyFallbackCount: 1,
+  });
+});
+
+test('accepts an explicit null firstUsefulFrame (schema-v3 build, no cold start recorded yet) -- not a parse failure', () => {
+  const payload = structuredClone(basePayload) as any;
+  payload.schemaVersion = 3;
+  payload.summary.firstUsefulFrame = null;
+
+  const parsed = parseNativeTelemetryPayload(payload);
+  assert.ok(parsed, 'an explicit null must validate, not be treated as malformed');
+  assert.equal(parsed.summary.firstUsefulFrame, null);
+});
+
+test('defaults firstUsefulFrame to null when the field is entirely absent (pre-schema-v3 payload)', () => {
+  const parsed = parseNativeTelemetryPayload(basePayload);
+  assert.ok(parsed);
+  assert.equal(parsed.summary.firstUsefulFrame, null, 'absence and explicit null must resolve to the same default');
+});
+
+test('rejects a present-but-malformed firstUsefulFrame instead of silently defaulting it to null', () => {
+  const payload = structuredClone(basePayload) as any;
+  payload.schemaVersion = 3;
+  payload.summary.firstUsefulFrame = { samples: 12, avgMs: 850, p50Ms: 700, p75Ms: 950, p95Ms: -1, emergencyFallbackCount: 0 };
+  assert.equal(
+    parseNativeTelemetryPayload(payload), null,
+    'a malformed-but-present firstUsefulFrame must fail the whole payload, the same way every other field here does'
+  );
+});

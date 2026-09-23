@@ -40,6 +40,19 @@ interface LoaderExposureSummary {
   p95DurationMs: number;
 }
 
+// Reliability plan item 8 (native repo schema v3). Absent on a payload from
+// a pre-schema-v3 app build, and `null` itself is also valid (a schema-v3
+// build that has not recorded a cold start yet) -- both render the same
+// "no data yet" state below, distinct from a populated summary.
+interface FirstUsefulFrameSummary {
+  samples: number;
+  avgMs: number;
+  p50Ms: number;
+  p75Ms: number;
+  p95Ms: number;
+  emergencyFallbackCount: number;
+}
+
 interface SummaryRow {
   id: string;
   identity_kind: "guest" | "authenticated";
@@ -55,6 +68,7 @@ interface SummaryRow {
     duplicateRequests?: DuplicateRequestSummary[];
     interactionTimings?: InteractionTimingSummary[];
     loaderExposure?: LoaderExposureSummary[];
+    firstUsefulFrame?: FirstUsefulFrameSummary | null;
     totalEvents: number;
   };
 }
@@ -254,6 +268,42 @@ export default function NativeStartupTelemetrySection() {
                         })}
                       </tbody>
                     </table>
+                  )}
+
+                  {row.summary.firstUsefulFrame && (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--brand-muted)] mb-1.5">
+                        First Useful Frame (cold start)
+                      </p>
+                      <table className="w-full text-[11px]">
+                        <thead>
+                          <tr className="text-left text-[var(--brand-muted)] uppercase tracking-wider text-[10px]">
+                            <th className="pb-1.5 pr-3">Samples</th>
+                            <th className="pb-1.5 pr-3">Avg</th>
+                            <th className="pb-1.5 pr-3">p50</th>
+                            <th className="pb-1.5 pr-3">p75</th>
+                            <th className="pb-1.5 pr-3">p95</th>
+                            <th className="pb-1.5">Via Emergency Fallback</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-t border-black/5">
+                            <td className="py-1.5 pr-3">{row.summary.firstUsefulFrame.samples}</td>
+                            <td className="py-1.5 pr-3">{ms(row.summary.firstUsefulFrame.avgMs)}</td>
+                            <td className="py-1.5 pr-3">{ms(row.summary.firstUsefulFrame.p50Ms)}</td>
+                            <td className="py-1.5 pr-3">{ms(row.summary.firstUsefulFrame.p75Ms)}</td>
+                            <td className="py-1.5 pr-3">{ms(row.summary.firstUsefulFrame.p95Ms)}</td>
+                            <td className={`py-1.5 ${row.summary.firstUsefulFrame.emergencyFallbackCount > 0 ? "text-rose-600 font-bold" : ""}`}>
+                              {row.summary.firstUsefulFrame.emergencyFallbackCount}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <p className="text-[10px] text-[var(--brand-muted)] mt-1">
+                        &quot;Via Emergency Fallback&quot; counts cold starts that only reached readiness through the
+                        6-second forced fail-safe (F01/F02) after session/profile resolution stalled -- should be 0.
+                      </p>
+                    </div>
                   )}
 
                   {(row.summary.loaderExposure ?? []).length > 0 && (

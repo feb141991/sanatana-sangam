@@ -74,6 +74,20 @@ export type NativeTelemetryServerTimingSummary = {
   sections: Array<{ name: string; avgDurationMs: number; p95DurationMs: number }>;
 };
 
+// Reliability plan item 8 (native repo lib/telemetry.ts schema v3).
+// Cold-start-to-interactive timing -- null is a distinct, valid state (a
+// schema-v3 build that simply has not recorded a cold start yet), not a
+// parse failure; see parseFirstUsefulFrameSummary's caller for how the
+// three states (absent/legacy, explicit null, real summary) are told apart.
+export type NativeTelemetryFirstUsefulFrameSummary = {
+  samples: number;
+  avgMs: number;
+  p50Ms: number;
+  p75Ms: number;
+  p95Ms: number;
+  emergencyFallbackCount: number;
+};
+
 export type NativeTelemetryPayload = {
   schemaVersion: number;
   appVersion: string | null;
@@ -88,6 +102,11 @@ export type NativeTelemetryPayload = {
     duplicateRequests: NativeTelemetryDuplicateRequestSummary[];
     interactionTimings: NativeTelemetryInteractionTimingSummary[];
     loaderExposure: NativeTelemetryLoaderExposureSummary[];
+    // Optional (absent = pre-schema-v3 payload, defaults to null), and null
+    // itself is also a valid value (a schema-v3 build with no cold start
+    // recorded yet) -- distinct from every other field above, which use
+    // absence/[] as their empty state instead of null.
+    firstUsefulFrame: NativeTelemetryFirstUsefulFrameSummary | null;
     totalEvents: number;
   };
 };
@@ -233,6 +252,23 @@ function parseServerTimingSummary(input: unknown): NativeTelemetryServerTimingSu
   return { route: s.route as NativeTelemetryRoute, samples, sections };
 }
 
+function parseFirstUsefulFrameSummary(input: unknown): NativeTelemetryFirstUsefulFrameSummary | null {
+  if (!input || typeof input !== 'object') return null;
+  const f = input as Record<string, unknown>;
+
+  const samples = finiteNonNegative(f.samples);
+  const avgMs = finiteNonNegative(f.avgMs);
+  const p50Ms = finiteNonNegative(f.p50Ms);
+  const p75Ms = finiteNonNegative(f.p75Ms);
+  const p95Ms = finiteNonNegative(f.p95Ms);
+  const emergencyFallbackCount = finiteNonNegative(f.emergencyFallbackCount);
+  if (samples === null || avgMs === null || p50Ms === null || p75Ms === null || p95Ms === null || emergencyFallbackCount === null) {
+    return null;
+  }
+
+  return { samples, avgMs, p50Ms, p75Ms, p95Ms, emergencyFallbackCount };
+}
+
 export function parseNativeTelemetryPayload(input: unknown): NativeTelemetryPayload | null {
   if (!input || typeof input !== 'object') return null;
   const record = input as Record<string, unknown>;
@@ -300,10 +336,21 @@ export function parseNativeTelemetryPayload(input: unknown): NativeTelemetryPayl
     loaderExposure.push(parsed);
   }
 
+  // Three valid states, not two: absent (pre-schema-v3 payload) and explicit
+  // null (a schema-v3 build with no cold start recorded yet) both resolve to
+  // `null` here without touching the parser; only a present-but-malformed
+  // value fails the whole payload, same as every other field above.
+  let firstUsefulFrame: NativeTelemetryFirstUsefulFrameSummary | null = null;
+  if (s.firstUsefulFrame !== undefined && s.firstUsefulFrame !== null) {
+    const parsed = parseFirstUsefulFrameSummary(s.firstUsefulFrame);
+    if (!parsed) return null;
+    firstUsefulFrame = parsed;
+  }
+
   return {
     schemaVersion,
     appVersion,
     platform,
-    summary: { routes, outbox, serverTimings, duplicateRequests, interactionTimings, loaderExposure, totalEvents },
+    summary: { routes, outbox, serverTimings, duplicateRequests, interactionTimings, loaderExposure, firstUsefulFrame, totalEvents },
   };
 }
