@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   getCandidateTypePipelineMode,
+  getRoutinePipelineMode,
   isCandidateResolverGloballyEnabled,
   shouldProcessCandidateType,
 } from './notification-candidate-pipeline-mode';
@@ -26,7 +27,7 @@ describe('notification-candidate-pipeline-mode', () => {
     expect(isCandidateResolverGloballyEnabled()).toBe(true);
   });
 
-  it('defaults candidate types to disabled', () => {
+  it('defaults new candidate types to disabled', () => {
     expect(getCandidateTypePipelineMode('dharm_veer')).toBe('disabled');
     expect(getCandidateTypePipelineMode('quiz')).toBe('disabled');
     expect(getCandidateTypePipelineMode('streak')).toBe('disabled');
@@ -39,6 +40,22 @@ describe('notification-candidate-pipeline-mode', () => {
     expect(getCandidateTypePipelineMode('dharm_veer')).toBe('candidate');
     expect(getCandidateTypePipelineMode('quiz')).toBe('legacy');
     expect(getCandidateTypePipelineMode('streak')).toBe('disabled');
+  });
+
+  it('defaults existing routine reminder types to legacy', () => {
+    delete process.env.NOTIFICATION_ROUTINE_MODE_JAPA;
+    delete process.env.NOTIFICATION_ROUTINE_MODE_SHLOKA;
+
+    expect(getRoutinePipelineMode('japa')).toBe('legacy');
+    expect(getRoutinePipelineMode('shloka')).toBe('legacy');
+  });
+
+  it('respects per-type routine mode override', () => {
+    process.env.NOTIFICATION_ROUTINE_MODE_JAPA = 'candidate';
+    process.env.NOTIFICATION_ROUTINE_MODE_SHLOKA = 'disabled';
+
+    expect(getRoutinePipelineMode('japa')).toBe('candidate');
+    expect(getRoutinePipelineMode('shloka')).toBe('disabled');
   });
 
   it('requires both global flag AND per-type candidate flag to process', () => {

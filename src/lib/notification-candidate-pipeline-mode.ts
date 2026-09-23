@@ -3,9 +3,11 @@
  * notification resolver architecture.
  *
  * All new candidate types default to 'disabled' unless explicitly enabled.
+ * Routine migrating types default to 'legacy' until parity is proven and cutover approved.
  */
 
 export type CandidatePipelineMode = 'legacy' | 'candidate' | 'disabled';
+export type RoutineReminderType = 'japa' | 'shloka' | 'mood' | 'sattvic' | 'nitya';
 
 /**
  * Returns whether the central notification candidate resolver is globally enabled.
@@ -33,8 +35,29 @@ export function getCandidateTypePipelineMode(eventType: string): CandidatePipeli
   if (envVal === 'legacy') return 'legacy';
   if (envVal === 'disabled') return 'disabled';
 
-  // Default off for all candidate types
+  // Default off for all new candidate types
   return 'disabled';
+}
+
+/**
+ * Returns the pipeline mode for an existing routine reminder being migrated.
+ * Resolution order:
+ * 1. Env override: `NOTIFICATION_ROUTINE_MODE_<UPPER_SNAKE_TYPE>`
+ * 2. Defaults to 'legacy' to preserve existing behavior until cutover.
+ */
+export function getRoutinePipelineMode(routineType: RoutineReminderType): CandidatePipelineMode {
+  if (!routineType) return 'legacy';
+
+  const normalized = routineType.trim().replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
+  const envKey = `NOTIFICATION_ROUTINE_MODE_${normalized}`;
+  const envVal = process.env[envKey]?.trim().toLowerCase();
+
+  if (envVal === 'candidate') return 'candidate';
+  if (envVal === 'disabled') return 'disabled';
+  if (envVal === 'legacy') return 'legacy';
+
+  // Existing routine reminders default to legacy until cutover
+  return 'legacy';
 }
 
 /**

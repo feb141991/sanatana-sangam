@@ -4,6 +4,9 @@ import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
+import { produceJapaCandidate } from '@/lib/japa-candidate-producer';
+import type { NotificationCandidateInsert } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +26,9 @@ type UserDateGroup = {
   id: string;
   tz: string;
   localDate: string;
+  japa_reminder_time?: string | null;
+  notification_quiet_hours_start?: number | null;
+  notification_quiet_hours_end?: number | null;
 };
 
 export async function GET(request: Request) {
@@ -34,6 +40,17 @@ export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Pipeline Mode check: legacy | candidate | disabled
+  const pipelineMode = getRoutinePipelineMode('japa');
+  if (pipelineMode === 'disabled') {
+    return NextResponse.json({
+      ok: true,
+      skipped: true,
+      pipeline_mode: 'disabled',
+      reason: 'japa_reminders_disabled_by_policy',
+    });
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
@@ -51,7 +68,7 @@ export async function GET(request: Request) {
     // Fetch all users with japa reminders enabled
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, timezone')
+      .select('id, timezone, japa_reminder_enabled, japa_reminder_time, notification_quiet_hours_start, notification_quiet_hours_end')
       .eq('japa_reminder_enabled', true);
 
     if (usersError) throw usersError;
@@ -62,16 +79,24 @@ export async function GET(request: Request) {
       const tz = resolveTimeZone(user.timezone);
       const localDate = getLocalDateIso(now, tz);
       const group = groupsByDate.get(localDate) ?? [];
-      group.push({ id: user.id, tz, localDate });
+      group.push({
+        id: user.id,
+        tz,
+        localDate,
+        japa_reminder_time: user.japa_reminder_time,
+        notification_quiet_hours_start: user.notification_quiet_hours_start,
+        notification_quiet_hours_end: user.notification_quiet_hours_end,
+      });
       groupsByDate.set(localDate, group);
     }
 
     let eligibleCount = 0;
     let wouldInsertCount = 0;
-    const notificationsToInsert: JapaNotificationInsert[] = [];
+    const legacyNotificationsToInsert: JapaNotificationInsert[] = [];
+    const candidateRowsToInsert: NotificationCandidateInsert[] = [];
     const userIdsToPush: string[] = [];
 
-    // Run one batched query per distinct localDate group (turns N sequential queries into 1-3 batched queries)
+    // Run one batched query per distinct localDate group
     for (const [groupLocalDate, groupUsers] of groupsByDate.entries()) {
       const groupUserIds = groupUsers.map((u) => u.id);
 
@@ -98,19 +123,41 @@ export async function GET(request: Request) {
           body: "Your daily Japa practice awaits. Keep your streak alive 🙏",
         });
 
-        notificationsToInsert.push({
-          user_id: user.id,
-          title,
-          body,
-          emoji: '🔔',
-          type: 'japa',
-          action_url: '/japa',
-          notification_key: `japa-reminder:${user.localDate}`,
-          local_date: user.localDate,
-          sent_timezone: user.tz,
-        });
-        wouldInsertCount++;
-        userIdsToPush.push(user.id);
+        if (pipelineMode === 'candidate') {
+          const candidate = produceJapaCandidate(
+            {
+              id: user.id,
+              timezone: user.tz,
+              japa_reminder_enabled: true,
+              japa_reminder_time: user.japa_reminder_time,
+              notification_quiet_hours_start: user.notification_quiet_hours_start,
+              notification_quiet_hours_end: user.notification_quiet_hours_end,
+            },
+            user.localDate,
+            false,
+            { title, body }
+          );
+
+          if (candidate) {
+            candidateRowsToInsert.push(candidate);
+            wouldInsertCount++;
+          }
+        } else {
+          // Legacy pipeline
+          legacyNotificationsToInsert.push({
+            user_id: user.id,
+            title,
+            body,
+            emoji: '🔔',
+            type: 'japa',
+            action_url: '/japa',
+            notification_key: `japa-reminder:${user.localDate}`,
+            local_date: user.localDate,
+            sent_timezone: user.tz,
+          });
+          wouldInsertCount++;
+          userIdsToPush.push(user.id);
+        }
       }
     }
 
@@ -119,11 +166,49 @@ export async function GET(request: Request) {
         eligibleCount,
         skippedCount: (users?.length ?? 0) - eligibleCount,
         wouldInsertCount,
-        wouldSendCount: userIdsToPush.length,
+        wouldSendCount: pipelineMode === 'candidate' ? 0 : userIdsToPush.length,
       }));
     }
 
-    if (notificationsToInsert.length === 0) {
+    // ─── CANDIDATE PIPELINE PATH ─────────────────────────────────────────────
+    if (pipelineMode === 'candidate') {
+      if (candidateRowsToInsert.length === 0) {
+        return NextResponse.json({
+          success: true,
+          pipeline_mode: 'candidate',
+          message: 'No eligible users to notify',
+          candidates_created: 0,
+        });
+      }
+
+      let totalInserted = 0;
+      for (let i = 0; i < candidateRowsToInsert.length; i += 100) {
+        const batch = candidateRowsToInsert.slice(i, i + 100);
+        const { data: rows, error: insertErr } = await supabase
+          .from('notification_candidates')
+          .upsert(batch, {
+            onConflict: 'user_id,event_type,event_id,event_instance,local_date,audience_variant',
+            ignoreDuplicates: true,
+          })
+          .select('id');
+
+        if (insertErr) {
+          console.error('[japa-reminder] candidate upsert error:', insertErr);
+          return NextResponse.json({ error: insertErr.message }, { status: 500 });
+        }
+        totalInserted += rows?.length ?? batch.length;
+      }
+
+      return NextResponse.json({
+        success: true,
+        pipeline_mode: 'candidate',
+        eligibleCount,
+        candidatesCreated: totalInserted,
+      });
+    }
+
+    // ─── LEGACY PIPELINE PATH ────────────────────────────────────────────────
+    if (legacyNotificationsToInsert.length === 0) {
       return NextResponse.json({ success: true, message: 'No eligible users to notify', notified_users: [] });
     }
 
@@ -131,13 +216,13 @@ export async function GET(request: Request) {
     let totalInserted = 0;
     const insertedIds: string[] = [];
     const notificationIdsByUserId: Record<string, string> = {};
-    for (let i = 0; i < notificationsToInsert.length; i += 100) {
-      const batch = notificationsToInsert.slice(i, i + 100);
+    for (let i = 0; i < legacyNotificationsToInsert.length; i += 100) {
+      const batch = legacyNotificationsToInsert.slice(i, i + 100);
       const { data: rows, error: insertErr } = await supabase
         .from('notifications')
         .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
         .select('id, user_id');
-        
+
       if (insertErr) {
         console.error('[japa-reminder] insert error:', insertErr);
         return NextResponse.json({ error: insertErr.message }, { status: 500 });
@@ -162,6 +247,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
+      pipeline_mode: 'legacy',
       eligibleCount,
       totalInserted,
       pushTargets: pushResult.sent,
