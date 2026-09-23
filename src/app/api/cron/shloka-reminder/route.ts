@@ -2,22 +2,40 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
-import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
+import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
+import { produceShlokaCandidate } from '@/lib/shloka-candidate-producer';
+import type { NotificationCandidateInsert } from '@/types/database';
+
+export const dynamic = 'force-dynamic';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
 // Schedule: 0 18 * * * (daily on Vercel Hobby — route still filters by user local evening)
 // Finds users who have NOT read today's shloka in their local date window.
-// Inserts a gentle reminder notification for each of them.
+// In candidate mode: writes to notification_candidates for central resolution (zero direct push).
+// In legacy mode: direct bell insertion + push dispatch.
+// In disabled mode: halts cleanly without sending.
 
 export async function GET(request: Request) {
-    const cronSecret = process.env.CRON_SECRET;
+  const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
     return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
   }
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Pipeline Mode check: legacy | candidate | disabled
+  const pipelineMode = getRoutinePipelineMode('shloka');
+  if (pipelineMode === 'disabled') {
+    return NextResponse.json({
+      ok: true,
+      skipped: true,
+      pipeline_mode: 'disabled',
+      reason: 'shloka_reminders_disabled_by_policy',
+    });
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -52,7 +70,7 @@ export async function GET(request: Request) {
     }
 
     if (!users || users.length === 0) {
-      return NextResponse.json({ message: 'All users have read today\'s shloka', sent: 0 });
+      return NextResponse.json({ message: "All users have read today's shloka", sent: 0 });
     }
 
     const eligibleUsers = users.filter((user) => {
@@ -70,9 +88,78 @@ export async function GET(request: Request) {
     });
 
     if (eligibleUsers.length === 0) {
-      return NextResponse.json({ message: 'No users in the local reminder window', sent: 0 });
+      return NextResponse.json({
+        message: 'No users in the local reminder window',
+        sent: 0,
+        eligibleCount: 0,
+        pipeline_mode: pipelineMode,
+      });
     }
 
+    // ─── CANDIDATE PIPELINE PATH ─────────────────────────────────────────────
+    if (pipelineMode === 'candidate') {
+      const candidateRowsToInsert: NotificationCandidateInsert[] = [];
+
+      for (const u of eligibleUsers) {
+        const timeZone = resolveTimeZone((u as any).timezone);
+        const localDate = getLocalDateIso(now, timeZone);
+        const candidate = produceShlokaCandidate(
+          {
+            id: u.id,
+            tradition: (u as any).tradition,
+            timezone: timeZone,
+            shloka_streak: u.shloka_streak,
+            last_shloka_date: u.last_shloka_date,
+            wants_shloka_reminders: (u as any).wants_shloka_reminders,
+            latitude: (u as any).latitude,
+            longitude: (u as any).longitude,
+            notification_quiet_hours_start: (u as any).notification_quiet_hours_start,
+            notification_quiet_hours_end: (u as any).notification_quiet_hours_end,
+          },
+          localDate
+        );
+
+        if (candidate) {
+          candidateRowsToInsert.push(candidate);
+        }
+      }
+
+      if (candidateRowsToInsert.length === 0) {
+        return NextResponse.json({
+          success: true,
+          pipeline_mode: 'candidate',
+          message: 'No eligible candidates generated',
+          candidatesCreated: 0,
+        });
+      }
+
+      let totalInserted = 0;
+      for (let i = 0; i < candidateRowsToInsert.length; i += 100) {
+        const batch = candidateRowsToInsert.slice(i, i + 100);
+        const { data: rows, error: insertErr } = await supabase
+          .from('notification_candidates')
+          .upsert(batch, {
+            onConflict: 'user_id,event_type,event_id,event_instance,local_date,audience_variant',
+            ignoreDuplicates: true,
+          })
+          .select('id');
+
+        if (insertErr) {
+          console.error('[shloka-reminder] candidate upsert error:', insertErr);
+          return NextResponse.json({ error: insertErr.message }, { status: 500 });
+        }
+        totalInserted += rows?.length ?? batch.length;
+      }
+
+      return NextResponse.json({
+        success: true,
+        pipeline_mode: 'candidate',
+        eligibleCount: eligibleUsers.length,
+        candidatesCreated: totalInserted,
+      });
+    }
+
+    // ─── LEGACY PIPELINE PATH ────────────────────────────────────────────────
     const notifications = eligibleUsers.map((u) => {
       const timeZone  = resolveTimeZone((u as any).timezone);
       const localDate = getLocalDateIso(now, timeZone);
@@ -132,7 +219,7 @@ export async function GET(request: Request) {
     const pushResult = await sendPushNotification({
       userIds: insertedUserIds,
       title: 'Your sadhana awaits, Shoonya 🙏',
-      body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
+      body: "Take a quiet moment for today's sacred text and keep your practice flowing.",
       url: actionUrl,
       data: {
         type: 'streak',
@@ -140,6 +227,8 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
+      success:       true,
+      pipeline_mode: 'legacy',
       message:       'Shloka reminders sent',
       reminded:      totalInserted,
       push_targets:  pushResult.sent,
