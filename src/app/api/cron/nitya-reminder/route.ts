@@ -5,6 +5,9 @@ import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/l
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
 import { getAshramaNudgeSuffix, type LifeStage } from '@/lib/ashrama';
+import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
+import { produceMorningNityaCandidate } from '@/lib/nitya-candidate-producer';
+import type { NotificationCandidateInsert } from '@/types/database';
 
 // ─── Nitya Karma Morning Reminder Cron ───────────────────────────────────────
 // Schedule: runs twice daily — 10:30 PM UTC (≈ 4 AM IST) and 6 AM UTC.
@@ -41,6 +44,17 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  // Pipeline Mode check: legacy | candidate | disabled
+  const pipelineMode = getRoutinePipelineMode('nitya');
+  if (pipelineMode === 'disabled') {
+    return NextResponse.json({
+      ok: true,
+      skipped: true,
+      pipeline_mode: 'disabled',
+      reason: 'nitya_reminders_disabled_by_policy',
+    });
+  }
+
   const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('nitya', request);
 
   try {
@@ -132,6 +146,70 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'All morning-window users have already started', sent: 0 });
     }
 
+    // ─── CANDIDATE PIPELINE PATH ─────────────────────────────────────────────
+    if (pipelineMode === 'candidate') {
+      const candidateRowsToInsert: NotificationCandidateInsert[] = [];
+
+      for (const u of unstartedUsers) {
+        const tz = resolveTimeZone((u as any).timezone);
+        const localDate = getLocalDateIso(now, tz);
+
+        const candidate = produceMorningNityaCandidate(
+          {
+            id: u.id,
+            full_name: (u as any).full_name,
+            tradition: (u as any).tradition,
+            life_stage: (u as any).life_stage,
+            gender_context: (u as any).gender_context,
+            timezone: tz,
+            latitude: (u as any).latitude,
+            longitude: (u as any).longitude,
+            notification_quiet_hours_start: (u as any).notification_quiet_hours_start,
+            notification_quiet_hours_end: (u as any).notification_quiet_hours_end,
+            wants_nitya_reminders: (u as any).wants_nitya_reminders,
+          },
+          localDate,
+          {
+            now,
+            skipPanchangCheck: true, // Already verified in step 2 above
+          }
+        );
+
+        if (candidate) {
+          candidateRowsToInsert.push(candidate);
+        }
+      }
+
+      let totalCandidates = 0;
+      for (let i = 0; i < candidateRowsToInsert.length; i += 100) {
+        const batch = candidateRowsToInsert.slice(i, i + 100);
+        const { data: upserted, error: upsertErr } = await supabase
+          .from('notification_candidates')
+          .upsert(batch, {
+            onConflict: 'user_id,event_type,event_id,event_instance,local_date,audience_variant',
+            ignoreDuplicates: true,
+          })
+          .select('id');
+
+        if (upsertErr) {
+          console.error('[nitya-reminder/candidate] Candidate upsert error:', upsertErr.message);
+          return NextResponse.json({ error: upsertErr.message }, { status: 500 });
+        }
+        totalCandidates += upserted?.length ?? 0;
+      }
+
+      return NextResponse.json({
+        ok: true,
+        pipeline_mode: 'candidate',
+        message: 'Nitya morning candidates produced successfully',
+        eligible: eligibleUsers.length,
+        unstarted: unstartedUsers.length,
+        candidates_produced: candidateRowsToInsert.length,
+        candidates_inserted: totalCandidates,
+      });
+    }
+
+    // ─── LEGACY PIPELINE PATH ────────────────────────────────────────────────
     // ── Step 4: Build engine-enriched, tradition-aware notifications ──────────
     const TRADITION_NUDGE: Record<string, { title: string; body: string }> = {
       hindu:    { title: '🌅 Brahma Muhurta — Your Sadhana Path Awaits', body: 'Suprabhat! Your personalised morning sequence is ready. Begin with snana and let the day unfold in dharma.' },

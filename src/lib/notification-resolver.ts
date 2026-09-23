@@ -80,7 +80,7 @@ export function resolvePriorityClassForEventType(rawEventType: string): Notifica
   }
 
   // 3. Approved ritual window
-  if (['brahma_muhurta', 'sandhya', 'nitya_madhyahn', 'nitya_sandhya', 'ritual_window', 'pradosha_window'].includes(eventType)) {
+  if (['brahma_muhurta', 'sandhya', 'nitya_madhyahn', 'nitya_sandhya', 'ritual_window', 'pradosha_window', 'nitya'].includes(eventType)) {
     return 'approved_ritual_window';
   }
 

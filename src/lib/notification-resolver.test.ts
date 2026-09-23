@@ -45,9 +45,12 @@ describe('notification resolver & engagement policy', () => {
       expect(resolvePriorityClass(makeCandidate({ event_type: 'security' }))).toBe('transactional_safety');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'user_reminder' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'brahma_muhurta' }))).toBe('approved_ritual_window');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'nitya' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'observance' }))).toBe('reviewed_observance');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'festival' }))).toBe('reviewed_observance');
-      expect(resolvePriorityClass(makeCandidate({ metadata: { budget_exempt: true } }))).toBe('reviewed_observance');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'mandali_prompt', metadata: { budget_exempt: true, priority_class: 'transactional_safety' } }))).toBe('devotional_engagement');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'dharm_veer' }))).toBe('routine_engagement');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'quiz' }))).toBe('routine_engagement');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'mood_checkin' }))).toBe('routine_engagement');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'mandali_prompt' }))).toBe('devotional_engagement');
     });

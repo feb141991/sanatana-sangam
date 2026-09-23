@@ -45,17 +45,21 @@ describe('notification-candidate-pipeline-mode', () => {
   it('defaults existing routine reminder types to legacy', () => {
     delete process.env.NOTIFICATION_ROUTINE_MODE_JAPA;
     delete process.env.NOTIFICATION_ROUTINE_MODE_SHLOKA;
+    delete process.env.NOTIFICATION_ROUTINE_MODE_NITYA;
 
     expect(getRoutinePipelineMode('japa')).toBe('legacy');
     expect(getRoutinePipelineMode('shloka')).toBe('legacy');
+    expect(getRoutinePipelineMode('nitya')).toBe('legacy');
   });
 
   it('respects per-type routine mode override', () => {
     process.env.NOTIFICATION_ROUTINE_MODE_JAPA = 'candidate';
     process.env.NOTIFICATION_ROUTINE_MODE_SHLOKA = 'disabled';
+    process.env.NOTIFICATION_ROUTINE_MODE_NITYA = 'candidate';
 
     expect(getRoutinePipelineMode('japa')).toBe('candidate');
     expect(getRoutinePipelineMode('shloka')).toBe('disabled');
+    expect(getRoutinePipelineMode('nitya')).toBe('candidate');
   });
 
   it('requires both global flag AND per-type candidate flag to process', () => {

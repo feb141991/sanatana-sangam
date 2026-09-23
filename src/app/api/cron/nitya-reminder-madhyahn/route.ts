@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { emitEvent } from "@/lib/monitoring/events";
 import { getNextLocalHourUtc, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
+import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
+import { produceMadhyahnNityaCandidate } from '@/lib/nitya-candidate-producer';
+import type { NotificationCandidateInsert } from '@/types/database';
 
 // ─── Nitya Karma Madhyahn Reminder Enqueuer Cron ────────────────────────────
 // Schedule: runs daily (e.g. 6:30 AM UTC ≈ 12:00 PM IST).
@@ -45,6 +48,17 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Pipeline Mode check: legacy | candidate | disabled
+  const pipelineMode = getRoutinePipelineMode('nitya');
+  if (pipelineMode === 'disabled') {
+    return NextResponse.json({
+      ok: true,
+      skipped: true,
+      pipeline_mode: 'disabled',
+      reason: 'nitya_reminders_disabled_by_policy',
+    });
+  }
+
   const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceRoleKey) {
@@ -72,6 +86,81 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: "No eligible madhyahn users found", enqueued: 0 });
     }
 
+    // ─── CANDIDATE PIPELINE PATH ─────────────────────────────────────────────
+    if (pipelineMode === 'candidate') {
+      const candidateRowsToInsert: NotificationCandidateInsert[] = [];
+
+      for (const u of users) {
+        const tz = resolveTimeZone(u.timezone);
+        const { localDateIso } = getNextLocalHourUtc(now, tz, TARGET_LOCAL_HOUR, 0);
+
+        const tradition = (u.tradition ?? "hindu") as string;
+        const defaultNudge = TRADITION_NUDGE[tradition] ?? TRADITION_NUDGE.hindu;
+        const nudge = await resolveNotificationCopy('madhyahn', tradition, defaultNudge);
+
+        const candidate = produceMadhyahnNityaCandidate(
+          {
+            id: u.id,
+            tradition: u.tradition,
+            timezone: tz,
+            notification_quiet_hours_start: u.notification_quiet_hours_start,
+            notification_quiet_hours_end: u.notification_quiet_hours_end,
+            wants_madhyahn_reminder: u.wants_madhyahn_reminder,
+            nitya_rhythm_mode: u.nitya_rhythm_mode,
+            is_deleting: u.is_deleting,
+          },
+          localDateIso,
+          { copy: nudge }
+        );
+
+        if (candidate) {
+          candidateRowsToInsert.push(candidate);
+        }
+      }
+
+      let totalCandidates = 0;
+      for (let i = 0; i < candidateRowsToInsert.length; i += 100) {
+        const batch = candidateRowsToInsert.slice(i, i + 100);
+        const { data: upserted, error: upsertErr } = await supabase
+          .from('notification_candidates')
+          .upsert(batch, {
+            onConflict: 'user_id,event_type,event_id,event_instance,local_date,audience_variant',
+            ignoreDuplicates: true,
+          })
+          .select('id');
+
+        if (upsertErr) {
+          console.error('[nitya-reminder-madhyahn/candidate] Candidate upsert error:', upsertErr.message);
+          return NextResponse.json({ error: upsertErr.message }, { status: 500 });
+        }
+        totalCandidates += upserted?.length ?? 0;
+      }
+
+      emitEvent({
+        severity: 'P3',
+        domain: 'notifications',
+        route: '/api/cron/nitya-reminder-madhyahn',
+        latency_ms: Date.now() - startTime,
+        context: {
+          status: 'candidate_produced',
+          pipeline_mode: 'candidate',
+          total_eligible: users.length,
+          candidates_produced: candidateRowsToInsert.length,
+          candidates_inserted: totalCandidates,
+        },
+      });
+
+      return NextResponse.json({
+        ok: true,
+        pipeline_mode: 'candidate',
+        message: 'Nitya madhyahn candidates produced successfully',
+        total_eligible: users.length,
+        candidates_produced: candidateRowsToInsert.length,
+        candidates_inserted: totalCandidates,
+      });
+    }
+
+    // ─── LEGACY PIPELINE PATH ────────────────────────────────────────────────
     const scheduledRows: Array<{
       user_id: string;
       title: string;
