@@ -5,16 +5,16 @@
 ## Summary
 
 - Route-level producers/workers discovered: **27**
-- Direct push callers: **21**
-- Queue writers: **6**
+- Direct push callers: **20**
+- Queue writers: **7**
 - Live database queried: **yes**
 - Live table reachability verified: **yes**
 
 | Classification | Count |
 | --- | ---: |
 | `admin_or_test` | 2 |
-| `direct_send_legacy` | 15 |
-| `scheduled_queue_producer` | 5 |
+| `direct_send_legacy` | 14 |
+| `scheduled_queue_producer` | 6 |
 | `delivery_worker` | 1 |
 | `transactional_event` | 4 |
 
@@ -25,7 +25,7 @@
 | `/api/admin/broadcast` | `admin_or_test` | not in vercel.json | yes | no | none detected |
 | `/api/admin/notification-templates/test` | `admin_or_test` | not in vercel.json | yes | no | none detected |
 | `/api/cron/aarti-notify` | `direct_send_legacy` | `30 12 * * *` | yes | no | none detected |
-| `/api/cron/brahma-muhurta` | `direct_send_legacy` | `0 3 * * *` | yes | no | none detected |
+| `/api/cron/brahma-muhurta` | `scheduled_queue_producer` | `0 3 * * *` | no | yes | none detected |
 | `/api/cron/calendar-health` | `direct_send_legacy` | `0 9 1 * *` | yes | no | none detected |
 | `/api/cron/festival-reminder` | `direct_send_legacy` | `30 5 * * *` | yes | no | `wants_festival_reminders` |
 | `/api/cron/guided-plan-reminder` | `direct_send_legacy` | `0 7 * * *` | yes | no | none detected |
@@ -106,27 +106,27 @@ Migration files are repository evidence only. They are not labelled applied to p
   "tables": {
     "notification_schedule": {
       "reachable": true,
-      "count": 115,
+      "count": 362,
       "error": null
     },
     "notifications": {
       "reachable": true,
-      "count": 136,
+      "count": 514,
       "error": null
     },
     "push_tokens": {
       "reachable": true,
-      "count": 0,
+      "count": 8,
       "error": null
     },
     "notification_dispatch_events": {
       "reachable": true,
-      "count": 119,
+      "count": 429,
       "error": null
     },
     "push_token_events": {
       "reachable": true,
-      "count": 0,
+      "count": 66,
       "error": null
     }
   }

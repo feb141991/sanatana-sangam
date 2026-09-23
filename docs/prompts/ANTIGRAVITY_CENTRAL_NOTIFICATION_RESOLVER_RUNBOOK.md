@@ -1,8 +1,9 @@
-# Antigravity Runbook: Central Notification Candidate Resolver
+# Observance-First Notification Architecture and Resolver Runbook
 
-Execute these prompts sequentially. Stop after each prompt for independent review. Do not
-combine prompts, apply production migrations, deploy, trigger production notifications, or
-change a feature flag without explicit founder approval.
+Execute the stages sequentially and stop after each for independent review. This runbook
+now starts with reviewed observance reminders; generic engagement candidates are a later
+stage. Do not apply production migrations, deploy, trigger production notifications, or
+change a live feature flag without explicit founder approval.
 
 Canonical backend/PWA repository:
 `/Users/Business(C)/Sanatan Sangam/Shoonaya`
@@ -25,6 +26,20 @@ Native repository:
 - Never notify from unresolved, disputed, fallback, unaudited, unverified, withheld, or
   non-live calendar/content data.
 - Never run legacy and candidate delivery simultaneously for one notification type.
+- The first observance pilot must enqueue to the existing `notification_schedule`; do not
+  introduce a second delivery queue or send directly from an observance producer.
+- An explicit user-requested observance or ritual reminder is outside every generic daily
+  engagement budget. A routine/engagement budget may arbitrate only non-requested
+  engagement candidates. It must never suppress an enabled observance reminder, a
+  user-created ritual reminder, or an approved time-sensitive ritual window.
+- Content preference, reminder offsets/time, quiet hours, and OS push permission are
+  distinct controls. An OS push denial may disable push delivery but must not erase an
+  opted-in in-app reminder. Existing reminder consent must not be silently broadened or
+  narrowed during migration.
+- Missing tradition, calendar profile, sampradaya, location, or audience information must
+  not be guessed. Shared occurrences can qualify without a tradition; scoped occurrences
+  require an exact applicable profile. Women-focused content requires explicit audience
+  eligibility and must not treat missing gender as a match.
 - Derive identity server-side. Never accept a client-supplied user ID as authoritative.
 - Treat timezone, local civil date, spiritual date, calendar profile, tradition,
   sampradaya, language, and location as separate dimensions.
@@ -75,7 +90,74 @@ Stop for review.
 
 ---
 
-## Prompt 1 - Candidate and resolver database contracts
+## Stage O1 - Observance policy and preference contract (current implementation stage)
+
+Build a pure policy layer first. It must be usable by previews and later enqueueing, with
+no writes, cron changes, delivery, or flag activation in this stage.
+
+### Required
+
+1. Accept only occurrences marked source-eligible by the existing reviewed-occurrence
+   query. Keep the reviewed/published/verified/audited/withheld gates authoritative; the
+   planner must not recreate or weaken them.
+2. Model a user's observance opt-in, selected lead times, preferred local send time,
+   timezone, quiet hours, tradition, calendar profile, sampradaya, and audience context as
+   separate inputs. Default new/unset preferences to opted out until the settings contract
+   and conservative legacy-preference migration are agreed.
+3. Reject tradition- or calendar-profile-specific occurrences when the user's matching
+   profile is absent or differs. Universal/shared occurrences may remain eligible.
+4. Require explicit audience qualification for audience-specific observances. Never infer
+   it from a null profile field.
+5. Generate a semantic key containing occurrence identity, offset, local observance date,
+   and audience variant. D-7, D-1, and D0 are separate deliveries; old `festival:`,
+   `vrat:`, and `tithi:` namespaces must be checked before enqueueing.
+6. Mark explicit observance candidates as budget-exempt. Do not build a daily resolver
+   budget in this stage. Later generic engagement limits must operate on a separate
+   engagement class and cannot reject an explicit observance choice.
+7. Add a small deterministic policy test matrix including fail-closed preference,
+   tradition/profile mismatch, missing audience, shared observance, source ineligibility,
+   duplicate semantic identity, and budget-exemption invariants.
+
+No database migration is required for this pure stage. Do not change existing legacy
+producers. Stop for review.
+
+## Stage O2 - Observance preference storage and settings contract
+
+After O1 review, add an explicit preference contract for festival and vrat/tithi reminders,
+lead-time choices, preferred local send time, and locale-aware copy preference. Keep
+content opt-in separate from OS permission and quiet hours. Design an additive schema/API
+with user-scoped RLS, authenticated-user ownership, versioned native/PWA types, migration
+backfill that preserves existing explicit choices, and a rollback. Any legacy `NULL`
+semantics must be quantified before selecting a backfill; do not silently treat null as
+new consent. Apply only to a disposable shadow database until separately approved.
+Stop for review.
+
+## Stage O3 - Observance schedule producer (disabled by default)
+
+For opted-in users, create schedule rows from canonical reviewed occurrences, resolved
+against the user's actual calendar profile/tradition/sampradaya and valid timezone. Compute
+each selected offset's local send instant with DST-safe timezone conversion; persist the
+result as UTC plus the original timezone, local date, occurrence/profile identity, source
+references, diagnostics, chosen offset, and semantic key. Reuse
+`notification_schedule` and the existing dispatcher for inbox/push/receipt handling.
+
+Use a per-category exclusive mode (`legacy | schedule | disabled`), default `legacy` until
+parity is reviewed; enforce that exactly one mode can execute. Add a no-write shadow
+preview before any enqueue. Do not gate explicit observance rows on a generic daily budget.
+Stop for review.
+
+## Stage O4 - Shadow parity, then controlled cutover
+
+Generate a reproducible 60-day comparison over representative traditions, calendar
+profiles, sampradaya variants, locations, timezone offsets, DST transitions, missing
+profile fields, and audience contexts. Report eligible, excluded (by structured reason),
+scheduled instant, local date, offset, semantic key, copy, and route. Assert no duplicate
+old/new semantic identities and prove a same-day explicit observance reminder survives a
+full engagement budget. Differences require an explanation backed by data; do not activate
+the schedule mode until the review approves them. Cut over one category at a time with a
+tested rollback path. Stop for review before changing flags.
+
+## Prompt 1 - Candidate and resolver database contracts (future generic engagement stage)
 
 Create schema and types only. Do not migrate any producer.
 
@@ -135,11 +217,15 @@ Implement the resolver as a deterministic, testable domain function. Do not wire
 
 ### Policy
 
-Default devotional budget per user/local spiritual date:
+Default engagement budget per user/local spiritual date (this applies only to generic,
+non-requested engagement candidates; it never applies to opted-in observance or explicit
+ritual reminders):
 
 - maximum one routine engagement notification;
-- maximum two total devotional notifications;
-- approved time-sensitive ritual windows may override the routine slot;
+- maximum two non-exempt devotional engagement notifications; explicit observance and
+  ritual reminders do not count toward this cap;
+- approved time-sensitive ritual windows and explicit user-requested reminders are exempt
+  from the engagement budget;
 - security, account, moderation, and transactional safety messages are outside this
   devotional budget;
 - sent notifications cannot be displaced retroactively;
@@ -147,12 +233,14 @@ Default devotional budget per user/local spiritual date:
 
 Default priority classes:
 
-1. critical ritual window
-2. same-day reviewed observance
-3. explicit user reminder
-4. streak rescue
-5. learning/story engagement
-6. non-urgent milestone
+1. security/account/moderation transactional safety (outside the budget)
+2. explicit user-requested observance or ritual reminder (outside the budget)
+3. approved time-sensitive ritual window (outside the budget)
+4. reviewed same-day observance (if not explicitly requested, still never budget-suppressed
+   after opted in)
+5. routine engagement: streak rescue
+6. routine engagement: learning/story engagement
+7. routine engagement: non-urgent milestone
 
 Store the policy in one versioned backend-owned module. Do not scatter numeric priorities
 through producers.
@@ -212,7 +300,7 @@ Stop for review.
 
 ---
 
-## Prompt 4 - Low-risk pilot: Dharm Veer and Quiz
+## Prompt 4 - Low-risk generic engagement pilot: Dharm Veer and Quiz
 
 Implement two new candidate producers as the first live-capable pilot. Keep their feature
 flags off.
@@ -267,7 +355,9 @@ Stop for review after every notification type; do not bulk-cut all types.
 
 ## Prompt 6 - Observance hard cutover: festival, vrat, and tithi
 
-This is the highest-risk migration. Do not execute until Prompts 0-5 are approved.
+This is the highest-risk migration. Execute only after Stages O1-O4 and Prompts 0-5 are
+approved. The observance schedule pipeline described above is the target; generic
+engagement budgets are never a suppression input for user-enabled observance reminders.
 
 ### Required
 
@@ -361,4 +451,3 @@ fallback only where duplicate risk has been eliminated.
 
 Stop before production activation and present the complete release checklist to the
 founder.
-

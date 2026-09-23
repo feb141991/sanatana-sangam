@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "b830e304df7c1d29ea436d554b98c2a88bd58ec997157fbedf6023c1bdba553d",
+  "sourceFingerprint": "a21948a9164d452b9061335b8a568c94bd0e5f9e24a188a1d76b6ae1b29b3048",
   "schemaVersion": "2.0.0",
   "ownership": {
     "canonicalRepository": "Sanatan Sangam/Shoonaya",
@@ -7,12 +7,12 @@
   },
   "summary": {
     "totalRoutes": 27,
-    "directPushCallers": 21,
-    "queueWriters": 6,
+    "directPushCallers": 20,
+    "queueWriters": 7,
     "byClassification": {
       "admin_or_test": 2,
-      "direct_send_legacy": 15,
-      "scheduled_queue_producer": 5,
+      "direct_send_legacy": 14,
+      "scheduled_queue_producer": 6,
       "delivery_worker": 1,
       "transactional_event": 4
     },
@@ -62,16 +62,15 @@
     {
       "route": "/api/cron/brahma-muhurta",
       "sourceFile": "src/app/api/cron/brahma-muhurta/route.ts",
-      "classification": "direct_send_legacy",
+      "classification": "scheduled_queue_producer",
       "schedule": "0 3 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": true,
+      "callsPushDirectly": false,
+      "readsSchedule": true,
+      "writesSchedule": true,
+      "writesBell": false,
       "preferenceColumns": [],
       "notificationKeyLiterals": [
-        ",\n        notification_key: ",
-        "Notification insert failed: ${insertError.message}"
+        "Notification schedule upsert failed: ${upsertError.message}"
       ]
     },
     {
@@ -290,9 +289,7 @@
       "writesBell": true,
       "preferenceColumns": [],
       "notificationKeyLiterals": [
-        ",\n        notification_key: ",
-        ",\n      notificationKeysByUserId,\n      notificationIdsByUserId,\n    });\n\n    return NextResponse.json({\n      message:      ",
-        ", baseUrl).toString();\n    const pushResult = await sendPushNotification({\n      userIds: insertedIds,\n      title:   pitruInfo.isMahalaya ? "
+        ",\n        notification_key: "
       ]
     },
     {
@@ -684,27 +681,27 @@
     "tables": {
       "notification_schedule": {
         "reachable": true,
-        "count": 115,
+        "count": 362,
         "error": null
       },
       "notifications": {
         "reachable": true,
-        "count": 136,
+        "count": 514,
         "error": null
       },
       "push_tokens": {
         "reachable": true,
-        "count": 0,
+        "count": 8,
         "error": null
       },
       "notification_dispatch_events": {
         "reachable": true,
-        "count": 119,
+        "count": 429,
         "error": null
       },
       "push_token_events": {
         "reachable": true,
-        "count": 0,
+        "count": 66,
         "error": null
       }
     }

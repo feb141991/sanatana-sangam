@@ -27,6 +27,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Admin Auth Patterns](architecture/admin-auth-patterns.md) — Server actions re-verify HMAC independently; content_reports status union; postgrest-js v2 .update() never bug workaround; Next.js 15 searchParams must be awaited
 - [Mandali Daily Prompt Materialization](architecture/mandali-daily-prompt-materialization.md) — Atomic daily identity, UTC rotation, trusted official attribution, localization, and immutable published prompts
 - [Dharma Mitra RAG Source Governance](architecture/dharma-mitra-rag-source-governance.md) — Explicit source intent overrides profile tradition; prompt wording follows source status; pending corpora fail closed
+- [Observance-First Notification Delivery](architecture/observance-first-notification-delivery.md) — Reviewed observances use the existing durable scheduler; explicit ritual reminders are exempt from generic engagement budgets
 
 ### Product
 
