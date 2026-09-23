@@ -139,7 +139,7 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    const updates: Record<string, string | boolean | null> = {};
+    const updates: Record<string, string | boolean | number[] | null> = {};
 
     for (const field of EDITABLE_TEXT_FIELDS) {
       if (!(field in rawBody)) continue;

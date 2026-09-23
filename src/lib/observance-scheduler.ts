@@ -14,10 +14,12 @@ import {
 import {
   buildObservanceActionPath,
   isWomenFocusedVrat,
+  OCCURRENCE_BACKED_TITHI_SLUGS,
   type ReviewedObservance,
 } from "./observance-notification-source";
 import {
   getLocalHour,
+  isValidTimeZone,
   isHourInQuietWindow,
   resolveTimeZone,
 } from "./sacred-time";
@@ -55,6 +57,7 @@ export type ScheduledObservanceRow = {
     days_away: number;
     local_date: string;
     sent_timezone: string;
+    timezone: string;
     action_url: string;
     emoji: string;
     tradition: string | null;
@@ -148,6 +151,10 @@ export function generateObservanceScheduleCandidates(input: {
       continue;
     }
 
+    if (!isValidTimeZone(user.timezone)) {
+      recordSuppression("invalid_timezone");
+      continue;
+    }
     const tz = resolveTimeZone(user.timezone);
     const reminderTime = user.observance_reminder_time || "08:00";
 
@@ -157,8 +164,9 @@ export function generateObservanceScheduleCandidates(input: {
         continue;
       }
 
+      const isTithi = OCCURRENCE_BACKED_TITHI_SLUGS.has((observance.slug ?? "").toLowerCase());
       const isVrat = observance.type === "vrat" || isWomenFocusedVrat(observance);
-      const category: ObservanceCategory = isVrat ? "vrat" : "festival";
+      const category: ObservanceCategory = isTithi ? "tithi" : isVrat ? "vrat" : "festival";
 
       if (categoryFilter !== "all" && category !== categoryFilter) {
         continue;
@@ -208,8 +216,8 @@ export function generateObservanceScheduleCandidates(input: {
           slug: observance.slug,
           date: observance.date,
           tradition: observance.tradition || "all",
-          calendarProfile: (observance as any).calendar_profile || null,
-          sampradaya: (observance as any).sampradaya || null,
+          calendarProfile: observance.calendar_profile ?? null,
+          sampradaya: observance.sampradaya ?? null,
           audience,
           sourceEligible: true,
         };
@@ -243,7 +251,10 @@ export function generateObservanceScheduleCandidates(input: {
             slug: observance.slug,
             name: observance.name,
             category,
-            type: category,
+            // `notifications.type` is the in-app bell category. The supported
+            // bell category for all observance subtypes is `festival`; the
+            // schedule row retains the precise festival/vrat/tithi type.
+            type: "festival",
             days_away: daysAway,
             local_date: sendInstant.localDate,
             sent_timezone: tz,

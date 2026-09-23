@@ -513,7 +513,7 @@ export function simulateLegacyCronDirectSends(
         user_id: user.id,
         category,
         observance_id: obs.id ?? '',
-        slug: obs.slug,
+        slug: obs.slug ?? '',
         days_away: daysAway,
         local_date: localDate,
         notification_key: key,
@@ -628,7 +628,7 @@ export function run60DayObservanceParityAudit(
 
   return {
     startDate: startDateStr,
-    endDate: endDateStr,
+    endDate: endDateStr ?? startDateStr,
     totalDays: daysCount,
     profileCount: users.length,
     observanceCount: observances.length,

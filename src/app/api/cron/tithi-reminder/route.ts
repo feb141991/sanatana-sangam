@@ -69,7 +69,10 @@ export async function GET(request: Request) {
       const fallbackRes = await supabase
         .from('profiles')
         .select('id, tradition, timezone, latitude, longitude, wants_festival_reminders, notification_quiet_hours_start, notification_quiet_hours_end');
-      users = fallbackRes.data;
+      users = (fallbackRes.data ?? []).map((user) => ({
+        ...user,
+        wants_tithi_reminders: user.wants_festival_reminders,
+      }));
       usersError = fallbackRes.error;
     }
 
@@ -84,7 +87,7 @@ export async function GET(request: Request) {
 
     // ── Filter: morning window + opt-in ─────────────────────────────────────
     const windowUsers = users.filter((user) => {
-      if ((user as any).wants_tithi_reminders === false || (user as any).wants_festival_reminders === false) return false; // respect global preference
+      if ((user as any).wants_tithi_reminders !== true) return false;
       const tz = resolveTimeZone((user as any).timezone);
       return canSendInLocalWindow(
         now, tz, TARGET_LOCAL_HOUR,

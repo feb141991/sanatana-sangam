@@ -198,7 +198,7 @@ async function run() {
     }
   }
 
-  console.log(`Parity Verification: ${parityMatches}/${totalEvaluated} decisions match (100% eligibility parity).`);
+  console.log(`Fixture comparison: ${parityMatches}/${totalEvaluated} hard-coded scenario decisions match.`);
 
   // ─── 4. EVALUATE THROUGH CENTRAL RESOLVER ─────────────────────────────────
   const allCandidates: NotificationCandidate[] = candidateResults
@@ -244,7 +244,7 @@ async function run() {
   console.log(`- Suppressed: ${resolution.suppressed.length}`);
   console.log(`- Deferred: ${resolution.deferred.length}`);
 
-  // Generate 14-day shadow parity report
+  // Generate a deterministic fixture-simulation report (not a live shadow run).
   const reportPath = resolve(__dirname, '../docs/notifications/JAPA_14DAY_SHADOW_PARITY_REPORT.md');
   const aucklandRows = allCandidates
     .filter((c) => c.user_id === 'devotee-auckland-quiet-conflict')
@@ -255,7 +255,9 @@ async function run() {
     )
     .join('\n');
 
-  const markdown = `# Prompt 5A: Japa Routine Reminder 14-Day Shadow Parity Report
+  const markdown = `# Prompt 5A: Japa Routine Reminder 14-Day Fixture Simulation
+
+> Evidence scope: deterministic simulation over hard-coded devotee profiles, completion patterns, and dates. No live database rows, device usage, deployed legacy cron, or production candidate outcomes were observed. The match counts below apply only to these fixtures and do not establish production parity or cutover readiness.
 
 ## 1. Executive Summary
 This audit validates the migration of the daily Japa routine reminder from the legacy direct-send pipeline to the central notification candidate architecture.
@@ -274,11 +276,11 @@ Evaluated across **5 global timezones** over a **14-day evaluation window** (202
 
 | Evaluation Dimension | Legacy Pipeline | Candidate Pipeline | Parity Status | Evidence & Notes |
 |---|---|---|---|---|
-| **Eligibility Decision** | 35 eligible / 35 skipped | 35 eligible / 35 skipped | **100% IDENTICAL** | Exact decision match on all 70 devotee-days. |
-| **Completion Suppression** | Skipped when \`japa_done=true\` | Skipped when \`japa_done=true\` | **100% IDENTICAL** | Zero reminders sent or generated for devotees who already chanted. |
-| **Preference Respect** | Suppressed if \`enabled=false\` | Suppressed if \`enabled=false\` | **100% IDENTICAL** | 14/14 days suppressed for opted-out Los Angeles user. |
-| **Canonical Route** | \`/japa\` | \`/japa\` | **100% IDENTICAL** | 100% of links route to \`/japa\`. |
-| **Pipeline Exclusivity** | Direct push + Bell write | Candidate row insertion only | **INTENTIONAL** | Mode check guarantees legacy and candidate never execute simultaneously. |
+| **Eligibility Decision** | 35 eligible / 35 skipped | 35 eligible / 35 skipped | **Fixture match** | Matches only the hard-coded cases executed by this script. |
+| **Completion Suppression** | Skipped when \`japa_done=true\` | Skipped when \`japa_done=true\` | **Fixture match** | Fixture scenarios with completed practice produce no candidate. |
+| **Preference Respect** | Suppressed if \`enabled=false\` | Suppressed if \`enabled=false\` | **Fixture match** | Opt-out behavior tested for the synthetic Los Angeles profile. |
+| **Canonical Route** | \`/japa\` | \`/japa\` | **Fixture match** | Tested candidate links route to \`/japa\`. |
+| **Pipeline Exclusivity** | Direct push + Bell write | Candidate row insertion only | **Not assessed** | Route/cron exclusivity requires deployed integration verification. |
 | **Quiet Hours Protection** | Blind send at cron runtime | Defers past quiet hours | **IMPROVED** | Auckland 23:30 reminder safely shifted to 07:00 local time. |
 | **Central Resolver Cap** | Uncapped / ad-hoc | 1 routine notification/day | **ENFORCED** | All 35 candidates accepted under 1 routine/day cap. |
 
@@ -316,12 +318,12 @@ Pipeline mode configuration in \`src/lib/notification-candidate-pipeline-mode.ts
   - Test/Preview: \`'candidate'\` (Enqueues to \`notification_candidates\`, suppresses push & bell).
   - Kill Switch: \`'disabled'\` (Halts all Japa reminder execution).
 
-**Status**: 14-day shadow parity audit passed with zero regressions. Ready for founder review.
+**Status**: Fixture scenario comparison completed. Production parity, deployed cron behavior, and cutover readiness remain unverified.
 `;
 
   writeFileSync(reportPath, markdown, 'utf8');
   console.log(`Report written to ${reportPath}`);
-  console.log('=== JAPA 14-DAY SHADOW PARITY AUDIT COMPLETE: 100% PASSING ===');
+  console.log('=== JAPA 14-DAY FIXTURE SIMULATION COMPLETE ===');
 }
 
 run().catch((err) => {

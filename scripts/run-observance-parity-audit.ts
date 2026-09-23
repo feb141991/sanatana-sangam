@@ -6,10 +6,11 @@ function formatReport() {
   const result = run60DayObservanceParityAudit('2026-10-01', 60);
 
   let md = '';
-  md += '# 60-Day Observance Shadow Parity Audit Report\n\n';
+  md += '# 60-Day Observance Fixture Simulation Report\n\n';
   md += `**Evaluation Window**: ${result.startDate} to ${result.endDate} (60 days)\n`;
   md += `**Representative Devotee Profiles**: ${result.profileCount}\n`;
   md += `**Canonical Observances in Horizon**: ${result.observanceCount}\n\n`;
+  md += '> Evidence scope: deterministic fixture simulation using hard-coded representative profiles and canonical occurrence fixtures. This is not a live database shadow run, not a production cohort, and not cutover approval. The percentages below describe only these fixtures.\n\n';
 
   md += '## 1. Executive Summary & Verification Metrics\n\n';
   md += '| Metric | Legacy Direct Cron | Scheduled Dispatcher | Delta / Explanation |\n';
@@ -36,7 +37,7 @@ function formatReport() {
       analysis = 'Suppressed 100% due to pending deletion.';
     } else if (profile.id === 'devotee-quiet-hours-conflict') {
       analysis = 'Suppressed 100% because chosen reminder time falls in quiet hours.';
-    } else if (profile.timezone.startsWith('America/')) {
+    } else if (profile.timezone?.startsWith('America/')) {
       analysis = 'Legacy missed 100% (ran at 07:00 UTC / 02:00 local). Scheduled restores 100% local morning coverage.';
     } else if (profile.wants_vrat_reminders === false) {
       analysis = 'Granular Stage O2 preference: vrats suppressed while festivals delivered.';
@@ -79,13 +80,11 @@ function formatReport() {
     md += `| \`${code}\` | ${count} | ${desc} |\n`;
   }
 
-  md += '\n## 5. Cutover Readiness Assessment\n\n';
-  md += '- [x] **Zero Delivery Collisions**: Old keys (\`festival:*\`, \`vrat:*\`) and new keys (\`observance-v1:*\`) never intersect.\n';
-  md += '- [x] **Exclusive Pipeline Modes**: \`OBSERVANCE_PIPELINE_MODE_<CATEGORY>\` enforces that legacy crons abort when schedule mode is active.\n';
-  md += '- [x] **Timezone Equity**: Devotees outside India (e.g. US, UK, Australia) are accurately alerted at their local morning hour rather than missed or alerted in the middle of the night.\n';
-  md += '- [x] **Granular Devotee Choice**: Festival opt-in and Vrat opt-in operate independently without OS push permission entanglement.\n';
-  md += '- [x] **Budget Invariant Preserved**: 100% of explicit observance notifications carry \`budget_exempt: true\` and \`budget_class: explicit_observance\`.\n';
-  md += '- [x] **Rollback Tested**: Toggling \`OBSERVANCE_PIPELINE_MODE=legacy\` immediately restores legacy crons and halts scheduled enqueueing.\n';
+  md += '\n## 5. Cutover Readiness (Not Established by Fixture Simulation)\n\n';
+  md += '- [ ] Compare both pipelines against the same representative, privacy-safe database snapshot.\n';
+  md += '- [ ] Run a time-bounded live shadow cohort and retain raw candidate/legacy outcomes, including failures and duplicate keys.\n';
+  md += '- [ ] Verify cron deployment, Vault secret resolution, dispatch preferences, and rollback on the deployed environment.\n';
+  md += '- [ ] Obtain product/calendar review of scope matching and opt-in defaults before enabling categories.\n';
 
   return md;
 }

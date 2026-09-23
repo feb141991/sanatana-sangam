@@ -1,13 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   NotificationCandidate,
-  NotificationResolverEventInsert,
 } from '@/types/database';
 import {
   resolveCandidates,
   type CandidateEvaluationItem,
   type DeliveryHistoryItem,
-  type NotificationPriorityClass,
+  resolvePriorityClassForEventType,
   type ResolutionResult,
 } from './notification-resolver';
 import { deriveCandidateNotificationKey } from './notification-candidate-key';
@@ -298,28 +297,60 @@ export async function executeCandidateResolverPipeline(
   const localDates = Array.from(new Set(activeCandidates.map((c) => c.local_date)));
 
   // Query notification_schedule for existing sent or pending records for these devotees
-  const { data: scheduleHistory, error: histError } = await supabase
+  const [{ data: scheduleHistory, error: scheduleHistoryError }, { data: directHistory, error: directHistoryError }] = await Promise.all([
+    supabase
     .from('notification_schedule')
     .select('id, user_id, notification_type, send_at, status, notification_key, metadata')
     .in('user_id', userIds)
-    .in('status', ['sent', 'sending', 'pending']);
+    .in('status', ['sent', 'sending', 'pending']),
+    supabase
+      .from('notifications')
+      .select('id, user_id, type, created_at, local_date, notification_key')
+      .in('user_id', userIds)
+      .in('local_date', localDates),
+  ]);
+
+  if (scheduleHistoryError || directHistoryError) {
+    throw new Error(`Failed to load notification budget history: ${scheduleHistoryError?.message ?? directHistoryError?.message}`);
+  }
 
   const historyItems: DeliveryHistoryItem[] = [];
-  if (!histError && Array.isArray(scheduleHistory)) {
+  if (Array.isArray(scheduleHistory)) {
     for (const row of scheduleHistory) {
-      const meta = (row.metadata ?? {}) as Record<string, any>;
+      const meta = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
+        ? row.metadata as Record<string, unknown>
+        : {};
       // Extract local_date from metadata or notification_key or send_at
-      const localDate = meta.local_date ?? (row.notification_key?.split(':')[3] || row.send_at?.slice(0, 10));
+      const localDateValue = meta.local_date;
+      const localDate = typeof localDateValue === 'string'
+        ? localDateValue
+        : (row.notification_key?.split(':')[3] || row.send_at?.slice(0, 10));
       if (localDate && localDates.includes(localDate)) {
         historyItems.push({
           id: row.id,
           user_id: row.user_id,
           local_date: localDate,
           notification_type: row.notification_type,
-          priority_class: meta.priority_class as NotificationPriorityClass | undefined,
+          priority_class: resolvePriorityClassForEventType(row.notification_type),
+          notification_key: row.notification_key,
           sent_at: row.send_at,
         });
       }
+    }
+  }
+  if (Array.isArray(directHistory)) {
+    for (const row of directHistory) {
+      if (!row.local_date || !localDates.includes(row.local_date)) continue;
+      const eventType = row.type === 'festival' ? 'festival' : row.type === 'streak' ? 'streak' : row.type;
+      historyItems.push({
+        id: row.id,
+        user_id: row.user_id,
+        local_date: row.local_date,
+        notification_type: row.type,
+        priority_class: resolvePriorityClassForEventType(eventType),
+        notification_key: row.notification_key,
+        sent_at: row.created_at,
+      });
     }
   }
 
@@ -329,7 +360,9 @@ export async function executeCandidateResolverPipeline(
     history: historyItems,
     now,
     policyVersion: 'v1',
-    allowDeferrals: true,
+    // These candidate events are time-sensitive; late replay under a future
+    // budget window would be misleading. Suppress at the budget boundary.
+    allowDeferrals: false,
   });
 
   let promotedToScheduleCount = 0;
@@ -337,76 +370,60 @@ export async function executeCandidateResolverPipeline(
 
   // 6. Persist results (if not dry-run)
   if (!dryRun) {
-    // a. Promote accepted candidates into notification_schedule (idempotent ON CONFLICT)
-    if (resolution.accepted.length > 0) {
-      const scheduleInserts = resolution.accepted.map((cand) => {
-        const notificationKey = deriveCandidateNotificationKey(cand);
-        return {
-          user_id: cand.user_id,
-          notification_type: cand.event_type,
-          title: cand.title,
-          body: cand.body,
-          send_at: cand.scheduled_for,
-          status: 'pending',
-          notification_key: notificationKey,
-          metadata: {
-            ...(cand.metadata as Record<string, any> || {}),
-            action_url: cand.action_url,
-            candidate_id: cand.id,
-            priority: cand.priority,
-            language: cand.language,
-            timezone: cand.timezone,
-            tradition: cand.tradition,
-            calendar_profile: cand.calendar_profile,
-            source_status: cand.source_status,
-            source_refs: cand.source_refs,
-            local_date: cand.local_date,
-            promoted_by: 'central_notification_resolver',
-            promoted_at: nowIso,
-          },
-        };
-      });
+    const scheduleRows = resolution.accepted.map((cand) => {
+      const notificationKey = deriveCandidateNotificationKey(cand);
+      return {
+        user_id: cand.user_id,
+        notification_type: cand.event_type,
+        title: cand.title,
+        body: cand.body,
+        send_at: cand.scheduled_for,
+        notification_key: notificationKey,
+        metadata: {
+          ...(cand.metadata as Record<string, unknown> || {}),
+          action_url: cand.action_url,
+          candidate_id: cand.id,
+          priority: cand.priority,
+          language: cand.language,
+          timezone: cand.timezone,
+          tradition: cand.tradition,
+          calendar_profile: cand.calendar_profile,
+          source_status: cand.source_status,
+          source_refs: cand.source_refs,
+          local_date: cand.local_date,
+          promoted_by: 'central_notification_resolver',
+          promoted_at: nowIso,
+        },
+      };
+    });
+    const candidateUpdates = resolution.evaluations.map((evaluation) => ({
+      candidate_id: evaluation.candidate.id,
+      status: evaluation.decision,
+      reason: evaluation.reason,
+      resolved_at: nowIso,
+    }));
 
-      const { data: insertedSched, error: schedError } = await supabase
-        .from('notification_schedule')
-        .upsert(scheduleInserts, { onConflict: 'user_id,notification_key' })
-        .select('id');
-
-      if (!schedError && Array.isArray(insertedSched)) {
-        promotedToScheduleCount = insertedSched.length;
-      } else {
-        // If upsert returned no rows due to ignoreDuplicates, count rows inserted/updated
-        promotedToScheduleCount = scheduleInserts.length;
+    // One transaction prevents partial schedule/candidate/audit state. Unique
+    // conflicts are ignored in SQL, preserving the existing sent/terminal row.
+    const { data: persistedResolution, error: persistError } = await supabase.rpc(
+      'persist_notification_candidate_resolution',
+      {
+        p_schedule_rows: scheduleRows,
+        p_candidate_updates: candidateUpdates,
+        p_audit_events: resolution.auditEvents,
       }
+    );
+    if (persistError) {
+      throw new Error(`Failed to persist candidate resolution atomically: ${persistError.message}`);
     }
-
-    // b. Update candidate statuses in notification_candidates
-    for (const evaluation of resolution.evaluations) {
-      await supabase
-        .from('notification_candidates')
-        .update({
-          status: evaluation.decision,
-          decision_reason: evaluation.reason,
-          resolved_at: nowIso,
-        })
-        .eq('id', evaluation.candidate.id);
+    const persistence = Array.isArray(persistedResolution) ? persistedResolution[0] : persistedResolution;
+    if (!persistence || typeof persistence !== 'object') {
+      throw new Error('Candidate resolution persistence returned no counts');
     }
+    promotedToScheduleCount = Number(persistence.promoted_count ?? 0);
+    auditEventsRecorded = Number(persistence.audit_count ?? 0);
 
-    // c. Write audit events to notification_resolver_events
-    if (resolution.auditEvents.length > 0) {
-      const { data: insertedEvents, error: auditError } = await supabase
-        .from('notification_resolver_events')
-        .insert(resolution.auditEvents)
-        .select('id');
-
-      if (!auditError && Array.isArray(insertedEvents)) {
-        auditEventsRecorded = insertedEvents.length;
-      } else {
-        auditEventsRecorded = resolution.auditEvents.length;
-      }
-    }
-
-    // d. Retention cleanup if requested
+    // Retention cleanup if requested
     if (runRetentionCleanup) {
       await cleanupNotificationCandidatesRetention(supabase, retentionDays);
     }

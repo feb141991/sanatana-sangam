@@ -56,7 +56,7 @@ describe('observance-preferences', () => {
       expect(prefs.sampradaya).toBe('gaudiya');
     });
 
-    it('uses custom lead days when valid or falls back to DEFAULT_LEAD_DAYS', () => {
+    it('uses custom lead days when valid, preserves explicit empty selection, and defaults when absent', () => {
       const customProfile: ProfilePreferenceInput = {
         observance_reminder_lead_days: [0, 1, 3],
       };
@@ -65,7 +65,8 @@ describe('observance-preferences', () => {
       const emptyProfile: ProfilePreferenceInput = {
         observance_reminder_lead_days: [],
       };
-      expect(mapProfileToObservancePreferences(emptyProfile, 'festival').leadDays).toEqual(DEFAULT_LEAD_DAYS);
+      expect(mapProfileToObservancePreferences(emptyProfile, 'festival').leadDays).toEqual([]);
+      expect(mapProfileToObservancePreferences({}, 'festival').leadDays).toEqual(DEFAULT_LEAD_DAYS);
     });
   });
 

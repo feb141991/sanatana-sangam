@@ -46,6 +46,30 @@ Native repository:
 - Every decision must be explainable through a structured audit reason.
 - Report passed, failed, and skipped counts. Run `git diff --check` and
   `git status --short`. Do not stage unrelated dirty files.
+
+## Source implementation checkpoint (2026-09-23; not deployed)
+
+The repository now contains source for the candidate/resolver tables, an atomic promotion
+RPC, a protected resolver pipeline, and a Supabase `pg_cron`/`pg_net` trigger. The
+observance schedule producer also has a separate daily trigger. These changes have local
+tests and disposable-shadow SQL checks, but the migrations have not been applied to
+production and the scheduled jobs have not been verified in the target Supabase project.
+
+The source implementation includes these safety corrections:
+
+- Schedule conflicts are immutable (`ON CONFLICT DO NOTHING`); a retry cannot reset an
+  already-sent or cancelled notification to pending.
+- Candidate decisions, schedule promotion, and audit writes are committed atomically.
+- Priority class is derived from backend-owned event type, never producer metadata.
+- Resolver history reads include both scheduled delivery and legacy in-app notification
+  records and fail closed if either query fails.
+- Time-sensitive candidates are not deferred beyond their intended window.
+- Fixture parity reports are labelled simulations, not live shadow parity. O4 and all
+  production cutover checks remain open until real shadow evidence is collected.
+
+Continue treating the rest of this runbook as the required staged review and cutover
+sequence. Source presence is not approval to apply migrations, deploy, enable a mode, or
+send production notifications.
 - One scoped objective and one scoped commit per prompt. Do not push until independently
   reviewed.
 

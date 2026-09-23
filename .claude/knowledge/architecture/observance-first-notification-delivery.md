@@ -25,6 +25,22 @@ The current direct-send festival, vrat, and tithi jobs must remain exclusive wit
 - The existing `notification_schedule` and `notification-dispatch` chain remains the only delivery path for the pilot.
 - Legacy direct-send and new scheduled modes must never run concurrently for the same category.
 
+## Implementation checkpoint (2026-09-23)
+
+Source now includes the additive candidate/resolver ledger and atomic schedule-promotion
+path as infrastructure for staged notification work. This does not change the observance
+delivery decision above: reviewed observances still use `notification_schedule`, remain
+budget-exempt, and must be migrated one category at a time behind exclusive modes. The
+candidate resolver derives priority from backend-owned event types, fails closed when
+delivery history cannot be read, and does not defer time-sensitive candidates. Its
+subdaily trigger is defined through Supabase `pg_cron`/`pg_net`; the observance schedule
+producer has a separate daily trigger.
+
+These are source-level changes only until migrations and cron configuration are reviewed
+and applied to the target environment. Fixture parity reports are deterministic
+simulations, not production shadow evidence. Do not treat tests or local SQL shadow checks
+as proof of production migration state, live parity, or delivery behavior.
+
 ## What we explicitly rejected
 
 - A second generic candidates/delivery queue as the first implementation. It would duplicate scheduling and delivery responsibilities before the resolver's value is proven.

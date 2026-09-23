@@ -86,7 +86,7 @@ export function produceDharmVeerCandidate(
     calendar_profile: null,
     source_status: 'verified',
     source_refs: {
-      source: hero.source,
+      source: hero.source ?? null,
       citations: hero.sourceCitations ?? [],
     },
     metadata: {

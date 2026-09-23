@@ -32,6 +32,7 @@ function makeCandidate(overrides: Partial<NotificationCandidate> = {}): Notifica
     status: overrides.status ?? 'pending',
     decision_reason: overrides.decision_reason ?? null,
     resolved_at: overrides.resolved_at ?? null,
+    claimed_at: overrides.claimed_at ?? null,
     created_at: overrides.created_at ?? '2026-11-01T00:00:00.000Z',
     updated_at: overrides.updated_at ?? '2026-11-01T00:00:00.000Z',
   };
@@ -186,6 +187,33 @@ describe('notification resolver & engagement policy', () => {
       expect(res.suppressed.map((c) => c.id)).toContain('new-devotional');
       // newObservance is accepted because it is exempt
       expect(res.accepted.map((c) => c.id)).toContain('new-observance');
+    });
+
+    it('counts a scheduled push and its in-app bell record only once', () => {
+      const history: DeliveryHistoryItem[] = [
+        {
+          id: 'schedule-row',
+          user_id: 'user-devotee-1',
+          local_date: '2026-11-08',
+          notification_type: 'mandali_prompt',
+          priority_class: 'devotional_engagement',
+          notification_key: 'mandali_prompt:prompt-1:2026-11-08:general',
+          sent_at: '2026-11-08T01:00:00.000Z',
+        },
+        {
+          id: 'bell-row',
+          user_id: 'user-devotee-1',
+          local_date: '2026-11-08',
+          notification_type: 'general',
+          priority_class: 'devotional_engagement',
+          notification_key: 'mandali_prompt:prompt-1:2026-11-08:general',
+          sent_at: '2026-11-08T01:00:00.000Z',
+        },
+      ];
+      const candidate = makeCandidate({ id: 'routine-follow-up', event_type: 'japa' });
+      const result = resolveCandidates({ candidates: [candidate], history, now: fixedNow, allowDeferrals: false });
+      expect(result.accepted.map((item) => item.id)).toContain('routine-follow-up');
+      expect(result.suppressed).toHaveLength(0);
     });
   });
 

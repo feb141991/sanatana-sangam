@@ -5,7 +5,9 @@ DB_NAME="shoonaya_claim_shadow_$$"
 PSQL="$(command -v psql)"
 MIGRATION_1="supabase/migrations/20260923140000_notification_candidates_and_resolver.sql"
 MIGRATION_3="supabase/migrations/20260923150000_notification_candidates_claim_and_persistence.sql"
+MIGRATION_ATOMIC="supabase/migrations/20260923170000_atomic_notification_candidate_resolution.sql"
 ROLLBACK_3="supabase/rollbacks/20260923150000_notification_candidates_claim_and_persistence_rollback.sql"
+ROLLBACK_ATOMIC="supabase/rollbacks/20260923170000_atomic_notification_candidate_resolution_rollback.sql"
 
 cleanup() {
   "${PSQL}" -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};" >/dev/null 2>&1 || true
@@ -65,6 +67,9 @@ echo "=== Applying Prompt 1 Base Migration ==="
 
 echo "=== Applying Prompt 3 Claim RPC Migration ==="
 "${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -f "${MIGRATION_3}" >/dev/null
+
+echo "=== Applying Atomic Resolver Persistence Migration ==="
+"${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -f "${MIGRATION_ATOMIC}" >/dev/null
 
 echo "=== Verifying Candidate Claim Logic & Status Check ==="
 "${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -q <<'SQL'
@@ -157,6 +162,76 @@ BEGIN
 END $$;
 SQL
 
+echo "=== Verifying Atomic Persistence, Conflict Safety, and Rollback ==="
+"${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -q <<'SQL'
+SET ROLE service_role;
+
+-- A matching already-sent row must remain sent after resolver retry.
+INSERT INTO public.notification_schedule (
+  user_id, notification_type, title, body, send_at, status, notification_key
+) VALUES (
+  '11111111-1111-1111-1111-111111111111', 'devotional_engagement',
+  'Old title', 'Old body', NOW(), 'pending',
+  'devotional_engagement:prompt-1:2026-11-08:general'
+);
+UPDATE public.notification_schedule SET status = 'sent'
+WHERE notification_key = 'devotional_engagement:prompt-1:2026-11-08:general';
+
+DO $$
+DECLARE
+  v_result record;
+  v_status text;
+BEGIN
+  SELECT * INTO v_result FROM public.persist_notification_candidate_resolution(
+    '[{"user_id":"11111111-1111-1111-1111-111111111111","notification_type":"devotional_engagement","title":"New title","body":"New body","send_at":"2026-11-08T02:30:00Z","notification_key":"devotional_engagement:prompt-1:2026-11-08:general","metadata":{}}]'::jsonb,
+    '[{"candidate_id":"11111111-0000-0000-0000-000000000001","status":"accepted","reason":"accepted","resolved_at":"2026-11-08T02:00:00Z"}]'::jsonb,
+    '[{"candidate_id":"11111111-0000-0000-0000-000000000001","user_id":"11111111-1111-1111-1111-111111111111","event_type":"devotional_engagement","decision":"accepted","reason":"accepted","policy_version":"v1","metadata":{},"resolved_at":"2026-11-08T02:00:00Z"}]'::jsonb
+  );
+
+  SELECT status INTO v_status FROM public.notification_schedule
+  WHERE notification_key = 'devotional_engagement:prompt-1:2026-11-08:general';
+  IF v_status <> 'sent' THEN
+    RAISE EXCEPTION 'Conflict rewrote schedule status; expected sent, got %', v_status;
+  END IF;
+  IF v_result.promoted_count <> 0 OR v_result.candidate_count <> 1 OR v_result.audit_count <> 1 THEN
+    RAISE EXCEPTION 'Unexpected atomic persistence counts: %', v_result;
+  END IF;
+END $$;
+
+-- If candidate state cannot be updated, schedule insertion must roll back too.
+INSERT INTO public.notification_candidates (
+  id, user_id, event_type, event_id, local_date, scheduled_for, expires_at,
+  title, body, action_url, status
+) VALUES (
+  '11111111-0000-0000-0000-000000000004',
+  '11111111-1111-1111-1111-111111111111', 'devotional_engagement', 'rollback-case',
+  '2026-11-08', NOW(), NOW() + INTERVAL '1 hour', 'Rollback', 'Body', '/path', 'resolving'
+);
+
+DO $$
+DECLARE
+  v_inserted integer;
+  v_status text;
+BEGIN
+  BEGIN
+    PERFORM * FROM public.persist_notification_candidate_resolution(
+      '[{"user_id":"11111111-1111-1111-1111-111111111111","notification_type":"devotional_engagement","title":"Must rollback","body":"Body","send_at":"2026-11-08T02:30:00Z","notification_key":"rollback-case","metadata":{}}]'::jsonb,
+      '[{"candidate_id":"11111111-0000-0000-0000-000000000099","status":"accepted","reason":"accepted","resolved_at":"2026-11-08T02:00:00Z"}]'::jsonb,
+      '[]'::jsonb
+    );
+    RAISE EXCEPTION 'Expected failed candidate update to abort transaction';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM = 'Expected failed candidate update to abort transaction' THEN RAISE; END IF;
+  END;
+
+  SELECT count(*) INTO v_inserted FROM public.notification_schedule WHERE notification_key = 'rollback-case';
+  SELECT status INTO v_status FROM public.notification_candidates WHERE id = '11111111-0000-0000-0000-000000000004';
+  IF v_inserted <> 0 OR v_status <> 'resolving' THEN
+    RAISE EXCEPTION 'Persistence failure was not rolled back atomically';
+  END IF;
+END $$;
+SQL
+
 echo "=== Verifying Schedule Promotion Idempotency ==="
 "${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -q <<'SQL'
 SET ROLE service_role;
@@ -172,9 +247,7 @@ INSERT INTO public.notification_schedule (
   NOW(),
   'devotional_engagement:prompt-1:2026-11-08:general'
 )
-ON CONFLICT (user_id, notification_key) DO UPDATE
-SET title = EXCLUDED.title,
-    body = EXCLUDED.body;
+ON CONFLICT (user_id, notification_key) DO NOTHING;
 
 -- Second identical insert must succeed idempotently without error
 INSERT INTO public.notification_schedule (
@@ -187,9 +260,7 @@ INSERT INTO public.notification_schedule (
   NOW(),
   'devotional_engagement:prompt-1:2026-11-08:general'
 )
-ON CONFLICT (user_id, notification_key) DO UPDATE
-SET title = EXCLUDED.title,
-    body = EXCLUDED.body;
+ON CONFLICT (user_id, notification_key) DO NOTHING;
 
 DO $$
 DECLARE
@@ -233,6 +304,7 @@ END $$;
 SQL
 
 echo "=== Testing Clean Rollback ==="
+"${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -f "${ROLLBACK_ATOMIC}" >/dev/null
 "${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -f "${ROLLBACK_3}" >/dev/null
 
 "${PSQL}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -q <<'SQL'

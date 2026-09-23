@@ -35,6 +35,8 @@ export interface Festival {
   route_slug?: string | null;
   year?: number;
   slug?: string | null;
+  calendar_profile?: string | null;
+  sampradaya?: string | null;
   final_date_source?: string | null;
   manual_date_override?: string | null;
   locked_for_regeneration?: boolean | null;
@@ -243,7 +245,7 @@ export function mapOccurrenceToFestival(row: any): Festival {
     emoji: def.emoji || '🪔',
     description: def.description || '',
     type: def.kind || 'major',
-    tradition: def.tradition || 'all',
+    tradition: row.spiritual_tradition || def.tradition || 'all',
     source_name: provenance.source_name || null,
     source_kind: provenance.source_kind || null,
     review_status: row.review_status || null,
@@ -257,6 +259,8 @@ export function mapOccurrenceToFestival(row: any): Festival {
     route_slug: def.route_slug || null,
     year: row.year,
     slug: def.slug || null,
+    calendar_profile: row.calendar_profile ?? null,
+    sampradaya: def.sampradaya_filter ?? null,
     final_date_source: row.final_date_source || null,
     manual_date_override: row.manual_date_override || null,
     locked_for_regeneration: row.locked_for_regeneration ?? null,

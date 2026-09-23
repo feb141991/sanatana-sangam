@@ -28,6 +28,7 @@ export type DeliveryHistoryItem = {
   local_date: string;
   notification_type: string;
   priority_class?: NotificationPriorityClass;
+  notification_key?: string | null;
   sent_at: string;
 };
 
@@ -149,8 +150,14 @@ export function resolveCandidates(input: {
   // 1. Group past history by user_id and local_date
   const historyDevotionalByGroup = new Map<string, number>();
   const historyRoutineByGroup = new Map<string, number>();
+  const seenHistoryNotificationKeys = new Set<string>();
 
   for (const item of history) {
+    if (item.notification_key) {
+      const identity = `${item.user_id}::${item.notification_key}`;
+      if (seenHistoryNotificationKeys.has(identity)) continue;
+      seenHistoryNotificationKeys.add(identity);
+    }
     const groupKey = `${item.user_id}::${item.local_date}`;
     const pClass = item.priority_class ?? 'devotional_engagement';
 

@@ -735,6 +735,89 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['notifications']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['notifications']['Insert']>;
       };
+      notification_candidates: {
+        Row: {
+          id: string;
+          user_id: string;
+          event_type: string;
+          event_id: string;
+          event_instance: string;
+          local_date: string;
+          audience_variant: string;
+          scheduled_for: string;
+          expires_at: string;
+          priority: number;
+          title: string;
+          body: string;
+          action_url: string;
+          language: string;
+          timezone: string;
+          tradition: string | null;
+          calendar_profile: string | null;
+          source_status: string;
+          source_refs: Json;
+          metadata: Json;
+          status: 'pending' | 'resolving' | 'accepted' | 'suppressed' | 'expired' | 'cancelled' | 'deferred';
+          decision_reason: string | null;
+          resolved_at: string | null;
+          claimed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          event_type: string;
+          event_id: string;
+          event_instance?: string;
+          local_date: string;
+          audience_variant?: string;
+          scheduled_for: string;
+          expires_at: string;
+          priority?: number;
+          title: string;
+          body: string;
+          action_url: string;
+          language?: string;
+          timezone?: string;
+          tradition?: string | null;
+          calendar_profile?: string | null;
+          source_status?: string;
+          source_refs?: Json;
+          metadata?: Json;
+          status?: string;
+          decision_reason?: string | null;
+          resolved_at?: string | null;
+          claimed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['notification_candidates']['Row']>;
+      };
+      notification_resolver_events: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          user_id: string;
+          event_type: string;
+          decision: 'accepted' | 'suppressed' | 'expired' | 'cancelled' | 'deferred';
+          reason: string;
+          winning_candidate_id: string | null;
+          policy_version: string;
+          metadata: Json;
+          resolved_at: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['notification_resolver_events']['Row'], 'id' | 'created_at' | 'winning_candidate_id' | 'policy_version' | 'metadata' | 'resolved_at'> & {
+          id?: string;
+          created_at?: string;
+          winning_candidate_id?: string | null;
+          policy_version?: string;
+          metadata?: Json;
+          resolved_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['notification_resolver_events']['Row']>;
+      };
       festivals: {
         Row: {
           id: string;
@@ -1193,6 +1276,18 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      persist_notification_candidate_resolution: {
+        Args: {
+          p_schedule_rows?: Json;
+          p_candidate_updates?: Json;
+          p_audit_events?: Json;
+        };
+        Returns: {
+          promoted_count: number;
+          candidate_count: number;
+          audit_count: number;
+        }[];
+      };
       get_post_comment_previews: {
         Args: { p_post_ids: string[]; p_preview_count?: number };
         Returns: {

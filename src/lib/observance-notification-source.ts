@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { filterWithheldJoinedRows } from './calendar/withheld';
 import { mapOccurrenceToFestival, type Festival } from '@/lib/festivals';
 
-type ReviewedObservanceKind = 'major' | 'regional' | 'vrat';
+export type ReviewedObservanceKind = 'major' | 'regional' | 'vrat';
 
 export type ReviewedObservance = Festival & {
   slug: string | null;
@@ -22,7 +22,7 @@ export type ObservanceNotificationPreview = {
   notificationKey: string;
 };
 
-const OCCURRENCE_BACKED_TITHI_SLUGS = new Set([
+export const OCCURRENCE_BACKED_TITHI_SLUGS = new Set([
   'ekadashi',
   'pradosh-vrat',
   'purnima-vrat',

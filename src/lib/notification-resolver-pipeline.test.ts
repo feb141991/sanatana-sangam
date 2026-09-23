@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   cleanupNotificationCandidatesRetention,
   executeCandidateResolverPipeline,
@@ -54,10 +55,10 @@ describe('notification-resolver-pipeline', () => {
     const mockSupabase = {
       rpc: vi.fn(),
       from: vi.fn(),
-    } as any;
+    };
 
     const res = await executeCandidateResolverPipeline({
-      supabase: mockSupabase,
+      supabase: mockSupabase as unknown as SupabaseClient,
       dryRun: false,
     });
 
@@ -91,13 +92,14 @@ describe('notification-resolver-pipeline', () => {
       from: vi.fn().mockImplementation((table: string) => {
         if (table === 'notification_candidates') return mockCandidateQuery;
         if (table === 'notification_schedule') return mockScheduleQuery;
+        if (table === 'notifications') return mockScheduleQuery;
         return {};
       }),
       rpc: vi.fn(),
-    } as any;
+    };
 
     const res = await executeCandidateResolverPipeline({
-      supabase: mockSupabase,
+      supabase: mockSupabase as unknown as SupabaseClient,
       now: new Date('2026-11-08T02:00:00.000Z'),
       dryRun: true,
     });
@@ -117,60 +119,79 @@ describe('notification-resolver-pipeline', () => {
     const cand2 = makeCandidate({ id: 'cand-2', event_type: 'devotional_engagement', priority: 51 });
     const cand3 = makeCandidate({ id: 'cand-3', event_type: 'devotional_engagement', priority: 52 });
 
-    const mockUpsert = vi.fn().mockReturnValue({
-      select: vi.fn().mockResolvedValue({ data: [{ id: 'sched-1' }, { id: 'sched-2' }], error: null }),
-    });
-    const mockUpdate = vi.fn().mockReturnValue({
-      eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-    });
-    const mockInsert = vi.fn().mockReturnValue({
-      select: vi.fn().mockResolvedValue({ data: [{ id: 'event-1' }, { id: 'event-2' }, { id: 'event-3' }], error: null }),
-    });
-
     const mockScheduleQuery = {
       select: vi.fn().mockReturnThis(),
       in: vi.fn(),
-      upsert: mockUpsert,
     };
     mockScheduleQuery.in = vi.fn().mockReturnValue({
       in: vi.fn().mockResolvedValue({ data: [], error: null }),
     });
 
     const mockSupabase = {
-      rpc: vi.fn().mockResolvedValue({ data: [cand1, cand2, cand3], error: null }),
+      rpc: vi.fn().mockImplementation((name: string) => name === 'claim_pending_notification_candidates'
+        ? Promise.resolve({ data: [cand1, cand2, cand3], error: null })
+        : Promise.resolve({ data: [{ promoted_count: 2, candidate_count: 3, audit_count: 3 }], error: null })),
       from: vi.fn().mockImplementation((table: string) => {
         if (table === 'notification_schedule') return mockScheduleQuery;
-        if (table === 'notification_candidates') return { update: mockUpdate };
-        if (table === 'notification_resolver_events') return { insert: mockInsert };
+        if (table === 'notifications') return mockScheduleQuery;
         return {};
       }),
-    } as any;
+    };
 
     const res = await executeCandidateResolverPipeline({
-      supabase: mockSupabase,
+      supabase: mockSupabase as unknown as SupabaseClient,
       now: new Date('2026-11-08T02:00:00.000Z'),
       dryRun: false,
     });
 
     expect(res.ok).toBe(true);
     expect(res.acceptedCount).toBe(2);
-    expect(res.deferredCount).toBe(1);
-    expect(mockUpsert).toHaveBeenCalledTimes(1);
+    expect(res.suppressedCount).toBe(1);
+    const persistCall = mockSupabase.rpc.mock.calls.find(([name]) => name === 'persist_notification_candidate_resolution');
+    expect(persistCall).toBeDefined();
+    expect(persistCall?.[1].p_schedule_rows).toHaveLength(2);
+    expect(persistCall?.[1].p_schedule_rows[0].notification_key).toBe('devotional_engagement:prompt-1:2026-11-08:general');
+    expect(persistCall?.[1].p_candidate_updates).toHaveLength(3);
+    expect(persistCall?.[1].p_audit_events).toHaveLength(3);
+    expect(mockSupabase.rpc).toHaveBeenCalledTimes(2);
+  });
 
-    // Verify notification_schedule payload
-    const upsertCall = mockUpsert.mock.calls[0];
-    const upsertRows = upsertCall[0];
-    const upsertOptions = upsertCall[1];
-    expect(upsertOptions).toEqual({ onConflict: 'user_id,notification_key' });
-    expect(upsertRows).toHaveLength(2);
-    expect(upsertRows[0].notification_key).toBe('devotional_engagement:prompt-1:2026-11-08:general');
-    expect(upsertRows[0].status).toBe('pending');
+  it('fails closed if delivery-history lookup fails', async () => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    process.env.NOTIFICATION_CANDIDATE_MODE_DEVOTIONAL_ENGAGEMENT = 'candidate';
+    const candidate = makeCandidate();
+    const failedQuery = {
+      select: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+      then: (resolve: (value: unknown) => unknown) => resolve({ data: null, error: { message: 'history unavailable' } }),
+    };
+    const supabase = {
+      rpc: vi.fn().mockResolvedValue({ data: [candidate], error: null }),
+      from: vi.fn().mockReturnValue(failedQuery),
+    };
 
-    // Verify updates to notification_candidates
-    expect(mockUpdate).toHaveBeenCalledTimes(3);
+    await expect(executeCandidateResolverPipeline({ supabase: supabase as unknown as SupabaseClient })).rejects.toThrow('history unavailable');
+    expect(supabase.rpc).toHaveBeenCalledTimes(1);
+  });
 
-    // Verify audit logs written
-    expect(mockInsert).toHaveBeenCalledTimes(1);
+  it('surfaces atomic persistence failure instead of reporting successful resolution', async () => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    process.env.NOTIFICATION_CANDIDATE_MODE_DEVOTIONAL_ENGAGEMENT = 'candidate';
+    const candidate = makeCandidate();
+    const okQuery = {
+      select: vi.fn().mockReturnThis(),
+      in: vi.fn(),
+      then: (resolve: (value: unknown) => unknown) => resolve({ data: [], error: null }),
+    };
+    okQuery.in = vi.fn().mockReturnValue(okQuery);
+    const supabase = {
+      rpc: vi.fn().mockImplementation((name: string) => name === 'claim_pending_notification_candidates'
+        ? Promise.resolve({ data: [candidate], error: null })
+        : Promise.resolve({ data: null, error: { message: 'transaction rolled back' } })),
+      from: vi.fn().mockReturnValue(okQuery),
+    };
+
+    await expect(executeCandidateResolverPipeline({ supabase: supabase as unknown as SupabaseClient })).rejects.toThrow('transaction rolled back');
   });
 
   it('purges terminal candidates and audit events older than 90 days', async () => {
@@ -198,9 +219,9 @@ describe('notification-resolver-pipeline', () => {
         }
         return {};
       }),
-    } as any;
+    };
 
-    const res = await cleanupNotificationCandidatesRetention(mockSupabase, 90);
+    const res = await cleanupNotificationCandidatesRetention(mockSupabase as unknown as SupabaseClient, 90);
     expect(res.candidatesPurged).toBe(2);
     expect(res.eventsPurged).toBe(1);
   });

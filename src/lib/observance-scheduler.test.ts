@@ -46,6 +46,19 @@ describe('observance scheduler', () => {
       route_kind: 'vrat',
       route_slug: 'karva-chauth',
     },
+    {
+      id: 'occ-somvar-vrat-2026',
+      name: 'Shravan Somvar Vrat',
+      emoji: '🔱',
+      date: '2026-11-06',
+      type: 'vrat',
+      slug: 'somvar-vrat',
+      tradition: 'hindu',
+      description: 'Sacred fast dedicated to Lord Shiva',
+      sourceEligible: true,
+      route_kind: 'vrat',
+      route_slug: 'somvar-vrat',
+    },
   ];
 
   const defaultUser: ObservanceProfile = {
@@ -263,5 +276,42 @@ describe('observance scheduler', () => {
     expect(
       vratOnlyResult.candidates.every((c) => c.notification_type === 'vrat')
     ).toBe(true);
+  });
+
+  it('uses canonical occurrence scope instead of treating missing scope as universal', () => {
+    const scopedOccurrence: ReviewedObservance = {
+      ...mockFestivals[0],
+      calendar_profile: 'north-indian',
+      sampradaya: 'vaishnava',
+    };
+    const result = generateObservanceScheduleCandidates({
+      users: [{ ...defaultUser, calendar_profile: 'surya-siddhanta', sampradaya: 'smarta' }],
+      observances: [scopedOccurrence],
+      now: new Date('2026-11-01T00:00:00.000Z'),
+    });
+    expect(result.candidates).toHaveLength(0);
+    expect(result.stats.suppressedReasons.calendar_profile_not_applicable).toBeGreaterThan(0);
+  });
+
+  it('routes occurrence-backed tithis through the distinct tithi preference and mode', () => {
+    const tithi: ReviewedObservance = { ...mockFestivals[1], slug: 'ekadashi' };
+    const result = generateObservanceScheduleCandidates({
+      users: [{ ...defaultUser, wants_vrat_reminders: false, wants_tithi_reminders: true }],
+      observances: [tithi],
+      now: new Date('2026-11-01T00:00:00.000Z'),
+    });
+    expect(result.candidates.length).toBeGreaterThan(0);
+    expect(result.candidates.every((candidate) => candidate.notification_type === 'tithi')).toBe(true);
+    expect(result.candidates.every((candidate) => candidate.metadata.category === 'tithi')).toBe(true);
+  });
+
+  it('fails closed when a profile has no valid IANA timezone', () => {
+    const result = generateObservanceScheduleCandidates({
+      users: [{ ...defaultUser, timezone: 'Mars/Olympus_Mons' }],
+      observances: [mockFestivals[0]],
+      now: new Date('2026-11-01T00:00:00.000Z'),
+    });
+    expect(result.candidates).toHaveLength(0);
+    expect(result.stats.suppressedReasons.invalid_timezone).toBe(1);
   });
 });

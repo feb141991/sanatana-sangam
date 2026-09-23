@@ -43,7 +43,7 @@ describe('nitya-candidate-producer', () => {
       expect(candidate?.body).toContain(MORNING_NITYA_NUDGE.hindu.body);
       // 05:00 IST = 23:30 UTC of previous day
       expect(candidate?.scheduled_for).toBe('2026-09-22T23:30:00.000Z');
-      expect(candidate?.metadata?.priority_class).toBe('approved_ritual_window');
+      expect(candidate?.metadata).toMatchObject({ priority_class: 'approved_ritual_window' });
     });
 
     it('suppresses morning candidate if wants_nitya_reminders === false', () => {
@@ -97,7 +97,7 @@ describe('nitya-candidate-producer', () => {
       expect(candidate?.body).toBe(MADHYAHN_NITYA_NUDGE.hindu.body);
       // 12:00 IST = 06:30 UTC
       expect(candidate?.scheduled_for).toBe('2026-09-23T06:30:00.000Z');
-      expect(candidate?.metadata?.priority_class).toBe('approved_ritual_window');
+      expect(candidate?.metadata).toMatchObject({ priority_class: 'approved_ritual_window' });
     });
 
     it('suppresses midday candidate if wants_madhyahn_reminder is not true', () => {
@@ -134,7 +134,7 @@ describe('nitya-candidate-producer', () => {
       expect(candidate?.body).toBe(SANDHYA_NITYA_NUDGE.hindu.body);
       // 18:00 IST = 12:30 UTC
       expect(candidate?.scheduled_for).toBe('2026-09-23T12:30:00.000Z');
-      expect(candidate?.metadata?.priority_class).toBe('approved_ritual_window');
+      expect(candidate?.metadata).toMatchObject({ priority_class: 'approved_ritual_window' });
     });
 
     it('suppresses evening candidate if wants_evening_reminder is not true', () => {

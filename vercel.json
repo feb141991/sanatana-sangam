@@ -22,6 +22,10 @@
       "schedule": "30 5 * * *"
     },
     {
+      "path": "/api/cron/observance-schedule?daysAhead=30",
+      "schedule": "0 6 * * *"
+    },
+    {
       "path": "/api/cron/shloka-reminder",
       "schedule": "0 6 * * *"
     },

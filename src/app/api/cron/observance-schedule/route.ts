@@ -56,7 +56,7 @@ export async function GET(request: Request) {
     categoryParamRaw === 'festival' || categoryParamRaw === 'vrat' || categoryParamRaw === 'tithi'
       ? categoryParamRaw
       : 'all';
-  const daysAhead = Math.max(1, Math.min(30, Number(url.searchParams.get('daysAhead') ?? 10) || 10));
+  const daysAhead = Math.max(1, Math.min(30, Number(url.searchParams.get('daysAhead') ?? 30) || 30));
   const now = new Date();
 
   const modeFestival = getObservancePipelineMode('festival');
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
         scheduledCount: 0,
       });
     }
-    if (categoryParam === 'all' && modeFestival !== 'schedule' && modeVrat !== 'schedule') {
+    if (categoryParam === 'all' && modeFestival !== 'schedule' && modeVrat !== 'schedule' && modeTithi !== 'schedule') {
       return NextResponse.json({
         message: `Observance schedule skipped: no observance categories are in 'schedule' mode`,
         pipelineModes: { festival: modeFestival, vrat: modeVrat, tithi: modeTithi },
@@ -152,6 +152,9 @@ export async function GET(request: Request) {
     if (categoryParam === 'all' || categoryParam === 'vrat') {
       allowedKinds.push('vrat');
     }
+    if (categoryParam === 'tithi') {
+      allowedKinds.push('vrat');
+    }
 
     const { observances: rawObservances, error: observanceError } =
       await fetchReviewedObservancesForNotifications(supabase, allowedKinds);
@@ -169,8 +172,12 @@ export async function GET(request: Request) {
     }
 
     // 3. Filter observances to relevant upcoming date window
-    const todayIso = now.toISOString().slice(0, 10);
-    const maxDateIso = shiftCivilDate(todayIso, daysAhead);
+    // Occurrence dates are civil dates qualified by their own calendar profile;
+    // use a one-day UTC cushion at both edges so user timezones near midnight
+    // aren't excluded by the cron host's UTC date.
+    const utcToday = now.toISOString().slice(0, 10);
+    const todayIso = shiftCivilDate(utcToday, -1) ?? utcToday;
+    const maxDateIso = shiftCivilDate(utcToday, daysAhead + 1) ?? utcToday;
     const windowObservances = rawObservances.filter(
       (o) => o.date >= todayIso && o.date <= maxDateIso
     );

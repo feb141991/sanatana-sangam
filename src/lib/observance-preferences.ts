@@ -58,7 +58,9 @@ export function mapProfileToObservancePreferences(
   }
 
   const validLeadDays = sanitizeObservanceLeadDays(profile.observance_reminder_lead_days);
-  const leadDays = validLeadDays && validLeadDays.length > 0 ? validLeadDays : DEFAULT_LEAD_DAYS;
+  // An explicitly empty array means the user disabled every reminder offset;
+  // only a missing/invalid field falls back to the documented defaults.
+  const leadDays = validLeadDays ?? DEFAULT_LEAD_DAYS;
 
   const audience = profile.gender_context === 'female' ? 'female' : 'not_female';
 
