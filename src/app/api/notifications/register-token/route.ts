@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { recordPushTokenEvent } from '@/lib/push-token-audit';
 
 // --- Push token registration -------------------------------------------------
@@ -36,7 +36,7 @@ type RegisterBody = {
 export async function POST(request: NextRequest) {
   const { user, error } = await getApiUser(request);
   if (!user) {
-    return NextResponse.json({ error: error?.message ?? 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   let body: RegisterBody;
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const { user, error } = await getApiUser(request);
   if (!user) {
-    return NextResponse.json({ error: error?.message ?? 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   let body: RegisterBody;

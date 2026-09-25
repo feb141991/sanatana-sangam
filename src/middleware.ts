@@ -68,15 +68,46 @@ const ALWAYS_PUBLIC_PREFIX = [
   "/robots",
 ];
 
+// Request correlation ID. Generated once per request, here, so every log
+// line and response this request touches -- middleware, getApiUser's
+// authFailure (src/lib/api-auth.ts, which already reads this exact header
+// and falls back to generating its own if absent), route handlers, any
+// future log drain -- can be tied back to the same request. Without this,
+// "a 401 followed by a 200" was a pattern to investigate, not proof it was
+// the same request (see the auth observability review this fixes).
+// UUID v4, matching api-auth.ts's requestIdFor() validation regex exactly.
+//
+// Deliberately ALWAYS generated fresh here, never read from an incoming
+// x-request-id -- unlike api-auth.ts's own requestIdFor(), which trusts an
+// existing valid one. That asymmetry is intentional, not an inconsistency:
+// middleware is the first server-side code this request reaches, so it's
+// the right place to establish "a new id starts here," rather than let a
+// client (or anyone curling the API directly) choose the id that ends up
+// in server logs -- a client could otherwise reuse the same id across many
+// requests and make log correlation useless, or spoof an id to make an
+// unrelated request appear to match one from a bug report. api-auth.ts's
+// fallback exists for robustness (never crash if middleware didn't run,
+// e.g. a direct function invocation in a test), not to honor client input.
+function generateRequestId(): string {
+  return crypto.randomUUID();
+}
+
 export async function middleware(req: NextRequest) {
+  const requestId = generateRequestId();
+  let response: NextResponse;
   try {
-    return await middlewareHandler(req);
+    response = await middlewareHandler(req, requestId);
   } catch (err) {
     // Never let an unhandled throw reach Vercel's edge — it returns 403.
     // Fall through and let the request proceed normally.
-    console.error("[middleware] unhandled error:", err);
-    return NextResponse.next();
+    console.error("[middleware] unhandled error:", { requestId, err });
+    response = NextResponse.next();
   }
+  // Set on every exit path (redirects, JSON errors, pass-through) from one
+  // place, rather than touching each of middlewareHandler's several return
+  // points individually.
+  response.headers.set("x-request-id", requestId);
+  return response;
 }
 
 function isAuthCookieName(name: string): boolean {
@@ -179,10 +210,16 @@ async function getMiddlewareUserWithTimeout(
   }
 }
 
-async function middlewareHandler(req: NextRequest) {
+async function middlewareHandler(req: NextRequest, requestId: string) {
   const { pathname } = req.nextUrl;
   const envPreviewKey = process.env.PREVIEW_KEY ?? "";
-  const res = NextResponse.next();
+  // Forwarded as a REQUEST header (not just set on the response below) so
+  // the route handler that actually runs next -- e.g. getApiUser in
+  // src/lib/api-auth.ts -- sees req.headers.get('x-request-id') already
+  // populated, instead of falling back to generating its own separate id.
+  const forwardedHeaders = new Headers(req.headers);
+  forwardedHeaders.set("x-request-id", requestId);
+  const res = NextResponse.next({ request: { headers: forwardedHeaders } });
 
   // OAuth callback requests must reach the route handler even when the browser
   // carries stale Supabase cookies. Otherwise middleware clears the stale cookie

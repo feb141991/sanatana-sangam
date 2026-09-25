@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { randomUUID } from 'node:crypto';
 
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { classifyApiAuthFailure } from "@/lib/api-auth-status";
@@ -30,12 +31,20 @@ type ApiUserResult =
 const AUTH_TIMEOUT_MS = 4_000;
 
 function withAuthTimeout<T>(promise: Promise<T>): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => {
-      setTimeout(() => reject(new Error('Auth check timed out')), AUTH_TIMEOUT_MS);
-    }),
-  ]);
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<T>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error('Auth check timed out')), AUTH_TIMEOUT_MS);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
+}
+
+function requestIdFor(req: NextRequest): string {
+  const candidate = req.headers.get('x-request-id');
+  return candidate && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(candidate)
+    ? candidate
+    : randomUUID();
 }
 
 function getBearerToken(req: NextRequest) {
@@ -49,19 +58,33 @@ export function getApiAuthFailureResponse(error: unknown, headers?: HeadersInit)
   const responseHeaders = new Headers(headers);
   responseHeaders.set('Cache-Control', 'no-store');
   if (failure.status === 503) responseHeaders.set('Retry-After', '5');
-  return NextResponse.json({ error: failure.message, code: failure.code }, {
+  const requestId = typeof error === 'object' && error !== null && 'requestId' in error &&
+    typeof error.requestId === 'string' ? error.requestId : null;
+  if (requestId) responseHeaders.set('X-Request-ID', requestId);
+  return NextResponse.json({ error: failure.message, code: failure.code, ...(requestId ? { requestId } : {}) }, {
     status: failure.status,
     headers: responseHeaders,
   });
 }
 
-function authFailure(req: NextRequest, error: unknown): ApiUserResult {
+function authFailure(req: NextRequest, error: unknown, durationMs: number): ApiUserResult {
   const failure = classifyApiAuthFailure(error);
+  const requestId = requestIdFor(req);
   // Never log JWTs, headers, user details or provider error messages.
-  console.warn('[api-auth]', { path: req.nextUrl.pathname, status: failure.status, code: failure.code });
+  console.warn('[api-auth]', {
+    path: req.nextUrl.pathname,
+    status: failure.status,
+    code: failure.code,
+    durationMs,
+    requestId,
+  });
   return {
     user: null,
-    error: Object.assign(new Error(failure.message), { status: failure.status, code: failure.code }),
+    error: Object.assign(new Error(failure.message), {
+      status: failure.status,
+      code: failure.code,
+      requestId,
+    }),
     supabase: null,
   };
 }
@@ -82,6 +105,7 @@ function authFailure(req: NextRequest, error: unknown): ApiUserResult {
  */
 export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
   const token = getBearerToken(req);
+  const startedAt = Date.now();
 
   try {
 
@@ -108,7 +132,7 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
       return { user: bearerResult.data.user, error: null, supabase: bearerClient };
     }
 
-    return authFailure(req, bearerResult.error);
+    return authFailure(req, bearerResult.error, Date.now() - startedAt);
   }
 
   // 2. Fallback path: Web callers with cookie session
@@ -119,8 +143,8 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
       return { user: cookieResult.data.user, error: null, supabase: cookieClient };
     }
 
-    return authFailure(req, cookieResult.error);
+    return authFailure(req, cookieResult.error, Date.now() - startedAt);
   } catch (err: unknown) {
-    return authFailure(req, err);
+    return authFailure(req, err, Date.now() - startedAt);
   }
 }

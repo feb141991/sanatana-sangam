@@ -16,7 +16,7 @@ vi.mock('@/lib/supabase-server', () => ({
   createServerSupabaseClient: (...args: unknown[]) => mocks.createServerSupabaseClient(...args),
 }));
 
-import { getApiUser } from './api-auth';
+import { getApiAuthFailureResponse, getApiUser } from './api-auth';
 
 describe('getApiUser auth failure contract', () => {
   beforeEach(() => {
@@ -55,6 +55,43 @@ describe('getApiUser auth failure contract', () => {
 
     expect(result.error).toMatchObject({ status: 503, code: 'AUTH_UNAVAILABLE' });
     expect(result.error?.message).toBe('Authentication temporarily unavailable');
+  });
+
+  it('uses one request id in auth logs and the retryable response', async () => {
+    const requestId = 'a1b2c3d4-e5f6-4789-8123-456789abcdef';
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    mocks.bearerGetUser.mockRejectedValue(new Error('provider transport detail'));
+
+    const result = await getApiUser(new NextRequest('http://localhost/api/example', {
+      headers: { Authorization: 'Bearer token', 'X-Request-ID': requestId },
+    }));
+    const response = getApiAuthFailureResponse(result.error);
+    const body = await response.json();
+
+    expect(result.error).toMatchObject({ status: 503, code: 'AUTH_UNAVAILABLE', requestId });
+    expect(warn).toHaveBeenCalledWith('[api-auth]', expect.objectContaining({
+      path: '/api/example', status: 503, code: 'AUTH_UNAVAILABLE', requestId,
+    }));
+    expect(response.status).toBe(503);
+    expect(response.headers.get('x-request-id')).toBe(requestId);
+    expect(body.requestId).toBe(requestId);
+    expect(body.error).not.toContain('provider transport detail');
+    warn.mockRestore();
+  });
+
+  it('clears the auth timeout timer when the provider responds promptly', async () => {
+    vi.useFakeTimers();
+    try {
+      mocks.bearerGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
+      const result = await getApiUser(new NextRequest('http://localhost/api/example', {
+        headers: { Authorization: 'Bearer valid-token' },
+      }));
+
+      expect(result.user?.id).toBe('user-1');
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('classifies a thrown auth transport failure as 503 without exposing its message', async () => {
