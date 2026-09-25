@@ -32,6 +32,7 @@ type NotificationPreferencesState = {
   madhyahn_reminder_time: string;
   wants_evening_reminder: boolean;
   evening_reminder_time: string;
+  wants_sankalpa_midpoint_reminders: boolean;
 };
 
 type SectionCopy = {
@@ -59,6 +60,8 @@ type SectionCopy = {
   quizReminderHint: string;
   nityaReminder: string;
   nityaReminderHint: string;
+  sankalpaReminder: string;
+  sankalpaReminderHint: string;
   accountEyebrow: string;
   accountTitle: string;
   accountDescription: string;
@@ -73,6 +76,8 @@ type SectionCopy = {
   traditionWarning: string;
   consentToggleLabel: string;
   consentToggleHint: string;
+  activityConsentLabel: string;
+  activityConsentHint: string;
 };
 
 const COPY: Record<AppLang, SectionCopy> = {
@@ -101,6 +106,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     quizReminderHint: 'Prompt for your daily reflection quiz.',
     nityaReminder: 'Nitya karma reminder',
     nityaReminderHint: 'A reminder to keep your daily duties steady.',
+    sankalpaReminder: 'Sankalpa midpoint reminder',
+    sankalpaReminderHint: 'One gentle reminder halfway through an active vow. The vow text is never included.',
     accountEyebrow: 'Account',
     accountTitle: 'Membership and control',
     accountDescription: 'Manage your subscription or close the account permanently.',
@@ -115,6 +122,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     traditionWarning: 'Changing tradition will update your daily quiz and recommendations.',
     consentToggleLabel: 'Tradition-aware personalization',
     consentToggleHint: 'Uses your spiritual preference data to tailor recommendations.',
+    activityConsentLabel: 'Practice activity personalization',
+    activityConsentHint: 'Allow recent practice activity to reorder Mood and Sankalpa suggestions. Turn this off any time.',
   },
   hi: {
     pageTitle: 'सेटिंग्स',
@@ -141,6 +150,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     quizReminderHint: 'दैनिक चिंतन क्विज़ के लिए संकेत।',
     nityaReminder: 'नित्य कर्म स्मरण',
     nityaReminderHint: 'दैनिक कर्तव्य स्थिर रखने का स्मरण।',
+    sankalpaReminder: 'संकल्प के मध्य का स्मरण',
+    sankalpaReminderHint: 'सक्रिय संकल्प के बीच में एक शांत स्मरण। संकल्प का मूल पाठ शामिल नहीं होगा।',
     accountEyebrow: 'खाता',
     accountTitle: 'सदस्यता और नियंत्रण',
     accountDescription: 'अपनी सदस्यता प्रबंधित करें या खाता स्थायी रूप से बंद करें।',
@@ -155,6 +166,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     traditionWarning: 'परंपरा बदलने पर आपका दैनिक क्विज़ और सुझाव अपडेट होंगे।',
     consentToggleLabel: 'परंपरा-अनुरूप निजीकरण',
     consentToggleHint: 'आपके सुझाव तैयार करने के लिए आपकी आध्यात्मिक पसंद के डेटा का उपयोग करता है।',
+    activityConsentLabel: 'साधना गतिविधि से सुझाव',
+    activityConsentHint: 'हाल की साधना गतिविधि से मूड और संकल्प सुझावों का क्रम बदलने की अनुमति दें। इसे कभी भी बंद कर सकते हैं।',
   },
   pa: {
     pageTitle: 'ਸੈਟਿੰਗਜ਼',
@@ -181,6 +194,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     quizReminderHint: 'ਰੋਜ਼ਾਨਾ ਵਿਚਾਰ ਕੁਇਜ਼ ਲਈ ਸੰਕੇਤ।',
     nityaReminder: 'ਨਿੱਤ ਕਰਮ ਯਾਦ ਦਿਹਾਣੀ',
     nityaReminderHint: 'ਰੋਜ਼ਾਨਾ ਫਰਜ਼ਾਂ ਨੂੰ ਸਥਿਰ ਰੱਖਣ ਲਈ ਸੰਕੇਤ।',
+    sankalpaReminder: 'ਸੰਕਲਪ ਦੇ ਅੱਧ ਵਿਚਕਾਰ ਯਾਦ ਦਿਹਾਣੀ',
+    sankalpaReminderHint: 'ਚੱਲ ਰਹੇ ਸੰਕਲਪ ਦੇ ਅੱਧ ਵਿਚਕਾਰ ਇੱਕ ਨਰਮ ਯਾਦ ਦਿਹਾਣੀ। ਸੰਕਲਪ ਦਾ ਮੂਲ ਪਾਠ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋਵੇਗਾ।',
     accountEyebrow: 'ਖਾਤਾ',
     accountTitle: 'ਮੈਂਬਰਸ਼ਿਪ ਅਤੇ ਨਿਯੰਤਰਣ',
     accountDescription: 'ਆਪਣੀ ਮੈਂਬਰਸ਼ਿਪ ਸੰਭਾਲੋ ਜਾਂ ਖਾਤਾ ਸਦਾ ਲਈ ਬੰਦ ਕਰੋ।',
@@ -195,6 +210,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     traditionWarning: 'ਪਰੰਪਰਾ ਬਦਲਣ ਨਾਲ ਤੁਹਾਡਾ ਰੋਜ਼ਾਨਾ ਕੁਇਜ਼ ਅਤੇ ਸਿਫ਼ਾਰਸ਼ਾਂ ਅੱਪਡੇਟ ਹੋਣਗੀਆਂ।',
     consentToggleLabel: 'ਪਰੰਪਰਾ-ਅਨੁਸਾਰ ਨਿੱਜੀਕਰਨ',
     consentToggleHint: 'ਤੁਹਾਡੀਆਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਤਿਆਰ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਅਧਿਆਤਮਿਕ ਪਸੰਦ ਦੇ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।',
+    activityConsentLabel: 'ਸਾਧਨਾ ਸਰਗਰਮੀ ਅਨੁਸਾਰ ਸੁਝਾਅ',
+    activityConsentHint: 'ਹਾਲੀਆ ਸਾਧਨਾ ਸਰਗਰਮੀ ਨਾਲ ਮੂਡ ਅਤੇ ਸੰਕਲਪ ਸੁਝਾਵਾਂ ਦਾ ਕ੍ਰਮ ਬਦਲਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਇਹ ਚੋਣ ਕਦੇ ਵੀ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।',
   },
 };
 
@@ -244,6 +261,7 @@ function sameNotificationState(
     && a.wants_madhyahn_reminder === b.wants_madhyahn_reminder
     && a.madhyahn_reminder_time === b.madhyahn_reminder_time
     && a.wants_evening_reminder === b.wants_evening_reminder
+    && a.wants_sankalpa_midpoint_reminders === b.wants_sankalpa_midpoint_reminders
     && a.evening_reminder_time === b.evening_reminder_time
   );
 }
@@ -358,9 +376,9 @@ function ReminderRow({
   label: string;
   hint: string;
   enabled: boolean;
-  time: string;
+  time?: string;
   onToggle: () => void;
-  onTimeChange: (value: string) => void;
+  onTimeChange?: (value: string) => void;
 }) {
   return (
     <div className="rounded-2xl border p-4" style={{ borderColor: 'var(--card-border)', background: 'var(--surface-soft)' }}>
@@ -373,19 +391,21 @@ function ReminderRow({
           type="button"
           onClick={onToggle}
           aria-pressed={enabled}
-          className="relative h-7 w-12 rounded-full transition"
-          style={{ background: enabled ? 'var(--brand-primary)' : 'var(--card-border)' }}
+          aria-label={label}
+          className="relative flex h-11 w-14 shrink-0 items-center justify-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)]"
         >
-          <span
-            className="absolute top-1 h-5 w-5 rounded-full transition"
-            style={{
-              left: enabled ? 'calc(100% - 1.5rem)' : '0.25rem',
-              background: 'var(--card-bg)',
-            }}
-          />
+          <span className="relative block h-7 w-12 rounded-full transition" style={{ background: enabled ? 'var(--brand-primary)' : 'var(--card-border)' }}>
+            <span
+              className="absolute top-1 h-5 w-5 rounded-full transition"
+              style={{
+                left: enabled ? 'calc(100% - 1.5rem)' : '0.25rem',
+                background: 'var(--card-bg)',
+              }}
+            />
+          </span>
         </button>
       </div>
-      {enabled ? (
+      {enabled && time && onTimeChange ? (
         <div className="mt-3">
           <Input type="time" value={time} onChange={(event) => onTimeChange(event.target.value)} />
         </div>
@@ -408,6 +428,8 @@ export default function SettingsClient({
   initialMadhyahnReminderTime,
   initialWantsEveningReminder,
   initialEveningReminderTime,
+  initialWantsSankalpaMidpointReminders,
+  initialConsentActivityPersonalization,
   initialNityaRhythmMode,
   subscriptionStatus,
   initialConsentReligiousData,
@@ -426,6 +448,8 @@ export default function SettingsClient({
   initialWantsEveningReminder: boolean;
   initialConsentReligiousData: boolean;
   initialEveningReminderTime: string;
+  initialWantsSankalpaMidpointReminders: boolean;
+  initialConsentActivityPersonalization: boolean;
   initialNityaRhythmMode: string;
   subscriptionStatus: SubscriptionStatus;
 }) {
@@ -460,6 +484,7 @@ export default function SettingsClient({
     madhyahn_reminder_time: initialMadhyahnReminderTime,
     wants_evening_reminder: initialWantsEveningReminder,
     evening_reminder_time: initialEveningReminderTime,
+    wants_sankalpa_midpoint_reminders: initialWantsSankalpaMidpointReminders,
   });
   const [savedNotificationState, setSavedNotificationState] = useState<NotificationPreferencesState>({
     japa_reminder_enabled: initialJapaReminderEnabled,
@@ -472,11 +497,14 @@ export default function SettingsClient({
     madhyahn_reminder_time: initialMadhyahnReminderTime,
     wants_evening_reminder: initialWantsEveningReminder,
     evening_reminder_time: initialEveningReminderTime,
+    wants_sankalpa_midpoint_reminders: initialWantsSankalpaMidpointReminders,
   });
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [savingTradition, setSavingTradition] = useState(false);
   const [consentReligiousData, setConsentReligiousData] = useState(initialConsentReligiousData);
   const [savingConsent, setSavingConsent] = useState(false);
+  const [consentActivityPersonalization, setConsentActivityPersonalization] = useState(initialConsentActivityPersonalization);
+  const [savingActivityConsent, setSavingActivityConsent] = useState(false);
   const savedNotificationRef = useRef(savedNotificationState);
   const hasMountedNotificationRef = useRef(false);
 
@@ -584,6 +612,24 @@ export default function SettingsClient({
       showErrorToast(copy.saveFailed);
     } finally {
       setSavingConsent(false);
+    }
+  }
+
+  async function handleToggleActivityConsent() {
+    if (savingActivityConsent) return;
+
+    const previous = consentActivityPersonalization;
+    const next = !previous;
+    setSavingActivityConsent(true);
+    setConsentActivityPersonalization(next);
+    try {
+      await profileMutation.mutateAsync({ consent_activity_personalization: next });
+      showSavedToast(copy.saved);
+    } catch {
+      setConsentActivityPersonalization(previous);
+      showErrorToast(copy.saveFailed);
+    } finally {
+      setSavingActivityConsent(false);
     }
   }
 
@@ -751,6 +797,15 @@ export default function SettingsClient({
                 nitya_reminder_time: value,
               }))}
             />
+            <ReminderRow
+              label={copy.sankalpaReminder}
+              hint={copy.sankalpaReminderHint}
+              enabled={notificationState.wants_sankalpa_midpoint_reminders}
+              onToggle={() => setNotificationState((current) => ({
+                ...current,
+                wants_sankalpa_midpoint_reminders: !current.wants_sankalpa_midpoint_reminders,
+              }))}
+            />
             {initialNityaRhythmMode !== 'morning' ? (
               <>
                 <ReminderRow
@@ -807,19 +862,53 @@ export default function SettingsClient({
                   onClick={handleToggleConsentReligiousData}
                   disabled={savingConsent}
                   aria-pressed={consentReligiousData}
-                  className="relative h-7 w-12 shrink-0 rounded-full transition"
+                  aria-label={copy.consentToggleLabel}
+                  className="relative flex h-11 w-14 shrink-0 items-center justify-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)]"
                   style={{
-                    background: consentReligiousData ? 'var(--brand-primary)' : 'var(--card-border)',
                     opacity: savingConsent ? 0.6 : 1,
                   }}
                 >
-                  <span
-                    className="absolute top-1 h-5 w-5 rounded-full transition"
-                    style={{
-                      left: consentReligiousData ? 'calc(100% - 1.5rem)' : '0.25rem',
-                      background: 'var(--card-bg)',
-                    }}
-                  />
+                  <span className="relative block h-7 w-12 rounded-full transition" style={{ background: consentReligiousData ? 'var(--brand-primary)' : 'var(--card-border)' }}>
+                    <span
+                      className="absolute top-1 h-5 w-5 rounded-full transition"
+                      style={{
+                        left: consentReligiousData ? 'calc(100% - 1.5rem)' : '0.25rem',
+                        background: 'var(--card-bg)',
+                      }}
+                    />
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              className="rounded-2xl border p-4"
+              style={{ borderColor: 'var(--card-border)', background: 'var(--surface-soft)' }}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-[color:var(--text-cream)]">{copy.activityConsentLabel}</p>
+                  <p className="mt-1 text-xs text-[color:var(--text-dim)]">{copy.activityConsentHint}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleActivityConsent}
+                  disabled={savingActivityConsent}
+                  aria-pressed={consentActivityPersonalization}
+                  aria-label={copy.activityConsentLabel}
+                  className="relative flex h-11 w-14 shrink-0 items-center justify-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--brand-primary)]"
+                  style={{
+                    opacity: savingActivityConsent ? 0.6 : 1,
+                  }}
+                >
+                  <span className="relative block h-7 w-12 rounded-full transition" style={{ background: consentActivityPersonalization ? 'var(--brand-primary)' : 'var(--card-border)' }}>
+                    <span
+                      className="absolute top-1 h-5 w-5 rounded-full transition"
+                      style={{
+                        left: consentActivityPersonalization ? 'calc(100% - 1.5rem)' : '0.25rem',
+                        background: 'var(--card-bg)',
+                      }}
+                    />
+                  </span>
                 </button>
               </div>
             </div>

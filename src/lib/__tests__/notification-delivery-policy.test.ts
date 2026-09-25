@@ -24,6 +24,14 @@ describe("notification delivery policy", () => {
       .toBeNull();
   });
 
+  it("fails closed for Sankalpa midpoint reminders until the user explicitly opts in", () => {
+    const row = { notification_type: "sankalpa_midpoint", notification_key: "candidate:sankalpa-1:midpoint" };
+    expect(getNotificationPreferenceSkipReason(row, {})).toBe("sankalpa_midpoint_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_sankalpa_midpoint_reminders: false }))
+      .toBe("sankalpa_midpoint_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_sankalpa_midpoint_reminders: true })).toBeNull();
+  });
+
   it("routes Sanskar notifications to the Sanskara screen", () => {
     expect(getScheduledNotificationActionPath(sanskarRow)).toBe("/kul/sanskara");
   });

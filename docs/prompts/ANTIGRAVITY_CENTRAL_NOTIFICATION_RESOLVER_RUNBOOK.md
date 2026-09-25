@@ -83,6 +83,37 @@ send production notifications.
 - One scoped objective and one scoped commit per prompt. Do not push until independently
   reviewed.
 
+### Sankalpa midpoint + activity-personalization checkpoint (2026-09-25)
+
+- Practice-history use is controlled by a separate `profiles.consent_activity_personalization`
+  choice. It is independent of tradition/profile-data consent and defaults to false.
+- Mood recommendation ranking and Sankalpa suggestion anchoring read activity history only
+  when that choice is true. Sankalpa's optional AI response always retains one deterministic
+  practice-matched suggestion when a consented activity signal exists.
+- Midpoint reminders use a separate `profiles.wants_sankalpa_midpoint_reminders` opt-in,
+  default false. The candidate copy is generic and localized; it never includes or sends the
+  user's vow text to an AI provider.
+- `sankalpa_midpoint` is classified from the server-owned event type as
+  `explicit_user_requested`, so a user's opted-in ritual reminder is never suppressed by a
+  generic engagement cap.
+- The old direct-send cron is now a candidate-only producer. It requires both the global
+  resolver switch and `NOTIFICATION_CANDIDATE_MODE_SANKALPA_MIDPOINT=candidate`; its type
+  mode defaults to disabled. Candidate generation remains idempotent and uses the existing
+  candidate-to-`notification_schedule`-to-dispatch flow.
+- Migration `20260925015252_add_sankalpa_midpoint_reminder_preference.sql` is applied to
+  production project `mnbwodcswxoojndytngu`; the migration record and both `NOT NULL DEFAULT
+  false` columns were verified. Existing profiles have neither choice enabled. The matching
+  rollback is retained for recovery planning.
+- `NOTIFICATION_RESOLVER_ENABLED` and `NOTIFICATION_CANDIDATE_MODE_SANKALPA_MIDPOINT` are
+  absent from Vercel Production, so the new candidate producer remains disabled. No
+  notification was sent. The backend application change was deployed to production from a
+  clean release snapshot on 2026-09-25 (`dpl_8TNfSZSQsquCUG23MKbqQnHryv1M`, aliased to
+  `https://www.shoonaya.com`). The deployment included the 23 existing local commits ahead
+  of `origin/main` plus this scoped feature; uncommitted calendar/observance work was excluded.
+  The production build completed successfully. Candidate generation remains off until both
+  flags are deliberately configured; do not enable it as part of a store build without
+  separately reviewing the Native persistence and opt-in path.
+
 ---
 
 ## Prompt 0 - Ground-truth notification topology audit

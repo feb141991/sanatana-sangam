@@ -14,6 +14,7 @@ type PushPreferencePayload = {
   madhyahn_reminder_time?: string;
   wants_evening_reminder?: boolean;
   evening_reminder_time?: string;
+  wants_sankalpa_midpoint_reminders?: boolean;
 };
 
 type PushPreferenceKey = keyof PushPreferencePayload;
@@ -56,7 +57,8 @@ export async function GET(req: NextRequest) {
         wants_madhyahn_reminder,
         madhyahn_reminder_time,
         wants_evening_reminder,
-        evening_reminder_time
+        evening_reminder_time,
+        wants_sankalpa_midpoint_reminders
       `)
       .eq('id', user.id)
       .maybeSingle();
@@ -125,6 +127,13 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: 'wants_evening_reminder must be a boolean' }, { status: 400 });
       }
       updates.wants_evening_reminder = rawBody.wants_evening_reminder;
+    }
+
+    if ('wants_sankalpa_midpoint_reminders' in rawBody) {
+      if (typeof rawBody.wants_sankalpa_midpoint_reminders !== 'boolean') {
+        return NextResponse.json({ error: 'wants_sankalpa_midpoint_reminders must be a boolean' }, { status: 400 });
+      }
+      updates.wants_sankalpa_midpoint_reminders = rawBody.wants_sankalpa_midpoint_reminders;
     }
 
     for (const field of TIME_FIELDS) {

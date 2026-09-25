@@ -26,6 +26,8 @@ function ensureMockProfile(userId: string): Profile {
       spiritual_level: 'sadhaka',
       legacy_family_name: 'Sharma',
       consent_religious_data: true,
+      consent_activity_personalization: false,
+      wants_sankalpa_midpoint_reminders: false,
       consent_updated_at: new Date('2026-05-15T12:00:00.000Z').toISOString(),
       gotra: 'Bharadwaj',
       kul_devata: 'Radha Krishna',

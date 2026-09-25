@@ -20,6 +20,8 @@ const EDITABLE_BOOLEAN_FIELDS = new Set([
   "wants_community_notifications",
   "wants_family_notifications",
   "consent_religious_data",
+  "consent_activity_personalization",
+  "wants_sankalpa_midpoint_reminders",
 ]);
 
 const RASHIS = new Set([

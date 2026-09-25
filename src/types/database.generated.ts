@@ -5800,6 +5800,7 @@ export type Database = {
           city: string | null
           comm_prefs_set: boolean | null
           consent_religious_data: boolean
+          consent_activity_personalization: boolean
           consent_updated_at: string | null
           country: string | null
           country_code: string | null
@@ -5896,6 +5897,7 @@ export type Database = {
           observance_reminder_time: string
           wants_madhyahn_reminder: boolean | null
           wants_nitya_reminders: boolean
+          wants_sankalpa_midpoint_reminders: boolean
           wants_shloka_reminders: boolean
           weekly_seva: number | null
           whatsapp_number: string | null
@@ -5914,6 +5916,7 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_religious_data?: boolean
+          consent_activity_personalization?: boolean
           consent_updated_at?: string | null
           country?: string | null
           country_code?: string | null
@@ -6010,6 +6013,7 @@ export type Database = {
           observance_reminder_time?: string
           wants_madhyahn_reminder?: boolean | null
           wants_nitya_reminders?: boolean
+          wants_sankalpa_midpoint_reminders?: boolean
           wants_shloka_reminders?: boolean
           weekly_seva?: number | null
           whatsapp_number?: string | null
@@ -6028,6 +6032,7 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_religious_data?: boolean
+          consent_activity_personalization?: boolean
           consent_updated_at?: string | null
           country?: string | null
           country_code?: string | null
@@ -6123,6 +6128,7 @@ export type Database = {
           observance_reminder_time?: string
           wants_madhyahn_reminder?: boolean | null
           wants_nitya_reminders?: boolean
+          wants_sankalpa_midpoint_reminders?: boolean
           wants_shloka_reminders?: boolean
           weekly_seva?: number | null
           whatsapp_number?: string | null

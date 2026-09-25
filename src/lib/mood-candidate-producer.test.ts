@@ -90,6 +90,19 @@ describe('mood-candidate-producer', () => {
     expect(jainMidday?.body).toContain(MIDDAY_PROMPTS_BY_TRADITION.jain[0]);
   });
 
+  it('uses neutral prompts when a profile has no declared tradition', () => {
+    const candidate = produceMoodCandidate(
+      { ...baseDevotee, tradition: null },
+      'midday',
+      '2026-09-23',
+      { promptIndex: 0 },
+    );
+
+    expect(candidate?.body).toBe(`${MIDDAY_PROMPTS_BY_TRADITION.other[0]} Let scripture meet your mood.`);
+    expect(candidate?.tradition).toBe('other');
+    expect(getMoodPrompt('midday', null, 0)).toBe(MIDDAY_PROMPTS_BY_TRADITION.other[0]);
+  });
+
   it('allows custom title and body overrides', () => {
     const candidate = produceMoodCandidate(baseDevotee, 'midday', '2026-09-23', {
       customTitle: 'Special Reflection',

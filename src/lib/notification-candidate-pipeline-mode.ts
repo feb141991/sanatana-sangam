@@ -16,6 +16,7 @@ export const ALL_CANDIDATE_TYPES = [
   'observance',
   'dharm_veer',
   'quiz',
+  'sankalpa_midpoint',
   ...ALL_ROUTINE_TYPES,
   ...ALL_TIME_SENSITIVE_TYPES,
 ] as const;

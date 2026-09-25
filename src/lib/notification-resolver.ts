@@ -111,7 +111,7 @@ export function resolvePriorityClassForEventType(rawEventType: string): Notifica
   }
 
   // 2. Explicit user requested
-  if (['user_reminder', 'custom_reminder', 'explicit_request', 'user_sadhana_reminder'].includes(eventType)) {
+  if (['user_reminder', 'custom_reminder', 'explicit_request', 'user_sadhana_reminder', 'sankalpa_midpoint'].includes(eventType)) {
     return 'explicit_user_requested';
   }
 

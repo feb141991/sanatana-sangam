@@ -28,6 +28,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Mandali Daily Prompt Materialization](architecture/mandali-daily-prompt-materialization.md) — Atomic daily identity, UTC rotation, trusted official attribution, localization, and immutable published prompts
 - [Dharma Mitra RAG Source Governance](architecture/dharma-mitra-rag-source-governance.md) — Explicit source intent overrides profile tradition; prompt wording follows source status; pending corpora fail closed
 - [Observance-First Notification Delivery](architecture/observance-first-notification-delivery.md) — Reviewed observances use the existing durable scheduler; the candidate ledger is source-only infrastructure until staged migrations and cutover review
+- [Separate Activity Personalization Consent](architecture/activity-personalization-consent.md) — Practice-history recommendations and Sankalpa midpoint reminders each require their own explicit opt-in and use the central notification pipeline
 
 ### Product
 

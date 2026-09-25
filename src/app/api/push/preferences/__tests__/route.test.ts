@@ -87,4 +87,37 @@ describe('push/preferences route', () => {
       quiz_reminder_time: '15:30',
     });
   });
+
+  it('persists the explicit Sankalpa midpoint reminder preference', async () => {
+    const mockUpdate = vi.fn().mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ data: null, error: null }),
+    });
+    vi.mocked(getApiUser).mockResolvedValueOnce({
+      user: { id: 'user-1' },
+      error: null,
+      supabase: { from: vi.fn().mockReturnValue({ update: mockUpdate }) },
+    } as unknown as Awaited<ReturnType<typeof getApiUser>>);
+
+    const req = new NextRequest('https://shoonaya.com/api/push/preferences', {
+      method: 'PATCH',
+      body: JSON.stringify({ wants_sankalpa_midpoint_reminders: true }),
+    });
+    const res = await PATCH(req);
+    expect(res.status).toBe(200);
+    expect(mockUpdate).toHaveBeenCalledWith({ wants_sankalpa_midpoint_reminders: true });
+  });
+
+  it('rejects non-boolean Sankalpa reminder preferences', async () => {
+    vi.mocked(getApiUser).mockResolvedValueOnce({
+      user: { id: 'user-1' },
+      error: null,
+      supabase: {} as never,
+    } as unknown as Awaited<ReturnType<typeof getApiUser>>);
+    const req = new NextRequest('https://shoonaya.com/api/push/preferences', {
+      method: 'PATCH',
+      body: JSON.stringify({ wants_sankalpa_midpoint_reminders: 'yes' }),
+    });
+    const res = await PATCH(req);
+    expect(res.status).toBe(400);
+  });
 });

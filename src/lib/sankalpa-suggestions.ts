@@ -62,3 +62,18 @@ export function pickFallbackSuggestions(topPractice: SankalpaSuggestionPractice 
   const picked = [...preferred, ...rest].slice(0, count).map((s) => s.text);
   return picked;
 }
+
+/**
+ * Keeps one deterministic, practice-matched suggestion in the visible set
+ * even when the optional AI call succeeds. Activity data therefore has a
+ * predictable effect instead of merely being mentioned in a prompt.
+ */
+export function mergePracticeAnchoredSuggestions(
+  topPractice: SankalpaSuggestionPractice | null,
+  aiSuggestions: string[],
+  count = 4,
+): string[] {
+  const anchor = topPractice ? pickFallbackSuggestions(topPractice, 1) : [];
+  const fallback = pickFallbackSuggestions(topPractice, count);
+  return [...new Set([...anchor, ...aiSuggestions, ...fallback])].slice(0, count);
+}

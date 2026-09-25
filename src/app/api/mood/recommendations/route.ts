@@ -23,21 +23,31 @@ export async function GET(request: NextRequest) {
     const banned = await assertNotBanned(supabase, user.id);
     if (banned) return banned;
 
-    // Fetch last 50 check-ins to build personalized history
+    // Practice history is used only after a separate, explicit activity-
+    // personalization choice. Tradition/profile personalization remains a
+    // distinct setting and does not imply consent to use activity history.
     try {
-      const { data: checkins } = await supabase
-        .from('user_mood_checkins')
-        .select('clicked_action, completed_action, skipped_actions')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-        
-      if (checkins) {
-        history = checkins.map(c => ({
-          clicked_action: c.clicked_action,
-          completed_action: c.completed_action,
-          skipped_actions: Array.isArray(c.skipped_actions) ? c.skipped_actions : null
-        })) as MoodHistory[];
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('consent_activity_personalization')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profile?.consent_activity_personalization === true) {
+        const { data: checkins } = await supabase
+          .from('user_mood_checkins')
+          .select('clicked_action, completed_action, skipped_actions')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(50);
+
+        if (checkins) {
+          history = checkins.map(c => ({
+            clicked_action: c.clicked_action,
+            completed_action: c.completed_action,
+            skipped_actions: Array.isArray(c.skipped_actions) ? c.skipped_actions : null
+          })) as MoodHistory[];
+        }
       }
     } catch (e) {
       console.error('Failed to fetch mood history', e);

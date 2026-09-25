@@ -98,6 +98,29 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(json.persisted.updated_at).toBeUndefined();
   });
 
+  it("accepts the distinct activity-consent and Sankalpa reminder preferences", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-preferences" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({
+        consent_activity_personalization: true,
+        wants_sankalpa_midpoint_reminders: true,
+      }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({
+      consent_activity_personalization: true,
+      wants_sankalpa_midpoint_reminders: true,
+    });
+    expect(updatedUserFilter).toBe("user-preferences");
+  });
+
   it.each(["male", "prefer_not", "unknown"])(
     "rejects non-canonical gender_context value %s",
     async (genderContext) => {

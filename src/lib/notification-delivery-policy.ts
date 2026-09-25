@@ -9,12 +9,20 @@ export type NotificationProfile = {
   wants_festival_reminders?: boolean | null;
   wants_vrat_reminders?: boolean | null;
   wants_tithi_reminders?: boolean | null;
+  wants_sankalpa_midpoint_reminders?: boolean | null;
 };
 
 export function getNotificationPreferenceSkipReason(
   row: ScheduledNotificationRow,
   profile: NotificationProfile,
 ): string | null {
+  if (
+    row.notification_type === "sankalpa_midpoint" &&
+    profile.wants_sankalpa_midpoint_reminders !== true
+  ) {
+    return "sankalpa_midpoint_reminders_disabled";
+  }
+
   if (
     row.notification_type === "sanskar_milestone" &&
     profile.wants_family_notifications !== true
@@ -54,6 +62,7 @@ export function getScheduledNotificationActionPath(row: ScheduledNotificationRow
 
   const notificationType = row.notification_type ?? "generic";
   if (notificationType === "sanskar_milestone") return "/kul/sanskara";
+  if (notificationType === "sankalpa_midpoint") return "/sankalpa";
   if (notificationType === "sattvic_reminder") return "/bhakti/zen";
   if (notificationType.startsWith("nitya")) return "/nitya-karma";
   if (notificationType === "festival" || notificationType === "tithi") return "/panchang";
@@ -73,6 +82,10 @@ export function getScheduledNotificationPushData(
   if (row.notification_type === "sanskar_milestone") {
     data.sanskara_id = String(metadata.sanskara_id ?? "");
     data.kul_member_id = String(metadata.kul_member_id ?? "");
+  }
+
+  if (row.notification_type === "sankalpa_midpoint") {
+    data.sankalpa_id = String(metadata.sankalpa_id ?? "");
   }
 
   if (

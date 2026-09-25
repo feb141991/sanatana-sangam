@@ -29,6 +29,8 @@ const baseProfile: MandaliProfile = {
   spiritual_level: 'sadhaka',
   legacy_family_name: null,
   consent_religious_data: false,
+  consent_activity_personalization: false,
+  wants_sankalpa_midpoint_reminders: false,
   consent_updated_at: null,
   gotra: null,
   kul_devata: null,

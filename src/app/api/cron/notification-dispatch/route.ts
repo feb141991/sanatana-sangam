@@ -128,7 +128,7 @@ export async function GET(request: Request) {
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
     let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders")
+      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders")
       .in("id", userIds);
 
     if (profileErr && (profileErr as any).code === "42703") {

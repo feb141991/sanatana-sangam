@@ -4,6 +4,7 @@ import { assertNotBanned } from '@/lib/api-guards';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import {
   pickFallbackSuggestions,
+  mergePracticeAnchoredSuggestions,
   type SankalpaSuggestionPractice,
 } from '@/lib/sankalpa-suggestions';
 
@@ -56,21 +57,24 @@ export async function GET(req: NextRequest) {
   if (banned) return banned;
 
   // ── Context gathering (best-effort; never blocks the response) ─────────
-  let tradition = 'hindu';
+  let tradition: string | null = null;
+  let activityPersonalizationAllowed = false;
   let topPractice: SankalpaSuggestionPractice | null = null;
 
   try {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('tradition')
+      .select('tradition, consent_religious_data, consent_activity_personalization')
       .eq('id', user.id)
       .single();
-    if (profile?.tradition) tradition = profile.tradition;
+    if (profile?.consent_religious_data === true && profile.tradition) tradition = profile.tradition;
+    activityPersonalizationAllowed = profile?.consent_activity_personalization === true;
   } catch {
     // profile lookup is best-effort; default tradition stands
   }
 
   try {
+    if (!activityPersonalizationAllowed) throw new Error('activity_personalization_not_consented');
     const since = new Date();
     since.setDate(since.getDate() - 21);
     const { data: recentSadhana } = await supabase
@@ -80,14 +84,23 @@ export async function GET(req: NextRequest) {
       .gte('date', since.toISOString().slice(0, 10));
 
     if (recentSadhana && recentSadhana.length > 0) {
-      const counts: Record<string, number> = { japa: 0, nitya: 0, pathshala: 0, quiz: 0 };
+      const counts: Record<Exclude<SankalpaSuggestionPractice, 'all'>, number> = {
+        japa: 0,
+        nitya: 0,
+        pathshala: 0,
+        quiz: 0,
+      };
       for (const row of recentSadhana) {
-        for (const [practice, column] of Object.entries(PRACTICE_COLUMNS)) {
-          if ((row as Record<string, boolean>)[column]) counts[practice] += 1;
-        }
+        if (row.japa_done === true) counts.japa += 1;
+        if (row.nitya_done === true) counts.nitya += 1;
+        if (row.pathshala_done === true) counts.pathshala += 1;
+        if (row.quiz_done === true) counts.quiz += 1;
       }
-      const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
-      if (top && top[1] > 0) topPractice = top[0] as SankalpaSuggestionPractice;
+      const orderedPractices = Object.keys(PRACTICE_COLUMNS) as Array<Exclude<SankalpaSuggestionPractice, 'all'>>;
+      const top = orderedPractices
+        .map((practice) => [practice, counts[practice]] as const)
+        .sort((a, b) => b[1] - a[1])[0];
+      if (top && top[1] > 0) topPractice = top[0];
     }
   } catch {
     // activity lookup is best-effort; topPractice stays null
@@ -98,7 +111,10 @@ export async function GET(req: NextRequest) {
   // ── AI personalization attempt ──────────────────────────────────────────
   try {
     const practiceLabel = topPractice ?? 'a well-rounded daily practice';
-    const prompt = `A devotee following the ${tradition} tradition is about to set a Sankalpa (a sacred, time-bound personal vow held for a fixed number of days). Their most active practice recently has been: ${practiceLabel}.
+    const devoteeContext = tradition
+      ? `A devotee following the ${tradition} tradition`
+      : 'A devotee';
+    const prompt = `${devoteeContext} is about to set a Sankalpa (a sacred, time-bound personal vow held for a fixed number of days). Their most active practice recently has been: ${practiceLabel}.
 
 Suggest exactly ${SUGGESTION_COUNT} short Sankalpa resolutions they could take. Each must:
 - Be a first-person vow starting with "I will..."
@@ -122,8 +138,9 @@ Return ONLY a JSON array of ${SUGGESTION_COUNT} strings, nothing else.`;
       .filter((item) => item.length >= 10 && item.length <= 200);
 
     if (parsed.length >= SUGGESTION_COUNT) {
+      const suggestions = mergePracticeAnchoredSuggestions(topPractice, parsed, SUGGESTION_COUNT);
       return NextResponse.json(
-        { suggestions: parsed.slice(0, SUGGESTION_COUNT), source: 'ai' },
+        { suggestions, source: 'ai' },
         { headers: { 'Cache-Control': 'no-store' } },
       );
     }
@@ -131,7 +148,7 @@ Return ONLY a JSON array of ${SUGGESTION_COUNT} strings, nothing else.`;
     // Partial/short AI result — top up with fallback entries rather than
     // discarding the (still valid) AI suggestions we did get.
     if (parsed.length > 0) {
-      const topped = [...parsed, ...fallback].slice(0, SUGGESTION_COUNT);
+      const topped = mergePracticeAnchoredSuggestions(topPractice, parsed, SUGGESTION_COUNT);
       return NextResponse.json(
         { suggestions: topped, source: 'ai' },
         { headers: { 'Cache-Control': 'no-store' } },

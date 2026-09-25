@@ -31,6 +31,7 @@ describe('notification-candidate-pipeline-mode', () => {
     expect(getCandidateTypePipelineMode('dharm_veer')).toBe('disabled');
     expect(getCandidateTypePipelineMode('quiz')).toBe('disabled');
     expect(getCandidateTypePipelineMode('streak')).toBe('disabled');
+    expect(getCandidateTypePipelineMode('sankalpa_midpoint')).toBe('disabled');
   });
 
   it('respects per-type candidate mode override', () => {

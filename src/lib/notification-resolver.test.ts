@@ -45,6 +45,7 @@ describe('notification resolver & engagement policy', () => {
     it('correctly maps event types and metadata to priority classes', () => {
       expect(resolvePriorityClass(makeCandidate({ event_type: 'security' }))).toBe('transactional_safety');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'user_reminder' }))).toBe('explicit_user_requested');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'sankalpa_midpoint' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'brahma_muhurta' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'nitya' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'observance' }))).toBe('reviewed_observance');
@@ -144,6 +145,17 @@ describe('notification resolver & engagement policy', () => {
       expect(res.accepted.map((c) => c.id)).toContain('diwali-alert');
       expect(res.accepted.map((c) => c.id)).toContain('brahma-alert');
       expect(res.suppressed).toHaveLength(0);
+    });
+
+    it('never applies the generic daily budget to an opted-in Sankalpa midpoint candidate', () => {
+      const sankalpa = makeCandidate({ id: 'sankalpa-midpoint', event_type: 'sankalpa_midpoint', priority: 20 });
+      const history: DeliveryHistoryItem[] = [
+        { id: 'history-1', user_id: sankalpa.user_id, local_date: sankalpa.local_date, notification_type: 'mood', priority_class: 'routine_engagement', sent_at: fixedNow.toISOString() },
+        { id: 'history-2', user_id: sankalpa.user_id, local_date: sankalpa.local_date, notification_type: 'japa', priority_class: 'routine_engagement', sent_at: fixedNow.toISOString() },
+      ];
+      const result = resolveCandidates({ candidates: [sankalpa], history, now: fixedNow, allowDeferrals: false });
+      expect(result.accepted.map((candidate) => candidate.id)).toEqual(['sankalpa-midpoint']);
+      expect(result.suppressed).toHaveLength(0);
     });
 
     it('respects past history and does not retroactively displace sent notifications', () => {

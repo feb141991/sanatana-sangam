@@ -64,7 +64,7 @@ export const EVENING_PROMPTS_BY_TRADITION: Record<string, string[]> = {
 /**
  * Returns a deterministic or randomly chosen prompt for a given slot and tradition.
  */
-export function getMoodPrompt(slot: MoodSlot, tradition: string = 'hindu', seedIndex?: number): string {
+export function getMoodPrompt(slot: MoodSlot, tradition?: string | null, seedIndex?: number): string {
   const normalizedTradition = tradition?.toLowerCase() ?? 'other';
   const table = slot === 'midday' ? MIDDAY_PROMPTS_BY_TRADITION : EVENING_PROMPTS_BY_TRADITION;
   const prompts = table[normalizedTradition] ?? table.other;
@@ -122,7 +122,7 @@ export function produceMoodCandidate(
   }
 
   // 3. Tradition-specific reflection prompt
-  const tradition = devotee.tradition ?? 'hindu';
+  const tradition = devotee.tradition ?? 'other';
   const prompt = getMoodPrompt(slot, tradition, options?.promptIndex);
 
   const title = options?.customTitle ?? (slot === 'midday' ? 'Midday check-in 🌿' : '🌙 Evening check-in');

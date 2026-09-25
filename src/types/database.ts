@@ -237,6 +237,7 @@ export interface Database {
           spiritual_level: string | null;
           legacy_family_name: string | null;
           consent_religious_data: boolean;
+          consent_activity_personalization: boolean;
           consent_updated_at: string | null;
           gotra: string | null;
           kul_devata: string | null;
@@ -303,6 +304,7 @@ export interface Database {
           quiz_reminder_time?: string;
           nitya_reminder_enabled?: boolean;
           nitya_reminder_time?: string;
+          wants_sankalpa_midpoint_reminders: boolean;
           // Account-deletion cool-off (supabase/migrations/20260711000000_account_deletion_cooloff.sql).
           // Server-managed: only written by src/app/api/user/delete/{request,cancel}/route.ts
           // via getApiUser's RLS-scoped client -- never by a direct client-side

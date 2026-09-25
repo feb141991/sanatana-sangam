@@ -33,7 +33,9 @@ export default async function SettingsPage() {
       wants_evening_reminder,
       evening_reminder_time,
       subscription_status,
-      consent_religious_data
+      consent_religious_data,
+      consent_activity_personalization,
+      wants_sankalpa_midpoint_reminders
     `)
     .eq('id', user.id)
     .single();
@@ -53,9 +55,11 @@ export default async function SettingsPage() {
       initialMadhyahnReminderTime={profile?.madhyahn_reminder_time ?? '12:00'}
       initialWantsEveningReminder={profile?.wants_evening_reminder ?? false}
       initialEveningReminderTime={profile?.evening_reminder_time ?? '18:30'}
+      initialWantsSankalpaMidpointReminders={profile?.wants_sankalpa_midpoint_reminders ?? false}
       initialNityaRhythmMode={profile?.nitya_rhythm_mode ?? 'morning'}
       subscriptionStatus={(profile?.subscription_status ?? 'free') as SubscriptionStatus}
       initialConsentReligiousData={profile?.consent_religious_data ?? false}
+      initialConsentActivityPersonalization={profile?.consent_activity_personalization ?? false}
     />
   );
 }
