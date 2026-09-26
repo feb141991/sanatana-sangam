@@ -1,0 +1,5506 @@
+{
+  "_label": "CLASSIFICATION ONLY — no row is eligible for restoration from this profile-agnostic reproduction",
+  "generated_at": "2026-09-26T11:15:00.588Z",
+  "generator": "scripts/reconcile-cross-profile-withheld-189.ts",
+  "inputs": {
+    "reproduction_receipt": "docs/audits/observance-cross-profile-engine-reproduction-2026-09-24/receipt.json",
+    "rule_source": "packages/dharma-rules/src/festivals/rules.json (via CANONICAL_RULES)",
+    "profile_limitation": "calculateObservancesForYear(year, location) accepts no calendar profile; exact date reproduction is not profile validation",
+    "rule_gate": "findKnownRulePublicationBlockers() only detects known metadata blockers; an empty list is not approval or ratification"
+  },
+  "total_rows": 189,
+  "counts": {
+    "engine_reproduces_profile_unverified": 185,
+    "engine_date_differs_at_stored_location": 4
+  },
+  "stored_publication_status_counts": {
+    "withheld_disputed": 189
+  },
+  "restoration_decision": {
+    "eligible_rows": 0,
+    "reason": "Not evaluated as restore candidates: no profile-aware calculation path or structured council-ratification evidence is available.",
+    "all_rows_remain_withheld": true
+  },
+  "rows": [
+    {
+      "selector_sha256": "a38720b363df9c80686ba70cb7258be161adc07f311d22229ca713018ea6c61f",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-30",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "ddce5306654f487e7ecc3e839921adff6cb2541067d2833afc0ea1fc73f56cb6",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-10",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c06a154e167fe3a3f8007b56b0dc018a6ddc2a4deec28cacdeb2181783ef8dfa",
+      "slug": "ganeshotsav-day-6",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-19",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-19"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c8078274d370398fedc24a8871d5d13a2a89218f1b4e43a3d4e9987ba4900172",
+      "slug": "paryushana-day-6",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-13",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-13"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "52611af3b941bcbe7b65851ad0e5c9d01a7e53c3480809a5ed052e62950fea10",
+      "slug": "ganeshotsav-day-5",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-18",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-18"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "649e80c10d817d50fb82206b36bb229fd9b668f377b4bacbb0fd2c6f04f96114",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-06-11",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-27",
+        "2026-03-14",
+        "2026-03-28",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-05-26",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-10",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-04",
+        "2026-11-20",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8693c3ae2ee63e575bb1546e8ba3f3e1272080cf3ff7a314352d5913fb7f2df0",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-11",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "705c3f8915a932f104aa9ce87bdc7e6f7f1f7a47fca519b9ce868f5bc399cb5d",
+      "slug": "samvatsari-paryushana-ends",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-15",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-15"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "badac0125bd51f84bcd201ba6c562535a30a8ead8c8c824e3572d3e17c79560a",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-30",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "15df50fd3a9f1165ee4a679cf73219d3a0c79609c618b1799db27bd86249fc05",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-01-29",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-27",
+        "2026-03-14",
+        "2026-03-28",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-05-26",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-10",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-04",
+        "2026-11-20",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "7c5db90171a3e2a9ecff95c2149cdee65fab1c050b3ca55bf83521e11903b465",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-08",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "5383b039f5e93e14745c63e9c92a1362219c8277a4b66bdda38dd6dcf27987ac",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-16",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "102fdc80b963e2ad07da4747126179859e13bb6e5f3b075f204818e48f0dac54",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-12",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "233a86727796e44ad612a576975d93b95e893c5b4fa3245b7b50e3d33d4eb8ce",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-29",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "39081fd05af72827017e6d91848acc89038228d634138b905b9769076a347b4a",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-11",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "0699871ae44970613e17e71ce2bf763a6c60511df65116c6ace16bdd2c204c49",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-27",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "172b1df4d01fd5ee7e99b22c0f09dbef42a5d000c094b17bbea71e28e4dfb51c",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-02-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8760adf38305f022e93892572367c9a5da85ac956bafa6fb60e789e11c1c33b9",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-02",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "5c8b0b297d57815ece4c4ff486f82d49ac112f3c102b13fcab85dbcfcae15075",
+      "slug": "purnima-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-05-01",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-01",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-27",
+        "2026-09-26",
+        "2026-10-25",
+        "2026-11-24",
+        "2026-12-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "4810d88201e89eb18e3cd3bc83625ffcc286c1a8e3dce1bf6f258e385bc645fb",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-09-26",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24",
+        "2026-12-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "5b967bd23771647111d877b440bafc61789ca9c77bd23dc223dbd136496725c1",
+      "slug": "ganeshotsav-day-2",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-15",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-15"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "07bc1f70609fe1b99db80088272eb0d15e433b8b484d66f22bd483ea4988b2c3",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "89918772e5f5b8263eb2b1ac6b5618e561bfb090c97ec4c235bd00ed4fe00044",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-31",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "028362bbcffe3e1c4a0d8961b12c67fb696318c3f3a7ed0b8192ae5bb20a37b1",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-06",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "a1b59c3d3d6492df0ae600b3a8138779bede4266ecd77043470baaa48637faac",
+      "slug": "purnima-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-04-02",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": false,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-01",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-27",
+        "2026-09-26",
+        "2026-10-25",
+        "2026-11-24",
+        "2026-12-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_date_differs_at_stored_location"
+    },
+    {
+      "selector_sha256": "792656e51e6940223af78266297b7e486b4fd1bfd8a11eede0d91366b30ee277",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-26",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24",
+        "2026-12-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "b9dda7c60071527c17a547a2f440ed68013263c93e836bf19ca3595f3c45923f",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-11-22",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "72005b026c258ea7df19e74554407b8e0f7f6ded252dfa531633cc1042e12ec3",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-25",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "b4104bbec24ec1b9899f6def8124f50cbe5a0cf8f8376bf643ad2d881ad8174d",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-12-20",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-27",
+        "2026-03-14",
+        "2026-03-28",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-05-26",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-10",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-04",
+        "2026-11-20",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "9a46add8e590c5b89f71a8f61601b650a63ff14a7497f0dd3acaa6fa76daca27",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-07-11",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "da082feff617d6eeccf2ca1fec850031fe9095d97e3a3e8a86e9ad8d89757cae",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-10-06",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-27",
+        "2026-03-14",
+        "2026-03-28",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-05-26",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-10",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-04",
+        "2026-11-20",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "47c0ecdb8603de2f399c9d7ec33cd704067584c1f48602c371c1c0714b4cdcf2",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-17",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "1038adcfb7e18497a5e5813946d2fa36d9d5d4e441ea6e073c8dd8184332e042",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-10",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8de3073aff0a40a20222ff200d12c533242f3eb47d20585efbe6ec5d7311abd4",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-06",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "f7b35dd8db5b06ee30800ec8c56b22d4d8086fa5f6314d569ef432dd6b7ff22e",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-28",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "78b37210acdb8d8eee542ce6f2b7cc5bcfdeb1f5ca0abf9cf34dff18941cb11b",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-09-26",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "fb202bc5d0298fd34b65e702e0e766aedd8b2295bf9f859923fc1d61514e650d",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-25",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "6133ee0195f6d39bd80deb04a25fa0cfd253ce469fa2af14cc9ed55c94f40796",
+      "slug": "paryushana-parva-begins",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-08",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c5800334776103841784f2fa32a0b1802f8fe0c1683317bce8b1098b85747ece",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-15",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "fcd7d82144c6af83be911e0e3c6e81e693722cb4310b2cd00cdf0d8f7aadeddb",
+      "slug": "ganeshotsav-day-2",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-15"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "6a1247aab24a6faa198a05b1085a25c21a74398164819a3608f6502aee15110b",
+      "slug": "ganeshotsav-day-8",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-21",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "6fd635d2d86a2bd24d5fc9a9382ea48d9118d868e8bc697481165b96ac9c5575",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-11",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "0f24bc5c7283644e6092be65a5c173c9b95c837438ccfe924365f6bc089e5541",
+      "slug": "ganesh-chaturthi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-14",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-14"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "9f85bd59004ef69721d756bab963ab9ba079ba2fbd511a52319e518a931148c8",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-30",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "471274ddcc87b2603e48c84052ce81cc69336e3a713173c5956151746ffe9056",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "b8e9c0f5b2b5d81f9a865e0c10455605cda5a4cf0ed18ebca777de7c0b6d2bac",
+      "slug": "paryushana-parva-begins",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-08",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c1c37670f73dafed954ed3034cd1dec212337592c88ab7a699a37487612710ec",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-28",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "82479a6d1d7a82b845f82226e7f491e9fa5e7b0e102bd940912d2cb8af8128cf",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-12",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "b3c96c122d2e6c123c4eec755a2327f42c81de9b268474365b5791d24fe9ca92",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-20",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "5ec084db5c4b355fed3f04f6d26a4b30939c17acf3764fe1577418ace809cc0c",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-04-27",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-27",
+        "2026-03-14",
+        "2026-03-28",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-05-26",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-10",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-04",
+        "2026-11-20",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "ad0f6471d45d65c58a7eca89fb2618796f8b84cfc1994cd7039b2faa819d45e0",
+      "slug": "raksha-bandhan",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-08-28",
+      "stored_calendar_profile": "legacy-ujjain",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-08-28"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "825a3a5ede0e6aba3a46c7e81ff4fd10458f89ab2a7c3385b11ee28687c7ad8e",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-14",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "7393cdfd14b28e3fd5201db19c93f9e6ef680938813d1b3cfa809378daa0f61f",
+      "slug": "anant-chaturdashi-ganesh-visarjan",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-24",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "88ffaeefd0eb31ada2ecd3225dac0cb5f2ef84c4acc6693df352ae3af2e22193",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-28",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "ba149c9e629658fe1a6d2b661f9c91fb473d4d7a7e7d234b5fe55dffa32975d0",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-29",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "54c13caab810f0993c402bf42c9cf46a04439e859c1e48fe1a3df98419a87fdf",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-21",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "fc1141475fccc93fbac8793de8e710fd1bf3a411978382f18b6e92d4b413e28d",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-10",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "d01a06ca788757e22f998ef26d90ca1edbdb11060c4a1f6962bbd03701607c51",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-23",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "7d17bce2384c5768fa00b7203663e1d6b09ec2a1426b42f5c509f7e8f0702774",
+      "slug": "ganeshotsav-day-10",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-23",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "07a3a7a336828bfce5b8425dac1b8438c3180757deb0c5955e26a50abfb54728",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-14",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "04ef6fcb3bbcdc0a6a315f4fc4115150dff467dd597b02d572ebba898379bdff",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-10-22",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-27",
+        "2026-03-14",
+        "2026-03-28",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-05-26",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-10",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-04",
+        "2026-11-20",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "944e90c4ae570d1262194ce3f6abeb03ca10bb21ca739d3f4af4e2ced3a3e6aa",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-11-22",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "6583196cc30ad33969a0b5b8522d9fe56447011a20fea31de1cdae7be647f2e1",
+      "slug": "purnima-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-10-26",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": false,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-01",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-27",
+        "2026-09-26",
+        "2026-10-25",
+        "2026-11-24",
+        "2026-12-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_date_differs_at_stored_location"
+    },
+    {
+      "selector_sha256": "2c4e8837e9afc2862695a9b5884ec0903a1fa7bdb23150cd8c138d5d8c18a2f7",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "27ad2167e9e0aeaa6c8a82c22f9db78309fa69fd9c781b906cc531fcfa50eb28",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-04-17",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "cf54502a61b71f6b708d01a215d15e90dcf0286390a0c35366e123dec1d6d3e9",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-19",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "52c201851aeb1c29871e9b2e502f4a01d657179d90ff3f10e911030a4cfd07cd",
+      "slug": "ganeshotsav-day-9",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-22",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-22"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "752274d8c095f089eb985ef04477f339ff013de907c4ecc2c4e7f2026c7d3750",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-29",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "757f43ca350417719e32ffc1cc080c7c9f99884f7fe011cba1f5b04fb2c9d0d9",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-26",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "01127757dbb9db058ddc84a1f45b68732715c33df09df03bb377a2c256f0f35b",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-02-14",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "185e376914364eeff1d663ece384ebfa7653f257a00fcbac64541ce41b96afc4",
+      "slug": "ganeshotsav-day-4",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-17",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-17"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "505723f2f1bb0433d164f7571cd379998c3488e2836798c5f976f23e80d639b2",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-06",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "d693f79416a1f662c8108d5a4b3be86958b8a6853482a692fedbfb3e77fa491c",
+      "slug": "paryushana-day-4",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-11",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-11"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "5c3ac767ffa1989253ba5bbcb9f2dd0a347212fcc3286b2d5d670bd5c229aaaa",
+      "slug": "ganeshotsav-day-4",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-17",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-17"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "0b7b2099e23aeeadfad1dc0ab25d74050eb321dc6f4346e51ae490e1bd7cbd57",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-06",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8750b6fce720bf6b8667c38ddd4cb15a123c10b4a851f56b0340e7baa05f69b6",
+      "slug": "chhath-nahay-khay",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-13",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-13"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "87db7a85dbce7005540b4a9ccb664faff38cb396d19b24a65880f72431fbe3c1",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-27",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "9ce16ebcded9bb55ef78e7890d93b237cf95f8faf8ea09bdae77fcf5eba75040",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-01",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "eb8490ddca0a967e9767c6140996e339144bd4105474b51a2b0077aebd531155",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-16",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "06224c164a6ad7b4fc46864507880528a220146ce7467647b30ce16e1ffebc2b",
+      "slug": "ganesh-chaturthi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-14"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "72196297704d23ff4d64b26949a0441ae7b4fbf8784cf79ada9680aee5249066",
+      "slug": "chhath-usha-arghya",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-16",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-16"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c2680c684664d6f64f0aa41ed38d7ca37b56cf3411b8c570101db6c771d2bdb6",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-07-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "d649e7c7ed528605e868424358e4a917b8c34dc64144c322bee217d956370518",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-11-22",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c24ea569d5868e3745297680dec5054d2450c2a67d851da4e0c32f20a0cd09bb",
+      "slug": "paryushana-day-3",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-10",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-10"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "87c08eed907e619c1a7befc9e9cdf7a7c4520729dbcb93d0eaf22f2a02829a8a",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-08-12",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "1ffa151b3b44c562aa6dad7ce644af52d661a7e684aa6df27aee99c731577bf6",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-03",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24",
+        "2026-12-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "2cfb3f44a317dad8e8aaaa741441a45868b9bad4777c8d9d94bc5b643de88dfd",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-21",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "cd5ee52e7cab9f6bf07d3981051f9ed85374aba4cdf65cd236d900d484c8cc6e",
+      "slug": "ganeshotsav-day-10",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-23",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "071c35d20bc2cf11ebbc88b997ca2cd3cf09d0105a74b317c4026e7c3506e242",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-08",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "cf55d9aa49638fcef145ea3e986dafa790bd106e6eb01f2cc68047c77627e896",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-01",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24",
+        "2026-12-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "e77d36021fc4d56546af2f40062efa6bb4362b464d7c8d9a0dee86d056fc66e3",
+      "slug": "paryushana-parva-begins",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-08",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "3adc811eb3440b43b5d588bb1cf2d1391b3f8a5d458507e298116c36dcb161c8",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-28",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "b21510c011e7b6f48c345916677a02430598ceae6f2d331eb5ee744686b108c7",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-08",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "61f7444375e95da08bf5703b7249729c5a079323af775e002d6dbfee3ed5c262",
+      "slug": "paryushana-day-5",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-12",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-12"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "f98333f5686541e288836889f3cb91fdfdb83aee78d5a37d221ef823c44f9102",
+      "slug": "raksha-bandhan",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-08-28",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-08-28"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "7b17b69fc266a9dac805f3adcb2ffc4a45bc5a5321c8e6a9792c5a1b075d6424",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-10-10",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "4c8b2a3048036e4f45e170187f4176a6d7300f145251f5ce80915fafc2033c02",
+      "slug": "raksha-bandhan",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-08-28",
+      "stored_calendar_profile": "legacy-ujjain",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-08-28"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "566bebebdfd27e5631b29f544ca6fe911614a4f7ab2965c44f3b0111cc7fcb28",
+      "slug": "ganeshotsav-day-6",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-19",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-19"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "a22e293ae4186bd6e1dc2cca2010a040bec8d88a0d97600ded5b4220729c64a9",
+      "slug": "chhath-puja",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-15"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8cf39d02dc0c182e30059f87eced5b459c0d598646d7e1e04bfb74f3f734d36b",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "2c58bc12f6d193396b331b169e34df4b66e06f031d19a6c59cb6759604c8fd79",
+      "slug": "purnima-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-06-29",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-01",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-27",
+        "2026-09-26",
+        "2026-10-25",
+        "2026-11-24",
+        "2026-12-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "2f2c4b939a4d9bb3062801dd3fb07fd20651a47a828e60570dcf8e42fbd2b6ee",
+      "slug": "ganeshotsav-day-7",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-20",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "9657dda6ba90ec7a8a17cc00ce4138c1031873e87fa2a055ab0e5e2859047c50",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8552ddd6daaad5c544760f851697e68547b8f1b48999eec38655aafbee042237",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-21",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "509c62ec38759e6e69ae14ba8b626eb6edb2578f4ff3bed6856cee460bdd1a83",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-11",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "f30edf6c6d57d7352e32fa2a13c6225f37a4a230905ef77f0421963f8256a3fa",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-27",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "7a44ae7938397a902a05029dfb535c6669c51dfb810fabb8c8509b36ffcbd623",
+      "slug": "chhath-usha-arghya",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-16"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "518d394e8d34eec6aba8d9a916f23865ebd17498db5d094d10a819eadd2f226e",
+      "slug": "ganeshotsav-day-9",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-22",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-22"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "103d807f75fac3e88eba195df8def9f28dcf39e53db9dab18fc7c6bd4d2ae278",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "0291bc00fb1e3ffc73b7f72990efd0dff825618ff6014c45e63ef95f193aafab",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-26",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "3ebe9d87ccadf2dafa0218e8656142b9944224e7e82172e743cbe485b3daae8d",
+      "slug": "ganeshotsav-day-8",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-21",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "bde07585f58936b7fc141be2d676da9931149649bf9b015161145917a9ea959b",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-12",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "a30a5c77aa993a4a5a663695edf47b9d718e242eaabdc6583685214bc93f388a",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-06",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "be506e892329d5fe198c660da0db90a2a15b8a19df5ba4804634b9eddfd6440f",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-26",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "5e7622e4150fe8f85a79d8b5a184b7b35c8cdefd400e16e3a83f338aa718e52d",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-23",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "d4c66cd87061fdf1dd5af136f7d9c9adb330f0781eea8099e65086a5ee270503",
+      "slug": "samvatsari-paryushana-ends",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-15"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "266f78acc96efd4026bcbb4079652c788ad5692f46a00dbaec85b2a0e842af48",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-27",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "f5a25c8a60701016eb3995d255d578625a4cd21dad442bd418c75157b78ccee7",
+      "slug": "paryushana-day-7",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-14",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-14"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "0a8d281b87ab89deb785667722585243c093486f4fd01f3ff442d5e3a5da4073",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-12-20",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "41f7980c7a3d7743a74f3bf1674c2e3ce247ed8674acedde9044c59e5149731e",
+      "slug": "paryushana-day-4",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-11",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-11"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "fb83ad378e1edf78e3a8bf0ad5ab343fb35751d9fdab4687ad9ea14c30fdd5c1",
+      "slug": "paryushana-day-2",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-09",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-09"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "7f05247554931231686351b111801fb5e63d2349ff1990357304d271f41dd774",
+      "slug": "chaitra-navratri-begins",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-03-20",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-03-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "688b7c3caf2cc4491b23de18f4a2c4de4e441cd0ef69479882d31e61245563cf",
+      "slug": "ganeshotsav-day-5",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-18",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-18"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "7c09ee293f71fcf6336c4165c124990e40bee105a7a6d5b4e6051cd595d6f414",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-03",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "981804905df25e403eaeacbff6f918628ff9b7931c8184aeb30b63e0f7fbb219",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-26",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "21fc56fae81de9ac975f6842d811b5b46ccda2f163124020d87bda2bf34068d0",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-18",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "ad2dd297f3d746f192ce25ec907184303db7029d6caf5eac69817e7e47ba75b8",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-30",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "59e76c70a8352d3c53e3ae4840c0ee4542aa50cfdd955261a9ae75787d5c5991",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-23",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "d3ef693e5f952b133b2edc4562a097591cc37ba6fdbed9af1ea9ba167fe31e7e",
+      "slug": "purnima-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-26",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-01",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-27",
+        "2026-09-26",
+        "2026-10-25",
+        "2026-11-24",
+        "2026-12-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "2cb9bc1d7bda8ae5db54796a913373c432229a271b411270c0b4d5852ee99250",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-02",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24",
+        "2026-12-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "b4b0f9fe5c93cafb56e6f75214ad0da2d1a4347242d9936463e14ae908ac1ad3",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-02-17",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "0bba175f71c63e8664148cd508a589d39d7760fd8ccad87f7c493b8b71cda577",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-15",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "9a0d785388c1f4173a794d29bdb4d11ea40ce938a239c22295edba6256aeafca",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-02-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "bf6ebd44cd908525b4266c3c57581d870748b3fa3c64abcad25ce027d3d09d3b",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-27",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "6d60f043045e66f1d7176e9d57e75f410f2673cd328147a93b6918a7ba74d043",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8e15dbaa3da55ed2b2e37591a6a531e397bd10ce54f10b043ba70383722d483e",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-02-17",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "80133aeb9cb343d5c86e14c76b72b443e5e0bc8eaeaf74f436907bc8b0ca9a96",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-08",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "36a07c3f3eae43c71fbbb313188113cf692ac9f9eb18e653f98216ea28205eea",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-30",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "64bb9c26110d4516c1efdeeaccf2c182050d4fbfd756f07bc155f22f5e32a8db",
+      "slug": "chhath-nahay-khay",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-13",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-13"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "6372bf5b00b8a0bad6a07992695179b21c5ee8ac67fa552c00bf8c8ec51c4111",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-06-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": false,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_date_differs_at_stored_location"
+    },
+    {
+      "selector_sha256": "0e61e3233d7e915a3d3e09a380c460ed3d16b6dbead675c0e837af312a889a45",
+      "slug": "purnima-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-05-31",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-01",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-27",
+        "2026-09-26",
+        "2026-10-25",
+        "2026-11-24",
+        "2026-12-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "3f6b8e3aa826ca68ac94ba2ad6bbef974fcaed6d83019ebe0cb509fdb3292933",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-03-19",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "3b85bcd9a6446d7bf5e098af5fd2d0c0d6f2a5a8daaac0b62bf99b20c0d6218b",
+      "slug": "paryushana-day-6",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-13",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-13"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "3cc95412803b13bd60e6fef86c70878d4efedd87284b4fa483a8b970868aeff3",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-12",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "45c17ee33df15417384a84ddfad5db71ec54cbc82541263dbb6f43b8d3d90238",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-17",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "4b007231215c47099066f9769339953ba3feedb994d656648356c59ce278d8a1",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-01-18",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "76702d6e028327ac0592b7c5c6d273691b19e43c78ab4f16f0228228a0fba558",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "ef843647a7dcffe0048f6ee6523198ace547938b2da7a9e2c4e56e4ac5ff3617",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-16",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "47bbe9a32a474f0dffacd2bce215f6504ddbdfd5752370412bb6f5baf98e93e6",
+      "slug": "purnima-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-01-03",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-01",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-27",
+        "2026-09-26",
+        "2026-10-25",
+        "2026-11-24",
+        "2026-12-23"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "f0b493a90a63a9fbf7a7e288441d262a66349b8262d7695f6c92824f963e1bb1",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-10",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "4f534853c39d625c674867f02d8f8c2b6959f269c402836cc640867ce976b48c",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "257f3cff29f198895fe325c6edc97b97d0469d033f751e29887c4e6ec58e49b0",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-12",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "70d99beb57dc9110842ae917179d8ed16246349eb9beeb5d3e8ac497306e2f89",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-30",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "50cd64c4586a6e9411037fc19354483fd8db307fb5f4aa67ce7a48cad1c40383",
+      "slug": "nirjala-ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-06-25",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-06-25"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "ac1b9029d852f4274dafcfccc40511fc757efe8d4e16a8ff62a03da0028a0fe8",
+      "slug": "chhath-puja",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-15",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-15"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "a77b5bf3fbaa023c276d5ca5a3066f3bfcb4dc3e2079d20b85741202d4756fed",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-07-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "d412efab2ee79452d48b84b72a7630ae783f6afccb2bbe29cc29441638214905",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-25",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "1c8eebeb794a4265fe776a47cc42340b2cb60e3498450332014151cb784c2d17",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-12-08",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c11e023fe1b68afe6ce37820ecad947acdb70fbe5760fe7ec7410c7ed997344f",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-22",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c151ce1b4c0a6823057d51004fa9f225a4687b603412167967fd1f42f0337194",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-05-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "9fa2c0827e83605f1184589a2980c2c72dc8488b7e991a82d54997a057625f7c",
+      "slug": "nirjala-ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-06-25",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-06-25"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "da1766e73a4259b85de963ff053e7c680fc5fc37db9adbc65496f93aa4654a2a",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-08",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "88498296154bd50d15a7317b158c74e0a0dd483b751855bb727d1b9e69cbd780",
+      "slug": "nirjala-ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-06-25",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-06-25"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "92634d3364856cec01c1da1113c0cb3a61a5ba406bca57e8437d6f5ea3970a8b",
+      "slug": "samvatsari-paryushana-ends",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-15"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "2dde67b66c98a27ec71d4a6e2b6a6f3f50fa36c8222fb523c2ae0d7d2d8788a6",
+      "slug": "paryushana-day-7",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-14"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "bdc327bbb8ecebea3d918f5c9a160899eea58e6e8bba85783a7e35b6e7a6870b",
+      "slug": "ganeshotsav-day-3",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-16",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-16"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "093db325d9e6707b8d851da93c26660bd37b9512e714f6fa1afc3c8fcf141b54",
+      "slug": "anant-chaturdashi-ganesh-visarjan",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-24",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "e0c4b0c492bcbc2d0395908425e0c15706d1a3d768cc69f6a1250ab445ed0da7",
+      "slug": "chhath-kharna",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-14",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-14"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "e7dbbb9d12588b283041d05f134b33575601366c01f7ade4559467195859faac",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-28",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "eb928b795780033feb8a3efa35f4b1dd2bb2c4d405a2135b10862471ddfb7215",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "1e70d211a17b8d1170debd3fb8e18f5aef57358e37c00ff60a29ec45488f8adf",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-31",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24",
+        "2026-12-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "64e09a3d291a5e6fc8ed5ab4b3db530b72340232efc0ff7fb299efba8de05c21",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "68120f0d4027da9729fd471046f3c6869ffd2a79f79066f1fbdf630fabeef9a1",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-02-17",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "5dc0da7cc229716b1e166b7cff073b4c5e53294c385d3df056133cd1b4b77d70",
+      "slug": "ganeshotsav-day-7",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-20",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "505613360888a1ecc51d32adb87c018656ae8350225da80ed458e38be91611f9",
+      "slug": "ekadashi",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-10-22",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "03bdb00a3a27718a03650cecc6b71e6a73a2d6b7393c02553a2d3040ae8f3cb7",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-04-15",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "4b8728b492daf36c561b724fd0c0c2a32b07f40c541498719a07853255b3b723",
+      "slug": "vijaya-ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2027,
+      "stored_date": "2027-03-04",
+      "stored_calendar_profile": "legacy-ujjain",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2027-03-04"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "1f3395a38159627f7727953f2aefd48e83befde8dc02086e3da68727cd3ade3b",
+      "slug": "pradosh-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-08-10",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-15",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-02-28",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-14",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-06-12",
+        "2026-06-26",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-23",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "4693e7704d965920d32e3862fb1688e71a01c1f20e1d2fdf93cb510f19a51e13",
+      "slug": "paryushana-day-2",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-09",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-09"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "e1728e72ea6a6d2f962fa6d1c7f167e175b0953422cb4dc0ce80eb846bbe7869",
+      "slug": "chhath-kharna",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-11-14",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-11-14"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "d785495be9e318faeac7fe455fb21b075cb3e14b5929ef5e03b95be141f3fca5",
+      "slug": "ekadashi",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-03-15",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "c64ebfbb423f31a3b9d6fab44e08ab5819cf10b169818fbab960833ed2ecb876",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-05-01",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "bb129ad9bb5cc552a5f530e5e0c8596bb5db70f4f2226d8b8339a88d13d953c5",
+      "slug": "ganeshotsav-day-3",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-16",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-16"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "aa9146543e801c3a8863935c075206a59aba6244e4b931e347a4e10bf67ac289",
+      "slug": "paryushana-day-5",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-12",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-12"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "1dd9545b09d89572a3f3acad60798bf703336ed3f1493d71b7822683db9ef5ca",
+      "slug": "paryushana-day-3",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-09-10",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-09-10"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "8d626b0cff8d2964d847d86738c5963731ff3e2b620f3e5cc2eb7d683981c67a",
+      "slug": "chaitra-navratri-begins",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-03-20",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-03-20"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "cd199eadf5c235b1949e61662bb9aeab943f110dc8f54af6c56f90bd8434b625",
+      "slug": "purnima-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-06-29",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24",
+        "2026-12-24"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    },
+    {
+      "selector_sha256": "4b559794870ff9a56e56c395e5a83dc36de413b4d255880d86122b4a7a177be2",
+      "slug": "amavasya-vrat",
+      "variant_key": "legacy-default",
+      "year": 2026,
+      "stored_date": "2026-03-19",
+      "stored_calendar_profile": "north_indian_purnimanta",
+      "engine_reproduces_at_stored_location": false,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-18",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-10",
+        "2026-10-10",
+        "2026-11-08",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_date_differs_at_stored_location"
+    },
+    {
+      "selector_sha256": "dd8d80c631e001402528bef4b107981976592bf889fd2a8b25a4bd175119332c",
+      "slug": "amavasya-vrat",
+      "variant_key": "standard",
+      "year": 2026,
+      "stored_date": "2026-01-18",
+      "stored_calendar_profile": "kannada_amanta",
+      "engine_reproduces_at_stored_location": true,
+      "engine_dates_for_variant": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "exact_rule_identity_found": true,
+      "known_rule_publication_blockers": [
+        "rule has no citation"
+      ],
+      "category": "engine_reproduces_profile_unverified"
+    }
+  ]
+}

@@ -319,6 +319,9 @@ describe('materializeOccurrencesForYears — commit mode', () => {
     expect(batches.filter(batch => batch.status === 'partial')).toHaveLength(1);
   });
 
+  // Full-year materialization evaluates every canonical rule with real
+  // astronomy. It runs close to Vitest's default timeout in isolation and
+  // can exceed it under the complete calendar suite's parallel load.
   it('every inserted row satisfies the NOT NULL columns, including occurrence_date', async () => {
     const { client, inserted } = makeClient({ definitions: DEFS });
 
@@ -336,7 +339,7 @@ describe('materializeOccurrencesForYears — commit mode', () => {
         expect(row[col], `${row.definition_id}: ${col} must not be null`).not.toBeNull();
       }
     }
-  });
+  }, 240000);
 
   it('occurrence_date equals date on insert', async () => {
     const { client, inserted } = makeClient({ definitions: DEFS });
