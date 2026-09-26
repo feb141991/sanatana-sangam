@@ -80,6 +80,28 @@ interface Metrics {
   distinct_authenticated_users_24h: number | null;
   recent: SummaryRow[];
   recent_fetch_error: boolean;
+  auth_diagnostics: AuthDiagnosticRow[];
+  auth_diagnostics_1h: number | null;
+  auth_diagnostics_24h: number | null;
+  auth_diagnostics_fetch_error: boolean;
+}
+
+interface AuthDiagnosticRow {
+  request_id: string;
+  retry_request_id: string | null;
+  route: string;
+  auth_code: string;
+  initial_status: number;
+  final_status: number;
+  auth_ready_wait_ms: number;
+  had_access_token: boolean;
+  refresh_attempted: boolean;
+  refresh_succeeded: boolean;
+  duration_ms: number;
+  app_version: string | null;
+  platform: string | null;
+  client_occurred_at: string | null;
+  received_at: string;
 }
 
 function ms(value: number): string {
@@ -196,6 +218,43 @@ export default function NativeStartupTelemetrySection() {
           The recent-submissions list failed to load; the counts above are independent of it and may still be accurate.
         </div>
       )}
+
+      <div className="border-t border-black/5 pt-6 space-y-3">
+        <div>
+          <h3 className="text-sm font-bold theme-ink">Native auth diagnostics</h3>
+          <p className="text-[10px] text-[var(--brand-muted)] mt-1">Anonymous request IDs and auth outcomes, retained for 30 days. Match request IDs with structured server logs.</p>
+        </div>
+        {data?.auth_diagnostics_fetch_error && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+            Auth diagnostics are unavailable. The migration may not be applied, or a query failed.
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-3 max-w-md">
+          <div className="p-3 rounded-xl bg-black/[0.02] border border-black/5"><p className="text-[10px] uppercase tracking-wider text-gray-500">Auth events · 1h</p><p className="text-xl font-bold theme-ink">{data ? countDisplay(data.auth_diagnostics_1h) : "—"}</p></div>
+          <div className="p-3 rounded-xl bg-black/[0.02] border border-black/5"><p className="text-[10px] uppercase tracking-wider text-gray-500">Auth events · 24h</p><p className="text-xl font-bold theme-ink">{data ? countDisplay(data.auth_diagnostics_24h) : "—"}</p></div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[11px] min-w-[850px]">
+            <thead><tr className="text-left text-[var(--brand-muted)] uppercase tracking-wider text-[10px]">
+              <th className="pb-2 pr-3">Received</th><th className="pb-2 pr-3">Request ID(s)</th><th className="pb-2 pr-3">Build</th><th className="pb-2 pr-3">Route</th><th className="pb-2 pr-3">Auth result</th><th className="pb-2 pr-3">Token</th><th className="pb-2 pr-3">Refresh</th><th className="pb-2 pr-3">Gate wait</th><th className="pb-2">Total</th>
+            </tr></thead>
+            <tbody>{(data?.auth_diagnostics ?? []).map((event) => (
+              <tr key={event.request_id} className="border-t border-black/5">
+                <td className="py-2 pr-3 whitespace-nowrap">{new Date(event.received_at).toLocaleString()}</td>
+                <td className="py-2 pr-3 font-mono select-all">{event.request_id}{event.retry_request_id && <><br /><span className="text-[var(--brand-muted)]">retry {event.retry_request_id}</span></>}</td>
+                <td className="py-2 pr-3">{event.platform ?? "?"} · {event.app_version ?? "?"}</td>
+                <td className="py-2 pr-3 font-mono">{event.route}</td>
+                <td className="py-2 pr-3">{event.initial_status} → {event.final_status} · {event.auth_code}</td>
+                <td className="py-2 pr-3">{event.had_access_token ? "yes" : "no"}</td>
+                <td className="py-2 pr-3">{event.refresh_attempted ? (event.refresh_succeeded ? "succeeded" : "failed") : "—"}</td>
+                <td className="py-2 pr-3">{ms(event.auth_ready_wait_ms)}</td>
+                <td className="py-2">{ms(event.duration_ms)}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+          {data && data.auth_diagnostics.length === 0 && !data.auth_diagnostics_fetch_error && <p className="py-4 text-center text-xs text-[var(--brand-muted)]">No auth diagnostic events yet.</p>}
+        </div>
+      </div>
 
       <div className="space-y-2">
         {(data?.recent ?? []).length === 0 && !loading && (
