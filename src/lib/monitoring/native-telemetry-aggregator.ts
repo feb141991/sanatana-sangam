@@ -59,9 +59,10 @@ export interface NativeAuthDiagnosticRow {
 
 const RECENT_LIMIT = 100;
 
-// Untyped client -- this table isn't in the generated Database types yet
-// (see the migration file and src/lib/api-auth.ts's own note on the same
-// `never`-typing issue for tables missing from the generated types).
+// Keep this admin client untyped to match existing factories: explicitly
+// applying Database currently resolves several `.from()` calls to `never`
+// under this repo's Supabase JS version (see src/lib/api-auth.ts). The new
+// table itself is still present in database.generated.ts for contract sync.
 function adminClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

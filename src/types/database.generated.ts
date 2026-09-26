@@ -3458,6 +3458,60 @@ export type Database = {
         }
         Relationships: []
       }
+      native_auth_diagnostic_events: {
+        Row: {
+          app_version: string | null
+          auth_code: string
+          auth_ready_wait_ms: number
+          client_occurred_at: string | null
+          duration_ms: number
+          final_status: number
+          had_access_token: boolean
+          initial_status: number
+          platform: string | null
+          received_at: string
+          refresh_attempted: boolean
+          refresh_succeeded: boolean
+          request_id: string
+          retry_request_id: string | null
+          route: string
+        }
+        Insert: {
+          app_version?: string | null
+          auth_code: string
+          auth_ready_wait_ms: number
+          client_occurred_at?: string | null
+          duration_ms: number
+          final_status: number
+          had_access_token: boolean
+          initial_status: number
+          platform?: string | null
+          received_at?: string
+          refresh_attempted: boolean
+          refresh_succeeded: boolean
+          request_id: string
+          retry_request_id?: string | null
+          route: string
+        }
+        Update: {
+          app_version?: string | null
+          auth_code?: string
+          auth_ready_wait_ms?: number
+          client_occurred_at?: string | null
+          duration_ms?: number
+          final_status?: number
+          had_access_token?: boolean
+          initial_status?: number
+          platform?: string | null
+          received_at?: string
+          refresh_attempted?: boolean
+          refresh_succeeded?: boolean
+          request_id?: string
+          retry_request_id?: string | null
+          route?: string
+        }
+        Relationships: []
+      }
       native_startup_telemetry_summaries: {
         Row: {
           app_version: string | null
