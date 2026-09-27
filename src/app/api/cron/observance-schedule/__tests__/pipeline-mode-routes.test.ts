@@ -68,6 +68,26 @@ vi.mock('@supabase/supabase-js', () => ({
   }),
 }));
 
+vi.mock('@/lib/observance-notification-source', () => ({
+  OCCURRENCE_BACKED_TITHI_SLUGS: new Set<string>(),
+  isWomenFocusedVrat: () => false,
+  fetchReviewedObservancesForNotifications: async () => ({
+    observances: [{
+      id: 'occ-preview',
+      name: 'Preview observance',
+      emoji: '🪔',
+      date: new Date(Date.now() + 86_400_000).toISOString().slice(0, 10),
+      type: 'major',
+      slug: 'preview-observance',
+      tradition: 'hindu',
+      sourceEligible: true,
+      route_kind: 'festival',
+      route_slug: 'preview-observance',
+    }],
+    error: null,
+  }),
+}));
+
 vi.mock('@/lib/calendar/observance-series-eligibility', () => ({
   fetchIncompleteSeriesOccurrenceIds: async () => new Set(),
 }));

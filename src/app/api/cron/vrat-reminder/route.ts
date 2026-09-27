@@ -144,7 +144,7 @@ export async function GET(request: Request) {
 
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, tradition, gender_context, timezone, wants_festival_reminders, notification_quiet_hours_start, notification_quiet_hours_end')
+      .select('id, tradition, gender_context, timezone, wants_vrat_reminders, notification_quiet_hours_start, notification_quiet_hours_end')
       .or('tradition.eq.hindu,tradition.is.null');
 
     if (usersError) {
@@ -172,17 +172,21 @@ export async function GET(request: Request) {
     const eligibleUserIds = new Set<string>();
 
     for (const user of users) {
-      if ((user as any).wants_festival_reminders === false) continue;
+      // Vrat reminders have their own preference. Falling back to the festival
+      // flag here made the Vrat switch ineffective in the legacy delivery path.
+      // Treat an unset/null value as opt-out; the schema default handles existing
+      // accounts without silently granting consent on an incomplete row.
+      if (user.wants_vrat_reminders !== true) continue;
 
-      const tz = resolveTimeZone((user as any).timezone);
+      const tz = resolveTimeZone(user.timezone);
       const localDate = getLocalDateIso(now, tz);
 
       if (!canSendInLocalWindow(
         now,
         tz,
         targetLocalHour,
-        (user as any).notification_quiet_hours_start ?? null,
-        (user as any).notification_quiet_hours_end ?? null
+        user.notification_quiet_hours_start ?? null,
+        user.notification_quiet_hours_end ?? null
       )) continue;
 
       eligibleUserIds.add(user.id);
@@ -191,7 +195,7 @@ export async function GET(request: Request) {
         { audience: 'general', vrats: generalVrats },
       ];
 
-      if ((user as any).gender_context === 'female' || (user as any).gender_context == null) {
+      if (user.gender_context === 'female' || user.gender_context == null) {
         audienceGroups.push({ audience: 'female', vrats: femaleVrats });
       }
 
