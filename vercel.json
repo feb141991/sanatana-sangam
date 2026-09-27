@@ -30,6 +30,10 @@
       "schedule": "0 3 * * *"
     },
     {
+      "path": "/api/cron/learning-engagement-candidates",
+      "schedule": "5 3 * * *"
+    },
+    {
       "path": "/api/cron/shloka-reminder",
       "schedule": "0 6 * * *"
     },
