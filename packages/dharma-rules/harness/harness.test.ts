@@ -89,24 +89,28 @@ const calendarProfileBySlug = new Map(
 
 // ── Engine Evaluation Cache ──────────────────────────────────────────────────
 
-let engineEvaluationCount = 0;
-const engineYearCache = new Map<number, Map<string, string>>();
+function createEngineDateLookup(
+  calculateYear: (year: number) => CalculatedOccurrence[],
+): (slug: string, year: number) => string | null {
+  const yearCache = new Map<number, Map<string, string>>();
 
-function getEngineDate(slug: string, year: number): string | null {
-  let yearMap = engineYearCache.get(year);
-  if (!yearMap) {
-    engineEvaluationCount++;
-    const results: CalculatedOccurrence[] = calculateObservancesForYear(year);
-    yearMap = new Map<string, string>();
-    for (const r of results) {
-      if (!yearMap.has(r.slug)) {
-        yearMap.set(r.slug, r.date);
+  return (slug, year) => {
+    let yearMap = yearCache.get(year);
+    if (!yearMap) {
+      const results = calculateYear(year);
+      yearMap = new Map<string, string>();
+      for (const result of results) {
+        if (!yearMap.has(result.slug)) {
+          yearMap.set(result.slug, result.date);
+        }
       }
+      yearCache.set(year, yearMap);
     }
-    engineYearCache.set(year, yearMap);
-  }
-  return yearMap.get(slug) ?? null;
+    return yearMap.get(slug) ?? null;
+  };
 }
+
+const getEngineDate = createEngineDateLookup(calculateObservancesForYear);
 
 function getApprovedFixtureEngineDate(fixture: GoldenFixture): string {
   // profile.calendar === null means the fixture is for a rule with no
@@ -389,18 +393,22 @@ describe('Engine evaluation caching invariant', () => {
     const distinctFixtureYears = Array.from(new Set([
       ...goldenFixtures.map(f => f.year),
       ...snapshotFixtures.map(f => f.year),
-    ]));
+    ])).sort((a, b) => a - b);
+    const evaluatedYears: number[] = [];
+    const getCachedFixtureDate = createEngineDateLookup(year => {
+      evaluatedYears.push(year);
+      return [];
+    });
 
     for (const fixture of snapshotFixtures) {
-      getEngineDate(fixture.festivalId, fixture.year);
+      getCachedFixtureDate(fixture.festivalId, fixture.year);
     }
 
     for (const fixture of goldenFixtures) {
-      getEngineDate(fixture.festivalId, fixture.year);
+      getCachedFixtureDate(fixture.festivalId, fixture.year);
     }
 
-    expect(engineEvaluationCount).toBe(distinctFixtureYears.length);
-    expect(engineEvaluationCount).toBeLessThanOrEqual(distinctFixtureYears.length);
+    expect(evaluatedYears).toEqual(distinctFixtureYears);
   });
 });
 
