@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 // GET /api/native/progress
 //
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(req);
     if (!user || !supabase) {
-      return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
 
     const today = new Date().toISOString().slice(0, 10);

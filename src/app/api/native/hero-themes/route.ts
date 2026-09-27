@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { HOME_HERO_THEMES, mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const { user, error, supabase } = await getApiUser(request);
 
   if (error || !user || !supabase) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   const tradition = request.nextUrl.searchParams.get('tradition') ?? 'hindu';

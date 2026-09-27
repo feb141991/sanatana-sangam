@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -27,7 +27,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 // ── GET — single profile with full chart_data ─────────────────────────────────
 export async function GET(req: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
-  const { user } = await getApiUser(req);
+  const { user, error: authError } = await getApiUser(req);
 
   const db = getServiceClient();
 
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, ctx: RouteContext) {
   } else if (sessionToken) {
     query = query.eq('session_token', sessionToken).is('owner_id', null);
   } else {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const { data, error } = await query.single();
@@ -55,9 +55,9 @@ export async function GET(req: NextRequest, ctx: RouteContext) {
 // ── PATCH — update label / relation / is_primary ──────────────────────────────
 export async function PATCH(req: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
-  const { user } = await getApiUser(req);
+  const { user, error: authError } = await getApiUser(req);
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   let body: Record<string, unknown> = {};
@@ -115,9 +115,9 @@ export async function PATCH(req: NextRequest, ctx: RouteContext) {
 // ── DELETE — remove profile ───────────────────────────────────────────────────
 export async function DELETE(req: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
-  const { user } = await getApiUser(req);
+  const { user, error: authError } = await getApiUser(req);
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const db = getServiceClient();

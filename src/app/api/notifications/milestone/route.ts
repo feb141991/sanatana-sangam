@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { sendPushNotification } from '@/lib/push-server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 // ─── Achievement Milestone Notification ───────────────────────────────────────
 // Called by JapaClient after saving a session when streak or total session count
@@ -48,7 +48,7 @@ const VALID_SESSION_THRESHOLDS   = [7, 21, 40, 108, 365, 1000];
 
 export async function POST(request: NextRequest) {
   const { user, error } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: error?.message ?? 'Unauthorized' }, { status: 401 });
+  if (!user) return getApiAuthFailureResponse(error);
 
   let body: { type?: string; threshold?: number; shieldName?: string };
   try { body = await request.json(); }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -14,7 +14,7 @@ export const runtime = 'nodejs';
 export async function POST(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (authError || !user || !supabase) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const { error } = await supabase

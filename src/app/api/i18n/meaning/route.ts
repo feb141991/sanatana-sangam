@@ -6,7 +6,7 @@ import { generateSarvamTranslation } from "@/lib/ai/providers/sarvam-translate";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
 import { generateReasoningCacheKey, fetchReasoningCache, storeReasoningCache } from "@/lib/ai/reasoning-cache";
 import { getDefaultTags, logValidationResult, mergeTags, validatePipelineTags } from "@/lib/ai/validate-pipeline-tags";
-import { getApiUser } from "@/lib/api-auth";
+import { getApiAuthFailureResponse, getApiUser } from "@/lib/api-auth";
 import { rejectLargeRequest, asBoundedString, checkDurableRateLimit } from "@/lib/api-security";
 
 const MAX_BODY_BYTES = 32 * 1024;
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   const { user, error, supabase: authSupabase } = await getApiUser(req);
   if (!user || error) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   const rateRejection = await checkDurableRateLimit(

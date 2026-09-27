@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { TERMS_VERSION } from '@/lib/terms-content';
 import { PRIVACY_VERSION } from '@/lib/privacy-content';
 
@@ -18,7 +18,7 @@ const CURRENT_VERSION: Record<'terms' | 'privacy', string> = {
 export async function POST(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
-    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const body = await req.json().catch(() => null) as { document?: string; surface?: string } | null;

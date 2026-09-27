@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +22,7 @@ export const runtime = 'nodejs';
 export async function POST(req: NextRequest) {
   const { user, error: authError } = await getApiUser(req);
   if (authError || !user) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const admin = createAdminClient();

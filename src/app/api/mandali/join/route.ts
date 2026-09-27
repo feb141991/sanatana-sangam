@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 function optionalTrim(value: unknown) {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     const { user, error: authError, supabase } = await getApiUser(request);
     if (!user || !supabase) {
-      return NextResponse.json({ error: authError?.message || 'Unauthenticated' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
 
     const { data, error } = await supabase.rpc('join_mandali' as never, {

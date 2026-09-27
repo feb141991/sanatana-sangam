@@ -10,7 +10,10 @@ let nextId = 1;
 let forceUniqueViolationOnce = false;
 
 const getApiUser = vi.fn();
-vi.mock("@/lib/api-auth", () => ({ getApiUser: (...a: unknown[]) => getApiUser(...a) }));
+vi.mock("@/lib/api-auth", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/api-auth")>(),
+  getApiUser: (...a: unknown[]) => getApiUser(...a),
+}));
 vi.mock("@/lib/api-guards", () => ({ assertNotBanned: async () => null }));
 vi.mock("@/lib/api-security", () => ({ rejectLargeRequest: () => null, rateLimitByIp: () => null }));
 

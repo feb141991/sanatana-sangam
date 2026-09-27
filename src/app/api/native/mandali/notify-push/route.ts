@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { sendPushNotification } from '@/lib/push-server';
 
@@ -30,7 +30,7 @@ export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
   const { user, error } = await getApiUser(request);
   if (!user) {
-    return NextResponse.json({ error: error?.message ?? 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   const body = await request.json().catch(() => null);

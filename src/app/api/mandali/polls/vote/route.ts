@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { createMandaliPromptAdminClient } from '@/lib/mandali-prompt-admin';
 
 export async function POST(request: NextRequest) {
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
 
   const admin = createMandaliPromptAdminClient();
   const banned = await assertNotBanned(admin as any, user.id);

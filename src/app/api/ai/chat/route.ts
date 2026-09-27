@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { localSpiritualDate } from '@/lib/sacred-time';
@@ -354,7 +354,7 @@ export async function POST(req: NextRequest) {
   // previously made this route unreachable from the native app entirely.
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
-    return NextResponse.json({ error: authError?.message ?? 'Unauthorised' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const { data: profile } = await supabase

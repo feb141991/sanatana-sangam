@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { runPathshalaRecommend } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   // receive the same RLS-protected behavior.
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
-    return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const {

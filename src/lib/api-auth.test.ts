@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
   bearerGetUser: vi.fn(),
+  bearerGetClaims: vi.fn(),
   cookieGetUser: vi.fn(),
   createClient: vi.fn(),
   createServerSupabaseClient: vi.fn(),
@@ -20,17 +21,19 @@ import { getApiAuthFailureResponse, getApiUser } from './api-auth';
 
 describe('getApiUser auth failure contract', () => {
   beforeEach(() => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://mnbwodcswxoojndytngu.supabase.co');
     mocks.bearerGetUser.mockReset();
+    mocks.bearerGetClaims.mockReset();
     mocks.cookieGetUser.mockReset();
     mocks.createClient.mockReset();
     mocks.createServerSupabaseClient.mockReset();
-    mocks.createClient.mockReturnValue({ auth: { getUser: mocks.bearerGetUser } });
+    mocks.createClient.mockReturnValue({ auth: { getUser: mocks.bearerGetUser, getClaims: mocks.bearerGetClaims } });
     mocks.createServerSupabaseClient.mockResolvedValue({ auth: { getUser: mocks.cookieGetUser } });
   });
 
   it('keeps an invalid bearer as 401 and never falls through to cookie auth', async () => {
-    mocks.bearerGetUser.mockResolvedValue({
-      data: { user: null },
+    mocks.bearerGetClaims.mockResolvedValue({
+      data: null,
       error: { status: 401, name: 'AuthApiError' },
     });
 
@@ -40,12 +43,13 @@ describe('getApiUser auth failure contract', () => {
 
     expect(result.user).toBeNull();
     expect(result.error).toMatchObject({ status: 401, code: 'AUTH_REQUIRED' });
+    expect(mocks.bearerGetUser).not.toHaveBeenCalled();
     expect(mocks.createServerSupabaseClient).not.toHaveBeenCalled();
   });
 
   it('preserves a returned auth dependency failure as 503', async () => {
-    mocks.bearerGetUser.mockResolvedValue({
-      data: { user: null },
+    mocks.bearerGetClaims.mockResolvedValue({
+      data: null,
       error: { status: 503, name: 'AuthRetryableFetchError' },
     });
 
@@ -60,7 +64,7 @@ describe('getApiUser auth failure contract', () => {
   it('uses one request id in auth logs and the retryable response', async () => {
     const requestId = 'a1b2c3d4-e5f6-4789-8123-456789abcdef';
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    mocks.bearerGetUser.mockRejectedValue(new Error('provider transport detail'));
+    mocks.bearerGetClaims.mockRejectedValue(new Error('provider transport detail'));
 
     const result = await getApiUser(new NextRequest('http://localhost/api/example', {
       headers: { Authorization: 'Bearer token', 'X-Request-ID': requestId },
@@ -79,10 +83,12 @@ describe('getApiUser auth failure contract', () => {
     warn.mockRestore();
   });
 
-  it('clears the auth timeout timer when the provider responds promptly', async () => {
+  it('clears the auth timeout timer when claim verification responds promptly', async () => {
     vi.useFakeTimers();
     try {
-      mocks.bearerGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
+      mocks.bearerGetClaims.mockResolvedValue({
+        data: { claims: validClaims({ sub: 'user-1' }) }, error: null,
+      });
       const result = await getApiUser(new NextRequest('http://localhost/api/example', {
         headers: { Authorization: 'Bearer valid-token' },
       }));
@@ -94,8 +100,8 @@ describe('getApiUser auth failure contract', () => {
     }
   });
 
-  it('classifies a thrown auth transport failure as 503 without exposing its message', async () => {
-    mocks.bearerGetUser.mockRejectedValue(new Error('sensitive provider transport detail'));
+  it('classifies a thrown signing-key transport failure as 503 without exposing its message', async () => {
+    mocks.bearerGetClaims.mockRejectedValue(new Error('sensitive signing-key transport detail'));
 
     const result = await getApiUser(new NextRequest('http://localhost/api/example', {
       headers: { Authorization: 'Bearer token' },
@@ -105,12 +111,10 @@ describe('getApiUser auth failure contract', () => {
     expect(result.error?.message).not.toContain('sensitive');
   });
 
-  it('times out a hanging bearer auth.getUser() call as 503 rather than hanging the request (reliability plan item 7)', async () => {
+  it('times out a hanging bearer claim verification as 503 rather than hanging the request', async () => {
     vi.useFakeTimers();
     try {
-      // Never resolves -- simulates a stalled network round trip to the
-      // auth provider, the exact failure mode withAuthTimeout exists for.
-      mocks.bearerGetUser.mockReturnValue(new Promise(() => {}));
+      mocks.bearerGetClaims.mockReturnValue(new Promise(() => {}));
 
       const resultPromise = getApiUser(new NextRequest('http://localhost/api/example', {
         headers: { Authorization: 'Bearer slow-token' },
@@ -124,6 +128,31 @@ describe('getApiUser auth failure contract', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('accepts only signed claims for this project and authenticated users', async () => {
+    mocks.bearerGetClaims.mockResolvedValue({ data: { claims: validClaims({ sub: 'user-42' }) }, error: null });
+    const result = await getApiUser(new NextRequest('http://localhost/api/example', {
+      headers: { Authorization: 'Bearer valid-token' },
+    }));
+
+    expect(result.user).toMatchObject({ id: 'user-42', email: 'devotee@example.com' });
+    expect(mocks.bearerGetUser).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['wrong issuer', { iss: 'https://attacker.example/auth/v1' }],
+    ['wrong audience', { aud: 'anon' }],
+    ['wrong role', { role: 'service_role' }],
+    ['missing subject', { sub: '' }],
+  ])('rejects verified claims with %s', async (_label, override) => {
+    mocks.bearerGetClaims.mockResolvedValue({ data: { claims: validClaims(override) }, error: null });
+    const result = await getApiUser(new NextRequest('http://localhost/api/example', {
+      headers: { Authorization: 'Bearer signed-token' },
+    }));
+
+    expect(result.user).toBeNull();
+    expect(result.error).toMatchObject({ status: 401, code: 'AUTH_REQUIRED' });
   });
 
   it('times out a hanging cookie auth.getUser() call as 503 rather than hanging the request (reliability plan item 7)', async () => {
@@ -143,3 +172,18 @@ describe('getApiUser auth failure contract', () => {
     }
   });
 });
+
+function validClaims(overrides: Record<string, unknown> = {}) {
+  const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://mnbwodcswxoojndytngu.supabase.co';
+  return {
+    sub: 'user-default',
+    iss: `${projectUrl.replace(/\/$/, '')}/auth/v1`,
+    aud: ['authenticated'],
+    role: 'authenticated',
+    exp: Math.floor(Date.now() / 1000) + 3600,
+    email: 'devotee@example.com',
+    user_metadata: { full_name: 'Devotee' },
+    app_metadata: {},
+    ...overrides,
+  };
+}

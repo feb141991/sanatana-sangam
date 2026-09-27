@@ -9,7 +9,10 @@ const mocks = vi.hoisted(() => ({
   retrieveDharmaChatGrounding: vi.fn(),
 }));
 
-vi.mock('@/lib/api-auth', () => ({ getApiUser: mocks.getApiUser }));
+vi.mock('@/lib/api-auth', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/api-auth')>(),
+  getApiUser: mocks.getApiUser,
+}));
 vi.mock('@/lib/monitoring/events', () => ({
   emitEvent: mocks.emitEvent,
   emitError: mocks.emitError,

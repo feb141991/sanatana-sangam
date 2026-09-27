@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { computeQuizStreak } from '@/lib/quiz-streak';
 
 // Auth: switched from a cookie-only server client to getApiUser(req), which
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
 
   if (!user || !supabase) {
-    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   try {

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { filterProfileRows, getUserSafetyState } from '@/lib/user-safety';
 
 export async function GET(request: NextRequest) {
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
 
   const query = new URL(request.url).searchParams.get('q')?.trim() ?? '';
   if (query.length < 2 || query.length > 40) return NextResponse.json({ profiles: [] });

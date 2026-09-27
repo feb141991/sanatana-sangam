@@ -3,7 +3,10 @@ import { NextRequest } from "next/server";
 import { PATCH } from "./route";
 
 const getApiUser = vi.fn();
-vi.mock("@/lib/api-auth", () => ({ getApiUser: (...a: unknown[]) => getApiUser(...a) }));
+vi.mock("@/lib/api-auth", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/api-auth")>(),
+  getApiUser: (...a: unknown[]) => getApiUser(...a),
+}));
 
 describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite", () => {
   let updatedPayload: Record<string, unknown> | null = null;
@@ -49,7 +52,7 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
   });
 
   it("returns 401 Unauthorized when unauthenticated", async () => {
-    getApiUser.mockResolvedValue({ user: null, error: new Error("Unauthorized"), supabase: null });
+    getApiUser.mockResolvedValue({ user: null, error: Object.assign(new Error("Unauthorized"), { status: 401 }), supabase: null });
     const req = new NextRequest("http://localhost:3000/api/native/profile", {
       method: "PATCH",
       body: JSON.stringify({ rashi: "karka" }),

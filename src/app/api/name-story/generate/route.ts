@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 import {
@@ -258,7 +258,7 @@ export async function POST(req: NextRequest) {
     const { user, error: authError, supabase } = await getApiUser(req);
 
     if (authError || !user || !supabase) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
 
     const parsedBody = parseRequestBody(await req.json().catch(() => null));

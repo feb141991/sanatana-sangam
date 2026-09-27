@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 
 // Clears the signed-in user's in-app notification inbox. This is intentionally
@@ -9,7 +9,7 @@ import { createServiceRoleSupabaseClient } from '@/lib/admin';
 export async function POST(request: NextRequest) {
   const { user, error } = await getApiUser(request);
   if (!user) {
-    return NextResponse.json({ error: error?.message ?? 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   try {

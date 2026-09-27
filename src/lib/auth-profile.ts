@@ -6,7 +6,9 @@ import type { Database } from '@/types/database';
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 export type AuthProfileState = Pick<ProfileRow, 'onboarding_completed'> | null;
 
-function profileName(user: User) {
+type AuthProfileUser = Pick<User, 'id' | 'email' | 'user_metadata'>;
+
+function profileName(user: AuthProfileUser) {
   const meta = user.user_metadata ?? {};
   const name = typeof meta.full_name === 'string' ? meta.full_name
     : typeof meta.name === 'string' ? meta.name
@@ -14,7 +16,7 @@ function profileName(user: User) {
   return name?.trim() || 'Shoonaya Seeker';
 }
 
-export function profileAvatarUrl(user: User): string | null {
+export function profileAvatarUrl(user: AuthProfileUser): string | null {
   const meta = user.user_metadata ?? {};
   if (typeof meta.avatar_url === "string" && meta.avatar_url.trim()) {
     return meta.avatar_url.trim();
@@ -25,7 +27,7 @@ export function profileAvatarUrl(user: User): string | null {
   return null;
 }
 
-function profileUsername(user: User) {
+function profileUsername(user: AuthProfileUser) {
   const meta = user.user_metadata ?? {};
   const raw = typeof meta.username === 'string' ? meta.username
     : user.email?.split('@')[0];
@@ -39,7 +41,7 @@ function profileUsername(user: User) {
 }
 
 export async function ensureAuthProfile(
-  user: User,
+  user: AuthProfileUser,
   sessionSupabase?: Awaited<ReturnType<typeof createServerSupabaseClient>>,
 ): Promise<AuthProfileState> {
   const profile = {

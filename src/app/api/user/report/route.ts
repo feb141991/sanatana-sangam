@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import {
   malaSessionBeads,
@@ -16,7 +16,7 @@ import {
 export async function GET(request: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(request);
   if (authError || !user || !supabase) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
   
   const bannedError = await assertNotBanned(supabase, user.id);

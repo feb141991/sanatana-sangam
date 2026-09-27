@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ALL_LIBRARY_ENTRIES } from "@/lib/library-content";
 import { generateWithProvider } from "@/lib/ai/providers/inference";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
-import { getApiUser } from "@/lib/api-auth";
+import { getApiAuthFailureResponse, getApiUser } from "@/lib/api-auth";
 import { rejectLargeRequest, asBoundedString, checkDurableRateLimit } from "@/lib/api-security";
 
 // POST /api/discover/mood
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
 
   const { user, error, supabase } = await getApiUser(req);
   if (!user || error) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return getApiAuthFailureResponse(error);
   }
 
   const rateRejection = await checkDurableRateLimit(

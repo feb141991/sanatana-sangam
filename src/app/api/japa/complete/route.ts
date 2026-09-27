@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(req);
     if (!user || !supabase) {
-      return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
 
     const body = (await req.json().catch(() => null)) as JapaCompleteBody | null;

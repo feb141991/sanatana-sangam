@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { SACRED_RELICS } from '@/lib/relics';
 
@@ -37,8 +37,8 @@ const PUBLIC_PROFILE_FIELDS =
   'id, full_name, username, avatar_url, bio, tradition, sampradaya, ishta_devata, city, country, seva_score, karma_points, life_stage, active_symbol_id, created_at, mandali_id, shloka_streak';
 
 export async function GET(request: NextRequest) {
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
 
   const id = new URL(request.url).searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'id is required.' }, { status: 400 });

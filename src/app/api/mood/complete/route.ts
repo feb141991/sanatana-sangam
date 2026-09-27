@@ -1,12 +1,12 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 
 export async function POST(request: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(request);
     if (!user || !supabase) {
-      return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
     const banned = await assertNotBanned(supabase, user.id);
     if (banned) return banned;

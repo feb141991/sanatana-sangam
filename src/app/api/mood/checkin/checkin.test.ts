@@ -3,7 +3,10 @@ import { NextRequest } from "next/server";
 import { POST } from "./route";
 
 const getApiUser = vi.fn();
-vi.mock("@/lib/api-auth", () => ({ getApiUser: (...a: unknown[]) => getApiUser(...a) }));
+vi.mock("@/lib/api-auth", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/api-auth")>(),
+  getApiUser: (...a: unknown[]) => getApiUser(...a),
+}));
 vi.mock("@/lib/api-guards", () => ({ assertNotBanned: async () => null }));
 
 type Row = { id: string; user_id: string; client_operation_id: string | null };

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { rejectLargeRequest, rateLimitByIp } from '@/lib/api-security';
 import { parseMandaliCommentInput, parseMandaliCommentEditInput, parseMandaliCommentDeleteInput } from '@/lib/mandali-write-contract';
@@ -12,8 +12,8 @@ import { createAdminClient } from '@/lib/supabase-admin';
 // look up exactly one comment (the realtime-new-comment enrichment path
 // in app/(tabs)/mandali.tsx uses this instead of re-fetching the thread).
 export async function GET(request: NextRequest) {
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
 
   const url = new URL(request.url);
   const postId = url.searchParams.get('postId');
@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
   const rejected = rejectLargeRequest(request, 4_096)
     ?? rateLimitByIp(request, { keyPrefix: 'mandali-comment', limit: 30, windowMs: 60 * 60 * 1000 });
   if (rejected) return rejected;
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
   const admin = createAdminClient();
   const banned = await assertNotBanned(admin, user.id);
   if (banned) return banned;
@@ -117,8 +117,8 @@ export async function PATCH(request: NextRequest) {
   const rejected = rejectLargeRequest(request, 4_096)
     ?? rateLimitByIp(request, { keyPrefix: 'mandali-comment-edit', limit: 20, windowMs: 60 * 60 * 1000 });
   if (rejected) return rejected;
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
   const admin = createAdminClient();
   const banned = await assertNotBanned(admin, user.id);
   if (banned) return banned;
@@ -141,8 +141,8 @@ export async function PATCH(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const rejected = rateLimitByIp(request, { keyPrefix: 'mandali-comment-delete', limit: 20, windowMs: 60 * 60 * 1000 });
   if (rejected) return rejected;
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
   const admin = createAdminClient();
   const banned = await assertNotBanned(admin, user.id);
   if (banned) return banned;

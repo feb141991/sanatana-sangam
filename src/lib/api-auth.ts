@@ -15,19 +15,32 @@ import { classifyApiAuthFailure } from "@/lib/api-auth-status";
 // repo-wide type-generation mismatch unrelated to this route (confirmed by
 // reproducing the same `never` errors against already-existing, unrelated
 // tables). Left untyped here to stay consistent with the rest of the codebase.
+type ApiUser = Pick<User, 'id' | 'email' | 'user_metadata' | 'app_metadata'>;
 type ApiUserResult =
-  | { user: User; error: null; supabase: SupabaseClient }
+  | { user: ApiUser; error: null; supabase: SupabaseClient }
   | { user: null; error: Error; supabase: null };
 
-// Reliability plan item 7: getApiUser is the auth entry point for nearly
-// every route in this app and previously had no timeout at all on either
-// auth.getUser() call -- a slow/hanging auth-provider network round trip
-// would hang the whole request rather than failing fast. Matches the
-// DB_TIMEOUT convention already used in /api/native/progress-summary. A
-// timeout here throws a plain Error with no .status/.name/.code, which
-// classifyApiAuthFailure's default branch correctly reads as
-// AUTH_UNAVAILABLE (503, retryable) rather than AUTH_REQUIRED (401) --
-// a slow dependency is not evidence of bad credentials.
+let claimsVerifier: SupabaseClient | null = null;
+
+/**
+ * Reuse one verifier client per server process so supabase-js can cache the
+ * project's signing keys. Unlike the per-request RLS client below, this client
+ * has no request Authorization header or persisted session.
+ */
+function getClaimsVerifier(): SupabaseClient {
+  if (!claimsVerifier) {
+    claimsVerifier = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false } },
+    );
+  }
+  return claimsVerifier;
+}
+
+// Bound both local JWKS verification (including key refresh) and the web
+// cookie getUser() fallback. A timeout is a dependency outage (503), never a
+// credential rejection (401).
 const AUTH_TIMEOUT_MS = 4_000;
 
 function withAuthTimeout<T>(promise: Promise<T>): Promise<T> {
@@ -92,9 +105,10 @@ function authFailure(req: NextRequest, error: unknown, durationMs: number): ApiU
 /**
  * Resolves the authenticated user for an API route.
  *
- * Fast path: checks for a Bearer token FIRST (native callers via `apiFetch`),
- * avoiding an expensive cookie-session network lookup that is guaranteed to fail
- * for native clients.
+ * Bearer path: locally verifies the signed access-token claims with the
+ * project's cached signing keys. This avoids a Supabase Auth `/user` request
+ * on every native API request. Cookie callers keep the existing fresh
+ * `getUser()` validation path.
  *
  * Fallback path: falls through to cookie-based session verification for web callers.
  *
@@ -108,34 +122,54 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
   const startedAt = Date.now();
 
   try {
-
-  // 1. Fast path: Native callers with Bearer token
-  if (token) {
-    const bearerClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
-        global: {
-          headers: {
-            Authorization: "Bearer " + token,
+    // 1. Native callers: validate signature, expiration, issuer, audience and
+    // role locally. `getClaims(jwt)` uses the project's JWKS for asymmetric
+    // signing keys (ES256 in production), so each API call avoids Auth `/user`.
+    if (token) {
+      const claimsResult = await withAuthTimeout(getClaimsVerifier().auth.getClaims(token));
+      const claims = claimsResult.data?.claims;
+      const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (!projectUrl) throw new Error('Supabase URL is not configured');
+      const expectedIssuer = `${projectUrl.replace(/\/$/, '')}/auth/v1`;
+      const audience = Array.isArray(claims?.aud) ? claims.aud : [claims?.aud];
+      if (
+        claims &&
+        typeof claims.sub === 'string' && claims.sub.length > 0 &&
+        claims.iss === expectedIssuer &&
+        audience.includes('authenticated') &&
+        claims.role === 'authenticated' &&
+        typeof claims.exp === 'number' && Number.isFinite(claims.exp) &&
+        claims.exp > Math.floor(Date.now() / 1000) &&
+        (claims.nbf === undefined || (typeof claims.nbf === 'number' &&
+          Number.isFinite(claims.nbf) && claims.nbf <= Math.floor(Date.now() / 1000)))
+      ) {
+        // This is the minimal verified identity data our routes consume, not
+        // a fetched Auth User record. Local JWT validation cannot observe
+        // revocation or user deletion before the token expires.
+        const user: ApiUser = {
+          id: claims.sub,
+          email: typeof claims.email === 'string' ? claims.email : undefined,
+          user_metadata: claims.user_metadata ?? {},
+          app_metadata: claims.app_metadata ?? {},
+        };
+        const bearerClient = createClient(
+          projectUrl,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+            global: { headers: { Authorization: `Bearer ${token}` } },
           },
-        },
-      }
-    );
+        );
 
-    const bearerResult = await withAuthTimeout(bearerClient.auth.getUser(token));
-    if (bearerResult.data?.user) {
-      return { user: bearerResult.data.user, error: null, supabase: bearerClient };
+        return { user, error: null, supabase: bearerClient };
+      }
+
+      const invalidClaims = Object.assign(new Error('Invalid bearer token claims'), { status: 401 });
+      return authFailure(req, claimsResult.error ?? invalidClaims, Date.now() - startedAt);
     }
 
-    return authFailure(req, bearerResult.error, Date.now() - startedAt);
-  }
-
-  // 2. Fallback path: Web callers with cookie session
+    // 2. Fallback path: Web callers with cookie session, which remains a fresh
+    // Auth `/user` lookup because web cookies can be rotated or revoked server-side.
     const cookieClient = await createServerSupabaseClient();
     const cookieResult = await withAuthTimeout(cookieClient.auth.getUser());
 

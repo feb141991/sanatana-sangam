@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { ensureAuthProfile } from '@/lib/auth-profile';
 
 export const runtime = 'nodejs';
@@ -12,9 +12,9 @@ export const dynamic = 'force-dynamic';
  * is derived from the bearer/cookie session; callers cannot select an id.
  */
 export async function POST(request: NextRequest) {
-  const { user } = await getApiUser(request);
+  const { user, error: authError } = await getApiUser(request);
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const profile = await ensureAuthProfile(user);

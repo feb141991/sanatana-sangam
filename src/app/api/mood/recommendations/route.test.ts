@@ -8,7 +8,10 @@ const mocks = vi.hoisted(() => ({
   assertNotBanned: vi.fn().mockResolvedValue(null),
 }));
 
-vi.mock('@/lib/api-auth', () => ({ getApiUser: mocks.getApiUser }));
+vi.mock('@/lib/api-auth', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/api-auth')>(),
+  getApiUser: mocks.getApiUser,
+}));
 vi.mock('@/lib/api-guards', () => ({ assertNotBanned: mocks.assertNotBanned }));
 
 function makeSupabase(consented: boolean, checkins: Array<Record<string, unknown>>) {

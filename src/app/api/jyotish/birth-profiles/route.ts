@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -20,9 +20,9 @@ function getServiceClient() {
 
 // ── GET — list user's birth profiles ─────────────────────────────────────────
 export async function GET(req: NextRequest) {
-  const { user } = await getApiUser(req);
+  const { user, error: authError } = await getApiUser(req);
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const db = getServiceClient();
@@ -52,9 +52,9 @@ export async function GET(req: NextRequest) {
 // ── POST — claim guest profiles on signup ─────────────────────────────────────
 // Body: { session_token: string }
 export async function POST(req: NextRequest) {
-  const { user } = await getApiUser(req);
+  const { user, error: authError } = await getApiUser(req);
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   let body: { session_token?: string } = {};

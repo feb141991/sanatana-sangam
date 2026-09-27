@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 
@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
   const rateRejection = rateLimitByIp(request, { keyPrefix: 'mandali-report', limit: 12, windowMs: 60 * 60 * 1000 });
   if (rateRejection) return rateRejection;
 
-  const { user } = await getApiUser(request);
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return getApiAuthFailureResponse(authError);
 
   const body = await request.json().catch(() => null) as Record<string, unknown> | null;
   const targetType = typeof body?.targetType === 'string' ? body.targetType : '';

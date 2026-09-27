@@ -5,7 +5,10 @@ const mocks = vi.hoisted(() => ({
   resolve: vi.fn(), auth: vi.fn(), admin: vi.fn(), load: vi.fn(), render: vi.fn(),
 }));
 vi.mock('@/lib/calendar/request-profile', () => ({ resolveRequestProfile: mocks.resolve }));
-vi.mock('@/lib/api-auth', () => ({ getApiUser: mocks.auth }));
+vi.mock('@/lib/api-auth', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/api-auth')>(),
+  getApiUser: mocks.auth,
+}));
 vi.mock('@/lib/admin', () => ({ createServiceRoleSupabaseClient: mocks.admin }));
 vi.mock('@/lib/calendar/subscription-feed', () => ({
   loadSubscriptionEvents: mocks.load, renderSubscriptionCalendar: mocks.render,

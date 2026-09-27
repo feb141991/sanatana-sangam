@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { resolveActiveLiveStreams, type LiveDarshanDbRow } from '@/lib/live-streams';
 
 // GET /api/native/live-darshan
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(req);
     if (!user || !supabase) {
-      return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
 
     const { data: dbStreams, error: streamsError } = await supabase

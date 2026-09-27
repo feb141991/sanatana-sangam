@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { getPathLessons } from '@/lib/pathshala-lessons';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
@@ -77,7 +77,7 @@ function parsePayload(value: unknown): PathshalaProgressPayload | null {
 export async function GET(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (authError || !user || !supabase) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const banned = await assertNotBanned(supabase, user.id);
@@ -147,7 +147,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (authError || !user || !supabase) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const banned = await assertNotBanned(supabase, user.id);

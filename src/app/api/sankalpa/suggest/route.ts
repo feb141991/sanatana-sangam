@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import {
@@ -51,7 +51,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 export async function GET(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
-    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
   const banned = await assertNotBanned(supabase, user.id);
   if (banned) return banned;

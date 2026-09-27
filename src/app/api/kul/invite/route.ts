@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 type InvitePayload = { targetUserId?: string; inviteCode?: string };
 
 export async function POST(request: NextRequest) {
-  const { user, supabase } = await getApiUser(request);
-  if (!user || !supabase) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, supabase, error: authError } = await getApiUser(request);
+  if (!user || !supabase) return getApiAuthFailureResponse(authError);
 
   const payload = await request.json() as InvitePayload;
   if (!payload.targetUserId || !payload.inviteCode || payload.targetUserId === user.id) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { runPathshalaExplain } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { validatePipelineTags, getDefaultTags, mergeTags, canExplain, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   // this route directly instead of faking it through the generic chat screen.
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
-    return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
   const { data: profile } = await supabase
     .from('profiles')

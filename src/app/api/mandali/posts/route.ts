@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { rejectLargeRequest, rateLimitByIp } from '@/lib/api-security';
 import { parseMandaliPostInput } from '@/lib/mandali-write-contract';
@@ -14,8 +14,8 @@ async function authenticate(request: NextRequest): Promise<
   | { response: NextResponse }
   | { admin: ReturnType<typeof createAdminClient>; user: NonNullable<Awaited<ReturnType<typeof getApiUser>>['user']> }
 > {
-  const { user } = await getApiUser(request);
-  if (!user) return { response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) return { response: getApiAuthFailureResponse(authError) };
   const admin = createAdminClient();
   const banned = await assertNotBanned(admin, user.id);
   if (banned) return { response: banned };

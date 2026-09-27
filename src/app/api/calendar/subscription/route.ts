@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveRequestProfile } from '@/lib/calendar/request-profile';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { loadSubscriptionEvents, subscriptionSettings } from '@/lib/calendar/subscription-feed';
 import type { CalendarSubscriptionSettings } from '@/lib/calendar/subscription-feed';
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   const auth = await getApiUser(request);
-  if (!auth.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers });
+  if (!auth.user) return getApiAuthFailureResponse(auth.error, headers);
   const { error } = await auth.supabase.from('calendar_subscriptions').delete().eq('user_id', auth.user.id);
   return error ? NextResponse.json({ error: 'SUBSCRIPTION_UNAVAILABLE' }, { status: 503, headers }) : new Response(null, { status: 204, headers });
 }

@@ -10,7 +10,10 @@ const mocks = vi.hoisted(() => ({
   generateWithProvider: vi.fn(),
 }));
 
-vi.mock('@/lib/api-auth', () => ({ getApiUser: mocks.getApiUser }));
+vi.mock('@/lib/api-auth', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/api-auth')>(),
+  getApiUser: mocks.getApiUser,
+}));
 vi.mock('@/lib/api-guards', () => ({ assertNotBanned: mocks.assertNotBanned }));
 vi.mock('@/lib/ai/providers/inference', () => ({ generateWithProvider: mocks.generateWithProvider }));
 

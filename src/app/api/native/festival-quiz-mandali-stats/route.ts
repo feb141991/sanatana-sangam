@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { resolveFestivalQuizSeriesForUser } from '@/lib/calendar/resolve-festival-quiz-series';
 
@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 // feed payload.
 export async function GET(request: NextRequest) {
   const { user, error } = await getApiUser(request);
-  if (error || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (error || !user) return getApiAuthFailureResponse(error);
 
   const admin = createAdminClient();
 

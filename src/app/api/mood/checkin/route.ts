@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 
 // Auth: switched from a cookie-only server client (createServerSupabaseClient
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(request);
     if (!user || !supabase) {
-      return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
     const banned = await assertNotBanned(supabase, user.id);
     if (banned) return banned;
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(request);
     if (!user || !supabase) {
-      return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
     const banned = await assertNotBanned(supabase, user.id);
     if (banned) return banned;

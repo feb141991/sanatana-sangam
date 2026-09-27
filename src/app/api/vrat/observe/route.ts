@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getApiUser } from "@/lib/api-auth";
+import { getApiAuthFailureResponse, getApiUser } from "@/lib/api-auth";
 import { assertNotBanned } from "@/lib/api-guards";
 import { localSpiritualDate } from "@/lib/sacred-time";
 import { createServiceRoleSupabaseClient } from "@/lib/admin";
@@ -12,7 +12,7 @@ import { resolveObservableVratOccurrence } from "@/lib/calendar/vrat-observable-
 export async function GET(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
-    return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const occurrence_id = req.nextUrl.searchParams.get("occurrence_id");
@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
-    return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const banned = await assertNotBanned(supabase, user.id);

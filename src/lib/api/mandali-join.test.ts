@@ -5,7 +5,10 @@ import { POST } from '@/app/api/mandali/join/route';
 
 const rpc = vi.fn();
 vi.mock('@/lib/supabase', () => ({ createClient: () => ({ rpc }) }));
-vi.mock('@/lib/api-auth', () => ({ getApiUser: async () => ({ user: { id: 'viewer' }, supabase: { rpc } }) }));
+vi.mock('@/lib/api-auth', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/api-auth')>(),
+  getApiUser: async () => ({ user: { id: 'viewer' }, supabase: { rpc } }),
+}));
 describe('Mandali join entry contracts', () => {
   beforeEach(() => rpc.mockReset());
   it('PWA location joins use one atomic RPC, not a profile update', async () => {

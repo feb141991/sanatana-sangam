@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { runPathshalaBridge } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   // getApiUser supports native Bearer tokens and PWA cookie sessions.
   const { user, error: authError } = await getApiUser(req);
   if (!user) {
-    return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   const {

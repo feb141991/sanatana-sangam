@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
 
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       if (authError) {
         console.warn('[sadhana/perfect-day] unauthorized:', authError.message);
       }
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return getApiAuthFailureResponse(authError);
     }
 
     const { timeZone } = await req.json().catch(() => ({ timeZone: 'UTC' }));

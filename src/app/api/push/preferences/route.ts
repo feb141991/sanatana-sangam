@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
 
   if (!user || !supabase) {
-    return authError ? getApiAuthFailureResponse(authError) : NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   try {
@@ -75,7 +75,7 @@ export async function PATCH(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
 
   if (!user || !supabase) {
-    return authError ? getApiAuthFailureResponse(authError) : NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return getApiAuthFailureResponse(authError);
   }
 
   try {

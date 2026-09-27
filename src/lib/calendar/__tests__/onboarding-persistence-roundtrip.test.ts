@@ -18,7 +18,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { resolveCalendarContext } from '../calendar-context';
 
 const getApiUser = vi.fn();
-vi.mock('@/lib/api-auth', () => ({ getApiUser: (...a: unknown[]) => getApiUser(...a) }));
+vi.mock('@/lib/api-auth', async (importOriginal) => ({
+  ...await importOriginal<typeof import('@/lib/api-auth')>(),
+  getApiUser: (...a: unknown[]) => getApiUser(...a),
+}));
 vi.mock('@/lib/supabase-server', () => ({
   createServerSupabaseClient: async () => makeClient(null),
 }));

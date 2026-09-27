@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -22,8 +22,8 @@ type ShrutiLeaderboardUser = {
 
 export async function GET(request: NextRequest) {
   try {
-    const { user } = await getApiUser(request);
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { user, error: authError } = await getApiUser(request);
+    if (!user) return getApiAuthFailureResponse(authError);
     const admin = createAdminClient();
     const { data, error } = await admin
       .from('pathshala_recitation_stats')

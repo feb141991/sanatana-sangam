@@ -8,7 +8,8 @@ const mockAssertNotBanned = vi.fn();
 const mockResolveObservable = vi.fn();
 const mockAdminRpc = vi.fn();
 
-vi.mock("@/lib/api-auth", () => ({
+vi.mock("@/lib/api-auth", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/lib/api-auth")>(),
   getApiUser: (...args: unknown[]) => mockGetApiUser(...args),
 }));
 
@@ -36,7 +37,7 @@ describe("Vrat Observation API Route (/api/vrat/observe)", () => {
 
   describe("GET /api/vrat/observe", () => {
     it("returns 401 when unauthenticated", async () => {
-      mockGetApiUser.mockResolvedValue({ user: null, error: new Error("Unauthorized"), supabase: null });
+      mockGetApiUser.mockResolvedValue({ user: null, error: Object.assign(new Error("Unauthorized"), { status: 401 }), supabase: null });
 
       const req = new NextRequest(`https://shoonaya.com/api/vrat/observe?occurrence_id=${VALID_OCCURRENCE_ID}`);
       const res = await GET(req);
@@ -117,7 +118,7 @@ describe("Vrat Observation API Route (/api/vrat/observe)", () => {
 
   describe("POST /api/vrat/observe", () => {
     it("returns 401 when unauthenticated", async () => {
-      mockGetApiUser.mockResolvedValue({ user: null, error: new Error("Unauthorized"), supabase: null });
+      mockGetApiUser.mockResolvedValue({ user: null, error: Object.assign(new Error("Unauthorized"), { status: 401 }), supabase: null });
 
       const req = new NextRequest("https://shoonaya.com/api/vrat/observe", {
         method: "POST",
