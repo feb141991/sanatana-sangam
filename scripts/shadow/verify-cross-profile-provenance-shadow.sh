@@ -36,7 +36,7 @@ CREATE TABLE public.provenance_snapshot AS
 SELECT id, date, publication_status, final_date_source, diagnostics FROM public.observance_occurrences;
 SQL
 
-psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$ROOT/supabase/migrations/20260924120000_correct_legacy_seed_provenance_label.sql"
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$ROOT/supabase/migrations/20260926121048_correct_legacy_seed_provenance_label.sql"
 psql -d "$DB" -q -v ON_ERROR_STOP=1 <<'SQL'
 DO $$
 BEGIN
@@ -59,7 +59,7 @@ BEGIN
 END $$;
 SQL
 
-psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$ROOT/supabase/rollbacks/20260924120000_correct_legacy_seed_provenance_label_rollback.sql"
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$ROOT/supabase/rollbacks/20260926121048_correct_legacy_seed_provenance_label_rollback.sql"
 psql -d "$DB" -q -v ON_ERROR_STOP=1 <<'SQL'
 DO $$
 BEGIN

@@ -1,7 +1,8 @@
--- Rollback for 20260924120000_correct_legacy_seed_provenance_label.sql
+-- Rollback for 20260926121048_correct_legacy_seed_provenance_label.sql
 --
 -- Matches ONLY rows carrying this migration's own diagnostics marker
--- ('legacy_seed_corrected_20260924120000') -- precise by construction,
+-- ('legacy_seed_corrected_20260924120000') -- the marker retains the
+-- original migration-authoring timestamp and is precise by construction,
 -- not inferred from calculated_by/calculation_version, which 140 other
 -- rows among the same 189 already shared before the forward migration
 -- ever ran. See the forward migration's own header for why that matters.

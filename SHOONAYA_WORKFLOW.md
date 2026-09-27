@@ -87,3 +87,24 @@ Do not call a task complete if the main flow has not been checked.
 If the work creates a durable decision about architecture, product behavior, ritual sequence, schema, rollout, or agent workflow, run the knowledge curator and update `.claude/knowledge/INDEX.md`.
 
 Skip knowledge capture for routine mechanical fixes.
+
+## 8. Supabase Migration Version Integrity
+
+Committed migration filenames are the version identifiers Supabase uses to
+decide which files are pending. Apply those files with the linked Supabase CLI
+workflow (`supabase db push --linked`) after the required shadow test and
+read-only preflight. The Supabase migration API may register a newly generated
+remote timestamp rather than the timestamp in a local filename; using it for a
+file-backed migration creates a split history and can cause later replay.
+
+After an authorized direct migration-API application, record the returned
+remote version, verify the applied SQL and its postconditions, then rename the
+local migration file to that exact remote version and update rollback/script/
+documentation references. Preserve any data markers already written by the
+SQL; a file rename does not change those markers. Finish with
+`supabase migration list --linked` and confirm the affected local/remote
+version pair is aligned. Do not use `supabase migration repair` to conceal an
+unknown or unverified application. For a repeatable check of a particular
+version, run `node scripts/assert-supabase-migration-version.mjs <version>`;
+it fails unless exactly one row for that version has both local and remote
+entries. Review any other one-sided entries separately before running `db push`.

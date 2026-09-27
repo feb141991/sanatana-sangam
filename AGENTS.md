@@ -28,6 +28,18 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   calendar profile, sampradaya, location and timezone.
 - Calendar migrations must be tested against a shadow/Supabase branch before
   production.
+- Apply committed, file-backed migrations with `supabase db push --linked`
+  only after the shadow check and production preflight. Do not apply the SQL
+  file through a migration API that assigns its own timestamp: that creates a
+  remote history version different from the filename and can make a later
+  `db push` replay a guarded data migration. After every application, run
+  `supabase migration list --linked` and
+  `node scripts/assert-supabase-migration-version.mjs <version>`; confirm the
+  newly applied version matches locally and remotely, and review other
+  one-sided entries before any `db push`. If an authorized direct application already registered another
+  version, first verify the exact SQL and data result, then align the local
+  filename to the recorded remote version and update all references; never
+  blindly repair or delete migration history.
 
 ### 3. Spiritual Content Integrity
 - Never fabricate scripture, mantra, quotation, translation, ritual rule,

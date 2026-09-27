@@ -9,7 +9,13 @@
 -- docs/PROFILE_AWARE_CALCULATION_CONTRACT_DESIGN.md and
 -- docs/audits/cross-profile-withheld-189-reconciliation-2026-09-24/).
 --
--- NOT APPLIED. Prepared for review and shadow-branch verification only.
+-- Applied to the linked production project on 2026-09-26 through the
+-- Supabase migration API. Supabase registered it as version 20260926121048;
+-- this filename intentionally matches that recorded version so a future
+-- `supabase db push --linked` does not attempt to run the 47-row update again.
+-- The diagnostics marker below retains its original 20260924120000 suffix
+-- because that exact marker is already present on the 47 affected rows and
+-- is the rollback selector. Do not rename the marker without a data migration.
 --
 -- What this corrects: `ensureYearMaterialized` (src/lib/calendar/
 -- resolve-occurrences.ts) never set `final_date_source` on its insert
@@ -42,15 +48,15 @@
 -- this migration itself changes.
 --
 -- Rollback guidance: supabase/rollbacks/
--- 20260924120000_correct_legacy_seed_provenance_label_rollback.sql
+-- 20260926121048_correct_legacy_seed_provenance_label_rollback.sql
 -- matches ONLY rows carrying this migration's own diagnostics marker --
 -- reverts final_date_source to 'legacy_seed' and removes the marker.
 -- No row is deleted; no other column changes.
 --
 -- Privilege review: no new grants. RLS: no policy change.
 --
--- Shadow verification required before any live application, per AGENTS.md
--- calendar-governance rule 2. Not performed by this file.
+-- The production application was explicitly authorized without a Supabase
+-- shadow branch; the local synthetic PostgreSQL forward/rollback check passed.
 
 begin;
 

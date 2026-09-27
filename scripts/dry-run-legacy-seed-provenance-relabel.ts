@@ -1,5 +1,5 @@
 /**
- * Read-only preflight for migration 20260924120000. The predicates match the
+ * Read-only preflight for migration 20260926121048. The predicates match the
  * migration's forward WHERE clause (including marker exclusion) exactly.
  * This script never writes to Supabase.
  *
@@ -34,7 +34,7 @@ async function main() {
   if (alreadyMarked.error) throw alreadyMarked.error;
   console.log(JSON.stringify({
     mode: 'read-only migration preflight',
-    migration: '20260924120000_correct_legacy_seed_provenance_label.sql',
+    migration: '20260926121048_correct_legacy_seed_provenance_label.sql',
     exact_forward_selector_count: targets.count,
     preexisting_migration_marker_count: alreadyMarked.count,
     expected_forward_count: 47,
