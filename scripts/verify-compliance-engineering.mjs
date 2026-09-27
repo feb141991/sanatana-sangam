@@ -37,7 +37,10 @@ check('web optional vendors are loaded only by the consent manager', () => {
   const consent = read('src/components/privacy/WebConsentManager.tsx');
   assert.match(consent, /preferences\.analytics/);
   assert.match(consent, /preferences\.advertising/);
-  assert.match(consent, /preferences\.push/);
+  // Web push was intentionally removed with OneSignal. Keep the verifier in
+  // sync with the current consent contract and prevent a stale push toggle or
+  // vendor integration from silently returning.
+  assert.doesNotMatch(consent, /preferences\.push|OneSignalSDK|OneSignal/);
 });
 
 if (existsSync(nativeRoot)) {

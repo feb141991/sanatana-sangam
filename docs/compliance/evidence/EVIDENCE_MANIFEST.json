@@ -65,8 +65,8 @@
     },
     {
       "path": "docs/compliance/procedures/DATA_SUBJECT_REQUEST_PROCEDURE.md",
-      "sha256": "54cb18bc6e5c9ae79b8d99154ed1369eb5538142c9dc3ac4e805630bc877891e",
-      "bytes": 1914
+      "sha256": "303089f4ea236c0290bab72b98b756915fc92cb45debf5744c80ccf73c061c12",
+      "bytes": 1911
     },
     {
       "path": "docs/compliance/procedures/LEGAL_DOCUMENT_CHANGE_PROCEDURE.md",
@@ -105,8 +105,8 @@
     },
     {
       "path": "docs/compliance/registers/PROCESSING_ACTIVITIES_REGISTER.json",
-      "sha256": "dca5d82d6f33d87d61a9748f760b75270420402d38489a20e1037d1fbe797d28",
-      "bytes": 26928
+      "sha256": "727f1a7550e9b2f4d589cd17fc759f50752020698a12f849ff2e7999c78c5f35",
+      "bytes": 26925
     },
     {
       "path": "docs/compliance/registers/PROCESSING_ACTIVITIES_REGISTER.md",
