@@ -13,14 +13,14 @@
     "calendar": "gujarati_amanta",
     "tradition": "smarta"
   },
-  "capturedAt": "2026-08-17T15:20:44.208Z",
+  "capturedAt": "2026-09-27T13:58:46Z",
   "engineVersion": "0.2.1",
   "ruleEngineVersion": "2.0.0",
   "captured": {
-    "civilDate": null,
+    "civilDate": "2026-03-20",
     "slug": "chaitra-navratri-begins",
     "recurring": null
   },
   "approved": false,
-  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-08-17T15:20:44.208Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
+  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-09-27T13:58:46Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
 }
