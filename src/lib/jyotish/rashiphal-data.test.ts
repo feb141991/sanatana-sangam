@@ -36,6 +36,17 @@ describe('getDailyHoroscope PWA/legacy path is unaffected by the native opt-in',
       expect(highlight.detail).toMatch(/^\w+ activates /);
     }
   });
+
+  it('adds an explicit interpretive-content notice only on the Native opt-in path', () => {
+    const date = new Date('2026-06-15T10:00:00Z');
+    const legacy = getDailyHoroscope('virgo', date, 'Asia/Kolkata');
+    const native = getDailyHoroscope('virgo', date, 'Asia/Kolkata', { useDistinctGuidance: true });
+    expect(legacy.accuracyNote).not.toContain('editorial Jyotish-inspired');
+    expect(native.accuracyNote).toContain('editorial Jyotish-inspired');
+    expect(native.accuracyNote).toContain('awaiting tradition-specific human review');
+    expect(native.luckyColor).toBe(legacy.luckyColor);
+    expect(native.health).toContain('cannot assess health');
+  });
 });
 
 describe('PLANET_HOUSE_GUIDANCE completeness and distinctness', () => {
@@ -65,6 +76,15 @@ describe('PLANET_HOUSE_GUIDANCE completeness and distinctness', () => {
       expect(unique.size, `${planet} should have ${HOUSES.length} distinct texts`).toBe(HOUSES.length);
     }
   });
+
+  it('does not make medical, accident, or high-stakes financial/legal claims', () => {
+    const unsafeClaim = /\b(accident|medical|diagnos(?:e|is)|health issue|debt|inheritance|lawsuit|sharp tools|vehicles?)\b/i;
+    for (const planet of PLANETS) {
+      for (const house of HOUSES) {
+        expect(PLANET_HOUSE_GUIDANCE[planet][house].text, `${planet} house ${house}`).not.toMatch(unsafeClaim);
+      }
+    }
+  });
 });
 
 describe('getHouseStructure', () => {
@@ -74,8 +94,8 @@ describe('getHouseStructure', () => {
     expect(getHouseStructure(6).sort()).toEqual(['dusthana', 'upachaya'].sort());
   });
 
-  it('ships house 1 as kendra-only pending the disputed-classification review gate', () => {
-    expect(getHouseStructure(1)).toEqual(['kendra']);
+  it('hides house 1 classification pending the disputed-classification review gate', () => {
+    expect(getHouseStructure(1)).toEqual([]);
   });
 
   it('returns an empty array for a house outside all four groups, never "neutral"', () => {
@@ -94,15 +114,15 @@ describe('findActiveDashaEntry', () => {
     schemaVersion: 2,
     dasha: {
       timeline: [
-        { planet: 'Shani', startDate: '2020-01-01T00:00:00.000Z', endDate: '2039-01-01T00:00:00.000Z', years: 19, isCurrent: true },
-        { planet: 'Budha', startDate: '2039-01-01T00:00:00.000Z', endDate: '2056-01-01T00:00:00.000Z', years: 17, isCurrent: false },
+        { planet: 'Shani', startDate: '2020-01-01', endDate: '2039-01-01', years: 19, isCurrent: true },
+        { planet: 'Budha', startDate: '2039-01-01', endDate: '2056-01-01', years: 17, isCurrent: false },
       ],
     },
   };
 
   it('finds the entry active on a date within its range', () => {
     const result = findActiveDashaEntry(validChartData, new Date('2026-06-15T00:00:00.000Z'));
-    expect(result).toEqual({ planet: 'Shani', endDate: '2039-01-01T00:00:00.000Z' });
+    expect(result).toEqual({ planet: 'Shani', endDate: '2039-01-01' });
   });
 
   it('finds the entry exactly on its start-date boundary (inclusive)', () => {
@@ -132,14 +152,30 @@ describe('findActiveDashaEntry', () => {
     expect(findActiveDashaEntry(undefined, new Date())).toBeNull();
   });
 
+  it('rejects chart_data with a mismatched schema version even if its timeline looks valid', () => {
+    expect(findActiveDashaEntry({ ...validChartData, schemaVersion: 1 }, new Date('2026-06-15T00:00:00.000Z'))).toBeNull();
+  });
+
   it('returns null when dasha.timeline is absent (older/malformed chart_data)', () => {
     expect(findActiveDashaEntry({ schemaVersion: 2 }, new Date())).toBeNull();
     expect(findActiveDashaEntry({ schemaVersion: 2, dasha: {} }, new Date())).toBeNull();
   });
 
   it('returns null when timeline entries are malformed', () => {
-    const malformed = { dasha: { timeline: [{ planet: 'Shani', startDate: null, endDate: '2039-01-01' }] } };
+    const malformed = { schemaVersion: 2, dasha: { timeline: [{ planet: 'Shani', startDate: null, endDate: '2039-01-01' }] } };
     expect(findActiveDashaEntry(malformed, new Date('2026-01-01'))).toBeNull();
+  });
+
+  it('returns null for invalid date values and overlapping active ranges', () => {
+    expect(findActiveDashaEntry(validChartData, new Date('invalid'))).toBeNull();
+    const overlapping = {
+      schemaVersion: 2,
+      dasha: { timeline: [
+        { planet: 'Shani', startDate: '2020-01-01', endDate: '2030-01-01' },
+        { planet: 'Budha', startDate: '2025-01-01', endDate: '2040-01-01' },
+      ] },
+    };
+    expect(findActiveDashaEntry(overlapping, new Date('2026-01-01T00:00:00.000Z'))).toBeNull();
   });
 
   it('never throws on a non-object chart_data', () => {

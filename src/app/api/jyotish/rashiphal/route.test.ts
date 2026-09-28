@@ -51,7 +51,7 @@ describe('GET /api/jyotish/rashiphal', () => {
   it('attaches dashaContext when the exactly-one primary profile matches the requested sign and has an active Dasha', async () => {
     const chartData = {
       schemaVersion: 2,
-      dasha: { timeline: [{ planet: 'Shani', startDate: '2020-01-01T00:00:00.000Z', endDate: '2039-01-01T00:00:00.000Z', years: 19, isCurrent: true }] },
+      dasha: { timeline: [{ planet: 'Shani', startDate: '2020-01-01', endDate: '2039-01-01', years: 19, isCurrent: true }] },
     };
     const client = mockBirthProfilesClient({ data: [{ rashi: 'virgo', chart_data: chartData }], error: null });
     mocks.getApiUser.mockResolvedValue({ user: { id: 'user-1' }, error: null, supabase: client });
@@ -61,7 +61,7 @@ describe('GET /api/jyotish/rashiphal', () => {
     const body = await response.json();
 
     expect(body.dashaContextStatus).toBe('available');
-    expect(body.dashaContext).toMatchObject({ planet: 'Shani', endDate: '2039-01-01T00:00:00.000Z' });
+    expect(body.dashaContext).toMatchObject({ planet: 'Shani', endDate: '2039-01-01' });
     expect(response.headers.get('cache-control')).toBe('private, no-store');
     expect(client._spies.eq1).toHaveBeenCalledWith('owner_id', 'user-1');
     expect(client._spies.eq2).toHaveBeenCalledWith('is_primary', true);
@@ -74,7 +74,7 @@ describe('GET /api/jyotish/rashiphal', () => {
     // reason (e.g. an empty timeline that fails regardless of the sign).
     const chartData = {
       schemaVersion: 2,
-      dasha: { timeline: [{ planet: 'Shani', startDate: '2020-01-01T00:00:00.000Z', endDate: '2039-01-01T00:00:00.000Z', years: 19, isCurrent: true }] },
+      dasha: { timeline: [{ planet: 'Shani', startDate: '2020-01-01', endDate: '2039-01-01', years: 19, isCurrent: true }] },
     };
     const client = mockBirthProfilesClient({ data: [{ rashi: 'leo', chart_data: chartData }], error: null });
     mocks.getApiUser.mockResolvedValue({ user: { id: 'user-1' }, error: null, supabase: client });
