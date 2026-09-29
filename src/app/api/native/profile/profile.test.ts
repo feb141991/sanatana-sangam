@@ -124,6 +124,47 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(updatedUserFilter).toBe("user-preferences");
   });
 
+  it("persists Japa reminder opt-in and its validated local time for the authenticated owner", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-japa" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ japa_reminder_enabled: true, japa_reminder_time: "06:45" }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({ japa_reminder_enabled: true, japa_reminder_time: "06:45" });
+    expect(updatedUserFilter).toBe("user-japa");
+  });
+
+  it.each(["7:00", "24:00", "12:60", 700])("rejects invalid Japa reminder time %s", async (time) => {
+    getApiUser.mockResolvedValue({ user: { id: "user-japa" }, error: null, supabase: mockSupabase });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ japa_reminder_time: time }),
+    }));
+
+    expect(res.status).toBe(400);
+    expect(updatedPayload).toBeNull();
+  });
+
+  it("rejects a non-boolean Japa reminder opt-in", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-japa" }, error: null, supabase: mockSupabase });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ japa_reminder_enabled: "true" }),
+    }));
+
+    expect(res.status).toBe(400);
+    expect(updatedPayload).toBeNull();
+  });
+
   it.each(["male", "prefer_not", "unknown"])(
     "rejects non-canonical gender_context value %s",
     async (genderContext) => {

@@ -12,6 +12,7 @@ const LIFE_STAGES = new Set(["brahmacharya", "grihastha", "vanaprastha", "sannya
 const EDITABLE_TEXT_FIELDS = new Set(["full_name", "sampradaya", "ishta_devata", "city", "country"]);
 const EDITABLE_LANGUAGE_FIELDS = new Set(["app_language", "meaning_language", "transliteration_language"]);
 const EDITABLE_BOOLEAN_FIELDS = new Set([
+  "japa_reminder_enabled",
   "wants_festival_reminders",
   "wants_vrat_reminders",
   "wants_tithi_reminders",
@@ -201,6 +202,14 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: "observance_reminder_time must be in HH:MM 24-hour format" }, { status: 400 });
       }
       updates.observance_reminder_time = value;
+    }
+
+    if ("japa_reminder_time" in rawBody) {
+      const value = rawBody.japa_reminder_time;
+      if (!isValidObservanceReminderTime(value)) {
+        return NextResponse.json({ error: "japa_reminder_time must be in HH:MM 24-hour format" }, { status: 400 });
+      }
+      updates.japa_reminder_time = value;
     }
 
     if ("date_of_birth" in rawBody) {
