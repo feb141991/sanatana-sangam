@@ -82,6 +82,7 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       wants_vrat_reminders: true,
       wants_tithi_reminders: true,
       wants_sankalpa_midpoint_reminders: true,
+      japa_reminder_enabled: true,
     }];
     mocks.sadhanaResponse = { data: [{ user_id: 'user-1', japa_done: true }], error: null };
     mocks.sadhanaDates = [];
@@ -124,6 +125,22 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
     expect(mocks.updates).toContainEqual({
       table: 'notification_schedule',
       update: { status: 'pending', claimed_at: null, error: 'japa_completion_lookup_retry' },
+      ids: ['schedule-1'],
+    });
+  });
+
+  it('skips an already-scheduled Japa reminder after the user disables it', async () => {
+    mocks.profiles[0].japa_reminder_enabled = false;
+    mocks.sadhanaResponse = { data: [], error: null };
+
+    const response = await GET(request());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ claimed: 1, succeeded: 0, skipped: 1 });
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule',
+      update: { status: 'skipped', error: 'japa_reminders_disabled' },
       ids: ['schedule-1'],
     });
   });

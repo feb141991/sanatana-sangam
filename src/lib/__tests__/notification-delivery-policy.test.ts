@@ -24,6 +24,14 @@ describe("notification delivery policy", () => {
       .toBeNull();
   });
 
+  it("fails closed for Japa if the reminder was turned off after scheduling", () => {
+    const row = { notification_type: "japa", notification_key: "japa:2026-09-29" };
+    expect(getNotificationPreferenceSkipReason(row, {})).toBe("japa_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { japa_reminder_enabled: false }))
+      .toBe("japa_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { japa_reminder_enabled: true })).toBeNull();
+  });
+
   it("fails closed for Sankalpa midpoint reminders until the user explicitly opts in", () => {
     const row = { notification_type: "sankalpa_midpoint", notification_key: "candidate:sankalpa-1:midpoint" };
     expect(getNotificationPreferenceSkipReason(row, {})).toBe("sankalpa_midpoint_reminders_disabled");

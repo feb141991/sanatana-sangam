@@ -10,12 +10,20 @@ export type NotificationProfile = {
   wants_vrat_reminders?: boolean | null;
   wants_tithi_reminders?: boolean | null;
   wants_sankalpa_midpoint_reminders?: boolean | null;
+  japa_reminder_enabled?: boolean | null;
 };
 
 export function getNotificationPreferenceSkipReason(
   row: ScheduledNotificationRow,
   profile: NotificationProfile,
 ): string | null {
+  if (
+    row.notification_type === "japa" &&
+    profile.japa_reminder_enabled !== true
+  ) {
+    return "japa_reminders_disabled";
+  }
+
   if (
     row.notification_type === "sankalpa_midpoint" &&
     profile.wants_sankalpa_midpoint_reminders !== true
