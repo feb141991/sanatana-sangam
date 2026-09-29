@@ -13,21 +13,39 @@ export async function GET(req: NextRequest) {
   try {
     const todayStr = new Date().toISOString().split('T')[0];
 
-    const { data: sankalpa, error } = await supabase
-      .from('sankalpas')
-      .select('id, user_id, text, related_practice, target_days, start_date, end_date, status, created_at, updated_at')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .gte('end_date', todayStr)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    const profilePreferencePromise = Promise.resolve(
+      supabase
+        .from('profiles')
+        .select('wants_sankalpa_midpoint_reminders')
+        .eq('id', user.id)
+        .maybeSingle(),
+    ).catch(() => ({ data: null, error: { message: 'profile_preference_unavailable' } }));
+    const [sankalpaResult, profileResult] = await Promise.all([
+      supabase
+        .from('sankalpas')
+        .select('id, user_id, text, related_practice, target_days, start_date, end_date, status, created_at, updated_at')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .gte('end_date', todayStr)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single(),
+      profilePreferencePromise,
+    ]);
+    const { data: sankalpa, error } = sankalpaResult;
 
     if (error && error.code !== 'PGRST116') { // PGRST116 is "No rows found"
       throw error;
     }
 
-    return NextResponse.json({ sankalpa: sankalpa || null });
+    return NextResponse.json({
+      sankalpa: sankalpa || null,
+      wantsSankalpaMidpointReminders: profileResult.error
+        ? null
+        : typeof profileResult.data?.wants_sankalpa_midpoint_reminders === 'boolean'
+          ? profileResult.data.wants_sankalpa_midpoint_reminders
+          : null,
+    });
   } catch (err) {
     console.error('[sankalpa/GET] Failed:', err);
     return NextResponse.json({ error: 'Failed to fetch sankalpa' }, { status: 500 });

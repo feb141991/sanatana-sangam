@@ -61,6 +61,9 @@ type ProfileRow = {
   last_shloka_date: string | null;
   calendar_scope: string | null;
   calendar_profile: string | null;
+  wants_festival_reminders: boolean | null;
+  wants_vrat_reminders: boolean | null;
+  wants_tithi_reminders: boolean | null;
 };
 
 type DailySadhanaRow = {
@@ -116,6 +119,9 @@ type HomeSummaryResponse = {
     karmaPoints: number;
     relicImageUrl: string | null;
     avatarUrl: string | null;
+    wantsFestivalReminders: boolean | null;
+    wantsVratReminders: boolean | null;
+    wantsTithiReminders: boolean | null;
   };
   hero: {
     imageUrl: string;
@@ -523,7 +529,7 @@ export async function GET(request: NextRequest) {
   const profileSection = await settleOptionalSection(
     supabase
       .from('profiles')
-      .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date, calendar_scope, calendar_profile')
+      .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date, calendar_scope, calendar_profile, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders')
       .eq('id', user.id)
       .maybeSingle() as unknown as PromiseLike<{
         data: ProfileRow | null;
@@ -1000,6 +1006,9 @@ export async function GET(request: NextRequest) {
       karmaPoints: profile?.karma_points ?? 0,
       relicImageUrl: getRelicImageUrl(profile?.active_symbol_id),
       avatarUrl: profile?.avatar_url ?? null,
+      wantsFestivalReminders: typeof profile?.wants_festival_reminders === 'boolean' ? profile.wants_festival_reminders : null,
+      wantsVratReminders: typeof profile?.wants_vrat_reminders === 'boolean' ? profile.wants_vrat_reminders : null,
+      wantsTithiReminders: typeof profile?.wants_tithi_reminders === 'boolean' ? profile.wants_tithi_reminders : null,
     },
     hero: {
       imageUrl: profile?.cover_url ?? heroTheme.heroImage,
