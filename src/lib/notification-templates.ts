@@ -169,10 +169,11 @@ export const DEFAULT_NOTIFICATION_TEMPLATES: NotificationTemplateItem[] = [
     name: 'Daily Japa Mala Reminder',
     description: 'Daily mantra chanting reminder to maintain streak',
     titleTemplate: '🔔 Time for Japa',
-    bodyTemplate: 'Your daily Japa practice awaits. Keep your streak alive 🙏',
+    bodyTemplate: '{{japaGreeting}}Your daily Japa practice awaits. Keep your streak alive 🙏',
     defaultTitle: '🔔 Time for Japa',
-    defaultBody: 'Your daily Japa practice awaits. Keep your streak alive 🙏',
+    defaultBody: '{{japaGreeting}}Your daily Japa practice awaits. Keep your streak alive 🙏',
     placeholders: [
+      { key: 'japaGreeting', label: 'Optional Seeker Greeting', sample: 'Hi Prince. ', description: 'Optional first-name greeting for English Japa reminders; blank when no safe name is available' },
       { key: 'streak', label: 'Current Streak', sample: '7', description: 'Number of consecutive practice days' },
       { key: 'mantraName', label: 'Preferred Mantra', sample: 'Maha Mrityunjaya', description: 'Devotee favorite mantra' },
     ],
@@ -353,6 +354,19 @@ export function interpolateTemplate(template: string, data: Record<string, strin
   });
 }
 
+export function applyJapaGreeting(
+  templateBody: string,
+  renderedBody: string,
+  greeting: string | null | undefined
+): string {
+  if (!greeting || /\{\{\s*japaGreeting\s*\}\}|\{\s*japaGreeting\s*\}/u.test(templateBody)) {
+    return renderedBody;
+  }
+  // Existing admin-authored Japa templates may predate the placeholder. Keep
+  // their copy while still applying the same optional, language-gated greeting.
+  return `${greeting}${renderedBody}`;
+}
+
 export async function getActiveNotificationTemplates(): Promise<Map<string, { title: string; body: string }>> {
   const now = Date.now();
   if (cachedTemplates && now - cacheLoadedAt < CACHE_TTL_MS) {
@@ -420,8 +434,11 @@ export async function resolveNotificationCopy(
     body: fallback.body,
   };
 
+  const renderedBody = interpolateTemplate(template.body, contextVars) || fallback.body;
   return {
     title: interpolateTemplate(template.title, contextVars) || fallback.title,
-    body: interpolateTemplate(template.body, contextVars) || fallback.body,
+    body: routine === 'japa'
+      ? applyJapaGreeting(template.body, renderedBody, contextVars.japaGreeting?.toString())
+      : renderedBody,
   };
 }

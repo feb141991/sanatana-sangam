@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => {
     mockUsers: [
       {
         id: 'devotee-1',
+        full_name: 'Prince Sharma',
+        app_language: 'en',
         timezone: 'Asia/Kolkata',
         japa_reminder_enabled: true,
         japa_reminder_time: '07:00',
@@ -14,6 +16,7 @@ const mocks = vi.hoisted(() => {
     ],
     mockCandidatesUpsert: vi.fn(),
     mockNotificationsUpsert: vi.fn(),
+    mockResolveNotificationCopy: vi.fn(),
     mockSadhanaResponse: { data: [], error: null } as { data: unknown[] | null; error: { message: string } | null },
   };
 });
@@ -23,7 +26,7 @@ vi.mock('@/lib/push-server', () => ({
 }));
 
 vi.mock('@/lib/notification-templates', () => ({
-  resolveNotificationCopy: vi.fn().mockResolvedValue({
+  resolveNotificationCopy: mocks.mockResolveNotificationCopy.mockResolvedValue({
     title: '🔔 Time for Japa',
     body: 'Your daily Japa practice awaits. Keep your streak alive 🙏',
   }),
@@ -72,6 +75,10 @@ describe('cron/japa-reminder pipeline exclusivity', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
     vi.clearAllMocks();
+    mocks.mockResolveNotificationCopy.mockResolvedValue({
+      title: '🔔 Time for Japa',
+      body: 'Your daily Japa practice awaits. Keep your streak alive 🙏',
+    });
     mocks.mockSadhanaResponse = { data: [], error: null };
 
     mocks.mockCandidatesUpsert.mockReturnValue({
@@ -139,6 +146,12 @@ describe('cron/japa-reminder pipeline exclusivity', () => {
       completion_guard: 'japa',
     });
     expect(new Date(candidateRows[0].scheduled_for).getTime()).toBeGreaterThan(Date.now());
+    expect(mocks.mockResolveNotificationCopy).toHaveBeenCalledWith(
+      'japa',
+      'all',
+      expect.any(Object),
+      { japaGreeting: 'Hi Prince. ' }
+    );
     // Assert legacy notifications NOT inserted
     expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
   });

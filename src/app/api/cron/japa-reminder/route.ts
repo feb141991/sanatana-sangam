@@ -5,6 +5,7 @@ import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
+import { buildJapaNotificationGreeting } from '@/lib/japa-notification-personalization';
 import {
   getCompletedJapaUserIds,
   planNextJapaReminder,
@@ -30,6 +31,8 @@ type UserDateGroup = {
   id: string;
   tz: string;
   localDate: string;
+  full_name?: string | null;
+  app_language?: string | null;
   japa_reminder_time?: string | null;
   notification_quiet_hours_start?: number | null;
   notification_quiet_hours_end?: number | null;
@@ -72,7 +75,7 @@ export async function GET(request: Request) {
     // Fetch all users with japa reminders enabled
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, timezone, japa_reminder_enabled, japa_reminder_time, notification_quiet_hours_start, notification_quiet_hours_end')
+      .select('id, full_name, app_language, timezone, japa_reminder_enabled, japa_reminder_time, notification_quiet_hours_start, notification_quiet_hours_end')
       .eq('japa_reminder_enabled', true);
 
     if (usersError) throw usersError;
@@ -113,6 +116,8 @@ export async function GET(request: Request) {
           const { title, body } = await resolveNotificationCopy('japa', 'all', {
             title: '🔔 Time for Japa',
             body: "Your daily Japa practice awaits. Keep your streak alive 🙏",
+          }, {
+            japaGreeting: buildJapaNotificationGreeting(user.full_name, user.app_language),
           });
           const candidate = produceJapaCandidate({
             id: user.id,
@@ -182,6 +187,8 @@ export async function GET(request: Request) {
         tz,
         localDate: spiritualDate,
         japa_reminder_time: user.japa_reminder_time,
+        full_name: user.full_name,
+        app_language: user.app_language,
         notification_quiet_hours_start: user.notification_quiet_hours_start,
         notification_quiet_hours_end: user.notification_quiet_hours_end,
       });
@@ -206,6 +213,8 @@ export async function GET(request: Request) {
         const { title, body } = await resolveNotificationCopy('japa', 'all', {
           title: '🔔 Time for Japa',
           body: "Your daily Japa practice awaits. Keep your streak alive 🙏",
+        }, {
+          japaGreeting: buildJapaNotificationGreeting(user.full_name, user.app_language),
         });
 
         legacyNotificationsToInsert.push({
