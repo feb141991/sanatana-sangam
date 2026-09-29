@@ -58,8 +58,37 @@ describe("observance-timing", () => {
       expect(gmt?.toISOString()).toBe("2026-01-15T09:00:00.000Z");
     });
 
+    it("shifts a nonexistent spring-forward time by the DST gap", () => {
+      const london = localTimeToUtc("2026-03-29", "01:30", "Europe/London");
+      const newYork = localTimeToUtc("2026-03-08", "02:30", "America/New_York");
+
+      expect(london?.toISOString()).toBe("2026-03-29T01:30:00.000Z");
+      expect(new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Europe/London",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      }).format(london!)).toBe("02:30");
+      expect(newYork?.toISOString()).toBe("2026-03-08T07:30:00.000Z");
+      expect(new Intl.DateTimeFormat("en-GB", {
+        timeZone: "America/New_York",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      }).format(newYork!)).toBe("03:30");
+    });
+
+    it("chooses the first occurrence of an ambiguous fall-back time", () => {
+      const london = localTimeToUtc("2026-10-25", "01:30", "Europe/London");
+      const newYork = localTimeToUtc("2026-11-01", "01:30", "America/New_York");
+
+      expect(london?.toISOString()).toBe("2026-10-25T00:30:00.000Z");
+      expect(newYork?.toISOString()).toBe("2026-11-01T05:30:00.000Z");
+    });
+
     it("returns null for malformed date or time", () => {
       expect(localTimeToUtc("invalid", "08:00", "UTC")).toBeNull();
+      expect(localTimeToUtc("2026-02-30", "08:00", "UTC")).toBeNull();
       expect(localTimeToUtc("2026-10-20", "25:00", "UTC")).toBeNull();
       expect(localTimeToUtc("2026-10-20", "invalid", "UTC")).toBeNull();
     });

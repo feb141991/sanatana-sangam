@@ -111,7 +111,7 @@ export function resolvePriorityClassForEventType(rawEventType: string): Notifica
   }
 
   // 2. Explicit user requested
-  if (['user_reminder', 'custom_reminder', 'explicit_request', 'user_sadhana_reminder', 'sankalpa_midpoint'].includes(eventType)) {
+  if (['user_reminder', 'custom_reminder', 'explicit_request', 'user_sadhana_reminder', 'sankalpa_midpoint', 'japa'].includes(eventType)) {
     return 'explicit_user_requested';
   }
 
@@ -126,7 +126,7 @@ export function resolvePriorityClassForEventType(rawEventType: string): Notifica
   }
 
   // 6. Routine engagement
-  if (['routine_engagement', 'mood_checkin', 'mood', 'japa', 'shloka', 'sattvic', 'dharm_veer', 'quiz', 'streak', 'streak_nudge', 'daily_checkin'].includes(eventType)) {
+  if (['routine_engagement', 'mood_checkin', 'mood', 'shloka', 'sattvic', 'dharm_veer', 'quiz', 'streak', 'streak_nudge', 'daily_checkin'].includes(eventType)) {
     return 'routine_engagement';
   }
 

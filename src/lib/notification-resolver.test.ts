@@ -46,6 +46,7 @@ describe('notification resolver & engagement policy', () => {
       expect(resolvePriorityClass(makeCandidate({ event_type: 'security' }))).toBe('transactional_safety');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'user_reminder' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'sankalpa_midpoint' }))).toBe('explicit_user_requested');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'japa' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'brahma_muhurta' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'nitya' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'observance' }))).toBe('reviewed_observance');
@@ -147,14 +148,15 @@ describe('notification resolver & engagement policy', () => {
       expect(res.suppressed).toHaveLength(0);
     });
 
-    it('never applies the generic daily budget to an opted-in Sankalpa midpoint candidate', () => {
+    it('never applies the generic daily budget to opted-in Sankalpa or Japa reminders', () => {
       const sankalpa = makeCandidate({ id: 'sankalpa-midpoint', event_type: 'sankalpa_midpoint', priority: 20 });
+      const japa = makeCandidate({ id: 'opted-in-japa', event_type: 'japa', priority: 21 });
       const history: DeliveryHistoryItem[] = [
         { id: 'history-1', user_id: sankalpa.user_id, local_date: sankalpa.local_date, notification_type: 'mood', priority_class: 'routine_engagement', sent_at: fixedNow.toISOString() },
-        { id: 'history-2', user_id: sankalpa.user_id, local_date: sankalpa.local_date, notification_type: 'japa', priority_class: 'routine_engagement', sent_at: fixedNow.toISOString() },
+        { id: 'history-2', user_id: sankalpa.user_id, local_date: sankalpa.local_date, notification_type: 'mandali_prompt', priority_class: 'devotional_engagement', sent_at: fixedNow.toISOString() },
       ];
-      const result = resolveCandidates({ candidates: [sankalpa], history, now: fixedNow, allowDeferrals: false });
-      expect(result.accepted.map((candidate) => candidate.id)).toEqual(['sankalpa-midpoint']);
+      const result = resolveCandidates({ candidates: [sankalpa, japa], history, now: fixedNow, allowDeferrals: false });
+      expect(result.accepted.map((candidate) => candidate.id)).toEqual(['sankalpa-midpoint', 'opted-in-japa']);
       expect(result.suppressed).toHaveLength(0);
     });
 
@@ -222,7 +224,7 @@ describe('notification resolver & engagement policy', () => {
           sent_at: '2026-11-08T01:00:00.000Z',
         },
       ];
-      const candidate = makeCandidate({ id: 'routine-follow-up', event_type: 'japa' });
+      const candidate = makeCandidate({ id: 'routine-follow-up', event_type: 'mood_checkin' });
       const result = resolveCandidates({ candidates: [candidate], history, now: fixedNow, allowDeferrals: false });
       expect(result.accepted.map((item) => item.id)).toContain('routine-follow-up');
       expect(result.suppressed).toHaveLength(0);

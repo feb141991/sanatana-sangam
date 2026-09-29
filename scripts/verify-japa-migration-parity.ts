@@ -1,6 +1,7 @@
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
-import { produceJapaCandidate, type DevoteeProfileForJapa } from '../src/lib/japa-candidate-producer';
+import { planNextJapaReminder, produceJapaCandidate, type DevoteeProfileForJapa } from '../src/lib/japa-candidate-producer';
+import { localTimeToUtc } from '../src/lib/observance-timing';
 import { resolveCandidates } from '../src/lib/notification-resolver';
 import type { NotificationCandidate } from '../src/types/database';
 
@@ -142,7 +143,11 @@ async function run() {
       }
 
       // ─── 2. SIMULATE CANDIDATE PIPELINE ──────────────────────────────────────
-      const candidate = produceJapaCandidate(devotee, date, isCompleted);
+      const localMidnight = localTimeToUtc(date, '00:00', devotee.timezone ?? 'UTC');
+      const plan = localMidnight
+        ? planNextJapaReminder(devotee, new Date(localMidnight.getTime() - 1))
+        : null;
+      const candidate = plan ? produceJapaCandidate(devotee, plan, isCompleted) : null;
       if (!candidate) {
         const reason = !devotee.japa_reminder_enabled
           ? 'preference_disabled'
@@ -251,7 +256,7 @@ async function run() {
     .slice(0, 3)
     .map(
       (c) =>
-        `| \`${c.local_date}\` | 23:30 (Quiet window) | 07:00 (Post-quiet) | \`${c.scheduled_for}\` | Scheduled Safe |`
+        `| \`${c.local_date}\` | 23:30 (Quiet window) | 07:30 (Post-quiet) | \`${c.scheduled_for}\` | Scheduled Safe |`
     )
     .join('\n');
 
@@ -281,8 +286,8 @@ Evaluated across **5 global timezones** over a **14-day evaluation window** (202
 | **Preference Respect** | Suppressed if \`enabled=false\` | Suppressed if \`enabled=false\` | **Fixture match** | Opt-out behavior tested for the synthetic Los Angeles profile. |
 | **Canonical Route** | \`/japa\` | \`/japa\` | **Fixture match** | Tested candidate links route to \`/japa\`. |
 | **Pipeline Exclusivity** | Direct push + Bell write | Candidate row insertion only | **Not assessed** | Route/cron exclusivity requires deployed integration verification. |
-| **Quiet Hours Protection** | Blind send at cron runtime | Defers past quiet hours | **IMPROVED** | Auckland 23:30 reminder safely shifted to 07:00 local time. |
-| **Central Resolver Cap** | Uncapped / ad-hoc | 1 routine notification/day | **ENFORCED** | All 35 candidates accepted under 1 routine/day cap. |
+| **Quiet Hours Protection** | Blind send at cron runtime | Defers past quiet hours | **IMPROVED** | Auckland 23:30 reminder shifts to 07:30 local time, preserving the selected minute. |
+| **Explicit opt-in priority** | User-configured reminder | Exempt from generic engagement cap | **ENFORCED** | Japa is scheduled only for profiles with \`japa_reminder_enabled=true\`; generic daily caps cannot suppress it. |
 
 ---
 
@@ -303,9 +308,9 @@ Evaluated across **5 global timezones** over a **14-day evaluation window** (202
 
 ## 4. Sample Schedule & Quiet Hour Handling (Auckland Devotee)
 
-Devotee requested reminder at 23:30 local time. Quiet hours are configured from 22:00 to 06:00.
+Devotee requested reminder at 23:30 local time. Quiet hours are configured from 22:00 to 06:00. The safe post-quiet time preserves the configured 30-minute offset.
 
-| Date | Requested Time | Adjusted Local Instant | Scheduled UTC Instant | Status |
+| Target local date | Requested Time | Adjusted Local Instant | Scheduled UTC Instant | Status |
 |---|---|---|---|---|
 ${aucklandRows}
 

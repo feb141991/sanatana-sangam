@@ -24,8 +24,8 @@ Evaluated across **5 global timezones** over a **14-day evaluation window** (202
 | **Preference Respect** | Suppressed if `enabled=false` | Suppressed if `enabled=false` | **Fixture match** | Opt-out behavior tested for the synthetic Los Angeles profile. |
 | **Canonical Route** | `/japa` | `/japa` | **Fixture match** | Tested candidate links route to `/japa`. |
 | **Pipeline Exclusivity** | Direct push + Bell write | Candidate row insertion only | **Not assessed** | Route/cron exclusivity requires deployed integration verification. |
-| **Quiet Hours Protection** | Blind send at cron runtime | Defers past quiet hours | **IMPROVED** | Auckland 23:30 reminder safely shifted to 07:00 local time. |
-| **Central Resolver Cap** | Uncapped / ad-hoc | 1 routine notification/day | **ENFORCED** | All 35 candidates accepted under 1 routine/day cap. |
+| **Quiet Hours Protection** | Blind send at cron runtime | Defers past quiet hours | **IMPROVED** | Auckland 23:30 reminder shifts to 07:30 local time, preserving the selected minute. |
+| **Explicit opt-in priority** | User-configured reminder | Exempt from generic engagement cap | **ENFORCED** | Japa is scheduled only for profiles with `japa_reminder_enabled=true`; generic daily caps cannot suppress it. |
 
 ---
 
@@ -46,13 +46,13 @@ Evaluated across **5 global timezones** over a **14-day evaluation window** (202
 
 ## 4. Sample Schedule & Quiet Hour Handling (Auckland Devotee)
 
-Devotee requested reminder at 23:30 local time. Quiet hours are configured from 22:00 to 06:00.
+Devotee requested reminder at 23:30 local time. Quiet hours are configured from 22:00 to 06:00. The safe post-quiet time preserves the configured 30-minute offset.
 
-| Date | Requested Time | Adjusted Local Instant | Scheduled UTC Instant | Status |
+| Target local date | Requested Time | Adjusted Local Instant | Scheduled UTC Instant | Status |
 |---|---|---|---|---|
-| `2026-11-01` | 23:30 (Quiet window) | 07:00 (Post-quiet) | `2026-10-31T18:30:00.000Z` | Scheduled Safe |
-| `2026-11-02` | 23:30 (Quiet window) | 07:00 (Post-quiet) | `2026-11-01T18:30:00.000Z` | Scheduled Safe |
-| `2026-11-03` | 23:30 (Quiet window) | 07:00 (Post-quiet) | `2026-11-02T18:30:00.000Z` | Scheduled Safe |
+| `2026-11-01` | 23:30 (Quiet window) | 07:30 (Post-quiet) | `2026-10-31T18:30:00.000Z` | Scheduled Safe |
+| `2026-11-02` | 23:30 (Quiet window) | 07:30 (Post-quiet) | `2026-11-01T18:30:00.000Z` | Scheduled Safe |
+| `2026-11-03` | 23:30 (Quiet window) | 07:30 (Post-quiet) | `2026-11-02T18:30:00.000Z` | Scheduled Safe |
 
 ---
 

@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => {
     ],
     mockCandidatesUpsert: vi.fn(),
     mockNotificationsUpsert: vi.fn(),
+    mockSadhanaResponse: { data: [], error: null } as { data: unknown[] | null; error: { message: string } | null },
   };
 });
 
@@ -42,7 +43,7 @@ vi.mock('@supabase/supabase-js', () => ({
         return {
           select: vi.fn().mockReturnValue({
             in: vi.fn().mockReturnValue({
-              eq: vi.fn().mockResolvedValue({ data: [], error: null }), // Incomplete
+              eq: vi.fn().mockImplementation(async () => mocks.mockSadhanaResponse), // Incomplete by default
             }),
           }),
         };
@@ -71,6 +72,7 @@ describe('cron/japa-reminder pipeline exclusivity', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
     vi.clearAllMocks();
+    mocks.mockSadhanaResponse = { data: [], error: null };
 
     mocks.mockCandidatesUpsert.mockReturnValue({
       select: vi.fn().mockResolvedValue({ data: [{ id: 'cand-japa-1' }], error: null }),
@@ -131,8 +133,29 @@ describe('cron/japa-reminder pipeline exclusivity', () => {
     expect(sendPushNotification).not.toHaveBeenCalled();
     // Assert candidate upsert called
     expect(mocks.mockCandidatesUpsert).toHaveBeenCalledTimes(1);
+    const candidateRows = mocks.mockCandidatesUpsert.mock.calls[0][0];
+    expect(candidateRows[0].metadata).toMatchObject({
+      local_date: candidateRows[0].local_date,
+      completion_guard: 'japa',
+    });
+    expect(new Date(candidateRows[0].scheduled_for).getTime()).toBeGreaterThan(Date.now());
     // Assert legacy notifications NOT inserted
     expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when it cannot verify daily Japa completion', async () => {
+    process.env.NOTIFICATION_ROUTINE_MODE_JAPA = 'candidate';
+    mocks.mockSadhanaResponse = { data: null, error: { message: 'database unavailable' } };
+
+    const req = new Request('https://shoonaya.com/api/cron/japa-reminder', {
+      headers: { authorization: 'Bearer cron-secret-123' },
+    });
+    const res = await GET(req);
+
+    expect(res.status).toBe(500);
+    expect(mocks.mockCandidatesUpsert).not.toHaveBeenCalled();
+    expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
+    expect(sendPushNotification).not.toHaveBeenCalled();
   });
 
   it('executes legacy pipeline when mode is legacy (or unset)', async () => {

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { NotificationCandidateInsert } from '@/types/database';
-import { localTimeToUtc } from './observance-timing';
-import { isHourInQuietWindow, resolveTimeZone } from './sacred-time';
+import { localTimeToUtc, shiftCivilDate } from './observance-timing';
+import { getLocalDateIso, isHourInQuietWindow, localSpiritualDate, resolveTimeZone } from './sacred-time';
 
 export interface DevoteeProfileForJapa {
   id: string;
@@ -10,6 +10,79 @@ export interface DevoteeProfileForJapa {
   japa_reminder_time?: string | null;
   notification_quiet_hours_start?: number | null;
   notification_quiet_hours_end?: number | null;
+}
+
+export interface PlannedJapaReminder {
+  localDate: string;
+  completionDate: string;
+  scheduledFor: Date;
+  expiresAt: Date;
+  timezone: string;
+}
+
+const LOCAL_TIME_RE = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+/**
+ * Selects the next future local reminder slot. The producer cron can run once
+ * daily at one UTC hour without scheduling a past local date for users west or
+ * east of that UTC hour.
+ */
+export function planNextJapaReminder(
+  devotee: DevoteeProfileForJapa,
+  now: Date
+): PlannedJapaReminder | null {
+  const timezone = resolveTimeZone(devotee.timezone);
+  const preferredTime = devotee.japa_reminder_time || '07:00';
+  const timeMatch = LOCAL_TIME_RE.exec(preferredTime);
+  if (!timeMatch) return null;
+
+  let hour = Number(timeMatch[1]);
+  const minute = Number(timeMatch[2]);
+  let scheduleDate = getLocalDateIso(now, timezone);
+
+  if (
+    devotee.notification_quiet_hours_start != null &&
+    devotee.notification_quiet_hours_end != null &&
+    isHourInQuietWindow(
+      hour,
+      devotee.notification_quiet_hours_start,
+      devotee.notification_quiet_hours_end
+    )
+  ) {
+    const adjustedHour = (devotee.notification_quiet_hours_end + 1) % 24;
+    // A quiet-hours adjustment that wraps past midnight belongs to tomorrow.
+    if (adjustedHour <= hour) {
+      const nextDate = shiftCivilDate(scheduleDate, 1);
+      if (!nextDate) return null;
+      scheduleDate = nextDate;
+    }
+    hour = adjustedHour;
+  }
+
+  const sendTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  let scheduledFor = localTimeToUtc(scheduleDate, sendTime, timezone);
+  if (!scheduledFor) return null;
+
+  if (scheduledFor.getTime() <= now.getTime()) {
+    const nextDate = shiftCivilDate(scheduleDate, 1);
+    if (!nextDate) return null;
+    scheduleDate = nextDate;
+    scheduledFor = localTimeToUtc(scheduleDate, sendTime, timezone);
+    if (!scheduledFor || scheduledFor.getTime() <= now.getTime()) return null;
+  }
+
+  const dayAfterSchedule = shiftCivilDate(scheduleDate, 1);
+  if (!dayAfterSchedule) return null;
+  const expiresAt = localTimeToUtc(dayAfterSchedule, '00:00', timezone);
+  if (!expiresAt || expiresAt.getTime() < scheduledFor.getTime()) return null;
+
+  return {
+    localDate: scheduleDate,
+    completionDate: localSpiritualDate(timezone, 4, scheduledFor),
+    scheduledFor,
+    expiresAt,
+    timezone,
+  };
 }
 
 /**
@@ -29,8 +102,7 @@ export async function getCompletedJapaUserIds(
     .eq('date', localDate);
 
   if (error) {
-    console.warn(`[japa-candidate-producer] sadhana fetch warning for date ${localDate}:`, error.message);
-    return new Set();
+    throw new Error(`Could not verify Japa completion for ${localDate}: ${error.message}`);
   }
 
   const completed = new Set<string>();
@@ -53,7 +125,7 @@ export async function getCompletedJapaUserIds(
  */
 export function produceJapaCandidate(
   devotee: DevoteeProfileForJapa,
-  localDate: string,
+  plan: PlannedJapaReminder,
   isAlreadyCompleted: boolean = false,
   copy?: { title: string; body: string }
 ): NotificationCandidateInsert | null {
@@ -67,29 +139,6 @@ export function produceJapaCandidate(
     return null;
   }
 
-  const timezone = resolveTimeZone(devotee.timezone);
-
-  // 3. Determine local send time (default 07:00 morning)
-  let sendTime = devotee.japa_reminder_time || '07:00';
-  let [hour, minute] = sendTime.split(':').map(Number);
-
-  // 4. Adjust if falling inside quiet hours window
-  if (
-    devotee.notification_quiet_hours_start != null &&
-    devotee.notification_quiet_hours_end != null &&
-    isHourInQuietWindow(hour, devotee.notification_quiet_hours_start, devotee.notification_quiet_hours_end)
-  ) {
-    hour = (devotee.notification_quiet_hours_end + 1) % 24;
-    sendTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-  }
-
-  const scheduledForDate = localTimeToUtc(localDate, sendTime, timezone);
-  const expiresAtDate = localTimeToUtc(localDate, '23:59', timezone);
-
-  if (!scheduledForDate || !expiresAtDate) {
-    return null;
-  }
-
   const title = copy?.title ?? '🔔 Time for Japa';
   const body = copy?.body ?? 'Your daily Japa practice awaits. Keep your streak alive 🙏';
 
@@ -98,16 +147,16 @@ export function produceJapaCandidate(
     event_type: 'japa',
     event_id: 'japa-daily',
     event_instance: '',
-    local_date: localDate,
+    local_date: plan.localDate,
     audience_variant: 'general',
-    scheduled_for: scheduledForDate.toISOString(),
-    expires_at: expiresAtDate.toISOString(),
+    scheduled_for: plan.scheduledFor.toISOString(),
+    expires_at: plan.expiresAt.toISOString(),
     priority: 50, // Routine streak / practice reminder
     title,
     body,
     action_url: '/japa',
     language: 'en',
-    timezone,
+    timezone: plan.timezone,
     tradition: null,
     calendar_profile: null,
     source_status: 'verified',
@@ -117,6 +166,9 @@ export function produceJapaCandidate(
     metadata: {
       priority_class: 'routine_engagement',
       routine_type: 'japa',
+      completion_guard: 'japa',
+      local_date: plan.localDate,
+      completion_date: plan.completionDate,
     },
     status: 'pending',
   };

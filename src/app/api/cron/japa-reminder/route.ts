@@ -3,9 +3,13 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
-import { getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
-import { produceJapaCandidate } from '@/lib/japa-candidate-producer';
+import {
+  getCompletedJapaUserIds,
+  planNextJapaReminder,
+  produceJapaCandidate,
+} from '@/lib/japa-candidate-producer';
 import type { NotificationCandidateInsert } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
@@ -73,105 +77,64 @@ export async function GET(request: Request) {
 
     if (usersError) throw usersError;
 
-    // Group users by their computed localDate (accounts for different user timezones)
-    const groupsByDate = new Map<string, UserDateGroup[]>();
-    for (const user of users || []) {
-      const tz = resolveTimeZone(user.timezone);
-      const localDate = getLocalDateIso(now, tz);
-      const group = groupsByDate.get(localDate) ?? [];
-      group.push({
-        id: user.id,
-        tz,
-        localDate,
-        japa_reminder_time: user.japa_reminder_time,
-        notification_quiet_hours_start: user.notification_quiet_hours_start,
-        notification_quiet_hours_end: user.notification_quiet_hours_end,
+    // Candidate mode schedules each user's next future local slot. Group by
+    // that target date so completion checks use the same date as delivery.
+    if (pipelineMode === 'candidate') {
+      const plannedUsers = (users ?? []).flatMap((user) => {
+        const plan = planNextJapaReminder({
+          id: user.id,
+          timezone: user.timezone,
+          japa_reminder_enabled: user.japa_reminder_enabled,
+          japa_reminder_time: user.japa_reminder_time,
+          notification_quiet_hours_start: user.notification_quiet_hours_start,
+          notification_quiet_hours_end: user.notification_quiet_hours_end,
+        }, now);
+        return plan ? [{ user, plan }] : [];
       });
-      groupsByDate.set(localDate, group);
-    }
-
-    let eligibleCount = 0;
-    let wouldInsertCount = 0;
-    const legacyNotificationsToInsert: JapaNotificationInsert[] = [];
-    const candidateRowsToInsert: NotificationCandidateInsert[] = [];
-    const userIdsToPush: string[] = [];
-
-    // Run one batched query per distinct localDate group
-    for (const [groupLocalDate, groupUsers] of groupsByDate.entries()) {
-      const groupUserIds = groupUsers.map((u) => u.id);
-
-      const { data: sadhanaRows, error: sadhanaErr } = await supabase
-        .from('daily_sadhana')
-        .select('user_id, japa_done')
-        .in('user_id', groupUserIds)
-        .eq('date', groupLocalDate);
-
-      if (sadhanaErr) {
-        console.warn(`[japa-reminder] sadhana batch fetch warning for date ${groupLocalDate}:`, sadhanaErr.message);
+      const plannedByDate = new Map<string, typeof plannedUsers>();
+      for (const planned of plannedUsers) {
+        const group = plannedByDate.get(planned.plan.completionDate) ?? [];
+        group.push(planned);
+        plannedByDate.set(planned.plan.completionDate, group);
       }
 
-      const completedUserIds = new Set(
-        (sadhanaRows ?? []).filter((r) => r.japa_done).map((r) => r.user_id),
-      );
+      const candidateRowsToInsert: NotificationCandidateInsert[] = [];
+      let eligibleCount = 0;
+      for (const [localDate, group] of plannedByDate) {
+        const completedUserIds = await getCompletedJapaUserIds(
+          supabase,
+          group.map(({ user }) => user.id),
+          localDate
+        );
 
-      for (const user of groupUsers) {
-        if (completedUserIds.has(user.id)) continue;
-        eligibleCount++;
-
-        const { title, body } = await resolveNotificationCopy('japa', 'all', {
-          title: '🔔 Time for Japa',
-          body: "Your daily Japa practice awaits. Keep your streak alive 🙏",
-        });
-
-        if (pipelineMode === 'candidate') {
-          const candidate = produceJapaCandidate(
-            {
-              id: user.id,
-              timezone: user.tz,
-              japa_reminder_enabled: true,
-              japa_reminder_time: user.japa_reminder_time,
-              notification_quiet_hours_start: user.notification_quiet_hours_start,
-              notification_quiet_hours_end: user.notification_quiet_hours_end,
-            },
-            user.localDate,
-            false,
-            { title, body }
-          );
-
-          if (candidate) {
-            candidateRowsToInsert.push(candidate);
-            wouldInsertCount++;
-          }
-        } else {
-          // Legacy pipeline
-          legacyNotificationsToInsert.push({
-            user_id: user.id,
-            title,
-            body,
-            emoji: '🔔',
-            type: 'japa',
-            action_url: '/japa',
-            notification_key: `japa-reminder:${user.localDate}`,
-            local_date: user.localDate,
-            sent_timezone: user.tz,
+        for (const { user, plan } of group) {
+          if (completedUserIds.has(user.id)) continue;
+          eligibleCount++;
+          const { title, body } = await resolveNotificationCopy('japa', 'all', {
+            title: '🔔 Time for Japa',
+            body: "Your daily Japa practice awaits. Keep your streak alive 🙏",
           });
-          wouldInsertCount++;
-          userIdsToPush.push(user.id);
+          const candidate = produceJapaCandidate({
+            id: user.id,
+            timezone: user.timezone,
+            japa_reminder_enabled: user.japa_reminder_enabled,
+            japa_reminder_time: user.japa_reminder_time,
+            notification_quiet_hours_start: user.notification_quiet_hours_start,
+            notification_quiet_hours_end: user.notification_quiet_hours_end,
+          }, plan, false, { title, body });
+          if (candidate) candidateRowsToInsert.push(candidate);
         }
       }
-    }
 
-    if (isDryRun || skipDelivery) {
-      return NextResponse.json(buildNotificationSafetyResponse('japa', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
-        eligibleCount,
-        skippedCount: (users?.length ?? 0) - eligibleCount,
-        wouldInsertCount,
-        wouldSendCount: pipelineMode === 'candidate' ? 0 : userIdsToPush.length,
-      }));
-    }
+      if (isDryRun || skipDelivery) {
+        return NextResponse.json(buildNotificationSafetyResponse('japa', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
+          eligibleCount,
+          skippedCount: (users?.length ?? 0) - eligibleCount,
+          wouldInsertCount: candidateRowsToInsert.length,
+          wouldSendCount: 0,
+        }));
+      }
 
-    // ─── CANDIDATE PIPELINE PATH ─────────────────────────────────────────────
-    if (pipelineMode === 'candidate') {
       if (candidateRowsToInsert.length === 0) {
         return NextResponse.json({
           success: true,
@@ -196,7 +159,7 @@ export async function GET(request: Request) {
           console.error('[japa-reminder] candidate upsert error:', insertErr);
           return NextResponse.json({ error: insertErr.message }, { status: 500 });
         }
-        totalInserted += rows?.length ?? batch.length;
+        totalInserted += rows?.length ?? 0;
       }
 
       return NextResponse.json({
@@ -205,6 +168,69 @@ export async function GET(request: Request) {
         eligibleCount,
         candidatesCreated: totalInserted,
       });
+    }
+
+    // Legacy direct-send behavior remains isolated behind its own pipeline mode.
+    // Japa completion is recorded against the app's 04:00 spiritual-day date.
+    const groupsByDate = new Map<string, UserDateGroup[]>();
+    for (const user of users || []) {
+      const tz = resolveTimeZone(user.timezone);
+      const spiritualDate = localSpiritualDate(tz, 4, now);
+      const group = groupsByDate.get(spiritualDate) ?? [];
+      group.push({
+        id: user.id,
+        tz,
+        localDate: spiritualDate,
+        japa_reminder_time: user.japa_reminder_time,
+        notification_quiet_hours_start: user.notification_quiet_hours_start,
+        notification_quiet_hours_end: user.notification_quiet_hours_end,
+      });
+      groupsByDate.set(spiritualDate, group);
+    }
+
+    let eligibleCount = 0;
+    let wouldInsertCount = 0;
+    const legacyNotificationsToInsert: JapaNotificationInsert[] = [];
+    const userIdsToPush: string[] = [];
+
+    // Run one batched query per distinct localDate group
+    for (const [groupLocalDate, groupUsers] of groupsByDate.entries()) {
+      const groupUserIds = groupUsers.map((u) => u.id);
+
+      const completedUserIds = await getCompletedJapaUserIds(supabase, groupUserIds, groupLocalDate);
+
+      for (const user of groupUsers) {
+        if (completedUserIds.has(user.id)) continue;
+        eligibleCount++;
+
+        const { title, body } = await resolveNotificationCopy('japa', 'all', {
+          title: '🔔 Time for Japa',
+          body: "Your daily Japa practice awaits. Keep your streak alive 🙏",
+        });
+
+        legacyNotificationsToInsert.push({
+            user_id: user.id,
+            title,
+            body,
+            emoji: '🔔',
+            type: 'japa',
+            action_url: '/japa',
+            notification_key: `japa-reminder:${user.localDate}`,
+            local_date: user.localDate,
+            sent_timezone: user.tz,
+        });
+        wouldInsertCount++;
+        userIdsToPush.push(user.id);
+      }
+    }
+
+    if (isDryRun || skipDelivery) {
+      return NextResponse.json(buildNotificationSafetyResponse('japa', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
+        eligibleCount,
+        skippedCount: (users?.length ?? 0) - eligibleCount,
+        wouldInsertCount,
+        wouldSendCount: userIdsToPush.length,
+      }));
     }
 
     // ─── LEGACY PIPELINE PATH ────────────────────────────────────────────────

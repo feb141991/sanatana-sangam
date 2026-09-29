@@ -43,15 +43,12 @@ export function localTimeToUtc(
   timeString: string,
   timeZone: string
 ): Date | null {
-  if (!ISO_DATE_RE.test(civilDateIso) || !TIME_RE.test(timeString)) return null;
+  if (!isValidIsoDate(civilDateIso) || !TIME_RE.test(timeString)) return null;
   const tz = resolveTimeZone(timeZone);
 
   const [year, month, day] = civilDateIso.split("-").map(Number);
   const [hour, minute] = timeString.split(":").map(Number);
-
-  // Initial estimate in UTC with the requested civil components
-  const utcEstimate = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
-  if (Number.isNaN(utcEstimate.getTime())) return null;
+  const targetWallTime = Date.UTC(year, month - 1, day, hour, minute, 0);
 
   try {
     const formatter = new Intl.DateTimeFormat("en-GB", {
@@ -61,28 +58,43 @@ export function localTimeToUtc(
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: false,
+      hourCycle: "h23",
     });
 
-    const parts = formatter.formatToParts(utcEstimate);
-    const get = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0);
+    const getLocalWallTime = (instantMs: number) => {
+      const parts = formatter.formatToParts(new Date(instantMs));
+      const get = (type: string) => Number(parts.find((part) => part.type === type)?.value ?? 0);
+      return Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), 0);
+    };
 
-    const localTimestamp = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), 0);
-    const targetTimestamp = Date.UTC(year, month - 1, day, hour, minute, 0);
-    const diff = targetTimestamp - localTimestamp;
-
-    const resolved = new Date(utcEstimate.getTime() + diff);
-
-    // Fine-tuning check across DST boundary jump
-    const verifyParts = formatter.formatToParts(resolved);
-    const vGet = (type: string) => Number(verifyParts.find((p) => p.type === type)?.value ?? 0);
-    const verifyLocalTs = Date.UTC(vGet("year"), vGet("month") - 1, vGet("day"), vGet("hour"), vGet("minute"), 0);
-    if (verifyLocalTs !== targetTimestamp) {
-      const secondDiff = targetTimestamp - verifyLocalTs;
-      return new Date(resolved.getTime() + secondDiff);
+    // Sample both sides of the requested local time. This yields all relevant
+    // UTC offsets for ordinary DST folds/gaps without guessing one offset.
+    const offsets = new Set<number>();
+    for (const hours of [-36, -24, -12, 0, 12, 24, 36]) {
+      const instantMs = targetWallTime + hours * 60 * 60 * 1000;
+      offsets.add(getLocalWallTime(instantMs) - instantMs);
     }
 
-    return resolved;
+    const exactInstants = Array.from(offsets)
+      .map((offset) => targetWallTime - offset)
+      .filter((instantMs) => getLocalWallTime(instantMs) === targetWallTime)
+      .sort((a, b) => a - b);
+
+    if (exactInstants.length > 0) {
+      // If the wall time occurs twice when clocks move back, choose its first
+      // occurrence. A single semantic reminder can then never fire twice.
+      return new Date(exactInstants[0]);
+    }
+
+    // If the wall time is skipped when clocks move forward, shift it forward
+    // by the DST gap while preserving its minutes (02:30 becomes 03:30).
+    const shiftedForward = Array.from(offsets)
+      .map((offset) => targetWallTime - offset)
+      .map((instantMs) => ({ instantMs, localWallTime: getLocalWallTime(instantMs) }))
+      .filter(({ localWallTime }) => localWallTime > targetWallTime && localWallTime - targetWallTime <= 6 * 60 * 60 * 1000)
+      .sort((a, b) => a.localWallTime - b.localWallTime || a.instantMs - b.instantMs);
+
+    return shiftedForward.length > 0 ? new Date(shiftedForward[0].instantMs) : null;
   } catch {
     return null;
   }

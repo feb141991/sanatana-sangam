@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendPushNotification } from "@/lib/push-server";
+import { getCompletedJapaUserIds } from "@/lib/japa-candidate-producer";
 import { recordNotificationDispatchBatch, type NotificationDispatchEventPayload } from "@/lib/notification-dispatch-audit";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
-import { getLocalHour, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
+import { getLocalHour, isHourInQuietWindow, localSpiritualDate, resolveTimeZone } from "@/lib/sacred-time";
 import {
   getNotificationPreferenceSkipReason,
   getScheduledNotificationActionPath,
@@ -154,6 +155,64 @@ export async function GET(request: Request) {
     const skippedRows: Array<{ id: string; reason: string }> = [];
     const dispatchAuditEvents: NotificationDispatchEventPayload[] = [];
 
+    // A Japa candidate can be scheduled hours before its preferred local
+    // reminder time. Recheck completion at delivery so practice logged after
+    // candidate generation suppresses the stale reminder.
+    const japaRows = claimedRows.filter((row) => row.notification_type === 'japa');
+    const japaRowsByDate = new Map<string, typeof japaRows>();
+    const japaMissingDateIds = new Set<string>();
+    for (const row of japaRows) {
+      const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
+        ? row.metadata as Record<string, unknown>
+        : {};
+      const timezone = resolveTimeZone(
+        typeof metadata.timezone === 'string'
+          ? metadata.timezone
+          : profileMap.get(row.user_id)?.timezone
+      );
+      const sendAt = typeof row.send_at === 'string' ? new Date(row.send_at) : null;
+      const completionDate = typeof metadata.completion_date === 'string'
+        ? metadata.completion_date
+        : sendAt && !Number.isNaN(sendAt.getTime())
+          ? localSpiritualDate(timezone, 4, sendAt)
+          : typeof metadata.local_date === 'string'
+            ? metadata.local_date
+            : null;
+      if (!completionDate) {
+        japaMissingDateIds.add(row.id);
+        continue;
+      }
+      const group = japaRowsByDate.get(completionDate) ?? [];
+      group.push(row);
+      japaRowsByDate.set(completionDate, group);
+    }
+
+    const completedJapaIds = new Set<string>();
+    try {
+      for (const [localDate, rows] of japaRowsByDate) {
+        const completedUsers = await getCompletedJapaUserIds(
+          supabase,
+          Array.from(new Set(rows.map((row) => row.user_id))),
+          localDate
+        );
+        for (const row of rows) {
+          if (completedUsers.has(row.user_id)) completedJapaIds.add(row.id);
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'completion_lookup_failed';
+      console.error('[notification-dispatch] Japa completion lookup failed; requeuing claimed batch:', message);
+      const { error: requeueError } = await supabase
+        .from('notification_schedule')
+        .update({ status: 'pending', claimed_at: null, error: 'japa_completion_lookup_retry' })
+        .in('id', claimedRows.map((row) => row.id))
+        .eq('status', 'sending');
+      if (requeueError) {
+        console.error('[notification-dispatch] Could not requeue after Japa completion lookup failure:', requeueError.message);
+      }
+      return NextResponse.json({ error: 'Could not verify Japa completion; delivery will retry' }, { status: 503 });
+    }
+
     for (const row of claimedRows) {
       const profile = profileMap.get(row.user_id);
       if (!profile || profile.is_deleting) {
@@ -198,6 +257,32 @@ export async function GET(request: Request) {
           decision: "skipped",
           reason: "quiet_hours_active",
           provider: "expo",
+        });
+        continue;
+      }
+
+      if (japaMissingDateIds.has(row.id)) {
+        skippedRows.push({ id: row.id, reason: 'japa_completion_date_missing' });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: 'skipped',
+          reason: 'japa_completion_date_missing',
+          provider: 'expo',
+        });
+        continue;
+      }
+
+      if (completedJapaIds.has(row.id)) {
+        skippedRows.push({ id: row.id, reason: 'japa_completed_before_delivery' });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: 'skipped',
+          reason: 'japa_completed_before_delivery',
+          provider: 'expo',
         });
         continue;
       }

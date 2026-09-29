@@ -32,6 +32,9 @@ Native repository:
   engagement budget. A routine/engagement budget may arbitrate only non-requested
   engagement candidates. It must never suppress an enabled observance reminder, a
   user-created ritual reminder, or an approved time-sensitive ritual window.
+- An opted-in Japa reminder (`profiles.japa_reminder_enabled = true`) is also an explicit
+  user-requested ritual reminder. Its candidate is generated only after checking that opt-in;
+  classify it as `explicit_user_requested` so generic engagement caps cannot suppress it.
 - Content preference, reminder offsets/time, quiet hours, and OS push permission are
   distinct controls. An OS push denial may disable push delivery but must not erase an
   opted-in in-app reminder. Existing reminder consent must not be silently broadened or
@@ -413,6 +416,17 @@ For each type:
 
 Streak rescue must query actual incomplete activity and suppress for recently active users.
 Do not use guilt or loss-pressure copy.
+
+For opted-in Japa reminders specifically, treat the user's saved reminder as an explicit
+request: the central engagement cap must not suppress it. The producer selects the next
+future local slot (never a past same-day time), checks completion against the target's
+spiritual date (the same 04:00 local boundary used by Japa completion) before candidate
+creation, and the dispatcher rechecks completion immediately before delivery. If completion
+cannot be read, do not send; return a retryable error and retain the schedule for retry.
+Expire at the next local midnight after the target civil date. For DST gaps,
+shift a nonexistent wall time forward by the gap while preserving minutes; for DST folds,
+choose the first occurrence to avoid duplicate reminders. These are Japa-specific rules,
+not a blanket policy to change every producer in this prompt.
 
 Stop for review after every notification type; do not bulk-cut all types.
 
