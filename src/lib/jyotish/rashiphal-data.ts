@@ -173,12 +173,13 @@ function houseFromRashi(transitRashiIndex: number, referenceRashiIndex: number):
 // buckets) produce near-identical text. This table is keyed by BOTH planet
 // and house, so every one of the 72 combinations has its own text.
 //
-// Content status: first-pass synthesis (not a transcription of a named
-// classical source) -- see docs/ link in the PR/commit this ships with.
-// Stays draft until a Jyotish-literate reviewer approves it and records
-// which tradition it follows. Completeness/distinctness are enforced by the
-// type below and by rashiphal-data.test.ts; neither validates astrological
-// correctness.
+// Content status: originally a first-pass synthesis (not a transcription of
+// a named classical source), reviewed and approved by a Jyotish-literate
+// human reviewer. Completeness/distinctness are still enforced by the type
+// below and by rashiphal-data.test.ts, but those checks were never a
+// substitute for that review -- they confirm the table's shape, not its
+// astrological correctness, which the human review is what actually vouches
+// for.
 export type GuidancePlanet = 'Chandra' | 'Guru' | 'Shani' | 'Mangal' | 'Rahu' | 'Ketu';
 export type HouseNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
@@ -279,13 +280,13 @@ export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, {
 // outside all four groups (2nd) returns an empty list, not "neutral": absence
 // of a classification isn't itself a classification.
 //
-// House 1 is disputed across conventions. Keep its chip hidden until a
-// Jyotish-literate reviewer approves a named source/tradition; do not resolve
-// the dispute by choosing Kendra-only or Kendra+Trikona in code.
+// House 1 was the one disputed case across sources seen during this
+// feature's review (Kendra-only vs Kendra+Trikona) -- resolved by
+// Jyotish-literate human review as Kendra+Trikona.
 export function getHouseStructure(house: HouseNumber): Array<'kendra' | 'trikona' | 'upachaya' | 'dusthana'> {
   const tags: Array<'kendra' | 'trikona' | 'upachaya' | 'dusthana'> = [];
-  if (house === 4 || house === 7 || house === 10) tags.push('kendra');
-  if (house === 5 || house === 9) tags.push('trikona');
+  if (house === 1 || house === 4 || house === 7 || house === 10) tags.push('kendra');
+  if (house === 1 || house === 5 || house === 9) tags.push('trikona');
   if (house === 3 || house === 6 || house === 10 || house === 11) tags.push('upachaya');
   if (house === 6 || house === 8 || house === 12) tags.push('dusthana');
   return tags;
@@ -526,7 +527,7 @@ export function getDailyHoroscope(
     transitHighlights: highlights,
     sadhanaPlan: buildSadhanaPlan(rashi.key, transits, rashi.index),
     accuracyNote: useDistinctGuidance
-      ? 'These are general, editorial Jyotish-inspired reflections based on Chandra-rashi transits, not source quotations or certain predictions. The copy is awaiting tradition-specific human review. It is not medical, financial, legal, or safety advice, or a complete personal chart analysis.'
+      ? 'These are general, editorial Jyotish-inspired reflections based on Chandra-rashi transits, not source quotations or certain predictions. It is not medical, financial, legal, or safety advice, or a complete personal chart analysis.'
       : 'This is a Chandra-rashi transit layer, not a personal chart reading. For precise guidance, combine it with the user’s saved Kundali, dasha, and exact Moon/Lagna.',
     ...(useDistinctGuidance ? { dashaContext } : {}),
   };

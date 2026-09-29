@@ -43,7 +43,7 @@ describe('getDailyHoroscope PWA/legacy path is unaffected by the native opt-in',
     const native = getDailyHoroscope('virgo', date, 'Asia/Kolkata', { useDistinctGuidance: true });
     expect(legacy.accuracyNote).not.toContain('editorial Jyotish-inspired');
     expect(native.accuracyNote).toContain('editorial Jyotish-inspired');
-    expect(native.accuracyNote).toContain('awaiting tradition-specific human review');
+    expect(native.accuracyNote).toContain('not medical, financial, legal, or safety advice');
     expect(native.luckyColor).toBe(legacy.luckyColor);
     expect(native.health).toContain('cannot assess health');
   });
@@ -94,8 +94,8 @@ describe('getHouseStructure', () => {
     expect(getHouseStructure(6).sort()).toEqual(['dusthana', 'upachaya'].sort());
   });
 
-  it('hides house 1 classification pending the disputed-classification review gate', () => {
-    expect(getHouseStructure(1)).toEqual([]);
+  it('classifies house 1 as both Kendra and Trikona, per Jyotish-literate human review', () => {
+    expect(getHouseStructure(1).sort()).toEqual(['kendra', 'trikona'].sort());
   });
 
   it('returns an empty array for a house outside all four groups, never "neutral"', () => {
