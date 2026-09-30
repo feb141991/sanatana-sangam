@@ -5017,6 +5017,445 @@
           }
         }
       ]
+    },
+    {
+      "definitionKey": "pitru-paksha",
+      "name": {
+        "value": {
+          "en": "Pitru Paksha"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "traditions": [
+            "hindu"
+          ],
+          "universal": false
+        }
+      },
+      "tradition": "hindu",
+      "children": [
+        {
+          "slug": "pitru-paksha-day-1",
+          "sequence": 1,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 1"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-2",
+          "sequence": 2,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 2"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Offer water, sesame, or a quiet prayer in honour of those who came before you."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-3",
+          "sequence": 3,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 3"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-4",
+          "sequence": 4,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 4"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-5",
+          "sequence": 5,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 5"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Offer water, sesame, or a quiet prayer in honour of those who came before you."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-6",
+          "sequence": 6,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 6"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-7",
+          "sequence": 7,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 7"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-8",
+          "sequence": 8,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 8"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Offer water, sesame, or a quiet prayer in honour of those who came before you."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-9",
+          "sequence": 9,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 9"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-10",
+          "sequence": 10,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 10"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-11",
+          "sequence": 11,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 11"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Offer water, sesame, or a quiet prayer in honour of those who came before you."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-12",
+          "sequence": 12,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 12"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "pitru-paksha-day-13",
+          "sequence": 13,
+          "canonicalTitle": {
+            "value": {
+              "en": "Pitru Paksha Day 13"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        },
+        {
+          "slug": "mahalaya-amavasya",
+          "sequence": 14,
+          "canonicalTitle": {
+            "value": {
+              "en": "Mahalaya Amavasya"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "The most auspicious day of Pitru Paksha -- offer tarpan and Pinda daan to all ancestors today."
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "universal": false
+            }
+          }
+        }
+      ]
     }
   ]
 }

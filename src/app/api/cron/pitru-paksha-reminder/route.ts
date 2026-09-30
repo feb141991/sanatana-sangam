@@ -4,6 +4,7 @@ import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
+import { REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 
 // ─── Pitru Paksha Morning Reminder ───────────────────────────────────────────
 // Schedule: 0 3 * * * (3 AM UTC = 8:30 AM IST — before the Shraddha window)
@@ -54,7 +55,13 @@ export async function GET(request: Request) {
       const tz = resolveTimeZone((user as any).timezone);
       const latitude = (user as any).latitude as number | null;
       const longitude = (user as any).longitude as number | null;
-      if (latitude == null || longitude == null) return [];
+      // Missing GPS location must not silently drop a user from ancestor-
+      // remembrance reminders. Fall back to the app's own reference location
+      // (Ujjain) for the sunrise/tithi calculation while still honoring the
+      // user's own timezone for civil-day boundaries and quiet hours.
+      const hasOwnLocation = latitude != null && longitude != null;
+      const effectiveLat = hasOwnLocation ? latitude : REFERENCE_LOCATION_UJJAIN.lat;
+      const effectiveLon = hasOwnLocation ? longitude : REFERENCE_LOCATION_UJJAIN.lon;
       if (!canSendInLocalWindow(
         now,
         tz,
@@ -64,7 +71,7 @@ export async function GET(request: Request) {
       )) return [];
 
       const localDate = getLocalDateIso(now, tz);
-      const pitruInfo = getPitruPakshaDay(localDate, { lat: latitude, lon: longitude, tz });
+      const pitruInfo = getPitruPakshaDay(localDate, { lat: effectiveLat, lon: effectiveLon, tz });
       return pitruInfo ? [{ user, localDate, pitruInfo }] : [];
     });
 
