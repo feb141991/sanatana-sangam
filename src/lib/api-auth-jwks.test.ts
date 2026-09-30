@@ -112,6 +112,26 @@ describe('getApiUser with real ES256 signatures and JWKS verification', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it('uses dynamic JWKS lookup for a new kid on the production project', async () => {
+    projectUrl = 'https://mnbwodcswxoojndytngu.supabase.co';
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', projectUrl);
+    const rotated = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+    const rotatedJwk = {
+      ...rotated.publicKey.export({ format: 'jwk' }), kid: 'rotated-key', alg: 'ES256', use: 'sig',
+    };
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input) === `${projectUrl}/auth/v1/.well-known/jwks.json`) {
+        return Response.json({ keys: [rotatedJwk] });
+      }
+      throw new Error(`Unexpected fixture request: ${String(input)}`);
+    });
+
+    const result = await getApiUser(request(token({}, rotated.privateKey, 'rotated-key')));
+
+    expect(result.user?.id).toBe('b12dc895-7fb3-4cc7-8a2c-17c1cf5b9b4b');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it('preserves a JWKS dependency failure as 503', async () => {
     fetchMock.mockResolvedValue(Response.json({ message: 'fixture outage' }, { status: 503 }));
     const result = await getApiUser(request(token()));

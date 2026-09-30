@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { classifyApiAuthFailure } from "@/lib/api-auth-status";
+import { getPinnedProjectJwksOptions } from '@/lib/api-auth-jwks-config';
 
 // Deliberately untyped (no `<Database>` generic) — matching every other
 // working Supabase client factory in this repo (`createClient()` in
@@ -21,26 +22,6 @@ type ApiUserResult =
   | { user: null; error: Error; supabase: null };
 
 let claimsVerifier: SupabaseClient | null = null;
-
-// Known public signing keys for project mnbwodcswxoojndytngu to avoid cold-start
-// HTTP latency to /.well-known/jwks.json on serverless function spin-up.
-// Unknown or rotated kid values still gracefully fall back to fetching dynamically.
-const KNOWN_PROJECT_JWKS = {
-  keys: [
-    {
-      alg: 'ES256',
-      crv: 'P-256',
-      ext: true,
-      key_ops: ['verify'],
-      kid: 'e26cc168-f537-4df4-9f93-36a04a17c7dc',
-      kty: 'EC',
-      use: 'sig',
-      x: 'gbCv9Pxxtwm24dfwtFbY1jRXF_U7S_H4j2KZmfoRCHk',
-      y: 'bLxFTNpHQ4NGMqDJ8rvQ3agzNT6DiUT9wpmb-O1uAb8',
-    },
-  ],
-};
-
 
 /**
  * Reuse one verifier client per server process so supabase-js can cache the
@@ -148,8 +129,7 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
     if (token) {
       const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       if (!projectUrl) throw new Error('Supabase URL is not configured');
-      const isKnownProject = projectUrl.includes('mnbwodcswxoojndytngu');
-      const jwksOptions = isKnownProject ? { jwks: KNOWN_PROJECT_JWKS } : undefined;
+      const jwksOptions = getPinnedProjectJwksOptions(projectUrl);
       const claimsResult = await withAuthTimeout(getClaimsVerifier().auth.getClaims(token, jwksOptions));
       const claims = claimsResult.data?.claims;
       const expectedIssuer = `${projectUrl.replace(/\/$/, '')}/auth/v1`;
