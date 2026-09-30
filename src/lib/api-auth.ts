@@ -22,6 +22,26 @@ type ApiUserResult =
 
 let claimsVerifier: SupabaseClient | null = null;
 
+// Known public signing keys for project mnbwodcswxoojndytngu to avoid cold-start
+// HTTP latency to /.well-known/jwks.json on serverless function spin-up.
+// Unknown or rotated kid values still gracefully fall back to fetching dynamically.
+const KNOWN_PROJECT_JWKS = {
+  keys: [
+    {
+      alg: 'ES256',
+      crv: 'P-256',
+      ext: true,
+      key_ops: ['verify'],
+      kid: 'e26cc168-f537-4df4-9f93-36a04a17c7dc',
+      kty: 'EC',
+      use: 'sig',
+      x: 'gbCv9Pxxtwm24dfwtFbY1jRXF_U7S_H4j2KZmfoRCHk',
+      y: 'bLxFTNpHQ4NGMqDJ8rvQ3agzNT6DiUT9wpmb-O1uAb8',
+    },
+  ],
+};
+
+
 /**
  * Reuse one verifier client per server process so supabase-js can cache the
  * project's signing keys. Unlike the per-request RLS client below, this client
@@ -126,10 +146,12 @@ export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
     // role locally. `getClaims(jwt)` uses the project's JWKS for asymmetric
     // signing keys (ES256 in production), so each API call avoids Auth `/user`.
     if (token) {
-      const claimsResult = await withAuthTimeout(getClaimsVerifier().auth.getClaims(token));
-      const claims = claimsResult.data?.claims;
       const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       if (!projectUrl) throw new Error('Supabase URL is not configured');
+      const isKnownProject = projectUrl.includes('mnbwodcswxoojndytngu');
+      const jwksOptions = isKnownProject ? { jwks: KNOWN_PROJECT_JWKS } : undefined;
+      const claimsResult = await withAuthTimeout(getClaimsVerifier().auth.getClaims(token, jwksOptions));
+      const claims = claimsResult.data?.claims;
       const expectedIssuer = `${projectUrl.replace(/\/$/, '')}/auth/v1`;
       const audience = Array.isArray(claims?.aud) ? claims.aud : [claims?.aud];
       if (
