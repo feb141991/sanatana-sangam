@@ -33,6 +33,7 @@ const tsOutput = `/**
 export type EditorialStatus =
   | 'source_backed'
   | 'council_reviewed_editorial'
+  | 'reviewed_editorial'
   | 'pending_source'
   | 'withheld';
 
@@ -46,6 +47,10 @@ export interface Applicability {
 
 export interface ObservanceSeriesSourceRef {
   sourceName: string;
+  publisher?: string | null;
+  region?: string | null;
+  scholarNotes?: string | null;
+  url?: string | null;
   pageOrSection?: string;
   tier: number;
   confidence?: 'high' | 'medium' | 'low' | string;
@@ -57,7 +62,7 @@ export interface LocalizedEditorialField<T> {
   status: EditorialStatus;
   sourceRefs: ObservanceSeriesSourceRef[];
   applicability: Applicability;
-  /** Required when status is council_reviewed_editorial. */
+  /** Required for council_reviewed_editorial and reviewed_editorial; records the actual human reviewer. */
   reviewRef?: string;
   translationStatus?: {
     en: 'source' | 'reviewed_translation' | 'pending';

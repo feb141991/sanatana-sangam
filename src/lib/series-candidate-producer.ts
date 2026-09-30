@@ -7,7 +7,7 @@
  * 1. Consumes the canonical sourced observance-series contract (SERIES_DEFINITIONS & SERIES_CONTENT_DATA).
  * 2. Emits candidates ONLY for published, reviewed daily children on their verified date.
  * 3. Never produces unsourced daily colors, mantras, deity claims, or ritual instructions.
- * 4. Fails closed with zero candidates if child occurrence is withheld, unreviewed, or lacks source refs.
+ * 4. Fails closed if an occurrence is withheld, unreviewed, or lacks source refs; approved editorial requires a review record.
  * 5. Default-off via getCandidateTypePipelineMode('observance_series').
  */
 
@@ -16,20 +16,17 @@ import type { Json, NotificationCandidateInsert } from '@/types/database';
 import { zonedTimeToUtcIso } from './marketing/social/schedule-time';
 import {
   SERIES_DEFINITIONS,
-  type SeriesDefinition,
 } from './calendar/observance-series';
 import seriesContentJson from '@sangam/dharma-rules/src/festivals/series-content.json';
+import { isEditorialFieldDisplayable } from './calendar/series-card-helpers';
+import type { LocalizedEditorialField } from '../../contracts/observance-series-contract';
 
-type LocalizedField<T> = {
-  value?: { en?: T };
-  en?: T;
-  status?: string;
-  sourceRefs?: Json[];
-};
+type LocalizedField<T> = LocalizedEditorialField<{ en: T; hi?: T; pa?: T }>;
 
 type SeriesContentFile = {
   series: Array<{
     definitionKey: string;
+    tradition: string;
     name?: LocalizedField<string>;
     children?: Array<{
       slug: string;
@@ -44,10 +41,12 @@ type SeriesContentFile = {
 
 const SERIES_CONTENT = seriesContentJson as SeriesContentFile;
 
-function getSourceBackedField<T>(field: LocalizedField<T> | undefined): { value: T; refs: Json[] } | null {
-  if (field?.status !== 'source_backed' || !Array.isArray(field.sourceRefs) || field.sourceRefs.length === 0) return null;
-  const value = field.value?.en ?? field.en;
-  return value === undefined ? null : { value, refs: field.sourceRefs };
+function getApprovedField<T>(field: LocalizedField<T> | undefined, tradition: string): { value: T; refs: Json[] } | null {
+  // Use the same source/review/applicability contract as Native and calendar cards.
+  // Human-approved editorial is curated copy, never a purported scripture quotation.
+  if (!isEditorialFieldDisplayable(field, { tradition, calendarProfile: 'legacy-ujjain' })
+    || field.translationStatus?.en === 'pending') return null;
+  return { value: field.value.en, refs: field.sourceRefs as unknown as Json[] };
 }
 
 export interface ReviewedSeriesOccurrence {
@@ -70,6 +69,9 @@ const CONTENT_BY_SLUG = new Map<string, {
   seriesName: string;
   seriesNameRefs: Json[];
   seriesKey: string;
+  tradition: string;
+  nameEditorial: LocalizedField<string>;
+  titleEditorial: LocalizedField<string>;
   sequence: number;
   totalDays: number;
   canonicalTitle: string;
@@ -81,24 +83,27 @@ const CONTENT_BY_SLUG = new Map<string, {
 
 for (const s of SERIES_CONTENT.series) {
   const def = SERIES_DEFINITIONS.find(d => d.definitionKey === s.definitionKey);
-  const seriesNameField = getSourceBackedField(s.name);
+  const seriesNameField = getApprovedField(s.name, s.tradition);
   const totalDays = def?.children.length ?? s.children?.length ?? 0;
   if (!seriesNameField) continue;
   for (const child of (s.children || [])) {
-    const canonicalTitleField = getSourceBackedField(child.canonicalTitle);
+    const canonicalTitleField = getApprovedField(child.canonicalTitle, s.tradition);
     if (!canonicalTitleField) continue;
 
     CONTENT_BY_SLUG.set(child.slug, {
       seriesName: seriesNameField.value,
       seriesNameRefs: seriesNameField.refs,
       seriesKey: s.definitionKey,
+      tradition: s.tradition,
+      nameEditorial: s.name!,
+      titleEditorial: child.canonicalTitle!,
       sequence: child.sequence,
       totalDays,
       canonicalTitle: canonicalTitleField.value,
       canonicalTitleRefs: canonicalTitleField.refs,
-      deityOrTheme: getSourceBackedField(child.deityOrTheme) ?? undefined,
-      rituals: getSourceBackedField(child.rituals) ?? undefined,
-      significance: getSourceBackedField(child.significance) ?? undefined,
+      deityOrTheme: getApprovedField(child.deityOrTheme, s.tradition) ?? undefined,
+      rituals: getApprovedField(child.rituals, s.tradition) ?? undefined,
+      significance: getApprovedField(child.significance, s.tradition) ?? undefined,
     });
   }
 }
@@ -157,6 +162,16 @@ export function produceSeriesCandidates(
     const content = CONTENT_BY_SLUG.get(child.slug);
     if (!content) {
       continue; // Not a recognized series child
+    }
+    if (content.tradition !== 'all' && content.tradition !== child.tradition) {
+      diagnostics.push(`child_${child.slug}_tradition_mismatch`);
+      continue;
+    }
+    const editorialContext = { tradition: child.tradition ?? undefined, calendarProfile: child.calendarProfile ?? undefined };
+    if (!isEditorialFieldDisplayable(content.nameEditorial, editorialContext)
+      || !isEditorialFieldDisplayable(content.titleEditorial, editorialContext)) {
+      diagnostics.push(`child_${child.slug}_editorial_scope_mismatch`);
+      continue;
     }
 
     // Rule: Send only published, reviewed daily children

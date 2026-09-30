@@ -82,8 +82,8 @@ for (const group of backendContent.series) {
     invalidEditorialContracts++;
     errors++;
   }
-  if (group.name.status === 'council_reviewed_editorial' && !group.name.reviewRef) {
-    console.error(`  ❌ Council-reviewed series name has no review record: ${group.definitionKey}.name`);
+  if (['council_reviewed_editorial', 'reviewed_editorial'].includes(group.name.status) && !group.name.reviewRef) {
+    console.error(`  ❌ Reviewed series name has no review record: ${group.definitionKey}.name`);
     invalidEditorialContracts++;
     errors++;
   }
@@ -118,8 +118,8 @@ for (const group of backendContent.series) {
         invalidEditorialContracts++;
         errors++;
       }
-      if (field.status === 'council_reviewed_editorial' && !field.reviewRef) {
-        console.error(`  ❌ Council-reviewed field has no review record: ${child.slug}.${fieldName}`);
+      if (['council_reviewed_editorial', 'reviewed_editorial'].includes(field.status) && !field.reviewRef) {
+        console.error(`  ❌ Reviewed field has no review record: ${child.slug}.${fieldName}`);
         invalidEditorialContracts++;
         errors++;
       }
@@ -156,9 +156,9 @@ for (const group of backendContent.series) {
   }
 }
 
-console.log(`English titles:                     ${enCount}/${totalChildren} (100%)`);
-console.log(`Hindi titles:                       ${hiCount}/${totalChildren} (100%)`);
-console.log(`Punjabi titles:                     ${paCount}/${totalChildren} (100%)`);
+console.log(`English titles:                     ${enCount}/${totalChildren} `);
+console.log(`Hindi titles:                       ${hiCount}/${totalChildren} `);
+console.log(`Punjabi titles:                     ${paCount}/${totalChildren} `);
 
 // 4. Native Snapshot Parity
 console.log('\n--- 4. Native Snapshot Parity ---');

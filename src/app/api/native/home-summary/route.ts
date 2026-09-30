@@ -18,6 +18,7 @@ import { resolveMonthLabelForSlug } from '@/lib/calendar/month-label-resolver';
 import { getOrMaterializeOccurrences } from '@/lib/calendar/resolve-occurrences';
 import { resolveObservanceLocationBucket } from '@sangam/panchang-engine';
 import { buildObservanceSeries } from '@/lib/calendar/observance-series';
+import { fetchSeriesCompositionResults } from '@/lib/calendar/observance-series-eligibility';
 import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
 import {
   formatOccurrencesToResults,
@@ -954,14 +955,22 @@ export async function GET(request: NextRequest) {
     );
     displaySeriesResults = selectDisplayObservances(seriesResults);
     const primarySeriesContext = seriesResults.find(result => result.isPrimary) ?? seriesResults[0] ?? null;
-    series = primarySeriesContext
-      ? buildObservanceSeries(seriesResults, {
+    if (primarySeriesContext) {
+      const seriesOptions = {
           spiritualDate: today,
           profile: primarySeriesContext.profile,
           location: primarySeriesContext.location,
           tradition,
-        })
-      : [];
+      };
+      // The viewport window stays unchanged. Completeness needs earlier and later
+      // siblings too; a forward-only slice otherwise falsely marks active journeys pending.
+      const familySection = await settleOptionalSection(
+        fetchSeriesCompositionResults(createAdminClient(), seriesResults, seriesOptions),
+        DB_TIMEOUT, seriesResults,
+      );
+      if (familySection.status !== 'ready') degradedSections.add('calendar_series_siblings');
+      series = buildObservanceSeries(familySection.value, seriesOptions);
+    }
   } catch (error) {
     degradedSections.add('calendar_series');
     console.error('[home-summary] calendar series composition failed:', error);

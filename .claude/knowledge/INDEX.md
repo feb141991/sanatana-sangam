@@ -52,6 +52,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Nitya Karma Error Boundaries](decisions/nitya-karma-error-boundaries.md) — Route-level error.tsx on /insights and /plans; reset() + Go Back recovery; never a single parent boundary
 - [Calendar Launch Governance](decisions/calendar-launch-governance.md) — Neutral launch defaults, unresolved-date withholding, profile-selected variants, and deferred scholarly scope
 - [Festival Content Provenance Gate](decisions/festival-content-provenance-gate.md) — Backend-owned drafts remain withheld until exact sources, rights, and durable human review evidence exist
+- [Pitru Paksha Publication Scope](decisions/pitru-paksha-publication-scope.md) — Founder-approved 2026 Ujjain civil journey, truthful review authority, complete sibling eligibility and exclusive reminder delivery
 
 ## How to add entries
 

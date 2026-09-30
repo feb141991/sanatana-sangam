@@ -17,6 +17,51 @@ export function isSeriesMemberSlug(slug: string | null | undefined): boolean {
   return Boolean(slug) && SERIES_MEMBER_SLUGS.has(slug as string);
 }
 
+/** Expand candidates to their full canonical families, never to unrelated series. */
+export function getSeriesSiblingSlugs(candidateSlugs: Array<string | null | undefined>): string[] {
+  const candidates = new Set(candidateSlugs.filter(isSeriesMemberSlug));
+  return [...new Set(SERIES_DEFINITIONS
+    .filter(definition => definition.children.some(child => candidates.has(child.slug)))
+    .flatMap(definition => definition.children.map(child => child.slug)))];
+}
+
+/** Load the whole bounded family for series composition, without changing the visible feed window. */
+export async function fetchSeriesSiblingRows(
+  supabase: SupabaseClient,
+  candidateSlugs: Array<string | null | undefined>,
+  candidateDates: string[],
+  calendarProfile = DEFAULT_CALENDAR_PROFILE,
+) {
+  const slugs = getSeriesSiblingSlugs(candidateSlugs);
+  const dates = candidateDates.filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date)).sort();
+  if (!slugs.length || !dates.length) return [];
+  const { data, error } = await supabase.from('observance_occurrences')
+    .select(CALENDAR_OCCURRENCE_SELECT)
+    .in('observance_definitions.slug', slugs)
+    .eq('calendar_profile', calendarProfile)
+    .gte('date', shiftIsoDate(dates[0], -15))
+    .lte('date', shiftIsoDate(dates[dates.length - 1], 15));
+  if (error) throw new Error(`Failed to load observance series siblings: ${error.message}`);
+  return data ?? [];
+}
+
+export async function fetchSeriesCompositionResults(
+  supabase: SupabaseClient,
+  results: ClientObservanceResult[],
+  options: BuildObservanceSeriesOptions,
+): Promise<ClientObservanceResult[]> {
+  const dates = results.map(result => result.civilDate).filter((date): date is string => Boolean(date));
+  const rows = await fetchSeriesSiblingRows(supabase, results.map(result => result.slug), dates, options.profile.calendar);
+  if (!rows.length) return results;
+  const withBatches = await attachMaterialisationBatches(rows, undefined, options.profile.calendar, {
+    latitude: options.location.lat, longitude: options.location.lon, timezone: options.location.tz,
+  });
+  const siblings = formatOccurrencesToResults(withBatches, [], options.tradition, options.profile.calendar,
+    null, shiftIsoDate(dates.sort()[0], -15), shiftIsoDate(dates[dates.length - 1], 15));
+  const ids = new Set(results.map(result => result.id));
+  return [...results, ...siblings.filter(result => !ids.has(result.id))];
+}
+
 /**
  * Batch-notification eligibility gate: which occurrence IDs currently belong
  * to an under_review (incomplete/disputed/unresolved-sibling) series.
@@ -38,7 +83,7 @@ export async function fetchIncompleteSeriesOccurrenceIds(
   candidateSlugs: Array<string | null | undefined>,
   candidateDates: string[],
 ): Promise<Set<string>> {
-  const relevantSlugs = [...new Set(candidateSlugs.filter(isSeriesMemberSlug) as string[])];
+  const relevantSlugs = getSeriesSiblingSlugs(candidateSlugs);
   if (relevantSlugs.length === 0) return new Set();
 
   // A series spans at most a handful of days; pad generously around the

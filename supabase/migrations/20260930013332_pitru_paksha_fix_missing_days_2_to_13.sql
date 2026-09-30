@@ -1,17 +1,3 @@
--- Corrective migration for 20260930120000_pitru_paksha_daily_journey_series_2026.
---
--- That migration's `existing` CTE used `distinct on (o.definition_id)` over
--- a LEFT JOIN against observance_occurrences. Because none of the 13 new
--- pitru-paksha-day-N definitions had any pre-existing 2026 occurrence row,
--- o.definition_id was NULL for all of them -- and Postgres treats NULLs as
--- equal for DISTINCT ON, collapsing all 12 unmatched candidates (days 2-13)
--- down to a single arbitrary survivor. Only day 1 actually got an
--- observance_occurrences row inserted; days 2-13 silently got none.
---
--- This inserts the 11 missing occurrence rows (days 2-13, day 1 excluded --
--- it already exists) with the exact same values the original migration
--- intended, still unpublished pending human review.
-
 insert into public.observance_occurrences (
   definition_id,
   year,

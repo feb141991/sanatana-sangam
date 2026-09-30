@@ -80,7 +80,7 @@ export function isEditorialFieldDisplayable<T>(
 ): field is LocalizedEditorialField<T> {
   if (!field || field.status === 'pending_source' || field.status === 'withheld') return false;
   if (field.status === 'source_backed' && field.sourceRefs.length === 0) return false;
-  if (field.status === 'council_reviewed_editorial' && !field.reviewRef) return false;
+  if ((field.status === 'council_reviewed_editorial' || field.status === 'reviewed_editorial') && !field.reviewRef) return false;
 
   const applicability = field.applicability;
   const hasScopedValues = Boolean(

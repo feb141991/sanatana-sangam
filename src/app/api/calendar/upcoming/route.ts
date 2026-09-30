@@ -9,6 +9,7 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from '@/lib/calendar/occurrence-reader';
 import { buildObservanceSeries } from '@/lib/calendar/observance-series';
+import { fetchSeriesCompositionResults } from '@/lib/calendar/observance-series-eligibility';
 import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
 import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
 import { selectDisplayObservances } from '@/lib/calendar/display-observances';
@@ -224,12 +225,14 @@ export async function GET(request: NextRequest) {
     let series: ObservanceSeries[] = [];
     if (primaryContext) {
       try {
-        series = buildObservanceSeries(formattedResults, {
+        const seriesOptions = {
           spiritualDate: fromStr,
           profile: primaryContext.profile,
           location: primaryContext.location,
           tradition,
-        });
+        };
+        const familyResults = await fetchSeriesCompositionResults(supabase, formattedResults, seriesOptions);
+        series = buildObservanceSeries(familyResults, seriesOptions);
       } catch (error) {
         console.warn('[API Calendar Upcoming] Series enrichment unavailable:', error);
       }

@@ -5,6 +5,7 @@ import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/l
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 import { REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
+import { getCandidateTypePipelineMode, isCandidateResolverGloballyEnabled } from '@/lib/notification-candidate-pipeline-mode';
 
 // ─── Pitru Paksha Morning Reminder ───────────────────────────────────────────
 // Schedule: 0 3 * * * (3 AM UTC = 8:30 AM IST — before the Shraddha window)
@@ -25,6 +26,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // One owner: the series resolver replaces this legacy producer at cutover.
+  if (isCandidateResolverGloballyEnabled() && getCandidateTypePipelineMode('observance_series') === 'candidate') {
+    return NextResponse.json({ sent: 0, skipped: true, reason: 'observance_series_candidate_pipeline_active' });
+  }
+
   const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceRoleKey) {
@@ -41,7 +47,7 @@ export async function GET(request: Request) {
     // Only target Hindu (and null/unset tradition) users
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, full_name, tradition, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end')
+      .select('id, full_name, tradition, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end, wants_festival_reminders, is_deleting')
       .or('tradition.eq.hindu,tradition.is.null');
 
     if (usersError) {
@@ -52,26 +58,29 @@ export async function GET(request: Request) {
     }
 
     const eligibleUsers = users.flatMap((user) => {
-      const tz = resolveTimeZone((user as any).timezone);
-      const latitude = (user as any).latitude as number | null;
-      const longitude = (user as any).longitude as number | null;
+      if (user.wants_festival_reminders !== true || user.is_deleting === true) return [];
+      const tz = resolveTimeZone(user.timezone);
+      const latitude = user.latitude as number | null;
+      const longitude = user.longitude as number | null;
       // Missing GPS location must not silently drop a user from ancestor-
       // remembrance reminders. Fall back to the app's own reference location
-      // (Ujjain) for the sunrise/tithi calculation while still honoring the
-      // user's own timezone for civil-day boundaries and quiet hours.
-      const hasOwnLocation = latitude != null && longitude != null;
-      const effectiveLat = hasOwnLocation ? latitude : REFERENCE_LOCATION_UJJAIN.lat;
-      const effectiveLon = hasOwnLocation ? longitude : REFERENCE_LOCATION_UJJAIN.lon;
+      // (Ujjain) as a complete calculation context. Delivery still follows
+      // the user's timezone; never combine Ujjain coordinates with London time.
+      const hasOwnLocation = Number.isFinite(latitude) && Number.isFinite(longitude)
+        && latitude! >= -90 && latitude! <= 90 && longitude! >= -180 && longitude! <= 180;
+      const location = hasOwnLocation
+        ? { lat: latitude!, lon: longitude!, tz }
+        : REFERENCE_LOCATION_UJJAIN;
       if (!canSendInLocalWindow(
         now,
         tz,
         targetLocalHour,
-        (user as any).notification_quiet_hours_start ?? null,
-        (user as any).notification_quiet_hours_end ?? null
+        user.notification_quiet_hours_start ?? null,
+        user.notification_quiet_hours_end ?? null
       )) return [];
 
       const localDate = getLocalDateIso(now, tz);
-      const pitruInfo = getPitruPakshaDay(localDate, { lat: effectiveLat, lon: effectiveLon, tz });
+      const pitruInfo = getPitruPakshaDay(getLocalDateIso(now, location.tz), location);
       return pitruInfo ? [{ user, localDate, pitruInfo }] : [];
     });
 
@@ -80,7 +89,7 @@ export async function GET(request: Request) {
     }
 
     const notifications = eligibleUsers.map(({ user: u, localDate, pitruInfo }) => {
-      const tz = resolveTimeZone((u as any).timezone);
+      const tz = resolveTimeZone(u.timezone);
       const copy = getPitruPakshaBannerCopy(pitruInfo);
 
       return {

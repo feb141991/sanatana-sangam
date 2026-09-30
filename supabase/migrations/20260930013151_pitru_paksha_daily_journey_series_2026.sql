@@ -91,12 +91,7 @@ resolved as (
   join public.observance_definitions d on d.slug = s.slug
 ),
 existing as (
-  -- distinct on (r.definition_id), not o.definition_id: when no occurrence
-  -- row exists yet, o.definition_id is NULL for every candidate row, and
-  -- Postgres treats NULLs as equal for DISTINCT ON -- collapsing all
-  -- brand-new (no-existing-row) definitions down to a single arbitrary
-  -- survivor instead of keeping one row per definition.
-  select distinct on (r.definition_id)
+  select distinct on (o.definition_id)
     o.id,
     r.definition_id,
     r.slug,
@@ -108,7 +103,7 @@ existing as (
     on o.definition_id = r.definition_id
    and o.year = 2026
    and o.calendar_profile = 'legacy-ujjain'
-  order by r.definition_id, o.id
+  order by o.definition_id, o.id
 ),
 updated as (
   update public.observance_occurrences o

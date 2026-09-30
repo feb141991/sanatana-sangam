@@ -22,6 +22,11 @@ vi.mock('@/lib/sacred-time', async (importOriginal) => {
   };
 });
 
+vi.mock('@/lib/pitru-paksha', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/pitru-paksha')>();
+  return { ...actual, getPitruPakshaDay: vi.fn(actual.getPitruPakshaDay) };
+});
+
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     from: (table: string) => {
@@ -51,6 +56,8 @@ describe('cron/pitru-paksha-reminder location fallback', () => {
   beforeEach(() => {
     process.env = { ...originalEnv };
     process.env.CRON_SECRET = 'cron-secret-123';
+    delete process.env.NOTIFICATION_RESOLVER_ENABLED;
+    delete process.env.NOTIFICATION_CANDIDATE_MODE_OBSERVANCE_SERIES;
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
     mocks.mockNotificationsUpsert.mockReset();
@@ -71,6 +78,8 @@ describe('cron/pitru-paksha-reminder location fallback', () => {
         id: 'devotee-no-location',
         full_name: 'No Location Devotee',
         tradition: 'hindu',
+        wants_festival_reminders: true,
+        is_deleting: false,
         timezone: 'Asia/Kolkata',
         latitude: null,
         longitude: null,
@@ -100,6 +109,8 @@ describe('cron/pitru-paksha-reminder location fallback', () => {
         id: 'devotee-with-location',
         full_name: 'Has Location Devotee',
         tradition: 'hindu',
+        wants_festival_reminders: true,
+        is_deleting: false,
         timezone: 'Asia/Kolkata',
         latitude: 28.6139,
         longitude: 77.209,
@@ -130,6 +141,8 @@ describe('cron/pitru-paksha-reminder location fallback', () => {
         id: 'devotee-no-location',
         full_name: 'No Location Devotee',
         tradition: 'hindu',
+        wants_festival_reminders: true,
+        is_deleting: false,
         timezone: 'Asia/Kolkata',
         latitude: null,
         longitude: null,
@@ -146,5 +159,53 @@ describe('cron/pitru-paksha-reminder location fallback', () => {
 
     expect(body.message).toBe('No users in 8 AM window');
     expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
+  });
+});
+
+
+describe('Pitru delivery ownership and consent', () => {
+  const request = () => new Request('https://example.com/api/cron/pitru-paksha-reminder', {
+    headers: { authorization: 'Bearer cron-secret-123' },
+  });
+  beforeEach(() => {
+    process.env.CRON_SECRET = 'cron-secret-123';
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-placeholder';
+    delete process.env.NOTIFICATION_RESOLVER_ENABLED;
+    delete process.env.NOTIFICATION_CANDIDATE_MODE_OBSERVANCE_SERIES;
+    mocks.mockNotificationsUpsert.mockReset();
+    mocks.mockUsers = [{ id: 'no-gps', tradition: 'hindu', timezone: 'Europe/London',
+      latitude: null, longitude: null, wants_festival_reminders: true, is_deleting: false }];
+  });
+  afterEach(() => { delete process.env.NOTIFICATION_RESOLVER_ENABLED; delete process.env.NOTIFICATION_CANDIDATE_MODE_OBSERVANCE_SERIES; });
+
+  it('does not send legacy pushes once the series candidate resolver owns delivery', async () => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    process.env.NOTIFICATION_CANDIDATE_MODE_OBSERVANCE_SERIES = 'candidate';
+    const response = await GET(request());
+    expect(await response.json()).toMatchObject({ sent: 0, skipped: true });
+    expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
+  });
+
+  it.each([false, null, undefined])('does not send without explicit festival consent (%s)', async (consent) => {
+    mocks.mockUsers[0].wants_festival_reminders = consent;
+    await GET(request());
+    expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
+  });
+
+  it('does not send to a deleting account', async () => {
+    mocks.mockUsers[0].is_deleting = true;
+    await GET(request());
+    expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps the full Ujjain calculation context for a London user without GPS', async () => {
+    const { getLocalDateIso } = await import('@/lib/sacred-time');
+    vi.mocked(getLocalDateIso).mockReturnValue('2026-09-27');
+    const { getPitruPakshaDay } = await import('@/lib/pitru-paksha');
+    vi.mocked(getPitruPakshaDay).mockClear();
+    await GET(request());
+    expect(getPitruPakshaDay).toHaveBeenCalledWith('2026-09-27',
+      expect.objectContaining({ lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' }));
   });
 });

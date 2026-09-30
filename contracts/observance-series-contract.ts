@@ -4,7 +4,7 @@
  * Backend owns this file. Native receives a byte-identical generated snapshot;
  * clients render these dates and identities but never calculate them.
  */
-export const OBSERVANCE_SERIES_CONTRACT_VERSION = '1.1.0';
+export const OBSERVANCE_SERIES_CONTRACT_VERSION = '1.2.0';
 
 export type ObservanceSeriesMode =
   | 'daily_journey'
@@ -22,6 +22,7 @@ export type ObservanceSeriesStatus =
 export type EditorialStatus =
   | 'source_backed'
   | 'council_reviewed_editorial'
+  | 'reviewed_editorial'
   | 'pending_source'
   | 'withheld';
 
@@ -54,7 +55,7 @@ export interface LocalizedEditorialField<T> {
   status: EditorialStatus;
   sourceRefs: ObservanceSeriesSourceReference[];
   applicability: Applicability;
-  /** Required when status is council_reviewed_editorial. */
+  /** Required for council_reviewed_editorial and reviewed_editorial; records the actual human reviewer. */
   reviewRef?: string;
   translationStatus?: {
     en: 'source' | 'reviewed_translation' | 'pending';

@@ -26,6 +26,7 @@
 import { CANONICAL_RULES, ObservanceRule } from './rules';
 import { isPublishableForYear, ruleIdentityKey } from './engine';
 import { APPROVED_FIXTURE_WRITER } from './approved-fixture-governance';
+import { isApprovedPitruConclusion } from './pitru-paksha-publication';
 
 /** ruleIdentityKey -> rule, for variant-qualified O(1) lookup. */
 const BY_RULE_KEY = new Map<string, ObservanceRule>(
@@ -150,6 +151,10 @@ export function filterWithheldJoinedRows<T>(rows: T[]): T[] {
       ? r.observance_definitions[0]
       : r.observance_definitions;
 
+    // Some completeness readers intentionally load unpublished siblings.
+    // They must become missing children, never resolved public occurrences.
+    if (r.publication_status && r.publication_status !== 'published') return false;
+
     // An exact fixture decision may override a GENERAL rule gate without
     // changing that rule for every year/profile/location. This is deliberately
     // strict: all persisted governance signals must agree, including a typed
@@ -171,6 +176,10 @@ export function filterWithheldJoinedRows<T>(rows: T[]): T[] {
         !!source && typeof source === 'object' && 'tier' in source && source.tier === 1
       );
     if (r.calculated_by === APPROVED_FIXTURE_WRITER) return fixtureScopedApproval;
+
+    // The founder approved this specific 2026 Ujjain conclusion. The generic
+    // deferred calculation rule remains closed for every other context/year.
+    if (isApprovedPitruConclusion(def?.slug, row)) return true;
 
     return !isWithheldOccurrence(
       def?.slug,
