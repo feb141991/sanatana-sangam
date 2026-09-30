@@ -1,7 +1,7 @@
 # Pitru Paksha — Scoped Human Approval and Complete-Series Eligibility
 
-**Date:** 2026-09-30  
-**Session context:** Publishing the source-approved 2026 civil remembrance journey and correcting shared readers and reminder eligibility  
+**Date:** 2026-09-30
+**Session context:** Publishing the source-approved 2026 civil remembrance journey and correcting shared readers and reminder eligibility
 **Category:** decision
 
 ## What we decided

@@ -23,7 +23,7 @@ describe('exact Pitru conclusion publication approval',()=> {
     {variant_key:'other'},{date:'2026-10-09'},{occurrence_date:'2026-10-09'},
     {publication_status:'withheld_disputed'},{review_status:'needs_review'},
     {verification_status:'not_checked'},{audit_status:'failed'},{source_provenance:{}},
-    {source_refs:[]},{diagnostics:[]},{manual_date_override:'2026-10-10'},
+    {source_refs:[]},{diagnostics:[]},{manual_date_override:'2026-10-10'},{manual_date_override:undefined},
     {final_date_source:'fallback'},
   ])('does not override the deferred rule when %j changes',patch=> {
     const candidate={...row,...patch};

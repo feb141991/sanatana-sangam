@@ -32,3 +32,9 @@ Shadow runner passed: 14 independently recomputed engine dates; exactly 13 new p
 The DB CLI dry run uses a private temporary deployment directory containing the actual fetched remote migration history plus exactly the committed publication migration. It lists only 20260930013837 for application, avoiding unrelated pending migrations and avoiding mutation of remote history. The two Pitru historical local files match their stored remote statements. Production version assertion remains required after application. This does not claim unrelated historical migration drift has been reconciled.
 
 Current production resolver is enabled, but the observance-series candidate flag is unset/empty. No global candidate-mode flag is changed by this publication. Existing Pitru legacy reminders retain their local-window schedule and now require explicit festival consent. Calendar publication does not opt anyone into notifications.
+
+## Production publication
+
+20260930013837 was applied through the linked CLI from the isolated history snapshot. Live read-only postcheck confirms 13 newly published dates plus existing Mahalaya, all reviewed/verified/published. The digest of 3,467 unrelated occurrence rows is unchanged: `82b443681db7360d3d333ed81e1a5e1e`. The migration version assertion passes exactly once locally/remotely. Backend implementation d9d40a7 and Native 4d34eee were pushed; backend deploy and production OTA verification follow.
+
+The final reader check requires the selected manual override field to be explicitly null, not silently absent, for the exact concluding approval. This prevents a projection omission from passing the read gate.

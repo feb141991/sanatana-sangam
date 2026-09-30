@@ -14,7 +14,7 @@ export function isApprovedPitruConclusion(slug: string | null | undefined, input
     && row.year === 2026 && row.calendar_profile === 'legacy-ujjain'
     && row.spiritual_tradition == null && row.variant_key === 'legacy-default'
     && row.computed_latitude === 23.1765 && row.computed_longitude === 75.7885
-    && row.computed_timezone === 'Asia/Kolkata' && row.manual_date_override == null
+    && row.computed_timezone === 'Asia/Kolkata' && row.manual_date_override === null
     && row.review_status === 'reviewed' && row.verification_status === 'verified'
     && row.audit_status === 'completed' && row.publication_status === 'published'
     && row.final_date_source !== 'fallback' && Array.isArray(row.source_refs) && row.source_refs.length > 0

@@ -33,6 +33,7 @@ export const CALENDAR_OCCURRENCE_SELECT = `
   publication_status,
   calculated_by,
   final_date_source,
+  manual_date_override,
   source_provenance,
   calendar_profile,
   spiritual_tradition,
