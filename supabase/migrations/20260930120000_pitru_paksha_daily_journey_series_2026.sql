@@ -91,7 +91,12 @@ resolved as (
   join public.observance_definitions d on d.slug = s.slug
 ),
 existing as (
-  select distinct on (o.definition_id)
+  -- distinct on (r.definition_id), not o.definition_id: when no occurrence
+  -- row exists yet, o.definition_id is NULL for every candidate row, and
+  -- Postgres treats NULLs as equal for DISTINCT ON -- collapsing all
+  -- brand-new (no-existing-row) definitions down to a single arbitrary
+  -- survivor instead of keeping one row per definition.
+  select distinct on (r.definition_id)
     o.id,
     r.definition_id,
     r.slug,
@@ -103,7 +108,7 @@ existing as (
     on o.definition_id = r.definition_id
    and o.year = 2026
    and o.calendar_profile = 'legacy-ujjain'
-  order by o.definition_id, o.id
+  order by r.definition_id, o.id
 ),
 updated as (
   update public.observance_occurrences o
@@ -135,8 +140,8 @@ updated as (
     series_instance_key = e.series_instance_key,
     batch_id = null,
     locked_for_regeneration = false,
-    reasons = array['series:pitru-paksha', 'sequence:' || e.sequence::text, 'pending_calendar_review'],
-    diagnostics = array['computed_via_src_lib_pitru_paksha_ts_getPitruPakshaDay'],
+    reasons = to_jsonb(array['series:pitru-paksha', 'sequence:' || e.sequence::text, 'pending_calendar_review']),
+    diagnostics = to_jsonb(array['computed_via_src_lib_pitru_paksha_ts_getPitruPakshaDay']),
     updated_at = now()
   from existing e
   where e.id is not null
@@ -203,8 +208,8 @@ select
   e.series_instance_key,
   null,
   false,
-  array['series:pitru-paksha', 'sequence:' || e.sequence::text, 'pending_calendar_review'],
-  array['computed_via_src_lib_pitru_paksha_ts_getPitruPakshaDay']
+  to_jsonb(array['series:pitru-paksha', 'sequence:' || e.sequence::text, 'pending_calendar_review']),
+  to_jsonb(array['computed_via_src_lib_pitru_paksha_ts_getPitruPakshaDay'])
 from existing e
 where e.id is null;
 
@@ -215,7 +220,7 @@ where e.id is null;
 update public.observance_occurrences o
 set
   series_instance_key = md5('pitru-paksha|2026|legacy-ujjain|general'),
-  reasons = array['series:pitru-paksha', 'sequence:14'],
+  reasons = to_jsonb(array['series:pitru-paksha', 'sequence:14']),
   updated_at = now()
 from public.observance_definitions d
 where o.definition_id = d.id
