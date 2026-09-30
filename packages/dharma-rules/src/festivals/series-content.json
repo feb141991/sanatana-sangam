@@ -5022,7 +5022,9 @@
       "definitionKey": "pitru-paksha",
       "name": {
         "value": {
-          "en": "Pitru Paksha"
+          "en": "Pitru Paksha",
+          "hi": "पितृ पक्ष",
+          "pa": "ਪਿਤਰੀ ਪੱਖ"
         },
         "status": "reviewed_editorial",
         "sourceRefs": [
@@ -5048,7 +5050,9 @@
         },
         "reviewRef": "founder:pitru-paksha-2026-20260930",
         "translationStatus": {
-          "en": "source"
+          "en": "source",
+          "hi": "reviewed_translation",
+          "pa": "reviewed_translation"
         }
       },
       "tradition": "hindu",
@@ -5058,10 +5062,36 @@
           "sequence": 1,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 1"
+              "en": "Pitru Paksha Day 1 — Pratipada Shraddha",
+              "hi": "पितृ पक्ष दिन १ — प्रतिपदा श्राद्ध",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੧ — ਪ੍ਰਤਿਪਦਾ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5084,15 +5114,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Day 1 marks Pratipada Shraddha, the sacred beginning of the ancestral remembrance fortnight. According to Nirnaya Sindhu, this day is dedicated to ancestors who departed on Pratipada tithi of either Paksha, and carries special traditional significance for maternal grandparents (Nana-Nani) whose exact dates of passing may be unknown. Offering Tarpan with sesame and pure water on Pratipada brings deep solace to maternal lineage ancestors and bestows generational peace and harmony.",
+              "hi": "पितृ पक्ष का पहला दिन प्रतिपदा श्राद्ध के रूप में मनाया जाता है। निर्णय सिंधु के अनुसार, यह दिन उन पितरों के लिए है जिनका निधन किसी भी पक्ष की प्रतिपदा को हुआ हो। विशेष रूप से नाना-नानी के श्राद्ध के लिए यह दिन अत्यंत पुण्यकारी माना गया है। इस दिन श्रद्धापूर्वक तर्पण करने से नाना-नानी और मातृकुल के पितृ तृप्त होकर सुख-समृद्धि का आशीर्वाद देते हैं।",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਾ ਪਹਿਲਾ ਦਿਨ ਪ੍ਰਤਿਪਦਾ ਸਰਾਧ ਵਜੋਂ ਮਨਾਇਆ ਜਾਂਦਾ ਹੈ। ਨਿਰਣੈ ਸਿੰਧੂ ਅਨੁਸਾਰ, ਇਹ ਦਿਨ ਉਹਨਾਂ ਵਡੇਰਿਆਂ ਲਈ ਹੈ ਜਿਨ੍ਹਾਂ ਦਾ ਅਕਾਲ ਚਲਾਣਾ ਪ੍ਰਤਿਪਦਾ ਤਿੱਥ ਨੂੰ ਹੋਇਆ ਸੀ, ਖਾਸ ਤੌਰ 'ਤੇ ਨਾਨਾ-ਨਾਨੀ ਦੇ ਨਮਿੱਤ ਤਰਪਣ ਕਰਨਾ ਅਤਿ ਫਲਦਾਇਕ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5115,7 +5173,145 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Pratipada Shraddha & Maternal Ancestor Remembrance",
+              "hi": "प्रतिपदा श्राद्ध एवं नाना-नानी तर्पण",
+              "pa": "ਪ੍ਰਤਿਪਦਾ ਸਰਾਧ ਅਤੇ ਨਾਨਾ-ਨਾਨੀ ਤਰਪਣ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform Tarpan during Kutup Muhurta (approx 11:36 AM – 12:24 PM) or Rohina Muhurta facing South.",
+                "Wear a Kusha grass ring (Pavitri) on the ring finger; use a copper or brass vessel with water, black sesame (Kala Til), and barley.",
+                "Offer three Jalanjalis each to Devas, Rishis, and Pitrus with heartfelt reverence.",
+                "Execute Panchabali: separate portions for cow (Gau), crow (Kaka), dog (Shvana), gods (Deva), and ants (Pipilika).",
+                "Feed a pious Brahmin or provide Anna Daan (satvik meal without onion/garlic) and dakshina to the needy."
+              ],
+              "hi": [
+                "अपराह्न काल में कुतुप मुहूर्त (लगभग पूर्वाह्न ११:३६ से १२:२४) अथवा रोहिण मुहूर्त में दक्षिण मुखी होकर तर्पण करें।",
+                "अनामिका उंगली में कुशा की पवित्री धारण कर तांबे के पात्र से जल, काले तिल और कुश द्वारा जलांजलि अर्पित करें।",
+                "देवों, ऋषियों और पितरों को श्रद्धापूर्वक तीन-तीन जलांजलि समर्पित करें।",
+                "भोजन से पूर्व पंचबलि निकालें: गाय (गोबलि), कौवे (काकबलि), कुत्ते (श्वानबलि), देवों और चींटियों (पिपीलिका) के निमित्त।",
+                "बिना लहसुन-प्याज का सात्विक भोजन कराकर ब्राह्मण अथवा जरूरतमंद को अन्न, वस्त्र व दक्षिणा का दान करें।"
+              ],
+              "pa": [
+                "ਦੁਪਹਿਰ ਕੁਤੁਪ ਜਾਂ ਰੋਹਿਣ ਮੁਹੂਰਤ ਵਿੱਚ ਦੱਖਣ ਵੱਲ ਮੂੰਹ ਕਰਕੇ ਪਵਿੱਤਰ ਤਰਪਣ ਕਰੋ।",
+                "ਹੱਥ ਵਿੱਚ ਕੁਸ਼ਾ ਧਾਰਨ ਕਰਕੇ ਪਾਣੀ, ਕਾਲੇ ਤਿਲਾਂ ਅਤੇ ਜੌਂ ਨਾਲ ਪਿਤਰਾਂ ਨੂੰ ਜਲਾਂਜਲੀ ਭੇਟ ਕਰੋ।",
+                "ਦੇਵਤਿਆਂ, ਰਿਸ਼ੀਆਂ ਅਤੇ ਪਿਤਰਾਂ ਨੂੰ ਤਿੰਨ-ਤਿੰਨ ਵਾਰ ਜਲਾਂਜਲੀ ਅਰਪਿਤ ਕਰੋ।",
+                "ਭੋਜਨ ਤੋਂ ਪਹਿਲਾਂ ਪੰਚਬਲੀ ਕੱਢੋ: ਗਊ, ਕਾਂ, ਕੁੱਤੇ, ਦੇਵਤੇ ਅਤੇ ਕੀੜੀਆਂ ਦੇ ਹਿੱਸੇ ਦਾ ਅੰਨ।",
+                "ਲੋੜਵੰਦਾਂ ਜਾਂ ਬ੍ਰਾਹਮਣ ਨੂੰ ਸਾਦਾ ਸਾਤਵਿਕ ਭੋਜਨ ਕਰਵਾ ਕੇ ਬਸਤਰ ਅਤੇ ਦਾਨ ਅਰਪਣ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5124,10 +5320,36 @@
           "sequence": 2,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 2"
+              "en": "Pitru Paksha Day 2 — Dwitiya Shraddha",
+              "hi": "पितृ पक्ष दिन २ — द्वितीया श्राद्ध",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੨ — ਦਵਿਤੀਆ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5150,15 +5372,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "Remember your ancestors with gratitude, following the customs of your family and tradition."
+              "en": "Day 2 is observed for ancestors who passed away on Dwitiya tithi of either Shukla or Krishna Paksha. Garuda Purana emphasizes that performing Shraddha with barley, black sesame, and pure water pacifies ancestral souls and removes generational obstacles (Pitru Dosha) from the household, bringing peace of mind to descendants.",
+              "hi": "पितृ पक्ष का दूसरा दिन शुक्ल अथवा कृष्ण पक्ष की द्वितीया तिथि को दिवंगत हुए पितरों के श्राद्ध के लिए समर्पित है। गरुड़ पुराण के अनुसार, द्वितीया पर जौ, तिल और निर्मल जल से किया गया तर्पण पितरों को तृप्ति प्रदान करता है तथा घर-परिवार से पितृ दोष का निवारण कर मानसिक शांति प्रदान करता है।",
+              "pa": "ਦੂਜਾ ਦਿਨ ਦਵਿਤੀਆ ਤਿੱਥ ਨੂੰ ਸੱਚਖੰਡ ਗਏ ਪਿਤਰਾਂ ਦੇ ਸਰਾਧ ਲਈ ਹੈ। ਤਿਲਾਂ ਅਤੇ ਪਵਿੱਤਰ ਜਲ ਨਾਲ ਕੀਤਾ ਗਿਆ ਤਰਪਣ ਪਰਿਵਾਰ ਵਿੱਚ ਸੁੱਖ-ਸ਼ਾਂਤੀ ਲਿਆਉਂਦਾ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5181,7 +5431,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Dwitiya Tithi Ancestral Shraddha",
+              "hi": "द्वितीया तिथि पितृ श्राद्ध",
+              "pa": "ਦਵਿਤੀਆ ਤਿੱਥ ਪਿਤਰੀ ਸਰਾਧ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Observe morning purity and commence Tarpan during Aparahna kaal facing South.",
+                "Offer white flowers, barley, and black sesame in a copper vessel with Kusha grass.",
+                "Recite ancestral prayers with humility, seeking forgiveness for any unintended lapses.",
+                "Offer Panchabali offerings before taking family meals.",
+                "Donate raw food grains (Seedha) or feed a respected priest with devotion."
+              ],
+              "hi": [
+                "प्रातः काल शुद्धि के उपरांत दोपहर में दक्षिण दिशा की ओर मुख कर तर्पण आरंभ करें।",
+                "तांबे के लोटे में जल, सफेद फूल, अक्षत, जौ व काले तिल मिलाकर कुशा के अग्रभाग से तर्पण दें।",
+                "हाथ जोड़कर पूर्वजों से अनजाने अपराधों के लिए क्षमा याचना करें।",
+                "भोजन निर्माण के उपरांत सर्वप्रथम गाय, कौवे, कुत्ते व चींटियों के लिए ग्रास निकालें।",
+                "ब्राह्मण अथवा योग्य साधक को सीधा (कच्चा अन्न) अथवा भोजन करवाकर आशीर्वाद प्राप्त करें।"
+              ],
+              "pa": [
+                "ਦੁਪਹਿਰ ਵੇਲੇ ਦੱਖਣ ਵੱਲ ਮੁੱਖ ਕਰਕੇ ਪਵਿੱਤਰ ਜਲ ਅਤੇ ਕਾਲੇ ਤਿਲਾਂ ਨਾਲ ਤਰਪਣ ਕਰੋ।",
+                "ਤਾਂਬੇ ਦੇ ਭਾਂਡੇ ਵਿੱਚ ਚਿੱਟੇ ਫੁੱਲ, ਜੌਂ ਅਤੇ ਤਿਲ ਪਾ ਕੇ ਵਡੇਰਿਆਂ ਦਾ ਧਿਆਨ ਧਰੋ।",
+                "ਗਊ, ਕਾਂ ਅਤੇ ਬੇਜ਼ਬਾਨ ਜੀਵਾਂ ਨੂੰ ਅੰਨ ਦਾ ਹਿੱਸਾ ਅਰਪਿਤ ਕਰੋ।",
+                "ਪੂਰੇ ਸ਼ਰਧਾ ਭਾਵ ਨਾਲ ਭੋਜਨ ਜਾਂ ਅੰਨ ਦਾ ਦਾਨ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5190,10 +5577,36 @@
           "sequence": 3,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 3"
+              "en": "Pitru Paksha Day 3 — Tritiya Shraddha",
+              "hi": "पितृ पक्ष दिन ३ — तृतीया श्राद्ध",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੩ — ਤ੍ਰਿਤੀਆ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5216,15 +5629,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Tritiya Shraddha is solemnized for ancestors who departed on Tritiya tithi. Dharma Sindhu describes that continuous remembrance through Jalanjali (water offering) quenches the thirst of pitrus in the spiritual realm and ensures enduring prosperity and health in domestic life.",
+              "hi": "तृतीया श्राद्ध उन पूर्वजों के निमित्त किया जाता है जिनका देहावसान तृतीया तिथि को हुआ था। धर्म सिंधु के अनुसार, कुश और काले तिल मिश्रित जल की अंजलि देने से पितरों की आत्मा तृप्त होती है तथा वंश वृद्धि, समृद्धि व आरोग्य का आशीष प्राप्त होता है।",
+              "pa": "ਇਹ ਦਿਨ ਤ੍ਰਿਤੀਆ ਤਿੱਥ ਦੇ ਪਿਤਰਾਂ ਨਮਿੱਤ ਹੈ। ਪਵਿੱਤਰ ਜਲਾਂਜਲੀ ਅਰਪਣ ਕਰਨ ਨਾਲ ਪਿਤਰਾਂ ਨੂੰ ਸ਼ਾਂਤੀ ਮਿਲਦੀ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5247,7 +5688,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Tritiya Tithi Shraddha & Jalanjali",
+              "hi": "तृतीया तिथि श्राद्ध एवं जलांजलि",
+              "pa": "ਤ੍ਰਿਤੀਆ ਤਿੱਥ ਸਰਾਧ ਅਤੇ ਜਲਾਂਜਲੀ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Begin ritual during Kutup Muhurta with peaceful mind and clean attire.",
+                "Offer three Jalanjalis each to Devas, Rishis, and departed Pitrus using black sesame.",
+                "Complete Panchabali rites: cow, crow, dog, fire, and ants.",
+                "Feed birds and water sacred Peepal or Banyan trees with sesame water.",
+                "Give dakshina and satvik food to Brahmin priests or needy individuals."
+              ],
+              "hi": [
+                "कुतुप मुहूर्त में शांत चित्त और श्वेत वस्त्र धारण कर तर्पण का संकल्प लें।",
+                "काले तिल और कुशा से देवों, ऋषियों और अपने पितरों को क्रमशः तीन-तीन जलांजलि अर्पित करें।",
+                "पंचबलि (गाय, कुत्ता, कौवा, देव और चींटी) का भाग निकालकर समर्पण करें।",
+                "पीपल के वृक्ष पर जल व कच्चा दूध चढ़ाएं और पक्षियों को दाना-पानी दें।",
+                "ब्राह्मण अथवा जरूरतमंद को सात्विक भोजन व दक्षिणा प्रदान करें।"
+              ],
+              "pa": [
+                "ਕੁਤੁਪ ਵੇਲੇ ਸ਼ਾਂਤ ਮਨ ਨਾਲ ਪਿਤਰਾਂ ਲਈ ਅਰਦਾਸ ਅਤੇ ਤਰਪਣ ਕਰੋ।",
+                "ਪਿਤਰਾਂ ਦੇ ਨਮਿੱਤ ਤਿੰਨ ਵਾਰ ਜਲਾਂਜਲੀ ਭੇਟ ਕਰੋ।",
+                "ਪੰਚਬਲੀ ਕੱਢ ਕੇ ਪੰਛੀਆਂ ਤੇ ਜਾਨਵਰਾਂ ਨੂੰ ਭੋਜਨ ਦਿਓ।",
+                "ਪਿੱਪਲ ਨੂੰ ਜਲ ਅਰਪਣ ਕਰੋ ਅਤੇ ਦੀਨ-ਦੁਖੀਆਂ ਦੀ ਸੇਵਾ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5256,10 +5834,36 @@
           "sequence": 4,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 4"
+              "en": "Pitru Paksha Day 4 — Chaturthi Shraddha",
+              "hi": "पितृ पक्ष दिन ४ — चतुर्थी श्राद्ध",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੪ — ਚਤੁਰਥੀ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5282,15 +5886,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Dedicated to ancestors who departed on Chaturthi tithi of either fortnight. Performing Shraddha on Chaturthi with sincere devotion frees the family lineage from unforeseen adversities, clears karmic debts, and brings spiritual serenity to the home.",
+              "hi": "चतुर्थी तिथि को दिवंगत हुए पितरों के लिए चतुर्थी श्राद्ध किया जाता है। निर्णय सिंधु के अनुसार, श्रद्धापूर्वक किया गया यह अनुष्ठान कुल में शांति, क्लेशों की निवृत्ति और पितरों का स्नेह प्रदान करता है। पितृ गायत्री मंत्र का जप इस दिन विशेष कल्याणकारी माना गया है।",
+              "pa": "ਚਤੁਰਥੀ ਤਿੱਥ ਨੂੰ ਗਏ ਪਿਤਰਾਂ ਲਈ ਇਹ ਸਰਾਧ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਪਿਤਰਾਂ ਦੇ ਨਮਿੱਤ ਜਪ ਅਤੇ ਦਾਨ ਨਾਲ ਕਸ਼ਟ ਦੂਰ ਹੁੰਦੇ ਹਨ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5313,7 +5945,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Chaturthi Shraddha & Ancestral Peace",
+              "hi": "चतुर्थी श्राद्ध एवं पितृ शांति",
+              "pa": "ਚਤੁਰਥੀ ਸਰਾਧ ਅਤੇ ਪਿਤਰੀ ਸ਼ਾਂਤੀ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform Tarpan facing South in afternoon (Aparahna) with Kusha grass and black sesame.",
+                "Recite Pitru Gayatri or 'Om Namo Bhagavate Vasudevaya' with a concentrated mind.",
+                "Offer Panchabali portions without fail before consuming meals.",
+                "Distribute food and warm clothing to the poor, disabled, and elderly.",
+                "Maintain complete peace and avoid conflict or harsh speech on this sacred day."
+              ],
+              "hi": [
+                "अपराह्न वेला में दक्षिण दिशा की ओर मुंह करके तिल-जल से तर्पण करें।",
+                "पितृ गायत्री मंत्र अथवा 'ॐ नमो भगवते वासुदेवाय' का एकाग्र मन से जप करें।",
+                "भोजन से पूर्व पंचबलि (गौ, काक, श्वान, पिपीलिका, देव) अवश्य अर्पित करें।",
+                "वृद्धजनों और निर्धनों को भोजन व वस्त्र दान कर उनका आशीर्वाद लें।",
+                "श्राद्ध के दिन घर में शांति बनाए रखें, क्रोध व कटु वचनों से बचें।"
+              ],
+              "pa": [
+                "ਦੁਪਹਿਰ ਵੇਲੇ ਦੱਖਣ ਵੱਲ ਮੁੱਖ ਕਰਕੇ ਤਰਪਣ ਦੀ ਵਿਧੀ ਪੂਰੀ ਕਰੋ।",
+                "ਪਿਤਰਾਂ ਦੀ ਸ਼ਾਂਤੀ ਲਈ ਵਾਹਿਗੁਰੂ ਜਾਂ ਈਸ਼ਵਰ ਦੇ ਨਾਮ ਦਾ ਸਿਮਰਨ ਕਰੋ।",
+                "ਪੰਚਬਲੀ ਦੇ ਕੇ ਪੰਛੀਆਂ ਤੇ ਜਾਨਵਰਾਂ ਨੂੰ ਤ੍ਰਿਪਤ ਕਰੋ।",
+                "ਗਰੀਬਾਂ ਤੇ ਬਜ਼ੁਰਗਾਂ ਨੂੰ ਭੋਜਨ ਅਤੇ ਕੱਪੜੇ ਦਾਨ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5322,10 +6091,36 @@
           "sequence": 5,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 5"
+              "en": "Pitru Paksha Day 5 — Panchami Shraddha (Kunwar Panchami)",
+              "hi": "पितृ पक्ष दिन ५ — पंचमी श्राद्ध (कुंवारा पंचमी)",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੫ — ਪੰਚਮੀ ਸਰਾਧ (ਕੰਵਾਰਾ ਪੰਚਮੀ)"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5348,15 +6143,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "Remember your ancestors with gratitude, following the customs of your family and tradition."
+              "en": "Also revered as Kunwar Panchami, this day holds extraordinary traditional significance: it is specifically designated for ancestors who passed away unmarried, as well as those who departed on Panchami tithi. Offering kheer made of cow milk and tarpan on this day grants liberation and spiritual satisfaction to unfulfilled departed souls.",
+              "hi": "इसे 'कुंवारा पंचमी' भी कहा जाता है। यह दिन उन पूर्वजों के श्राद्ध के लिए अत्यंत विशेष है जिनका देहांत विवाह से पूर्व (अविवाहित अवस्था में) हुआ हो, साथ ही पंचमी तिथि के दिवंगत पितरों के लिए। इस दिन खीर का भोग लगाकर तर्पण करने से अतृप्त आत्माओं को मोक्ष और शांति मिलती है।",
+              "pa": "ਇਸ ਨੂੰ ਕੰਵਾਰਾ ਪੰਚਮੀ ਕਿਹਾ ਜਾਂਦਾ ਹੈ। ਜੋ ਪਿਤਰ ਅਣਵਿਆਹੇ ਸੰਸਾਰ ਤੋਂ ਗਏ ਹੋਣ, ਉਨ੍ਹਾਂ ਦੇ ਨਮਿੱਤ ਅੱਜ ਖੀਰ ਅਤੇ ਤਰਪਣ ਭੇਟ ਕਰਨਾ ਬਹੁਤ ਮਹੱਤਵਪੂਰਨ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5379,7 +6202,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Panchami Shraddha & Unmarried Departed Rites",
+              "hi": "पंचमी श्राद्ध एवं अविवाहित पितृ शांति",
+              "pa": "ਪੰਚਮੀ ਸਰਾਧ ਅਤੇ ਅਵਿਵਾਹਿਤ ਪਿਤਰੀ ਸ਼ਾਂਤੀ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Prepare sweet rice kheer made of cow milk as primary offering (Naivedya).",
+                "Perform Tarpan during Kutup Muhurta with black sesame, white flowers, and Kusha.",
+                "Offer special Panchabali with kheer portions to cows and crows.",
+                "Donate milk, rice, sugar, or silver to worthy individuals in memory of unmarried ancestors.",
+                "Pray wholeheartedly for the elevation of all young and departed souls of the clan."
+              ],
+              "hi": [
+                "गाय के शुद्ध दूध और चावल से बनी खीर का भोग तैयार करें।",
+                "कुतुप मुहूर्त में काले तिल, श्वेत पुष्प और कुशा से विधिवत तर्पण करें।",
+                "पंचबलि में विशेष रूप से खीर का भाग गाय और कौवे को अर्पित करें।",
+                "अविवाहित दिवंगत आत्माओं की शांति हेतु दूध, चावल, चीनी अथवा चांदी का दान करें।",
+                "कुल के सभी दिवंगत युवाओं व पूर्वजों की आत्मा की शांति के लिए प्रार्थना करें।"
+              ],
+              "pa": [
+                "ਗਾਂ ਦੇ ਦੁੱਧ ਦੀ ਖੀਰ ਤਿਆਰ ਕਰਕੇ ਪਿਤਰਾਂ ਨਮਿੱਤ ਭੋਗ ਲਗਾਓ।",
+                "ਕੁਤੁਪ ਵੇਲੇ ਕਾਲੇ ਤਿਲਾਂ ਅਤੇ ਚਿੱਟੇ ਫੁੱਲਾਂ ਨਾਲ ਤਰਪਣ ਕਰੋ।",
+                "ਗਊ ਅਤੇ ਕਾਂ ਨੂੰ ਖੀਰ ਦਾ ਹਿੱਸਾ ਖੁਆਓ।",
+                "ਲੋੜਵੰਦਾਂ ਨੂੰ ਦੁੱਧ, ਚੌਲ ਅਤੇ ਮਿੱਠੇ ਦਾ ਦਾਨ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5388,10 +6348,36 @@
           "sequence": 6,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 6"
+              "en": "Pitru Paksha Day 6 — Shashthi Shraddha",
+              "hi": "पितृ पक्ष दिन ६ — षष्ठी श्राद्ध",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੬ — ਛਠੀ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5414,15 +6400,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Observed for ancestors who departed on Shashthi tithi. Dharmashastras advise reciting Chapter 7 of Srimad Bhagavad Gita on this day; dedicating the spiritual merit of this recitation to departed ancestors helps liberate them from earthly attachments and elevates their consciousness.",
+              "hi": "षष्ठी तिथि को दिवंगत हुए पूर्वजों का श्राद्ध इस दिन संपन्न किया जाता है। धर्मशास्त्रों के अनुसार, इस दिन श्रीमद्भगवद्गीता के सातवें अध्याय का पाठ कर उसका पुण्य पितरों को समर्पित करने से उनकी आत्मा को उच्च लोकों की प्राप्ति होती है।",
+              "pa": "ਛਠੀ ਤਿੱਥ ਦੇ ਪਿਤਰਾਂ ਲਈ ਇਹ ਸਰਾਧ ਹੁੰਦਾ ਹੈ। ਗੀਤਾ ਜਾਂ ਧਾਰਮਿਕ ਗ੍ਰੰਥਾਂ ਦੇ ਪਾਠ ਦਾ ਫਲ ਪਿਤਰਾਂ ਨੂੰ ਸਮਰਪਿਤ ਕਰੋ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5445,7 +6459,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Shashthi Tithi Shraddha & Anna Daan",
+              "hi": "षष्ठी तिथि श्राद्ध एवं अन्नदान",
+              "pa": "ਛਠੀ ਤਿੱਥ ਸਰਾਧ ਅਤੇ ਅੰਨਦਾਨ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform afternoon Tarpan with sesame and barley facing South.",
+                "Recite Chapter 7 of Bhagavad Gita with devotion and dedicate its merit to ancestors.",
+                "Execute complete Panchabali rituals before family lunch.",
+                "Perform Anna Daan: feed nutritious food to labourers, hungry souls, or cows.",
+                "Maintain sattvic discipline in the household throughout the day."
+              ],
+              "hi": [
+                "अपराह्न में दक्षिण मुखी होकर तिल और जौ से तर्पण संपन्न करें।",
+                "भगवद्गीता के सातवें अध्याय का पाठ करें और पुण्य पितरों को अर्पित करें।",
+                "भोजन से पूर्व पंचबलि के पांचों भाग (गाय, कौवा, कुत्ता, कीट, देव) निकालें।",
+                "श्रमिकों, भूखों और निराश्रितों को भरपेट अन्न भोजन कराएं।",
+                "घर में सात्विक वातावरण बनाए रखें और व्यसन व अपशब्दों से दूर रहें।"
+              ],
+              "pa": [
+                "ਦੁਪਹਿਰ ਵੇਲੇ ਤਿਲਾਂ ਨਾਲ ਪਿਤਰਾਂ ਨੂੰ ਜਲ ਅਰਪਣ ਕਰੋ।",
+                "ਪਵਿੱਤਰ ਬਾਣੀ ਦਾ ਪਾਠ ਕਰਕੇ ਪਿਤਰਾਂ ਦੀ ਸਦਗਤੀ ਲਈ ਅਰਦਾਸ ਕਰੋ।",
+                "ਪੰਚਬਲੀ ਦਾ ਨੇਮ ਪੂਰਾ ਕਰੋ।",
+                "ਭੁੱਖੇ ਅਤੇ ਲੋੜਵੰਦ ਲੋਕਾਂ ਨੂੰ ਭੋਜਨ ਛਕਾਓ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5454,10 +6605,36 @@
           "sequence": 7,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 7"
+              "en": "Pitru Paksha Day 7 — Saptami Shraddha",
+              "hi": "पितृ पक्ष दिन ७ — सप्तमी श्राद्ध",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੭ — ਸਪਤਮੀ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5480,15 +6657,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Observed for ancestors who departed on Saptami tithi. Saptami Shraddha performed with white flowers and pure devotion is traditionally believed to foster mutual goodwill, resolve familial discords, and bestow longevity, vitality, and health upon descendants.",
+              "hi": "सप्तमी तिथि के श्राद्ध में श्वेत पुष्प, चंदन और काले तिल से तर्पण करने का विशेष विधान है। इस दिन पूर्वजों का स्मरण करने से परिवार में परस्पर सौहार्द बढ़ता है, गृह-क्लेश समाप्त होते हैं और संतानों को दीर्घायु व उत्तम स्वास्थ्य प्राप्त होता है।",
+              "pa": "ਸਪਤਮੀ ਤਿੱਥ ਨੂੰ ਗਏ ਪਿਤਰਾਂ ਦਾ ਸਰਾਧ ਪਰਿਵਾਰ ਵਿੱਚ ਪਿਆਰ ਅਤੇ ਅਰੋਗਤਾ ਬਖਸ਼ਦਾ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5511,7 +6716,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Saptami Tithi Shraddha",
+              "hi": "सप्तमी तिथि श्राद्ध",
+              "pa": "ਸਪਤਮੀ ਤਿੱਥ ਸਰਾਧ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform Tarpan during Kutup/Rohina Muhurta with pure water and black sesame.",
+                "Offer white sandalwood paste (Chandan) and white flowers to ancestors.",
+                "Offer Panchabali shares to sacred animals.",
+                "Provide fruits, grains, and dakshina to spiritual practitioners or temple priests.",
+                "Light a ghee lamp in the evening remembering the guidance of departed elders."
+              ],
+              "hi": [
+                "कुतुप अथवा रोहिण मुहूर्त में शुद्ध जल व काले तिल से तर्पण दें।",
+                "पितरों के निमित्त श्वेत चंदन और श्वेत पुष्प अर्पित करें।",
+                "पंचबलि का नियम पूर्ण करते हुए गाय, कौवे और कुत्ते को भोजन कराएं।",
+                "पुजारी अथवा सात्विक ब्राह्मण को मौसमी फल, धान्य और दक्षिणा भेंट करें।",
+                "संध्या समय पूर्वजों की स्मृति में गाय के घी का दीपक प्रज्वलित करें।"
+              ],
+              "pa": [
+                "ਕੁਤੁਪ ਵੇਲੇ ਸਾਫ ਜਲ ਨਾਲ ਤਰਪਣ ਕਰੋ ਅਤੇ ਚਿੱਟੇ ਫੁੱਲ ਅਰਪਿਤ ਕਰੋ।",
+                "ਪੰਚਬਲੀ ਦਾ ਭੋਜਨ ਜੀਵ-ਜੰਤੂਆਂ ਨੂੰ ਦਿਓ।",
+                "ਫਲ ਅਤੇ ਅੰਨ ਦਾ ਦਾਨ ਕਰੋ।",
+                "ਸ਼ਾਮ ਵੇਲੇ ਘਿਓ ਦਾ ਦੀਵਾ ਬਾਲ ਕੇ ਵਡੇਰਿਆਂ ਨੂੰ ਯਾਦ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5520,10 +6862,36 @@
           "sequence": 8,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 8"
+              "en": "Pitru Paksha Day 8 — Ashtami Shraddha (Madhyashtami)",
+              "hi": "पितृ पक्ष दिन ८ — अष्टमी श्राद्ध (मध्याष्टमी)",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੮ — ਅਸ਼ਟਮੀ ਸਰਾਧ (ਮਧਿਆਸ਼ਟਮੀ)"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5546,15 +6914,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "Remember your ancestors with gratitude, following the customs of your family and tradition."
+              "en": "Known as Madhyashtami, this is the vital midpoint of Pitru Paksha. It is dedicated to ancestors who departed on Ashtami tithi, as well as fatherly ancestors in general. Nirnaya Sindhu considers Madhyashtami exceptionally meritorious for Pinda Daan, pacifying afflictions and bringing comprehensive protection to the lineage.",
+              "hi": "इसे 'मध्याष्टमी' कहा जाता है। यह पितृपक्ष का अत्यंत महत्वपूर्ण मध्य-बिंदु है। अष्टमी तिथि को दिवंगत हुए पितरों के अतिरिक्त यह दिन समस्त पितृगणों के तर्पण के लिए अत्यंत फलदायी है। इस दिन पिंडदान व तर्पण करने से कुंडली के ग्रह-दोष शांत होते हैं और पितरों का पूर्ण संरक्षण मिलता है।",
+              "pa": "ਇਹ ਪਿਤਰੀ ਪੱਖ ਦਾ ਅੱਧ (ਮਧਿਆਸ਼ਟਮੀ) ਹੈ। ਅਸ਼ਟਮੀ ਨੂੰ ਗਏ ਪਿਤਰਾਂ ਨਮਿੱਤ ਪਿੰਡ-ਦਾਨ ਅਤੇ ਤਰਪਣ ਬਹੁਤ ਪਵਿੱਤਰ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5577,7 +6973,143 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Madhyashtami Shraddha & Mid-Fortnight Tarpan",
+              "hi": "मध्याष्टमी श्राद्ध एवं पितृ तर्पण",
+              "pa": "ਮਧਿਆਸ਼ਟਮੀ ਸਰਾਧ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform comprehensive Tarpan during Aparahna with black sesame, Kusha, and barley.",
+                "Prepare rice and sesame balls (Pinda) mixed with ghee and offer facing South.",
+                "Observe strict Panchabali offerings before noon.",
+                "Feed cows with green fodder (Gau-gras) and donate jaggery and sesame.",
+                "Chant Vishnu Sahasranama or Pitru Stotra for ancestral liberation."
+              ],
+              "hi": [
+                "अपराह्न काल में काले तिल, जौ और कुशा से संपूर्ण तर्पण संपन्न करें।",
+                "चावल, तिल और घी से बने पिंड दक्षिण दिशा की ओर मुख कर पितरों को अर्पित करें।",
+                "पंचबलि (गौ, काक, श्वान, पिपीलिका, देव) अवश्य निकालें।",
+                "गाय को हरा चारा, गुड़ और तिल खिलाकर सेवा करें।",
+                "विष्णु सहस्रनाम अथवा पितृ स्तोत्र का पाठ कर पुण्य पितरों को समर्पित करें।"
+              ],
+              "pa": [
+                "ਦੁਪਹਿਰ ਵੇਲੇ ਤਿਲਾਂ ਅਤੇ ਜੌਂ ਨਾਲ ਵਿਧੀਵਤ ਤਰਪਣ ਕਰੋ।",
+                "ਗਊਆਂ ਨੂੰ ਹਰਾ ਚਾਰਾ ਅਤੇ ਗੁੜ ਖੁਆਓ।",
+                "ਪੰਚਬਲੀ ਦਾ ਨੇਮ ਨਿਭਾਓ ਅਤੇ ਦਾਨ ਪੁੰਨ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5586,10 +7118,36 @@
           "sequence": 9,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 9"
+              "en": "Pitru Paksha Day 9 — Matri Navami (Avidhava Navami)",
+              "hi": "पितृ पक्ष दिन ९ — मातृ नवमी (अविधवा नवमी)",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੯ — ਮਾਤ੍ਰੀ ਨਵਮੀ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5612,15 +7170,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Matri Navami (also known as Avidhava Navami) is the foremost day dedicated exclusively to departed mothers, grandmothers, and female ancestors. Even if a mother's exact date of passing is unrecorded, Shraddha performed on Matri Navami redeems filial obligations (Matri Rin) and invokes a mother's eternal blessing of peace and happiness.",
+              "hi": "मातृ नवमी पितृपक्ष का परम पावन दिन है जो केवल माताओं, दादियों और कुल की दिवंगत स्त्रियों के श्राद्ध के लिए समर्पित है। यदि माता की मृत्यु तिथि ज्ञात न हो, तो भी इसी दिन उनका श्राद्ध किया जाता है। इस दिन सुहागिन स्त्रियों को भोजन कराने व श्रृंगार दान से मातृ ऋण से मुक्ति और अनंत वात्सल्य प्राप्त होता है।",
+              "pa": "ਮਾਤ੍ਰੀ ਨਵਮੀ ਵਿਸ਼ੇਸ਼ ਤੌਰ 'ਤੇ ਮਾਤਾਵਾਂ ਅਤੇ ਬਜ਼ੁਰਗ ਔਰਤਾਂ ਦੀ ਯਾਦ ਵਿੱਚ ਮਨਾਈ ਜਾਂਦੀ ਹੈ। ਅੱਜ ਦੇ ਦਿਨ ਮਾਤਾ ਜੀ ਦੇ ਨਮਿੱਤ ਤਰਪਣ ਅਤੇ ਦਾਨ ਪਰਿਵਾਰ ਨੂੰ ਠੰਢਕ ਬਖਸ਼ਦਾ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5643,7 +7229,143 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Matri Navami (Mother & Female Ancestor Remembrance)",
+              "hi": "मातृ नवमी (माता व सौभाग्यवती पितृ तर्पण)",
+              "pa": "ਮਾਤ੍ਰੀ ਨਵਮੀ (ਮਾਤਾ ਅਤੇ ਇਸਤਰੀ ਪਿਤਰਾਂ ਦਾ ਸਰਾਧ)"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform Matri Tarpan during Kutup Muhurta with milk, white flowers, and sesame.",
+                "Prepare favourite satvik dishes of departed mothers and female ancestors.",
+                "Invite married women (Suhagins) or daughters, feed them with reverence, and present gifts/clothing.",
+                "Offer Panchabali and donate green bangles, bindi, saree, or cosmetics to married ladies.",
+                "Bow down and pray for the eternal peace of maternal ancestors."
+              ],
+              "hi": [
+                "कुतुप मुहूर्त में दूध, गंगाजल, श्वेत पुष्प व तिल से मातृ तर्पण करें।",
+                "माता व दिवंगत स्त्रियों के प्रिय व्यंजनों का सात्विक भोग तैयार करें।",
+                "सुहागिन स्त्रियों अथवा कन्याओं को आदरपूर्वक भोजन कराएं और वस्त्र-श्रृंगार भेंट करें।",
+                "पंचबलि निकालें और जरूरतमंद महिलाओं को साड़ी, सुहाग सामग्री व अन्न का दान करें।",
+                "मातृकुल की दिवंगत आत्माओं की शांति और आशीर्वाद के लिए नतमस्तक होकर प्रार्थना करें।"
+              ],
+              "pa": [
+                "ਦੁੱਧ ਅਤੇ ਜਲ ਨਾਲ ਮਾਤਾ ਜੀ ਦੇ ਨਾਮ 'ਤੇ ਤਰਪਣ ਕਰੋ।",
+                "ਧੀਆਂ-ਧਿਆਣੀਆਂ ਅਤੇ ਸੁਹਾਗਣਾਂ ਨੂੰ ਆਦਰ ਸਹਿਤ ਭੋਜਨ ਛਕਾਓ ਅਤੇ ਸੂਟ ਜਾਂ ਤੋਹਫ਼ੇ ਦਿਓ।",
+                "ਪੰਚਬਲੀ ਦਾ ਨੇਮ ਪੂਰਾ ਕਰੋ ਅਤੇ ਲੋੜਵੰਦ ਔਰਤਾਂ ਦੀ ਮਦਦ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5652,10 +7374,36 @@
           "sequence": 10,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 10"
+              "en": "Pitru Paksha Day 10 — Dashami Shraddha",
+              "hi": "पितृ पक्ष दिन १० — दशमी श्राद्ध",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੧੦ — ਦਸ਼ਮੀ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5678,15 +7426,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Observed for ancestors who departed on Dashami tithi. Spiritual teachers advise reciting Chapter 11 (Vishwaroop Darshan) of Srimad Bhagavad Gita on Dashami; offering its spiritual merit illuminates the spiritual journey of ancestors and grants them peace in higher celestial abodes.",
+              "hi": "दशमी तिथि को दिवंगत हुए पितरों के लिए यह श्राद्ध किया जाता है। इस दिन भगवद्गीता के ११वें अध्याय (विश्वरूप दर्शन) का पाठ करने और उसका पुण्य पितरों को समर्पित करने से पूर्वज भव-बंधन से मुक्त होकर परम पद को प्राप्त होते हैं।",
+              "pa": "ਦਸ਼ਮੀ ਤਿੱਥ ਦੇ ਪਿਤਰਾਂ ਨਮਿੱਤ ਇਹ ਦਿਨ ਹੈ। ਪਵਿੱਤਰ ਗ੍ਰੰਥਾਂ ਦਾ ਪਾਠ ਅਤੇ ਦਾਨ ਪੁੰਨ ਪਿਤਰਾਂ ਨੂੰ ਮੁਕਤੀ ਮਾਰਗ ਵੱਲ ਲੈ ਜਾਂਦਾ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5709,7 +7485,143 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Dashami Tithi Shraddha & Spiritual Wisdom",
+              "hi": "दशमी तिथि श्राद्ध एवं आध्यात्मिक शांति",
+              "pa": "ਦਸ਼ਮੀ ਤਿੱਥ ਸਰਾਧ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform Tarpan facing South in Aparahna period with sesame and water.",
+                "Recite Chapter 11 of Bhagavad Gita and dedicate the spiritual fruit to departed ancestors.",
+                "Perform Panchabali offerings before partaking meals.",
+                "Feed cows and supply drinking water or grain to birds and animals.",
+                "Donate religious scriptures or educational material to young students."
+              ],
+              "hi": [
+                "अपराह्न वेला में दक्षिण मुखी होकर तिल, जल और कुशा से तर्पण करें।",
+                "गीता के ११वें अध्याय का पाठ कर पुण्य पूर्वजों को अर्पित करें।",
+                "भोजन से पूर्व पंचबलि (गाय, कुत्ता, कौवा, कीट, देव) का भाग निकालें।",
+                "पशु-पक्षियों के लिए दाना-पानी का प्रबंध करें और अन्नदान दें।",
+                "धार्मिक पुस्तकों अथवा शिक्षण सामग्री का विद्यार्थियों में दान करें।"
+              ],
+              "pa": [
+                "ਦੁਪਹਿਰ ਵੇਲੇ ਦੱਖਣ ਵੱਲ ਮੁੱਖ ਕਰਕੇ ਤਰਪਣ ਕਰੋ।",
+                "ਪਾਠ ਕਰਕੇ ਪਿਤਰਾਂ ਦੀ ਆਤਮਿਕ ਸ਼ਾਂਤੀ ਲਈ ਅਰਦਾਸ ਕਰੋ।",
+                "ਪੰਚਬਲੀ ਕੱਢੋ ਅਤੇ ਜੀਵਾਂ ਨੂੰ ਅੰਨ ਦਿਓ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5718,10 +7630,36 @@
           "sequence": 11,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 11"
+              "en": "Pitru Paksha Day 11 — Ekadashi Shraddha (Indira Ekadashi)",
+              "hi": "पितृ पक्ष दिन ११ — एकादशी श्राद्ध (इन्दिरा एकादशी)",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੧੧ — ਇਕਾਦਸ਼ੀ ਸਰਾਧ (ਇੰਦਿਰਾ ਇਕਾਦਸ਼ੀ)"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5744,15 +7682,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "Remember your ancestors with gratitude, following the customs of your family and tradition."
+              "en": "Coinciding with Indira Ekadashi, this is one of the most spiritually powerful days of the year. According to Brahma Vaivarta Purana, observing the Indira Ekadashi fast and performing Tarpan on this day delivers even those ancestors who may be caught in difficult spiritual planes directly into Vaikuntha.",
+              "hi": "पितृपक्ष की एकादशी को 'इन्दिरा एकादशी' कहा जाता है। पद्म व ब्रह्मवैवर्त पुराण के अनुसार, इस दिन का व्रत और श्राद्ध अत्यंत महिमामयी है। यदि कोई पूर्वज अपने कर्मवश कष्टप्रद योनियों में भटक रहे हों, तो वंशज द्वारा इन्दिरा एकादशी का व्रत रखने से वे तत्काल मुक्त होकर वैकुंठ धाम को प्राप्त करते हैं।",
+              "pa": "ਇਸ ਦਿਨ ਇੰਦਿਰਾ ਇਕਾਦਸ਼ੀ ਹੁੰਦੀ ਹੈ। ਇਹ ਵਰਤ ਅਤੇ ਤਰਪਣ ਪਿਤਰਾਂ ਨੂੰ ਸਾਰੇ ਕਸ਼ਟਾਂ ਤੋਂ ਮੁਕਤ ਕਰਵਾ ਕੇ ਪ੍ਰਭੂ ਚਰਨਾਂ ਵਿੱਚ ਥਾਂ ਦਿਵਾਉਂਦਾ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5775,7 +7741,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Indira Ekadashi Shraddha & Ancestral Moksha",
+              "hi": "इन्दिरा एकादशी श्राद्ध एवं पितृ मोक्ष",
+              "pa": "ਇੰਦਿਰਾ ਇਕਾਦਸ਼ੀ ਸਰਾਧ ਅਤੇ ਮੁਕਤੀ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Observe the sacred Indira Ekadashi fast with devotion and satvik discipline.",
+                "Perform Tarpan during noon using water, milk, and black sesame facing South.",
+                "Worship Lord Vishnu with Tulsi leaves, yellow flowers, and fruit offerings.",
+                "Offer fruits, milk, or phalahari food to cows and ascetics.",
+                "Stay awake in evening kirtan or Vishnu contemplation for ancestral liberation."
+              ],
+              "hi": [
+                "इन्दिरा एकादशी का पावन व्रत रखें और सात्विक आचरण का पालन करें।",
+                "मध्याह्न काल में काले तिल और गंगाजल से पितरों के निमित्त तर्पण दें।",
+                "भगवान शालिग्राम अथवा श्रीहरि विष्णु का तुलसी दल व पीले पुष्पों से पूजन करें।",
+                "गाय को फल व चारा खिलाएं तथा फलाहार अन्न का जरूरतमंदों में वितरण करें।",
+                "सायंकाल में विष्णु संकीर्तन अथवा भागवत श्रवण कर पितरों की मुक्ति की कामना करें।"
+              ],
+              "pa": [
+                "ਇਕਾਦਸ਼ੀ ਦਾ ਪਵਿੱਤਰ ਵਰਤ ਰੱਖੋ ਅਤੇ ਪ੍ਰਭੂ ਭਗਤੀ ਵਿੱਚ ਲੀਨ ਰਹੋ।",
+                "ਦੁਪਹਿਰ ਵੇਲੇ ਪਿਤਰਾਂ ਨਮਿੱਤ ਤਰਪਣ ਕਰੋ।",
+                "ਤੁਲਸੀ ਅਤੇ ਫੁੱਲਾਂ ਨਾਲ ਪ੍ਰਭੂ ਦੀ ਅਰਾਧਨਾ ਕਰੋ।",
+                "ਗਊਆਂ ਦੀ ਸੇਵਾ ਕਰੋ ਅਤੇ ਫਲਾਂ ਦਾ ਦਾਨ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5784,10 +7887,36 @@
           "sequence": 12,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 12"
+              "en": "Pitru Paksha Day 12 — Dwadashi Shraddha (Sanyasi Shraddha)",
+              "hi": "पितृ पक्ष दिन १२ — द्वादशी श्राद्ध (संन्यासी श्राद्ध)",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੧੨ — ਦੁਆਦਸ਼ੀ ਸਰਾਧ (ਸੰਨਿਆਸੀ ਸਰਾਧ)"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5810,15 +7939,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Dwadashi Shraddha (also called Yati Shraddha) is dedicated to ancestors who took Sanyasa (renunciation), monastic vows, or lived ascetic lives before departing, as well as those who passed on Dwadashi. Rites are performed with Tulsi leaves and sacred waters honoring their spiritual renunciation.",
+              "hi": "द्वादशी तिथि का श्राद्ध 'संन्यासी श्राद्ध' कहलाता है। यह उन पूर्वजों के निमित्त किया जाता है जिन्होंने देहत्याग से पूर्व संन्यास, वैराग्य अथवा दीक्षा ग्रहण की थी, साथ ही द्वादशी तिथि के दिवंगत पितरों के लिए। इस दिन तुलसी पत्र युक्त जल से तर्पण करने का विशेष महात्म्य है।",
+              "pa": "ਦੁਆਦਸ਼ੀ ਦਾ ਸਰਾਧ ਉਹਨਾਂ ਪਿਤਰਾਂ ਲਈ ਹੈ ਜਿਨ੍ਹਾਂ ਨੇ ਸੰਨਿਆਸ ਲਿਆ ਹੋਵੇ ਜਾਂ ਸਾਧੂ ਜੀਵਨ ਬਤੀਤ ਕੀਤਾ ਹੋਵੇ। ਤੁਲਸੀ ਅਤੇ ਪਵਿੱਤਰ ਜਲ ਨਾਲ ਤਰਪਣ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5841,7 +7998,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Yati & Sanyasi Shraddha (Renunciant Ancestors)",
+              "hi": "संन्यासी, यति व साधु पितृ श्राद्ध",
+              "pa": "ਸੰਨਿਆਸੀ ਅਤੇ ਸਾਧੂ ਪਿਤਰਾਂ ਦਾ ਸਰਾਧ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform Tarpan offering water mixed with sacred Tulsi leaves and barley.",
+                "Prepare satvik offerings honoring spiritual teachers (Gurus) and ascetic ancestors.",
+                "Perform Panchabali rites diligently.",
+                "Donate umbrellas, walking sticks, footwear, or food grains to monks, ascetics, or sadhus.",
+                "Pray for detachment, spiritual wisdom, and righteous living for descendants."
+              ],
+              "hi": [
+                "जल में तुलसी पत्र और जौ मिलाकर संन्यासी पूर्वजों को तर्पण अर्पित करें।",
+                "कुल के गुरुजनों और संन्यासी पितरों का ध्यान कर सात्विक प्रसाद बनाएं।",
+                "पंचबलि (गौ, श्वान, काक, देव, कीट) का भाग निकालें।",
+                "साधु-संतों अथवा जरूरतमंदों को छाता, खड़ाऊं, वस्त्र अथवा अन्न का दान करें।",
+                "संतान में धर्म, वैराग्य और सद्विचार की वृद्धि हेतु प्रार्थना करें।"
+              ],
+              "pa": [
+                "ਤੁਲਸੀ ਵਾਲੇ ਜਲ ਨਾਲ ਸੰਨਿਆਸੀ ਪਿਤਰਾਂ ਨੂੰ ਤਰਪਣ ਭੇਟ ਕਰੋ।",
+                "ਸਾਧ-ਸੰਤਾਂ ਦੀ ਸੇਵਾ ਕਰੋ ਅਤੇ ਭੋਜਨ ਛਕਾਓ।",
+                "ਪੰਚਬਲੀ ਦਾ ਨੇਮ ਪੂਰਾ ਕਰੋ।",
+                "ਲੋੜਵੰਦਾਂ ਨੂੰ ਬਸਤਰ ਅਤੇ ਛਤਰੀਆਂ ਦਾ ਦਾਨ ਕਰੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5850,10 +8144,36 @@
           "sequence": 13,
           "canonicalTitle": {
             "value": {
-              "en": "Pitru Paksha Day 13"
+              "en": "Pitru Paksha Day 13 — Trayodashi Shraddha (Magha Shraddha)",
+              "hi": "पितृ पक्ष दिन १३ — त्रयोदशी श्राद्ध (काकबलि एवं बाल श्राद्ध)",
+              "pa": "ਪਿਤਰੀ ਪੱਖ ਦਿਨ ੧੩ — ਤ੍ਰਯੋਦਸ਼ੀ ਸਰਾਧ"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5876,15 +8196,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "A sacred time to remember your ancestors with gratitude and prayer."
+              "en": "Trayodashi Shraddha is observed for ancestors who passed on Trayodashi tithi and holds special significance for deceased young children of the lineage. Known in classical texts as Kakbali day, extensive food offerings to crows and birds ensure freedom from distress and bless descendants with healthy progeny and prosperity.",
+              "hi": "त्रयोदशी श्राद्ध उन पूर्वजों के लिए है जिनका निधन त्रयोदशी को हुआ हो, तथा विशेष रूप से कुल के दिवंगत नन्हें बच्चों (बाल पितरों) की शांति के लिए। इस दिन कौवों और पक्षियों को विशेष रूप से खीर-पूड़ी खिलाने से बाल-दोष शांत होते हैं और संतान को आरोग्य व दीर्घायु का आशीर्वाद मिलता है।",
+              "pa": "ਤ੍ਰਯੋਦਸ਼ੀ ਸਰਾਧ ਬੱਚਿਆਂ ਅਤੇ ਤ੍ਰਯੋਦਸ਼ੀ ਨੂੰ ਗਏ ਪਿਤਰਾਂ ਨਮਿੱਤ ਹੈ। ਪੰਛੀਆਂ ਨੂੰ ਭੋਜਨ ਕਰਵਾਉਣ ਨਾਲ ਸੰਤਾਨ ਸੁੱਖ ਮਿਲਦਾ ਹੈ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5907,7 +8255,144 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Trayodashi Shraddha & Child Ancestor Remembrance",
+              "hi": "त्रयोदशी तिथि श्राद्ध एवं बाल पितृ शांति",
+              "pa": "ਤ੍ਰਯੋਦਸ਼ੀ ਸਰਾਧ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform afternoon Tarpan with sesame and sweet water facing South.",
+                "Prepare kheer and pooris specifically for distribution to crows and birds.",
+                "Conduct extensive Panchabali offerings before taking meals.",
+                "Donate sweets, milk, toys, or study material to underprivileged children.",
+                "Offer prayers for the health, protection, and long life of all children in the family."
+              ],
+              "hi": [
+                "अपराह्न में दक्षिण दिशा की ओर मुख कर मीठे जल और काले तिल से तर्पण करें।",
+                "खीर और पूरी बनाकर कौवों, चिड़ियों और अन्य पक्षियों को प्रचुर मात्रा में खिलाएं।",
+                "पंचबलि का नियम विधिवत संपन्न करें।",
+                "गरीब व अनाथ बच्चों को मिठाई, दूध, वस्त्र अथवा पुस्तकें दान करें।",
+                "परिवार के सभी बच्चों के उत्तम स्वास्थ्य, सुरक्षा व दीर्घायु के लिए प्रार्थना करें।"
+              ],
+              "pa": [
+                "ਦੁਪਹਿਰ ਵੇਲੇ ਮਿੱਠੇ ਜਲ ਅਤੇ ਤਿਲਾਂ ਨਾਲ ਤਰਪਣ ਕਰੋ।",
+                "ਕਾਂਵਾਂ ਅਤੇ ਪੰਛੀਆਂ ਨੂੰ ਖੀਰ-ਪੂੜੀ ਖੁਆਓ।",
+                "ਪੰਚਬਲੀ ਕੱਢੋ।",
+                "ਲੋੜਵੰਦ ਬੱਚਿਆਂ ਨੂੰ ਮਿਠਾਈ, ਦੁੱਧ ਅਤੇ ਕਿਤਾਬਾਂ ਵੰਡੋ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         },
@@ -5916,10 +8401,36 @@
           "sequence": 14,
           "canonicalTitle": {
             "value": {
-              "en": "Mahalaya Amavasya"
+              "en": "Mahalaya Amavasya — Sarva Pitru Moksha",
+              "hi": "महालय अमावस्या — सर्वपितृ मोक्ष अमावस्या",
+              "pa": "ਮਹਾਲਯ ਮੱਸਿਆ — ਸਰਵ ਪਿਤਰੀ ਮੋਕਸ਼"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5942,15 +8453,43 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           },
           "significance": {
             "value": {
-              "en": "Mahalaya Amavasya concludes this remembrance journey. Honour your ancestors according to your family and tradition."
+              "en": "Mahalaya Amavasya (Sarva Pitru Amavasya) is the sacred culmination of Pitru Paksha. It is the universal day of redemption for ALL departed ancestors, known and unknown, those whose death anniversaries are forgotten, or whose rites were missed throughout the year. Rites performed today bring complete peace and liberation to all departed souls, who return to Pitru Loka blessing the home with boundless abundance and harmony.",
+              "hi": "महालय अमावस्या (सर्वपितृ मोक्ष अमावस्या) पितृपक्ष की परम पूर्णाहुति है। यह समस्त ज्ञात-अज्ञात, सगोत्र-असगोत्र पूर्वजों की तृप्ति का महादिन है। जिनकी तिथि याद न हो अथवा वर्षभर जिनका श्राद्ध न हो सका हो, आज के दिन उनके निमित्त तर्पण व पिंडदान करने से वे पूर्ण तृप्त होकर मोक्ष प्राप्त करते हैं और परिवार को अखंड सौभाग्य व समृद्धि का आशीष देते हैं।",
+              "pa": "ਮਹਾਲਯ ਮੱਸਿਆ ਪਿਤਰੀ ਪੱਖ ਦਾ ਅੰਤਿਮ ਤੇ ਸਭ ਤੋਂ ਵੱਡਾ ਦਿਨ ਹੈ। ਸਾਰੇ ਜਾਣੇ-ਅਣਜਾਣੇ ਪਿਤਰਾਂ ਦੇ ਨਮਿੱਤ ਅੱਜ ਤਰਪਣ ਕਰਨ ਨਾਲ ਸਾਰੇ ਪਿਤਰ ਤ੍ਰਿਪਤ ਹੁੰਦੇ ਹਨ ਅਤੇ ਪਰਿਵਾਰ ਨੂੰ ਖੁਸ਼ਹਾਲੀ ਬਖਸ਼ਦੇ ਹਨ।"
             },
             "status": "reviewed_editorial",
             "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
               {
                 "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
                 "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
@@ -5973,7 +8512,145 @@
             },
             "reviewRef": "founder:pitru-paksha-2026-20260930",
             "translationStatus": {
-              "en": "source"
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Sarva Pitru Amavasya & Universal Ancestral Liberation",
+              "hi": "सर्वपितृ मोक्ष अमावस्या एवं महातर्पण",
+              "pa": "ਸਰਵ ਪਿਤਰੀ ਮੱਸਿਆ ਅਤੇ ਮਹਾਂਤਰਪਣ"
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
+            }
+          },
+          "rituals": {
+            "value": {
+              "en": [
+                "Perform Mahatarpan during Kutup/Rohina Muhurta with sacred water, milk, black sesame (Kala Til), and Kusha grass.",
+                "Perform Pinda Daan (rice and sesame balls with ghee and honey) facing South.",
+                "Perform widespread Panchabali: offerings to cow, crow, dog, gods, and ants without fail.",
+                "Organize Brahmabhoj and extensive Anna Daan; donate clothes, umbrellas, sesame, and footwear to the needy.",
+                "Light a sacred mustard oil lamp (Deepak) in the evening facing South to illuminate the ancestors' return journey."
+              ],
+              "hi": [
+                "कुतुप एवं रोहिण मुहूर्त में काले तिल, जौ, दूध व कुश से संपूर्ण सर्वपितृ महातर्पण करें।",
+                "चावल, तिल व मधु से पिंडदान बनाकर दक्षिण दिशा की ओर मुख कर तर्पण अर्पित करें।",
+                "पंचबलि (गाय, कुत्ता, कौवा, देव, चींटी) का ग्रास अवश्य निकालें।",
+                "ब्राह्मण भोजन कराएं तथा वस्त्र, अन्न, तिल, खड़ाऊं व दक्षिणा का उदारतापूर्वक दान करें।",
+                "संध्याकाल में दक्षिण दिशा की ओर मुख कर पितरों के मार्गदर्शन हेतु सरसों के तेल का दीपक प्रज्वलित करें।"
+              ],
+              "pa": [
+                "ਕੁਤੁਪ ਵੇਲੇ ਦੁੱਧ, ਜਲ ਅਤੇ ਕਾਲੇ ਤਿਲਾਂ ਨਾਲ ਮਹਾਂਤਰਪਣ ਕਰੋ।",
+                "ਪਿੰਡ-ਦਾਨ ਕਰਕੇ ਪਿਤਰਾਂ ਦੀ ਮੁਕਤੀ ਲਈ ਪ੍ਰਾਰਥਨਾ ਕਰੋ।",
+                "ਪੰਚਬਲੀ ਦਾ ਨੇਮ ਨਿਭਾਓ।",
+                "ਵੱਧ ਤੋਂ ਵੱਧ ਲੋੜਵੰਦਾਂ ਨੂੰ ਅੰਨ ਅਤੇ ਬਸਤਰਾਂ ਦਾ ਦਾਨ ਕਰੋ।",
+                "ਸ਼ਾਮ ਨੂੰ ਦੱਖਣ ਵੱਲ ਸਰ੍ਹੋਂ ਦੇ ਤੇਲ ਦਾ ਦੀਵਾ ਜਗਾਓ।"
+              ]
+            },
+            "status": "reviewed_editorial",
+            "sourceRefs": [
+              {
+                "sourceName": "Nirnaya Sindhu (Shraddha Prakarana)",
+                "publisher": "Chaukhamba Sanskrit Sansthan / Gita Press",
+                "pageOrSection": "Ashvina Krishna Paksha Shraddha Nirnaya & Kutup-Rohina Vidhi",
+                "tier": 1,
+                "scholarNotes": "Authoritative Dharmashastra compendium by Mahamahopadhyaya Kamalakar Bhatta on tithi determination, Kutup muhurta, and Panchabali.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Garuda Purana (Preta Khanda & Dharma Khanda)",
+                "publisher": "Motilal Banarsidass / Gita Press",
+                "pageOrSection": "Chapters on Shraddha Mahatmya, Tarpan, and Ancestral Deliverance",
+                "tier": 1,
+                "scholarNotes": "Classical Puranic authority on ancestral rites, tilanjali, and merits of filial piety.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Dharma Sindhu (Kashinath Upadhyaya)",
+                "publisher": "Chaukhamba Sanskrit Pratishthan",
+                "pageOrSection": "Parvana Shraddha Vidhi, Matri Navami, and Mahalaya Amavasya",
+                "tier": 1,
+                "scholarNotes": "Standard liturgical ritual guide detailing Aparahna time window and Panchabali procedures.",
+                "usagePermitted": "academic_citation"
+              },
+              {
+                "sourceName": "Thanjavur Panchangam 2026–2027 (London edition)",
+                "publisher": "Thanjavur Panchangam; hosted by Uttaradi Math",
+                "pageOrSection": "Ashvina: Paksha masa, September 27 to October 10",
+                "tier": 3,
+                "region": "London",
+                "scholarNotes": "Independent civil-journey range corroboration only; not authority for Ujjain ritual times or universal location dates.",
+                "usagePermitted": "academic_citation",
+                "url": "https://cdn.umath.in/panchanga-2026-2027/pdf/london_2026_2027.pdf"
+              }
+            ],
+            "applicability": {
+              "traditions": [
+                "hindu"
+              ],
+              "calendarProfiles": [
+                "legacy-ujjain"
+              ],
+              "universal": false
+            },
+            "reviewRef": "founder:pitru-paksha-2026-20260930",
+            "translationStatus": {
+              "en": "source",
+              "hi": "reviewed_translation",
+              "pa": "reviewed_translation"
             }
           }
         }
