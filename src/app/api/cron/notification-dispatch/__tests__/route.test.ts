@@ -83,6 +83,8 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       wants_tithi_reminders: true,
       wants_sankalpa_midpoint_reminders: true,
       japa_reminder_enabled: true,
+      wants_shloka_reminders: true,
+      last_shloka_date: '2026-09-28',
     }];
     mocks.sadhanaResponse = { data: [{ user_id: 'user-1', japa_done: true }], error: null };
     mocks.sadhanaDates = [];
@@ -142,6 +144,58 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       table: 'notification_schedule',
       update: { status: 'skipped', error: 'japa_reminders_disabled' },
       ids: ['schedule-1'],
+    });
+  });
+
+  it('skips a Shloka reminder when the user has read that date after scheduling', async () => {
+    mocks.claimedRows[0] = {
+      id: 'schedule-shloka-1',
+      user_id: 'user-1',
+      notification_type: 'shloka',
+      notification_key: 'candidate:shloka:2026-09-29',
+      title: 'Shloka reminder',
+      body: 'Read today’s verse',
+      send_at: '2026-09-29T18:00:00.000Z',
+      metadata: { local_date: '2026-09-29', timezone: 'Europe/London' },
+      retry_count: 0,
+    };
+    mocks.profiles[0].last_shloka_date = '2026-09-29';
+
+    const response = await GET(request());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ claimed: 1, succeeded: 0, skipped: 1 });
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule',
+      update: { status: 'skipped', error: 'shloka_completed_before_delivery' },
+      ids: ['schedule-shloka-1'],
+    });
+  });
+
+  it('skips a queued Shloka reminder after the user disables it', async () => {
+    mocks.claimedRows[0] = {
+      id: 'schedule-shloka-2',
+      user_id: 'user-1',
+      notification_type: 'shloka',
+      notification_key: 'candidate:shloka:2026-09-29',
+      title: 'Shloka reminder',
+      body: 'Read today’s verse',
+      send_at: '2026-09-29T18:00:00.000Z',
+      metadata: { local_date: '2026-09-29', timezone: 'Europe/London' },
+      retry_count: 0,
+    };
+    mocks.profiles[0].wants_shloka_reminders = false;
+
+    const response = await GET(request());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ claimed: 1, succeeded: 0, skipped: 1 });
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule',
+      update: { status: 'skipped', error: 'shloka_reminders_disabled' },
+      ids: ['schedule-shloka-2'],
     });
   });
 });

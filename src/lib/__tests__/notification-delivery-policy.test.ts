@@ -32,6 +32,16 @@ describe("notification delivery policy", () => {
     expect(getNotificationPreferenceSkipReason(row, { japa_reminder_enabled: true })).toBeNull();
   });
 
+  it("suppresses a queued Shloka reminder if the user turned it off after scheduling", () => {
+    const row = { notification_type: "shloka", notification_key: "candidate:shloka:2026-09-29" };
+    expect(getNotificationPreferenceSkipReason(row, { wants_shloka_reminders: false }))
+      .toBe("shloka_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_shloka_reminders: true })).toBeNull();
+    // Preserve the producer's existing compatibility behavior for legacy rows
+    // whose preference is null or absent: only explicit opt-out suppresses.
+    expect(getNotificationPreferenceSkipReason(row, {})).toBeNull();
+  });
+
   it("fails closed for Sankalpa midpoint reminders until the user explicitly opts in", () => {
     const row = { notification_type: "sankalpa_midpoint", notification_key: "candidate:sankalpa-1:midpoint" };
     expect(getNotificationPreferenceSkipReason(row, {})).toBe("sankalpa_midpoint_reminders_disabled");

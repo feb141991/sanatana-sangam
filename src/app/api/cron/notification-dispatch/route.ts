@@ -4,7 +4,7 @@ import { sendPushNotification } from "@/lib/push-server";
 import { getCompletedJapaUserIds } from "@/lib/japa-candidate-producer";
 import { recordNotificationDispatchBatch, type NotificationDispatchEventPayload } from "@/lib/notification-dispatch-audit";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
-import { getLocalHour, isHourInQuietWindow, localSpiritualDate, resolveTimeZone } from "@/lib/sacred-time";
+import { getLocalDateIso, getLocalHour, isHourInQuietWindow, localSpiritualDate, resolveTimeZone } from "@/lib/sacred-time";
 import {
   getNotificationPreferenceSkipReason,
   getScheduledNotificationActionPath,
@@ -129,13 +129,13 @@ export async function GET(request: Request) {
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
     let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled")
+      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, wants_shloka_reminders, last_shloka_date")
       .in("id", userIds);
 
     if (profileErr && (profileErr as any).code === "42703") {
       const fallbackRes = await supabase
         .from("profiles")
-        .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, japa_reminder_enabled")
+        .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, japa_reminder_enabled, wants_shloka_reminders, last_shloka_date")
         .in("id", userIds);
       profiles = (fallbackRes.data ?? []).map((p: any) => ({
         ...p,
@@ -213,6 +213,34 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Could not verify Japa completion; delivery will retry' }, { status: 503 });
     }
 
+    // Shloka candidates are generated before the user's local evening. Recheck
+    // their read state at delivery so a user who opens the daily text after
+    // candidate generation does not receive a stale reminder.
+    const shlokaRows = claimedRows.filter((row) => row.notification_type === 'shloka');
+    const shlokaMissingDateIds = new Set<string>();
+    const completedShlokaIds = new Set<string>();
+    for (const row of shlokaRows) {
+      const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
+        ? row.metadata as Record<string, unknown>
+        : {};
+      const timezone = resolveTimeZone(
+        typeof metadata.timezone === 'string'
+          ? metadata.timezone
+          : profileMap.get(row.user_id)?.timezone
+      );
+      const scheduledAt = typeof row.send_at === 'string' ? new Date(row.send_at) : null;
+      const localDate = typeof metadata.local_date === 'string'
+        ? metadata.local_date
+        : scheduledAt && !Number.isNaN(scheduledAt.getTime())
+          ? getLocalDateIso(scheduledAt, timezone)
+          : null;
+      if (!localDate) {
+        shlokaMissingDateIds.add(row.id);
+      } else if (profileMap.get(row.user_id)?.last_shloka_date === localDate) {
+        completedShlokaIds.add(row.id);
+      }
+    }
+
     for (const row of claimedRows) {
       const profile = profileMap.get(row.user_id);
       if (!profile || profile.is_deleting) {
@@ -269,6 +297,32 @@ export async function GET(request: Request) {
           notificationType: row.notification_type,
           decision: 'skipped',
           reason: 'japa_completion_date_missing',
+          provider: 'expo',
+        });
+        continue;
+      }
+
+      if (shlokaMissingDateIds.has(row.id)) {
+        skippedRows.push({ id: row.id, reason: 'shloka_completion_date_missing' });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: 'skipped',
+          reason: 'shloka_completion_date_missing',
+          provider: 'expo',
+        });
+        continue;
+      }
+
+      if (completedShlokaIds.has(row.id)) {
+        skippedRows.push({ id: row.id, reason: 'shloka_completed_before_delivery' });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: 'skipped',
+          reason: 'shloka_completed_before_delivery',
           provider: 'expo',
         });
         continue;

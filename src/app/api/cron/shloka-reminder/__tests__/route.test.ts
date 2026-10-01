@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => {
     ],
     mockCandidatesUpsert: vi.fn(),
     mockNotificationsUpsert: vi.fn(),
+    mockCanSendInLocalWindow: true,
   };
 });
 
@@ -32,7 +33,7 @@ vi.mock('@/lib/sacred-time', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/sacred-time')>();
   return {
     ...actual,
-    canSendInLocalWindow: vi.fn().mockReturnValue(true),
+    canSendInLocalWindow: vi.fn(() => mocks.mockCanSendInLocalWindow),
     getLocalDateIso: vi.fn().mockReturnValue('2026-11-08'),
   };
 });
@@ -69,6 +70,7 @@ describe('cron/shloka-reminder pipeline exclusivity', () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
     vi.clearAllMocks();
+    mocks.mockCanSendInLocalWindow = true;
 
     mocks.mockCandidatesUpsert.mockReturnValue({
       select: vi.fn().mockResolvedValue({ data: [{ id: 'cand-shloka-1' }], error: null }),
@@ -112,6 +114,9 @@ describe('cron/shloka-reminder pipeline exclusivity', () => {
 
   it('executes candidate pipeline when mode is candidate with zero push calls', async () => {
     process.env.NOTIFICATION_ROUTINE_MODE_SHLOKA = 'candidate';
+    // 06:00 UTC is outside this user's 19:00 IST window, but candidate mode
+    // must still schedule the future local slot.
+    mocks.mockCanSendInLocalWindow = false;
 
     const req = new Request('https://shoonaya.com/api/cron/shloka-reminder', {
       headers: { authorization: 'Bearer cron-secret-123' },
@@ -129,6 +134,8 @@ describe('cron/shloka-reminder pipeline exclusivity', () => {
     expect(sendPushNotification).not.toHaveBeenCalled();
     // Assert candidate upsert called
     expect(mocks.mockCandidatesUpsert).toHaveBeenCalledTimes(1);
+    const candidate = mocks.mockCandidatesUpsert.mock.calls[0][0][0];
+    expect(candidate.scheduled_for).toBe('2026-11-08T13:30:00.000Z');
     // Assert legacy notifications NOT inserted
     expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
   });
@@ -151,6 +158,22 @@ describe('cron/shloka-reminder pipeline exclusivity', () => {
     // Assert legacy notifications upserted
     expect(mocks.mockNotificationsUpsert).toHaveBeenCalledTimes(1);
     // Assert zero candidate rows upserted
+    expect(mocks.mockCandidatesUpsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps immediate legacy delivery inside the local reminder window', async () => {
+    delete process.env.NOTIFICATION_ROUTINE_MODE_SHLOKA;
+    mocks.mockCanSendInLocalWindow = false;
+
+    const req = new Request('https://shoonaya.com/api/cron/shloka-reminder', {
+      headers: { authorization: 'Bearer cron-secret-123' },
+    });
+    const res = await GET(req);
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ sent: 0, eligibleCount: 0, pipeline_mode: 'legacy' });
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
     expect(mocks.mockCandidatesUpsert).not.toHaveBeenCalled();
   });
 });

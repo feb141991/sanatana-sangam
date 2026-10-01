@@ -11,10 +11,12 @@ import type { NotificationCandidateInsert } from '@/types/database';
 export const dynamic = 'force-dynamic';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
-// Schedule: 0 18 * * * (daily on Vercel Hobby — route still filters by user local evening)
-// Finds users who have NOT read today's shloka in their local date window.
-// In candidate mode: writes to notification_candidates for central resolution (zero direct push).
-// In legacy mode: direct bell insertion + push dispatch.
+// Schedule: 0 6 * * * (daily; see vercel.json).
+// In candidate mode, produces each opted-in user's 19:00 local slot regardless
+// of the cron's current local hour, then central resolution dispatches it later.
+// Legacy mode still sends immediately and therefore requires the cron to run
+// inside each user's local reminder window; it is not timezone-complete with a
+// single daily UTC invocation.
 // In disabled mode: halts cleanly without sending.
 
 export async function GET(request: Request) {
@@ -76,15 +78,23 @@ export async function GET(request: Request) {
     const eligibleUsers = users.filter((user) => {
       const timeZone = resolveTimeZone((user as any).timezone);
       if ((user as any).wants_shloka_reminders === false) return false;
-      if (!canSendInLocalWindow(
+      const localDate = getLocalDateIso(now, timeZone);
+      if (user.last_shloka_date === localDate) return false;
+
+      // Candidate production schedules the user's future local slot. Filtering
+      // by the cron's current hour here would discard users before that slot can
+      // be materialized (for example, IST is 11:30 when this cron runs at 06Z).
+      if (pipelineMode === 'candidate') return true;
+
+      // Legacy delivery is immediate, so retain its local-window guard to avoid
+      // sending at an arbitrary hour while that pipeline remains active.
+      return canSendInLocalWindow(
         now,
         timeZone,
         targetLocalHour,
         (user as any).notification_quiet_hours_start ?? null,
         (user as any).notification_quiet_hours_end ?? null
-      )) return false;
-      const localDate = getLocalDateIso(now, timeZone);
-      return !user.last_shloka_date || user.last_shloka_date !== localDate;
+      );
     });
 
     if (eligibleUsers.length === 0) {
