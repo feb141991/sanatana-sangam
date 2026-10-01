@@ -135,7 +135,7 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Shoonaya — Ancient Wisdom. In Your Pocket.",
+    title: "Shoonaya: Ancient Wisdom in Your Pocket",
     description:
       "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions. Available on iOS & Android.",
     siteName: "Shoonaya",
@@ -144,7 +144,7 @@ export const metadata: Metadata = {
         url: "https://www.shoonaya.com/og-image.png?v=2",
         width: 1200,
         height: 630,
-        alt: "Shoonaya — Your Sacred Dharmic Companion for Hindu, Sikh, Buddhist and Jain traditions.",
+        alt: "Shoonaya: Your Sacred Dharmic Companion for Hindu, Sikh, Buddhist and Jain traditions.",
       },
     ],
     type: "website",
@@ -152,7 +152,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shoonaya — Ancient Wisdom. In Your Pocket.",
+    title: "Shoonaya: Ancient Wisdom in Your Pocket",
     description:
       "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions. Available on iOS & Android.",
     images: ["https://www.shoonaya.com/og-image.png?v=2"],

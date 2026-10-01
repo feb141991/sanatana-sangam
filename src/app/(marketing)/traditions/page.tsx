@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Sparkles, Scroll, BookOpen, Compass, Flame } from "lucide-react";
 
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
-import { LegacyExperienceFrame } from "@/components/marketing/LegacyExperienceFrame";
+import { TraditionsSectionClient } from "./TraditionsSectionClient";
 import { marketingTraditions } from "@/config/marketing";
 
 export const metadata: Metadata = {
@@ -162,27 +162,9 @@ export default function TraditionsPage() {
       </section>
 
       {/* 2. THEN FOLLOWS: CHOOSE YOUR TRADITION */}
-      <section className="px-4 py-16 sm:px-8 lg:px-10 lg:py-24" id="choose-tradition">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10 text-center max-w-3xl mx-auto space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--brand-primary-strong)]">
-              Choose Your Tradition
-            </p>
-            <h2 className="font-display text-4xl font-medium leading-tight sm:text-5xl text-[var(--text-cream)]">
-              Four paths, one Sangam.
-            </h2>
-            <p className="text-base leading-8 text-[var(--text-muted-warm)] sm:text-lg">
-              Shoonaya honours the full breadth of dharmic wisdom across Hindu, Sikh,
-              Buddhist, and Jain. Each tradition has its own dedicated experience
-              within one shared community. Switch between the tabs below to explore authentic verses, sacred symbols, and daily practices.
-            </p>
-          </div>
-
-          <LegacyExperienceFrame
-            section="traditions"
-            title="Shoonaya four-tradition verse carousel"
-            className="min-h-[55rem] lg:min-h-[47rem]"
-          />
+      <section className="px-5 py-16 sm:px-8 lg:px-10 lg:py-24" id="choose-tradition">
+        <div className="mx-auto max-w-6xl">
+          <TraditionsSectionClient />
         </div>
       </section>
 

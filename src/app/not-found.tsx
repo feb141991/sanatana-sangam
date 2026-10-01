@@ -32,13 +32,13 @@ export default function NotFound() {
         className="text-2xl font-semibold mb-3"
         style={{ color: 'var(--text-cream, #ede8de)', fontFamily: 'var(--font-cormorant, Georgia, serif)' }}
       >
-        शून्यता — This path leads nowhere
+        शून्यता: This path leads nowhere
       </h1>
       <p
         className="text-sm max-w-xs mb-8 leading-relaxed"
         style={{ color: 'var(--brand-muted, #b0aa9e)' }}
       >
-        The page you seek has dissolved into the void. Perhaps it was moved, renamed, or never existed — much like the ego.
+        The page you seek has dissolved into the void. Perhaps it was moved, renamed, or never existed, much like the ego.
       </p>
 
       {/* CTA */}
