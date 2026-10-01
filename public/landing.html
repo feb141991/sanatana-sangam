@@ -4265,9 +4265,11 @@
         }
 
         function render(items) {
-          var visible = items
-            .slice(activeIndex, activeIndex + 2)
-            .concat(items.slice(0, Math.max(0, activeIndex + 2 - items.length)));
+          var visible = items.slice(activeIndex, activeIndex + 2);
+          var targetCount = Math.min(2, items.length);
+          if (visible.length < targetCount) {
+            visible = visible.concat(items.slice(0, targetCount - visible.length));
+          }
 
           stack.innerHTML = visible
             .map(function (item) {
@@ -4314,21 +4316,40 @@
                 });
               })
               .filter(Boolean);
+            var selectedOccurrences = [];
+            var seenOccurrenceKeys = new Set();
 
-            if (!upcomingByTradition.length) {
+            function addDistinctOccurrence(item) {
+              var key = (item.slug || item.display_name) + "|" + item.civilDate;
+              if (seenOccurrenceKeys.has(key)) return;
+              seenOccurrenceKeys.add(key);
+              selectedOccurrences.push(item);
+            }
+
+            upcomingByTradition.forEach(addDistinctOccurrence);
+            // Keep the two-card preview useful when only one tradition has an
+            // upcoming event: show its next distinct occurrence instead of
+            // cloning the sole item to fill the second card.
+            if (selectedOccurrences.length < 2) {
+              reviewed.forEach(function (item) {
+                if (selectedOccurrences.length < 2) addDistinctOccurrence(item);
+              });
+            }
+
+            if (!selectedOccurrences.length) {
               stack.innerHTML =
                 '<div class="hero-observance-empty">No reviewed public observances are available in the next 60 days.</div>';
               return;
             }
 
-            render(upcomingByTradition);
+            render(selectedOccurrences);
             if (
-              upcomingByTradition.length > 2 &&
+              selectedOccurrences.length > 2 &&
               !window.matchMedia("(prefers-reduced-motion: reduce)").matches
             ) {
               window.setInterval(function () {
-                activeIndex = (activeIndex + 2) % upcomingByTradition.length;
-                render(upcomingByTradition);
+                activeIndex = (activeIndex + 2) % selectedOccurrences.length;
+                render(selectedOccurrences);
               }, 4800);
             }
           })
@@ -7760,157 +7781,6 @@
           </div>
         </div>
       </section>
-      <section class="download-section" id="download">
-        <div class="s-label reveal" style="text-align: center">
-          Native App · Android Beta
-        </div>
-        <div class="s-title reveal" style="text-align: center">
-          Your sacred home,<br />on every screen.
-        </div>
-        <p class="s-sub reveal" style="text-align: center; margin: 0 auto 56px">
-          Shoonaya.com is the public doorway to the native app. Join the Android
-          beta when the verified invitation is available; iOS is planned later.
-        </p>
-        <div class="download-phones reveal">
-          <a
-            class="phone-mockup main"
-            href="https://www.shoonaya.com"
-            aria-label="Open Shoonaya web app"
-          >
-            <span class="phone-status live"
-              ><span class="pulse-dot"></span>Web · Jun 17</span
-            >
-            <div class="phone-icon-wrap">
-              <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="11.5"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                />
-                <path
-                  d="M5 16h22M16 4.5c3.2 3.2 4.8 7 4.8 11.5S19.2 24.3 16 27.5C12.8 24.3 11.2 20.5 11.2 16S12.8 7.7 16 4.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M8.5 8.6c2 1.4 4.5 2.1 7.5 2.1s5.5-.7 7.5-2.1M8.5 23.4c2-1.4 4.5-2.1 7.5-2.1s5.5.7 7.5 2.1"
-                  stroke="currentColor"
-                  stroke-width="1.1"
-                  stroke-linecap="round"
-                  opacity=".65"
-                />
-              </svg>
-            </div>
-            <div class="phone-copy">
-              <div class="phone-label">Web App</div>
-              <p class="phone-desc">
-                Full experience in any browser — sadhana, Panchang, Kul,
-                Mandali, Pathshala, and more. No install needed.
-              </p>
-            </div>
-            <div class="phone-screen-lines">
-              <div class="phone-screen-line accent"></div>
-              <div class="phone-screen-line"></div>
-              <div class="phone-screen-line"></div>
-            </div>
-          </a>
-          <div class="phone-mockup sikh">
-            <span class="phone-status cs-pill anim-shimmer"
-              >🌱 Coming Soon</span
-            >
-            <div class="phone-icon-wrap">
-              <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-                <path
-                  d="M20.5 4.5c.1 2.4-1.6 4.5-3.8 4.8-.3-2.2 1.3-4.3 3.8-4.8Z"
-                  fill="currentColor"
-                  opacity=".85"
-                />
-                <path
-                  d="M24.5 21.5c-.7 1.8-1.1 2.6-2.1 4.2-1.4 2.1-3.4 2.2-4.2 2.2-.9 0-1.9-.6-3.1-.6-1.3 0-2.4.6-3.2.6-1.7.1-3-1.8-4.4-4-2.4-3.8-2.6-8.3-1.1-10.6 1.1-1.7 2.8-2.7 4.6-2.7 1.1 0 2.2.7 3.4.7 1.1 0 2.7-.8 4.5-.7 1.5.1 3 .8 4 2-3.5 2.1-2.9 7.1.6 8.9Z"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div class="phone-copy">
-              <div class="phone-label">iPhone App</div>
-              <p class="phone-desc">
-                Native iOS experience is planned later. Use the live web app
-                today, including Add to Home Screen on Safari.
-              </p>
-            </div>
-            <div class="phone-screen-lines">
-              <div class="phone-screen-line accent"></div>
-              <div class="phone-screen-line"></div>
-              <div class="phone-screen-line"></div>
-            </div>
-          </div>
-          <div class="phone-mockup jain">
-            <span class="phone-status cs-pill anim-shimmer"
-              >🌱 Coming Soon</span
-            >
-            <div class="phone-icon-wrap">
-              <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-                <path
-                  d="M9 12.5h14v10.8c0 2.3-1.9 4.2-4.2 4.2h-5.6C10.9 27.5 9 25.6 9 23.3V12.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M12 12.5 9.5 8M20 12.5 22.5 8M12.5 17h.1M19.5 17h.1"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M6 15v7M26 15v7"
-                  stroke="currentColor"
-                  stroke-width="1.4"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </div>
-            <div class="phone-copy">
-              <div class="phone-label">Android App</div>
-              <p class="phone-desc">
-                Native Android experience is planned later. Use the live web app
-                today, including browser install where supported.
-              </p>
-            </div>
-            <div class="phone-screen-lines">
-              <div class="phone-screen-line accent"></div>
-              <div class="phone-screen-line"></div>
-              <div class="phone-screen-line"></div>
-            </div>
-          </div>
-        </div>
-        <p class="download-note">
-          Web app live now · Native iOS and Android apps planned later
-        </p>
-        <div class="install-guide reveal" aria-label="Install Shoonaya web app">
-          <div class="install-guide-card">
-            <div class="install-guide-title">Install on iPhone</div>
-            <ol class="install-guide-list">
-              <li>Open Shoonaya in Safari.</li>
-              <li>Tap the Share button.</li>
-              <li>Choose Add to Home Screen, then tap Add.</li>
-            </ol>
-          </div>
-          <div class="install-guide-card">
-            <div class="install-guide-title">Install on Android</div>
-            <ol class="install-guide-list">
-              <li>Open Shoonaya in Chrome.</li>
-              <li>Tap the browser menu.</li>
-              <li>Choose Install app or Add to Home screen.</li>
-            </ol>
-          </div>
-        </div>
-      </section>
       <section class="cta-section" id="cta-section">
         <div class="cta-bg"></div>
         <div class="reveal" style="position: relative">
@@ -7954,15 +7824,50 @@
                 <div class="faq-a-inner" itemprop="text">
                   Shoonaya is a spiritual companion app built for seekers of
                   Sanatan, Sikh, Jain and Buddhist wisdom. It brings Daily
-                  Dharma, Panchang, scripture, japa, sacred festivals, and
-                  community into one living space — personalised to your
-                  tradition, your language, and your timezone. The name comes
-                  from <strong>Shoonya</strong> — the Sanskrit word for zero,
-                  emptiness, and infinite potential.
+                  Dharma, astronomical Panchang, sacred scriptures, tactile japa,
+                  and sacred community into one living space — personalised to
+                  your tradition, your language, and your timezone. The name
+                  derives from <strong>Shoonya</strong> — the Sanskrit word for
+                  zero, emptiness, and the infinite potential where all paths return to source.
                   <a href="/what-is-shoonaya">Learn more →</a>
                 </div>
               </div>
             </div>
+
+            <div
+              class="faq-item"
+              itemscope
+              itemprop="mainEntity"
+              itemtype="https://schema.org/Question"
+            >
+              <button class="faq-q" aria-expanded="false">
+                <span class="faq-q-text" itemprop="name"
+                  >What services and spiritual practices does Shoonaya include?</span
+                >
+                <span class="faq-icon" aria-hidden="true">+</span>
+              </button>
+              <div
+                class="faq-a"
+                itemscope
+                itemprop="acceptedAnswer"
+                itemtype="https://schema.org/Answer"
+              >
+                <div class="faq-a-inner" itemprop="text">
+                  Shoonaya brings together a complete ecosystem of daily spiritual services:
+                  <ul style="margin: 10px 0 14px 18px; padding: 0; line-height: 1.8;">
+                    <li><strong>Daily Dharma &amp; Sadhana:</strong> Morning reflection, intention setting, and guided contemplation.</li>
+                    <li><strong>Sacred Time &amp; Panchang:</strong> Drik Ganita astronomical calculations for your exact city, including tithi, nakshatra, and rahu kalam.</li>
+                    <li><strong>Tactile Japa Mala:</strong> 27, 54, and 108-bead counter with physical haptic feedback and streak tracking.</li>
+                    <li><strong>Pathshala &amp; Scripture:</strong> Audio recitations with Devanagari, Gurmukhi, and Roman transliterations across the Gita, Upanishads, Gurbani, and Dhammapada.</li>
+                    <li><strong>Gyan Chaupar:</strong> The original ancient Indian philosophical board game mapping karma, virtues, and spiritual ascent.</li>
+                    <li><strong>Tirtha Map:</strong> Global sacred directory locating mandirs, gurduwaras, viharas, and Jain deris worldwide.</li>
+                    <li><strong>Kul (Family Spaces):</strong> Preserving your family gotra, ancestral lineage, and generational sanskaras.</li>
+                  </ul>
+                  <a href="/faq">Explore all service details in the FAQ →</a>
+                </div>
+              </div>
+            </div>
+
             <div
               class="faq-item"
               itemscope
@@ -7983,15 +7888,17 @@
               >
                 <div class="faq-a-inner" itemprop="text">
                   No. Shoonaya is built for
-                  <strong>four dharmic traditions</strong> — Sanatan (Hindu),
+                  <strong>four living dharmic traditions</strong> — Sanatan (Hindu),
                   Sikh, Jain and Buddhist. The app adapts its content, calendar,
-                  scripture and community features based on your tradition. A
-                  Sikh user sees Gurbani, Gurpurab reminders and Sikh community
-                  content. A Buddhist user sees Dhamma teachings, Pali texts and
-                  mindfulness practices. Everyone belongs here.
+                  scripture and community features based on your tradition:
+                  a Sikh user explores Gurbani and Gurpurab commemorations; a
+                  Buddhist seeker accesses Dhammapada teachings and mindfulness;
+                  a Jain follower observes Paryushana and Agamas; and a Sanatan
+                  seeker explores Vedic, Upanishadic, and sampradaya wisdom. Everyone belongs here.
                 </div>
               </div>
             </div>
+
             <div
               class="faq-item"
               itemscope
@@ -8000,7 +7907,7 @@
             >
               <button class="faq-q" aria-expanded="false">
                 <span class="faq-q-text" itemprop="name"
-                  >Does Shoonaya work outside India?</span
+                  >Does Shoonaya work outside India for the global diaspora?</span
                 >
                 <span class="faq-icon" aria-hidden="true">+</span>
               </button>
@@ -8011,15 +7918,17 @@
                 itemtype="https://schema.org/Answer"
               >
                 <div class="faq-a-inner" itemprop="text">
-                  Yes — Shoonaya is built
+                  Yes — Shoonaya was engineered
                   <strong>specifically for the global diaspora</strong>. Whether
-                  you are in London, Toronto, Dubai, Singapore, Sydney or New
-                  York, the app finds temples and gurduwaras near you, shows
-                  your local Panchang timings, and connects you with your local
-                  community. The spiritual home travels with you.
+                  you are in London, Toronto, Dubai, New York, Singapore, Sydney or
+                  Melbourne, the app calculates sunrise, sunset, and panchang
+                  timings for your precise geolocation, alerts you to upcoming
+                  festival dates in your local civil calendar, and helps you locate
+                  nearest temples and gurduwaras.
                 </div>
               </div>
             </div>
+
             <div
               class="faq-item"
               itemscope
@@ -8028,7 +7937,7 @@
             >
               <button class="faq-q" aria-expanded="false">
                 <span class="faq-q-text" itemprop="name"
-                  >Is Shoonaya free?</span
+                  >Is my spiritual practice and personal data private?</span
                 >
                 <span class="faq-icon" aria-hidden="true">+</span>
               </button>
@@ -8039,18 +7948,14 @@
                 itemtype="https://schema.org/Answer"
               >
                 <div class="faq-a-inner" itemprop="text">
-                  Core features are completely free — Daily Dharma, Panchang,
-                  japa counter, scripture library, festival calendar and the
-                  Tirtha Map.
-                  <strong
-                    >The tradition should never be behind a paywall.</strong
-                  >
-                  Premium features for deeper community spaces, family lineage
-                  tools and advanced learning paths are available through
-                  Shoonaya Premium.
+                  Completely. We follow the <strong>Zeroists Trust Principle</strong>:
+                  your reflections, prayer streaks, and spiritual reflections belong to
+                  you alone. Shoonaya has zero behavioral ad tracking, never sells
+                  data to third parties, and keeps your sadhana records encrypted and confidential.
                 </div>
               </div>
             </div>
+
             <div
               class="faq-item"
               itemscope
@@ -8059,8 +7964,7 @@
             >
               <button class="faq-q" aria-expanded="false">
                 <span class="faq-q-text" itemprop="name"
-                  >How is Shoonaya different from Headspace, Calm or other
-                  meditation apps?</span
+                  >How can I try Shoonaya today?</span
                 >
                 <span class="faq-icon" aria-hidden="true">+</span>
               </button>
@@ -8071,165 +7975,28 @@
                 itemtype="https://schema.org/Answer"
               >
                 <div class="faq-a-inner" itemprop="text">
-                  Headspace and Calm are Western mindfulness products. Shoonaya
-                  is rooted in <strong>living dharmic tradition</strong> — with
-                  actual scripture, Panchang, japa, community, family lineage,
-                  and sacred calendar built in. It is not generic wellness. It
-                  knows what Ekadashi is, who Guru Nanak Dev Ji was, and what
-                  the Dhammapada says. It is built by and for people who already
-                  have a spiritual home — they just need a digital one.
+                  Shoonaya is available immediately on the web at
+                  <strong>shoonaya.com</strong> on any phone, tablet, or laptop.
+                  You can also join our verified Android beta, or save the web app
+                  directly to your iPhone Home Screen via Safari for a full native-like offline experience.
                 </div>
               </div>
             </div>
-            <div
-              class="faq-item"
-              itemscope
-              itemprop="mainEntity"
-              itemtype="https://schema.org/Question"
+          </div>
+
+          <div class="reveal" style="text-align: center; margin-top: 48px;">
+            <p style="font-size: 15px; color: var(--ink-mid); margin-bottom: 16px;">
+              Have questions about specific services, traditions, offline mode, or lineage sources?
+            </p>
+            <a
+              href="/faq"
+              style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; padding: 14px 32px; border-radius: 100px; background: var(--saffron); color: #fff; font-family: var(--fb); font-size: 14px; font-weight: 600; transition: opacity 0.2s;"
+              onmouseover="this.style.opacity='0.9'"
+              onmouseout="this.style.opacity='1'"
             >
-              <button class="faq-q" aria-expanded="false">
-                <span class="faq-q-text" itemprop="name"
-                  >Is my spiritual data private?</span
-                >
-                <span class="faq-icon" aria-hidden="true">+</span>
-              </button>
-              <div
-                class="faq-a"
-                itemscope
-                itemprop="acceptedAnswer"
-                itemtype="https://schema.org/Answer"
-              >
-                <div class="faq-a-inner" itemprop="text">
-                  Yes. Your japa count, prayers, reflections and check-ins are
-                  <strong>private by default</strong>. You choose what to share
-                  — with family, your local community (Mandali), or publicly.
-                  Your spiritual practice is yours. We do not sell personal
-                  data. <a href="/privacy">Read our Privacy Policy →</a>
-                </div>
-              </div>
-            </div>
-            <div
-              class="faq-item"
-              itemscope
-              itemprop="mainEntity"
-              itemtype="https://schema.org/Question"
-            >
-              <button class="faq-q" aria-expanded="false">
-                <span class="faq-q-text" itemprop="name"
-                  >Who are Zeroists?</span
-                >
-                <span class="faq-icon" aria-hidden="true">+</span>
-              </button>
-              <div
-                class="faq-a"
-                itemscope
-                itemprop="acceptedAnswer"
-                itemtype="https://schema.org/Answer"
-              >
-                <div class="faq-a-inner" itemprop="text">
-                  <strong>Zeroists</strong> is the name of our community —
-                  seekers who return to zero, to the source, beyond labels and
-                  ego.
-                </div>
-              </div>
-            </div>
-            <div
-              class="faq-item"
-              itemscope
-              itemprop="mainEntity"
-              itemtype="https://schema.org/Question"
-            >
-              <button class="faq-q" aria-expanded="false">
-                <span class="faq-q-text" itemprop="name"
-                  >How can I try Shoonaya?</span
-                >
-                <span class="faq-icon" aria-hidden="true">+</span>
-              </button>
-              <div
-                class="faq-a"
-                itemscope
-                itemprop="acceptedAnswer"
-                itemtype="https://schema.org/Answer"
-              >
-                <div class="faq-a-inner" itemprop="text">
-                  Shoonaya.com is the public doorway to the native product.
-                  Android beta access will be offered through a verified
-                  invitation link when it is ready.
-                </div>
-              </div>
-            </div>
-            <div
-              class="faq-item"
-              itemscope
-              itemprop="mainEntity"
-              itemtype="https://schema.org/Question"
-            >
-              <button class="faq-q" aria-expanded="false">
-                <span class="faq-q-text" itemprop="name"
-                  >Is an iPhone app available?</span
-                >
-                <span class="faq-icon" aria-hidden="true">+</span>
-              </button>
-              <div
-                class="faq-a"
-                itemscope
-                itemprop="acceptedAnswer"
-                itemtype="https://schema.org/Answer"
-              >
-                <div class="faq-a-inner" itemprop="text">
-                  The native Android beta comes first. A native iPhone
-                  experience is planned later.
-                </div>
-              </div>
-            </div>
-            <div
-              class="faq-item"
-              itemscope
-              itemprop="mainEntity"
-              itemtype="https://schema.org/Question"
-            >
-              <button class="faq-q" aria-expanded="false">
-                <span class="faq-q-text" itemprop="name"
-                  >Where will accounts be created?</span
-                >
-                <span class="faq-icon" aria-hidden="true">+</span>
-              </button>
-              <div
-                class="faq-a"
-                itemscope
-                itemprop="acceptedAnswer"
-                itemtype="https://schema.org/Answer"
-              >
-                <div class="faq-a-inner" itemprop="text">
-                  Account creation and sign-in belong inside the native
-                  Shoonaya app rather than on the public marketing website.
-                </div>
-              </div>
-            </div>
-            <div
-              class="faq-item"
-              itemscope
-              itemprop="mainEntity"
-              itemtype="https://schema.org/Question"
-            >
-              <button class="faq-q" aria-expanded="false">
-                <span class="faq-q-text" itemprop="name"
-                  >Is Kids Zone live?</span
-                >
-                <span class="faq-icon" aria-hidden="true">+</span>
-              </button>
-              <div
-                class="faq-a"
-                itemscope
-                itemprop="acceptedAnswer"
-                itemtype="https://schema.org/Answer"
-              >
-                <div class="faq-a-inner" itemprop="text">
-                  Kids Zone is not live yet. It is a Coming Next area for
-                  stories, songs, festivals, and parent-friendly learning paths.
-                </div>
-              </div>
-            </div>
+              <span>Explore All 16+ Questions &amp; Services</span>
+              <span>→</span>
+            </a>
           </div>
         </div>
       </section>
@@ -8264,6 +8031,7 @@
           <div class="footer-links">
             <a href="/about">About</a> <a href="/privacy">Privacy</a>
             <a href="/terms">Terms</a>
+            <a href="/faq">FAQ</a>
             <a href="/sitemap">Site Map</a>
             <a href="mailto:info@shoonaya.com">info@shoonaya.com</a>
             <a href="https://www.instagram.com/shoonayaapp" target="_blank" rel="noreferrer">Instagram</a>

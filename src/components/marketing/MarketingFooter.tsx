@@ -20,6 +20,7 @@ const footerGroups = [
     title: "Shoonaya",
     links: [
       { href: "/about", label: "About" },
+      { href: "/faq", label: "FAQ" },
       { href: "/sources", label: "Sources" },
       { href: "/contact", label: "Contact" },
       { href: "/sitemap", label: "Site Map" },
@@ -124,6 +125,8 @@ export function MarketingFooter() {
         <Link href="/privacy" className="hover:text-[var(--text-cream)] transition-colors">Privacy</Link>
         <span>•</span>
         <Link href="/terms" className="hover:text-[var(--text-cream)] transition-colors">Terms</Link>
+        <span>•</span>
+        <Link href="/faq" className="hover:text-[var(--text-cream)] transition-colors">FAQ</Link>
         <span>•</span>
         <Link href="/sitemap" className="hover:text-[var(--text-cream)] transition-colors">Site Map</Link>
       </div>

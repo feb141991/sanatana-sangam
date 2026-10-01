@@ -134,6 +134,7 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
       { label: "Editorial & Scholarly Guidelines", href: "/guidelines", description: "Rigorous standards for scriptural translation and tradition accuracy." },
       { label: "Privacy Policy", href: "/privacy", description: "Zero ad tracking, zero user data sale, strict privacy standards." },
       { label: "Terms of Service", href: "/terms", description: "Terms governing use of the Shoonaya website and mobile app." },
+      { label: "Frequently Asked Questions (FAQ)", href: "/faq", description: "Clear answers on daily sadhana, panchang accuracy, traditions, and services." },
       { label: "Data Deletion Request", href: "/data-deletion", description: "Clear, self-service instructions to purge your personal data." },
       { label: "Contact & Official Support", href: "/contact", description: "Get in touch with the editorial team and technical support." },
     ],
