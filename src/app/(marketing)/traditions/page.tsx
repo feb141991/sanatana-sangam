@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Sparkles, Scroll, BookOpen, Compass, Flame } from "lucide-react";
 
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { TraditionsSectionClient } from "./TraditionsSectionClient";
-import { marketingTraditions } from "@/config/marketing";
 
 export const metadata: Metadata = {
   title: "Dharmic Traditions & 5,000-Year Story | Shoonaya",
@@ -165,57 +162,6 @@ export default function TraditionsPage() {
       <section className="px-5 py-16 sm:px-8 lg:px-10 lg:py-24" id="choose-tradition">
         <div className="mx-auto max-w-6xl">
           <TraditionsSectionClient />
-        </div>
-      </section>
-
-      {/* 3. GO DEEPER: CONTEXT BEYOND THE CAROUSEL */}
-      <section className="border-t border-[var(--card-border)] bg-[var(--surface-soft)] px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-        <div className="mx-auto max-w-7xl space-y-5">
-          <div className="mb-12 max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--brand-primary-strong)]">
-              Go deeper
-            </p>
-            <h2 className="mt-4 font-display text-5xl font-medium leading-none sm:text-6xl text-[var(--text-cream)]">
-              Context beyond the carousel.
-            </h2>
-            <p className="mt-6 text-base leading-8 text-[var(--text-muted-warm)]">
-              These dedicated doorways explain how Shoonaya preserves vocabulary, sources,
-              observances, and community context without flattening distinct paths
-              into one generic experience.
-            </p>
-          </div>
-
-          {marketingTraditions.map((tradition, index) => (
-            <Link
-              key={tradition.slug}
-              href={`/traditions/${tradition.slug}`}
-              className="group grid gap-8 rounded-[2.25rem] border border-[var(--card-border)] bg-[var(--card-bg)] p-8 shadow-[var(--shadow-soft)] transition-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] md:grid-cols-[0.35fr_0.65fr] md:items-center sm:p-10"
-            >
-              <div>
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-dim)]">
-                  Path {String(index + 1).padStart(2, "0")}
-                </span>
-                <p className="mt-4 font-display text-3xl text-[var(--brand-primary-strong)]">
-                  {tradition.nativeName}
-                </p>
-                <h2 className="mt-2 font-display text-5xl font-semibold text-[var(--text-cream)]">
-                  {tradition.name}
-                </h2>
-              </div>
-              <div>
-                <p className="text-lg leading-8 text-[var(--text-muted-warm)]">
-                  {tradition.description}
-                </p>
-                <span className="mt-6 inline-flex items-center gap-2 font-semibold text-[var(--brand-primary-strong)]">
-                  Explore this path
-                  <ArrowRight
-                    className="size-4 transition-transform group-hover:translate-x-1"
-                    aria-hidden="true"
-                  />
-                </span>
-              </div>
-            </Link>
-          ))}
         </div>
       </section>
     </main>

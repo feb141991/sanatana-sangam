@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 
 type TraditionItem = {
@@ -449,19 +447,9 @@ export function TraditionsSectionClient() {
           </div>
 
           {/* Description text */}
-          <p className="text-sm sm:text-base leading-relaxed text-[var(--text-muted-warm)] mb-6 max-w-xl">
+          <p className="text-sm sm:text-base leading-relaxed text-[var(--text-muted-warm)] max-w-xl">
             {activeTrad.description}
           </p>
-
-          {/* Link to tradition doorway */}
-          <Link
-            href={`/traditions/${activeTrad.slug}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold transition-transform hover:translate-x-1"
-            style={{ color: activeTrad.color }}
-          >
-            <span>Explore {activeTrad.name} path</span>
-            <ArrowRight className="size-4" />
-          </Link>
         </div>
       </div>
     </div>
