@@ -560,42 +560,41 @@
       </section>
   
 <script>
-  const traditions = [hindu, sikh, buddhist, jain];
+  const traditions = ["hindu", "sikh", "buddhist", "jain"];
   const colors = {
-    hindu: #D88A1C,
-    sikh: #1B5E8B,
-    buddhist: #8B2D3E,
-    jain: #2A6B4A
+    hindu: "#D88A1C",
+    sikh: "#1B5E8B",
+    buddhist: "#8B2D3E",
+    jain: "#2A6B4A"
   };
   let currentIdx = 0;
-  let timer = null;
   let progressStart = 0;
   let animFrame = null;
   const DURATION = 8000;
 
   function updateIndicator(tradKey) {
     const tab = document.querySelector(`.trad-tab[data-trad="${tradKey}"]`);
-    const indicator = document.getElementById(trad-indicator);
+    const indicator = document.getElementById("trad-indicator");
     if (!tab || !indicator) return;
-    indicator.style.left = tab.offsetLeft + px;
-    indicator.style.width = tab.offsetWidth + px;
+    indicator.style.left = tab.offsetLeft + "px";
+    indicator.style.width = tab.offsetWidth + "px";
   }
 
   function switchTrad(tradKey, manual = true) {
     currentIdx = traditions.indexOf(tradKey);
-    document.querySelectorAll(.trad-tab).forEach(t => {
+    document.querySelectorAll(".trad-tab").forEach(t => {
       const active = t.dataset.trad === tradKey;
-      t.classList.toggle(active, active);
+      t.classList.toggle("active", active);
     });
-    document.querySelectorAll(.trad-panel).forEach(p => {
-      p.classList.remove(active);
+    document.querySelectorAll(".trad-panel").forEach(p => {
+      p.classList.remove("active");
     });
-    const activePanel = document.getElementById(panel- + tradKey);
-    if (activePanel) activePanel.classList.add(active);
+    const activePanel = document.getElementById("panel-" + tradKey);
+    if (activePanel) activePanel.classList.add("active");
 
     updateIndicator(tradKey);
 
-    const fill = document.getElementById(trad-progress-fill);
+    const fill = document.getElementById("trad-progress-fill");
     if (fill) fill.style.background = colors[tradKey];
 
     startProgress();
@@ -607,8 +606,8 @@
     function tick(now) {
       const elapsed = now - progressStart;
       const pct = Math.min(100, (elapsed / DURATION) * 100);
-      const fill = document.getElementById(trad-progress-fill);
-      if (fill) fill.style.width = pct + %;
+      const fill = document.getElementById("trad-progress-fill");
+      if (fill) fill.style.width = pct + "%";
       if (elapsed >= DURATION) {
         currentIdx = (currentIdx + 1) % traditions.length;
         switchTrad(traditions[currentIdx], false);
@@ -619,11 +618,10 @@
     animFrame = requestAnimationFrame(tick);
   }
 
-  window.addEventListener(DOMContentLoaded, () => {
-    switchTrad(hindu, false);
-    window.addEventListener(resize, () => updateIndicator(traditions[currentIdx]));
+  window.addEventListener("DOMContentLoaded", () => {
+    switchTrad("hindu", false);
+    window.addEventListener("resize", () => updateIndicator(traditions[currentIdx]));
   });
 </script>
-
 </body>
 </html>
