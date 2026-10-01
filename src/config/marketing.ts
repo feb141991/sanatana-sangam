@@ -75,7 +75,7 @@ export const marketingFeatures: readonly MarketingFeature[] = [
     summary:
       "Keep a focused mantra practice with a tactile mala experience and personal rhythm.",
     description:
-      "A quiet practice space for mantra repetition, mala sessions and reflection—designed for presence rather than performance.",
+      "A quiet practice space for mantra repetition, mala sessions and reflection, designed for quiet presence rather than performance.",
     highlights: [
       "27, 54 and 108-bead practices",
       "Session rhythm and continuity",
@@ -167,7 +167,7 @@ export const marketingTraditions: readonly MarketingTradition[] = [
     summary:
       "Gurbani learning, simran, Gurpurab context and connection with sangat.",
     description:
-      "The Sikh experience is designed around its own vocabulary, sources and community life—not as a relabelled Hindu interface.",
+      "The Sikh experience is designed around its own vocabulary, sources and community life, rather than a relabelled generic interface.",
     commitments: [
       "Gurbani source and Ang references shown where verified",
       "Sikh vocabulary and observances treated independently",

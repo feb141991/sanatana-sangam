@@ -9,7 +9,7 @@ import { marketingTraditions } from "@/config/marketing";
 export const metadata: Metadata = {
   title: "Dharmic Traditions & 5,000-Year Story | Shoonaya",
   description:
-    "Explore four living traditions — Sanatan, Sikh, Buddhist, and Jain — united in one home for the first time across 5,000 years of unbroken wisdom.",
+    "Explore four living traditions: Sanatan, Sikh, Buddhist, and Jain, united in one home across 5,000 years of unbroken wisdom.",
   alternates: { canonical: "https://www.shoonaya.com/traditions" },
 };
 
@@ -64,7 +64,7 @@ export default function TraditionsPage() {
       <MarketingPageHero
         eyebrow="A 5,000-Year Story"
         title="Four traditions. One home. For the first time."
-        intro="The Bhagavad Gita. The Guru Granth Sahib Ji. The Dhammapada. The Agamas. Four living traditions — each with thousands of years of wisdom, millions of daily practitioners, and a global diaspora seeking connection with their roots. They have always deserved a home worthy of them. Shoonaya is that home."
+        intro="The Bhagavad Gita. The Guru Granth Sahib Ji. The Dhammapada. The Agamas. Four living traditions, each with thousands of years of wisdom, millions of daily practitioners, and a global diaspora seeking connection with their roots. They have always deserved a home worthy of them. Shoonaya is that home."
       />
 
       {/* 5,000-Year Story Timeline & Stats Section */}
@@ -81,7 +81,7 @@ export default function TraditionsPage() {
                   Unbroken wisdom across millennia.
                 </h2>
                 <p className="mt-5 text-base leading-relaxed text-[var(--text-muted-warm)] sm:text-lg">
-                  Each path brings distinct vocabulary, scriptural canon, sacred dates, and ritual nuance. Shoonaya never flattens them into a generic blend — instead providing dedicated, tradition-qualified experiences grounded in source provenance (Pramana).
+                  Each path brings distinct vocabulary, scriptural canon, sacred dates, and ritual nuance. Shoonaya never flattens them into a generic blend, providing dedicated, tradition-qualified experiences grounded in source provenance (Pramana).
                 </p>
               </div>
 
@@ -172,7 +172,7 @@ export default function TraditionsPage() {
               Four paths, one Sangam.
             </h2>
             <p className="text-base leading-8 text-[var(--text-muted-warm)] sm:text-lg">
-              Shoonaya honours the full breadth of dharmic wisdom — Hindu, Sikh,
+              Shoonaya honours the full breadth of dharmic wisdom across Hindu, Sikh,
               Buddhist, and Jain. Each tradition has its own dedicated experience
               within one shared community. Switch between the tabs below to explore authentic verses, sacred symbols, and daily practices.
             </p>

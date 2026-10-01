@@ -31,7 +31,7 @@ export default function GyanChauparPage() {
       <MarketingPageHero
         eyebrow="Play sacred wisdom"
         title="A board where every move asks something of you."
-        intro="Gyan Chaupar turns ascent, distraction, virtue and consequence into a contemplative journey. Play the complete Shoonaya board below—the same experience, preserved without rewriting its rules or motion."
+        intro="Gyan Chaupar turns ascent, distraction, virtue and consequence into a contemplative journey. Play the complete Shoonaya board below, with its original rules and reflective motion preserved."
       >
         <a
           href="#play"

@@ -8,7 +8,7 @@ Shoonaya welcomes AI assistants, search engines, and answer engines to crawl pub
 
 - **Daily Panchang**: Astronomy-backed tithi, nakshatra, yoga, karana, vara, Rahu Kaal, Brahma Muhurta, sunrise/sunset. Uses Lahiri ayanamsha and Ujjain coordinates as the traditional meridian.
 - **Festivals & Observances**: 82 observances across 4 traditions. Computed via a declarative rule engine (lunar tithi, solar fixed, nakshatra-based, relative).
-- **Vrats (fasting days)**: Ekadashi, Purnima, Amavasya, Pradosh Vrat, Sankashti Chaturthi, Masik Shivaratri, Puranmashi, Uposatha, Vat Savitri Vrat, Vat Savitri Purnima, Hartalika Teej, Karva Chauth, Vaikunta Ekadashi, Navratri, Diwali, Janmashtami, Holi, Gurpurab — with significance, practice instructions, puja items, dos/donts, and mantra.
+- **Vrats (fasting days)**: Ekadashi, Purnima, Amavasya, Pradosh Vrat, Sankashti Chaturthi, Masik Shivaratri, Puranmashi, Uposatha, Vat Savitri Vrat, Vat Savitri Purnima, Hartalika Teej, Karva Chauth, Vaikunta Ekadashi, Navratri, Diwali, Janmashtami, Holi, Gurpurab: includes significance, practice instructions, puja items, dos/donts, and mantra.
 - **Bhakti Library**: Stotrams (Sanskrit hymns with transliteration and translation), Kathas (sacred stories) across traditions.
 - **Pathshala**: Structured learning paths through Bhagavad Gita, Guru Granth Sahib, Dhammapada, Jain Agamas, Ramayana.
 - **Japa Mala**: 108-bead digital mala counter with tradition-specific mantras and ambient audio.

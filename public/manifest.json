@@ -1,8 +1,8 @@
 {
   "id": "/?source=pwa",
-  "name": "Shoonaya — Dharmic Companion",
+  "name": "Shoonaya: Dharmic Companion",
   "short_name": "Shoonaya",
-  "description": "Find your infinite. Ancient wisdom for seekers — Hindu, Sikh, Buddhist, and Jain dharma in one sacred home.",
+  "description": "Find your infinite. Ancient wisdom for seekers across Hindu, Sikh, Buddhist, and Jain dharma in one sacred home.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",

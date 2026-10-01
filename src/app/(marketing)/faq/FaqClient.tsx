@@ -35,7 +35,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Traditions & Philosophy",
     question: "What is Shoonaya and what is the vision behind it?",
     answer:
-      "Shoonaya is a calm, contemplative spiritual companion engineered for seekers of Sanatan, Sikh, Jain, and Buddhist wisdom. It unites daily sadhana, astronomical panchang, sacred scriptures, tactile japa, and living community into one serene digital space — completely personalized to your tradition, language, and timezone.",
+      "Shoonaya is a calm, contemplative spiritual companion for seekers of Sanatan, Sikh, Jain, and Buddhist wisdom. It brings together daily sadhana, astronomical panchang, sacred scriptures, tactile japa, and living community into one digital space, shaped around your tradition, language, and timezone.",
     bullets: [
       "Derived from Shoonya: The Sanskrit word for zero, emptiness, and the boundless potential where all paths return to source.",
       "Built for the global diaspora: Maintaining authentic spiritual practice whether in India, North America, the UK, Europe, or beyond.",
@@ -178,7 +178,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Traditions & Philosophy",
     question: "Who are the Zeroists?",
     answer:
-      "Zeroists are the seekers and practitioners who make up the Shoonaya community. A Zeroist is someone who strives to return to the primordial zero (Shoonya) — stripping away mental clutter, ego, and sectarian animosity to discover inner quiet and pure awareness. Zeroism embraces daily discipline, intellectual humility, and compassion across all dharmic lineages.",
+      "Zeroists are the seekers and practitioners who make up the Shoonaya community. A Zeroist is someone who strives to return to the primordial zero (Shoonya), setting aside mental clutter, ego, and sectarian animosity to discover inner quiet and pure awareness. Zeroism embraces daily discipline, intellectual humility, and compassion across all dharmic lineages.",
     links: [{ label: "About Shoonaya Community", href: "/community" }],
   },
   {
@@ -209,7 +209,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Privacy, Trust & Security",
     question: "Is Shoonaya free to use, and why is there a subscription?",
     answer:
-      "The foundational dharma tools on Shoonaya — including Daily Sadhana, Panchang, Japa Mala, Scripture readings, and the Tirtha Map — are completely free. We believe sacred wisdom should never be locked behind a mandatory paywall.",
+      "The foundational dharma tools on Shoonaya, including Daily Sadhana, Panchang, Japa Mala, Scripture readings, and the Tirtha Map, are completely free. We believe sacred wisdom should never be locked behind a mandatory paywall.",
     bullets: [
       "Core Dharma: Free forever for all seekers globally.",
       "Optional Seva Subscriptions: Support scholarly translations, server infrastructure, and advanced multi-generational family space tools.",
@@ -222,7 +222,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Platform & Access",
     question: "Does Shoonaya work accurately outside India?",
     answer:
-      "Yes — Shoonaya was purpose-built from the first line of code for the global diaspora. Whether you live in London, Toronto, Dubai, New York, Singapore, Sydney, or Johannesburg, your Panchang is computed for your city's local coordinates, ensuring that sunrise-dependent vrats and muhurats are 100% accurate for your real-world location.",
+      "Yes. Shoonaya was built from the ground up for the global diaspora. Whether you live in London, Toronto, Dubai, New York, Singapore, Sydney, or Johannesburg, your Panchang is computed for your city's local coordinates, ensuring that sunrise-dependent vrats and muhurats are 100% accurate for your real-world location.",
   },
   {
     id: "available-platforms",

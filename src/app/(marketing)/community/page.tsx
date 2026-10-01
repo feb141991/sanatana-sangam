@@ -46,7 +46,7 @@ export default function CommunityPage() {
       <MarketingPageHero
         eyebrow="Community without noise"
         title="Belonging should feel human again."
-        intro="Shoonaya is designed to connect people through local community, shared practice, learning and family continuity—not through pressure to perform publicly."
+        intro="Shoonaya is designed to connect people through local community, shared practice, learning and family continuity, without pressure to perform publicly."
       >
         <Link
           href="/beta/android"
