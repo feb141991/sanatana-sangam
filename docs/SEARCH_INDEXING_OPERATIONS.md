@@ -35,6 +35,58 @@ https://www.shoonaya.com/sitemap.xml. Use URL Inspection on a small number of
 important published pages. Monitor Page indexing, sitemap fetch errors,
 Google-selected canonicals and Core Web Vitals. Submission is not an indexing guarantee.
 
+IndexNow is a discovery signal for participating engines; it is not Google's
+indexing or ranking telemetry. Use Search Console for Google-specific evidence.
+
+## Shoonaya brand identity across owned profiles
+
+Keep the public identity consistent wherever Shoonaya is described:
+
+- Display name: **Shoonaya** (do not list “Shoonya” as an alternate product name).
+- Descriptor: **A modern dharmic companion for daily practice, sacred time,
+  scripture, family, and community across Hindu, Sikh, Jain, and Buddhist
+  traditions.**
+- Canonical website: `https://www.shoonaya.com/`.
+- Use the same spelling and canonical website link on LinkedIn, Instagram,
+  Facebook, the Apple App Store listing, and the Android beta/store listing.
+- Keep availability claims accurate for each channel. The Android beta page is
+  not a public Google Play listing; do not describe it as publicly available
+  until that status changes.
+
+The homepage's `Organization` entity points to the official social profiles and
+the `SoftwareApplication` entity points to the Apple App Store listing. This
+helps connect the owned properties; it does not update their profile copy or
+guarantee a ranking. Verify the text and links on those external accounts
+directly after an authorized account owner updates them.
+
+## Brand-query measurement
+
+Before a metadata/content deployment, export the prior 28 days from Search
+Console Performance for Web Search and keep it as the baseline. After Google has
+recrawled the homepage, compare a new 28-day window with the preceding 28 days.
+Do not compare an incomplete post-deployment window with a full month.
+
+Review these query groups and pages:
+
+- Brand queries: `shoonaya`, `shoonaya app`, and `shoonaya dharmic`.
+- Relevant discovery queries: `dharmic companion app`, `sacred calendar app`,
+  and `daily dharmic practice`.
+- Pages: `/`, `/what-is-shoonaya`, `/features`, and the matching feature detail
+  pages.
+
+Record impressions, clicks, click-through rate, average position, country, and
+device. In URL Inspection, confirm the canonical homepage and the two brand
+pages are eligible for indexing and that Google's selected canonical matches
+the declared canonical. Search Console query data and URL Inspection establish
+whether pages are indexed and how they perform; a single manual search or a
+`site:` query is not a complete measurement. Keep AI Overview observations
+separate from ordinary web-result positions.
+
+Google may need days or weeks to recrawl changes, and neither a recrawl request
+nor a sitemap submission guarantees a ranking change. Do not report an SEO
+improvement until the matched post-deployment window has enough Search Console
+data to compare.
+
 ## Publication and deployment gates
 
 - Sitemap includes public course overviews and editorially publishable festival

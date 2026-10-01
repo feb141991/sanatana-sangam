@@ -50,78 +50,10 @@ const fontVars = [
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.shoonaya.com"),
-  title: "Shoonaya",
+  title: "Shoonaya — Daily Dharmic Practice, Sacred Calendar & Scripture",
   applicationName: "Shoonaya",
   description:
-    "Shoonaya is a spiritual companion application for Sanatan Dharma, Hindu, Sikh, Buddhist, and Jain traditions. The app provides daily Panchang astronomical calculations, sacred scripture reading, Japa mala counter, live temple darshan, and spiritual community features.",
-  keywords: [
-    // Brand
-    "Shoonaya",
-    "shoonaya app",
-    "Shoonya",
-    "shoonya app",
-    // Traditions (short + full)
-    "Hindu",
-    "Hinduism",
-    "Sikh",
-    "Sikhism",
-    "Buddhist",
-    "Buddhism",
-    "Jain",
-    "Jainism",
-    "Sanatan",
-    "Sanatan Dharma",
-    "Vedic",
-    // App category
-    "spiritual app",
-    "Hindu app",
-    "prayer app",
-    "devotional app",
-    "Indian spiritual app",
-    // Daily practice
-    "sadhana",
-    "japa",
-    "japa mala",
-    "mala",
-    "nitya karma",
-    "dinacharya",
-    "meditation",
-    // Bhakti content
-    "bhakti",
-    "aarti",
-    "stotram",
-    "bhajan",
-    "shloka",
-    "kirtan",
-    "mantra",
-    // Most-searched content
-    "Hanuman Chalisa",
-    "Gayatri Mantra",
-    "Bhagavad Gita",
-    "Gurbani",
-    "Nitnem",
-    // Calendar & panchang
-    "panchang",
-    "Hindu calendar",
-    "festival calendar",
-    "tithi",
-    "nakshatra",
-    "Diwali",
-    "Navratri",
-    "Ekadashi",
-    "Gurpurab",
-    // Tirtha
-    "tirtha",
-    "pilgrimage",
-    "temple",
-    "mandir",
-    // Concepts & language
-    "dharma",
-    "karma",
-    "moksha",
-    "Sanskrit",
-    "Vedanta",
-  ],
+    "Shoonaya is a modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -135,9 +67,9 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Shoonaya: Ancient Wisdom in Your Pocket",
+    title: "Shoonaya — Daily Dharmic Practice, Sacred Calendar & Scripture",
     description:
-      "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions. Available on iOS & Android.",
+      "A modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
     siteName: "Shoonaya",
     images: [
       {
@@ -152,9 +84,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shoonaya: Ancient Wisdom in Your Pocket",
+    title: "Shoonaya — Daily Dharmic Practice, Sacred Calendar & Scripture",
     description:
-      "Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions. Available on iOS & Android.",
+      "A modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
     images: ["https://www.shoonaya.com/og-image.png?v=2"],
   },
   itunes: {

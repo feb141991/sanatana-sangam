@@ -4,14 +4,14 @@ import PublicPageShell from "@/components/public/PublicPageShell";
 export const metadata: Metadata = {
   title: "What is Shoonaya? | Spiritual Companion for Daily Dharma",
   description:
-    "Shoonaya is a spiritual companion for seekers of Sanatan, Sikh, Jain, and Buddhist wisdom. Daily Dharma, Panchang, japa, scripture, and sacred community, all in one place.",
+    "What is Shoonaya? A dharmic companion app for daily practice, sacred calendar, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
   alternates: {
     canonical: "https://www.shoonaya.com/what-is-shoonaya",
   },
   openGraph: {
     title: "What is Shoonaya? | Spiritual Companion for Daily Dharma",
     description:
-      "Shoonaya is a spiritual companion for seekers of Sanatan, Sikh, Jain, and Buddhist wisdom. Daily Dharma, Panchang, japa, scripture, and sacred community, all in one place.",
+      "What is Shoonaya? A dharmic companion app for daily practice, sacred calendar, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
     url: "https://www.shoonaya.com/what-is-shoonaya",
   },
 };
@@ -21,9 +21,9 @@ export default function WhatIsShoonayaPage() {
     <PublicPageShell
       eyebrow="About the App"
       title="What is Shoonaya?"
-      intro="Shoonaya is a quiet spiritual companion for seekers of Sanatan, Sikh, Jain, and Buddhist wisdom, bringing Daily Dharma, Panchang, scripture, japa, festivals, and sacred community into one living space."
+      intro="Shoonaya is a modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions."
       asideTitle="The Name"
-      asideBody="Shoonaya comes from Shoonya, the Sanskrit word for zero, emptiness, and infinite potential. It is the place beyond sectarian labels where all paths meet. Our community calls themselves Zeroists: seekers who return to the quiet source."
+      asideBody="The name Shoonaya is inspired by the Sanskrit term śūnya (शून्य), associated with zero and emptiness. Shoonaya is the name of this dharmic companion for daily practice, sacred time, scripture, family, and community."
     >
       <section>
         <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">

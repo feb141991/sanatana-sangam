@@ -6,9 +6,9 @@ import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { marketingFeatures } from "@/config/marketing";
 
 export const metadata: Metadata = {
-  title: "Shoonaya Features | Practice, Learning and Community",
+  title: "Shoonaya App Features | Daily Practice, Calendar & Scripture",
   description:
-    "Explore Shoonaya features for daily sadhana, sacred calendar context, Japa, scripture learning, community, sacred places and family continuity.",
+    "Explore Shoonaya's dharmic companion app for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
   alternates: { canonical: "https://www.shoonaya.com/features" },
 };
 
@@ -16,9 +16,9 @@ export default function FeaturesPage() {
   return (
     <main>
       <MarketingPageHero
-        eyebrow="The app"
+        eyebrow="Shoonaya app"
         title="A dharmic life, held together."
-        intro="Shoonaya connects daily practice, learning, sacred time, family and community without turning them into disconnected utilities."
+        intro="Shoonaya is a modern dharmic companion for daily practice, sacred time, scripture, family and community across living traditions."
       />
 
       <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
