@@ -93,6 +93,18 @@ describe('admin/notification-cohort-report route', () => {
     expect(body.byLanguage).toEqual({ en: 1, unset: 1 });
   });
 
+  it('derives audience from gender_context the same way observance-preferences.ts does, defaulting to not_female', async () => {
+    mocks.mockProfiles = [
+      { id: 'p1', tradition: null, calendar_profile: null, app_language: null, gender_context: 'female', is_deleting: false, consent_activity_personalization: false },
+      { id: 'p2', tradition: null, calendar_profile: null, app_language: null, gender_context: 'male', is_deleting: false, consent_activity_personalization: false },
+      { id: 'p3', tradition: null, calendar_profile: null, app_language: null, gender_context: null, is_deleting: false, consent_activity_personalization: false },
+    ];
+    const res = await GET(new NextRequest('https://shoonaya.com/api/admin/notification-cohort-report'));
+    const body = await res.json();
+
+    expect(body.byAudience).toEqual({ female: 1, not_female: 2 });
+  });
+
   it('only counts recent activity among profiles that explicitly consented', async () => {
     mocks.mockProfiles = [
       { id: 'consented-active', tradition: 'hindu', calendar_profile: null, app_language: null, is_deleting: false, consent_activity_personalization: true },

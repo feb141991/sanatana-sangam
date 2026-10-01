@@ -12,8 +12,16 @@ type ProfileRow = CohortProfileInput & {
   sampradaya: string | null;
   calendar_profile: string | null;
   app_language: string | null;
+  gender_context: string | null;
   consent_activity_personalization: boolean | null;
 };
+
+// Matches observance-preferences.ts's mapProfileToObservancePreferences exactly
+// (audience = gender_context === 'female' ? 'female' : 'not_female') -- this
+// report must never derive a second, possibly-drifting definition of audience.
+function deriveAudience(genderContext: string | null): 'female' | 'not_female' {
+  return genderContext === 'female' ? 'female' : 'not_female';
+}
 
 function incr(counts: Record<string, number>, key: string) {
   counts[key] = (counts[key] ?? 0) + 1;
@@ -32,7 +40,7 @@ export async function GET(request: NextRequest) {
     const { data: profiles, error } = await supabase
       .from('profiles')
       .select(
-        'id, tradition, sampradaya, calendar_profile, app_language, is_deleting, ' +
+        'id, tradition, sampradaya, calendar_profile, app_language, gender_context, is_deleting, ' +
         'consent_activity_personalization, japa_reminder_enabled, wants_shloka_reminders, ' +
         'wants_nitya_reminders, wants_sankalpa_midpoint_reminders, wants_festival_reminders, ' +
         'wants_vrat_reminders, wants_tithi_reminders, wants_community_notifications, ' +
@@ -68,6 +76,7 @@ export async function GET(request: NextRequest) {
     const byTradition: Record<string, number> = {};
     const byCalendarProfile: Record<string, number> = {};
     const byLanguage: Record<string, number> = {};
+    const byAudience: Record<string, number> = {};
     let eligibleForAnyDelivery = 0;
     let consented = 0;
     let recentlyActiveAmongConsented = 0;
@@ -78,6 +87,7 @@ export async function GET(request: NextRequest) {
       incr(byTradition, row.tradition ?? 'unset');
       incr(byCalendarProfile, row.calendar_profile ?? 'unset');
       incr(byLanguage, row.app_language ?? 'unset');
+      incr(byAudience, deriveAudience(row.gender_context));
       if (classification.eligibleForAnyDelivery) eligibleForAnyDelivery++;
       if (row.consent_activity_personalization === true) {
         consented++;
@@ -97,6 +107,7 @@ export async function GET(request: NextRequest) {
       byTradition,
       byCalendarProfile,
       byLanguage,
+      byAudience,
       activityPersonalization: {
         consented,
         notConsented: rows.length - consented,
