@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traditions in Shoonaya</title>
+  <style>
+    :root {
+        --saffron: #d88a1c;
+        --saffron-lt: rgba(216, 138, 28, 0.12);
+        --saffron-dk: #9f6314;
+        --kumkum: #9f6314;
+        --kumkum-lt: rgba(159, 99, 20, 0.1);
+        --earth: #7a5126;
+        --earth-lt: rgba(122, 81, 38, 0.1);
+        --lotus: #c0607a;
+        --gold: #d88a1c;
+        --cream: #faf6ef;
+        --surface-soft: #efe4d3;
+        --warm-white: #fffdf8;
+        --ink: #3e2a1f;
+        --ink-mid: #6c4b35;
+        --ink-soft: #8e7868;
+        --border: rgba(200, 160, 110, 0.3);
+        --fd: Georgia, "Times New Roman", serif;
+        --fb:
+          system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --fh: "Devanagari Sangam MN", "Nirmala UI", Mangal, Georgia, serif;
+        --fg: "Gurmukhi MN", "Nirmala UI", Raavi, sans-serif;
+        --c-hindu: #d88a1c;
+        --c-hindu-bg: rgba(216, 138, 28, 0.1);
+        --c-sikh: #1b5e8b;
+        --c-sikh-bg: rgba(27, 94, 139, 0.1);
+        --c-buddhist: #8b2d3e;
+        --c-buddhist-bg: rgba(139, 45, 62, 0.1);
+        --c-jain: #2a6b4a;
+        --c-jain-bg: rgba(42, 107, 74, 0.1);
+        --peacock: #1a7b82;
+      }
+    
+  *, ::after, ::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background: var(--surface-soft);
+    color: var(--ink);
+    font-family: var(--fb);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 24px;
+  }
+  .s-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--saffron-dk);
+    margin-bottom: 8px;
+  }
+  .s-title {
+    font-family: var(--fd);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .s-sub {
+    font-size: 15px;
+    color: var(--ink-mid);
+    max-width: 620px;
+    line-height: 1.65;
+  }
+  .traditions-section {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .trad-tabs-wrap {
+    margin: 32px auto 40px;
+    max-width: 520px;
+  }
+  .trad-tabs-bar {
+    display: flex;
+    position: relative;
+    background: rgba(62,42,31,0.06);
+    padding: 4px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+  }
+  #trad-indicator {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    border-radius: 100px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(62,42,31,0.12);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .trad-tab {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    background: none;
+    border: none;
+    padding: 10px 14px;
+    font-family: var(--fb);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-mid);
+    cursor: pointer;
+    border-radius: 100px;
+    transition: color 0.25s;
+    text-align: center;
+  }
+  .trad-tab.active {
+    color: var(--ink);
+  }
+  #trad-progress {
+    height: 3px;
+    background: rgba(62,42,31,0.08);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  #trad-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--saffron);
+    transition: width 0.1s linear, background 0.3s;
+  }
+  .trad-panels {
+    min-height: 380px;
+  }
+  .trad-panel {
+    display: none;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 60px;
+    align-items: center;
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 48px;
+    box-shadow: 0 12px 36px rgba(62,42,31,0.06);
+  }
+  .trad-panel.active {
+    display: grid;
+    animation: tradFadeIn 0.4s ease forwards;
+  }
+  @keyframes tradFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .trad-symbol-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 240px;
+  }
+  .trad-symbol-glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .trad-symbol-text {
+    font-size: 150px;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    user-select: none;
+  }
+  .trad-symbol-svg {
+    width: 140px;
+    height: 140px;
+    position: relative;
+    z-index: 1;
+  }
+  .trad-trad-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+  }
+  .trad-trad-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  .trad-verse {
+    font-family: var(--fh);
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .trad-verse-script {
+    font-family: var(--fg);
+  }
+  .trad-verse-trans {
+    font-family: var(--fd);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink-mid);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .trad-verse-source {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--saffron-dk);
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+  }
+  .trad-verse-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+  .trad-feats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .trad-feat {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: rgba(62,42,31,0.05);
+    color: var(--ink);
+  }
+  .trad-desc-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-mid);
+  }
+  @media (max-width: 768px) {
+    .trad-panel {
+      grid-template-columns: 1fr;
+      padding: 32px 24px;
+      gap: 32px;
+    }
+    .trad-symbol-col {
+      height: 160px;
+    }
+    .trad-symbol-text {
+      font-size: 100px;
+    }
+    .trad-symbol-svg {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  </style>
+</head>
+<body>
+  <section class="traditions-section" id="traditions">
+        <div style="text-align: center; margin-bottom: 20px" class="reveal">
+          <div class="s-label" style="margin-bottom: 10px">
+            Choose Your Tradition
+          </div>
+          <div class="s-title">Four paths, one Sangam</div>
+          <p class="s-sub" style="margin: 0 auto 40px; text-align: center">
+            Shoonaya honours the full breadth of dharmic wisdom — Hindu, Sikh,
+            Buddhist, and Jain. Each tradition has its own dedicated experience
+            within one shared community.
+          </p>
+        </div>
+        <div class="trad-tabs-wrap reveal">
+          <div class="trad-tabs-bar">
+            <span id="trad-indicator"></span>
+            <button
+              class="trad-tab active"
+              data-trad="hindu"
+              onclick="switchTrad('hindu')"
+            >
+              🕉 Hindu
+            </button>
+            <button
+              class="trad-tab"
+              data-trad="sikh"
+              onclick="switchTrad('sikh')"
+            >
+              ੴ Sikh
+            </button>
+            <button
+              class="trad-tab"
+              data-trad="buddhist"
+              onclick="switchTrad('buddhist')"
+            >
+              ☸ Buddhist
+            </button>
+            <button
+              class="trad-tab"
+              data-trad="jain"
+              onclick="switchTrad('jain')"
+            >
+              ☮ Jain
+            </button>
+          </div>
+          <div id="trad-progress"><div id="trad-progress-fill"></div></div>
+        </div>
+        <div class="trad-panels">
+          <div class="trad-panel active" id="panel-hindu">
+            <div class="trad-symbol-col">
+              <div class="trad-symbol-glow"></div>
+              <div class="trad-symbol-text">ॐ</div>
+            </div>
+            <div>
+              <div class="trad-trad-badge">
+                <div class="trad-trad-dot"></div>
+                Sanatan Dharma · हिन्दू धर्म
+              </div>
+              <div class="trad-verse">
+                <div class="trad-verse-date">
+                  Vaishakha, Shukla Tritiya · Vikrama 2083
+                </div>
+                <div class="trad-verse-script">
+                  यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।<br />अभ्युत्थानमधर्मस्य
+                  तदात्मानं सृजाम्यहम्॥
+                </div>
+                <div class="trad-verse-divider"></div>
+                <div class="trad-verse-trans">
+                  "Whenever righteousness declines and unrighteousness rises, I
+                  manifest myself anew."
+                </div>
+                <div class="trad-verse-source">
+                  Bhagavad Gita · Chapter 4, Verse 7
+                </div>
+              </div>
+              <div class="trad-feats">
+                <span class="trad-feat">Daily Shloka</span>
+                <span class="trad-feat">Vedic Panchang</span>
+                <span class="trad-feat">18 Puranas</span>
+                <span class="trad-feat">12 Jyotirlingas</span>
+                <span class="trad-feat">Sanskrit Library</span>
+                <span class="trad-feat">Temple Directory</span>
+              </div>
+              <p class="trad-desc-text">
+                From the Vedas to the Upanishads, from daily puja to grand
+                utsavs — Shoonaya gives every Hindu a digital home for their
+                spiritual life, wherever they are in the world.
+              </p>
+            </div>
+          </div>
+          <div class="trad-panel" id="panel-sikh">
+            <div class="trad-symbol-col">
+              <div class="trad-symbol-glow"></div>
+              <div class="trad-symbol-text">ੴ</div>
+            </div>
+            <div>
+              <div class="trad-trad-badge">
+                <div class="trad-trad-dot"></div>
+                Sikhi · ਸਿੱਖ ਧਰਮ
+              </div>
+              <div class="trad-verse">
+                <div class="trad-verse-date">
+                  Vaishakha, Shukla Tritiya · Nanakshahi 558
+                </div>
+                <div class="trad-verse-script">
+                  ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥
+                </div>
+                <div class="trad-verse-divider"></div>
+                <div class="trad-verse-trans">
+                  "O my mind, you are the very form of Divine Light — recognise
+                  your own origin."
+                </div>
+                <div class="trad-verse-source">
+                  Guru Granth Sahib Ji · Ang 441
+                </div>
+              </div>
+              <div class="trad-feats">
+                <span class="trad-feat">Nitnem Banis</span>
+                <span class="trad-feat">Gurpurab Calendar</span>
+                <span class="trad-feat">Gurdwara Finder</span>
+                <span class="trad-feat">Kirtan Library</span>
+                <span class="trad-feat">Ardas Reminders</span>
+                <span class="trad-feat">Hukamnama Daily</span>
+              </div>
+              <p class="trad-desc-text">
+                Track daily nitnem, get Gurpurab reminders, find your nearest
+                Gurdwara, and connect with the global Sikh sangat — all in one
+                place, infused with the spirit of Seva.
+              </p>
+            </div>
+          </div>
+          <div class="trad-panel" id="panel-buddhist">
+            <div class="trad-symbol-col">
+              <div class="trad-symbol-glow"></div>
+              <svg class="trad-symbol-svg" viewBox="0 0 200 200" fill="none">
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="88"
+                  stroke="#D4827A"
+                  stroke-width="7"
+                  fill="none"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="18"
+                  stroke="#D4827A"
+                  stroke-width="5"
+                  fill="none"
+                />
+                <circle cx="100" cy="100" r="6" fill="#D4827A" />
+                <g stroke="#D4827A" stroke-width="4" stroke-linecap="round">
+                  <line x1="100" y1="18" x2="100" y2="82" />
+                  <line x1="100" y1="118" x2="100" y2="182" />
+                  <line x1="18" y1="100" x2="82" y2="100" />
+                  <line x1="118" y1="100" x2="182" y2="100" />
+                  <line x1="43" y1="43" x2="86" y2="86" />
+                  <line x1="114" y1="114" x2="157" y2="157" />
+                  <line x1="157" y1="43" x2="114" y2="86" />
+                  <line x1="86" y1="114" x2="43" y2="157" />
+                </g>
+                <g fill="#D4827A">
+                  <circle cx="100" cy="14" r="7" />
+                  <circle cx="100" cy="186" r="7" />
+                  <circle cx="14" cy="100" r="7" />
+                  <circle cx="186" cy="100" r="7" />
+                  <circle cx="41" cy="41" r="6" />
+                  <circle cx="159" cy="159" r="6" />
+                  <circle cx="159" cy="41" r="6" />
+                  <circle cx="41" cy="159" r="6" />
+                </g>
+              </svg>
+            </div>
+            <div>
+              <div class="trad-trad-badge">
+                <div class="trad-trad-dot"></div>
+                Buddhism · बौद्ध धर्म
+              </div>
+              <div class="trad-verse">
+                <div class="trad-verse-date">
+                  Vaishakha, Shukla Tritiya · Buddhist Era 2569
+                </div>
+                <div class="trad-verse-script">
+                  Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.
+                </div>
+                <div class="trad-verse-divider"></div>
+                <div class="trad-verse-trans">
+                  "Mind is the forerunner of all actions — all things arise from
+                  mind, fashioned by mind."
+                </div>
+                <div class="trad-verse-source">Dhammapada · Verse 1</div>
+              </div>
+              <div class="trad-feats">
+                <span class="trad-feat">Dhammapada</span>
+                <span class="trad-feat">Meditation Timer</span>
+                <span class="trad-feat">Buddhist Calendar</span>
+                <span class="trad-feat">Pali Canon</span>
+                <span class="trad-feat">Sangha Finder</span>
+                <span class="trad-feat">Buddha Purnima</span>
+              </div>
+              <p class="trad-desc-text">
+                Walk the Eightfold Path with daily reflections from the
+                Dhammapada, guided meditation sessions, and a global Buddhist
+                community united in the pursuit of liberation.
+              </p>
+            </div>
+          </div>
+          <div class="trad-panel" id="panel-jain">
+            <div class="trad-symbol-col">
+              <div class="trad-symbol-glow"></div>
+              <svg class="trad-symbol-svg" viewBox="0 0 200 200" fill="none">
+                <path
+                  d="M100 178 C72 178 48 155 48 126 L48 82 C48 73 55 67 63 70 C65 60 73 55 82 59 L82 48 C82 38 88 32 97 32 C106 32 112 38 112 48 L112 59 C121 55 129 60 131 70 C139 67 146 73 146 82 L146 126 C146 155 128 178 100 178Z"
+                  stroke="#6AB99A"
+                  stroke-width="4.5"
+                  fill="none"
+                  stroke-linejoin="round"
+                />
+                <line
+                  x1="82"
+                  y1="59"
+                  x2="82"
+                  y2="42"
+                  stroke="#6AB99A"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="112"
+                  y1="59"
+                  x2="112"
+                  y2="42"
+                  stroke="#6AB99A"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <circle
+                  cx="97"
+                  cy="122"
+                  r="24"
+                  stroke="#6AB99A"
+                  stroke-width="3.5"
+                  fill="none"
+                />
+                <circle cx="97" cy="122" r="7" fill="#6AB99A" />
+                <g stroke="#6AB99A" stroke-width="2" stroke-linecap="round">
+                  <line x1="97" y1="98" x2="97" y2="115" />
+                  <line x1="97" y1="129" x2="97" y2="146" />
+                  <line x1="73" y1="122" x2="90" y2="122" />
+                  <line x1="104" y1="122" x2="121" y2="122" />
+                </g>
+              </svg>
+            </div>
+            <div>
+              <div class="trad-trad-badge">
+                <div class="trad-trad-dot"></div>
+                Jainism · जैन धर्म
+              </div>
+              <div class="trad-verse">
+                <div class="trad-verse-date">
+                  Vaishakha, Shukla Tritiya · Vira Nirvana Samvat 2552
+                </div>
+                <div class="trad-verse-script">परस्परोपग्रहो जीवानाम् ।</div>
+                <div class="trad-verse-divider"></div>
+                <div class="trad-verse-trans">
+                  "The function of souls is to serve one another."
+                </div>
+                <div class="trad-verse-source">
+                  Tattvartha Sutra · 5.21 · Umasvati
+                </div>
+              </div>
+              <div class="trad-feats">
+                <span class="trad-feat">Agama Texts</span>
+                <span class="trad-feat">Paryushana</span>
+                <span class="trad-feat">Tirtha Locations</span>
+                <span class="trad-feat">Pratikraman Guide</span>
+                <span class="trad-feat">Samayasara</span>
+                <span class="trad-feat">Vrat Tracker</span>
+              </div>
+              <p class="trad-desc-text">
+                Explore Jain Agamas, track Paryushana observances, locate sacred
+                Tirthas, and practice Ahimsa daily — guided by the eternal
+                teachings of the 24 Tirthankaras.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+<script>
+  const traditions = [hindu, sikh, buddhist, jain];
+  const colors = {
+    hindu: #D88A1C,
+    sikh: #1B5E8B,
+    buddhist: #8B2D3E,
+    jain: #2A6B4A
+  };
+  let currentIdx = 0;
+  let timer = null;
+  let progressStart = 0;
+  let animFrame = null;
+  const DURATION = 8000;
+
+  function updateIndicator(tradKey) {
+    const tab = document.querySelector(`.trad-tab[data-trad="${tradKey}"]`);
+    const indicator = document.getElementById(trad-indicator);
+    if (!tab || !indicator) return;
+    indicator.style.left = tab.offsetLeft + px;
+    indicator.style.width = tab.offsetWidth + px;
+  }
+
+  function switchTrad(tradKey, manual = true) {
+    currentIdx = traditions.indexOf(tradKey);
+    document.querySelectorAll(.trad-tab).forEach(t => {
+      const active = t.dataset.trad === tradKey;
+      t.classList.toggle(active, active);
+    });
+    document.querySelectorAll(.trad-panel).forEach(p => {
+      p.classList.remove(active);
+    });
+    const activePanel = document.getElementById(panel- + tradKey);
+    if (activePanel) activePanel.classList.add(active);
+
+    updateIndicator(tradKey);
+
+    const fill = document.getElementById(trad-progress-fill);
+    if (fill) fill.style.background = colors[tradKey];
+
+    startProgress();
+  }
+
+  function startProgress() {
+    cancelAnimationFrame(animFrame);
+    progressStart = performance.now();
+    function tick(now) {
+      const elapsed = now - progressStart;
+      const pct = Math.min(100, (elapsed / DURATION) * 100);
+      const fill = document.getElementById(trad-progress-fill);
+      if (fill) fill.style.width = pct + %;
+      if (elapsed >= DURATION) {
+        currentIdx = (currentIdx + 1) % traditions.length;
+        switchTrad(traditions[currentIdx], false);
+      } else {
+        animFrame = requestAnimationFrame(tick);
+      }
+    }
+    animFrame = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener(DOMContentLoaded, () => {
+    switchTrad(hindu, false);
+    window.addEventListener(resize, () => updateIndicator(traditions[currentIdx]));
+  });
+</script>
+
+</body>
+</html>

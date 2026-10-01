@@ -12,7 +12,7 @@ export function LegacyExperienceFrame({
   return (
     <div className="overflow-hidden rounded-[2.5rem] border border-[var(--card-border)] bg-[var(--card-bg)] shadow-[var(--shadow-soft)]">
       <iframe
-        src={`/landing.html?embed=${section}`}
+        src={`/embed/${section}.html`}
         title={title}
         className={`block w-full border-0 ${className}`}
         loading="eager"

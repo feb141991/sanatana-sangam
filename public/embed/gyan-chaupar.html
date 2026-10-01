@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gyan Chaupar | Shoonaya</title>
+
+  <style>
+    :root {
+        --saffron: #d88a1c;
+        --saffron-lt: rgba(216, 138, 28, 0.12);
+        --saffron-dk: #9f6314;
+        --kumkum: #9f6314;
+        --kumkum-lt: rgba(159, 99, 20, 0.1);
+        --earth: #7a5126;
+        --earth-lt: rgba(122, 81, 38, 0.1);
+        --lotus: #c0607a;
+        --gold: #d88a1c;
+        --cream: #faf6ef;
+        --surface-soft: #efe4d3;
+        --warm-white: #fffdf8;
+        --ink: #3e2a1f;
+        --ink-mid: #6c4b35;
+        --ink-soft: #8e7868;
+        --border: rgba(200, 160, 110, 0.3);
+        --fd: Georgia, "Times New Roman", serif;
+        --fb:
+          system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --fh: "Devanagari Sangam MN", "Nirmala UI", Mangal, Georgia, serif;
+        --fg: "Gurmukhi MN", "Nirmala UI", Raavi, sans-serif;
+        --c-hindu: #d88a1c;
+        --c-hindu-bg: rgba(216, 138, 28, 0.1);
+        --c-sikh: #1b5e8b;
+        --c-sikh-bg: rgba(27, 94, 139, 0.1);
+        --c-buddhist: #8b2d3e;
+        --c-buddhist-bg: rgba(139, 45, 62, 0.1);
+        --c-jain: #2a6b4a;
+        --c-jain-bg: rgba(42, 107, 74, 0.1);
+        --peacock: #1a7b82;
+      }
+    
+  *, ::after, ::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--surface-soft);
+    color: var(--ink);
+    font-family: var(--fb);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    padding: 24px 16px;
+  }
+
+  </style>
+</head>
+<body>
+  <section
+        class="section"
+        id="gyan-chaupar"
+        style="background: var(--surface-soft); padding: 72px 24px 80px"
+      >
+        <style>
+          #gc-fs-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            transition: background 0.3s;
+          }
+          #gc-fs-wrap.is-fullscreen {
+            max-width: 100vw;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 24px 32px;
+            display: flex;
+            flex-direction: column;
+            background: var(--cream);
+            overflow: auto;
+            box-sizing: border-box;
+          }
+          .gc-top-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 28px;
+          }
+          .gc-top-left {
+            text-align: left;
+          }
+          .gc-eyebrow {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--saffron);
+            background: var(--saffron-lt);
+            border: 1px solid rgba(216, 138, 28, 0.25);
+            border-radius: 20px;
+            padding: 5px 14px;
+            margin-bottom: 10px;
+          }
+          .gc-title {
+            font-family: var(--fd);
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.15;
+            margin-bottom: 4px;
+          }
+          .gc-title em {
+            font-style: italic;
+            color: var(--saffron);
+          }
+          .gc-sub {
+            font-size: 13px;
+            color: var(--ink-soft);
+            max-width: 440px;
+            line-height: 1.55;
+          }
+          #gc-fs-btn,
+          #gc-rules-btn {
+            background: 0 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 12px;
+            color: var(--ink-soft);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+          }
+          #gc-fs-btn:hover,
+          #gc-rules-btn:hover {
+            border-color: var(--saffron);
+            color: var(--saffron);
+            background: rgba(216, 138, 28, 0.05);
+          }
+          #gc-rules-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(10, 8, 6, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+          }
+          #gc-rules-overlay.active {
+            display: flex;
+            animation: fadeDown 0.3s ease;
+          }
+          #gc-rules-card {
+            background: var(--cream);
+            border: 1px solid rgba(200, 160, 110, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+          }
+          #gc-rules-card h3 {
+            font-family: var(--fd);
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--ink);
+          }
+          #gc-rules-list {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+          }
+          #gc-rules-list li {
+            margin-bottom: 14px;
+            font-size: 14px;
+            color: var(--ink-mid);
+            line-height: 1.6;
+            display: flex;
+            gap: 12px;
+          }
+          #gc-rules-list li span {
+            color: var(--saffron);
+            font-weight: 700;
+          }
+          #gc-rules-close {
+            background: var(--saffron);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            padding: 12px 32px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+          }
+          #gc-rules-close:hover {
+            opacity: 0.9;
+          }
+          .gc-layout {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex: 1;
+          }
+          #gc-board-wrap {
+            position: relative;
+            flex-shrink: 0;
+          }
+          #gc-board {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            width: min(430px, 92vw);
+            background: rgba(200, 146, 74, 0.18);
+            border: 2px solid rgba(200, 146, 74, 0.35);
+            border-radius: 14px;
+            padding: 6px;
+            box-shadow: 0 8px 36px rgba(62, 42, 31, 0.14);
+          }
+          .gc-sq {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 7px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2px;
+            border: 1px solid rgba(200, 146, 74, 0.12);
+            background: rgba(250, 246, 239, 0.92);
+            transition:
+              transform 0.18s,
+              box-shadow 0.18s;
+          }
+          .gc-sq.virtue {
+            background: rgba(42, 107, 74, 0.13);
+            border-color: rgba(42, 107, 74, 0.32);
+          }
+          .gc-sq.vice {
+            background: rgba(159, 74, 74, 0.13);
+            border-color: rgba(159, 74, 74, 0.32);
+          }
+          .gc-sq.moksha {
+            background: rgba(216, 138, 28, 0.2);
+            border-color: rgba(216, 138, 28, 0.55);
+            border-width: 2px;
+          }
+          .gc-sq.active-sq {
+            outline: 2.5px solid var(--saffron);
+            outline-offset: 1px;
+            z-index: 2;
+            transform: scale(1.06);
+            box-shadow: 0 4px 14px rgba(216, 138, 28, 0.28);
+          }
+          .gc-sq.just-landed {
+            animation: gc-bounce 0.42s cubic-bezier(0.36, 1.5, 0.4, 1);
+          }
+          @keyframes gc-bounce {
+            0% {
+              transform: scale(1);
+            }
+            40% {
+              transform: scale(1.18);
+            }
+            70% {
+              transform: scale(0.95);
+            }
+            100% {
+              transform: scale(1.06);
+            }
+          }
+          .gc-sq-num {
+            font-size: 7px;
+            font-weight: 700;
+            color: var(--ink-soft);
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            line-height: 1;
+          }
+          .gc-sq-icon {
+            font-size: clamp(11px, 2.6vw, 17px);
+            line-height: 1;
+          }
+          .gc-sq-lbl {
+            font-size: clamp(4.5px, 1.2vw, 7.5px);
+            color: var(--ink-mid);
+            margin-top: 1px;
+            line-height: 1.1;
+            font-weight: 600;
+            display: none;
+          }
+          @media (min-width: 400px) {
+            .gc-sq-lbl {
+              display: block;
+            }
+          }
+          .gc-token {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d88a1c, #9f6314);
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transform: translate(-50%, -50%);
+            transition:
+              top 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 10;
+            pointer-events: none;
+            filter: drop-shadow(0 0 5px rgba(216, 138, 28, 0.5));
+          }
+          .gc-token.pop {
+            animation: gc-token-pop 0.4s cubic-bezier(0.36, 1.5, 0.4, 1);
+          }
+          @keyframes gc-token-pop {
+            0% {
+              transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+              transform: translate(-50%, -80%) scale(1.4);
+            }
+            100% {
+              transform: translate(-50%, -50%) scale(1);
+            }
+          }
+          #gc-panel {
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          }
+          #gc-dice-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+          }
+          #gc-dice {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            background: var(--warm-white);
+            border: 2px solid rgba(200, 146, 74, 0.4);
+            box-shadow: 0 4px 18px rgba(62, 42, 31, 0.13);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            cursor: pointer;
+            user-select: none;
+            transition: box-shadow 0.2s;
+          }
+          #gc-dice.rolling {
+            animation: gc-die-shake 0.55s ease;
+          }
+          @keyframes gc-die-shake {
+            0% {
+              transform: rotate(0) scale(1);
+            }
+            15% {
+              transform: rotate(-22deg) scale(1.1);
+            }
+            35% {
+              transform: rotate(18deg) scale(0.92);
+            }
+            55% {
+              transform: rotate(-12deg) scale(1.08);
+            }
+            75% {
+              transform: rotate(8deg) scale(0.96);
+            }
+            100% {
+              transform: rotate(0) scale(1);
+            }
+          }
+          #gc-dice.glowing {
+            box-shadow:
+              0 0 0 4px rgba(216, 138, 28, 0.25),
+              0 4px 18px rgba(62, 42, 31, 0.13);
+          }
+          #gc-roll-btn {
+            background: linear-gradient(
+              135deg,
+              var(--saffron),
+              var(--saffron-dk)
+            );
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition:
+              opacity 0.2s,
+              transform 0.12s,
+              box-shadow 0.2s;
+            box-shadow: 0 4px 18px rgba(216, 138, 28, 0.4);
+            width: 100%;
+          }
+          #gc-roll-btn:hover:not(:disabled) {
+            opacity: 0.88;
+            transform: translateY(-1px);
+            box-shadow: 0 7px 22px rgba(216, 138, 28, 0.45);
+          }
+          #gc-roll-btn:active:not(:disabled) {
+            transform: scale(0.96) translateY(0);
+          }
+          #gc-roll-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+          }
+          #gc-status-card {
+            background: var(--warm-white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.65;
+            color: var(--ink-mid);
+            min-height: 92px;
+            transition:
+              background 0.4s,
+              border-color 0.4s;
+          }
+          #gc-status-card.virtue-flash {
+            background: rgba(42, 107, 74, 0.08);
+            border-color: rgba(42, 107, 74, 0.3);
+          }
+          #gc-status-card.vice-flash {
+            background: rgba(159, 74, 74, 0.08);
+            border-color: rgba(159, 74, 74, 0.3);
+          }
+          #gc-status-card strong {
+            color: var(--ink);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+          }
+          .gc-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            letter-spacing: 0.06em;
+          }
+          .gc-badge.virtue {
+            background: rgba(42, 107, 74, 0.14);
+            color: #2a6b4a;
+          }
+          .gc-badge.vice {
+            background: rgba(159, 74, 74, 0.14);
+            color: #7a2a2a;
+          }
+          .gc-badge.plain {
+            background: rgba(200, 146, 74, 0.12);
+            color: var(--saffron-dk);
+          }
+          .gc-badge.moksha {
+            background: rgba(216, 138, 28, 0.18);
+            color: #9f6314;
+          }
+          #gc-pos-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--ink-soft);
+          }
+          #gc-pos-fill-wrap {
+            flex: 1;
+            height: 6px;
+            background: rgba(200, 146, 74, 0.15);
+            border-radius: 3px;
+            overflow: hidden;
+          }
+          #gc-pos-fill {
+            height: 100%;
+            background: linear-gradient(
+              90deg,
+              var(--saffron),
+              var(--saffron-dk)
+            );
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          #gc-restart-btn {
+            background: 0 0;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 18px;
+            font-size: 12px;
+            color: var(--ink-soft);
+            cursor: pointer;
+            width: 100%;
+            transition:
+              border-color 0.2s,
+              color 0.2s;
+          }
+          #gc-restart-btn:hover {
+            border-color: var(--saffron);
+            color: var(--saffron);
+          }
+          .gc-legend {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            font-size: 11px;
+            color: var(--ink-soft);
+          }
+          .gc-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+          .gc-legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+          }
+          #gc-celebration {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            pointer-events: none;
+            overflow: hidden;
+          }
+          #gc-celebration.active {
+            display: block;
+          }
+          .gc-confetti-piece {
+            position: absolute;
+            top: -20px;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            opacity: 0;
+            animation: gc-confetti-fall linear forwards;
+          }
+          @keyframes gc-confetti-fall {
+            0% {
+              transform: translateY(0) rotate(0) scale(1);
+              opacity: 1;
+            }
+            85% {
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(110vh) rotate(720deg) scale(0.6);
+              opacity: 0;
+            }
+          }
+          #gc-moksha-banner {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9001;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+          }
+          #gc-moksha-banner.active {
+            display: flex;
+          }
+          #gc-moksha-inner {
+            background: var(--warm-white);
+            border: 2px solid rgba(216, 138, 28, 0.4);
+            border-radius: 24px;
+            padding: 40px 48px;
+            text-align: center;
+            max-width: 420px;
+            box-shadow: 0 24px 80px rgba(62, 42, 31, 0.22);
+            animation: gc-banner-in 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          @keyframes gc-banner-in {
+            0% {
+              transform: scale(0.7) translateY(30px);
+              opacity: 0;
+            }
+            100% {
+              transform: scale(1) translateY(0);
+              opacity: 1;
+            }
+          }
+          #gc-moksha-inner .gc-moksha-emoji {
+            font-size: 56px;
+            margin-bottom: 12px;
+            animation: gc-spin-float 3s ease-in-out infinite;
+          }
+          @keyframes gc-spin-float {
+            0%,
+            100% {
+              transform: translateY(0) rotate(0);
+            }
+            50% {
+              transform: translateY(-8px) rotate(10deg);
+            }
+          }
+          #gc-moksha-inner h3 {
+            font-family: var(--fd);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 8px;
+          }
+          #gc-moksha-inner p {
+            font-size: 14px;
+            color: var(--ink-soft);
+            line-height: 1.6;
+            margin-bottom: 20px;
+          }
+          #gc-moksha-inner .gc-moksha-num {
+            font-family: var(--fd);
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--saffron);
+          }
+          #gc-moksha-close {
+            background: linear-gradient(
+              135deg,
+              var(--saffron),
+              var(--saffron-dk)
+            );
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+          }
+          .gc-spark {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: gc-spark-fly 0.7s ease-out forwards;
+          }
+          @keyframes gc-spark-fly {
+            0% {
+              transform: translate(0, 0) scale(1);
+              opacity: 1;
+            }
+            100% {
+              transform: translate(var(--tx), var(--ty)) scale(0);
+              opacity: 0;
+            }
+          }
+          #gc-roll-count {
+            font-size: 11px;
+            color: var(--ink-soft);
+            text-align: center;
+          }
+        </style>
+        <div id="gc-fs-wrap">
+          <div id="gc-celebration"></div>
+          <div id="gc-moksha-banner">
+            <div id="gc-moksha-inner">
+              <div class="gc-moksha-emoji">🕉️</div>
+              <div class="gc-moksha-num" id="gc-moksha-rolls">—</div>
+              <div
+                style="
+                  font-size: 12px;
+                  color: var(--ink-soft);
+                  margin-bottom: 8px;
+                "
+              >
+                rolls to liberation
+              </div>
+              <h3>Moksha attained</h3>
+              <p>
+                शून्य — the void that holds everything.<br />You have reached
+                the Infinite.
+              </p>
+              <button class="gc-moksha-close" onclick="gcMokshaClose()">
+                🙏 Play Again
+              </button>
+              <br /><br />
+              <a
+                href="#cta-section"
+                onclick="(gcMokshaClose(), scrollToCta())"
+                style="
+                  font-size: 13px;
+                  color: var(--saffron);
+                  font-weight: 600;
+                  text-decoration: none;
+                "
+                >→ Join Shoonaya to carry this practice further</a
+              >
+            </div>
+          </div>
+          <div id="gc-rules-overlay">
+            <div id="gc-rules-card">
+              <h3>Dharma Rules</h3>
+              <ul id="gc-rules-list">
+                <li>
+                  <span>1. Objective:</span> Reach Square 49 (Moksha) with an
+                  exact dice roll to attain liberation.
+                </li>
+                <li>
+                  <span>2. Virtues (Ladders):</span> Landing on a virtue square
+                  (Green 🪜) elevates your soul immediately to a higher plane.
+                </li>
+                <li>
+                  <span>3. Vices (Snakes):</span> Beware the vices (Red 🐍).
+                  They drag your soul back to lower states of being.
+                </li>
+                <li>
+                  <span>4. Rebirth:</span> If your roll exceeds what's needed
+                  for Square 49, you "bounce" back. You must land exactly on the
+                  void.
+                </li>
+                <li>
+                  <span>5. Philosophy:</span> Every square holds a teaching.
+                  Land on them to read the shastra insights.
+                </li>
+              </ul>
+              <button id="gc-rules-close" onclick="gcToggleRules()">
+                Got it, Jai Ho 🙏
+              </button>
+            </div>
+          </div>
+          <div class="gc-top-row">
+            <div class="gc-top-left">
+              <div class="gc-eyebrow">Play sacred wisdom now</div>
+              <h2 class="gc-title">Play <em>Gyan Chaupar</em></h2>
+              <p class="gc-sub">
+                Ancient Indian game of dharmic progress — roll dice, land on
+                virtues to ascend, conquer vices before they pull you down.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px">
+              <button id="gc-rules-btn" onclick="gcToggleRules()">
+                <span>📜</span> <span>Rules</span>
+              </button>
+              <button
+                id="gc-fs-btn"
+                onclick="gcToggleFS()"
+                title="Toggle fullscreen"
+              >
+                <span id="gc-fs-icon">⛶</span>
+                <span id="gc-fs-label">Fullscreen</span>
+              </button>
+            </div>
+          </div>
+          <div class="gc-layout">
+            <div id="gc-board-wrap">
+              <div id="gc-board"></div>
+              <div class="gc-token" id="gc-token">🪬</div>
+            </div>
+            <div id="gc-panel">
+              <div id="gc-dice-wrap">
+                <div id="gc-dice">⚀</div>
+                <button id="gc-roll-btn" onclick="gcRoll()">
+                  🎲 Roll the Dice
+                </button>
+                <div id="gc-roll-count">Roll 0 · Square 0 / 49</div>
+              </div>
+              <div id="gc-status-card">
+                <strong>Your journey begins</strong> Roll the dice to start your
+                path from the earthly realm toward Moksha. Each square holds a
+                teaching.
+              </div>
+              <div id="gc-pos-bar">
+                <span style="font-size: 11px; white-space: nowrap">0%</span>
+                <div id="gc-pos-fill-wrap"><div id="gc-pos-fill"></div></div>
+                <span>🕉️</span>
+              </div>
+              <button id="gc-restart-btn" onclick="gcRestart()">
+                ↺ New Game
+              </button>
+            </div>
+          </div>
+          <div class="gc-legend">
+            <div class="gc-legend-item">
+              <div
+                class="gc-legend-dot"
+                style="background: rgba(42, 107, 74, 0.5)"
+              ></div>
+              Virtue — ascend
+            </div>
+            <div class="gc-legend-item">
+              <div
+                class="gc-legend-dot"
+                style="background: rgba(159, 74, 74, 0.5)"
+              ></div>
+              Vice — descend
+            </div>
+            <div class="gc-legend-item">
+              <div
+                class="gc-legend-dot"
+                style="
+                  background: rgba(216, 138, 28, 0.5);
+                  border: 1px solid rgba(216, 138, 28, 0.7);
+                "
+              ></div>
+              Moksha (sq 49)
+            </div>
+          </div>
+        </div>
+        <script>
+          var GC_POS = 0,
+            GC_ROLLING = !1,
+            GC_ROLLS = 0,
+            GC_LADDERS = { 4: 22, 9: 31, 17: 38, 20: 42, 28: 47 },
+            GC_SNAKES = { 26: 6, 33: 14, 36: 12, 44: 24, 48: 30 },
+            GC_FACES = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"],
+            GC_SQ = {
+              1: {
+                icon: "🌱",
+                label: "Start",
+                type: "plain",
+                msg: "Your dharmic journey begins here. Every great path starts with a single step.",
+                badge: "Beginning",
+              },
+              4: {
+                icon: "🙏",
+                label: "Shraddha",
+                type: "virtue",
+                msg: "Shraddha — faith in the path. You rise to Viveka (square 22).",
+                badge: "Virtue ↑",
+              },
+              9: {
+                icon: "💛",
+                label: "Daya",
+                type: "virtue",
+                msg: "Daya — compassion for all beings. You leap to Bhakti (square 31).",
+                badge: "Virtue ↑",
+              },
+              12: {
+                icon: "⛓️",
+                label: "Bondage",
+                type: "vice",
+                msg: "Attachment binds the soul. Caught in the web of samsara.",
+                badge: "Vice",
+              },
+              14: {
+                icon: "😤",
+                label: "Suffering",
+                type: "vice",
+                msg: '"From anger comes delusion; from delusion, loss of memory." — Gita 2.63',
+                badge: "Vice",
+              },
+              17: {
+                icon: "🔥",
+                label: "Tapas",
+                type: "virtue",
+                msg: "Tapas — disciplined austerity. Purifying fire rises you to Dhyana (square 38).",
+                badge: "Virtue ↑",
+              },
+              20: {
+                icon: "🤲",
+                label: "Seva",
+                type: "virtue",
+                msg: "Seva — selfless service. Karma yoga lifts you to Vairagya (square 42).",
+                badge: "Virtue ↑",
+              },
+              22: {
+                icon: "💡",
+                label: "Viveka",
+                type: "virtue",
+                msg: "Viveka — discrimination of the real from the unreal. The rarest of human gifts.",
+                badge: "Virtue",
+              },
+              24: {
+                icon: "🔗",
+                label: "Attachment",
+                type: "vice",
+                msg: '"That which is not permanent seems permanent." — Gita 2.16',
+                badge: "Vice",
+              },
+              26: {
+                icon: "🌊",
+                label: "Kama",
+                type: "vice",
+                msg: '"Desire is the enemy of the wise." — Gita 3.37. You fall to square 6.',
+                badge: "Vice ↓",
+              },
+              28: {
+                icon: "☮️",
+                label: "Ahimsa",
+                type: "virtue",
+                msg: "Ahimsa — non-violence, the highest dharma. You soar to Samadhi (square 47).",
+                badge: "Virtue ↑",
+              },
+              30: {
+                icon: "🔄",
+                label: "Rebirth",
+                type: "vice",
+                msg: 'Ahamkara — the "I-maker" perpetuates samsara. Ego keeps you returning.',
+                badge: "Vice",
+              },
+              31: {
+                icon: "❤️",
+                label: "Bhakti",
+                type: "virtue",
+                msg: '"Through devotion one knows Me in truth." — Bhagavata Purana.',
+                badge: "Virtue",
+              },
+              33: {
+                icon: "😡",
+                label: "Krodha",
+                type: "vice",
+                msg: "Anger destroys discernment. You fall to suffering (square 14).",
+                badge: "Vice ↓",
+              },
+              36: {
+                icon: "💰",
+                label: "Lobha",
+                type: "vice",
+                msg: "Greed clouds the mind. You slip to bondage (square 12).",
+                badge: "Vice ↓",
+              },
+              38: {
+                icon: "🧘",
+                label: "Dhyana",
+                type: "virtue",
+                msg: "Dhyana — meditation. Still the mind, witness the witness.",
+                badge: "Virtue",
+              },
+              42: {
+                icon: "🌸",
+                label: "Vairagya",
+                type: "virtue",
+                msg: "Vairagya — non-attachment. The lotus blooms untouched by water.",
+                badge: "Virtue",
+              },
+              44: {
+                icon: "🌫️",
+                label: "Moha",
+                type: "vice",
+                msg: "Moha — delusion. Maya veils the Self. You fall to attachment (square 24).",
+                badge: "Vice ↓",
+              },
+              47: {
+                icon: "🌌",
+                label: "Samadhi",
+                type: "virtue",
+                msg: "Samadhi — absorption in the Infinite. The seeker and sought become one.",
+                badge: "Virtue",
+              },
+              48: {
+                icon: "👑",
+                label: "Ahamkara",
+                type: "vice",
+                msg: 'So close to liberation yet ego pulls you back to square 30. Release the "I".',
+                badge: "Vice ↓",
+              },
+              49: {
+                icon: "🕉️",
+                label: "Moksha",
+                type: "moksha",
+                msg: "Liberation! शून्य — the void that holds everything. You are free.",
+                badge: "Moksha 🙏",
+              },
+            };
+          function gcSqData(e) {
+            return (
+              GC_SQ[e] || {
+                icon: "",
+                label: "",
+                type: "plain",
+                msg: "Continue — each step is part of the path.",
+                badge: "Square",
+              }
+            );
+          }
+          function gcBuildBoard() {
+            var e = document.getElementById("gc-board");
+            if (e) {
+              e.innerHTML = "";
+              for (var t = 0; t < 7; t++)
+                for (var a = 6 - t, n = 7 * a, o = 0; o < 7; o++) {
+                  var i = a % 2 == 0 ? n + o + 1 : n + (6 - o) + 1,
+                    s = gcSqData(i),
+                    c = GC_LADDERS[i],
+                    l = GC_SNAKES[i],
+                    r =
+                      49 === i
+                        ? "moksha"
+                        : c
+                          ? "virtue"
+                          : l
+                            ? "vice"
+                            : s.type || "plain",
+                    d = c ? "🪜" : l ? "🐍" : s.icon || "",
+                    g = document.createElement("div");
+                  ((g.className = "gc-sq " + r),
+                    (g.id = "gcsq" + i),
+                    (g.innerHTML =
+                      '<span class="gc-sq-num">' +
+                      i +
+                      '</span><span class="gc-sq-icon">' +
+                      d +
+                      '</span><span class="gc-sq-lbl">' +
+                      (s.label || "") +
+                      "</span>"),
+                    e.appendChild(g));
+                }
+            }
+          }
+          function gcPositionToken(e) {
+            var t = document.getElementById("gc-token");
+            if (t) {
+              if (0 === e)
+                return ((t.style.top = "105%"), void (t.style.left = "50%"));
+              var a = document.getElementById("gcsq" + e);
+              if (a) {
+                var n = document
+                    .getElementById("gc-board-wrap")
+                    .getBoundingClientRect(),
+                  o = a.getBoundingClientRect();
+                ((t.style.left = o.left - n.left + o.width / 2 + "px"),
+                  (t.style.top = o.top - n.top + o.height / 2 + "px"),
+                  t.classList.remove("pop"),
+                  t.offsetWidth,
+                  t.classList.add("pop"));
+              }
+            }
+          }
+          function gcHighlight(e) {
+            if (
+              (document
+                .querySelectorAll(".gc-sq.active-sq,.gc-sq.just-landed")
+                .forEach(function (e) {
+                  e.classList.remove("active-sq", "just-landed");
+                }),
+              e > 0)
+            ) {
+              var t = document.getElementById("gcsq" + e);
+              t &&
+                (t.classList.add("active-sq"),
+                t.classList.remove("just-landed"),
+                t.offsetWidth,
+                t.classList.add("just-landed"));
+            }
+          }
+          function gcUpdateCard(e, t, a) {
+            var n = document.getElementById("gc-status-card");
+            if (n) {
+              var o = gcSqData(e),
+                i = GC_LADDERS[e]
+                  ? "virtue"
+                  : GC_SNAKES[e]
+                    ? "vice"
+                    : o.type || "plain",
+                s = GC_LADDERS[e]
+                  ? "🪜 " + o.badge
+                  : GC_SNAKES[e]
+                    ? "🐍 " + o.badge
+                    : o.badge,
+                c = "";
+              ("ladder" === a &&
+                (c =
+                  '<br><span style="color:#2A6B4A;font-weight:600">✨ Virtue! You ascend to square ' +
+                  GC_LADDERS[t] +
+                  ".</span>"),
+                "snake" === a &&
+                  (c =
+                    '<br><span style="color:#7A2A2A;font-weight:600">⚠️ Vice! You fall to square ' +
+                    GC_SNAKES[t] +
+                    ".</span>"),
+                "bounce" === a &&
+                  (c =
+                    '<br><span style="color:#9F6314;font-weight:600">Need exact roll to reach Moksha.</span>'),
+                (n.innerHTML =
+                  '<span class="gc-badge ' +
+                  i +
+                  '">' +
+                  s +
+                  "</span><strong>" +
+                  (o.label || "Square " + e) +
+                  "</strong>" +
+                  o.msg +
+                  c),
+                (n.className =
+                  "gc-status-card" +
+                  ("virtue" === i
+                    ? " virtue-flash"
+                    : "vice" === i
+                      ? " vice-flash"
+                      : "")),
+                setTimeout(function () {
+                  n && (n.className = "gc-status-card");
+                }, 900));
+              var l = Math.round((e / 49) * 100),
+                r = document.getElementById("gc-pos-fill");
+              r && (r.style.width = l + "%");
+              var d = document.querySelector("#gc-pos-bar span");
+              d && (d.textContent = l + "%");
+              var g = document.getElementById("gc-roll-count");
+              (g &&
+                (g.textContent =
+                  "Roll " + GC_ROLLS + " · Square " + e + " / 49"),
+                gcHighlight(e));
+            }
+          }
+          function gcSparks(e) {
+            var t = document.getElementById("gc-token");
+            if (t)
+              for (
+                var a =
+                    "virtue" === e
+                      ? ["#2A6B4A", "#3D9B6A", "#5BC88A"]
+                      : ["#9F2A2A", "#CC5050", "#FF8080"],
+                  n = document.getElementById("gc-board-wrap"),
+                  o = 0;
+                o < 10;
+                o++
+              )
+                (function () {
+                  var e = document.createElement("div");
+                  e.className = "gc-spark";
+                  var o = 4 + 6 * Math.random(),
+                    i = 360 * Math.random(),
+                    s = 30 + 50 * Math.random(),
+                    c = Math.cos((i * Math.PI) / 180) * s,
+                    l = Math.sin((i * Math.PI) / 180) * s;
+                  ((e.style.cssText =
+                    "width:" +
+                    o +
+                    "px;height:" +
+                    o +
+                    "px;background:" +
+                    a[Math.floor(Math.random() * a.length)] +
+                    ";left:" +
+                    t.style.left +
+                    ";top:" +
+                    t.style.top +
+                    ";transform:translate(-50%,-50%);--tx:" +
+                    c +
+                    "px;--ty:" +
+                    l +
+                    "px;animation-duration:" +
+                    (0.5 + 0.4 * Math.random()) +
+                    "s;animation-delay:" +
+                    0.12 * Math.random() +
+                    "s;"),
+                    n.appendChild(e),
+                    setTimeout(function () {
+                      e.parentNode && e.parentNode.removeChild(e);
+                    }, 900));
+                })();
+          }
+          function gcConfetti() {
+            var e = document.getElementById("gc-celebration");
+            if (e) {
+              (e.classList.add("active"), (e.innerHTML = ""));
+              for (
+                var t = [
+                    "#D88A1C",
+                    "#9F6314",
+                    "#2A6B4A",
+                    "#7A2A2A",
+                    "#1B5E8B",
+                    "#C0607A",
+                    "#f5c518",
+                    "#ff6b6b",
+                    "#4ecdc4",
+                  ],
+                  a = 0;
+                a < 90;
+                a++
+              )
+                (function (a) {
+                  setTimeout(function () {
+                    var a = document.createElement("div");
+                    a.className = "gc-confetti-piece";
+                    var n = 6 + 10 * Math.random(),
+                      o = 2.2 + 2 * Math.random();
+                    ((a.style.cssText =
+                      "left:" +
+                      100 * Math.random() +
+                      "vw;width:" +
+                      n +
+                      "px;height:" +
+                      n +
+                      "px;background:" +
+                      t[Math.floor(Math.random() * t.length)] +
+                      ";border-radius:" +
+                      (Math.random() > 0.5 ? "50%" : "2px") +
+                      ";animation-duration:" +
+                      o +
+                      "s;animation-delay:0s;transform:rotate(" +
+                      360 * Math.random() +
+                      "deg);"),
+                      e.appendChild(a),
+                      setTimeout(
+                        function () {
+                          a.parentNode && a.parentNode.removeChild(a);
+                        },
+                        1e3 * o + 200,
+                      ));
+                  }, 28 * a);
+                })(a);
+              setTimeout(function () {
+                e.classList.remove("active");
+              }, 7e3);
+            }
+          }
+          function gcShowMoksha() {
+            gcConfetti();
+            var e = document.getElementById("gc-moksha-banner");
+            e && e.classList.add("active");
+            var t = document.getElementById("gc-moksha-rolls");
+            t && (t.textContent = GC_ROLLS);
+          }
+          function gcMokshaClose() {
+            var e = document.getElementById("gc-moksha-banner");
+            (e && e.classList.remove("active"), gcRestart());
+          }
+          function gcToggleRules() {
+            var e = document.getElementById("gc-rules-overlay");
+            e && e.classList.toggle("active");
+          }
+          function gcToggleFS() {
+            var e = document.getElementById("gc-fs-wrap");
+            document.fullscreenElement
+              ? document.exitFullscreen && document.exitFullscreen()
+              : e.requestFullscreen &&
+                e.requestFullscreen().catch(function () {});
+          }
+          function gcFinish() {
+            GC_ROLLING = !1;
+            var e = document.getElementById("gc-roll-btn");
+            e && (e.disabled = !1);
+          }
+          function gcApplyMove(e) {
+            var t = GC_POS + e,
+              a = null;
+            t > 49 && ((t = 49 - (t - 49)), (a = "bounce"));
+            var n = t;
+            return (
+              (GC_POS = t),
+              GC_LADDERS[n]
+                ? (gcPositionToken(n),
+                  gcUpdateCard(n, n, null),
+                  gcSparks("virtue"),
+                  void setTimeout(function () {
+                    (gcPositionToken((GC_POS = GC_LADDERS[n])),
+                      gcUpdateCard(GC_POS, n, "ladder"),
+                      gcSparks("virtue"),
+                      gcFinish());
+                  }, 700))
+                : GC_SNAKES[n]
+                  ? (gcPositionToken(n),
+                    gcUpdateCard(n, n, null),
+                    gcSparks("vice"),
+                    void setTimeout(function () {
+                      (gcPositionToken((GC_POS = GC_SNAKES[n])),
+                        gcUpdateCard(GC_POS, n, "snake"),
+                        gcSparks("vice"),
+                        gcFinish());
+                    }, 700))
+                  : (gcPositionToken(GC_POS),
+                    gcUpdateCard(GC_POS, e, a),
+                    49 === GC_POS
+                      ? ((GC_ROLLING = !1), void setTimeout(gcShowMoksha, 800))
+                      : void gcFinish())
+            );
+          }
+          function gcRoll() {
+            if (!(GC_ROLLING || GC_POS >= 49)) {
+              ((GC_ROLLING = !0), GC_ROLLS++);
+              var e = document.getElementById("gc-roll-btn");
+              e && (e.disabled = !0);
+              var t = document.getElementById("gc-dice");
+              t &&
+                (t.classList.remove("rolling", "glowing"),
+                t.offsetWidth,
+                t.classList.add("rolling"));
+              var a = Math.ceil(6 * Math.random()),
+                n = 0,
+                o = setInterval(function () {
+                  (t &&
+                    (t.textContent = GC_FACES[Math.floor(6 * Math.random())]),
+                    ++n >= 9 &&
+                      (clearInterval(o),
+                      t &&
+                        ((t.textContent = GC_FACES[a - 1]),
+                        t.classList.remove("rolling"),
+                        t.classList.add("glowing"),
+                        setTimeout(function () {
+                          t && t.classList.remove("glowing");
+                        }, 600)),
+                      setTimeout(function () {
+                        gcApplyMove(a);
+                      }, 220)));
+                }, 55);
+            }
+          }
+          function gcRestart() {
+            ((GC_POS = 0), (GC_ROLLING = !1), (GC_ROLLS = 0));
+            var e = document.getElementById("gc-token");
+            (e && ((e.style.top = "105%"), (e.style.left = "50%")),
+              document
+                .querySelectorAll(".gc-sq.active-sq,.gc-sq.just-landed")
+                .forEach(function (e) {
+                  e.classList.remove("active-sq", "just-landed");
+                }));
+            var t = document.getElementById("gc-pos-fill");
+            t && (t.style.width = "0%");
+            var a = document.querySelector("#gc-pos-bar span");
+            a && (a.textContent = "0%");
+            var n = document.getElementById("gc-roll-count");
+            n && (n.textContent = "Roll 0 · Square 0 / 49");
+            var o = document.getElementById("gc-status-card");
+            o &&
+              (o.innerHTML =
+                "<strong>Your journey begins</strong>Roll the dice to start your path from the earthly realm toward Moksha. Each square holds a teaching.");
+            var i = document.getElementById("gc-dice");
+            i && (i.textContent = "⚀");
+            var s = document.getElementById("gc-roll-btn");
+            s &&
+              ((s.textContent = "🎲 Roll the Dice"),
+              (s.onclick = gcRoll),
+              (s.disabled = !1));
+          }
+          (document.addEventListener("fullscreenchange", function () {
+            var e = document.getElementById("gc-fs-wrap"),
+              t = document.getElementById("gc-fs-icon"),
+              a = document.getElementById("gc-fs-label");
+            (document.fullscreenElement
+              ? (e.classList.add("is-fullscreen"),
+                t && (t.textContent = "⛶"),
+                a && (a.textContent = "Exit"))
+              : (e.classList.remove("is-fullscreen"),
+                t && (t.textContent = "⛶"),
+                a && (a.textContent = "Fullscreen")),
+              setTimeout(function () {
+                GC_POS > 0 && gcPositionToken(GC_POS);
+              }, 120));
+          }),
+            (function e() {
+              if (document.getElementById("gc-board")) {
+                gcBuildBoard();
+                var t = document.getElementById("gc-token");
+                (t && ((t.style.top = "105%"), (t.style.left = "50%")),
+                  window.addEventListener("resize", function () {
+                    GC_POS > 0 &&
+                      setTimeout(function () {
+                        gcPositionToken(GC_POS);
+                      }, 60);
+                  }));
+              } else setTimeout(e, 80);
+            })());
+        </script>
+      </section>
+</body>
+</html>

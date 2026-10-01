@@ -22,6 +22,7 @@ const footerGroups = [
       { href: "/about", label: "About" },
       { href: "/sources", label: "Sources" },
       { href: "/contact", label: "Contact" },
+      { href: "/sitemap", label: "Site Map" },
     ],
   },
   {
@@ -117,9 +118,14 @@ export function MarketingFooter() {
           </div>
         ))}
       </div>
-      <div className="border-t border-[var(--card-border)] px-5 py-5 text-center text-xs text-[var(--text-dim)]">
-        © {new Date().getFullYear()} Shoonaya. Ancient foundation, modern
-        doorway.
+      <div className="border-t border-[var(--card-border)] px-5 py-5 text-center text-xs text-[var(--text-dim)] flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+        <span>© {new Date().getFullYear()} Shoonaya. Ancient foundation, modern doorway.</span>
+        <span>•</span>
+        <Link href="/privacy" className="hover:text-[var(--text-cream)] transition-colors">Privacy</Link>
+        <span>•</span>
+        <Link href="/terms" className="hover:text-[var(--text-cream)] transition-colors">Terms</Link>
+        <span>•</span>
+        <Link href="/sitemap" className="hover:text-[var(--text-cream)] transition-colors">Site Map</Link>
       </div>
     </footer>
   );
