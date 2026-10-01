@@ -42,6 +42,11 @@ describe("notification delivery policy", () => {
     expect(getNotificationPreferenceSkipReason(row, {})).toBeNull();
   });
 
+  it("routes Shloka reminders to the Shloka focus even when action metadata is absent", () => {
+    expect(getScheduledNotificationActionPath({ notification_type: "shloka" }))
+      .toBe("/home?focus=shloka");
+  });
+
   it("fails closed for Sankalpa midpoint reminders until the user explicitly opts in", () => {
     const row = { notification_type: "sankalpa_midpoint", notification_key: "candidate:sankalpa-1:midpoint" };
     expect(getNotificationPreferenceSkipReason(row, {})).toBe("sankalpa_midpoint_reminders_disabled");

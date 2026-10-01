@@ -147,6 +147,18 @@ export async function GET(request: Request) {
 
     if (profileErr) {
       console.error("[notification-dispatch] Profile lookup error:", profileErr);
+      const { error: requeueError } = await supabase
+        .from("notification_schedule")
+        .update({ status: "pending", claimed_at: null, error: "profile_lookup_retry" })
+        .in("id", claimedRows.map((row) => row.id))
+        .eq("status", "sending");
+      if (requeueError) {
+        console.error("[notification-dispatch] Could not requeue after profile lookup failure:", requeueError.message);
+      }
+      return NextResponse.json(
+        { error: "Could not verify notification eligibility; delivery will retry" },
+        { status: 503 }
+      );
     }
 
     const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));

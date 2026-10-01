@@ -101,6 +101,8 @@ export function produceShlokaCandidate(
     metadata: {
       priority_class: 'routine_engagement',
       routine_type: 'shloka',
+      type: 'streak',
+      emoji: meta.symbol,
       streak,
     },
     status: 'pending',

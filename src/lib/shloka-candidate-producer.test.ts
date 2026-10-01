@@ -21,6 +21,7 @@ describe('shloka-candidate-producer', () => {
     expect(cand!.event_id).toBe('shloka-daily');
     expect(cand!.local_date).toBe('2026-11-08');
     expect(cand!.action_url).toBe('/home?focus=shloka');
+    expect(cand!.metadata).toMatchObject({ type: 'streak', emoji: '🕉️' });
     expect(cand!.priority).toBe(45);
     expect(cand!.title).toContain('awaits');
     expect(cand!.body).toContain('Continue your 5-day sadhana journey 🙏');

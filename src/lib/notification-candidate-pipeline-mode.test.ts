@@ -63,6 +63,22 @@ describe('notification-candidate-pipeline-mode', () => {
     expect(getRoutinePipelineMode('nitya')).toBe('candidate');
   });
 
+  it('requires both Shloka candidate switches before the resolver can process Shloka candidates', () => {
+    process.env.NOTIFICATION_ROUTINE_MODE_SHLOKA = 'candidate';
+    process.env.NOTIFICATION_CANDIDATE_MODE_SHLOKA = 'candidate';
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+
+    expect(getRoutinePipelineMode('shloka')).toBe('candidate');
+    expect(shouldProcessCandidateType('shloka')).toBe(true);
+
+    process.env.NOTIFICATION_CANDIDATE_MODE_SHLOKA = 'disabled';
+    expect(shouldProcessCandidateType('shloka')).toBe(false);
+
+    process.env.NOTIFICATION_CANDIDATE_MODE_SHLOKA = 'candidate';
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'false';
+    expect(shouldProcessCandidateType('shloka')).toBe(false);
+  });
+
   it('requires both global flag AND per-type candidate flag to process', () => {
     process.env.NOTIFICATION_CANDIDATE_MODE_DHARM_VEER = 'candidate';
 

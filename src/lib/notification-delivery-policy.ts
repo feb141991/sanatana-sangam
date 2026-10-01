@@ -79,6 +79,7 @@ export function getScheduledNotificationActionPath(row: ScheduledNotificationRow
   const notificationType = row.notification_type ?? "generic";
   if (notificationType === "sanskar_milestone") return "/kul/sanskara";
   if (notificationType === "sankalpa_midpoint") return "/sankalpa";
+  if (notificationType === "shloka") return "/home?focus=shloka";
   if (notificationType === "sattvic_reminder") return "/bhakti/zen";
   if (notificationType.startsWith("nitya")) return "/nitya-karma";
   if (notificationType === "festival" || notificationType === "tithi") return "/panchang";

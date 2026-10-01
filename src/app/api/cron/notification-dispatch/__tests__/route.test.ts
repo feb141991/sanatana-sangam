@@ -5,6 +5,7 @@ import { sendPushNotification } from '@/lib/push-server';
 const mocks = vi.hoisted(() => ({
   claimedRows: [] as Array<Record<string, unknown>>,
   profiles: [] as Array<Record<string, unknown>>,
+  profileError: null as { message: string; code?: string } | null,
   sadhanaResponse: { data: null, error: null } as { data: unknown[] | null; error: { message: string } | null },
   sadhanaDates: [] as string[],
   updates: [] as Array<{ table: string; update: unknown; ids?: string[] }>,
@@ -21,7 +22,7 @@ vi.mock('@supabase/supabase-js', () => ({
     from: (table: string) => {
       const response = () => ({
         data: table === 'profiles' ? mocks.profiles : mocks.sadhanaResponse.data,
-        error: table === 'daily_sadhana' ? mocks.sadhanaResponse.error : null,
+        error: table === 'profiles' ? mocks.profileError : table === 'daily_sadhana' ? mocks.sadhanaResponse.error : null,
       });
       return {
         select: vi.fn().mockReturnValue({
@@ -87,6 +88,7 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       last_shloka_date: '2026-09-28',
     }];
     mocks.sadhanaResponse = { data: [{ user_id: 'user-1', japa_done: true }], error: null };
+    mocks.profileError = null;
     mocks.sadhanaDates = [];
     mocks.updates = [];
     vi.clearAllMocks();
@@ -127,6 +129,20 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
     expect(mocks.updates).toContainEqual({
       table: 'notification_schedule',
       update: { status: 'pending', claimed_at: null, error: 'japa_completion_lookup_retry' },
+      ids: ['schedule-1'],
+    });
+  });
+
+  it('requeues the claimed batch when profile eligibility cannot be verified', async () => {
+    mocks.profileError = { message: 'database unavailable', code: '57P01' };
+
+    const response = await GET(request());
+
+    expect(response.status).toBe(503);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule',
+      update: { status: 'pending', claimed_at: null, error: 'profile_lookup_retry' },
       ids: ['schedule-1'],
     });
   });
