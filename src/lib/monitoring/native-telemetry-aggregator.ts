@@ -37,6 +37,10 @@ export interface NativeTelemetryMonitoringMetrics {
   auth_diagnostics_1h: number | null;
   auth_diagnostics_24h: number | null;
   auth_diagnostics_fetch_error: boolean;
+  api_diagnostics: NativeApiDiagnosticRow[];
+  api_diagnostics_1h: number | null;
+  api_diagnostics_24h: number | null;
+  api_diagnostics_fetch_error: boolean;
 }
 
 export interface NativeAuthDiagnosticRow {
@@ -50,6 +54,23 @@ export interface NativeAuthDiagnosticRow {
   had_access_token: boolean;
   refresh_attempted: boolean;
   refresh_succeeded: boolean;
+  duration_ms: number;
+  app_version: string | null;
+  platform: string | null;
+  client_occurred_at: string | null;
+  received_at: string;
+}
+
+export interface NativeApiDiagnosticRow {
+  client_event_id: string;
+  server_request_id: string | null;
+  retry_server_request_id: string | null;
+  endpoint: string;
+  method: string;
+  outcome: string;
+  first_status: number | null;
+  final_status: number | null;
+  attempt_count: number;
   duration_ms: number;
   app_version: string | null;
   platform: string | null;
@@ -93,7 +114,8 @@ export async function fetchNativeTelemetryMonitoringMetrics(): Promise<NativeTel
   // top-100-overall query silently under-reports once daily submissions
   // exceed 100, with no error or signal that it happened.
   const [oneHourResult, twentyFourHourResult, lifetimeResult, distinctUsersResult,
-    authOneHourResult, authTwentyFourHourResult, authRecentResult] = await Promise.all([
+    authOneHourResult, authTwentyFourHourResult, authRecentResult,
+    apiOneHourResult, apiTwentyFourHourResult, apiRecentResult] = await Promise.all([
     supabase.from('native_startup_telemetry_summaries')
       .select('id', { count: 'exact', head: true })
       .gte('received_at', oneHourAgo),
@@ -111,6 +133,16 @@ export async function fetchNativeTelemetryMonitoringMetrics(): Promise<NativeTel
       .gte('received_at', twentyFourHoursAgo),
     supabase.from('native_auth_diagnostic_events')
       .select('request_id, retry_request_id, route, auth_code, initial_status, final_status, auth_ready_wait_ms, had_access_token, refresh_attempted, refresh_succeeded, duration_ms, app_version, platform, client_occurred_at, received_at')
+      .order('received_at', { ascending: false })
+      .limit(100),
+    supabase.from('native_api_diagnostic_events')
+      .select('client_event_id', { count: 'exact', head: true })
+      .gte('received_at', oneHourAgo),
+    supabase.from('native_api_diagnostic_events')
+      .select('client_event_id', { count: 'exact', head: true })
+      .gte('received_at', twentyFourHoursAgo),
+    supabase.from('native_api_diagnostic_events')
+      .select('client_event_id, server_request_id, retry_server_request_id, endpoint, method, outcome, first_status, final_status, attempt_count, duration_ms, app_version, platform, client_occurred_at, received_at')
       .order('received_at', { ascending: false })
       .limit(100),
   ]);
@@ -134,6 +166,13 @@ export async function fetchNativeTelemetryMonitoringMetrics(): Promise<NativeTel
       codes: [authOneHourResult.error?.code, authTwentyFourHourResult.error?.code, authRecentResult.error?.code].filter(Boolean),
     });
   }
+  const apiDiagnosticsFetchError = [apiOneHourResult, apiTwentyFourHourResult, apiRecentResult]
+    .some((result) => Boolean(result.error));
+  if (apiDiagnosticsFetchError) {
+    console.error('[native-telemetry-aggregator] API diagnostics query failed', {
+      codes: [apiOneHourResult.error?.code, apiTwentyFourHourResult.error?.code, apiRecentResult.error?.code].filter(Boolean),
+    });
+  }
 
   return {
     submissions_1h: oneHourResult.error ? null : oneHourResult.count,
@@ -148,5 +187,9 @@ export async function fetchNativeTelemetryMonitoringMetrics(): Promise<NativeTel
     auth_diagnostics_1h: authOneHourResult.error ? null : authOneHourResult.count,
     auth_diagnostics_24h: authTwentyFourHourResult.error ? null : authTwentyFourHourResult.count,
     auth_diagnostics_fetch_error: authDiagnosticsFetchError,
+    api_diagnostics: apiRecentResult.error ? [] : (apiRecentResult.data ?? []) as NativeApiDiagnosticRow[],
+    api_diagnostics_1h: apiOneHourResult.error ? null : apiOneHourResult.count,
+    api_diagnostics_24h: apiTwentyFourHourResult.error ? null : apiTwentyFourHourResult.count,
+    api_diagnostics_fetch_error: apiDiagnosticsFetchError,
   };
 }

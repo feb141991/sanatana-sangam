@@ -3512,6 +3512,57 @@ export type Database = {
         }
         Relationships: []
       }
+      native_api_diagnostic_events: {
+        Row: {
+          app_version: string | null
+          attempt_count: number
+          client_event_id: string
+          client_occurred_at: string | null
+          duration_ms: number
+          endpoint: string
+          final_status: number | null
+          first_status: number | null
+          method: string
+          outcome: string
+          platform: string | null
+          received_at: string
+          retry_server_request_id: string | null
+          server_request_id: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          attempt_count: number
+          client_event_id: string
+          client_occurred_at?: string | null
+          duration_ms: number
+          endpoint: string
+          final_status?: number | null
+          first_status?: number | null
+          method: string
+          outcome: string
+          platform?: string | null
+          received_at?: string
+          retry_server_request_id?: string | null
+          server_request_id?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          attempt_count?: number
+          client_event_id?: string
+          client_occurred_at?: string | null
+          duration_ms?: number
+          endpoint?: string
+          final_status?: number | null
+          first_status?: number | null
+          method?: string
+          outcome?: string
+          platform?: string | null
+          received_at?: string
+          retry_server_request_id?: string | null
+          server_request_id?: string | null
+        }
+        Relationships: []
+      }
       native_startup_telemetry_summaries: {
         Row: {
           app_version: string | null
