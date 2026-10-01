@@ -4886,9 +4886,13 @@
             justify-content: center;
             font-size: 14px;
             transform: translate(-50%, -50%);
+            opacity: 0;
+            visibility: hidden;
             transition:
               top 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-              left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+              left 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.3s ease,
+              transform 0.4s cubic-bezier(0.36, 1.5, 0.4, 1);
             z-index: 10;
             pointer-events: none;
             filter: drop-shadow(0 0 5px rgba(216, 138, 28, 0.5));
@@ -5595,14 +5599,21 @@
           function gcPositionToken(e) {
             var t = document.getElementById("gc-token");
             if (t) {
-              if (0 === e)
-                return ((t.style.top = "105%"), void (t.style.left = "50%"));
+              if (0 === e) {
+                t.style.opacity = "0";
+                t.style.visibility = "hidden";
+                t.style.pointerEvents = "none";
+                return;
+              }
               var a = document.getElementById("gcsq" + e);
               if (a) {
                 var n = document
                     .getElementById("gc-board-wrap")
                     .getBoundingClientRect(),
                   o = a.getBoundingClientRect();
+                t.style.opacity = "1";
+                t.style.visibility = "visible";
+                t.style.pointerEvents = "none";
                 ((t.style.left = o.left - n.left + o.width / 2 + "px"),
                   (t.style.top = o.top - n.top + o.height / 2 + "px"),
                   t.classList.remove("pop"),
@@ -5885,7 +5896,7 @@
           function gcRestart() {
             ((GC_POS = 0), (GC_ROLLING = !1), (GC_ROLLS = 0));
             var e = document.getElementById("gc-token");
-            (e && ((e.style.top = "105%"), (e.style.left = "50%")),
+            (e && ((e.style.opacity = "0"), (e.style.visibility = "hidden")),
               document
                 .querySelectorAll(".gc-sq.active-sq,.gc-sq.just-landed")
                 .forEach(function (e) {
@@ -5928,7 +5939,7 @@
               if (document.getElementById("gc-board")) {
                 gcBuildBoard();
                 var t = document.getElementById("gc-token");
-                (t && ((t.style.top = "105%"), (t.style.left = "50%")),
+                (t && ((t.style.opacity = "0"), (t.style.visibility = "hidden")),
                   window.addEventListener("resize", function () {
                     GC_POS > 0 &&
                       setTimeout(function () {
