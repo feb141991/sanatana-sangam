@@ -87,37 +87,82 @@ export async function purgeDueDeletedAccounts({ dryRun = false } = {}) {
   };
 }
 
-// Deletes the user's own files from the `avatars` bucket -- the only bucket
-// that currently holds user-owned content addressed by userId (confirmed
-// live: `{userId}/avatar.*` from profile photo uploads and
-// `profiles/{userId}/home_cover_*` from home-cover uploads). Does NOT touch
-// `kuls/{kulId}/...` -- that's shared family content owned by the Kul, not
-// any single member, and must survive one member's account deletion.
-// Best-effort: a Storage failure is logged but never blocks the account
-// deletion itself, so a transient Storage outage can't leave a user stuck
-// mid-deletion.
-async function deleteUserStorageObjects(admin: ReturnType<typeof createServiceRoleSupabaseClient>, userId: string) {
-  const prefixes = [userId, `profiles/${userId}`];
+type StorageAdmin = ReturnType<typeof createServiceRoleSupabaseClient>;
 
-  for (const prefix of prefixes) {
-    try {
-      const { data: files, error: listError } = await admin.storage.from('avatars').list(prefix);
-      if (listError) {
-        console.warn(`account-deletion: storage list failed for ${prefix}:`, listError.message);
-        continue;
-      }
-      if (!files || files.length === 0) continue;
+const STORAGE_LIST_PAGE_SIZE = 100;
+const STORAGE_REMOVE_BATCH_SIZE = 100;
+const STORAGE_MAX_FOLDER_DEPTH = 5;
 
-      const paths = files.map((file) => `${prefix}/${file.name}`);
-      const { error: removeError } = await admin.storage.from('avatars').remove(paths);
-      if (removeError) {
-        console.warn(`account-deletion: storage remove failed for ${prefix}:`, removeError.message);
+// Buckets whose objects are addressed by user id, and the prefixes to clear.
+// `avatars` holds `{userId}/avatar.*` and `profiles/{userId}/home_cover_*`.
+// `pathshala-recordings` is assumed to use the same `{userId}/` prefix; no
+// upload code exists yet, so confirm the layout when recordings ship. NOT
+// `kuls/{kulId}/...` in avatars: that is shared family content owned by the
+// Kul, and must survive one member's account deletion. `shoonaya-tts-cache`
+// is shared content keyed by text, not by user.
+function userStorageTargets(userId: string) {
+  return [
+    { bucket: 'avatars', prefixes: [userId, `profiles/${userId}`] },
+    { bucket: 'pathshala-recordings', prefixes: [userId] },
+  ];
+}
+
+// Lists every object under a prefix. Storage `list` returns one folder level
+// and at most one page per call, so a single call silently misses files once
+// a user has more than a page of them or any nested folder. Folders come back
+// as entries with a null id.
+async function collectObjectPaths(
+  admin: StorageAdmin,
+  bucket: string,
+  prefix: string,
+  depth = 0,
+): Promise<string[]> {
+  const paths: string[] = [];
+
+  for (let offset = 0; ; offset += STORAGE_LIST_PAGE_SIZE) {
+    const { data: entries, error } = await admin.storage
+      .from(bucket)
+      .list(prefix, { limit: STORAGE_LIST_PAGE_SIZE, offset });
+    if (error) throw new Error(error.message);
+    if (!entries || entries.length === 0) break;
+
+    for (const entry of entries) {
+      const fullPath = `${prefix}/${entry.name}`;
+      if (entry.id === null) {
+        if (depth < STORAGE_MAX_FOLDER_DEPTH) paths.push(...await collectObjectPaths(admin, bucket, fullPath, depth + 1));
+      } else {
+        paths.push(fullPath);
       }
-    } catch (err) {
-      console.warn(
-        `account-deletion: storage cleanup exception for ${prefix}:`,
-        err instanceof Error ? err.message : String(err)
-      );
+    }
+
+    if (entries.length < STORAGE_LIST_PAGE_SIZE) break;
+  }
+
+  return paths;
+}
+
+// Deletes the user's own storage objects. Best-effort per prefix: a Storage
+// failure is logged but never blocks the account deletion itself, so a
+// transient Storage outage can't leave a user stuck mid-deletion.
+async function deleteUserStorageObjects(admin: StorageAdmin, userId: string) {
+  for (const { bucket, prefixes } of userStorageTargets(userId)) {
+    for (const prefix of prefixes) {
+      try {
+        const paths = await collectObjectPaths(admin, bucket, prefix);
+        for (let index = 0; index < paths.length; index += STORAGE_REMOVE_BATCH_SIZE) {
+          const { error: removeError } = await admin.storage
+            .from(bucket)
+            .remove(paths.slice(index, index + STORAGE_REMOVE_BATCH_SIZE));
+          if (removeError) {
+            console.warn(`account-deletion: storage remove failed for ${bucket}/${prefix}:`, removeError.message);
+          }
+        }
+      } catch (err) {
+        console.warn(
+          `account-deletion: storage cleanup exception for ${bucket}/${prefix}:`,
+          err instanceof Error ? err.message : String(err)
+        );
+      }
     }
   }
 }
