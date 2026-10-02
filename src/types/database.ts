@@ -1290,6 +1290,44 @@ export interface Database {
           audit_count: number;
         }[];
       };
+      persist_notification_candidate_resolution_with_lock: {
+        Args: {
+          p_owner_id: string;
+          p_schedule_rows?: Json;
+          p_candidate_updates?: Json;
+          p_audit_events?: Json;
+        };
+        Returns: {
+          promoted_count: number;
+          candidate_count: number;
+          audit_count: number;
+        }[];
+      };
+      try_acquire_notification_resolver_lock: {
+        Args: { p_owner_id: string; p_lease_seconds?: number };
+        Returns: boolean;
+      };
+      release_notification_resolver_lock: {
+        Args: { p_owner_id: string };
+        Returns: boolean;
+      };
+      update_seva_tier_and_queue_notification: {
+        Args: {
+          p_user_id: string;
+          p_expected_score: number;
+          p_previous_tier: string | null;
+          p_next_tier: string;
+          p_title: string;
+          p_body: string;
+          p_notification_key: string;
+          p_send_at: string;
+          p_metadata?: Json;
+        };
+        Returns: {
+          profile_updated: boolean;
+          notification_queued: boolean;
+        }[];
+      };
       get_post_comment_previews: {
         Args: { p_post_ids: string[]; p_preview_count?: number };
         Returns: {

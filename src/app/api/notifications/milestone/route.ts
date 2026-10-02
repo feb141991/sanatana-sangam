@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { sendPushNotification } from '@/lib/push-server';
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
+import { getNextLocalHourUtc, resolveTimeZone } from '@/lib/sacred-time';
+import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
 
 // ─── Achievement Milestone Notification ───────────────────────────────────────
 // Called by JapaClient after saving a session when streak or total session count
@@ -73,56 +74,46 @@ export async function POST(request: NextRequest) {
 
   const serviceSupabase = createServiceRoleSupabaseClient();
   const bodyText = `${copy.body} Fellow Shoonyas celebrate with you!`;
-
-  // Upsert with ignoreDuplicates — idempotent: calling twice for the same
-  // user+milestone does nothing (no error). A real upsertError here means an
-  // actual persistence failure (permissions, connectivity, schema), not the
-  // expected "already recorded" case, so it must not be swallowed.
-  const { error: upsertError } = await serviceSupabase
-    .from('notifications')
-    .upsert({
-      user_id:          user.id,
-      title:            `${copy.emoji} ${copy.title}`,
-      body:             bodyText,
-      emoji:            copy.emoji,
-      type:             'milestone',
-      action_url:       actionUrl,
-      notification_key: notificationKey,
-    }, { onConflict: 'user_id,notification_key', ignoreDuplicates: true });
-
-  if (upsertError) {
-    console.error('[milestone] DB upsert error:', upsertError.message);
+  const { data: profile, error: profileError } = await serviceSupabase
+    .from('profiles')
+    .select('timezone')
+    .eq('id', user.id)
+    .maybeSingle();
+  if (profileError) {
+    return NextResponse.json({ ok: false, key: notificationKey, error: profileError.message }, { status: 500 });
   }
 
-  // Fire push (non-blocking, best-effort) regardless of the DB outcome — if
-  // we already have the copy ready, a failed persistence shouldn't also
-  // block the push. But the persistence failure is still reported below,
-  // not hidden behind a generic { ok: true }.
-  let pushError: string | null = null;
+  const timezone = resolveTimeZone(profile?.timezone);
+  const { sendAt, localDateIso } = getNextLocalHourUtc(new Date(), timezone, 10, 0);
   try {
-    await sendPushNotification({
-      userIds: [user.id],
-      title:   `${copy.emoji} ${copy.title}`,
-      body:    bodyText,
-      url:     new URL(actionUrl, new URL(request.url).origin).toString(),
-    });
+    const result = await enqueueNotificationSchedule(serviceSupabase, [{
+      user_id: user.id,
+      title: `${copy.emoji} ${copy.title}`,
+      body: bodyText,
+      send_at: sendAt.toISOString(),
+      notification_type: 'milestone',
+      status: 'pending',
+      notification_key: notificationKey,
+      metadata: {
+        emoji: copy.emoji,
+        type: 'general',
+        action_url: actionUrl,
+        timezone,
+        local_date: localDateIso,
+        milestone_type: type,
+        threshold,
+      },
+    }]);
+    return NextResponse.json({ ok: true, key: notificationKey, ...result });
   } catch (err) {
-    console.error('[milestone] Push error:', err);
-    pushError = err instanceof Error ? err.message : 'Push failed';
-  }
-
-  if (upsertError) {
+    console.error('[milestone] Schedule admission failed:', err);
     return NextResponse.json(
       {
         ok: false,
         key: notificationKey,
-        error: `Failed to save milestone notification: ${upsertError.message}`,
-        pushAttempted: true,
-        pushError,
+        error: err instanceof Error ? err.message : 'Failed to queue milestone notification',
       },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({ ok: true, key: notificationKey, pushError });
 }

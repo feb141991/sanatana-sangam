@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
-import { sendPushNotification } from '@/lib/push-server';
-import { buildSpiritualDateRange, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
+import { buildSpiritualDateRange, getNextLocalHourUtc, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
+import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
+import type { NotificationScheduleDraft } from '@/lib/notification-schedule-queue';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -104,7 +105,7 @@ export async function GET(request: Request) {
 
     const users = (profiles ?? []) as ProfileRow[];
     if (users.length === 0) {
-      return NextResponse.json({ processed: 0, sent: 0, failed: 0 });
+      return NextResponse.json({ processed: 0, queued: 0, failed: 0 });
     }
 
     const userDateRanges = new Map<string, string[]>();
@@ -158,7 +159,7 @@ export async function GET(request: Request) {
       .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
 
     if (activeUsers.length === 0) {
-      return NextResponse.json({ processed: users.length, sent: 0, failed: 0 });
+      return NextResponse.json({ processed: users.length, queued: 0, failed: 0 });
     }
 
     const settled = await Promise.allSettled(
@@ -175,19 +176,28 @@ export async function GET(request: Request) {
             throw new Error('Empty weekly summary');
           }
 
-          const pushResult = await sendPushNotification({
-            userIds: [user.id],
+          const timezone = resolveTimeZone(user.timezone);
+          const { sendAt, localDateIso } = getNextLocalHourUtc(new Date(), timezone, 10, 0);
+          const draft: NotificationScheduleDraft = {
+            user_id: user.id,
             title: TITLE,
             body,
-            url: '/home?focus=weekly-summary',
-            data: { type: 'weekly_summary' },
-          });
-
-          if (pushResult.sent < 1) {
-            throw new Error('Push not sent');
-          }
-
-          return { userId: user.id, sent: true };
+            send_at: sendAt.toISOString(),
+            notification_type: 'weekly_summary',
+            status: 'pending',
+            notification_key: `weekly-summary:${user.id}:${localDateIso}`,
+            metadata: {
+              type: 'general',
+              emoji: '🪔',
+              action_url: '/home?focus=weekly-summary',
+              timezone,
+              local_date: localDateIso,
+              active_days: totalDays,
+              perfect_days: perfectDays,
+              dominant_practice: dominantPractice,
+            },
+          };
+          return { userId: user.id, draft };
         } catch (error) {
           console.error('[weekly-summary] user failed', user.id, error);
           throw error;
@@ -195,12 +205,17 @@ export async function GET(request: Request) {
       })
     );
 
-    const sent = settled.filter((result) => result.status === 'fulfilled').length;
+    const drafts = settled
+      .filter((result): result is PromiseFulfilledResult<{ userId: string; draft: NotificationScheduleDraft }> => result.status === 'fulfilled')
+      .map((result) => result.value.draft);
+    const { queued, ignored } = await enqueueNotificationSchedule(supabase, drafts);
     const failed = settled.filter((result) => result.status === 'rejected').length;
 
     return NextResponse.json({
       processed: activeUsers.length,
-      sent,
+      generated: drafts.length,
+      queued,
+      ignored,
       failed,
     });
   } catch (error) {

@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
-import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { getNextLocalHourUtc, resolveTimeZone } from '@/lib/sacred-time';
+import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
+import type { NotificationScheduleDraft } from '@/lib/notification-schedule-queue';
 import { getPlanById } from '@/lib/guided-paths';
 
 // ─── Guided Plan Milestone Reminder Cron ─────────────────────────────────────
 // Schedule: runs daily at 6 AM UTC.
-// Finds users with an active guided plan and sends a day-N nudge push if they
-// haven't already received one for today. Skips users with no push tokens.
+// Finds users with an active guided plan and queues a day-N nudge into the
+// shared cadence dispatcher at their next local 08:00 slot.
 //
 // Notification key: `guided-plan:{path_id}:day:{day_reached}` — one per day.
 
@@ -33,7 +34,6 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
   const safetyState = getNotificationSafetyState('guided-plan', request);
   const now      = new Date();
-  const actionUrl = new URL('/nitya-karma/plans', new URL(request.url).origin).toString();
 
   try {
     // 1. Fetch all active guided plans with user profile info
@@ -54,31 +54,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No active guided plans', sent: 0 });
     }
 
-    // 2. Filter to users in morning window
-    const windowPlans = activePlans.filter((row: any) => {
-      const tz = resolveTimeZone(row.profiles?.timezone);
-      return canSendInLocalWindow(
-        now, tz, TARGET_LOCAL_HOUR,
-        row.profiles?.notification_quiet_hours_start ?? null,
-        row.profiles?.notification_quiet_hours_end ?? null,
-        2,
-      );
-    });
-
-    if (windowPlans.length === 0) {
-      return NextResponse.json({ message: 'No plans in morning window', sent: 0 });
-    }
+    const eligiblePlans = activePlans;
 
     // 3. Advance day_reached if last update was yesterday, build notifications
-    const notifications: {
-      user_id: string; title: string; body: string; emoji: string;
-      type: string; action_url: string; notification_key: string;
-      local_date: string; sent_timezone: string;
-    }[] = [];
+    const notifications: NotificationScheduleDraft[] = [];
 
-    for (const row of windowPlans as any[]) {
+    for (const row of eligiblePlans as any[]) {
       const tz        = resolveTimeZone(row.profiles?.timezone);
-      const localDate = getLocalDateIso(now, tz);
+      const { sendAt, localDateIso } = getNextLocalHourUtc(now, tz, TARGET_LOCAL_HOUR, 0);
       const plan      = getPlanById(row.path_id);
       if (!plan) continue;
 
@@ -94,12 +77,19 @@ export async function GET(request: Request) {
         user_id:          row.user_id,
         title,
         body,
-        emoji:            plan.emoji,
-        type:             'guided-plan',
-        action_url:       '/nitya-karma/plans',
-        notification_key: `guided-plan:${row.path_id}:day:${dayReached}:${localDate}`,
-        local_date:       localDate,
-        sent_timezone:    tz,
+        send_at:          sendAt.toISOString(),
+        notification_type: 'guided_plan',
+        status:           'pending',
+        notification_key: `guided-plan:${row.user_id}:${row.path_id}:day:${dayReached}:${localDateIso}`,
+        metadata: {
+          emoji: plan.emoji,
+          type: 'general',
+          action_url: '/nitya-karma/plans',
+          path_id: row.path_id,
+          day_reached: dayReached,
+          timezone: tz,
+          local_date: localDateIso,
+        },
       });
     }
 
@@ -109,9 +99,8 @@ export async function GET(request: Request) {
 
     if (safetyState.isDryRun || safetyState.skipDelivery) {
       return NextResponse.json(buildNotificationSafetyResponse('guided-plan', safetyState, {
-        eligibleCount: windowPlans.length,
+        eligibleCount: eligiblePlans.length,
         wouldInsertCount: notifications.length,
-        wouldSendCount: notifications.length,
         preview: notifications.slice(0, 10).map((notification) => ({
           user_id: notification.user_id,
           title: notification.title,
@@ -120,40 +109,8 @@ export async function GET(request: Request) {
       }));
     }
 
-    // 4. Insert with deduplication
-    let totalInserted    = 0;
-    const insertedUserIds: string[] = [];
-
-    for (let i = 0; i < notifications.length; i += 100) {
-      const batch = notifications.slice(i, i + 100);
-      const { data: insertedRows, error: insertError } = await supabase
-        .from('notifications')
-        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
-
-      if (insertError) {
-        console.error('Guided plan cron insert failed:', insertError);
-        continue;
-      }
-
-      totalInserted += insertedRows?.length ?? 0;
-      insertedUserIds.push(...(insertedRows ?? []).map((r: { user_id: string }) => r.user_id));
-    }
-
-    // 5. Send OneSignal pushes
-    const toSend = notifications.filter(n => insertedUserIds.includes(n.user_id));
-    let totalPushTargets = 0;
-
-    for (const notif of toSend) {
-      const pushResult = await sendPushNotification({
-        userIds: [notif.user_id],
-        title:   notif.title,
-        body:    notif.body,
-        url:     actionUrl,
-        data:    { type: 'guided-plan', path_id: (windowPlans as any[]).find((r: any) => r.user_id === notif.user_id)?.path_id },
-      });
-      totalPushTargets += pushResult.sent;
-    }
+    // 4. Queue with per-user/day cadence admission and idempotency.
+    const { queued, ignored } = await enqueueNotificationSchedule(supabase, notifications);
 
     // NOTE: We do NOT auto-advance day_reached here.
     // Day advancement is exclusively driven by the user tapping "Mark Day Complete"
@@ -161,11 +118,11 @@ export async function GET(request: Request) {
     // without the user actually doing the practice.
 
     return NextResponse.json({
-      message:      'Guided plan reminders sent',
+      message:      'Guided plan reminders queued',
       active_plans: activePlans.length,
-      window_plans: windowPlans.length,
-      inserted:     totalInserted,
-      push_targets: totalPushTargets,
+      eligible_plans: eligiblePlans.length,
+      inserted:     queued,
+      ignored,
     });
   } catch (error) {
     console.error('Guided plan cron crashed:', error);

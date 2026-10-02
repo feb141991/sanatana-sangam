@@ -8,9 +8,12 @@ const read = (file: string) => fs.readFileSync(path.join(root, file), 'utf8');
 describe('content generation delivery invariants', () => {
   it('queues digest delivery instead of sending push inline', () => {
     const source = read('src/app/api/digest/generate/route.ts');
+    const queue = read('src/lib/notification-schedule-queue.ts');
     expect(source).not.toContain("from '@/lib/push-server'");
-    expect(source).toContain(".from('notification_schedule')");
-    expect(source).toContain("onConflict: 'user_id,notification_key'");
+    expect(source).toContain("from '@/lib/notification-schedule-queue'");
+    expect(source).toContain('enqueueNotificationSchedule(supabase, notificationRows)');
+    expect(queue).toContain(".from('notification_schedule')");
+    expect(queue).toContain("onConflict: 'user_id,notification_key'");
     expect(source).toContain('panchang_signature');
   });
 

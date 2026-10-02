@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(31);
+SELECT plan(34);
 
 INSERT INTO auth.users (id) VALUES
   ('00000000-0000-0000-0000-000000000051'),
@@ -154,6 +154,44 @@ SELECT is(
    WHERE notification_key = 'resolver-batch:second:00000000-0000-0000-0000-000000000051'),
   '15:00',
   'candidate batch spacing shifts a later same-day notification instead of failing the batch'
+);
+SELECT lives_ok(
+  $$
+    DO $test$
+    DECLARE v_day DATE := (now() AT TIME ZONE 'UTC')::DATE + 31;
+    BEGIN
+      INSERT INTO public.notification_schedule (
+        user_id, title, body, send_at, notification_type, notification_key, metadata
+      ) VALUES
+        ('00000000-0000-0000-0000-000000000053', '10am', '10am', (v_day + TIME '10:00') AT TIME ZONE 'UTC', 'mood', 'no-slot:10am', jsonb_build_object('timezone', 'UTC', 'local_date', v_day::TEXT)),
+        ('00000000-0000-0000-0000-000000000053', '1pm', '1pm', (v_day + TIME '13:00') AT TIME ZONE 'UTC', 'mood', 'no-slot:1pm', jsonb_build_object('timezone', 'UTC', 'local_date', v_day::TEXT)),
+        ('00000000-0000-0000-0000-000000000053', '4pm', '4pm', (v_day + TIME '16:00') AT TIME ZONE 'UTC', 'mood', 'no-slot:4pm', jsonb_build_object('timezone', 'UTC', 'local_date', v_day::TEXT)),
+        ('00000000-0000-0000-0000-000000000053', '7pm', '7pm', (v_day + TIME '19:00') AT TIME ZONE 'UTC', 'mood', 'no-slot:7pm', jsonb_build_object('timezone', 'UTC', 'local_date', v_day::TEXT));
+    END;
+    $test$
+  $$,
+  'seed a full safe-spacing schedule with one remaining daily quota slot'
+);
+SELECT throws_ok(
+  $$SELECT * FROM public.persist_notification_candidate_resolution(
+      jsonb_build_array(jsonb_build_object(
+        'user_id', '00000000-0000-0000-0000-000000000053',
+        'notification_type', 'shloka', 'title', 'Late reflection', 'body', 'A quiet verse.',
+        'send_at', (((now() AT TIME ZONE 'UTC')::DATE + 31) + TIME '20:45') AT TIME ZONE 'UTC',
+        'notification_key', 'candidate:no-safe-slot',
+        'metadata', jsonb_build_object('timezone', 'UTC', 'local_date', ((now() AT TIME ZONE 'UTC')::DATE + 31)::TEXT, 'candidate_id', '00000000-0000-0000-0000-000000000099')
+      )), '[]'::jsonb, '[]'::jsonb
+    )$$,
+  'P0001',
+  'notification_cadence_candidate_reservation_mismatch',
+  'an accepted candidate whose spacing shift exceeds the same-day window fails closed'
+);
+SELECT is(
+  (SELECT count(*)::INTEGER FROM public.notification_schedule
+   WHERE user_id = '00000000-0000-0000-0000-000000000053'
+     AND notification_key = 'candidate:no-safe-slot'),
+  0,
+  'failed reservation leaves no schedule row behind'
 );
 SELECT ok(
   public.release_notification_resolver_lock('00000000-0000-0000-0000-000000000001'),

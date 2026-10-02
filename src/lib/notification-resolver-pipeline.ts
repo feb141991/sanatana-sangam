@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { randomUUID } from 'node:crypto';
 import type {
   NotificationCandidate,
 } from '@/types/database';
@@ -9,11 +10,17 @@ import {
   resolvePriorityClassForEventType,
   type ResolutionResult,
 } from './notification-resolver';
-import { deriveCandidateNotificationKey } from './notification-candidate-key';
+import { deriveCandidateNotificationKey, parseCandidateNotificationKey } from './notification-candidate-key';
 import {
   isCandidateResolverGloballyEnabled,
   shouldProcessCandidateType,
 } from './notification-candidate-pipeline-mode';
+import { getLocalDateIso, resolveTimeZone } from './sacred-time';
+import {
+  canonicalNotificationBudgetType,
+  NOTIFICATION_CADENCE_POLICY,
+  type NotificationQuietHours,
+} from './notification-cadence-policy';
 
 export interface ResolverPipelineOptions {
   supabase: SupabaseClient;
@@ -31,6 +38,7 @@ export interface ResolverPipelineRunResult {
   ok: boolean;
   skipped?: boolean;
   skipReason?: string;
+  retryCount?: number;
   dryRun: boolean;
   candidatesClaimed: number;
   acceptedCount: number;
@@ -47,6 +55,34 @@ export interface ResolverPipelineRunResult {
   };
   summary: ResolutionResult['summary'];
   error?: string;
+}
+
+function buildResolverSkippedResult(reason: string, retryCount = 0): ResolverPipelineRunResult {
+  return {
+    ok: true,
+    skipped: true,
+    skipReason: reason,
+    retryCount,
+    dryRun: false,
+    candidatesClaimed: 0,
+    acceptedCount: 0,
+    suppressedCount: 0,
+    deferredCount: 0,
+    expiredCount: 0,
+    cancelledCount: 0,
+    evaluations: [],
+    promotedToScheduleCount: 0,
+    auditEventsRecorded: 0,
+    summary: {
+      totalEvaluated: 0,
+      acceptedCount: 0,
+      suppressedCount: 0,
+      deferredCount: 0,
+      expiredCount: 0,
+      cancelledCount: 0,
+      reasons: {},
+    },
+  };
 }
 
 /**
@@ -86,6 +122,50 @@ export async function cleanupNotificationCandidatesRetention(
  */
 export async function executeCandidateResolverPipeline(
   options: ResolverPipelineOptions
+): Promise<ResolverPipelineRunResult> {
+  const { supabase, dryRun = false, forceIgnoreKillSwitch = false } = options;
+
+  // Dry-run is read-only and does not claim candidates, so it needs no lease.
+  // Disabled production runs also return without touching the database.
+  if (dryRun || (!forceIgnoreKillSwitch && !isCandidateResolverGloballyEnabled())) {
+    return executeCandidateResolverPipelineBody(options);
+  }
+
+  const lockOwnerId = randomUUID();
+  const { data: acquired, error: acquireError } = await supabase.rpc(
+    'try_acquire_notification_resolver_lock',
+    { p_owner_id: lockOwnerId, p_lease_seconds: 300 }
+  );
+  if (acquireError) {
+    throw new Error(`Could not acquire notification resolver lease: ${acquireError.message}`);
+  }
+  if (acquired !== true) {
+    return buildResolverSkippedResult('resolver_run_in_progress');
+  }
+
+  try {
+    return await executeCandidateResolverPipelineBody(options, lockOwnerId);
+  } finally {
+    try {
+      const { error: releaseError } = await supabase.rpc(
+        'release_notification_resolver_lock',
+        { p_owner_id: lockOwnerId }
+      );
+      if (releaseError) {
+        console.error('[notification-resolver] Failed to release run lease; it will expire automatically:', releaseError.message);
+      }
+    } catch (releaseError) {
+      console.error(
+        '[notification-resolver] Lease release request failed; it will expire automatically:',
+        releaseError instanceof Error ? releaseError.message : String(releaseError)
+      );
+    }
+  }
+}
+
+async function executeCandidateResolverPipelineBody(
+  options: ResolverPipelineOptions,
+  lockOwnerId?: string
 ): Promise<ResolverPipelineRunResult> {
   const {
     supabase,
@@ -295,24 +375,69 @@ export async function executeCandidateResolverPipeline(
   // 4. Fetch delivery history for candidate users to check existing engagement budget consumption
   const userIds = Array.from(new Set(activeCandidates.map((c) => c.user_id)));
   const localDates = Array.from(new Set(activeCandidates.map((c) => c.local_date)));
+  const candidateTimeZoneByUser = new Map<string, string>();
+  for (const candidate of activeCandidates) {
+    if (candidate.timezone && !candidateTimeZoneByUser.has(candidate.user_id)) {
+      candidateTimeZoneByUser.set(candidate.user_id, candidate.timezone);
+    }
+  }
 
-  // Query notification_schedule for existing sent or pending records for these devotees
-  const [{ data: scheduleHistory, error: scheduleHistoryError }, { data: directHistory, error: directHistoryError }] = await Promise.all([
+  // Use a generous UTC envelope around each local civil date. Local dates can
+  // begin in UTC-12 and end in UTC+14; the extra margin also covers DST shifts.
+  const sortedLocalDates = localDates.filter((date): date is string => /^\d{4}-\d{2}-\d{2}$/.test(date)).sort();
+  const historyFromIso = sortedLocalDates.length
+    ? new Date(Date.parse(`${sortedLocalDates[0]}T00:00:00.000Z`) - 14 * 60 * 60 * 1000).toISOString()
+    : new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString();
+  const historyToIso = sortedLocalDates.length
+    ? new Date(Date.parse(`${sortedLocalDates[sortedLocalDates.length - 1]}T00:00:00.000Z`) + 38 * 60 * 60 * 1000).toISOString()
+    : new Date(now.getTime() + 48 * 60 * 60 * 1000).toISOString();
+
+  // Read schedule/bell history and the user's quiet-hour policy together. These
+  // reads fail closed so missing policy data cannot accidentally create a burst.
+  const [
+    { data: scheduleHistory, error: scheduleHistoryError },
+    { data: directHistory, error: directHistoryError },
+    { data: profileRows, error: profileError },
+  ] = await Promise.all([
     supabase
     .from('notification_schedule')
     .select('id, user_id, notification_type, send_at, status, notification_key, metadata')
     .in('user_id', userIds)
-    .in('status', ['sent', 'sending', 'pending']),
+    .in('status', ['sent', 'sending', 'pending'])
+    .gte('send_at', historyFromIso)
+    .lt('send_at', historyToIso),
     supabase
       .from('notifications')
       .select('id, user_id, type, created_at, local_date, notification_key')
       .in('user_id', userIds)
       .in('local_date', localDates),
+    supabase
+      .from('profiles')
+      .select('id, timezone, notification_quiet_hours_start, notification_quiet_hours_end')
+      .in('id', userIds),
   ]);
 
-  if (scheduleHistoryError || directHistoryError) {
-    throw new Error(`Failed to load notification budget history: ${scheduleHistoryError?.message ?? directHistoryError?.message}`);
+  if (scheduleHistoryError || directHistoryError || profileError) {
+    throw new Error(`Failed to load notification budget history/policy: ${scheduleHistoryError?.message ?? directHistoryError?.message ?? profileError?.message}`);
   }
+
+  const quietHoursByUser: Record<string, NotificationQuietHours> = {};
+  const timeZoneByUser = new Map(candidateTimeZoneByUser);
+  if (Array.isArray(profileRows)) {
+    for (const row of profileRows) {
+      quietHoursByUser[row.id] = {
+        startHour: row.notification_quiet_hours_start == null ? null : Number(row.notification_quiet_hours_start),
+        endHour: row.notification_quiet_hours_end == null ? null : Number(row.notification_quiet_hours_end),
+      };
+      if (row.timezone) timeZoneByUser.set(row.id, row.timezone);
+    }
+  }
+  const timeZonesByUser = Object.fromEntries(
+    Array.from(timeZoneByUser, ([userId, timezone]) => [userId, resolveTimeZone(timezone)])
+  );
+
+  const isIsoLocalDate = (value: unknown): value is string =>
+    typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
   const historyItems: DeliveryHistoryItem[] = [];
   if (Array.isArray(scheduleHistory)) {
@@ -320,18 +445,29 @@ export async function executeCandidateResolverPipeline(
       const meta = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
         ? row.metadata as Record<string, unknown>
         : {};
-      // Extract local_date from metadata or notification_key or send_at
+      // Metadata is authoritative. Candidate keys have different shapes for
+      // generic reminders and observances; parse their semantic date before
+      // falling back to a date segment or the user's local date.
       const localDateValue = meta.local_date;
-      const localDate = typeof localDateValue === 'string'
+      const keyLocalDate = row.notification_key
+        ? parseCandidateNotificationKey(row.notification_key)?.local_date
+          ?? row.notification_key.split(':').find((part: string) => isIsoLocalDate(part))
+        : undefined;
+      const rowTimeZone = typeof meta.timezone === 'string' ? meta.timezone : timeZoneByUser.get(row.user_id);
+      const localDate = isIsoLocalDate(localDateValue)
         ? localDateValue
-        : (row.notification_key?.split(':')[3] || row.send_at?.slice(0, 10));
+        : isIsoLocalDate(keyLocalDate)
+          ? keyLocalDate
+          : row.send_at && Number.isFinite(Date.parse(row.send_at))
+            ? getLocalDateIso(new Date(row.send_at), resolveTimeZone(rowTimeZone))
+            : null;
       if (localDate && localDates.includes(localDate)) {
         historyItems.push({
           id: row.id,
           user_id: row.user_id,
           local_date: localDate,
-          notification_type: row.notification_type,
-          priority_class: resolvePriorityClassForEventType(row.notification_type),
+          notification_type: canonicalNotificationBudgetType(row.notification_type, row.notification_key),
+          priority_class: resolvePriorityClassForEventType(canonicalNotificationBudgetType(row.notification_type, row.notification_key)),
           notification_key: row.notification_key,
           sent_at: row.send_at,
         });
@@ -341,7 +477,7 @@ export async function executeCandidateResolverPipeline(
   if (Array.isArray(directHistory)) {
     for (const row of directHistory) {
       if (!row.local_date || !localDates.includes(row.local_date)) continue;
-      const eventType = row.type === 'festival' ? 'festival' : row.type === 'streak' ? 'streak' : row.type;
+      const eventType = canonicalNotificationBudgetType(row.type, row.notification_key);
       historyItems.push({
         id: row.id,
         user_id: row.user_id,
@@ -359,10 +495,12 @@ export async function executeCandidateResolverPipeline(
     candidates: activeCandidates,
     history: historyItems,
     now,
-    policyVersion: 'v1',
+    policyVersion: NOTIFICATION_CADENCE_POLICY.version,
     // These candidate events are time-sensitive; late replay under a future
     // budget window would be misleading. Suppress at the budget boundary.
     allowDeferrals: false,
+    quietHoursByUser,
+    timeZonesByUser,
   });
 
   let promotedToScheduleCount = 0;
@@ -403,17 +541,73 @@ export async function executeCandidateResolverPipeline(
       resolved_at: nowIso,
     }));
 
+    if (lockOwnerId) {
+      const { data: renewed, error: renewError } = await supabase.rpc(
+        'try_acquire_notification_resolver_lock',
+        { p_owner_id: lockOwnerId, p_lease_seconds: 300 }
+      );
+      if (renewError) {
+        throw new Error(`Could not renew notification resolver lease: ${renewError.message}`);
+      }
+      if (renewed !== true) {
+        const claimedIds = activeCandidates
+          .map((candidate) => candidate.id)
+          .filter((id): id is string => typeof id === 'string');
+        if (claimedIds.length > 0) {
+          const { error: requeueError } = await supabase
+            .from('notification_candidates')
+            .update({ status: 'pending', claimed_at: null, decision_reason: null, updated_at: nowIso })
+            .in('id', claimedIds)
+            .eq('status', 'resolving');
+          if (requeueError) {
+            throw new Error(`Resolver lease expired and claimed candidates could not be requeued: ${requeueError.message}`);
+          }
+        }
+        return buildResolverSkippedResult('resolver_lease_expired_retry_next_run', claimedIds.length);
+      }
+    }
+
     // One transaction prevents partial schedule/candidate/audit state. Unique
     // conflicts are ignored in SQL, preserving the existing sent/terminal row.
     const { data: persistedResolution, error: persistError } = await supabase.rpc(
-      'persist_notification_candidate_resolution',
+      lockOwnerId
+        ? 'persist_notification_candidate_resolution_with_lock'
+        : 'persist_notification_candidate_resolution',
       {
+        ...(lockOwnerId ? { p_owner_id: lockOwnerId } : {}),
         p_schedule_rows: scheduleRows,
         p_candidate_updates: candidateUpdates,
         p_audit_events: resolution.auditEvents,
       }
     );
     if (persistError) {
+      if (
+        persistError.message.includes('notification_cadence_conflict') ||
+        persistError.message.includes('notification_cadence_candidate_reservation_mismatch') ||
+        persistError.message.includes('notification_resolver_lock_lost')
+      ) {
+        const claimedIds = activeCandidates
+          .map((candidate) => candidate.id)
+          .filter((id): id is string => typeof id === 'string');
+        if (claimedIds.length > 0) {
+          const { error: requeueError } = await supabase
+            .from('notification_candidates')
+            .update({ status: 'pending', claimed_at: null, decision_reason: null, updated_at: nowIso })
+            .in('id', claimedIds)
+            .eq('status', 'resolving');
+          if (requeueError) {
+            throw new Error(
+              `Cadence conflict occurred and claimed candidates could not be requeued: ${requeueError.message}`
+            );
+          }
+        }
+        const retryReason = persistError.message.includes('notification_cadence_conflict')
+          ? 'cadence_history_changed_retry_next_run'
+          : persistError.message.includes('notification_cadence_candidate_reservation_mismatch')
+            ? 'candidate_schedule_not_reserved_retry_next_run'
+            : 'resolver_lease_expired_retry_next_run';
+        return buildResolverSkippedResult(retryReason, claimedIds.length);
+      }
       throw new Error(`Failed to persist candidate resolution atomically: ${persistError.message}`);
     }
     const persistence = Array.isArray(persistedResolution) ? persistedResolution[0] : persistedResolution;

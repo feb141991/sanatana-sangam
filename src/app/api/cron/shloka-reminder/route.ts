@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendPushNotification } from '@/lib/push-server';
-import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { getNextLocalHourUtc, resolveTimeZone } from '@/lib/sacred-time';
+import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
 import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
@@ -14,9 +14,8 @@ export const dynamic = 'force-dynamic';
 // Schedule: 0 6 * * * (daily; see vercel.json).
 // In candidate mode, produces each opted-in user's 19:00 local slot regardless
 // of the cron's current local hour, then central resolution dispatches it later.
-// Legacy mode still sends immediately and therefore requires the cron to run
-// inside each user's local reminder window; it is not timezone-complete with a
-// single daily UTC invocation.
+// Legacy mode also enters the shared schedule, so the single daily UTC cron
+// can enqueue each user's next local 19:00 without sending at cron time.
 // In disabled mode: halts cleanly without sending.
 
 export async function GET(request: Request) {
@@ -53,9 +52,7 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
-    const baseUrl = new URL(request.url).origin;
     const actionPath = '/home?focus=shloka';
-    const actionUrl = new URL(actionPath, baseUrl).toString();
     const now = new Date();
     const targetLocalHour = 19;
 
@@ -78,28 +75,13 @@ export async function GET(request: Request) {
     const eligibleUsers = users.filter((user) => {
       const timeZone = resolveTimeZone((user as any).timezone);
       if ((user as any).wants_shloka_reminders === false) return false;
-      const localDate = getLocalDateIso(now, timeZone);
-      if (user.last_shloka_date === localDate) return false;
-
-      // Candidate production schedules the user's future local slot. Filtering
-      // by the cron's current hour here would discard users before that slot can
-      // be materialized (for example, IST is 11:30 when this cron runs at 06Z).
-      if (pipelineMode === 'candidate') return true;
-
-      // Legacy delivery is immediate, so retain its local-window guard to avoid
-      // sending at an arbitrary hour while that pipeline remains active.
-      return canSendInLocalWindow(
-        now,
-        timeZone,
-        targetLocalHour,
-        (user as any).notification_quiet_hours_start ?? null,
-        (user as any).notification_quiet_hours_end ?? null
-      );
+      const targetDate = getNextLocalHourUtc(now, timeZone, targetLocalHour, 0).localDateIso;
+      return user.last_shloka_date !== targetDate;
     });
 
     if (eligibleUsers.length === 0) {
       return NextResponse.json({
-        message: 'No users in the local reminder window',
+        message: 'No users need a Shloka reminder for their next local slot',
         sent: 0,
         eligibleCount: 0,
         pipeline_mode: pipelineMode,
@@ -112,7 +94,7 @@ export async function GET(request: Request) {
 
       for (const u of eligibleUsers) {
         const timeZone = resolveTimeZone((u as any).timezone);
-        const localDate = getLocalDateIso(now, timeZone);
+        const localDate = getNextLocalHourUtc(now, timeZone, targetLocalHour, 0).localDateIso;
         const candidate = produceShlokaCandidate(
           {
             id: u.id,
@@ -170,9 +152,9 @@ export async function GET(request: Request) {
     }
 
     // ─── LEGACY PIPELINE PATH ────────────────────────────────────────────────
-    const notifications = eligibleUsers.map((u) => {
+    const scheduleRows = eligibleUsers.map((u) => {
       const timeZone  = resolveTimeZone((u as any).timezone);
-      const localDate = getLocalDateIso(now, timeZone);
+      const { sendAt, localDateIso } = getNextLocalHourUtc(now, timeZone, targetLocalHour, 0);
       const streak    = u.shloka_streak ?? 0;
       const tradition = (u as any).tradition ?? 'hindu';
       const meta = getTraditionMeta(tradition);
@@ -185,7 +167,7 @@ export async function GET(request: Request) {
       try {
         const lat   = (u as any).latitude  as number | null;
         const lon   = (u as any).longitude as number | null;
-        const times = getPanchangTimes(now, lat, lon);
+        const times = getPanchangTimes(sendAt, lat, lon);
         const tithiReminder = getTithiReminder(times.tithiIndex, tradition);
         if (tithiReminder) {
           tithiSuffix = ` Today is ${times.tithi} — ${tithiReminder.emoji} an especially powerful evening for your reading.`;
@@ -196,52 +178,29 @@ export async function GET(request: Request) {
         user_id:    u.id,
         title:      `${meta.symbol} ${meta.sacredTextLabel} awaits`,
         body:       `${streakMsg} Take a moment for today's ${meta.vocabulary.shloka.toLowerCase()}.${tithiSuffix}`,
-        emoji:      meta.symbol,
-        type:       'streak' as const,
-        action_url: actionPath,
-        notification_key: `streak:${localDate}`,
-        local_date: localDate,
-        sent_timezone: timeZone,
+        send_at: sendAt.toISOString(),
+        notification_type: 'shloka',
+        status: 'pending' as const,
+        notification_key: `shloka:${u.id}:${localDateIso}`,
+        metadata: {
+          emoji: meta.symbol,
+          type: 'streak',
+          action_url: actionPath,
+          timezone: timeZone,
+          local_date: localDateIso,
+        },
       };
     });
 
-    let totalInserted = 0;
-    const insertedUserIds: string[] = [];
-    for (let i = 0; i < notifications.length; i += 100) {
-      const batch = notifications.slice(i, i + 100);
-      const { data: insertedRows, error: insertError } = await supabase
-        .from('notifications')
-        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
-
-      if (insertError) {
-        console.error('Shloka cron notification insert failed:', insertError);
-        return NextResponse.json(
-          { error: `Notification insert failed: ${insertError.message}` },
-          { status: 500 }
-        );
-      }
-
-      totalInserted += insertedRows?.length ?? 0;
-      insertedUserIds.push(...((insertedRows ?? []).map((row: { user_id: string }) => row.user_id)));
-    }
-
-    const pushResult = await sendPushNotification({
-      userIds: insertedUserIds,
-      title: 'Your sadhana awaits, Shoonya 🙏',
-      body: "Take a quiet moment for today's sacred text and keep your practice flowing.",
-      url: actionUrl,
-      data: {
-        type: 'streak',
-      },
-    });
+    const { queued, ignored } = await enqueueNotificationSchedule(supabase, scheduleRows);
 
     return NextResponse.json({
       success:       true,
       pipeline_mode: 'legacy',
-      message:       'Shloka reminders sent',
-      reminded:      totalInserted,
-      push_targets:  pushResult.sent,
+      message:       'Shloka reminders queued',
+      scheduled_candidates: scheduleRows.length,
+      enqueued: queued,
+      ignored,
     });
   } catch (error) {
     console.error('Shloka cron crashed:', error);

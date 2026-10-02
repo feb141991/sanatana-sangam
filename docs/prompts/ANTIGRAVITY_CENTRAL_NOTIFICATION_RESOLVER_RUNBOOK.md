@@ -1,5 +1,14 @@
 # Observance-First Notification Architecture and Resolver Runbook
 
+## Current production checkpoint — 2026-10-02
+
+The engagement cadence migration is applied to production under Supabase version
+`20261002181447`. The required digest conflict-target compatibility fix is deployed;
+the queue-backed flexible producer and resolver source changes are verified locally
+but not yet deployed. Candidate-mode environment flags have not been changed. This
+migration version is aligned locally and remotely; unrelated legacy remote-only
+migration versions remain outside this rollout.
+
 Execute the stages sequentially and stop after each for independent review. This runbook
 now starts with reviewed observance reminders; generic engagement candidates are a later
 stage. Do not apply production migrations, deploy, trigger production notifications, or
@@ -285,19 +294,46 @@ Implement the resolver as a deterministic, testable domain function. Do not wire
 
 ### Policy
 
-Default engagement budget per user/local spiritual date (this applies only to generic,
-non-requested engagement candidates; it never applies to opted-in observance or explicit
-ritual reminders):
+The implemented policy is versioned as `engagement-cadence-v2` in
+`src/lib/notification-cadence-policy.ts`. It replaces the original one-routine/two-devotional
+starting defaults below; do not reintroduce those limits independently in producers:
 
-- maximum one routine engagement notification;
-- maximum two non-exempt devotional engagement notifications; explicit observance and
-  ritual reminders do not count toward this cap;
-- approved time-sensitive ritual windows and explicit user-requested reminders are exempt
-  from the engagement budget;
-- security, account, moderation, and transactional safety messages are outside this
-  devotional budget;
-- sent notifications cannot be displaced retroactively;
-- candidates may be deferred only while `scheduled_for < expires_at`.
+- maximum five non-exempt engagement pushes per user per local civil date, with a maximum
+  of five per canonical event type (the shared five-push ceiling remains the overall cap);
+- routine and devotional engagement share that total, so adding a new reminder type cannot
+  multiply the user's daily allowance;
+- legacy aliases such as `mood_checkin`/`mood`, `sattvic_reminder`/`sattvic`, and
+  `streak_nudge`/`shloka` consume the same canonical type allowance;
+- flexible engagement keeps its requested local time unless it conflicts with a prior
+  sent/pending push, an exempt fixed-time reminder, quiet hours, or the 07:00–21:00 local
+  delivery window; it then moves forward in 15-minute steps to a same-day slot at least
+  three hours from another delivery;
+- the resolver chooses eligible candidates by the existing priority classes, then assigns
+  their delivery times in requested-time order to avoid a later high-priority item pushing
+  an earlier reminder outside its expiry window;
+- security/account/moderation, explicit user-requested reminders, approved ritual windows,
+  and reviewed observances remain budget-exempt. Exact-time exempt reminders are never
+  shifted, but they block nearby flexible engagement from clustering around them;
+- sent or pending history is never displaced retroactively. Candidate-window reminders with
+  no legal same-day slot are suppressed with an audit reason rather than sent stale the next
+  day.
+
+Candidate persistence now has a database guard in
+`20261002181447_notification_cadence_atomicity.sql`: a per-user/local-date transaction
+lock recounts existing schedule and bell history in the same transaction as candidate
+promotion. A run-level lease avoids redundant overlapping resolver runs. Neither mechanism
+controls direct pushes that do not use `notification_schedule`. Flexible legacy producer
+routes are being switched to the shared queue; immediate social, admin broadcast, ritual,
+and reviewed-observance deliveries remain explicit direct-path exceptions. Production
+catalog verification passed, while a full Supabase shadow test remains outstanding.
+
+The quota and spacing apply to candidate promotions and non-exempt scheduled queue inserts.
+Direct delivery exceptions can still occur outside the overall budget and spacing guard;
+their urgency is preserved intentionally. Keep each routine behind its existing pipeline
+flag and verify producer parity before enabling candidate mode in production. The policy
+does not claim one universally optimal send hour: a user's configured reminder time is the
+preference, and cadence only moves flexible reminders when required for quiet hours or
+spacing.
 
 Default priority classes:
 
