@@ -358,7 +358,7 @@ export async function GET(request: Request) {
     if (recommendationsPersisted && notificationRows.length > 0) {
       const { data: queued, error: queueError } = await supabase
         .from('notification_schedule')
-        .upsert(notificationRows, { onConflict: 'notification_key', ignoreDuplicates: true })
+        .upsert(notificationRows, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
         .select('id');
       if (queueError) {
         console.warn('[digest/generate] notification queue insert failed:', queueError.message);

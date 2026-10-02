@@ -10,6 +10,7 @@ describe('content generation delivery invariants', () => {
     const source = read('src/app/api/digest/generate/route.ts');
     expect(source).not.toContain("from '@/lib/push-server'");
     expect(source).toContain(".from('notification_schedule')");
+    expect(source).toContain("onConflict: 'user_id,notification_key'");
     expect(source).toContain('panchang_signature');
   });
 
