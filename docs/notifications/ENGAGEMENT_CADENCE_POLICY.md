@@ -1,9 +1,9 @@
 # Engagement notification cadence
 
 **Status (2026-10-03):** the base database guard is applied to production as
-`20261002181447`. The producer/resolver release and follow-up fail-closed
-reservation migration are prepared and locally verified, but not yet deployed or
-applied. Production candidate flags have not been changed.
+`20261002181447`; the fail-closed reservation check is applied as
+`20261002185143`. Producer/resolver source commit `5a6237c` is deployed to Vercel
+Production. Production candidate flags have not changed.
 
 ## Delivery contract
 
@@ -78,8 +78,10 @@ The base migration and its rollback were executed against an isolated PostgreSQL
 The original repository SQL test's 31 assertions passed through a local pgTAP
 compatibility shim because pgTAP and Docker are not installed here; this is not a
 full Supabase shadow database. The follow-up adds three SQL assertions for the
-no-safe-slot rollback path; those still need a disposable database run because no
-local database container is available. A separate two-session test held the user/day lock
+no-safe-slot rollback path. The repository pgTAP suite could not run locally
+because no database container is available; an equivalent isolated transaction
+smoke test ran against production and verified the expected exception plus
+rollback of its synthetic profile, schedule, and audit rows. A separate two-session test held the user/day lock
 in one transaction while another candidate batch waited; after commit, the second
 batch saw the first three reservations and rejected its three-row request rather
 than exceeding the five-item cap. This verifies the database lock behavior but
@@ -90,7 +92,9 @@ aligned with Supabase's returned version and postconditions were verified read-o
 Roll out in this order:
 
 1. Deploy the queue-backed producers and resolver with candidate flags unchanged.
-2. Apply the follow-up fail-closed migration after that source is live.
+   This is live from commit `5a6237c`.
+2. Apply the follow-up fail-closed migration; this is live as
+   `20261002185143`.
 3. Run the full Supabase shadow suite when shadow infrastructure is available;
    include DST, quiet-hour, legacy-history, cancellation, repeated-key, multi-row,
    and concurrent-session cases.

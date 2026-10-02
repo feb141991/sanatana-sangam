@@ -1,13 +1,14 @@
 # Observance-First Notification Architecture and Resolver Runbook
 
-## Current production checkpoint — 2026-10-02
+## Current production checkpoint — 2026-10-03
 
-The engagement cadence migration is applied to production under Supabase version
-`20261002181447`. The required digest conflict-target compatibility fix is deployed;
-the queue-backed flexible producer and resolver source changes are verified locally
-but not yet deployed. Candidate-mode environment flags have not been changed. This
-migration version is aligned locally and remotely; unrelated legacy remote-only
-migration versions remain outside this rollout.
+The base engagement cadence migration is applied to production under Supabase
+version `20261002181447`; the follow-up fail-closed candidate reservation migration
+is applied as `20261002185143`. The digest compatibility fix is deployed, and the
+queue-backed producer/resolver source is pushed to `main` with its Vercel production
+deployment Ready from commit `5a6237c`. Candidate-mode environment flags have not
+been changed.
+Unrelated legacy remote-only migration versions remain outside this rollout.
 
 Execute the stages sequentially and stop after each for independent review. This runbook
 now starts with reviewed observance reminders; generic engagement candidates are a later

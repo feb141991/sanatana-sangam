@@ -1,10 +1,9 @@
 # Engagement cadence rollout audit
 
 **Status (2026-10-03):** the base cadence SQL migration is applied to production
-as version `20261002181447`; the digest compatibility fix is deployed. The
-flexible-producer/resolver release and follow-up reservation-consistency
-migration are verified locally but not yet deployed/applied. Production
-notification candidate flags remain unchanged.
+as version `20261002181447`; the fail-closed reservation migration is applied as
+`20261002185143`. Flexible-producer/resolver commit `5a6237c` is deployed to
+Vercel Production. Production notification candidate flags remain unchanged.
 
 ## Enforced boundary after rollout
 
@@ -75,9 +74,10 @@ and any future coalescing policy should be reviewed independently.
   fixture using a small pgTAP-compatible shim. pgTAP itself and Docker were not
   available, so this is not a full Supabase shadow verification.
 - The follow-up migration adds three SQL assertions covering the no-safe-slot
-  rollback behavior. They have not run yet because no local database container is
-  available; run them in a disposable Supabase shadow before treating that branch
-  as independently integration-tested.
+  rollback behavior. The repository's local pgTAP suite could not run because no
+  local database container is available. An equivalent isolated transaction smoke
+  test ran against production and read-after checks confirmed all synthetic user,
+  schedule, and audit rows were rolled back.
 - A two-session database test held a user's local-date advisory lock, started a
   competing candidate reservation, and confirmed the second session waited for
   commit, observed the three existing reservations, and rejected an over-budget
