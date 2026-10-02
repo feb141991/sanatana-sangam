@@ -28,6 +28,8 @@ const attachBatchesMock = vi.hoisted(() => vi.fn(
     _requestedLocation?: unknown,
   ) => rows.map(row => ({ ...row, batch: null })),
 ));
+const formattedResultsMock = vi.hoisted(() => vi.fn(() => [] as Array<Record<string, unknown>>));
+const fetchSeriesMock = vi.hoisted(() => vi.fn(async (_supabase: unknown, results: Array<Record<string, unknown>>) => results));
 
 /** Chainable, thenable recorder standing in for a Supabase query builder. */
 function recorder(table: string): any {
@@ -82,6 +84,24 @@ vi.mock('@/lib/calendar/occurrence-reader', async (importOriginal) => {
   };
 });
 
+vi.mock('@/lib/calendar/observance-formatter', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../observance-formatter')>();
+  return { ...actual, formatOccurrencesToResults: formattedResultsMock };
+});
+
+vi.mock('@/lib/calendar/observance-series-eligibility', () => ({
+  fetchSeriesCompositionResults: fetchSeriesMock,
+}));
+
+vi.mock('@/lib/calendar/observance-series', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../observance-series')>();
+  return { ...actual, buildObservanceSeries: vi.fn(() => []) };
+});
+
+vi.mock('@/lib/observance-content', () => ({
+  getPublishedObservanceStoryCards: vi.fn(async () => []),
+}));
+
 const { GET: monthGET } = await import('@/app/api/calendar/month/route');
 const { GET: dayGET } = await import('@/app/api/calendar/day/route');
 const { GET: upcomingGET } = await import('@/app/api/calendar/upcoming/route');
@@ -99,6 +119,8 @@ const occurrenceSelect = () => {
 beforeEach(() => {
   calls = [];
   attachBatchesMock.mockClear();
+  formattedResultsMock.mockReturnValue([]);
+  fetchSeriesMock.mockClear();
 });
 
 describe('tradition filtering reaches the database', () => {
@@ -228,5 +250,49 @@ describe('profile-qualified read contract reaches every public calendar route', 
         timezone: 'Asia/Kolkata',
       });
     }
+  });
+});
+
+describe('calendar responses are scoped to one calculation location and one card per instance', () => {
+  const makeObservance = (id: string, lat: number, lon: number, tz: string, isPrimary: boolean) => ({
+    id,
+    slug: 'pitru-paksha-day-5',
+    festivalId: 'pitru-paksha-day-5',
+    display_name: 'Pitru Paksha Day 5',
+    date: '2026-09-01',
+    civilDate: '2026-09-01',
+    reviewPlacementDate: '2026-09-01',
+    status: 'resolved',
+    isPrimary,
+    location: { label: 'calculated location', lat, lon, tz },
+    profile: { calendar: 'legacy-ujjain', tradition: 'standard' },
+  });
+
+  const duplicateAndOtherLocationRows = [
+    makeObservance('london', 51.5074, -0.1278, 'Europe/London', true),
+    makeObservance('ujjain-duplicate', 23.1765, 75.7885, 'Asia/Kolkata', false),
+    makeObservance('ujjain-canonical', 23.1765, 75.7885, 'Asia/Kolkata', true),
+  ];
+
+  it('day returns only the selected location and one canonical card', async () => {
+    formattedResultsMock.mockReturnValue(duplicateAndOtherLocationRows);
+    const response = await dayGET(request('http://t/api/calendar/day?date=2026-09-01'));
+    const payload = await response.json();
+    expect(payload.observances.map((item: { id: string }) => item.id)).toEqual(['ujjain-canonical']);
+  });
+
+  it('month returns only the selected location and one canonical card', async () => {
+    formattedResultsMock.mockReturnValue(duplicateAndOtherLocationRows);
+    const response = await monthGET(request('http://t/api/calendar/month?year=2026&month=9'));
+    const payload = await response.json();
+    expect(payload.byDate['2026-09-01'].map((item: { id: string }) => item.id)).toEqual(['ujjain-canonical']);
+  });
+
+  it('upcoming builds both observance lists from the same deduplicated, location-scoped rows', async () => {
+    formattedResultsMock.mockReturnValue(duplicateAndOtherLocationRows);
+    const response = await upcomingGET(request('http://t/api/calendar/upcoming?days=14'));
+    const payload = await response.json();
+    expect(payload.observances.map((item: { id: string }) => item.id)).toEqual(['ujjain-canonical']);
+    expect(payload.displayObservances.map((item: { id: string }) => item.id)).toEqual(['ujjain-canonical']);
   });
 });

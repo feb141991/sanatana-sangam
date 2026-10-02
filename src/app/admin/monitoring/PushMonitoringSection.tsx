@@ -21,13 +21,14 @@ interface DeliveryRow {
 
 interface PendingReceipt {
   ticket_id: string;
-  token: string;
+  token_hash: string | null;
   user_id?: string | null;
   created_at: string;
 }
 
 interface MonitoringData {
   activeTokens: number;
+  receiptOutcomes24h: { providerHandoffOk: number; failed: number; expired: number; trackingFailed: number };
   pendingReceiptsCount: number;
   pendingReceipts: PendingReceipt[];
   last24h: {
@@ -35,7 +36,7 @@ interface MonitoringData {
       sent: number;
       failed: number;
       skipped: number;
-      successRate: number;
+      successRate: number | null;
     };
     onesignal: {
       sent: number;
@@ -121,7 +122,7 @@ export default function PushMonitoringSection() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900">Push Notification Gateway & Delivery Monitor</h2>
-            <p className="text-xs text-gray-500">Live delivery metrics, APNs/FCM receipt verification, and failure tracking</p>
+            <p className="text-xs text-gray-500">Expo ticket and provider receipt evidence; receipts do not confirm lock-screen display.</p>
           </div>
         </div>
         <button
@@ -147,11 +148,11 @@ export default function PushMonitoringSection() {
           className={"p-4 rounded-xl text-left border transition-all " + (providerFilter === "expo" && statusFilter === "all" ? "bg-amber-50/70 border-amber-300 ring-2 ring-amber-400/20" : "bg-gray-50/70 border-gray-100 hover:bg-gray-100/70")}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active Device Tokens</span>
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Registered Push Tokens</span>
             <Smartphone size={16} className="text-amber-600" />
           </div>
           <div className="text-2xl font-bold text-gray-900">{data?.activeTokens?.toLocaleString() ?? "-"}</div>
-          <div className="text-[11px] text-gray-500 mt-1">Native iOS & Android devices</div>
+          <div className="text-[11px] text-gray-500 mt-1">Current rows; not proof a device is reachable</div>
         </button>
 
         <button
@@ -159,14 +160,14 @@ export default function PushMonitoringSection() {
           className={"p-4 rounded-xl text-left border transition-all " + (statusFilter === "sent" && providerFilter === "expo" ? "bg-emerald-50/70 border-emerald-300 ring-2 ring-emerald-400/20" : "bg-gray-50/70 border-gray-100 hover:bg-gray-100/70")}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Expo Success (24h)</span>
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Expo Per-User Ticket Acceptance (24h)</span>
             <CheckCircle size={16} className="text-emerald-600" />
           </div>
           <div className="text-2xl font-bold text-emerald-600">
-            {data ? (data.last24h.expo.successRate + "%") : "-"}
+            {data?.last24h.expo.successRate == null ? "No attempts" : `${data.last24h.expo.successRate}%`}
           </div>
           <div className="text-[11px] text-gray-500 mt-1">
-            Sent: {data?.last24h.expo.sent ?? 0} • Skipped: {data?.last24h.expo.skipped ?? 0}
+            Accepted recipients: {data?.last24h.expo.sent ?? 0} • Skipped: {data?.last24h.expo.skipped ?? 0}
           </div>
         </button>
 
@@ -175,13 +176,13 @@ export default function PushMonitoringSection() {
           className={"p-4 rounded-xl text-left border transition-all " + (statusFilter === "failed" ? "bg-rose-50/70 border-rose-300 ring-2 ring-rose-400/20" : "bg-gray-50/70 border-gray-100 hover:bg-gray-100/70")}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Failed Dispatches (7d)</span>
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recent Failed Examples (7d)</span>
             <AlertTriangle size={16} className="text-rose-600" />
           </div>
           <div className="text-2xl font-bold text-rose-600">
             {data?.recentFailures?.length ?? 0}
           </div>
-          <div className="text-[11px] text-gray-500 mt-1">Click to filter failed logs</div>
+          <div className="text-[11px] text-gray-500 mt-1">Up to 100 rows for investigation</div>
         </button>
 
         <button
@@ -197,6 +198,25 @@ export default function PushMonitoringSection() {
           </div>
           <div className="text-[11px] text-gray-500 mt-1">Awaiting APNs/FCM ticket check</div>
         </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6 text-xs">
+        <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+          <div className="font-semibold text-gray-700">Provider receipt outcomes (24h)</div>
+          <div className="mt-1 text-gray-500">Provider accepted: {data?.receiptOutcomes24h.providerHandoffOk ?? "-"}</div>
+        </div>
+        <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+          <div className="font-semibold text-gray-700">Provider errors</div>
+          <div className="mt-1 text-gray-500">Receipt errors: {data?.receiptOutcomes24h.failed ?? "-"}</div>
+        </div>
+        <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+          <div className="font-semibold text-gray-700">Receipt expired</div>
+          <div className="mt-1 text-gray-500">No receipt after 24h: {data?.receiptOutcomes24h.expired ?? "-"}</div>
+        </div>
+        <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+          <div className="font-semibold text-gray-700">Receipt tracking gaps</div>
+          <div className="mt-1 text-gray-500">Queue could not persist: {data?.receiptOutcomes24h.trackingFailed ?? "-"}</div>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 p-3 bg-gray-50/80 rounded-xl border border-gray-100">
@@ -252,7 +272,7 @@ export default function PushMonitoringSection() {
             <thead className="bg-gray-50/80 text-gray-500 border-b border-gray-100">
               <tr>
                 <th className="px-4 py-3 font-semibold">Ticket ID</th>
-                <th className="px-4 py-3 font-semibold">Token</th>
+                <th className="px-4 py-3 font-semibold">Token hash</th>
                 <th className="px-4 py-3 font-semibold">User ID</th>
                 <th className="px-4 py-3 font-semibold">Queued Time</th>
               </tr>
@@ -261,14 +281,14 @@ export default function PushMonitoringSection() {
               {data?.pendingReceipts?.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
-                    No pending receipts. All dispatches have been resolved by FCM/APNs!
+                    No pending receipts. This does not confirm device delivery.
                   </td>
                 </tr>
               ) : (
                 data?.pendingReceipts?.map((t) => (
                   <tr key={t.ticket_id} className="hover:bg-gray-50/50">
                     <td className="px-4 py-3 font-mono text-gray-900">{t.ticket_id}</td>
-                    <td className="px-4 py-3 font-mono text-gray-500 truncate max-w-xs">{t.token}</td>
+                    <td className="px-4 py-3 font-mono text-gray-500 truncate max-w-xs">{t.token_hash?.slice(0, 16) ?? "Legacy record"}</td>
                     <td className="px-4 py-3 font-mono text-gray-700">{t.user_id || "Anonymous"}</td>
                     <td className="px-4 py-3 text-gray-500">{new Date(t.created_at).toLocaleString()}</td>
                   </tr>

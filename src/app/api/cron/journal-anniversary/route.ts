@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendPushNotification } from '@/lib/push-server';
-import { resolveTimeZone } from '@/lib/sacred-time';
+import { getNextLocalHourUtc, resolveTimeZone } from '@/lib/sacred-time';
+import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     }
 
     const now = new Date();
-    const anniversaryUsers: { id: string; years: number }[] = [];
+    const anniversaryUsers: { id: string; years: number; timezone: string }[] = [];
 
     // 2. Identify users whose account creation anniversary is today in their timezone
     for (const profile of profiles) {
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
 
       if (localMonth === createdMonth && localDay === createdDay && localYear > createdYear) {
         const years = localYear - createdYear;
-        anniversaryUsers.push({ id: profile.id, years });
+        anniversaryUsers.push({ id: profile.id, years, timezone: tz });
       }
     }
 
@@ -111,49 +111,39 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'Anniversary users found, but none had journal entries', sent: 0 });
     }
 
-    // 4. Send push notifications
-    let pushCount = 0;
-    for (const target of eligibleNotifications) {
+    // 4. Queue a local daytime delivery. The dispatcher persists the bell
+    // record and sends the push only after quota, spacing, preferences, and
+    // quiet-hours checks have passed.
+    const scheduleRows = eligibleNotifications.map((target) => {
       const yearWord = target.years === 1 ? 'One year' : `${target.years} years`;
       const bodyText = `${yearWord} of your spiritual journey is recorded in your Shoonaya journal. [View your year in review →]`;
-
-      const pushResult = await sendPushNotification({
-        userIds: [target.id],
+      const { sendAt, localDateIso } = getNextLocalHourUtc(now, target.timezone, 10, 0);
+      return {
+        user_id: target.id,
         title: '✨ Journal Anniversary',
         body: bodyText,
-        url: '/sadhana/journal?focus=anniversary',
-        data: { type: 'journal_anniversary', years: String(target.years) },
-      });
-
-      pushCount += pushResult.sent;
-
-      // Log notification in the database
-      const tz = resolveTimeZone(profiles.find(p => p.id === target.id)?.timezone);
-      const localDateStr = now.toLocaleDateString('en-CA', { timeZone: tz });
-      try {
-        const { error: insErr } = await supabase.from('notifications').insert({
-          user_id: target.id,
-          title: '✨ Journal Anniversary',
-          body: bodyText,
-          emoji: '✨',
+        send_at: sendAt.toISOString(),
+        notification_type: 'journal_anniversary',
+        status: 'pending' as const,
+        notification_key: `journal-anniversary:${target.id}:${target.years}:${localDateIso}`,
+        metadata: {
           type: 'general',
-          action_url: '/sadhana/journal',
-          notification_key: `journal-anniversary:${target.years}:${localDateStr}`,
-          local_date: localDateStr,
-          sent_timezone: tz
-        });
-        if (insErr) {
-          console.warn('[cron/journal-anniversary] failed to insert notification row:', insErr);
-        }
-      } catch (err) {
-        console.warn('[cron/journal-anniversary] failed to insert notification row:', err);
-      }
-    }
+          emoji: '✨',
+          action_url: '/sadhana/journal?focus=anniversary',
+          years: target.years,
+          timezone: target.timezone,
+          local_date: localDateIso,
+        },
+      };
+    });
+    const { queued, ignored } = await enqueueNotificationSchedule(supabase, scheduleRows);
 
     return NextResponse.json({
-      message: 'Anniversary notifications processed',
+      message: 'Anniversary notifications queued',
       anniversaries_today: anniversaryUsers.length,
-      notifications_sent: pushCount
+      scheduled_candidates: scheduleRows.length,
+      enqueued: queued,
+      ignored,
     });
   } catch (error: any) {
     console.error('[cron/journal-anniversary] Cron crashed:', error);

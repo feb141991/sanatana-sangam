@@ -285,19 +285,46 @@ Implement the resolver as a deterministic, testable domain function. Do not wire
 
 ### Policy
 
-Default engagement budget per user/local spiritual date (this applies only to generic,
-non-requested engagement candidates; it never applies to opted-in observance or explicit
-ritual reminders):
+The implemented policy is versioned as `engagement-cadence-v2` in
+`src/lib/notification-cadence-policy.ts`. It replaces the original one-routine/two-devotional
+starting defaults below; do not reintroduce those limits independently in producers:
 
-- maximum one routine engagement notification;
-- maximum two non-exempt devotional engagement notifications; explicit observance and
-  ritual reminders do not count toward this cap;
-- approved time-sensitive ritual windows and explicit user-requested reminders are exempt
-  from the engagement budget;
-- security, account, moderation, and transactional safety messages are outside this
-  devotional budget;
-- sent notifications cannot be displaced retroactively;
-- candidates may be deferred only while `scheduled_for < expires_at`.
+- maximum five non-exempt engagement pushes per user per local civil date, with a maximum
+  of five per canonical event type (the shared five-push ceiling remains the overall cap);
+- routine and devotional engagement share that total, so adding a new reminder type cannot
+  multiply the user's daily allowance;
+- legacy aliases such as `mood_checkin`/`mood`, `sattvic_reminder`/`sattvic`, and
+  `streak_nudge`/`shloka` consume the same canonical type allowance;
+- flexible engagement keeps its requested local time unless it conflicts with a prior
+  sent/pending push, an exempt fixed-time reminder, quiet hours, or the 07:00–21:00 local
+  delivery window; it then moves forward in 15-minute steps to a same-day slot at least
+  three hours from another delivery;
+- the resolver chooses eligible candidates by the existing priority classes, then assigns
+  their delivery times in requested-time order to avoid a later high-priority item pushing
+  an earlier reminder outside its expiry window;
+- security/account/moderation, explicit user-requested reminders, approved ritual windows,
+  and reviewed observances remain budget-exempt. Exact-time exempt reminders are never
+  shifted, but they block nearby flexible engagement from clustering around them;
+- sent or pending history is never displaced retroactively. Candidate-window reminders with
+  no legal same-day slot are suppressed with an audit reason rather than sent stale the next
+  day.
+
+Candidate persistence now has a prepared database guard in
+`20261002181447_notification_cadence_atomicity.sql`: a per-user/local-date transaction
+lock recounts existing schedule and bell history in the same transaction as candidate
+promotion. A run-level lease avoids redundant overlapping resolver runs. Neither mechanism
+controls legacy direct pushes or direct queue writers; those remain rollout blockers for
+an app-wide cadence guarantee. The migration is not applied, and a real shadow-database
+contention test is still required before enabling additional candidate modes.
+
+The quota and spacing apply when an event goes through the candidate resolver. Legacy direct
+send routes can still exceed the overall budget until that reminder type is cut over; a
+history row can prevent later candidates from adding another push, but it cannot undo or
+reschedule a legacy send. Keep each routine behind its existing pipeline flag and verify
+producer parity before enabling the candidate mode in production. The policy intentionally
+does not claim one universally optimal send hour: a user's configured reminder time is the
+preference, and cadence only moves a flexible reminder when required for quiet hours or
+spacing.
 
 Default priority classes:
 

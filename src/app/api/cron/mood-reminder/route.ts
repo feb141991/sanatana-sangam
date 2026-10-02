@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { emitEvent } from "@/lib/monitoring/events";
 import { getNextLocalHourUtc, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
+import { enqueueNotificationSchedule } from "@/lib/notification-schedule-queue";
 import { getRoutinePipelineMode } from "@/lib/notification-candidate-pipeline-mode";
 import { produceMoodCandidate } from "@/lib/mood-candidate-producer";
 import type { NotificationCandidateInsert } from "@/types/database";
@@ -168,7 +169,6 @@ export async function GET(request: Request) {
       status: "pending";
       metadata: Record<string, any>;
       notification_key: string;
-      retry_count: number;
     }> = [];
 
     // 2. Compute the NEXT occurrence of local noon for each user
@@ -205,26 +205,12 @@ export async function GET(request: Request) {
           local_date: localDateIso,
         },
         notification_key: dedupeKey,
-        retry_count: 0,
       });
     }
 
-    // 3. Upsert scheduled rows in batches of 100 with deduplication
-    let totalEnqueued = 0;
-    for (let i = 0; i < scheduledRows.length; i += 100) {
-      const batch = scheduledRows.slice(i, i + 100);
-      const { data: upserted, error: upsertError } = await supabase
-        .from("notification_schedule")
-        .upsert(batch, { onConflict: "user_id,notification_key", ignoreDuplicates: true })
-        .select("id");
-
-      if (upsertError) {
-        console.error("[mood-reminder/enqueuer] Upsert error:", upsertError.message);
-        return NextResponse.json({ error: upsertError.message }, { status: 500 });
-      }
-
-      totalEnqueued += upserted?.length ?? 0;
-    }
+    // Use the shared writer so rows for a user/day are admitted in separate,
+    // deterministic statements and the database cadence lock can space them.
+    const { queued: totalEnqueued, ignored } = await enqueueNotificationSchedule(supabase, scheduledRows);
 
     emitEvent({
       severity: "P3",
@@ -237,6 +223,7 @@ export async function GET(request: Request) {
         total_eligible: users.length,
         scheduled_candidates: scheduledRows.length,
         enqueued_count: totalEnqueued,
+        ignored_count: ignored,
       },
     });
 
@@ -246,6 +233,7 @@ export async function GET(request: Request) {
       total_eligible: users.length,
       scheduled_candidates: scheduledRows.length,
       enqueued: totalEnqueued,
+      ignored,
     });
   } catch (error: any) {
     console.error("[mood-reminder/enqueuer] Cron crashed:", error);

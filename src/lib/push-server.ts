@@ -1,7 +1,8 @@
 import { getNotificationSafetyState } from '@/lib/notification-safety';
 import { recordNotificationDeliveryBatch, type AuditRecordPayload } from '@/lib/notification-delivery-audit';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { recordPushTokenEventBatch } from '@/lib/push-token-audit';
+import { hashPushToken } from '@/lib/push-token-audit';
+import { prunePushBindings, type PushBindingSnapshot } from '@/lib/push-binding';
 
 // --- Push send path -----------------------------------------------------------
 // Expo push -- reaches the native mobile app, keyed off Supabase user ids.
@@ -117,7 +118,7 @@ type ExpoTicket =
   | { status: 'ok'; id: string }
   | { status: 'error'; message: string; details?: { error?: string } };
 
-type TokenRow = { user_id: string; token: string };
+type TokenRow = PushBindingSnapshot;
 
 // --- Channel 1: Expo push (native app) ---------------------------------------
 
@@ -146,7 +147,7 @@ async function sendViaExpo(
 
   const { data: tokenRows, error: tokenError } = await supabase
     .from('push_tokens')
-    .select('user_id, token')
+    .select('user_id, token, binding_version')
     .in('user_id', targetUserIds);
 
   if (tokenError) {
@@ -167,10 +168,10 @@ async function sendViaExpo(
     return { sentUserIds, skippedUserIds, failedUserIds };
   }
 
-  const tokensByUser = new Map<string, string[]>();
+  const tokensByUser = new Map<string, TokenRow[]>();
   for (const row of (tokenRows ?? []) as TokenRow[]) {
     const list = tokensByUser.get(row.user_id) ?? [];
-    list.push(row.token);
+    list.push(row);
     tokensByUser.set(row.user_id, list);
   }
 
@@ -192,17 +193,18 @@ async function sendViaExpo(
   const usersWithTokens = targetUserIds.filter((id) => tokensByUser.has(id));
   if (usersWithTokens.length === 0) return { sentUserIds, skippedUserIds, failedUserIds };
 
-  const outbox: Array<{ userId: string; token: string; message: Record<string, unknown> }> = [];
+  const outbox: Array<{ userId: string; token: string; bindingVersion: string; message: Record<string, unknown> }> = [];
   for (const userId of usersWithTokens) {
-    for (const token of tokensByUser.get(userId)!) {
+    for (const binding of tokensByUser.get(userId)!) {
+      const token = binding.token;
       outbox.push({
         userId,
-        token,
+        token, bindingVersion: binding.binding_version,
         message: {
           to: token,
           title: message.title,
           body: message.body,
-          sound: 'default',
+          sound: 'default', channelId: 'default',
           data: { ...message.data, url: message.url ?? undefined },
         },
       });
@@ -218,9 +220,9 @@ async function sendViaExpo(
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
   const userOutcome = new Map<string, { sent: boolean; errorCode?: string; errorMessage?: string }>();
-  const receiptRows: { ticket_id: string; token: string; user_id: string }[] = [];
-  const staleTokens: string[] = [];
-  const staleTokenEvents: Array<{ token: string; userId?: string | null }> = [];
+  const receiptRows: Array<{ ticket_id: string; token: string; user_id: string; binding_version: string; token_hash: string; notification_type: string; notification_id: string | null; notification_key: string | null }> = [];
+  const staleBindings: PushBindingSnapshot[] = [];
+  const receiptTrackingFailedUsers = new Set<string>();
 
   for (const batch of chunk(outbox, EXPO_MESSAGE_BATCH_SIZE)) {
     try {
@@ -228,37 +230,45 @@ async function sendViaExpo(
         method: 'POST',
         headers,
         body: JSON.stringify(batch.map((item) => item.message)),
+        signal: AbortSignal.timeout(10_000),
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Expo push batch failed:', response.status, errorText);
+        await response.text().catch(() => '');
+        console.error('Expo push batch failed:', response.status);
         for (const item of batch) {
-          userOutcome.set(item.userId, { sent: false, errorCode: String(response.status), errorMessage: errorText.slice(0, 500) });
+          if (!userOutcome.get(item.userId)?.sent) userOutcome.set(item.userId, { sent: false, errorCode: String(response.status), errorMessage: 'Expo push request rejected' });
         }
         continue;
       }
 
       const payload = (await response.json().catch(() => null)) as { data?: ExpoTicket[] } | null;
-      const tickets = payload?.data ?? [];
+      const tickets = Array.isArray(payload?.data) ? payload.data : [];
 
-      tickets.forEach((ticket, index) => {
-        const item = batch[index];
-        if (!item) return;
+      batch.forEach((item, index) => {
+        const ticket = tickets[index];
+        if (!ticket || (ticket.status !== 'ok' && ticket.status !== 'error') || (ticket.status === 'ok' && (typeof ticket.id !== 'string' || !ticket.id))) {
+          if (!userOutcome.get(item.userId)?.sent) userOutcome.set(item.userId, { sent: false, errorCode: 'invalid_ticket', errorMessage: 'Expo did not return a valid ticket for this message' });
+          return;
+        }
 
         if (ticket.status === 'ok') {
-          receiptRows.push({ ticket_id: ticket.id, token: item.token, user_id: item.userId });
+          receiptRows.push({
+            ticket_id: ticket.id, token: item.token, user_id: item.userId, binding_version: item.bindingVersion,
+            token_hash: hashPushToken(item.token), notification_type: messageType,
+            notification_id: options?.notificationIdsByUserId?.[item.userId] ?? null,
+            notification_key: options?.notificationKeysByUserId?.[item.userId] ?? options?.notificationKey ?? null,
+          });
           const existing = userOutcome.get(item.userId);
           if (!existing || !existing.sent) userOutcome.set(item.userId, { sent: true });
         } else {
           const errorCode = ticket.details?.error ?? 'unknown';
           if (errorCode === 'DeviceNotRegistered') {
-            staleTokens.push(item.token);
-            staleTokenEvents.push({ token: item.token, userId: item.userId });
+            staleBindings.push({ token: item.token, user_id: item.userId, binding_version: item.bindingVersion });
           }
           const existing = userOutcome.get(item.userId);
           if (!existing || !existing.sent) {
-            userOutcome.set(item.userId, { sent: false, errorCode, errorMessage: ticket.message?.slice(0, 500) });
+            userOutcome.set(item.userId, { sent: false, errorCode, errorMessage: `Expo ticket rejected: ${errorCode}` });
           }
         }
       });
@@ -278,22 +288,24 @@ async function sendViaExpo(
   }
 
   if (receiptRows.length > 0) {
-    const { error: receiptInsertError } = await supabase.from('push_receipts_pending').insert(receiptRows);
-    if (receiptInsertError) console.warn('push_receipts_pending insert failed:', receiptInsertError.message);
+    let persisted = false;
+    for (let attempt = 0; attempt < 2 && !persisted; attempt++) {
+      try {
+        const { error } = await supabase.from('push_receipts_pending')
+          .upsert(receiptRows, { onConflict: 'ticket_id', ignoreDuplicates: true });
+        persisted = !error;
+      } catch { persisted = false; }
+      if (!persisted && attempt === 0) await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+    if (!persisted) {
+      console.warn('Expo accepted tickets but receipt tracking could not be queued');
+      for (const row of receiptRows) receiptTrackingFailedUsers.add(row.user_id);
+    }
   }
 
-  if (staleTokens.length > 0) {
-    const { error: pruneError } = await supabase.from('push_tokens').delete().in('token', staleTokens);
-    if (pruneError) console.warn('stale push_tokens prune failed:', pruneError.message);
-    await recordPushTokenEventBatch(
-      staleTokenEvents.map((e) => ({
-        userId: e.userId,
-        token: e.token,
-        eventType: 'pruned_device_not_registered',
-        reason: 'DeviceNotRegistered ticket from Expo push send',
-        source: 'push-server',
-      }))
-    );
+  if (staleBindings.length > 0) {
+    try { await prunePushBindings(staleBindings, 'push-server'); }
+    catch { console.warn('Versioned invalid push binding cleanup failed; no unguarded delete attempted'); }
   }
 
   const sentUserIdsList: string[] = [];
@@ -312,16 +324,20 @@ async function sendViaExpo(
   }
 
   if (sentUserIdsList.length > 0) {
-    await recordNotificationDeliveryBatch(buildAuditRows({
-      userIds: sentUserIdsList,
-      type: messageType,
-      status: 'sent',
-      provider: 'expo',
-      notificationKey: options?.notificationKey ?? null,
-      notificationKeysByUserId: options?.notificationKeysByUserId,
-      notificationIdsByUserId: options?.notificationIdsByUserId,
-      metadata: { url: message.url ?? null, ...options?.metadata },
-    }));
+    for (const receiptTracking of ['queued', 'failed'] as const) {
+      const recipients = sentUserIdsList.filter((userId) => receiptTrackingFailedUsers.has(userId) === (receiptTracking === 'failed'));
+      if (!recipients.length) continue;
+      await recordNotificationDeliveryBatch(buildAuditRows({
+        userIds: recipients,
+        type: messageType,
+        status: 'sent',
+        provider: 'expo',
+        notificationKey: options?.notificationKey ?? null,
+        notificationKeysByUserId: options?.notificationKeysByUserId,
+        notificationIdsByUserId: options?.notificationIdsByUserId,
+        metadata: { url: message.url ?? null, ...options?.metadata, stage: 'expo_ticket_accepted', receiptTracking },
+      }));
+    }
   }
 
   for (const [key, userIds] of failedByError) {

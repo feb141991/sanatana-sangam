@@ -3906,6 +3906,75 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_resolver_lock: {
+        Row: {
+          singleton_id: number
+          owner_id: string | null
+          lease_expires_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          singleton_id?: number
+          owner_id?: string | null
+          lease_expires_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          singleton_id?: number
+          owner_id?: string | null
+          lease_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_cadence_events: {
+        Row: {
+          id: string
+          user_id: string
+          notification_type: string
+          canonical_type: string
+          notification_key: string
+          local_date: string
+          decision: 'scheduled' | 'shifted' | 'suppressed' | 'duplicate'
+          reason: string | null
+          requested_at: string
+          scheduled_at: string | null
+          policy_version: string
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          notification_type: string
+          canonical_type: string
+          notification_key: string
+          local_date: string
+          decision: 'scheduled' | 'shifted' | 'suppressed' | 'duplicate'
+          reason?: string | null
+          requested_at: string
+          scheduled_at?: string | null
+          policy_version?: string
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          notification_type?: string
+          canonical_type?: string
+          notification_key?: string
+          local_date?: string
+          decision?: 'scheduled' | 'shifted' | 'suppressed' | 'duplicate'
+          reason?: string | null
+          requested_at?: string
+          scheduled_at?: string | null
+          policy_version?: string
+          metadata?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
       notification_schedule: {
         Row: {
           body: string
@@ -10222,6 +10291,51 @@ export type Database = {
         }[]
       }
       normalize_place_casing: { Args: { p_value: string }; Returns: string }
+      canonical_notification_budget_type: {
+        Args: { p_event_type: string; p_notification_key?: string | null }
+        Returns: string
+      }
+      notification_is_budget_exempt: {
+        Args: { p_event_type: string; p_notification_key?: string | null }
+        Returns: boolean
+      }
+      persist_notification_candidate_resolution: {
+        Args: {
+          p_schedule_rows?: Json
+          p_candidate_updates?: Json
+          p_audit_events?: Json
+        }
+        Returns: {
+          promoted_count: number
+          candidate_count: number
+          audit_count: number
+        }[]
+      }
+      persist_notification_candidate_resolution_internal: {
+        Args: {
+          p_schedule_rows?: Json
+          p_candidate_updates?: Json
+          p_audit_events?: Json
+        }
+        Returns: {
+          promoted_count: number
+          candidate_count: number
+          audit_count: number
+        }[]
+      }
+      persist_notification_candidate_resolution_with_lock: {
+        Args: {
+          p_owner_id: string
+          p_schedule_rows?: Json
+          p_candidate_updates?: Json
+          p_audit_events?: Json
+        }
+        Returns: {
+          promoted_count: number
+          candidate_count: number
+          audit_count: number
+        }[]
+      }
       populate_geometry_columns:
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
         | { Args: { use_typmod?: boolean }; Returns: string }
@@ -10267,6 +10381,10 @@ export type Database = {
         Returns: undefined
       }
       prune_old_user_data: { Args: { p_days?: number }; Returns: number }
+      release_notification_resolver_lock: {
+        Args: { p_owner_id: string }
+        Returns: boolean
+      }
       record_social_publish_result: {
         Args: {
           p_attempt_id: string
@@ -10317,6 +10435,31 @@ export type Database = {
       safe_timezone: {
         Args: { p_default?: string; p_tz: string }
         Returns: string
+      }
+      try_acquire_notification_resolver_lock: {
+        Args: { p_owner_id: string; p_lease_seconds?: number }
+        Returns: boolean
+      }
+      update_seva_tier_and_queue_notification: {
+        Args: {
+          p_user_id: string
+          p_expected_score: number
+          p_previous_tier: string | null
+          p_next_tier: string
+          p_title: string
+          p_body: string
+          p_notification_key: string
+          p_send_at: string
+          p_metadata?: Json
+        }
+        Returns: {
+          profile_updated: boolean
+          notification_queued: boolean
+        }[]
+      }
+      try_parse_notification_date: {
+        Args: { p_value: string }
+        Returns: string | null
       }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }

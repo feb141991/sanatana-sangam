@@ -14,6 +14,7 @@ export interface DevoteeProfileForShloka {
   longitude?: number | null;
   notification_quiet_hours_start?: number | null;
   notification_quiet_hours_end?: number | null;
+  is_deleting?: boolean | null;
 }
 
 /**
@@ -31,6 +32,12 @@ export function produceShlokaCandidate(
   localDate: string,
   copy?: { title: string; body: string }
 ): NotificationCandidateInsert | null {
+  // Deletion may take time to propagate to token cleanup; never enqueue new
+  // engagement after an account has entered its deletion lifecycle.
+  if (devotee.is_deleting === true) {
+    return null;
+  }
+
   // 1. Check opt-in: default is true unless explicitly false
   if (devotee.wants_shloka_reminders === false) {
     return null;

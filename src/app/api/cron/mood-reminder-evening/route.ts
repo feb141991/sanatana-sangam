@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendPushNotification } from '@/lib/push-server';
-import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { getNextLocalHourUtc, isHourInQuietWindow, resolveTimeZone } from '@/lib/sacred-time';
+import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
 import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
 import { produceMoodCandidate } from '@/lib/mood-candidate-producer';
 import type { NotificationCandidateInsert } from '@/types/database';
@@ -13,7 +13,7 @@ import type { NotificationCandidateInsert } from '@/types/database';
 //
 // Under 'candidate' mode: produces candidates into `notification_candidates`
 // with zero direct push and zero bell writes.
-// Under 'legacy' mode: direct bell insertion + push via sendPushNotification.
+// Under 'legacy' mode: enqueues into the shared, cadence-guarded schedule.
 // Under 'disabled' mode: halts immediately.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -62,20 +62,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No users found', sent: 0, pipeline_mode: pipelineMode });
     }
 
-    const eligibleUsers = users.filter((user) => {
-      const tz = resolveTimeZone((user as any).timezone);
-      return canSendInLocalWindow(
-        now,
-        tz,
-        targetLocalHour,
-        (user as any).notification_quiet_hours_start ?? null,
-        (user as any).notification_quiet_hours_end ?? null
-      );
-    });
-
-    if (eligibleUsers.length === 0) {
-      return NextResponse.json({ message: 'No users in evening window', sent: 0, pipeline_mode: pipelineMode });
-    }
+    // This cron is one UTC invocation, so a current-hour filter silently
+    // excludes most time zones. Schedule each user's next local 18:00 instead.
+    const eligibleUsers = users;
 
     // ─── CANDIDATE PIPELINE PATH ─────────────────────────────────────────────
     if (pipelineMode === 'candidate') {
@@ -83,7 +72,7 @@ export async function GET(request: Request) {
 
       for (const u of eligibleUsers) {
         const tz = resolveTimeZone((u as any).timezone);
-        const localDate = getLocalDateIso(now, tz);
+        const localDate = getNextLocalHourUtc(now, tz, targetLocalHour, 0).localDateIso;
 
         const candidate = produceMoodCandidate(
           {
@@ -156,57 +145,48 @@ export async function GET(request: Request) {
       ],
     };
 
-    const notifications = eligibleUsers.map((u) => {
+    const scheduleRows = eligibleUsers.flatMap((u) => {
       const tz = resolveTimeZone((u as any).timezone);
-      const localDate = getLocalDateIso(now, tz);
+      const { sendAt, localDateIso } = getNextLocalHourUtc(now, tz, targetLocalHour, 0);
+      const quietStart = (u as any).notification_quiet_hours_start == null
+        ? null
+        : Number((u as any).notification_quiet_hours_start);
+      const quietEnd = (u as any).notification_quiet_hours_end == null
+        ? null
+        : Number((u as any).notification_quiet_hours_end);
+      if (isHourInQuietWindow(targetLocalHour, quietStart, quietEnd)) return [];
       const tradition = ((u as any).tradition ?? 'hindu') as string;
       const prompts = EVENING_PROMPTS_BY_TRADITION[tradition] ?? EVENING_PROMPTS_BY_TRADITION.other;
       const prompt = prompts[Math.floor(Math.random() * prompts.length)];
 
-      return {
+      return [{
         user_id: u.id,
         title: '🌙 Evening check-in',
         body: `${prompt} Let scripture meet your mood.`,
-        emoji: '🌙',
-        type: 'general' as const,
-        action_url: '/discover/mood',
-        notification_key: `mood-evening:${localDate}`,
-        local_date: localDate,
-        sent_timezone: tz,
-      };
+        send_at: sendAt.toISOString(),
+        notification_type: 'mood',
+        status: 'pending' as const,
+        notification_key: `mood-evening:${u.id}:${localDateIso}`,
+        metadata: {
+          emoji: '🌙',
+          type: 'general',
+          action_url: '/discover/mood',
+          prompt,
+          tradition,
+          timezone: tz,
+          local_date: localDateIso,
+        },
+      }];
     });
 
-    let totalInserted = 0;
-    const insertedIds: string[] = [];
-    for (let i = 0; i < notifications.length; i += 100) {
-      const batch = notifications.slice(i, i + 100);
-      const { data: rows, error: insertErr } = await supabase
-        .from('notifications')
-        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
-      if (insertErr) {
-        console.error('mood-reminder-evening insert error:', insertErr);
-        return NextResponse.json({ error: insertErr.message }, { status: 500 });
-      }
-      totalInserted += rows?.length ?? 0;
-      insertedIds.push(...((rows ?? []).map((r: { user_id: string }) => r.user_id)));
-    }
-
-    const baseUrl = new URL(request.url).origin;
-    const actionUrl = new URL('/discover/mood', baseUrl).toString();
-    const pushResult = await sendPushNotification({
-      userIds: insertedIds,
-      title: 'Evening check-in 🌙',
-      body: 'How has your inner journey been today? Let scripture meet your mood.',
-      url: actionUrl,
-      data: { type: 'general' },
-    });
+    const { queued, ignored } = await enqueueNotificationSchedule(supabase, scheduleRows);
 
     return NextResponse.json({
-      message: 'Evening mood reminders sent',
+      message: 'Evening mood reminders queued',
       pipeline_mode: 'legacy',
-      reminded: totalInserted,
-      push_targets: pushResult.sent,
+      scheduled_candidates: scheduleRows.length,
+      enqueued: queued,
+      ignored,
     });
   } catch (error) {
     console.error('mood-reminder-evening cron crashed:', error);

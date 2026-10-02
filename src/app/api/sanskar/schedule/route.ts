@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── POST /api/sanskar/schedule ───────────────────────────────────────────────
 // Called after Garbhadhana is recorded with an expected_date (due date).
@@ -73,8 +74,20 @@ export async function POST(req: NextRequest) {
     body:         string;
     send_at:      string;
     notification_type: string;
+    notification_key: string;
     metadata:     Record<string, unknown>;
   }> = [];
+
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('timezone')
+    .eq('id', user.id)
+    .maybeSingle();
+  if (profileError) {
+    console.error('[sanskar/schedule] Could not load the reminder timezone:', profileError.message);
+    return NextResponse.json({ ok: false, error: 'Could not load reminder preferences' }, { status: 500 });
+  }
+  const timezone = resolveTimeZone(profile?.timezone);
 
   for (const m of MILESTONES) {
     const eventDate   = addMonths(conceptionDate, m.months_after_conception);
@@ -90,10 +103,14 @@ export async function POST(req: NextRequest) {
       body: `${m.name} is due around ${eventDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Open Shoonaya to prepare and record this sacred milestone.`,
       send_at: reminderAt.toISOString(),
       notification_type: 'sanskar_milestone',
+      notification_key: `sanskar:${encodeURIComponent(kul_member_id ?? 'self')}:${m.sanskara_id}:${eventDate.toISOString().slice(0, 10)}`,
       metadata: {
         sanskara_id:   m.sanskara_id,
         kul_member_id: kul_member_id ?? null,
         event_date:    eventDate.toISOString(),
+        action_url:    '/kul',
+        timezone,
+        local_date:    getLocalDateIso(reminderAt, timezone),
       },
     });
   }
@@ -105,7 +122,9 @@ export async function POST(req: NextRequest) {
 
   // Insert into notification_schedule (fail gracefully if table not yet created)
   try {
-    const { error } = await supabase.from('notification_schedule').insert(notifications);
+    const { error } = await supabase
+      .from('notification_schedule')
+      .upsert(notifications, { onConflict: 'user_id,notification_key', ignoreDuplicates: true });
     if (error) {
       // Table may not exist yet — log and return success anyway so the UI isn't blocked
       console.warn('[sanskar/schedule] Insert error:', error.message);

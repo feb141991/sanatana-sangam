@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resolveRequestProfile, PROFILE_RESOLUTION_PAD_DAYS, shiftDate } from '@/lib/calendar/request-profile';
 import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from '@/lib/calendar/occurrence-reader';
+import { deduplicateObservanceResults, filterObservancesToCalculationLocation } from '@/lib/calendar/response-location';
 
 export const runtime = 'nodejs';
 
@@ -142,7 +143,7 @@ export async function GET(request: NextRequest) {
       resolved.context.effectiveCalculationLocation,
     );
 
-    const formattedResults = formatOccurrencesToResults(
+    const allFormattedResults = formatOccurrencesToResults(
       occurrencesWithBatches,
       queueData || [],
       tradition,
@@ -152,6 +153,11 @@ export async function GET(request: NextRequest) {
       lastDay,
       resolved.context
     );
+    const locationScopedResults = filterObservancesToCalculationLocation(
+      allFormattedResults,
+      resolved.context.effectiveCalculationLocation,
+    );
+    const formattedResults = deduplicateObservanceResults(locationScopedResults, calendarProfile);
 
     const byDate: Record<string, ClientObservanceResult[]> = {};
     for (const item of formattedResults) {

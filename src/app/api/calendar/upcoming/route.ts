@@ -15,6 +15,7 @@ import type { HomeObservanceStoryCard } from '../../../../../contracts/observanc
 import { selectDisplayObservances } from '@/lib/calendar/display-observances';
 import { getPublishedObservanceStoryCards } from '@/lib/observance-content';
 import { ServerTimingCollector } from '@/lib/server-timing';
+import { deduplicateObservanceResults, filterObservancesToCalculationLocation } from '@/lib/calendar/response-location';
 
 export const runtime = 'nodejs';
 
@@ -189,7 +190,7 @@ export async function GET(request: NextRequest) {
     }
 
     const formatStartedAt = performance.now();
-    const formattedResults = formatOccurrencesToResults(
+    const allFormattedResults = formatOccurrencesToResults(
       occurrencesWithBatches,
       queueData || [],
       tradition,
@@ -199,29 +200,25 @@ export async function GET(request: NextRequest) {
       toStr,
       resolved.context
     );
+    const formattedResults = filterObservancesToCalculationLocation(
+      allFormattedResults,
+      resolved.context.effectiveCalculationLocation,
+    );
 
     // Re-sort results by date in JS
     formattedResults.sort((a, b) => {
       const aDate = a.civilDate ?? a.reviewPlacementDate ?? '';
       const bDate = b.civilDate ?? b.reviewPlacementDate ?? '';
-      return aDate.localeCompare(bDate);
+      return aDate.localeCompare(bDate)
+        || Number(b.isPrimary) - Number(a.isPrimary)
+        || a.display_name.localeCompare(b.display_name);
     });
 
-    // Deduplicate: the query fetches from both the active calendarProfile and
-    // 'legacy-ujjain'. A festival present in both produces two identical
-    // slug+date entries. Keep only the first occurrence per slug+date pair
-    // (the active profile's row, which sorts ahead of the legacy one).
-    const seenSlugDates = new Set<string>();
-    const dedupedResults = formattedResults.filter((r) => {
-      const key = `${r.slug ?? ''}|${r.civilDate ?? r.reviewPlacementDate ?? ''}`;
-      if (seenSlugDates.has(key)) return false;
-      seenSlugDates.add(key);
-      return true;
-    });
+    const dedupedResults = deduplicateObservanceResults(formattedResults, calendarProfile);
 
-    const displayObservances = selectDisplayObservances(formattedResults);
+    const displayObservances = selectDisplayObservances(dedupedResults);
 
-    const primaryContext = formattedResults.find(result => result.isPrimary) ?? formattedResults[0] ?? null;
+    const primaryContext = dedupedResults.find(result => result.isPrimary) ?? dedupedResults[0] ?? null;
     let series: ObservanceSeries[] = [];
     if (primaryContext) {
       try {
@@ -231,7 +228,7 @@ export async function GET(request: NextRequest) {
           location: primaryContext.location,
           tradition,
         };
-        const familyResults = await fetchSeriesCompositionResults(supabase, formattedResults, seriesOptions);
+        const familyResults = await fetchSeriesCompositionResults(supabase, dedupedResults, seriesOptions);
         series = buildObservanceSeries(familyResults, seriesOptions);
       } catch (error) {
         console.warn('[API Calendar Upcoming] Series enrichment unavailable:', error);

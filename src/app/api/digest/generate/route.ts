@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { localSpiritualDate } from '@/lib/sacred-time';
+import { getNextLocalHourUtc, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 import { getTodayPanchang } from '@/lib/panchang';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { buildDigestPanchangSignature } from '@/lib/digest-variant';
+import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
+import type { NotificationScheduleDraft } from '@/lib/notification-schedule-queue';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -165,6 +167,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const now = new Date();
 
   // ── 1. Compute today's spiritual date (IST anchor, brahma-muhurta = 4) ────
   // This is only a broad batch filter. Definitive dedupe/upsert uses each
@@ -272,15 +275,7 @@ export async function GET(request: Request) {
     const batch = eligibleContexts.slice(i, i + BATCH_SIZE);
     
     // We will collect users to push to after generating digests
-    const notificationRows: Array<{
-      user_id: string;
-      title: string;
-      body: string;
-      send_at: string;
-      notification_type: string;
-      notification_key: string;
-      metadata: Record<string, unknown>;
-    }> = [];
+    const notificationRows: NotificationScheduleDraft[] = [];
     const recommendationRows: Array<{
       user_id: string;
       date: string;
@@ -330,14 +325,25 @@ export async function GET(request: Request) {
           content: digest,
           generated_at: new Date().toISOString(),
         });
+        const timezone = resolveTimeZone(user.timezone);
+        const { sendAt, localDateIso } = getNextLocalHourUtc(now, timezone, 11, 0);
         notificationRows.push({
           user_id: user.id,
           title: `Dharmic Digest · ${userPanchang.tithiName}`,
           body: digest.body.slice(0, 80),
-          send_at: new Date().toISOString(),
+          send_at: sendAt.toISOString(),
           notification_type: 'daily_digest',
+          status: 'pending',
           notification_key: `daily-digest:${user.id}:${userToday}`,
-          metadata: { url: '/home', type: 'daily_digest', spiritual_date: userToday, panchang_signature: panchangSignature },
+          metadata: {
+            action_url: '/home',
+            type: 'general',
+            content_type: 'daily_digest',
+            spiritual_date: userToday,
+            panchang_signature: panchangSignature,
+            timezone,
+            local_date: localDateIso,
+          },
         });
       }),
     );
@@ -356,14 +362,15 @@ export async function GET(request: Request) {
     }
 
     if (recommendationsPersisted && notificationRows.length > 0) {
-      const { data: queued, error: queueError } = await supabase
-        .from('notification_schedule')
-        .upsert(notificationRows, { onConflict: 'notification_key', ignoreDuplicates: true })
-        .select('id');
-      if (queueError) {
-        console.warn('[digest/generate] notification queue insert failed:', queueError.message);
-      } else {
-        queuedCount += queued?.length ?? 0;
+      try {
+        const queued = await enqueueNotificationSchedule(supabase, notificationRows);
+        queuedCount += queued.queued;
+      } catch (queueError) {
+        console.error('[digest/generate] notification queue admission failed:', queueError);
+        return NextResponse.json(
+          { error: queueError instanceof Error ? queueError.message : 'Notification queue admission failed' },
+          { status: 500 },
+        );
       }
     }
 

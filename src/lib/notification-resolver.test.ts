@@ -47,7 +47,9 @@ describe('notification resolver & engagement policy', () => {
       expect(resolvePriorityClass(makeCandidate({ event_type: 'user_reminder' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'sankalpa_midpoint' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'japa' }))).toBe('explicit_user_requested');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'sanskar_milestone' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'brahma_muhurta' }))).toBe('approved_ritual_window');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'aarti' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'nitya' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'observance' }))).toBe('reviewed_observance');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'festival' }))).toBe('reviewed_observance');
@@ -55,6 +57,8 @@ describe('notification resolver & engagement policy', () => {
       expect(resolvePriorityClass(makeCandidate({ event_type: 'dharm_veer' }))).toBe('routine_engagement');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'quiz' }))).toBe('routine_engagement');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'mood_checkin' }))).toBe('routine_engagement');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'sattvic_reminder' }))).toBe('routine_engagement');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'streak_nudge' }))).toBe('routine_engagement');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'mandali_prompt' }))).toBe('devotional_engagement');
     });
 
@@ -69,53 +73,107 @@ describe('notification resolver & engagement policy', () => {
   });
 
   describe('engagement budget enforcement', () => {
-    it('enforces maximum 1 routine engagement notification per local date', () => {
+    it('applies one shared five-push budget across routine and devotional engagement', () => {
       const routine1 = makeCandidate({
         id: 'routine-1',
         event_type: 'mood_checkin',
         priority: 40,
+        scheduled_for: '2026-11-08T02:30:00.000Z',
         title: 'Morning reflection',
       });
       const routine2 = makeCandidate({
         id: 'routine-2',
         event_type: 'streak_nudge',
         priority: 50,
+        scheduled_for: '2026-11-08T05:30:00.000Z',
         title: 'Continue your japa streak',
       });
+      const devotional = makeCandidate({ id: 'devotional-1', event_type: 'mandali_prompt', scheduled_for: '2026-11-08T08:30:00.000Z' });
 
       const res = resolveCandidates({
-        candidates: [routine1, routine2],
+        candidates: [routine1, routine2, devotional],
         now: fixedNow,
         allowDeferrals: false,
       });
 
-      expect(res.accepted).toHaveLength(1);
-      expect(res.accepted[0].id).toBe('routine-1');
-      expect(res.suppressed).toHaveLength(1);
-      expect(res.suppressed[0].id).toBe('routine-2');
-      expect(res.evaluations.find((e) => e.candidate.id === 'routine-2')?.reason).toBe(
-        'routine_engagement_cap_reached'
-      );
+      expect(res.accepted).toHaveLength(3);
+      expect(res.accepted.map((candidate) => candidate.scheduled_for)).toEqual([
+        '2026-11-08T02:30:00.000Z',
+        '2026-11-08T05:30:00.000Z',
+        '2026-11-08T08:30:00.000Z',
+      ]);
+      expect(res.suppressed).toHaveLength(0);
     });
 
-    it('enforces maximum 2 non-exempt devotional notifications per local date', () => {
-      const dev1 = makeCandidate({ id: 'dev-1', event_type: 'mandali_prompt', priority: 50 });
-      const dev2 = makeCandidate({ id: 'dev-2', event_type: 'quiz_daily', priority: 51 });
-      const dev3 = makeCandidate({ id: 'dev-3', event_type: 'gita_reflection', priority: 52 });
+    it('accepts up to five, spreads collisions, and suppresses the sixth budgeted push', () => {
+      const eventTypes = ['mood', 'sattvic', 'shloka', 'dharm_veer', 'quiz', 'daily_checkin'];
+      const candidates = eventTypes.map((eventType, index) => makeCandidate({
+        id: `engagement-${index + 1}`,
+        event_type: eventType,
+        priority: index + 1,
+        scheduled_for: '2026-11-08T02:30:00.000Z',
+      }));
 
       const res = resolveCandidates({
-        candidates: [dev1, dev2, dev3],
+        candidates,
         now: fixedNow,
         allowDeferrals: false,
       });
 
-      expect(res.accepted).toHaveLength(2);
-      expect(res.accepted.map((c) => c.id)).toEqual(['dev-1', 'dev-2']);
+      expect(res.accepted).toHaveLength(5);
+      expect(res.accepted.map((c) => c.id)).toEqual(candidates.slice(0, 5).map((c) => c.id));
+      expect(res.accepted.map((candidate) => candidate.scheduled_for)).toEqual([
+        '2026-11-08T02:30:00.000Z',
+        '2026-11-08T05:30:00.000Z',
+        '2026-11-08T08:30:00.000Z',
+        '2026-11-08T11:30:00.000Z',
+        '2026-11-08T14:30:00.000Z',
+      ]);
       expect(res.suppressed).toHaveLength(1);
-      expect(res.suppressed[0].id).toBe('dev-3');
-      expect(res.evaluations.find((e) => e.candidate.id === 'dev-3')?.reason).toBe(
-        'devotional_budget_cap_reached'
-      );
+      expect(res.suppressed[0].id).toBe(candidates[5].id);
+      expect(res.evaluations.find((e) => e.candidate.id === candidates[5].id)?.reason).toBe('daily_budget_cap_reached');
+    });
+
+    it('backfills capacity when a higher-priority candidate has no safe cadence slot', () => {
+      const requests = [
+        { id: 'no-slot', event_type: 'shloka', priority: 1, scheduled_for: '2026-11-08T16:30:00.000Z', expires_at: '2026-11-08T18:00:00.000Z' },
+        { id: 'slot-1', event_type: 'mood', priority: 2, scheduled_for: '2026-11-08T02:30:00.000Z' },
+        { id: 'slot-2', event_type: 'sattvic', priority: 3, scheduled_for: '2026-11-08T05:30:00.000Z' },
+        { id: 'slot-3', event_type: 'quiz', priority: 4, scheduled_for: '2026-11-08T08:30:00.000Z' },
+        { id: 'slot-4', event_type: 'dharm_veer', priority: 5, scheduled_for: '2026-11-08T11:30:00.000Z' },
+        { id: 'backfill', event_type: 'daily_checkin', priority: 6, scheduled_for: '2026-11-08T14:30:00.000Z' },
+      ];
+      const candidates = requests.map((request) => makeCandidate({
+        ...request,
+        expires_at: request.expires_at ?? '2026-11-08T18:00:00.000Z',
+      }));
+
+      const result = resolveCandidates({
+        candidates,
+        now: new Date('2026-11-08T00:00:00.000Z'),
+        allowDeferrals: false,
+      });
+
+      expect(result.accepted.map((candidate) => candidate.id)).toEqual([
+        'slot-1', 'slot-2', 'slot-3', 'slot-4', 'backfill',
+      ]);
+      expect(result.suppressed.map((candidate) => candidate.id)).toEqual(['no-slot']);
+      expect(result.evaluations.find((item) => item.candidate.id === 'no-slot')?.reason).toBe('no_safe_cadence_slot');
+    });
+
+    it('unifies legacy and candidate aliases for the per-type cap', () => {
+      const candidates = ['sattvic', 'sattvic_reminder', 'sattvic', 'sattvic_reminder', 'sattvic', 'sattvic_reminder']
+        .map((eventType, index) => makeCandidate({
+          id: `sattvic-${index + 1}`,
+          event_type: eventType,
+          priority: index + 1,
+          scheduled_for: new Date(Date.parse('2026-11-08T02:30:00.000Z') + index * 3 * 60 * 60 * 1000).toISOString(),
+        }));
+
+      const result = resolveCandidates({ candidates, now: fixedNow, allowDeferrals: false });
+      expect(result.accepted).toHaveLength(5);
+      expect(result.suppressed.map((candidate) => candidate.id)).toEqual(['sattvic-6']);
+      expect(result.evaluations.find((evaluation) => evaluation.candidate.id === 'sattvic-6')?.reason).toBe('daily_budget_cap_reached');
     });
 
     it('never suppresses reviewed observances even when the devotional budget is full', () => {
@@ -180,7 +238,13 @@ describe('notification resolver & engagement policy', () => {
         },
       ];
 
-      // Devotee already received 1 routine and 1 devotional (total 2 devotional budget consumed)
+      // Five budgeted pushes already exist; this candidate must not exceed the shared cap.
+      const fullHistory: DeliveryHistoryItem[] = [
+        ...history,
+        { id: 'hist-3', user_id: 'user-devotee-1', local_date: '2026-11-08', notification_type: 'shloka', priority_class: 'devotional_engagement', sent_at: '2026-11-08T01:45:00.000Z' },
+        { id: 'hist-4', user_id: 'user-devotee-1', local_date: '2026-11-08', notification_type: 'quiz', priority_class: 'transactional_safety', sent_at: '2026-11-08T01:50:00.000Z' },
+        { id: 'hist-5', user_id: 'user-devotee-1', local_date: '2026-11-08', notification_type: 'sattvic_reminder', priority_class: 'reviewed_observance', sent_at: '2026-11-08T01:55:00.000Z' },
+      ];
       const newDevotional = makeCandidate({
         id: 'new-devotional',
         event_type: 'gita_reflection',
@@ -192,12 +256,13 @@ describe('notification resolver & engagement policy', () => {
 
       const res = resolveCandidates({
         candidates: [newDevotional, newObservance],
-        history,
+        history: fullHistory,
         now: fixedNow,
         allowDeferrals: false,
       });
 
-      // newDevotional is suppressed because history consumed 2/2 slots
+      // Engagement event types are reclassified from their trusted event type,
+      // so stale priority labels cannot evade the five-push budget.
       expect(res.suppressed.map((c) => c.id)).toContain('new-devotional');
       // newObservance is accepted because it is exempt
       expect(res.accepted.map((c) => c.id)).toContain('new-observance');
@@ -266,26 +331,24 @@ describe('notification resolver & engagement policy', () => {
     });
 
     it('defers candidates when budget is reached and window remains open', () => {
-      const dev1 = makeCandidate({ id: 'dev-1', priority: 50 });
-      const dev2 = makeCandidate({ id: 'dev-2', priority: 51 });
-      const dev3 = makeCandidate({
-        id: 'dev-3',
-        priority: 52,
+      const candidates = Array.from({ length: 6 }, (_, index) => makeCandidate({
+        id: `dev-${index + 1}`,
+        priority: 50 + index,
         scheduled_for: '2026-11-08T02:30:00.000Z',
         expires_at: '2026-11-08T18:00:00.000Z', // Open until evening
-      });
+      }));
 
       const res = resolveCandidates({
-        candidates: [dev1, dev2, dev3],
+        candidates,
         now: fixedNow,
         allowDeferrals: true,
       });
 
-      expect(res.accepted).toHaveLength(2);
+      expect(res.accepted).toHaveLength(5);
       expect(res.deferred).toHaveLength(1);
-      expect(res.deferred[0].id).toBe('dev-3');
-      expect(res.evaluations.find((e) => e.candidate.id === 'dev-3')?.reason).toBe(
-        'devotional_budget_cap_deferrable'
+      expect(res.deferred[0].id).toBe('dev-6');
+      expect(res.evaluations.find((e) => e.candidate.id === 'dev-6')?.reason).toBe(
+        'daily_budget_cap_deferrable'
       );
     });
   });
@@ -304,7 +367,7 @@ describe('notification resolver & engagement policy', () => {
       for (const event of res.auditEvents) {
         expect(event.candidate_id).toBeDefined();
         expect(event.user_id).toBe('user-devotee-1');
-        expect(event.policy_version).toBe('v1');
+        expect(event.policy_version).toBe('engagement-cadence-v2');
         expect(event.decision).toBe('accepted');
         expect(event.resolved_at).toBe(fixedNow.toISOString());
       }

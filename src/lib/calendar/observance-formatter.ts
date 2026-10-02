@@ -59,12 +59,16 @@ export interface ClientObservanceResult {
   date: string;
   slug: string;
   display_name: string;
+  display_name_local?: string | null;
+  display_name_pa?: string | null;
   emoji: string;
   kind: "major" | "vrat" | "regional";
   tradition: "hindu" | "sikh" | "buddhist" | "jain" | "all";
   route_kind: string | null;
   route_slug: string | null;
   description: string;
+  description_local?: string | null;
+  description_pa?: string | null;
 
   // ObservanceResult contract
   id?: string | null;
@@ -309,12 +313,16 @@ export function formatOccurrencesToResults(
       date: row.date,
       slug: def.slug,
       display_name: def.display_name,
+      display_name_local: def.display_name_local ?? null,
+      display_name_pa: def.display_name_pa ?? null,
       emoji: def.emoji ?? '🪔',
       kind: def.kind,
       tradition: def.tradition,
       route_kind: def.route_kind,
       route_slug: def.route_slug,
       description: def.description ?? '',
+      description_local: def.description_local ?? null,
+      description_pa: def.description_pa ?? null,
 
       // ObservanceResult contract
       id: row.id ?? null,
@@ -471,8 +479,9 @@ export function formatOccurrencesToResults(
   //
   // Location MUST be part of the key. The classification below decides "[1] DISPUTE vs
   // [4] LOCATION EFFECT" by counting distinct traditions in the group — a valid test only
-  // when every row in the group was computed at the SAME place. None of the three API
-  // routes (calendar/day, /month, /upcoming) constrain location in their query, so without
+  // when every row in the group was computed at the SAME place. The three public API routes
+  // (calendar/day, /month, /upcoming) over-fetch across locations for completeness, then filter
+  // formatted output to the effective calculation location before responding. Without
   // this a Smarta row computed at one location and a Gaudiya row computed at another would
   // land in one group, count as two traditions, and be published as a tradition dispute —
   // when the dates may differ purely because the locations do.

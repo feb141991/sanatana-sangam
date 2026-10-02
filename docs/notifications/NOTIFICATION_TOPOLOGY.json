@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "a21948a9164d452b9061335b8a568c94bd0e5f9e24a188a1d76b6ae1b29b3048",
+  "sourceFingerprint": "d2f077988e4c98ee305fe04e36f628c8bb6363cbc1ccfd5b07f81ae4371a4e59",
   "schemaVersion": "2.0.0",
   "ownership": {
     "canonicalRepository": "Sanatan Sangam/Shoonaya",
@@ -7,16 +7,16 @@
   },
   "summary": {
     "totalRoutes": 27,
-    "directPushCallers": 20,
-    "queueWriters": 7,
+    "directPushCallers": 19,
+    "queueWriters": 8,
     "byClassification": {
       "admin_or_test": 2,
-      "direct_send_legacy": 14,
-      "scheduled_queue_producer": 6,
+      "direct_send_legacy": 13,
+      "scheduled_queue_producer": 7,
       "delivery_worker": 1,
       "transactional_event": 4
     },
-    "preferenceReferences": 8
+    "preferenceReferences": 11
   },
   "producers": [
     {
@@ -128,7 +128,7 @@
       "route": "/api/cron/japa-reminder",
       "sourceFile": "src/app/api/cron/japa-reminder/route.ts",
       "classification": "direct_send_legacy",
-      "schedule": "0 2 * * *",
+      "schedule": "0 16 * * *",
       "callsPushDirectly": true,
       "readsSchedule": false,
       "writesSchedule": false,
@@ -138,11 +138,12 @@
       ],
       "notificationKeyLiterals": [
         " },\n    }, {\n      notificationKey: ",
-        ",\n          notification_key: ",
-        ",\n        });\n\n        notificationsToInsert.push({\n          user_id: user.id,\n          title,\n          body,\n          emoji: ",
+        ",\n            notification_key: ",
+        ",\n      notificationIdsByUserId,\n    });\n\n    return NextResponse.json({\n      success: true,\n      pipeline_mode: ",
         ";\n\ntype JapaNotificationInsert = {\n  user_id: string;\n  title: string;\n  body: string;\n  emoji: string;\n  type: ",
-        "[japa-reminder] insert error:",
-        "[japa-reminder] sadhana batch fetch warning for date ${groupLocalDate}:"
+        "Japa reminder cron error:",
+        "[japa-reminder] candidate upsert error:",
+        "[japa-reminder] insert error:"
       ]
     },
     {
@@ -175,12 +176,13 @@
       "writesBell": false,
       "preferenceColumns": [],
       "notificationKeyLiterals": [
-        ",\n        send_at:           sendAt.toISOString(),\n        notification_type: ",
+        " mode: halts immediately.\n\nconst TARGET_LOCAL_HOUR = 12; // noon local time\n\nconst MOOD_PROMPTS_BY_TRADITION: Record<string, string[]> = {\n  hindu: [\n    ",
+        ",\n        send_at: sendAt.toISOString(),\n        notification_type: ",
+        "[mood-reminder/candidate] Candidate upsert error:",
         "[mood-reminder/enqueuer] Cron crashed:",
         "[mood-reminder/enqueuer] Fetch profiles error:",
         "[mood-reminder/enqueuer] Upsert error:",
-        "mood_checkin:${u.id}:${localDateIso}",
-        "mood_checkin:${user_id}:${local_date}"
+        "mood_checkin:${u.id}:${localDateIso}"
       ]
     },
     {
@@ -195,8 +197,8 @@
       "preferenceColumns": [],
       "notificationKeyLiterals": [
         ",\n        notification_key: ",
-        ", baseUrl).toString();\n    const pushResult = await sendPushNotification({\n      userIds: insertedIds,\n      title:   ",
-        "mood-evening:<date>",
+        ", baseUrl).toString();\n    const pushResult = await sendPushNotification({\n      userIds: insertedIds,\n      title: ",
+        "[mood-reminder-evening/candidate] Candidate insert error:",
         "mood-reminder-evening cron crashed:",
         "mood-reminder-evening insert error:"
       ]
@@ -218,7 +220,8 @@
         "Nitya cron crashed:",
         "Nitya cron insert failed:",
         "Nitya cron users query failed:",
-        "Notification insert failed: ${insertError.message}"
+        "Notification insert failed: ${insertError.message}",
+        "[nitya-reminder/candidate] Candidate upsert error:"
       ]
     },
     {
@@ -234,6 +237,7 @@
         "wants_madhyahn_reminder"
       ],
       "notificationKeyLiterals": [
+        "[nitya-reminder-madhyahn/candidate] Candidate upsert error:",
         "[nitya-reminder-madhyahn/enqueuer] Cron crashed:",
         "[nitya-reminder-madhyahn/enqueuer] Fetch profiles error:",
         "[nitya-reminder-madhyahn/enqueuer] Upsert error:",
@@ -254,6 +258,7 @@
         "wants_evening_reminder"
       ],
       "notificationKeyLiterals": [
+        "[nitya-reminder-sandhya/candidate] Candidate upsert error:",
         "[nitya-reminder-sandhya/enqueuer] Cron crashed:",
         "[nitya-reminder-sandhya/enqueuer] Fetch profiles error:",
         "[nitya-reminder-sandhya/enqueuer] Upsert error:",
@@ -271,11 +276,39 @@
       "writesSchedule": false,
       "writesBell": true,
       "preferenceColumns": [
-        "wants_family_notifications"
+        "japa_reminder_enabled",
+        "wants_family_notifications",
+        "wants_festival_reminders",
+        "wants_sankalpa_midpoint_reminders",
+        "wants_shloka_reminders",
+        "wants_tithi_reminders",
+        "wants_vrat_reminders"
       ],
       "notificationKeyLiterals": [
+        ",\n        });\n        continue;\n      }\n\n      if (completedJapaIds.has(row.id)) {\n        skippedRows.push({ id: row.id, reason: ",
+        ",\n        });\n        continue;\n      }\n\n      if (japaMissingDateIds.has(row.id)) {\n        skippedRows.push({ id: row.id, reason: ",
+        "[notification-dispatch] Could not requeue after Japa completion lookup failure:",
+        "[notification-dispatch] Could not requeue after profile lookup failure:",
         "[notification-dispatch] Cron crashed:",
-        "[notification-dispatch] Profile lookup error:"
+        "[notification-dispatch] Japa completion lookup failed; requeuing claimed batch:"
+      ]
+    },
+    {
+      "route": "/api/cron/observance-schedule",
+      "sourceFile": "src/app/api/cron/observance-schedule/route.ts",
+      "classification": "scheduled_queue_producer",
+      "schedule": "0 6 * * *",
+      "callsPushDirectly": false,
+      "readsSchedule": true,
+      "writesSchedule": true,
+      "writesBell": false,
+      "preferenceColumns": [
+        "wants_festival_reminders",
+        "wants_tithi_reminders",
+        "wants_vrat_reminders"
+      ],
+      "notificationKeyLiterals": [
+        ",\n        pipelineModes: { festival: modeFestival, vrat: modeVrat, tithi: modeTithi },\n        scheduledCount: 0,\n      });\n    }\n    if (categoryParam === "
       ]
     },
     {
@@ -287,24 +320,11 @@
       "readsSchedule": false,
       "writesSchedule": false,
       "writesBell": true,
-      "preferenceColumns": [],
+      "preferenceColumns": [
+        "wants_festival_reminders"
+      ],
       "notificationKeyLiterals": [
         ",\n        notification_key: "
-      ]
-    },
-    {
-      "route": "/api/cron/sankalpa-checkin",
-      "sourceFile": "src/app/api/cron/sankalpa-checkin/route.ts",
-      "classification": "direct_send_legacy",
-      "schedule": "30 1 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": false,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ", sankalpa_id: sankalpa.id }\n          });\n          sent++;\n        }\n      } catch (err) {\n        console.error(",
-        "sankalpa-checkin cron crashed:"
       ]
     },
     {
@@ -320,11 +340,11 @@
         "wants_nitya_reminders"
       ],
       "notificationKeyLiterals": [
+        "[sattvic-reminder/candidate] Candidate upsert error:",
         "[sattvic-reminder/enqueuer] Cron crashed:",
         "[sattvic-reminder/enqueuer] Fetch profiles error:",
         "[sattvic-reminder/enqueuer] Upsert error:",
-        "sattvic_reminder:${u.id}:${localDateIso}",
-        "sattvic_reminder:${user_id}:${local_date}"
+        "sattvic_reminder:${u.id}:${localDateIso}"
       ]
     },
     {
@@ -355,14 +375,14 @@
       "writesSchedule": false,
       "writesBell": true,
       "preferenceColumns": [
-        "wants_festival_reminders"
+        "wants_festival_reminders",
+        "wants_tithi_reminders"
       ],
       "notificationKeyLiterals": [
         ",\n        action_url:       actionPath,\n        notification_key: ",
         "Notification insert failed: ${insertError.message}",
         "Tithi cron crashed:",
-        "Tithi cron insert failed:",
-        "Tithi cron users query failed:"
+        "Tithi cron insert failed:"
       ]
     },
     {
@@ -375,12 +395,12 @@
       "writesSchedule": false,
       "writesBell": true,
       "preferenceColumns": [
-        "wants_festival_reminders"
+        "wants_vrat_reminders"
       ],
       "notificationKeyLiterals": [
         " || /\\bvrat\\b/i.test(vrat.name) ? vrat.name : ",
         ", sent: 0 });\n    }\n\n    const notifications: Array<{\n      user_id: string;\n      title: string;\n      body: string;\n      emoji: string;\n      type: ",
-        ", vrats: generalVrats },\n      ];\n\n      if ((user as any).gender_context === ",
+        ", vrats: generalVrats },\n      ];\n\n      if (user.gender_context === ",
         ";\n}\n\nfunction buildVratTitle(\n  vrat: ReviewedObservance,\n  daysAway: number,\n  audience: ObservanceNotificationAudience,\n) {\n  const suffix = daysAway === 1 ? ",
         "Reviewed vrat source unavailable: ${observanceError.message}",
         "[vrat-reminder] cron crashed:",
@@ -540,7 +560,7 @@
   "settingsExposure": [
     {
       "column": "japa_reminder_enabled",
-      "nativeReferenced": false,
+      "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
     },
@@ -581,7 +601,25 @@
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
     },
     {
+      "column": "wants_sankalpa_midpoint_reminders",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
       "column": "wants_shloka_reminders",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "wants_tithi_reminders",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "wants_vrat_reminders",
       "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
@@ -672,6 +710,21 @@
       "migrationFile": "20260902150000_notification_templates.sql",
       "repositoryStatus": "present",
       "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20260923140000_notification_candidates_and_resolver.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20260923150000_notification_candidates_claim_and_persistence.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20260923170000_atomic_notification_candidate_resolution.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
     }
   ],
   "liveDatabase": {
@@ -681,12 +734,12 @@
     "tables": {
       "notification_schedule": {
         "reachable": true,
-        "count": 362,
+        "count": 699,
         "error": null
       },
       "notifications": {
         "reachable": true,
-        "count": 514,
+        "count": 929,
         "error": null
       },
       "push_tokens": {
@@ -696,12 +749,12 @@
       },
       "notification_dispatch_events": {
         "reachable": true,
-        "count": 429,
+        "count": 777,
         "error": null
       },
       "push_token_events": {
         "reachable": true,
-        "count": 66,
+        "count": 127,
         "error": null
       }
     }

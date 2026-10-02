@@ -18,7 +18,9 @@ vi.mock('@/lib/supabase-admin', () => ({
       select: vi.fn().mockImplementation(() => {
         const auditRows = Array.from({ length: 502 }, (_, index) => ({
           id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-          resolved_at: new Date(Date.UTC(2026, 8, 23, 12, 0, index)).toISOString(),
+          // Keep every fixture inside both rolling windows as the current date
+          // advances; fixed September timestamps silently fell outside them.
+          resolved_at: new Date(Date.now() - 60 * 60 * 1000 + index * 1000).toISOString(),
           decision: index === 0 ? 'accepted' : index === 1 ? 'deferred' : 'suppressed',
           reason: index === 0 ? 'within_budget' : index === 1 ? 'window_open_next_slot' : 'daily_devotional_budget_exceeded',
           event_type: index % 2 === 0 ? 'observance' : 'routine_engagement',

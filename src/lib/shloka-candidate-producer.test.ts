@@ -46,6 +46,13 @@ describe('shloka-candidate-producer', () => {
     expect(cand).toBeNull();
   });
 
+  it('suppresses new candidates for accounts in the deletion lifecycle', () => {
+    expect(produceShlokaCandidate(
+      { ...devotee, is_deleting: true },
+      '2026-11-08',
+    )).toBeNull();
+  });
+
   it('defaults to eligible when wants_shloka_reminders is null/undefined', () => {
     const cand = produceShlokaCandidate(
       { ...devotee, wants_shloka_reminders: null },

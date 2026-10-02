@@ -5,16 +5,16 @@
 ## Summary
 
 - Route-level producers/workers discovered: **27**
-- Direct push callers: **20**
-- Queue writers: **7**
+- Direct push callers: **19**
+- Queue writers: **8**
 - Live database queried: **yes**
 - Live table reachability verified: **yes**
 
 | Classification | Count |
 | --- | ---: |
 | `admin_or_test` | 2 |
-| `direct_send_legacy` | 14 |
-| `scheduled_queue_producer` | 6 |
+| `direct_send_legacy` | 13 |
+| `scheduled_queue_producer` | 7 |
 | `delivery_worker` | 1 |
 | `transactional_event` | 4 |
 
@@ -29,20 +29,20 @@
 | `/api/cron/calendar-health` | `direct_send_legacy` | `0 9 1 * *` | yes | no | none detected |
 | `/api/cron/festival-reminder` | `direct_send_legacy` | `30 5 * * *` | yes | no | `wants_festival_reminders` |
 | `/api/cron/guided-plan-reminder` | `direct_send_legacy` | `0 7 * * *` | yes | no | none detected |
-| `/api/cron/japa-reminder` | `direct_send_legacy` | `0 2 * * *` | yes | no | `japa_reminder_enabled` |
+| `/api/cron/japa-reminder` | `direct_send_legacy` | `0 16 * * *` | yes | no | `japa_reminder_enabled` |
 | `/api/cron/journal-anniversary` | `direct_send_legacy` | `0 8 * * *` | yes | no | none detected |
 | `/api/cron/mood-reminder` | `scheduled_queue_producer` | `30 3 * * *` | no | yes | none detected |
 | `/api/cron/mood-reminder-evening` | `direct_send_legacy` | `30 14 * * *` | yes | no | none detected |
 | `/api/cron/nitya-reminder` | `direct_send_legacy` | `0 4 * * *` | yes | no | `wants_nitya_reminders` |
 | `/api/cron/nitya-reminder-madhyahn` | `scheduled_queue_producer` | `30 6 * * *` | no | yes | `wants_madhyahn_reminder` |
 | `/api/cron/nitya-reminder-sandhya` | `scheduled_queue_producer` | `0 13 * * *` | no | yes | `wants_evening_reminder` |
-| `/api/cron/notification-dispatch` | `delivery_worker` | not in vercel.json | yes | no | `wants_family_notifications` |
-| `/api/cron/pitru-paksha-reminder` | `direct_send_legacy` | `0 3 * * *` | yes | no | none detected |
-| `/api/cron/sankalpa-checkin` | `direct_send_legacy` | `30 1 * * *` | yes | no | none detected |
+| `/api/cron/notification-dispatch` | `delivery_worker` | not in vercel.json | yes | no | `japa_reminder_enabled`, `wants_family_notifications`, `wants_festival_reminders`, `wants_sankalpa_midpoint_reminders`, `wants_shloka_reminders`, `wants_tithi_reminders`, `wants_vrat_reminders` |
+| `/api/cron/observance-schedule` | `scheduled_queue_producer` | `0 6 * * *` | no | yes | `wants_festival_reminders`, `wants_tithi_reminders`, `wants_vrat_reminders` |
+| `/api/cron/pitru-paksha-reminder` | `direct_send_legacy` | `0 3 * * *` | yes | no | `wants_festival_reminders` |
 | `/api/cron/sattvic-reminder` | `scheduled_queue_producer` | `0 11 * * *` | no | yes | `wants_nitya_reminders` |
 | `/api/cron/shloka-reminder` | `direct_send_legacy` | `0 6 * * *` | yes | no | `wants_shloka_reminders` |
-| `/api/cron/tithi-reminder` | `direct_send_legacy` | `0 5 * * *` | yes | no | `wants_festival_reminders` |
-| `/api/cron/vrat-reminder` | `direct_send_legacy` | `30 4 * * *` | yes | no | `wants_festival_reminders` |
+| `/api/cron/tithi-reminder` | `direct_send_legacy` | `0 5 * * *` | yes | no | `wants_festival_reminders`, `wants_tithi_reminders` |
+| `/api/cron/vrat-reminder` | `direct_send_legacy` | `30 4 * * *` | yes | no | `wants_vrat_reminders` |
 | `/api/cron/weekly-summary` | `direct_send_legacy` | `0 1 * * 0` | yes | no | none detected |
 | `/api/digest/generate` | `scheduled_queue_producer` | `0 23 * * *` | no | yes | none detected |
 | `/api/native/mandali/notify-push` | `transactional_event` | not in vercel.json | yes | no | `wants_community_notifications` |
@@ -65,14 +65,17 @@ These are review targets, not machine-proven duplicate deliveries. Prompt 2 must
 
 Reference detection is intentionally weaker than UI exposure. Prompt 4 must trace the actual controls.
 
-- `japa_reminder_enabled`: Native reference not found; Web reference found.
+- `japa_reminder_enabled`: Native reference found; Web reference found.
 - `wants_community_notifications`: Native reference found; Web reference found.
 - `wants_evening_reminder`: Native reference not found; Web reference found.
 - `wants_family_notifications`: Native reference found; Web reference found.
 - `wants_festival_reminders`: Native reference found; Web reference found.
 - `wants_madhyahn_reminder`: Native reference not found; Web reference found.
 - `wants_nitya_reminders`: Native reference found; Web reference found.
+- `wants_sankalpa_midpoint_reminders`: Native reference found; Web reference found.
 - `wants_shloka_reminders`: Native reference found; Web reference found.
+- `wants_tithi_reminders`: Native reference found; Web reference found.
+- `wants_vrat_reminders`: Native reference found; Web reference found.
 
 ## Migration evidence
 
@@ -95,6 +98,9 @@ Migration files are repository evidence only. They are not labelled applied to p
 - `20260828043000_fix_notification_schedule_onconflict_index.sql`: repository present; production not verified by source scan.
 - `20260828140000_drop_onesignal_player_id.sql`: repository present; production not verified by source scan.
 - `20260902150000_notification_templates.sql`: repository present; production not verified by source scan.
+- `20260923140000_notification_candidates_and_resolver.sql`: repository present; production not verified by source scan.
+- `20260923150000_notification_candidates_claim_and_persistence.sql`: repository present; production not verified by source scan.
+- `20260923170000_atomic_notification_candidate_resolution.sql`: repository present; production not verified by source scan.
 
 ## Live database evidence
 
@@ -106,12 +112,12 @@ Migration files are repository evidence only. They are not labelled applied to p
   "tables": {
     "notification_schedule": {
       "reachable": true,
-      "count": 362,
+      "count": 699,
       "error": null
     },
     "notifications": {
       "reachable": true,
-      "count": 514,
+      "count": 929,
       "error": null
     },
     "push_tokens": {
@@ -121,12 +127,12 @@ Migration files are repository evidence only. They are not labelled applied to p
     },
     "notification_dispatch_events": {
       "reachable": true,
-      "count": 429,
+      "count": 777,
       "error": null
     },
     "push_token_events": {
       "reachable": true,
-      "count": 66,
+      "count": 127,
       "error": null
     }
   }
