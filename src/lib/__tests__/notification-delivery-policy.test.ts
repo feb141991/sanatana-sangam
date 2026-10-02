@@ -32,6 +32,25 @@ describe("notification delivery policy", () => {
     expect(getNotificationPreferenceSkipReason(row, { japa_reminder_enabled: true })).toBeNull();
   });
 
+  it("suppresses queued Sattvic and Nitya reminders if the opt-in was turned off after scheduling", () => {
+    for (const notification_type of ["sattvic", "sattvic_reminder", "nitya", "nitya_madhyahn", "nitya_sandhya"]) {
+      const row = { notification_type, notification_key: `${notification_type}:2026-10-02` };
+      expect(getNotificationPreferenceSkipReason(row, { wants_nitya_reminders: false }), notification_type)
+        .toBe("nitya_reminders_disabled");
+      expect(getNotificationPreferenceSkipReason(row, { wants_nitya_reminders: true }), notification_type).toBeNull();
+      // Producers require the flag to be true, so an absent value is not a delivery-time veto.
+      expect(getNotificationPreferenceSkipReason(row, {}), notification_type).toBeNull();
+    }
+  });
+
+  it("does not apply the Nitya opt-in to unrelated types", () => {
+    for (const notification_type of ["mood_checkin", "brahma_muhurta", "festival"]) {
+      const row = { notification_type, notification_key: `${notification_type}:x` };
+      expect(getNotificationPreferenceSkipReason(row, { wants_nitya_reminders: false }), notification_type)
+        .not.toBe("nitya_reminders_disabled");
+    }
+  });
+
   it("suppresses a queued Shloka reminder if the user turned it off after scheduling", () => {
     const row = { notification_type: "shloka", notification_key: "candidate:shloka:2026-09-29" };
     expect(getNotificationPreferenceSkipReason(row, { wants_shloka_reminders: false }))

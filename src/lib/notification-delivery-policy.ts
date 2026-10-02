@@ -10,6 +10,7 @@ export type NotificationProfile = {
   wants_vrat_reminders?: boolean | null;
   wants_tithi_reminders?: boolean | null;
   wants_shloka_reminders?: boolean | null;
+  wants_nitya_reminders?: boolean | null;
   wants_sankalpa_midpoint_reminders?: boolean | null;
   japa_reminder_enabled?: boolean | null;
 };
@@ -30,6 +31,18 @@ export function getNotificationPreferenceSkipReason(
     profile.wants_shloka_reminders === false
   ) {
     return "shloka_reminders_disabled";
+  }
+
+  // Sattvic Mode and every Nitya slot are gated on the same opt-in at
+  // scheduling time; recheck it at delivery so a user who turns it off after a
+  // row was queued is not still sent that day's reminder. Only an explicit
+  // `false` suppresses, matching how the producers read the flag.
+  const type = row.notification_type ?? "";
+  if (
+    (type === "sattvic" || type === "sattvic_reminder" || type.startsWith("nitya")) &&
+    profile.wants_nitya_reminders === false
+  ) {
+    return "nitya_reminders_disabled";
   }
 
   if (
