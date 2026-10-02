@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
+import { readMoodCheckinStatus } from '@/lib/mood/checkin-status';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,8 @@ const ALL_FIELDS: Field[] = ['unreadNotifications', 'moodStatus'];
 type MoodStatus = {
   hasLoggedMoodToday: boolean;
   lastMood: string | null;
+  hasDismissedToday: boolean;
+  spiritualDate: string;
 };
 
 async function getUnreadNotificationCount(supabase: NonNullable<Awaited<ReturnType<typeof getApiUser>>['supabase']>, userId: string): Promise<number> {
@@ -39,27 +42,26 @@ async function getUnreadNotificationCount(supabase: NonNullable<Awaited<ReturnTy
   return (data ?? []).filter((row) => !row.read).length;
 }
 
-async function getMoodStatus(supabase: NonNullable<Awaited<ReturnType<typeof getApiUser>>['supabase']>, userId: string): Promise<MoodStatus> {
-  // Same today-window query and hasLoggedMoodToday/lastMood derivation as
-  // GET /api/mood/checkin (no ?history) -- see that route for the full
-  // rationale on why "any row with a non-null before_mood today" is the
-  // right definition for native's minimal check-in surface.
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
+async function getMoodStatus(
+  supabase: NonNullable<Awaited<ReturnType<typeof getApiUser>>['supabase']>,
+  userId: string,
+  timeZone: string | null,
+  dayBoundaryHour: number
+): Promise<MoodStatus | null> {
+  const result = await readMoodCheckinStatus(supabase, userId, timeZone, new Date(), dayBoundaryHour);
+  if (result.error || !result.status) {
+    // An unavailable read must not be represented as "no mood today"; that
+    // false value makes Home show an automatic prompt for someone who may
+    // already have checked in.
+    console.error('[home-live] mood status unavailable', { hasError: Boolean(result.error) });
+    return null;
+  }
 
-  const { data, error } = await supabase
-    .from('user_mood_checkins')
-    .select('before_mood, created_at')
-    .eq('user_id', userId)
-    .gte('created_at', todayStart.toISOString())
-    .order('created_at', { ascending: false });
-
-  if (error) return { hasLoggedMoodToday: false, lastMood: null };
-
-  const loggedToday = (data ?? []).find((row) => row.before_mood);
   return {
-    hasLoggedMoodToday: Boolean(loggedToday),
-    lastMood: loggedToday?.before_mood ?? null,
+    hasLoggedMoodToday: result.status.hasLoggedMoodToday,
+    lastMood: result.status.lastMood,
+    hasDismissedToday: result.status.hasDismissedToday,
+    spiritualDate: result.status.spiritualDate,
   };
 }
 
@@ -77,12 +79,19 @@ export async function GET(request: NextRequest) {
 
   const [unreadNotifications, moodStatus] = await Promise.all([
     fields.includes('unreadNotifications') ? getUnreadNotificationCount(supabase, user.id) : Promise.resolve(undefined),
-    fields.includes('moodStatus') ? getMoodStatus(supabase, user.id) : Promise.resolve(undefined),
+    fields.includes('moodStatus')
+      ? getMoodStatus(
+          supabase,
+          user.id,
+          request.nextUrl.searchParams.get('timezone'),
+          request.nextUrl.searchParams.has('timezone') ? 4 : 0
+        )
+      : Promise.resolve(undefined),
   ]);
 
   const response: { unreadNotifications?: number; moodStatus?: MoodStatus } = {};
   if (unreadNotifications !== undefined) response.unreadNotifications = unreadNotifications;
-  if (moodStatus !== undefined) response.moodStatus = moodStatus;
+  if (moodStatus) response.moodStatus = moodStatus;
 
   return NextResponse.json(response, {
     headers: {

@@ -61,15 +61,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No mood completion fields provided' }, { status: 400 });
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('user_mood_checkins')
       .update(updatePayload)
       .eq('id', checkin_id)
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .select('id')
+      .maybeSingle();
 
     if (error) {
       console.error('Error completing mood checkin:', error);
       return NextResponse.json({ error: 'Failed to complete mood checkin' }, { status: 500 });
+    }
+
+    if (!data) {
+      return NextResponse.json({ error: 'Check-in not found' }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });

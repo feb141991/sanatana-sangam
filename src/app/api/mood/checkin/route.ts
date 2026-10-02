@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
+import { readMoodCheckinStatus, resolveMoodTimeZone } from '@/lib/mood/checkin-status';
 
 // Auth: switched from a cookie-only server client (createServerSupabaseClient
 // + requireUserNotBanned) to getApiUser(req), which tries the cookie session
@@ -56,67 +57,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(historyResult);
     }
 
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const timeZoneParam = url.searchParams.get('timezone');
+    const timeZone = resolveMoodTimeZone(timeZoneParam);
+    // Existing web clients omit timezone and retain their prior UTC-midnight
+    // status window. Native sends its device timezone and gets the shared
+    // 4 a.m. spiritual-day contract used by the Home prompt.
+    const dayBoundaryHour = timeZoneParam ? 4 : 0;
+    const result = await readMoodCheckinStatus(supabase, user.id, timeZone, new Date(), dayBoundaryHour);
 
-    const { data, error } = await supabase
-      .from('user_mood_checkins')
-      .select('id, before_mood, clicked_action, completed_action, session_status, dismissed, created_at, closed_at')
-      .eq('user_id', user.id)
-      .gte('created_at', todayStart.toISOString())
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching mood status:', error);
+    if (result.error || !result.status) {
+      console.error('Error fetching mood status:', result.error);
       return NextResponse.json({ error: 'Failed to fetch status' }, { status: 500 });
     }
-
-    let hasCompletedToday = false;
-    let hasDismissedToday = false;
-    let openSession = null;
-    let lastCompletedMood = null;
-
-    if (data && data.length > 0) {
-      hasDismissedToday = data.some(d => d.dismissed);
-
-      const completed = data.filter(d => d.session_status === 'completed');
-      if (completed.length > 0) {
-        hasCompletedToday = true;
-        lastCompletedMood = completed[0].before_mood || null;
-      }
-
-      const open = data.find(d => d.session_status === 'open');
-      if (open) {
-        openSession = {
-          id: open.id,
-          before_mood: open.before_mood,
-          clicked_action: open.clicked_action,
-          created_at: open.created_at
-        };
-      }
-    }
-
-    // Additive fields for native's minimal check-in surface (does not change
-    // any field above, all pre-existing PWA behavior is untouched). Native
-    // needs a simple "did the user tell us their mood today" signal — the
-    // existing hasCompletedToday/lastCompletedMood pair only reflects rows
-    // with session_status === 'completed', which nothing in the current
-    // check-in flow (native's minimal card, or PWA's own MoodPulse "Done ✓"
-    // button) actually sets; both leave the row as 'open' or 'dismissed'.
-    // hasLoggedMoodToday/lastMood instead reflect any row with a non-null
-    // before_mood recorded today, regardless of session_status.
-    const loggedToday = (data ?? []).find(d => d.before_mood);
-    const hasLoggedMoodToday = Boolean(loggedToday);
-    const lastMood = loggedToday?.before_mood ?? null;
-
-    return NextResponse.json({
-      hasCompletedToday,
-      hasDismissedToday,
-      openSession,
-      lastCompletedMood,
-      hasLoggedMoodToday,
-      lastMood,
-    });
+    return NextResponse.json(result.status);
   } catch (error) {
     console.error('Error in /api/mood/checkin GET:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
