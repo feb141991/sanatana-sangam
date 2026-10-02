@@ -1,6 +1,7 @@
 import { getNotificationSafetyState } from '@/lib/notification-safety';
 import { recordNotificationDeliveryBatch, type AuditRecordPayload } from '@/lib/notification-delivery-audit';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
+import { findDeletingUserIds } from '@/lib/deleting-recipients';
 import { hashPushToken } from '@/lib/push-token-audit';
 import { prunePushBindings, type PushBindingSnapshot } from '@/lib/push-binding';
 
@@ -135,7 +136,7 @@ type ExpoSendResult = {
 };
 
 async function sendViaExpo(
-  targetUserIds: string[],
+  requestedUserIds: string[],
   message: PushMessage,
   messageType: string,
   options: SendPushOptions | undefined
@@ -145,22 +146,33 @@ async function sendViaExpo(
   const failedUserIds = new Set<string>();
   const supabase = createServiceRoleSupabaseClient();
 
-  // Safety filter: any user who requested account deletion (30-day cool-off)
-  // must have all push delivery silenced immediately across every cron/route.
-  const { data: deletingProfiles } = await supabase
-    .from('profiles')
-    .select('id')
-    .in('id', targetUserIds)
-    .eq('is_deleting', true);
-
-  const deletingUserIds = new Set((deletingProfiles ?? []).map((p: { id: string }) => p.id));
-  const activeTargetUserIds = targetUserIds.filter((id) => !deletingUserIds.has(id));
-
-  if (deletingUserIds.size > 0) {
-    const deletingList = Array.from(deletingUserIds);
-    for (const userId of deletingList) skippedUserIds.add(userId);
+  // An account in its deletion cool-off is never pushed to, whichever producer
+  // built the message. A failed check stops the send (retryable) instead of
+  // guessing that nobody is deleting.
+  const deletion = await findDeletingUserIds(supabase, requestedUserIds);
+  if (deletion.error) {
+    console.error('deletion-state lookup failed:', deletion.error.message);
     await recordNotificationDeliveryBatch(buildAuditRows({
-      userIds: deletingList,
+      userIds: requestedUserIds,
+      type: messageType,
+      status: 'failed',
+      provider: 'expo',
+      errorCode: 'deletion_lookup_failed',
+      errorMessage: deletion.error.message.slice(0, 500),
+      notificationKey: options?.notificationKey ?? null,
+      notificationKeysByUserId: options?.notificationKeysByUserId,
+      notificationIdsByUserId: options?.notificationIdsByUserId,
+      metadata: { url: message.url ?? null, ...options?.metadata },
+    }));
+    for (const userId of requestedUserIds) failedUserIds.add(userId);
+    return { sentUserIds, skippedUserIds, failedUserIds };
+  }
+
+  const deletingRecipients = requestedUserIds.filter((id) => deletion.deletingUserIds.has(id));
+  if (deletingRecipients.length > 0) {
+    for (const userId of deletingRecipients) skippedUserIds.add(userId);
+    await recordNotificationDeliveryBatch(buildAuditRows({
+      userIds: deletingRecipients,
       type: messageType,
       status: 'skipped',
       provider: 'expo',
@@ -170,15 +182,13 @@ async function sendViaExpo(
       metadata: { reason: 'account_deletion_pending', url: message.url ?? null, ...options?.metadata },
     }));
   }
-
-  if (activeTargetUserIds.length === 0) {
-    return { sentUserIds, skippedUserIds, failedUserIds };
-  }
+  const targetUserIds = requestedUserIds.filter((id) => !deletion.deletingUserIds.has(id));
+  if (targetUserIds.length === 0) return { sentUserIds, skippedUserIds, failedUserIds };
 
   const { data: tokenRows, error: tokenError } = await supabase
     .from('push_tokens')
     .select('user_id, token, binding_version')
-    .in('user_id', activeTargetUserIds);
+    .in('user_id', targetUserIds);
 
   if (tokenError) {
     console.error('push_tokens lookup failed:', tokenError);
@@ -205,7 +215,7 @@ async function sendViaExpo(
     tokensByUser.set(row.user_id, list);
   }
 
-  const usersWithNoToken = activeTargetUserIds.filter((id) => !tokensByUser.has(id));
+  const usersWithNoToken = targetUserIds.filter((id) => !tokensByUser.has(id));
   if (usersWithNoToken.length > 0) {
     for (const userId of usersWithNoToken) skippedUserIds.add(userId);
     await recordNotificationDeliveryBatch(buildAuditRows({
@@ -220,7 +230,7 @@ async function sendViaExpo(
     }));
   }
 
-  const usersWithTokens = activeTargetUserIds.filter((id) => tokensByUser.has(id));
+  const usersWithTokens = targetUserIds.filter((id) => tokensByUser.has(id));
   if (usersWithTokens.length === 0) return { sentUserIds, skippedUserIds, failedUserIds };
 
   const outbox: Array<{ userId: string; token: string; bindingVersion: string; message: Record<string, unknown> }> = [];
