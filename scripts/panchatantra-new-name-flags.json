@@ -1,0 +1,386 @@
+{
+ "generatedBy": "name-fidelity audit of antigravity output vs scripts/panchatantra-full-export.json",
+ "method": "capitalised mid-sentence tokens in the expanded body that appear nowhere in the original body/title/preview/phal and are not dictionary words",
+ "storiesFlagged": 84,
+ "newNamesByStory": {
+  "panchatantra-lion-and-rabbit": {
+   "Bhasuraka": 5
+  },
+  "panchatantra-monkey-and-crocodile": {
+   "Raktamukha": 3,
+   "Karalamukha": 3
+  },
+  "panchatantra-blue-jackal": {
+   "Chandaraka": 7,
+   "Kakuddruma": 1,
+   "Oooow-waaah": 1
+  },
+  "panchatantra-brahmin-and-crooks": {
+   "Sharma": 2,
+   "Brothers": 1
+  },
+  "panchatantra-crows-and-cobra": {
+   "Laghupatanaka": 1
+  },
+  "panchatantra-talkative-tortoise": {
+   "Kamalakara": 2,
+   "Kambugriva": 3,
+   "Sankata": 1,
+   "Vikata": 2,
+   "Manasa": 2
+  },
+  "panchatantra-mongoose-and-child": {
+   "Devasharma": 1
+  },
+  "panchatantra-foolish-friend-monkey": {
+   "Bharat": 1,
+   "Chandra": 3
+  },
+  "panchatantra-two-fish-and-frog": {
+   "Sahasrabuddhi": 3,
+   "Wits": 2,
+   "Shatabuddhi": 2,
+   "Ekabuddhi": 4
+  },
+  "panchatantra-bird-with-two-heads": {
+   "Bharunda": 2,
+   "Parijata": 1,
+   "Kalakuta": 1
+  },
+  "panchatantra-merchant-and-iron-balance": {
+   "Jirnadhana": 9,
+   "Shreshthi": 5,
+   "Dhanadeva": 1
+  },
+  "panchatantra-lion-mouse-and-cat": {
+   "Mahavikrama": 2,
+   "Dadhikarna": 5
+  },
+  "panchatantra-jackal-and-drum": {
+   "Gomukha": 4
+  },
+  "panchatantra-dove-king-and-net": {
+   "Dandaka": 1,
+   "Chitragriva": 4,
+   "Hiranyaka": 2
+  },
+  "panchatantra-mice-and-elephants": {
+   "Hiranyagarbha": 4,
+   "Gajendra": 5
+  },
+  "panchatantra-fox-and-grapes": {
+   "Gomukha": 2
+  },
+  "panchatantra-ass-in-tiger-skin": {
+   "Shuddhapata": 1,
+   "Gardabhaka": 2
+  },
+  "panchatantra-greedy-jackal": {
+   "Vindhya": 1,
+   "Bhairava": 1,
+   "Dirghamukha": 1
+  },
+  "panchatantra-heron-and-fish": {
+   "Mandamati": 1,
+   "Lotuses": 1
+  },
+  "panchatantra-sparrow-and-elephant": {
+   "Latavaka": 1,
+   "Charana": 1,
+   "Meghanada": 2
+  },
+  "panchatantra-king-and-minister": {
+   "Mahishmati": 1,
+   "Virasena": 6,
+   "Dharmapala": 4
+  },
+  "panchatantra-owl-and-crows": {
+   "Vindhya": 1,
+   "Meghavarna": 5,
+   "Arimardana": 4,
+   "Sthirajivi": 7
+  },
+  "panchatantra-moon-lake-rabbits": {
+   "Chandrasarovara": 2,
+   "Shilamukha": 1,
+   "Chaturdanta": 7,
+   "Vijayadatta": 2
+  },
+  "panchatantra-golden-dropping-bird": {
+   "Himavan": 2,
+   "Bharunda": 5,
+   "Lubdhaka": 5,
+   "Brahmadatta": 2,
+   "Bahushruta": 1
+  },
+  "panchatantra-weaver-as-vishnu": {
+   "Pataliputra": 2,
+   "Kaulika": 6,
+   "Narayana": 2,
+   "Chandravati": 2,
+   "Vaikuntha": 2
+  },
+  "panchatantra-four-friends": {
+   "Laghupatanaka": 1,
+   "Hiranyaka": 3,
+   "Mantharaka": 4,
+   "Chitranga": 6
+  },
+  "panchatantra-cat-as-judge": {
+   "Kapinjala": 3,
+   "Shighraga": 2,
+   "Dharmashastras": 1,
+   "Dadhikarna": 2
+  },
+  "panchatantra-donkey-and-jackal": {
+   "Uddhata": 2,
+   "Pheluka": 4,
+   "Saraswati": 1
+  },
+  "panchatantra-snake-and-frogs": {
+   "Mandavishya": 4,
+   "Jalapada": 3,
+   "Kings": 1
+  },
+  "panchatantra-camel-bell": {
+   "Uddhata": 6
+  },
+  "panchatantra-potter-as-warrior": {
+   "Yudhishthira": 4
+  },
+  "panchatantra-greedy-brahmin-dream": {
+   "Devakotta": 1,
+   "Svabhavakripana": 1,
+   "Somasarman": 1
+  },
+  "panchatantra-clever-hare-and-elephant": {
+   "Dandaka": 1,
+   "Chandrasaras": 2,
+   "Chaturdanta": 4,
+   "Vijaya": 4,
+   "Chandra": 1
+  },
+  "panchatantra-sage-and-mouse": {
+   "Jahnavi": 1,
+   "Mahatapa": 4,
+   "Punar": 1
+  },
+  "panchatantra-lion-and-bull": {
+   "Sanjivaka": 8,
+   "Yamuna": 1,
+   "Pingalaka": 8,
+   "Karataka": 1,
+   "Damanaka": 3
+  },
+  "panchatantra-monk-and-jackal": {
+   "Shivananda": 3
+  },
+  "panchatantra-lion-makers": {
+   "Vidyadhara": 3,
+   "Jnanasiddhi": 2,
+   "Shastradhara": 2,
+   "Subuddhi": 5
+  },
+  "panchatantra-hunter-and-pigeons": {
+   "Vindhya": 1,
+   "Lubdhaka": 3,
+   "Kapota": 1,
+   "Honored": 1
+  },
+  "panchatantra-raven-and-swan": {
+   "Kailash": 1
+  },
+  "panchatantra-three-fish": {
+   "Anagatavidhata": 3,
+   "Pratyutpannamati": 3,
+   "Yadbhavishya": 2,
+   "Brothers": 1
+  },
+  "panchatantra-golds-gloom": {
+   "Mahilaropya": 1,
+   "Chudakarna": 4,
+   "Hiranyaka": 1,
+   "Brihat-Sphik": 2
+  },
+  "panchatantra-mother-shandilees-bargain": {
+   "Somasharman": 2,
+   "Dharmashastras": 1
+  },
+  "panchatantra-self-defeating-forethought": {
+   "Malaya": 1,
+   "Bhairava": 2,
+   "Dirghamukha": 1
+  },
+  "panchatantra-mister-duly": {
+   "Pataliputra": 1,
+   "Sagaradatta": 1
+  },
+  "panchatantra-soft-the-weaver": {
+   "Mantharaka": 2,
+   "Vardhamana": 2
+  },
+  "panchatantra-hang-ball-and-greedy": {
+   "Malaya": 1
+  },
+  "panchatantra-spots-captivity": {
+   "Vindhya": 1
+  },
+  "panchatantra-four-treasure-seekers": {
+   "Ujjayini": 1,
+   "Vedas": 1,
+   "Himalayas": 1,
+   "Bhairavananda": 1,
+   "Brothers": 1
+  },
+  "panchatantra-hundred-wit-thousand-wit-single-wit": {
+   "Satabuddhi": 3,
+   "Sahasrabuddhi": 3,
+   "Ekabuddhi": 5,
+   "Brothers": 1
+  },
+  "panchatantra-musical-donkey": {
+   "Uddhata": 5,
+   "Hee-haw": 1
+  },
+  "panchatantra-slow-the-weaver": {
+   "Mantharaka": 1
+  },
+  "panchatantra-unforgiving-monkey": {
+   "Ayurvedic": 1
+  },
+  "panchatantra-three-breasted-princess": {
+   "Madhupura": 1,
+   "Manthara": 1
+  },
+  "panchatantra-fiend-who-washed-his-feet": {
+   "Dandaka": 1,
+   "Somadatta": 1,
+   "Vedas": 1,
+   "Brahmarakshasa": 1
+  },
+  "panchatantra-handsome-and-theodore": {
+   "Gangadatta": 1,
+   "Priyadarshana": 1,
+   "Greetings": 1
+  },
+  "panchatantra-flop-ear-and-dusty": {
+   "Karalakeshara": 1,
+   "Dhusaraka": 1,
+   "Lambakarna": 1
+  },
+  "panchatantra-ungrateful-wife": {
+   "Kanyakubja": 1,
+   "Somasharman": 4
+  },
+  "panchatantra-king-joy-and-secretary-splendour": {
+   "Pataliputra": 1,
+   "Vararuchi": 1,
+   "Overpowered": 1,
+   "Bhanumati": 1,
+   "Enthralled": 1
+  },
+  "panchatantra-how-supersmart-ate-the-elephant": {
+   "Beasts": 1,
+   "Terrified": 1
+  },
+  "panchatantra-how-birds-picked-a-king": {
+   "Meru": 1
+  },
+  "panchatantra-snake-and-the-ants": {
+   "Naimisha": 1
+  },
+  "panchatantra-snake-who-paid-cash": {
+   "Haridatta": 6,
+   "Serpents": 1
+  },
+  "panchatantra-unsocial-swans": {
+   "Padma-Sarovar": 1
+  },
+  "panchatantra-old-man-with-young-wife": {
+   "Kamatura": 1,
+   "Benares": 1
+  },
+  "panchatantra-brahman-thief-and-ghost": {
+   "Brahmarakshasa": 1,
+   "Atharva": 1
+  },
+  "panchatantra-gullible-carpenter": {
+   "Brihaspati": 4
+  },
+  "panchatantra-mouse-maid-made-mouse": {
+   "Astonished": 1
+  },
+  "panchatantra-cave-that-talked": {
+   "Kharanakhara": 1,
+   "Dadhipuccha": 3,
+   "Sprinting": 1
+  },
+  "panchatantra-wedge-pulling-monkey": {
+   "Anjana": 2
+  },
+  "panchatantra-merchant-strong-tooth": {
+   "Vardhamana": 1,
+   "Danta-Dhir": 1,
+   "Gorambha": 1,
+   "Restoring": 1
+  },
+  "panchatantra-godly-and-june": {
+   "Deva-Sharman": 1,
+   "Ashadha-Bhuti": 1
+  },
+  "panchatantra-jackal-at-ram-fight": {
+   "Deva-Sharman": 1
+  },
+  "panchatantra-weavers-wife": {
+   "Mandharaka": 1,
+   "Guardians": 1
+  },
+  "panchatantra-ungrateful-man": {
+   "Yajnadatta": 6,
+   "Moved": 1
+  },
+  "panchatantra-leap-and-creep": {
+   "Mandavisarpini": 1,
+   "Agnimukha": 1,
+   "Guards": 1
+  },
+  "panchatantra-passion-and-owl": {
+   "Raktaksha": 1,
+   "Swans": 1,
+   "Woods": 3
+  },
+  "panchatantra-uglys-trust-abused": {
+   "Katasur": 1,
+   "Madotkata": 1
+  },
+  "panchatantra-lion-and-the-carpenter": {
+   "Vishvanatha": 1,
+   "Intrigued": 1,
+   "Grabbing": 1
+  },
+  "panchatantra-plover-who-fought-the-ocean": {
+   "Brahmastra": 1
+  },
+  "panchatantra-shrewd-old-gander": {
+   "Disregarding": 1,
+   "Panicking": 1,
+   "Detaching": 1
+  },
+  "panchatantra-smart-the-jackal": {
+   "Tempted": 1,
+   "Terrified": 1,
+   "Yama": 1
+  },
+  "panchatantra-poor-blossom": {
+   "Amaravati": 1,
+   "Immortals": 1,
+   "Mrityu": 1
+  },
+  "panchatantra-unteachable-monkey": {
+   "Suchimukha": 1
+  },
+  "panchatantra-results-of-education": {
+   "Shocked": 1
+  }
+ }
+}
