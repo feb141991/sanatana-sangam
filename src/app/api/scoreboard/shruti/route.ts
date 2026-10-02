@@ -39,7 +39,8 @@ export async function GET(request: NextRequest) {
           id,
           username,
           avatar_url,
-          active_symbol_id
+          active_symbol_id,
+          is_deleting
         )
       `)
       .gte('scored_count', 3)
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
 
     const users: ShrutiLeaderboardUser[] = (data ?? []).flatMap((row: any) => {
       const profile = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
-      if (!profile?.id) return [];
+      if (!profile?.id || profile.is_deleting) return [];
       return [{
         id: profile.id,
         full_name: null,

@@ -163,4 +163,35 @@ describe("notification delivery policy", () => {
       days_away: "1",
     });
   });
+
+  it("suppresses all notification delivery when account deletion is pending", () => {
+    const rows = [
+      { notification_type: "japa" },
+      { notification_type: "festival" },
+      { notification_type: "vrat" },
+      { notification_type: "tithi" },
+      { notification_type: "shloka" },
+      { notification_type: "sattvic_reminder" },
+      { notification_type: "nitya_morning" },
+      { notification_type: "sanskar_milestone" },
+      { notification_type: "sankalpa_midpoint" },
+    ];
+
+    const deletingProfile = {
+      is_deleting: true,
+      japa_reminder_enabled: true,
+      wants_festival_reminders: true,
+      wants_vrat_reminders: true,
+      wants_tithi_reminders: true,
+      wants_shloka_reminders: true,
+      wants_nitya_reminders: true,
+      wants_family_notifications: true,
+      wants_sankalpa_midpoint_reminders: true,
+    };
+
+    for (const row of rows) {
+      expect(getNotificationPreferenceSkipReason(row, deletingProfile))
+        .toBe("account_deletion_pending");
+    }
+  });
 });

@@ -5,6 +5,7 @@ type ScheduledNotificationRow = {
 };
 
 export type NotificationProfile = {
+  is_deleting?: boolean | null;
   wants_family_notifications?: boolean | null;
   wants_festival_reminders?: boolean | null;
   wants_vrat_reminders?: boolean | null;
@@ -19,6 +20,10 @@ export function getNotificationPreferenceSkipReason(
   row: ScheduledNotificationRow,
   profile: NotificationProfile,
 ): string | null {
+  if (profile.is_deleting === true) {
+    return "account_deletion_pending";
+  }
+
   if (
     row.notification_type === "japa" &&
     profile.japa_reminder_enabled !== true

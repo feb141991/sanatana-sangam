@@ -3,6 +3,7 @@ import { start } from 'workflow/api';
 
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { purgeAfterFromRequestedAt } from '@/lib/account-deletion';
+import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { shouldUseVercelWorkflowRuntime } from '@/lib/workflow-runtime';
 import { accountDeletionCooloffWorkflow } from '@/workflows/account-deletion';
 
@@ -53,30 +54,33 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Best-effort admin-review breadcrumb, mirroring what ProfileClient.tsx's
-  // old inline requestAccountDeletion() did. content_reports has RLS
-  // enabled with zero CREATE POLICY statements anywhere in this repo's
-  // schema (confirmed across supabase/step2_constraints_policies.sql,
-  // supabase/public_schema.sql, live_schema_dump.sql) -- so this insert
-  // will silently no-op under the RLS-scoped client used here. That's a
-  // pre-existing gap in a different feature (the "report this post" flows
-  // in AiReportButton.tsx / MandaliMembers.tsx hit the exact same wall) and
-  // out of scope for this task. Not awaited-and-checked on purpose: a
-  // failure here must never block the actual deletion request, which is the
-  // part that matters. Flagged in the delivery report rather than silently
-  // expanding scope to fix content_reports RLS.
+  const adminSupabase = createServiceRoleSupabaseClient();
+
+  // 1. Immediately revoke push tokens for this user so device push notifications
+  // cease today across all background crons and queues.
+  try {
+    await adminSupabase.from('push_tokens').delete().eq('user_id', user.id);
+  } catch (tokenErr) {
+    console.error('[delete/request] push_tokens revocation failed:', tokenErr);
+  }
+
+  // 2. Persist exit feedback using service-role client so RLS does not silently discard it.
   const reasonSummary = feedbackReason
     ? `User requested account deletion. Cool-off period started. Reason: ${feedbackReason}${feedbackDetail ? ` (${feedbackDetail})` : ''}`
     : 'User requested account deletion. Cool-off period started.';
 
-  void supabase.from('content_reports').insert({
-    reported_by: user.id,
-    content_author_id: user.id,
-    content_type: 'account_deletion',
-    content_id: user.id,
-    reason: reasonSummary,
-    status: 'pending',
-  });
+  try {
+    await adminSupabase.from('content_reports').insert({
+      reported_by: user.id,
+      content_author_id: user.id,
+      content_type: 'account_deletion',
+      content_id: user.id,
+      reason: reasonSummary,
+      status: 'pending',
+    });
+  } catch (feedbackErr) {
+    console.error('[delete/request] content_reports feedback write failed:', feedbackErr);
+  }
 
   const deletionRequestedAt = data.deletion_requested_at as string;
   let workflowRunId: string | null = null;

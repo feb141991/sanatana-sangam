@@ -21,6 +21,7 @@ type ProfileRow = {
   created_at: string | null;
   mandali_id: string | null;
   shloka_streak: number | null;
+  is_deleting?: boolean | null;
 };
 
 type MandaliRow = {
@@ -34,7 +35,7 @@ type SadhanaRow = {
 };
 
 const PUBLIC_PROFILE_FIELDS =
-  'id, full_name, username, avatar_url, bio, tradition, sampradaya, ishta_devata, city, country, seva_score, karma_points, life_stage, active_symbol_id, created_at, mandali_id, shloka_streak';
+  'id, full_name, username, avatar_url, bio, tradition, sampradaya, ishta_devata, city, country, seva_score, karma_points, life_stage, active_symbol_id, created_at, mandali_id, shloka_streak, is_deleting';
 
 export async function GET(request: NextRequest) {
   const { user, error: authError } = await getApiUser(request);
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
     console.error('[mandali/member-profile] failed', error.message);
     return NextResponse.json({ error: 'Could not load profile.' }, { status: 500 });
   }
-  if (!data) return NextResponse.json({ error: 'Not found.' }, { status: 404 });
+  if (!data || data.is_deleting) return NextResponse.json({ error: 'Not found.' }, { status: 404 });
 
   // Parallel fetch aggregate sadhana highlights, mandali, and relic details
   const [mandaliResult, sadhanaResult, malasResult] = await Promise.all([
