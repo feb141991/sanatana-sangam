@@ -3,6 +3,7 @@ import { start } from 'workflow/api';
 
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { purgeAfterFromRequestedAt } from '@/lib/account-deletion';
+import { describeDeletionFeedback } from '@/lib/account-deletion-reasons';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { shouldUseVercelWorkflowRuntime } from '@/lib/workflow-runtime';
 import { accountDeletionCooloffWorkflow } from '@/workflows/account-deletion';
@@ -34,9 +35,10 @@ export async function POST(req: NextRequest) {
   // below when present. Never used for anything auth/identity-related; the
   // row being updated is always determined by getApiUser's user.id, never
   // by anything in the request body.
-  const body = await req.json().catch(() => null) as { reason?: string; otherReason?: string } | null;
-  const feedbackReason = typeof body?.reason === 'string' ? body.reason.slice(0, 200) : null;
-  const feedbackDetail = typeof body?.otherReason === 'string' ? body.otherReason.slice(0, 200) : null;
+  // `reason` is a DELETION_REASONS id (account-deletion-reasons.ts); older
+  // clients that send label text are kept but marked [unlisted].
+  const body = await req.json().catch(() => null) as { reason?: unknown; otherReason?: unknown } | null;
+  const feedback = describeDeletionFeedback(body?.reason, body?.otherReason);
 
   const now = new Date().toISOString();
 
@@ -65,8 +67,8 @@ export async function POST(req: NextRequest) {
   }
 
   // 2. Persist exit feedback using service-role client so RLS does not silently discard it.
-  const reasonSummary = feedbackReason
-    ? `User requested account deletion. Cool-off period started. Reason: ${feedbackReason}${feedbackDetail ? ` (${feedbackDetail})` : ''}`
+  const reasonSummary = feedback
+    ? `User requested account deletion. Cool-off period started. Reason: ${feedback}`
     : 'User requested account deletion. Cool-off period started.';
 
   try {
