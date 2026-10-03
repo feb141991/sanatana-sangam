@@ -71,6 +71,12 @@ export async function POST(request: NextRequest) {
     const { data, error: rpcError } = await supabase.rpc('register_native_push_token', {
       p_user_id: user.id, p_token: token, p_platform: platform,
     });
+    // Raised atomically by the RPC while profiles.is_deleting is true
+    // (20261003150200). Terminal, not "unavailable": Native must not retry
+    // until the user cancels deletion.
+    if (rpcError?.code === 'SHDEL') {
+      return json({ error: 'Account deletion is pending', code: 'ACCOUNT_DELETION_PENDING' }, 409);
+    }
     if (rpcError || typeof data !== 'string' || !UUID.test(data)) {
       console.warn('[push-registration] atomic registration failed', { code: rpcError?.code ?? 'invalid_acknowledgement' });
       return json({ error: 'Push registration is temporarily unavailable', code: 'PUSH_REGISTRATION_UNAVAILABLE' }, 503);
