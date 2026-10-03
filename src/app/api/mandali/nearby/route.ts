@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
       .select('id, username, avatar_url')
       .ilike('city', ownerLocation.city.trim())
       .neq('id', user.id)
+      .not('is_deleting', 'is', true)
       .limit(12);
     if (error) return NextResponse.json({ error: 'Nearby search unavailable.' }, { status: 500 });
     const candidates = (data ?? []) as unknown as CityCandidate[];
@@ -62,6 +63,8 @@ export async function GET(request: NextRequest) {
     .gte('longitude', lon - LON_DELTA_MAX)
     .lte('longitude', lon + LON_DELTA_MAX)
     .neq('id', user.id)
+    // Accounts in their deletion cool-off are unlisted from discovery.
+    .not('is_deleting', 'is', true)
     .limit(40);
   if (error) return NextResponse.json({ error: 'Nearby search unavailable.' }, { status: 500 });
 

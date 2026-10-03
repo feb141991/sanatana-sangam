@@ -12,7 +12,9 @@ export async function GET(request: NextRequest) {
 
   const admin = createAdminClient();
   const [{ data, error }, safety] = await Promise.all([
-    admin.from('profiles').select('id, username, avatar_url').ilike('username', `%${query}%`).neq('id', user.id).limit(20),
+    // Accounts in their deletion cool-off are unlisted from discovery.
+    admin.from('profiles').select('id, username, avatar_url').ilike('username', `%${query}%`).neq('id', user.id)
+      .not('is_deleting', 'is', true).limit(20),
     getUserSafetyState(admin, user.id),
   ]);
   if (error) return NextResponse.json({ error: 'Search unavailable.' }, { status: 500 });
