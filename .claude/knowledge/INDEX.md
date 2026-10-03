@@ -32,6 +32,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Notification Cadence and Atomic Reservation](architecture/notification-cadence-atomic-reservation.md) — Candidate persistence takes per-user/local-date transaction locks, but legacy direct sends and queue writers remain outside the app-wide cadence guarantee
 - [Native Push Registration Recovery — Local Implementation](architecture/native-push-registration-recovery.md) — Uncommitted Native/backend recovery, generation-guarded cleanup, and distinct delivery evidence; migration, final behavioral validation, deployment, and physical-device proof remain pending
 - [Separate Activity Personalization Consent](architecture/activity-personalization-consent.md) — Practice-history recommendations and Sankalpa midpoint reminders each require their own explicit opt-in and use the central notification pipeline
+- [Engagement Notification Cadence](architecture/notification-cadence-atomic-reservation.md) — Shared five-per-day cap, three-hour local spacing, exemption boundaries, and database-atomic admission
 
 ### Product
 

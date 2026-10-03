@@ -294,6 +294,39 @@ describe('notification-resolver-pipeline', () => {
     expect(updateEq).toHaveBeenCalledWith('status', 'resolving');
   });
 
+  it('requeues claimed candidates when cadence cannot reserve an accepted schedule row', async () => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    process.env.NOTIFICATION_CANDIDATE_MODE_DEVOTIONAL_ENGAGEMENT = 'candidate';
+    const candidate = makeCandidate({ id: 'candidate-without-slot' });
+    const updateEq = vi.fn().mockResolvedValue({ error: null });
+    const updateIn = vi.fn().mockReturnValue({ eq: updateEq });
+    const updateCandidates = vi.fn().mockReturnValue({ in: updateIn });
+    const supabase = {
+      rpc: vi.fn().mockImplementation((name: string) => {
+        if (name === 'try_acquire_notification_resolver_lock') return Promise.resolve({ data: true, error: null });
+        if (name === 'claim_pending_notification_candidates') return Promise.resolve({ data: [candidate], error: null });
+        if (name === 'persist_notification_candidate_resolution_with_lock') {
+          return Promise.resolve({
+            data: null,
+            error: { message: 'notification_cadence_candidate_reservation_mismatch' },
+          });
+        }
+        return Promise.resolve({ data: true, error: null });
+      }),
+      from: vi.fn().mockImplementation((table: string) => table === 'notification_candidates'
+        ? { update: updateCandidates }
+        : makeReadQuery({ data: [], error: null })),
+    };
+
+    const result = await executeCandidateResolverPipeline({ supabase: supabase as unknown as SupabaseClient });
+
+    expect(result.skipped).toBe(true);
+    expect(result.skipReason).toBe('candidate_schedule_not_reserved_retry_next_run');
+    expect(result.retryCount).toBe(1);
+    expect(updateIn).toHaveBeenCalledWith('id', ['candidate-without-slot']);
+    expect(updateEq).toHaveBeenCalledWith('status', 'resolving');
+  });
+
   it('purges terminal candidates and audit events older than 90 days', async () => {
     const mockCandDelete = vi.fn().mockReturnValue({
       in: vi.fn().mockReturnValue({

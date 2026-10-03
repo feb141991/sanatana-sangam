@@ -1,25 +1,62 @@
-# Notification cadence and atomic reservation
+# Engagement Notification Cadence — Shared Budget and Atomic Admission
 
-The `engagement-cadence-v2` policy is implemented in the candidate resolver: at most
-five non-exempt pushes per user per local civil day, aliases share canonical accounting,
-and flexible candidate pushes preserve their preferred time unless quiet hours or
-three-hour spacing requires a later same-day slot.
+**Date:** 2026-10-02
+**Session context:** Completing the shared cadence policy for scheduled engagement notifications
+**Category:** architecture
 
-The resolver's history read is useful for planning but is not a reservation. The prepared
-`20261002181447_notification_cadence_atomicity.sql` migration makes candidate promotion
-the reservation boundary: it takes a transaction-scoped advisory lock per user/local
-date, recounts schedule and bell history under that lock, and rejects a batch that would
-exceed the shared limit. The existing three-argument persistence RPC delegates to the
-guard, so older callers receive the same quota check. A run lease reduces duplicate work;
-the per-user/date transaction lock is the actual quota correctness mechanism.
+## What we decided
 
-This migration is source-only until shadow validation and explicit rollout. The local
-Supabase database could not be started because Docker was unavailable, so pgTAP and
-two-session contention have not been run. Apply the migration before deploying a resolver
-build that calls the new lock RPC.
+Flexible, non-exempt engagement shares a ceiling of five notifications per user per local
+civil day, with at most five for any canonical type. Delivery times should preserve each
+producer's requested local time when possible and shift only to avoid quiet hours, the
+07:00–21:00 local window, or less than three hours between deliveries. Candidate promotion
+and legacy queue admission use database-enforced per-user/day locking and idempotency.
 
-The guard only arbitrates candidate promotions. Legacy direct pushes and direct
-`notification_schedule` writers can still bypass the cap or race after the count. Their
-source inventory and rollout requirements are in
-`docs/notifications/CADENCE_ROLLOUT_AUDIT.md`; do not describe the policy as app-wide
-until those producers use a shared admission path and the pending queue has been audited.
+Account/security, explicitly requested reminders, approved ritual windows, and reviewed
+observances remain outside this engagement budget. Immediate social and operator sends keep
+their separate delivery contracts, so this policy is not a cap on every OS push.
+
+## Why
+
+An independent allowance of five for every feature would multiply total interruptions as
+new reminder types are added. A shared daily ceiling keeps the aggregate predictable while
+canonical aliases prevent one feature from getting a second allowance under a legacy name.
+The three-hour spacing and local daytime window reduce bursts without imposing one
+universally “best” time or overriding a user's preferred reminder hour.
+
+An application-level read is not a reservation: overlapping resolver runs or legacy queue
+writers could otherwise each observe the same remaining capacity. PostgreSQL therefore
+serializes admission per user and local date and recounts current history in the transaction
+that writes the schedule row.
+
+## Constraints this creates
+
+- Flexible producers must use `notification_schedule` or the candidate resolver; direct
+  budgeted push sends would bypass quota and spacing.
+- Idempotency keys must be recipient-scoped and stable across retries.
+- Candidate resolution may not move a message beyond its valid local date or expiry.
+- Exempt reminders preserve their authored delivery time but still block nearby flexible
+  notifications.
+- Immediate Mandali, admin, ritual, and observance routes remain outside the shared cap until
+  a separate urgency-aware policy is explicitly designed.
+- Production candidate flags stay separate from the database guard and require an internal
+  canary with delivery, receipt, opt-out, and suppression evidence.
+
+## What we explicitly rejected
+
+- Five independent slots per feature with no total ceiling: it would grow without bound as
+  features are added.
+- A single fixed delivery hour for every user: it would ignore timezones and saved reminder
+  preferences.
+- Delaying all immediate social/transactional events by several hours: cadence should not
+  break the expected real-time behavior of replies or security notices.
+
+## Production status
+
+Migration version `20261002181447` was applied to production on 2026-10-02 after preflight;
+the version is aligned in local and remote migration history. Catalog checks confirmed the
+trigger/RPCs, recipient-scoped unique index, and service-role-only audit table. The full
+Supabase shadow suite remains outstanding. The queue-backed producer/resolver code is
+verified locally and is the remaining deployment step.
+
+---

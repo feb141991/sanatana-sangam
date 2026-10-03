@@ -1,10 +1,9 @@
 # Engagement cadence rollout audit
 
-**Status (2026-10-02):** the production SQL cadence migration is applied and its
-two `notification_schedule` admission triggers are active. The resolver cron is
-active; its latest three recorded runs through 20:40 UTC succeeded. This audit
-did not independently verify the deployed backend revision or candidate-mode
-flags, so full production rollout is not yet signed off.
+**Status (2026-10-03):** the base cadence SQL migration is applied to production
+as version `20261002181447`; the fail-closed reservation migration is applied as
+`20261002185143`. Flexible-producer/resolver commit `5a6237c` is deployed to
+Vercel Production. Production notification candidate flags remain unchanged.
 
 ## Enforced boundary after rollout
 
@@ -15,6 +14,12 @@ keys, and finds a same-day slot at least three hours from other scheduled or
 delivered notifications. The resolver's own transaction uses the same lock and
 performs a live recount, protecting against another resolver or queue producer
 reserving capacity at the same time.
+
+The follow-up migration also checks that every genuinely new schedule key supplied
+by candidate persistence was actually inserted. If the cadence trigger skips a
+row because the requested time cannot move to a safe same-day slot, the transaction
+rolls back instead of recording the candidate as accepted; the resolver requeues
+the claim for a fresh evaluation.
 
 The cap applies to flexible messages admitted through the schedule queue. A direct
 push can still bypass it. Exempt direct paths are listed below so the product
@@ -65,18 +70,26 @@ and any future coalescing policy should be reviewed independently.
 
 - Targeted TypeScript and route tests cover queue admission, idempotent writes,
   local-time scheduling, and candidate/legacy ownership.
-- The prepared migration passed 31 SQL assertions in an isolated PostgreSQL 18.3
+- The base migration passed 31 SQL assertions in an isolated PostgreSQL 18.3
   fixture using a small pgTAP-compatible shim. pgTAP itself and Docker were not
   available, so this is not a full Supabase shadow verification.
+- The follow-up migration adds three SQL assertions covering the no-safe-slot
+  rollback behavior. The repository's local pgTAP suite could not run because no
+  local database container is available. An equivalent isolated transaction smoke
+  test ran against production and read-after checks confirmed all synthetic user,
+  schedule, and audit rows were rolled back.
 - A two-session database test held a user's local-date advisory lock, started a
   competing candidate reservation, and confirmed the second session waited for
   commit, observed the three existing reservations, and rejected an over-budget
   three-row batch.
-- The actual Supabase shadow test has not been run. The production migration is
-  already applied; do not reapply it.
+- A full Supabase shadow test remains outstanding. The migration was applied
+  through the targeted Supabase operation after production preflight, with the
+  returned version reconciled to the local filename. Production catalog checks
+  confirmed the global semantic-key index is absent, the recipient-scoped index
+  remains, the triggers and resolver lock functions exist, and cadence audit data
+  is service-role-only.
 
-Run the actual pgTAP test in a disposable Supabase shadow with the repository
-schema. Verify the deployed backend revision and confirm the global semantic-key
-index is removed while the per-user unique index remains. Keep candidate flags
-as-is until canary comparisons show expected producer rows, cadence decisions,
-dispatches, receipts, and opt-out behavior.
+Run the actual pgTAP test in a disposable Supabase shadow when shadow
+infrastructure is available. Keep candidate flags as-is until canary comparisons
+show expected producer rows, cadence decisions, dispatches, receipts, and opt-out
+behavior.

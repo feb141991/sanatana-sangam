@@ -1,10 +1,9 @@
 # Engagement notification cadence
 
-**Status (2026-10-02):** the cadence migration is applied in production and both
-database admission triggers are active. The resolver cron was active and its
-latest three recorded runs (through 20:40 UTC) succeeded. Backend deployment
-revision and candidate-mode flag values were not independently verified in this
-audit, so production end-to-end behavior is not yet signed off.
+**Status (2026-10-03):** the base database guard is applied to production as
+`20261002181447`; the fail-closed reservation check is applied as
+`20261002185143`. Producer/resolver source commit `5a6237c` is deployed to Vercel
+Production. Production candidate flags have not changed.
 
 ## Delivery contract
 
@@ -35,14 +34,19 @@ messages against one another.
 The candidate resolver applies priority, quota, quiet-hour, and spacing decisions.
 The SQL migration adds a per-user/local-date transaction lock and a
 `notification_schedule` admission trigger, so both candidate promotions and
-queued legacy producers use the same quota history. This database guard is live
-in production; whether the matching backend resolver revision is deployed still
-needs verification.
+queued legacy producers use the same quota history after the migration is applied.
 Candidate persistence inserts rows one at a time inside its transaction so later
 rows in the same batch can see earlier reservations and move safely. The shared
 TypeScript queue helper sorts locks deterministically and puts multiple rows for a
 single user/date into separate SQL statements; this avoids deadlocks and lets the
 trigger space them instead of rejecting a valid batch.
+
+The follow-up migration wraps candidate persistence with an inserted-row count
+check. If the database cadence trigger suppresses a resolver-accepted schedule
+row because no legal same-day slot remains, it raises inside the transaction so
+the schedule, candidate decision, and audit write all roll back together. The
+resolver recognizes that error and returns the claim to `pending` for a fresh
+history check on the next run.
 
 Flexible direct-send routes moved to the durable schedule include Shloka, evening
 mood, weekly summaries, journal anniversaries, guided-plan reminders, achievement
@@ -69,32 +73,35 @@ now or within about an hour ([Apple notification guidance](https://developer.app
 
 ## Verification and rollout
 
-The forward migration and its rollback have been executed against an isolated
-PostgreSQL 18.3 cluster with a minimal fixture matching the referenced tables and
-columns. The repository SQL test's 31 assertions passed through a local pgTAP
+The base migration and its rollback were executed against an isolated PostgreSQL
+18.3 cluster with a minimal fixture matching the referenced tables and columns.
+The original repository SQL test's 31 assertions passed through a local pgTAP
 compatibility shim because pgTAP and Docker are not installed here; this is not a
-full Supabase shadow database. A separate two-session test held the user/day lock
+full Supabase shadow database. The follow-up adds three SQL assertions for the
+no-safe-slot rollback path. The repository pgTAP suite could not run locally
+because no database container is available; an equivalent isolated transaction
+smoke test ran against production and verified the expected exception plus
+rollback of its synthetic profile, schedule, and audit rows. A separate two-session test held the user/day lock
 in one transaction while another candidate batch waited; after commit, the second
 batch saw the first three reservations and rejected its three-row request rather
 than exceeding the five-item cap. This verifies the database lock behavior but
-does not replace a full shadow run against the deployed Supabase schema.
+does not replace a full shadow run against the deployed Supabase schema. The
+migration was subsequently applied to production after preflight; its version was
+aligned with Supabase's returned version and postconditions were verified read-only.
 
 Roll out in this order:
 
-1. Keep production candidate flags unchanged while reviewing the migration and
-   source diff; the production cadence migration is already applied.
-2. Apply the cadence migration in a disposable Supabase shadow and run the actual
-   pgTAP suite there. Include DST, quiet-hour, legacy-history, cancellation,
-   repeated-key, multi-row, and concurrent-session cases.
-3. Confirm the production composite per-user key index exists and the obsolete
-   global key index is gone; do not reapply the migration.
-4. Verify/deploy the matching backend revision. Candidate-mode environment
-   variables remain a separate rollout decision; queue-backed legacy paths already
-   use the database guard.
-5. Canary internally. Compare producer rows, cadence decisions, queue dispatch,
+1. Deploy the queue-backed producers and resolver with candidate flags unchanged.
+   This is live from commit `5a6237c`.
+2. Apply the follow-up fail-closed migration; this is live as
+   `20261002185143`.
+3. Run the full Supabase shadow suite when shadow infrastructure is available;
+   include DST, quiet-hour, legacy-history, cancellation, repeated-key, multi-row,
+   and concurrent-session cases.
+4. Canary internally. Compare producer rows, cadence decisions, queue dispatch,
    push receipts, opt-outs, and notification-permission changes by canonical type
-   and local date before expanding.
-6. Roll back by reverting backend callers first. Keep the additive database guard
+   and local date before changing candidate-mode flags.
+5. Roll back by reverting backend callers first. Keep the additive database guard
    until no deployed code depends on it; use the SQL rollback only after that
    compatibility check.
 

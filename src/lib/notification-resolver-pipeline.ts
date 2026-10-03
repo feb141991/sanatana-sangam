@@ -583,6 +583,7 @@ async function executeCandidateResolverPipelineBody(
     if (persistError) {
       if (
         persistError.message.includes('notification_cadence_conflict') ||
+        persistError.message.includes('notification_cadence_candidate_reservation_mismatch') ||
         persistError.message.includes('notification_resolver_lock_lost')
       ) {
         const claimedIds = activeCandidates
@@ -602,7 +603,9 @@ async function executeCandidateResolverPipelineBody(
         }
         const retryReason = persistError.message.includes('notification_cadence_conflict')
           ? 'cadence_history_changed_retry_next_run'
-          : 'resolver_lease_expired_retry_next_run';
+          : persistError.message.includes('notification_cadence_candidate_reservation_mismatch')
+            ? 'candidate_schedule_not_reserved_retry_next_run'
+            : 'resolver_lease_expired_retry_next_run';
         return buildResolverSkippedResult(retryReason, claimedIds.length);
       }
       throw new Error(`Failed to persist candidate resolution atomically: ${persistError.message}`);

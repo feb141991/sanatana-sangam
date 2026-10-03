@@ -1,5 +1,15 @@
 # Observance-First Notification Architecture and Resolver Runbook
 
+## Current production checkpoint — 2026-10-03
+
+The base engagement cadence migration is applied to production under Supabase
+version `20261002181447`; the follow-up fail-closed candidate reservation migration
+is applied as `20261002185143`. The digest compatibility fix is deployed, and the
+queue-backed producer/resolver source is pushed to `main` with its Vercel production
+deployment Ready from commit `5a6237c`. Candidate-mode environment flags have not
+been changed.
+Unrelated legacy remote-only migration versions remain outside this rollout.
+
 Execute the stages sequentially and stop after each for independent review. This runbook
 now starts with reviewed observance reminders; generic engagement candidates are a later
 stage. Do not apply production migrations, deploy, trigger production notifications, or
@@ -309,21 +319,21 @@ starting defaults below; do not reintroduce those limits independently in produc
   no legal same-day slot are suppressed with an audit reason rather than sent stale the next
   day.
 
-Candidate persistence now has a prepared database guard in
+Candidate persistence now has a database guard in
 `20261002181447_notification_cadence_atomicity.sql`: a per-user/local-date transaction
 lock recounts existing schedule and bell history in the same transaction as candidate
 promotion. A run-level lease avoids redundant overlapping resolver runs. Neither mechanism
-controls legacy direct pushes or direct queue writers; those remain rollout blockers for
-an app-wide cadence guarantee. The migration is not applied, and a real shadow-database
-contention test is still required before enabling additional candidate modes.
+controls direct pushes that do not use `notification_schedule`. Flexible legacy producer
+routes are being switched to the shared queue; immediate social, admin broadcast, ritual,
+and reviewed-observance deliveries remain explicit direct-path exceptions. Production
+catalog verification passed, while a full Supabase shadow test remains outstanding.
 
-The quota and spacing apply when an event goes through the candidate resolver. Legacy direct
-send routes can still exceed the overall budget until that reminder type is cut over; a
-history row can prevent later candidates from adding another push, but it cannot undo or
-reschedule a legacy send. Keep each routine behind its existing pipeline flag and verify
-producer parity before enabling the candidate mode in production. The policy intentionally
+The quota and spacing apply to candidate promotions and non-exempt scheduled queue inserts.
+Direct delivery exceptions can still occur outside the overall budget and spacing guard;
+their urgency is preserved intentionally. Keep each routine behind its existing pipeline
+flag and verify producer parity before enabling candidate mode in production. The policy
 does not claim one universally optimal send hour: a user's configured reminder time is the
-preference, and cadence only moves a flexible reminder when required for quiet hours or
+preference, and cadence only moves flexible reminders when required for quiet hours or
 spacing.
 
 Default priority classes:
