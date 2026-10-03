@@ -15,7 +15,7 @@ export type ProfilePreferenceInput = {
 };
 
 export const TIME_FORMAT_RE = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
-export const DEFAULT_LEAD_DAYS: readonly number[] = [1, 7];
+export const DEFAULT_LEAD_DAYS: readonly number[] = [0, 1];
 export const DEFAULT_REMINDER_TIME = '08:00';
 
 export function isValidObservanceReminderTime(value: unknown): value is string {

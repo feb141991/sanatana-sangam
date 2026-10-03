@@ -8,6 +8,7 @@ import {
   buildObservanceActionPath,
   buildObservancePreviewRow,
   buildOccurrenceNotificationKey,
+  deduplicateTithiVrats,
   fetchReviewedObservancesForNotifications,
   filterGeneralOccurrenceBackedVrats,
   filterWomenFocusedVrats,
@@ -30,18 +31,24 @@ function buildVratReminderBody(
   audience: ObservanceNotificationAudience,
 ) {
   if (audience === 'female') {
+    if (daysAway === 0) {
+      return `${vratDescription || vratName} Today is ${vratName}. Observe your vrat with peace and devotion.`;
+    }
     if (daysAway === 1) {
       return `${vratDescription} Prepare according to your family and sampradaya guidance.`;
     }
+    return `${vratName} is coming up. Review the vrat guidance and prepare gently.`;
+  }
 
-    return `${vratName} is one week away. Review the vrat guidance and prepare gently.`;
+  if (daysAway === 0) {
+    return `${vratDescription || vratName} Today is ${vratName}. May your sadhana and practice bring peace and spiritual strength.`;
   }
 
   if (daysAway === 1) {
     return `${vratDescription} Prepare your sankalpa, meal rhythm, and practice gently.`;
   }
 
-  return `${vratName} is one week away. Review the observance guidance and prepare your practice.`;
+  return `${vratName} is coming up. Review the observance guidance and prepare your practice.`;
 }
 
 function buildVratTitle(
@@ -49,7 +56,7 @@ function buildVratTitle(
   daysAway: number,
   audience: ObservanceNotificationAudience,
 ) {
-  const suffix = daysAway === 1 ? 'Tomorrow!' : 'In 7 days';
+  const suffix = daysAway === 0 ? 'Today!' : daysAway === 1 ? 'Tomorrow!' : `In ${daysAway} days`;
   const label = audience === 'female' || /\bvrat\b/i.test(vrat.name) ? vrat.name : `${vrat.name} Vrat`;
   return `${vrat.emoji} ${label} — ${suffix}`;
 }
@@ -114,8 +121,10 @@ export async function GET(request: Request) {
       ? observances
       : observances.filter((o) => !o.id || !incompleteSeriesIds.has(o.id));
 
-    const generalVrats = filterGeneralOccurrenceBackedVrats(seriesEligibleObservances);
-    const femaleVrats = filterWomenFocusedVrats(seriesEligibleObservances);
+    const deduplicatedObservances = deduplicateTithiVrats(seriesEligibleObservances);
+
+    const generalVrats = filterGeneralOccurrenceBackedVrats(deduplicatedObservances);
+    const femaleVrats = filterWomenFocusedVrats(deduplicatedObservances);
     if (generalVrats.length === 0 && femaleVrats.length === 0) {
       return NextResponse.json({ message: 'No reviewed vrat source rows eligible for reminder', sent: 0 });
     }
@@ -202,7 +211,7 @@ export async function GET(request: Request) {
       for (const { audience, vrats } of audienceGroups) {
         for (const vrat of vrats) {
           const daysAway = isoDateDiff(vrat.date, localDate);
-          if (daysAway !== 1 && daysAway !== 7) continue;
+          if (daysAway !== 0 && daysAway !== 1) continue;
 
           const title = buildVratTitle(vrat, daysAway, audience);
           const body = buildVratReminderBody(vrat.name, vrat.description, daysAway, audience);

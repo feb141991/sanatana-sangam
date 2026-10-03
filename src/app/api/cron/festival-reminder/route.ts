@@ -26,6 +26,10 @@ function buildFestivalReminderBody(tradition: string | null | undefined, festiva
     all: 'Set aside a little time to remember and prepare well.',
   };
 
+  if (daysAway === 0) {
+    return `${festivalDescription}. Today is ${festivalName}. May your celebrations bring joy and spiritual peace.`;
+  }
+
   if (daysAway === 1) {
     return `${festivalDescription}. ${tomorrowTailByTradition[tradition ?? 'all'] ?? tomorrowTailByTradition.all}`;
   }
@@ -205,7 +209,7 @@ export async function GET(request: Request) {
         if (!isRelevantTradition) continue;
 
         const daysAway = isoDateDiff(festival.date, localDate);
-        if (daysAway !== 1 && daysAway !== 7) continue;
+        if (daysAway !== 0 && daysAway !== 1) continue;
 
         const actionPath = buildObservanceActionPath(festival);
         const notificationKey = `festival:${festival.id}:${daysAway}:${localDate}`;
@@ -213,9 +217,11 @@ export async function GET(request: Request) {
 
         notifications.push({
           user_id: user.id,
-          title: daysAway === 1
+          title: daysAway === 0
+            ? `${festival.emoji} ${festival.name} — Today!`
+            : daysAway === 1
             ? `${festival.emoji} ${festival.name} — Tomorrow!`
-            : `${festival.emoji} ${festival.name} — In 7 days`,
+            : `${festival.emoji} ${festival.name} — In ${daysAway} days`,
           body: buildFestivalReminderBody(festivalTradition, festival.name, festival.description, festival.date, daysAway),
           emoji: festival.emoji,
           type: 'festival',

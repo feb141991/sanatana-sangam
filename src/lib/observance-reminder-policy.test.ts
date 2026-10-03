@@ -18,7 +18,7 @@ const base: ObservanceReminderInput = {
   },
   preferences: {
     enabled: true,
-    leadDays: [1, 7],
+    leadDays: [0, 1],
     tradition: "hindu",
     calendarProfile: "legacy-ujjain",
     sampradaya: null,

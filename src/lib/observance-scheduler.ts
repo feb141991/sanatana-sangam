@@ -13,6 +13,7 @@ import {
 } from "./observance-timing";
 import {
   buildObservanceActionPath,
+  deduplicateTithiVrats,
   isWomenFocusedVrat,
   OCCURRENCE_BACKED_TITHI_SLUGS,
   type ReviewedObservance,
@@ -135,6 +136,8 @@ export function generateObservanceScheduleCandidates(input: {
     categoryFilter = "all",
   } = input;
 
+  const deduplicatedObservances = deduplicateTithiVrats(observances);
+
   const candidates: ScheduledObservanceRow[] = [];
   const suppressedReasons: Record<string, number> = {};
   let evaluatedCount = 0;
@@ -158,7 +161,7 @@ export function generateObservanceScheduleCandidates(input: {
     const tz = resolveTimeZone(user.timezone);
     const reminderTime = user.observance_reminder_time || "08:00";
 
-    for (const observance of observances) {
+    for (const observance of deduplicatedObservances) {
       if (observance.id && incompleteSeriesIds.has(observance.id)) {
         recordSuppression("incomplete_series");
         continue;

@@ -506,7 +506,7 @@ export function simulateLegacyCronDirectSends(
       }
 
       const daysAway = isoDateDiff(obs.date, localDate);
-      if (daysAway !== 1 && daysAway !== 7) continue;
+      if (daysAway !== 0 && daysAway !== 1) continue;
 
       const key = `${category}:${obs.id}:${daysAway}:${localDate}`;
       notifications.push({
@@ -517,7 +517,7 @@ export function simulateLegacyCronDirectSends(
         days_away: daysAway,
         local_date: localDate,
         notification_key: key,
-        title: daysAway === 1 ? `${obs.emoji} ${obs.name} — Tomorrow!` : `${obs.emoji} ${obs.name} — In 7 days`,
+        title: daysAway === 0 ? `${obs.emoji} ${obs.name} — Today!` : `${obs.emoji} ${obs.name} — Tomorrow!`,
       });
     }
   }
