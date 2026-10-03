@@ -47,9 +47,9 @@ function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsub
           <div class="subtitle">Find Your Infinity</div>
         </div>
         <div class="content">
-          <div class="shloka">“${shloka}”</div>
-          <div class="meaning">${meaning}</div>
-          
+          ${shloka ? `<div class="shloka">“${shloka}”</div>` : ''}
+          ${meaning ? `<div class="meaning">${meaning}</div>` : ''}
+
           <h2 style="font-size: 24px; margin-bottom: 16px;">${title}</h2>
           <p style="font-size: 15px; line-height: 1.6; color: #444; margin-bottom: 40px;">
             ${body}

@@ -4,6 +4,7 @@ import { start } from 'workflow/api';
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { purgeAfterFromRequestedAt } from '@/lib/account-deletion';
 import { describeDeletionFeedback } from '@/lib/account-deletion-reasons';
+import { sendDeletionNotice } from '@/lib/account-deletion-notices';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { shouldUseVercelWorkflowRuntime } from '@/lib/workflow-runtime';
 import { accountDeletionCooloffWorkflow } from '@/workflows/account-deletion';
@@ -99,6 +100,11 @@ export async function POST(req: NextRequest) {
       console.error('account deletion workflow start failed:', workflowError);
     }
   }
+
+  // Confirmation email (deduped per request by account_deletion_notices).
+  // Awaited so the serverless function does not freeze mid-send, but its
+  // outcome never changes the response: the deletion is already scheduled.
+  await sendDeletionNotice(adminSupabase, { userId: user.id, deletionRequestedAt, kind: 'scheduled' });
 
   return NextResponse.json({
     success: true,

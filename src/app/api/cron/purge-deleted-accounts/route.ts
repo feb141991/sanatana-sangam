@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 
 import { purgeDueDeletedAccounts } from '@/lib/account-deletion';
+import { sendDueDeletionReminders } from '@/lib/account-deletion-notices';
+import { createServiceRoleSupabaseClient } from '@/lib/admin';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -47,7 +49,12 @@ export async function GET(request: Request) {
   const dryRun = searchParams.get('dryRun') === 'true';
 
   try {
-    return NextResponse.json(await purgeDueDeletedAccounts({ dryRun }));
+    // 7-day / 1-day reminder emails first (never on dryRun, never blocks the
+    // purge); see src/lib/account-deletion-notices.ts.
+    const reminders = dryRun ? null : await sendDueDeletionReminders(createServiceRoleSupabaseClient());
+    if (reminders?.error) console.error('purge-deleted-accounts: reminder lookup failed:', reminders.error);
+    const purge = await purgeDueDeletedAccounts({ dryRun });
+    return NextResponse.json(reminders ? { ...purge, reminders } : purge);
   } catch (error) {
     console.error('purge-deleted-accounts: purge failed:', error);
     return NextResponse.json(
