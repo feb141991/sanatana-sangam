@@ -137,8 +137,10 @@ export async function GET(request: Request) {
     const key = name.toLowerCase().replace(/\s+/g, '_');
     const subject = subjects[key] || `${name} is in 3 days ✨`;
 
+    // Only the definition's own description is used. There is no sourced
+    // per-festival practice list, so none is shown -- this used to send the
+    // literal placeholder lines "Practice 1/2/3 related to <festival>".
     const lead = def.description ? `${def.description}\n\n` : '';
-    const bullets = `- Practice 1 related to ${name}\n- Practice 2 related to ${name}\n- Practice 3 related to ${name}\n`;
     const cta = `Set your reminder in Shoonaya → ${APP_BASE}/panchang`;
 
     for (const batch of userBatches) {
@@ -151,7 +153,7 @@ export async function GET(request: Request) {
             shloka: '',
             meaning: '',
             title: subject,
-            body: `${lead}${bullets}\n${cta}`,
+            body: `${lead}${cta}`,
             ctaText: 'Explore',
             ctaUrl: `${APP_BASE}/panchang`,
             unsubUrl: unsub,

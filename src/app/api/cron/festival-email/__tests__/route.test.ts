@@ -102,13 +102,14 @@ function targetDate(): string {
 }
 
 /** Every field the query/filters touch, defaulted to the "should send" case. */
-function row(overrides: Partial<{ date: string; publication_status: string; slug: string; display_name: string }> = {}) {
+function row(overrides: Partial<{ date: string; publication_status: string; slug: string; display_name: string; description: string | null }> = {}) {
   return {
     date: overrides.date ?? targetDate(),
     publication_status: overrides.publication_status ?? 'published',
     observance_definitions: {
       slug: overrides.slug ?? 'diwali',
       display_name: overrides.display_name ?? 'Diwali',
+      description: overrides.description ?? null,
     },
   };
 }
@@ -217,5 +218,28 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
     const call = sendShoonayaEmail.mock.calls[0][0];
     expect(call.subject).not.toContain('undefined');
     expect(call.subject.toLowerCase()).toContain('diwali');
+  });
+});
+
+describe('GET /api/cron/festival-email — body content', () => {
+  it('sends the sourced description and CTA, and no placeholder practice lines', async () => {
+    occurrenceRows = [row({ description: 'The festival of lights, celebrating the victory of light over darkness.' })];
+
+    await GET(makeRequest());
+
+    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
+    const { body } = sendShoonayaEmail.mock.calls[0][0] as { body: string };
+    expect(body).toBe('The festival of lights, celebrating the victory of light over darkness.\n\nSet your reminder in Shoonaya → https://www.shoonaya.com/panchang');
+    expect(body).not.toMatch(/Practice \d related to/);
+  });
+
+  it('sends only the CTA when the definition has no description, never filler', async () => {
+    occurrenceRows = [row({ description: null })];
+
+    await GET(makeRequest());
+
+    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
+    const { body } = sendShoonayaEmail.mock.calls[0][0] as { body: string };
+    expect(body).toBe('Set your reminder in Shoonaya → https://www.shoonaya.com/panchang');
   });
 });
