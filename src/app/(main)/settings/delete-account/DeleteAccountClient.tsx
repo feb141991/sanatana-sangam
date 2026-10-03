@@ -8,49 +8,48 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, Check, ChevronLeft, ExternalLink, PauseCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { SACRED_RELICS } from '@/lib/relics';
+import type { DeletionPreview } from '@/lib/account-deletion-preview';
 
 const SPRING = { type: 'spring', stiffness: 300, damping: 30 } as const;
 
-const FEEDBACK_OPTIONS = [
-  'I don\'t use it enough',
-  'Missing features I need',
-  'Privacy concerns',
-  'Starting fresh',
-  'Technical issues',
-  'Other reason',
-] as const;
-
-type FeedbackOption = (typeof FEEDBACK_OPTIONS)[number];
+// The same reminder flags Native's "pause notifications instead" turns off
+// (shoonaya-mobile app/settings/detail-screen.tsx), written through the same
+// PATCH /api/native/profile route (getApiUser: cookie or Bearer). There is no
+// /api/notifications/pause route and no timed pause -- they stay off until the
+// user turns them back on in Settings.
+const REMINDER_FLAGS_OFF = {
+  japa_reminder_enabled: false,
+  wants_festival_reminders: false,
+  wants_vrat_reminders: false,
+  wants_tithi_reminders: false,
+  wants_shloka_reminders: false,
+  wants_nitya_reminders: false,
+  wants_community_notifications: false,
+  wants_family_notifications: false,
+} as const;
 
 type DeleteAccountClientProps = {
-  userName: string;
-  tradition: string;
-  activeSymbolId: string | null;
-  streak: number;
-  karmaPoints: number;
-  sevaScore: number;
-  relicsUnlocked: number;
+  /** null when the summary could not be loaded -- show no numbers, not zeros. */
+  preview: DeletionPreview | null;
+  fallbackTradition: string;
   exportAvailable: boolean;
-  journalCount: number;
   journalDaysSpanned: number;
 };
 
 export default function DeleteAccountClient({
-  userName,
-  tradition,
-  activeSymbolId,
-  streak,
-  karmaPoints,
-  sevaScore,
-  relicsUnlocked,
+  preview,
+  fallbackTradition,
   exportAvailable,
-  journalCount,
   journalDaysSpanned,
 }: DeleteAccountClientProps) {
   const router = useRouter();
+  const tradition = preview?.tradition ?? fallbackTradition;
+  const activeSymbolId = preview?.activeSymbolId ?? null;
+  const journalCount = preview?.journalCount ?? 0;
+  const reasons = preview?.reasons ?? [];
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
-  const [feedback, setFeedback] = useState<FeedbackOption | ''>('');
+  const [feedback, setFeedback] = useState<string>('');
   const [otherReason, setOtherReason] = useState('');
   const [confirmText, setConfirmText] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -61,12 +60,13 @@ export default function DeleteAccountClient({
     [activeSymbolId],
   );
 
-  const stats = [
-    { label: 'Streak', value: `${streak} days` },
-    { label: 'Karma', value: karmaPoints.toLocaleString() },
-    { label: 'Seva', value: sevaScore.toLocaleString() },
-    { label: 'Relics', value: `${relicsUnlocked}` },
-  ];
+  const stats = preview ? [
+    { label: 'Streak', value: `${preview.streak} days` },
+    { label: 'Karma', value: preview.karmaPoints.toLocaleString() },
+    { label: 'Seva', value: preview.sevaScore.toLocaleString() },
+    { label: 'Relics', value: `${preview.relicsCount}` },
+  ] : [];
+  const feedbackNeedsDetails = reasons.some((r) => r.id === feedback && 'requireDetails' in r && r.requireDetails);
 
   function goNext(nextStep = step + 1) {
     setDirection(1);
@@ -82,11 +82,15 @@ export default function DeleteAccountClient({
     if (pausing) return;
     setPausing(true);
     try {
-      const res = await fetch('/api/notifications/pause', { method: 'POST' });
-      if (!res.ok) throw new Error('Pause is unavailable');
-      toast.success('Notifications paused for a week.');
+      const res = await fetch('/api/native/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(REMINDER_FLAGS_OFF),
+      });
+      if (!res.ok) throw new Error('Could not turn off reminders');
+      toast.success('All reminders are off. Turn them back on in Settings anytime.');
     } catch {
-      toast.error('Notification pause is unavailable right now.');
+      toast.error('Could not turn off reminders right now. Please try again.');
     } finally {
       setPausing(false);
     }
@@ -100,8 +104,8 @@ export default function DeleteAccountClient({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          reason: feedback,
-          otherReason: feedback === 'Other reason' ? otherReason.trim() : '',
+          reason: feedback || undefined,
+          otherReason: feedbackNeedsDetails && otherReason.trim() ? otherReason.trim() : undefined,
         }),
       });
 
@@ -193,9 +197,17 @@ export default function DeleteAccountClient({
                     Before you go...
                   </h1>
                   <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                    {userName}, this account holds your practice history, progress, and earned symbols.
+                    {preview ? `${preview.userName}, this` : 'This'} account holds your practice history, progress, and earned symbols.
                   </p>
                 </div>
+
+                {!preview && (
+                  <div className="mt-6 rounded-2xl border p-4" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.06)' }}>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                      We couldn&apos;t load your practice summary right now. Your streaks, karma, relics and journal are all part of your account and would be removed after the 30-day cool-off.
+                    </p>
+                  </div>
+                )}
 
                 <div className="mt-6 grid grid-cols-2 gap-3">
                   {stats.map((stat) => (
@@ -214,9 +226,17 @@ export default function DeleteAccountClient({
 
                 <div className="mt-5 rounded-2xl border p-4" style={{ borderColor: 'rgba(197,160,89,0.14)', background: 'rgba(197,160,89,0.06)' }}>
                   <p className="text-sm leading-relaxed">
-                    Deleting starts a 30-day cancellable cool-off. After that, your {streak}-day streak, karma, seva history, and unlocked relics are permanently removed. You can cancel anytime before then from your Profile page.
+                    Deleting starts a 30-day cancellable cool-off. After that, your {preview ? `${preview.streak}-day ` : ''}streak, karma, seva history, and unlocked relics are permanently removed. You can cancel anytime before then from your Profile page.
                   </p>
                 </div>
+
+                {preview && preview.ownedKuls.length > 0 && (
+                  <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: 'rgba(197,160,89,0.14)', background: 'rgba(197,160,89,0.06)' }}>
+                    <p className="text-sm leading-relaxed">
+                      You created <strong>{preview.ownedKuls.map((k) => k.name).join(', ')}</strong>. Other members keep their own accounts, but let your family know before you go.
+                    </p>
+                  </div>
+                )}
 
                 {journalCount > 0 && (
                   <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: 'rgba(212, 106, 106, 0.25)', background: 'rgba(212, 106, 106, 0.08)' }}>
@@ -257,23 +277,24 @@ export default function DeleteAccountClient({
                   What went wrong?
                 </h1>
                 <p className="mt-3 text-sm" style={{ color: 'var(--brand-muted)' }}>
-                  One reason is required. This helps prioritize what is broken or missing.
+                  Optional. This helps prioritize what is broken or missing.
                 </p>
 
                 <div className="mt-6 space-y-3">
-                  {FEEDBACK_OPTIONS.map((option) => {
-                    const selected = feedback === option;
+                  {reasons.map((reason) => {
+                    const selected = feedback === reason.id;
                     return (
                       <button
-                        key={option}
-                        onClick={() => setFeedback(option)}
+                        key={reason.id}
+                        aria-pressed={selected}
+                        onClick={() => setFeedback(selected ? '' : reason.id)}
                         className="flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition-colors"
                         style={{
                           background: selected ? 'rgba(197,160,89,0.08)' : 'rgba(255,255,255,0.03)',
                           borderColor: selected ? '#C5A059' : 'rgba(255,255,255,0.08)',
                         }}
                       >
-                        <span className="text-sm font-medium">{option}</span>
+                        <span className="text-sm font-medium">{reason.label}</span>
                         <span
                           className="flex h-5 w-5 items-center justify-center rounded-full border"
                           style={{
@@ -288,7 +309,7 @@ export default function DeleteAccountClient({
                   })}
                 </div>
 
-                {feedback === 'Other reason' && (
+                {feedbackNeedsDetails && (
                   <input
                     value={otherReason}
                     onChange={(e) => setOtherReason(e.target.value)}
@@ -305,7 +326,6 @@ export default function DeleteAccountClient({
 
                 <button
                   onClick={() => goNext(3)}
-                  disabled={!feedback || (feedback === 'Other reason' && !otherReason.trim())}
                   className="mt-6 w-full rounded-full py-3.5 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
                   style={{ background: '#C5A059', color: '#0E0E0F' }}
                 >
@@ -334,9 +354,9 @@ export default function DeleteAccountClient({
                   >
                     <PauseCircle size={18} color="#C5A059" className="mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold">Pause notifications for a week</p>
+                      <p className="text-sm font-semibold">{pausing ? 'Turning off reminders…' : 'Turn off all reminders instead'}</p>
                       <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                        Useful if the pressure is the problem, not the account.
+                        Useful if the pressure is the problem, not the account. Turn them back on in Settings anytime.
                       </p>
                     </div>
                   </button>

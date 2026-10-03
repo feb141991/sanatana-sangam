@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { getUnlockedRelics } from '@/lib/relics';
+import { createServiceRoleSupabaseClient } from '@/lib/admin';
+import { buildDeletionPreview } from '@/lib/account-deletion-preview';
 import DeleteAccountClient from './DeleteAccountClient';
 
 export default async function DeleteAccountPage() {
@@ -11,29 +12,12 @@ export default async function DeleteAccountPage() {
 
   if (!user) redirect('/login');
 
-  const [
-    { data: profile },
-    { data: streakRow },
-    { count: journalCount },
-    { data: firstEntry },
-    { data: lastEntry }
-  ] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('id, full_name, username, tradition, active_symbol_id, karma_points, seva_score, shloka_streak')
-      .eq('id', user.id)
-      .single(),
-    supabase
-      .from('daily_sadhana')
-      .select('streak_count')
-      .eq('user_id', user.id)
-      .order('date', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from('journal_entries')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id),
+  // Same builder as GET /api/user/delete/preview (Native), so both apps show
+  // the same numbers, reasons and Kul warning. A failed read renders the
+  // "couldn't load your summary" state, never a zero-filled one.
+  const [previewResult, { data: profileRow }, { data: firstEntry }, { data: lastEntry }] = await Promise.all([
+    buildDeletionPreview(supabase, createServiceRoleSupabaseClient(), user.id),
+    supabase.from('profiles').select('id, tradition').eq('id', user.id).maybeSingle(),
     supabase
       .from('journal_entries')
       .select('entry_date')
@@ -50,13 +34,7 @@ export default async function DeleteAccountPage() {
       .maybeSingle(),
   ]);
 
-  if (!profile) redirect('/settings');
-
-  const streak = streakRow?.streak_count ?? profile.shloka_streak ?? 0;
-  const sevaScore = profile.seva_score ?? 0;
-  const karmaPoints = profile.karma_points ?? 0;
-  const tradition = profile.tradition ?? 'hindu';
-  const relicsUnlocked = getUnlockedRelics(streak, sevaScore, tradition).length;
+  if (!previewResult.ok && previewResult.error === 'Profile not found' && !profileRow) redirect('/settings');
 
   let journalDaysSpanned = 0;
   if (firstEntry?.entry_date && lastEntry?.entry_date) {
@@ -72,15 +50,9 @@ export default async function DeleteAccountPage() {
 
   return (
     <DeleteAccountClient
-      userName={profile.full_name || profile.username || 'Seeker'}
-      tradition={tradition}
-      activeSymbolId={profile.active_symbol_id}
-      streak={streak}
-      karmaPoints={karmaPoints}
-      sevaScore={sevaScore}
-      relicsUnlocked={relicsUnlocked}
+      preview={previewResult.ok ? previewResult.preview : null}
+      fallbackTradition={profileRow?.tradition ?? 'hindu'}
       exportAvailable={exportRouteExists}
-      journalCount={journalCount ?? 0}
       journalDaysSpanned={journalDaysSpanned}
     />
   );
