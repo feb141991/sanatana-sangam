@@ -51,7 +51,6 @@ interface LeaderboardUser {
   avatar_url: string | null;
   tradition: string | null;
   active_symbol_id?: string | null;
-  is_pro: boolean;
   total_score: number;
 }
 
@@ -68,7 +67,6 @@ interface ChallengeClientProps {
     id: string;
     timezone: string | null;
     tradition: string | null;
-    is_pro: boolean;
     karma_points: number;
     full_name: string | null;
     username: string;

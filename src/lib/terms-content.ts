@@ -77,12 +77,12 @@ export const TERMS_DATA: { global: TermsSection[]; appendices: RegionalAppendix[
       ]
     },
     {
-      title: 'Subscriptions, Payments, and App Stores',
-      summary: 'Paid features follow the store and checkout terms used.',
+      title: 'Paid Services and Previous Purchases',
+      summary: 'Shoonaya currently has no app subscription plans.',
       content: [
-        'Core Shoonaya features may be free, while premium or supporter features may require payment where offered.',
-        'If you purchase through an app store or payment provider, their payment, cancellation, refund, tax, and renewal terms may also apply.',
-        'We may change, add, remove, or limit features over time. Where a paid feature is materially affected, we will handle the change in accordance with applicable law and platform rules.',
+        'All features currently available in Shoonaya are free to use. Shoonaya does not currently offer paid feature tiers or app subscriptions.',
+        'Any purchase or subscription made before this policy revision remains subject to the terms presented at the time of purchase and applicable law. App stores and payment providers may handle billing, cancellation, refunds, taxes, and renewals for those prior transactions.',
+        'If Shoonaya introduces a paid product in the future, its price and terms will be shown before you choose to purchase it.',
       ]
     },
     {
@@ -125,10 +125,10 @@ export const TERMS_DATA: { global: TermsSection[]; appendices: RegionalAppendix[
       sections: [
         {
           title: 'Consumer Rights',
-          summary: '14-day cooling-off period.',
+          summary: 'Applicable consumer protections continue to apply.',
           content: [
-            'For digital subscriptions, UK and EU residents have a 14-day "cooling-off" period to cancel and receive a full refund, provided the service has not been fully utilized.',
-            'Cancellations are simplified: you can cancel your subscription as easily as you joined, with a single click in your settings.',
+            'We honor applicable statutory cancellation, refund, and consumer-protection rights for purchases, including any purchases made before Shoonaya stopped offering app subscriptions.',
+            'For a prior app-store or payment-provider purchase, use the purchase channel and terms shown at checkout for billing management; contact Shoonaya if you need help finding the appropriate support route.',
           ]
         },
         {

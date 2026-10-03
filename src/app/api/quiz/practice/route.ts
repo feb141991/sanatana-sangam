@@ -186,16 +186,6 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_pro')
-    .eq('id', user.id)
-    .single();
-
-  if (!profile?.is_pro) {
-    return NextResponse.json({ error: 'Pro required', upgrade: true }, { status: 403 });
-  }
-
   const { searchParams } = new URL(req.url);
   const rawTradition = searchParams.get('tradition') ?? 'hindu';
   const topic        = searchParams.get('topic')     ?? 'deities';

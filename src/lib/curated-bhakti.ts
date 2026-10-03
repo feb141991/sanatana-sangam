@@ -6,7 +6,6 @@ export interface BhaktiSound {
   type: 'mantra' | 'bhajan' | 'chant';
   deity?: string;
   mood?: string;
-  isPremium?: boolean;
   cover?: string;
 }
 
@@ -19,7 +18,6 @@ export const CURATED_SOUNDS: BhaktiSound[] = [
     type: 'chant',
     deity: 'shiva',
     mood: 'energy',
-    isPremium: true,
     cover: '/images/sounds/shiva-tandava.png'
   },
   {
@@ -29,7 +27,6 @@ export const CURATED_SOUNDS: BhaktiSound[] = [
     duration: '11:08',
     type: 'mantra',
     mood: 'peace',
-    isPremium: false,
     cover: '/images/sounds/gayatri.png'
   },
   {
@@ -40,7 +37,6 @@ export const CURATED_SOUNDS: BhaktiSound[] = [
     type: 'bhajan',
     deity: 'hanuman',
     mood: 'protection',
-    isPremium: true,
     cover: '/images/sounds/hanuman-chalisa.png'
   },
   {
@@ -51,7 +47,6 @@ export const CURATED_SOUNDS: BhaktiSound[] = [
     type: 'chant',
     deity: 'vishnu',
     mood: 'wisdom',
-    isPremium: true,
     cover: '/images/sounds/vishnu-sahasranamam.png'
   }
 ];

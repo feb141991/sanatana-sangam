@@ -9,7 +9,6 @@ import {
   Crown,
   Edit3,
   Heart,
-  Lock,
   MapPin,
   MoreVertical,
   Network,
@@ -20,8 +19,6 @@ import {
   Trash2,
   TreePine,
 } from 'lucide-react';
-import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
-import { usePremium } from '@/hooks/usePremium';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { FamilyMember, MemberRow } from '../types';
 
@@ -39,14 +36,13 @@ const VIEW_OPTIONS: Array<{
   label: string;
   description: string;
   icon: typeof TreePine;
-  pro: boolean;
 }> = [
-  { key: 'lineage', label: 'Lineage tree', description: 'Clear parent-child structure', icon: TreePine, pro: false },
-  { key: 'mandala', label: 'Kul mandala', description: 'Radial family rings', icon: Orbit, pro: true },
-  { key: 'timeline', label: 'Living timeline', description: 'Generations across time', icon: CalendarDays, pro: true },
-  { key: 'constellation', label: 'Constellation', description: 'Interactive family clusters', icon: Network, pro: true },
-  { key: 'scroll', label: 'Ancestral scroll', description: 'Archive-style family record', icon: ScrollText, pro: true },
-  { key: 'courtyard', label: 'Temple courtyard', description: 'Sacred family gathering view', icon: Crown, pro: true },
+  { key: 'lineage', label: 'Lineage tree', description: 'Clear parent-child structure', icon: TreePine },
+  { key: 'mandala', label: 'Kul mandala', description: 'Radial family rings', icon: Orbit },
+  { key: 'timeline', label: 'Living timeline', description: 'Generations across time', icon: CalendarDays },
+  { key: 'constellation', label: 'Constellation', description: 'Interactive family clusters', icon: Network },
+  { key: 'scroll', label: 'Ancestral scroll', description: 'Archive-style family record', icon: ScrollText },
+  { key: 'courtyard', label: 'Temple courtyard', description: 'Sacred family gathering view', icon: Crown },
 ];
 
 export function KulVansh({
@@ -71,23 +67,14 @@ export function KulVansh({
   onBack?: () => void;
 }) {
   const { t } = useLanguage();
-  const isPro = usePremium();
   const [activeView, setActiveView] = useState<VanshView>('lineage');
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
-  const [showProModal, setShowProModal] = useState(false);
 
   const graph = useMemo(() => buildFamilyGraph(familyMembers), [familyMembers]);
   const activeMeta = VIEW_OPTIONS.find((option) => option.key === activeView) ?? VIEW_OPTIONS[0];
-  const isLocked = activeMeta.pro && !isPro;
   const isImmersiveView = activeView === 'constellation' || activeView === 'scroll' || activeView === 'courtyard';
 
   function selectView(view: VanshView) {
-    const meta = VIEW_OPTIONS.find((option) => option.key === view);
-    if (meta?.pro && !isPro) {
-      setActiveView(view);
-      setShowProModal(true);
-      return;
-    }
     setActiveView(view);
   }
 
@@ -125,7 +112,6 @@ export function KulVansh({
             {VIEW_OPTIONS.map((option) => {
               const Icon = option.icon;
               const active = activeView === option.key;
-              const locked = option.pro && !isPro;
               return (
                 <button
                   key={option.key}
@@ -141,7 +127,6 @@ export function KulVansh({
                   <span className="min-w-0 whitespace-nowrap">
                     <span className="flex items-center gap-1.5 text-sm font-medium">
                       {option.label}
-                      {locked && <Lock size={12} />}
                     </span>
                   </span>
                 </button>
@@ -154,7 +139,7 @@ export function KulVansh({
           <EmptyVanshState canManageVansh={canManageVansh} onAdd={() => setShowAdd(true)} />
         ) : (
           <section className={`relative overflow-hidden ${isImmersiveView ? '' : 'px-1 sm:px-2'}`}>
-            {!isImmersiveView && <ViewHeader activeMeta={activeMeta} memberCount={familyMembers.length} isLocked={isLocked} />}
+            {!isImmersiveView && <ViewHeader activeMeta={activeMeta} memberCount={familyMembers.length} />}
 
             <div className={isImmersiveView ? '' : 'mt-3'}>
               {activeView === 'lineage' && (
@@ -167,31 +152,11 @@ export function KulVansh({
                   onDelete={deleteMember}
                 />
               )}
-              {activeView === 'mandala' && (
-                <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <MandalaView members={graph.sortedMembers} onSelect={setSelectedMember} />
-                </LockedShell>
-              )}
-              {activeView === 'timeline' && (
-                <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <TimelineView generations={graph.generations} onSelect={setSelectedMember} />
-                </LockedShell>
-              )}
-              {activeView === 'constellation' && (
-                <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <ConstellationView members={graph.sortedMembers} onSelect={setSelectedMember} memberCount={familyMembers.length} />
-                </LockedShell>
-              )}
-              {activeView === 'scroll' && (
-                <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <AncestralScrollView generations={graph.generations} onSelect={setSelectedMember} memberCount={familyMembers.length} />
-                </LockedShell>
-              )}
-              {activeView === 'courtyard' && (
-                <LockedShell locked={isLocked} onUnlock={() => setShowProModal(true)}>
-                  <TempleCourtyardView members={graph.sortedMembers} onSelect={setSelectedMember} memberCount={familyMembers.length} />
-                </LockedShell>
-              )}
+              {activeView === 'mandala' && <MandalaView members={graph.sortedMembers} onSelect={setSelectedMember} />}
+              {activeView === 'timeline' && <TimelineView generations={graph.generations} onSelect={setSelectedMember} />}
+              {activeView === 'constellation' && <ConstellationView members={graph.sortedMembers} onSelect={setSelectedMember} memberCount={familyMembers.length} />}
+              {activeView === 'scroll' && <AncestralScrollView generations={graph.generations} onSelect={setSelectedMember} memberCount={familyMembers.length} />}
+              {activeView === 'courtyard' && <TempleCourtyardView members={graph.sortedMembers} onSelect={setSelectedMember} memberCount={familyMembers.length} />}
             </div>
           </section>
         )}
@@ -225,7 +190,6 @@ export function KulVansh({
         />
       )}
 
-      <PremiumActivateModal open={showProModal} onClose={() => setShowProModal(false)} />
     </div>
   );
 }
@@ -285,11 +249,9 @@ function inferGeneration(member: FamilyMember) {
 function ViewHeader({
   activeMeta,
   memberCount,
-  isLocked,
 }: {
   activeMeta: (typeof VIEW_OPTIONS)[number];
   memberCount: number;
-  isLocked: boolean;
 }) {
   const Icon = activeMeta.icon;
   return (
@@ -303,12 +265,6 @@ function ViewHeader({
           <p className="text-xs theme-muted">{memberCount} family members preserved</p>
         </div>
       </div>
-      {isLocked && (
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--brand-primary)] bg-[var(--brand-primary-soft)] px-3 py-1.5 text-xs font-medium text-[var(--brand-primary-strong)]">
-          <Lock size={12} />
-          Pro
-        </span>
-      )}
     </div>
   );
 }
@@ -860,26 +816,6 @@ function TempleCourtyardSurface({
         <p className="text-xs uppercase tracking-[0.28em] text-[#C9A35B]">Temple courtyard</p>
         <p className="mt-1 text-sm text-[#6C4B35] dark:text-[#b5b0a5]">Family members gather around the Kul sanctum. Tap a person to open their profile.</p>
       </div>
-    </div>
-  );
-}
-
-function LockedShell({ locked, onUnlock, children }: { locked: boolean; onUnlock: () => void; children: React.ReactNode }) {
-  return (
-    <div className="relative">
-      <div className={locked ? 'pointer-events-none select-none blur-[2px]' : ''}>{children}</div>
-      {locked && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-[2rem] bg-[var(--surface-base)]/62 p-6 backdrop-blur-sm">
-          <div className="max-w-xs rounded-[2rem] border border-[var(--brand-primary)] bg-[var(--surface-raised)] p-5 text-center shadow-sm">
-            <Lock className="mx-auto text-[var(--brand-primary)]" size={24} />
-            <p className="mt-3 text-lg font-medium theme-ink premium-serif">Pro Kul view</p>
-            <p className="mt-1 text-sm theme-muted">Unlock premium ways to experience the same family graph.</p>
-            <button onClick={onUnlock} className="mt-4 rounded-full bg-[var(--brand-primary)] px-5 py-3 text-sm font-medium text-white">
-              Unlock Pro
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

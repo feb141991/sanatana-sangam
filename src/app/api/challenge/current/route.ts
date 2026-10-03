@@ -10,16 +10,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // 1. Get user profile, timezone and pro status
+    // 1. Get user profile and timezone
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, timezone, tradition, is_pro, subscription_status')
+      .select('id, timezone, tradition')
       .eq('id', user.id)
       .single();
-
-    const isZenith = profile?.is_pro === true ||
-      profile?.subscription_status === 'pro' ||
-      profile?.subscription_status === 'kul_pro';
 
     const userTimezone = profile?.timezone || 'Asia/Kolkata';
     const formatter = new Intl.DateTimeFormat('en-US', {
@@ -116,8 +112,7 @@ export async function GET(req: NextRequest) {
     // 7. Format packs and obfuscate questions to prevent inspect-element cheating
     const formattedPacks = packs.map((pack) => {
       const progress = progressMap.get(pack.id);
-      // Zenith users get all packs auto-unlocked — no ads, no seva spend
-      const isUnlocked = pack.is_free || isZenith || !!(progress && progress.unlocked);
+      const isUnlocked = pack.is_free || !!(progress && progress.unlocked);
       const isCompleted = !!(progress && progress.completed);
       const score = progress?.score || 0;
       const answers = progress?.answers || {};
@@ -162,7 +157,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       challenge,
       packs: formattedPacks,
-      is_zenith: isZenith,   // client uses this to hide "Watch Ad" for pro users
       leaderboards: {
         overall: overallLeaderboard,
         tradition_ranks: traditionRanks

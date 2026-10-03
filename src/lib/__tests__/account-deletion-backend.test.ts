@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getNotificationPreferenceSkipReason } from '@/lib/notification-delivery-policy';
 import { getUnlockedRelics } from '@/lib/relics';
-import { DELETION_REASONS } from '@/app/api/user/delete/preview/route';
+import { DELETION_REASONS } from '@/lib/account-deletion';
 
 describe('Account Deletion Backend Policy & Preview Contract', () => {
   it('suppresses delivery for all notification types when account is in deletion cool-off', () => {

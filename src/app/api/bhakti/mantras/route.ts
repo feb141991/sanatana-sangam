@@ -16,9 +16,7 @@ export const runtime = 'edge';
  * `tradition` query param is required, but it's accepted for symmetry with
  * the other Bhakti content routes.
  *
- * `isPremium` is returned as-is (not gated server-side) — same as PWA,
- * which shows all mantras but locks premium ones behind a paywall nudge on
- * tap rather than hiding them from the list.
+ * Mantra content is available without subscription tiers.
  */
 export async function GET(req: NextRequest) {
   const tradition = req.nextUrl.searchParams.get('tradition');

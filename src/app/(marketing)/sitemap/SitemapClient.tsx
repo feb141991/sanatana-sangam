@@ -116,12 +116,11 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
   {
     id: "account",
     title: "Account & Membership",
-    summary: "Manage your profile, personal preferences, and subscription.",
+    summary: "Manage your profile and personal preferences.",
     icon: UserCircle,
     links: [
       { label: "Sign In", href: "/login", description: "Access your existing Shoonaya practice profile." },
       { label: "Create an Account", href: "/signup", description: "Begin your personalized spiritual journey today." },
-      { label: "Membership & Pricing", href: "/pricing", description: "Support Shoonaya's mission and unlock advanced features." },
     ],
   },
   {

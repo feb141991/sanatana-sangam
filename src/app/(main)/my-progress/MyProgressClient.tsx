@@ -6,7 +6,7 @@ import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, Activity, Sparkles, Share2, ExternalLink, Target, Flame } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, TrendingUp, TrendingDown, Minus, Calendar, Activity, Sparkles, Share2, ExternalLink, Target, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { localSpiritualDate } from '@/lib/sacred-time';
@@ -41,7 +41,6 @@ interface PillarData {
 interface Props {
   userName:         string;
   tradition:        string | null;
-  isPro:            boolean;
   streak:           number;
   heatmap:          { date: string; japa: boolean; nitya: boolean }[];
   sixMonthHeatmap?: { date: string; japa: boolean; nitya: boolean }[];
@@ -724,7 +723,7 @@ const KARMA_REASON_LABELS: Record<string, string> = {
   kul_event:           'Kul Event',
 };
 
-function AdvancedAnalyticsSection({ isPro, isDark }: { isPro: boolean; isDark: boolean }) {
+function AdvancedAnalyticsSection({ isDark }: { isDark: boolean }) {
   const [data, setData]       = useState<AdvancedData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState<string | null>(null);
@@ -736,56 +735,13 @@ function AdvancedAnalyticsSection({ isPro, isDark }: { isPro: boolean; isDark: b
   const cardBdr = isDark ? 'rgba(197,160,89,0.14)' : 'rgba(180,120,40,0.14)';
 
   useEffect(() => {
-    if (!isPro) return;
     setLoading(true);
     fetch('/api/analytics/advanced')
       .then(r => r.json())
       .then(d => { if (d.error) setError(d.error); else setData(d); })
       .catch(() => setError('Could not load analytics'))
       .finally(() => setLoading(false));
-  }, [isPro]);
-
-  // ── Locked preview for non-pro users ─────────────────────────────────────
-  if (!isPro) {
-    return (
-      <motion.section
-        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
-        className="mb-8 relative overflow-hidden rounded-[1.8rem]"
-        style={{ background: isDark ? 'rgba(197,160,89,0.06)' : 'rgba(197,160,89,0.04)', border: `1px solid rgba(197,160,89,0.22)` }}
-      >
-        {/* Blurred preview */}
-        <div className="p-5 blur-[5px] pointer-events-none select-none">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: `${amber}0.70)` }}>
-            ✦ Advanced Analytics
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {['Quiz Accuracy', 'Mood Pattern', 'Vrat Practice', 'Karma Flow'].map(label => (
-              <div key={label} className="rounded-xl p-3" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
-                <div className="h-8 w-12 rounded-full mb-2" style={{ background: `${amber}0.15)` }} />
-                <p className="text-xs font-medium" style={{ color: h1 }}>{label}</p>
-                <p className="text-[10px]" style={{ color: muted }}>—</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Lock overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6">
-          <Lock size={22} style={{ color: `${amber}0.80)` }} />
-          <div className="text-center">
-            <p className="font-serif text-base font-semibold" style={{ color: h1 }}>Advanced Analytics</p>
-            <p className="text-xs mt-1" style={{ color: muted }}>Quiz accuracy, mood patterns, vrat history, karma flow — all in one place.</p>
-          </div>
-          <Link
-            href="/settings/subscription"
-            className="px-6 py-2.5 rounded-full text-xs font-bold transition-opacity hover:opacity-90"
-            style={{ background: `${amber}0.90)`, color: '#1c1208' }}
-          >
-            Upgrade to Zenith →
-          </Link>
-        </div>
-      </motion.section>
-    );
-  }
+  }, []);
 
   // ── Loading ───────────────────────────────────────────────────────────────
   if (loading) {
@@ -1184,8 +1140,8 @@ function useAiExplain() {
 }
 
 // ── Premium Report Modal ──────────────────────────────────────────────────────
-function ReportModal({ report, isPro, onClose, isDark, streak }: {
-  report: ReportData; isPro: boolean; onClose: () => void; isDark: boolean; streak: number;
+function ReportModal({ report, onClose, isDark, streak }: {
+  report: ReportData; onClose: () => void; isDark: boolean; streak: number;
 }) {
   const printRef = useRef<HTMLDivElement>(null);
   const japaAi   = useAiExplain();
@@ -1220,33 +1176,6 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
     } else if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {});
     }
-  }
-
-  if (!isPro) {
-    return (
-      <motion.div
-        className="fixed inset-0 z-[90] flex items-end justify-center"
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-        <motion.div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-        <motion.div
-          initial={{ y: 60 }} animate={{ y: 0 }} exit={{ y: 60 }}
-          className="relative z-10 w-full max-w-lg rounded-t-[2rem] p-6 pb-10 text-center"
-          style={{ background: isDark ? '#1a0e08' : '#fdf6ec', border: `1px solid ${border}` }}>
-          <div className="text-4xl mb-3">📊</div>
-          <h2 className="text-xl font-semibold" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>
-            Sadhana Report
-          </h2>
-          <p className="mt-2 text-sm" style={{ color: muted }}>
-            A beautiful monthly summary of your entire practice — all pillars, trends, highlights — available with Shoonaya Pro.
-          </p>
-          <div className="mt-5 flex flex-col gap-2">
-            <Lock size={14} className="mx-auto" style={{ color: 'rgba(197, 160, 89,0.6)' }} />
-            <p className="text-xs" style={{ color: 'rgba(197, 160, 89,0.7)' }}>Premium Feature</p>
-          </div>
-          <button onClick={onClose} className="mt-4 text-xs" style={{ color: muted }}>Close</button>
-        </motion.div>
-      </motion.div>
-    );
   }
 
   return (
@@ -1531,7 +1460,6 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
 export default function MyProgressClient({
   userName,
   tradition,
-  isPro,
   streak,
   heatmap,
   sixMonthHeatmap,
@@ -2134,7 +2062,7 @@ export default function MyProgressClient({
           )}
 
           {/* ── Advanced Analytics (Zenith) — deferred until after first paint ── */}
-          {belowFoldMounted && <AdvancedAnalyticsSection isPro={isPro} isDark={isDark} />}
+          {belowFoldMounted && <AdvancedAnalyticsSection isDark={isDark} />}
 
           {/* ── Deep-dive links row ── */}
           <motion.div
@@ -2413,15 +2341,8 @@ export default function MyProgressClient({
             <button
               onClick={() => setShowReport(true)}
               className="w-full rounded-full py-3 text-sm font-medium flex items-center justify-center gap-2"
-              style={{
-                background: isPro
-                  ? 'linear-gradient(135deg,rgba(212,100,20,0.92),rgba(197, 160, 89,0.88))'
-                  : 'rgba(197, 160, 89,0.10)',
-                color: isPro ? '#1c1208' : 'rgba(197, 160, 89,0.8)',
-                border: isPro ? 'none' : '1px solid rgba(197, 160, 89,0.28)',
-              }}>
-              {!isPro && <Lock size={13} />}
-              {isPro ? 'Generate Report' : 'Upgrade to Pro'}
+              style={{ background: 'linear-gradient(135deg,rgba(212,100,20,0.92),rgba(197, 160, 89,0.88))', color: '#1c1208' }}>
+              Generate Report
             </button>
           </motion.section>
 
@@ -2432,7 +2353,6 @@ export default function MyProgressClient({
         {showReport && (
           <ReportModal
             report={report}
-            isPro={isPro}
             onClose={() => setShowReport(false)}
             isDark={isDark}
             streak={streak}

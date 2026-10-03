@@ -12,11 +12,10 @@ export default async function PlanInsightsPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_pro, tradition')
+    .select('tradition')
     .eq('id', user.id)
     .single();
 
-  const isPro = profile?.is_pro ?? false;
 
   // Fetch all progress rows for this user
   const { data: progressRows } = await supabase
@@ -47,7 +46,6 @@ export default async function PlanInsightsPage() {
 
   return (
     <InsightsClient
-      isPro={isPro}
       planData={planData}
       totalDaysCompleted={totalDaysCompleted}
       plansCompleted={plansCompleted}

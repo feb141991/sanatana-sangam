@@ -19,7 +19,6 @@ import { getGreeting, isGreetingCompatibleWithTradition } from '@/lib/traditions
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
-import { usePremium } from '@/hooks/usePremium';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
 import { getTraditionMeta } from '@/lib/tradition-config';
@@ -300,7 +299,6 @@ export default function HomeDashboard({
   const router      = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const searchParams = useSearchParams();
-  const isPro = usePremium();
   const { playHaptic } = useZenithSensory();
 
   // ── Notification panel ──
@@ -980,7 +978,6 @@ export default function HomeDashboard({
         userName={userName}
         userId={userId}
         avatarUrl={avatarUrl}
-        isPro={isPro}
         activeSymbolId={activeSymbolId}
         karmaPoints={karmaPoints}
         japaAlreadyDoneToday={japaAlreadyDoneToday}
@@ -1151,7 +1148,6 @@ export default function HomeDashboard({
             userName={userName}
             tradition={tradition}
             sampradaya={sampradaya}
-            isPro={isPro}
             japaAlreadyDoneToday={japaAlreadyDoneToday}
             nityaDoneToday={nityaDoneToday}
             activeSankalpa={activeSankalpa ?? null}

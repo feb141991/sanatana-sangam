@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Send, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
-import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
 import SacredIcon from '@/components/ui/SacredIcon';
 import AiReportButton from '@/components/ai/AiReportButton';
@@ -325,9 +323,7 @@ export default function AIChatClient({
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
-  const isPro = usePremium();
   const { playHaptic } = useZenithSensory();
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [responseLanguage, setResponseLanguage] = useState<string>(() =>
     resolveChatResponseLanguage(appLanguage ?? 'en', initialPrompt ?? '')
   );
@@ -342,7 +338,7 @@ export default function AIChatClient({
       if (res.ok) {
         const data = await res.json();
         setUsageData({ used: data.used, limit: data.limit });
-        if (data.used >= data.limit && !data.isPro) setLimitReached(true);
+        if (data.used >= data.limit) setLimitReached(true);
       }
     } catch { /* silent */ }
   };
@@ -501,11 +497,6 @@ export default function AIChatClient({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-display font-bold text-[color:var(--text-cream)] text-lg leading-tight">Dharma Mitra</h1>
-              {isPro && (
-                <span className="px-1.5 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-orange-500/20">
-                  Pro
-                </span>
-              )}
             </div>
             {contextLabel ? (
               <p className="text-[10px] font-medium px-2 py-0.5 rounded-full inline-block mt-0.5"
@@ -616,19 +607,13 @@ export default function AIChatClient({
         )}
 
         {/* ── Daily limit reached card ─────────────────────────────────── */}
-        {limitReached && !isPro && (
+        {limitReached && (
           <div className="mb-3 p-4 rounded-2xl border" style={{ background: 'rgba(26,20,14,0.95)', borderColor: 'rgba(197,160,89,0.3)' }}>
             <p className="font-display font-bold text-[#C5A059] text-sm mb-1">You&apos;ve reached your daily limit</p>
             <p className="text-xs text-white/60 leading-relaxed mb-3">
-              Free seekers get 5 conversations a day. Upgrade to Shoonaya Zenith for unlimited daily guidance.
+              Dharma Mitra has a daily usage limit to keep the service reliable for everyone.
             </p>
-            <a
-              href="/pricing"
-              className="inline-block bg-[#C5A059] text-white text-xs font-bold px-4 py-2 rounded-xl tracking-wide hover:opacity-90 transition"
-            >
-              Unlock Zenith →
-            </a>
-            <p className="text-[10px] text-white/30 mt-2">Resets at midnight · 5 free conversations tomorrow</p>
+            <p className="text-[10px] text-white/30 mt-2">Your usage allowance resets daily.</p>
           </div>
         )}
 
@@ -660,8 +645,8 @@ export default function AIChatClient({
           </button>
         </div>
 
-        {/* ── Usage bar (free users only) ──────────────────────────────── */}
-        {!isPro && usageData && (
+        {/* Usage allowance is an operational rate limit, not a paid tier. */}
+        {usageData && (
           <div className="mt-2 space-y-1">
             <div className="flex justify-between items-center">
               <div className="h-1 flex-1 rounded-full overflow-hidden mr-3" style={{ background: 'rgba(197,160,89,0.12)' }}>
@@ -692,7 +677,6 @@ export default function AIChatClient({
         </p>
       </div>
 
-      <PremiumActivateModal open={showPremiumModal} onClose={() => setShowPremiumModal(false)} />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 // ── GET /api/analytics/advanced ───────────────────────────────────────────────
-// Zenith-only endpoint. Returns aggregated analytics across all practice
+// Returns aggregated analytics across all practice
 // dimensions: quiz, mood, vrat, karma. Used by the Advanced Analytics section
 // on the My Progress page.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -18,16 +18,12 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
 
-  // Verify pro status
+  // Load the user's progress totals for the analytics response.
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_pro, karma_points, seva_score, weekly_seva')
+    .select('karma_points, seva_score, weekly_seva')
     .eq('id', user.id)
     .maybeSingle();
-
-  if (!profile?.is_pro) {
-    return NextResponse.json({ error: 'Upgrade to Zenith to access Advanced Analytics.', upgrade_required: true }, { status: 403 });
-  }
 
   const today = new Date().toISOString().slice(0, 10);
   const thirtyDaysAgo = daysAgoISO(30);
@@ -205,9 +201,9 @@ export async function GET() {
     },
     // Karma
     karma: {
-      current_total: profile.karma_points ?? 0,
-      seva_score: profile.seva_score ?? 0,
-      weekly_seva: profile.weekly_seva ?? 0,
+      current_total: profile?.karma_points ?? 0,
+      seva_score: profile?.seva_score ?? 0,
+      weekly_seva: profile?.weekly_seva ?? 0,
       last_30_days_earned: totalKarmaLast30,
       breakdown: karmaBreakdown,
       daily_trend: dailyKarma,

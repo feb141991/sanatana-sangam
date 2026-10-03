@@ -19,7 +19,7 @@ export default async function ChallengePage() {
   // 1. Fetch user profile
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, timezone, tradition, is_pro, karma_points, full_name, username, latitude, longitude, city, neighbourhood')
+    .select('id, timezone, tradition, karma_points, full_name, username, latitude, longitude, city, neighbourhood')
     .eq('id', user.id)
     .single();
 

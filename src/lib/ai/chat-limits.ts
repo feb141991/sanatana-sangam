@@ -1,6 +1,3 @@
-// ─── Dharma Mitra daily message limits ─────────────────────────────────────
-// Single source of truth consumed by both the chat POST route and the usage
-// GET route so the two endpoints can never drift out of sync.
-
-export const FREE_DAILY_LIMIT = 20;
-export const PRO_DAILY_LIMIT  = 20;
+// Single account-wide operational cap for Dharma Mitra. This limits provider
+// spend and abuse; it is not a paid-plan entitlement.
+export const DAILY_AI_MESSAGE_LIMIT = 20;

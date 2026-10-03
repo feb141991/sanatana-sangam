@@ -19,7 +19,7 @@ export default async function QuizPage() {
   const [profileResult, historyResult, sessionsResult] = await Promise.all([
     supabase
       .from('profiles')
-      .select('tradition, full_name, is_pro, karma_points, timezone, app_language')
+      .select('tradition, full_name, karma_points, timezone, app_language')
       .eq('id', user.id)
       .single(),
     supabase
@@ -37,7 +37,6 @@ export default async function QuizPage() {
   ]);
 
   const profile      = profileResult.data;
-  const isPro        = profile?.is_pro ?? false;
   const karmaPoints  = (profile as any)?.karma_points ?? 0;
   const tradition    = profile?.tradition ?? 'hindu';
   const userName     = profile?.full_name ?? 'Seeker';
@@ -47,8 +46,6 @@ export default async function QuizPage() {
   const todayStr     = localSpiritualDate(timezone, 4);
   const todayResponse = history.find((item) => item.date === todayStr) ?? null;
 
-  // Gate history: free = 7 days, Pro = full 50
-  const visibleHistory = isPro ? history : history.slice(0, 7);
 
   // Streak grace day logic — use spiritual date to match how quiz dates are recorded
   const yesterdayDate = new Date(todayStr + 'T12:00:00Z');
@@ -97,10 +94,9 @@ export default async function QuizPage() {
       tradition={tradition}
       timezone={timezone}
       appLanguage={appLanguage}
-      isPro={isPro}
       karmaPoints={karmaPoints}
       todayResponse={todayResponse}
-      initialHistory={visibleHistory}
+      initialHistory={history}
       activityDates={activityDates}
       heatmapGrid={heatmapGrid}
       spiritualToday={todayStr}

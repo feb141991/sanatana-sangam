@@ -12,7 +12,6 @@ export type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
  *  mandali_id  — auto-assigned by the on_profile_location_change trigger
  *  seva_score  — incremented by server-side task-completion logic
  *  is_admin    — set only by admins via the admin panel
- *  is_pro      — managed by subscription/payment webhooks
  *  is_banned   — managed by admin moderation actions
  *  ban_reason  — managed by admin moderation actions
  *  created_at  — immutable, set at insert time
@@ -26,7 +25,6 @@ const SERVER_MANAGED_COLUMNS = new Set<string>([
   'shloka_streak',
   'last_shloka_date',
   'is_admin',
-  'is_pro',
   'is_banned',
   'ban_reason',
   'created_at',
@@ -72,4 +70,3 @@ export async function updateProfile(userId: string, payload: ProfileUpdate) {
   if (error) throw error;
   return data as Profile;
 }
-

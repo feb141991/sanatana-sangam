@@ -150,7 +150,7 @@ export default async function HomePage() {
   // an error state.
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, active_symbol_id, onboarding_completed, onboarding_goal, nitya_rhythm_mode')
+    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, karma_points, seva_score, is_admin, active_symbol_id, onboarding_completed, onboarding_goal, nitya_rhythm_mode')
     .eq('id', user.id)
     .maybeSingle();
 

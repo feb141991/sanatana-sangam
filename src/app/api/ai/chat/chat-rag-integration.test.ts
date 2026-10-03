@@ -33,8 +33,7 @@ vi.mock('@/lib/ai/providers/inference', () => ({
   generateWithProvider: mocks.generateWithProvider,
 }));
 vi.mock('@/lib/ai/chat-limits', () => ({
-  FREE_DAILY_LIMIT: 5,
-  PRO_DAILY_LIMIT: 20,
+  DAILY_AI_MESSAGE_LIMIT: 20,
 }));
 vi.mock('@/lib/festivals', () => ({
   getFallbackFestivalCalendar: () => [],
@@ -67,7 +66,6 @@ function createSupabaseStub() {
     eq: vi.fn(),
     single: vi.fn().mockResolvedValue({
       data: {
-        is_pro: false,
         is_banned: false,
         tradition: 'hindu',
         sampradaya: null,

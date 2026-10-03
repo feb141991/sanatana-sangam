@@ -29,7 +29,6 @@ type LeaderboardUser = {
   weekly_seva: number | null;
   monthly_seva: number | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id?: string | null;
 };
 
@@ -39,7 +38,6 @@ type ShrutiLeaderboardUser = {
   username: string;
   avatar_url: string | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id?: string | null;
   avg_score_100: number;
   total_recordings: number;
@@ -54,7 +52,6 @@ type ScoreboardProfile = {
   username: string;
   avatar_url: string | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id: string | null;
 };
 
@@ -74,7 +71,6 @@ export type QuizLeaderboardUser = {
   username: string;
   avatar_url: string | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id?: string | null;
   total_karma: number;
   total_correct: number;
@@ -97,7 +93,6 @@ function toLeaderboardUsers(rows: unknown): LeaderboardUser[] {
     ...row,
     full_name: null,
     tradition: null,
-    is_pro: false,
   }));
 }
 
@@ -176,7 +171,6 @@ export default async function ScoreboardPage() {
       username: profile.username ?? '',
       avatar_url: profile.avatar_url ?? null,
       tradition: null,
-      is_pro: false,
       active_symbol_id: profile.active_symbol_id ?? null,
       avg_score_100: Math.round((Number(row.avg_overall_score ?? 0) || 0) * 20),
       total_recordings: Number(row.total_recordings ?? 0),
@@ -264,7 +258,6 @@ export default async function ScoreboardPage() {
           username: entry.profile.username ?? '',
           avatar_url: entry.profile.avatar_url ?? null,
           tradition: null,
-          is_pro: false,
           active_symbol_id: entry.profile.active_symbol_id ?? null,
           total_karma: entry.total_karma,
           total_correct: entry.total_correct,

@@ -2,9 +2,6 @@ import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getAuthUser } from '@/lib/auth-cache';
 import SettingsClient from './SettingsClient';
-import type { Database } from '@/types/database';
-
-type SubscriptionStatus = Database['public']['Tables']['profiles']['Row']['subscription_status'];
 
 export default async function SettingsPage() {
   const user = await getAuthUser();
@@ -32,7 +29,6 @@ export default async function SettingsPage() {
       madhyahn_reminder_time,
       wants_evening_reminder,
       evening_reminder_time,
-      subscription_status,
       consent_religious_data,
       consent_activity_personalization,
       wants_sankalpa_midpoint_reminders
@@ -57,7 +53,6 @@ export default async function SettingsPage() {
       initialEveningReminderTime={profile?.evening_reminder_time ?? '18:30'}
       initialWantsSankalpaMidpointReminders={profile?.wants_sankalpa_midpoint_reminders ?? false}
       initialNityaRhythmMode={profile?.nitya_rhythm_mode ?? 'morning'}
-      subscriptionStatus={(profile?.subscription_status ?? 'free') as SubscriptionStatus}
       initialConsentReligiousData={profile?.consent_religious_data ?? false}
       initialConsentActivityPersonalization={profile?.consent_activity_personalization ?? false}
     />

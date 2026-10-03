@@ -18,7 +18,6 @@ import type { PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/d
 import { AsyncStateCard, EmptyState } from '@/components/ui';
 import type { MandaliProfile, MandaliPublicIdentity } from '@/lib/mandali-contract';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
-import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import SeekersNearYou from './SeekersNearYou';
 import { Shimmer } from '@/components/ui/Shimmer';
@@ -738,7 +737,7 @@ function MandaliWelcome({ isFirstMember, cityLabel, onIntroduce, onStartGatherin
 }
 
 // ─── Reflections Tab (Neighborhood Shared Contemplation) ─────────
-function PostsTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, isPro = false, composePreset = null, hideEmpty = false }: {
+function PostsTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, composePreset = null, hideEmpty = false }: {
   posts: PostWithAuthor[];
   userId: string;
   comments: PostCommentWithAuthor[];
@@ -756,7 +755,6 @@ function PostsTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvot
   onHideContent: (contentId: string) => void;
   onHideAuthor: (authorId: string, mode?: 'mute' | 'block') => void;
   allowCompose?: boolean;
-  isPro?: boolean;
   /** Pre-fills the composer (welcome-card actions); new object re-applies */
   composePreset?: ComposePreset | null;
   /** Suppress the inline EmptyState when a richer empty state renders above */
@@ -823,7 +821,6 @@ function PostsTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvot
           submitting={submitting}
           onClose={() => setShowCompose(false)}
           onPost={handleComposePost}
-          isPro={isPro}
           textareaRef={textareaRef}
         />
       )}
@@ -860,7 +857,7 @@ const QUICK_EMOJIS = [
   '👍', '🙌', '💪', '✅', '❓', '💡', '🤝', '🌺', '😇', '🤲',
 ];
 
-function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost, isPro, textareaRef }: {
+function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost, textareaRef }: {
   postType: PostType;
   setPostType: (t: PostType) => void;
   content: string;
@@ -872,7 +869,6 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
   submitting: boolean;
   onClose: () => void;
   onPost: () => void;
-  isPro: boolean;
   textareaRef: React.RefObject<HTMLTextAreaElement>;
 }) {
   function insertEmoji(emoji: string) {
@@ -896,20 +892,16 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
       {/* Post type selector */}
       <div className="flex gap-2 flex-wrap">
         {POST_TYPES.map((t) => {
-          const isProOnly = t.value === 'announcement';
-          const locked = isProOnly && !isPro;
           return (
             <button key={t.value}
-              onClick={() => locked
-                ? toast('Announcement posts are a Shoonaya Pro feature 🔒', { icon: '✦' })
-                : setPostType(t.value)}
+              onClick={() => setPostType(t.value)}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 postType === t.value
                   ? ''
                   : 'bg-[var(--surface-soft)] text-[color:var(--brand-muted)] border'
-              } ${locked ? 'opacity-60' : ''}`}
+              }`}
               style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : { borderColor: 'var(--card-border)' }}>
-              {t.icon} {t.label}{locked && ' 🔒'}
+              {t.icon} {t.label}
             </button>
           );
         })}
@@ -1158,7 +1150,6 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
 
 // ─── Main Component ──────────────────────────────────────────────
 export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [], userTradition }: Props) {
-  const isPro = usePremium();
   const router = useRouter();
   const { playHaptic } = useZenithSensory();
   const mandaliQuery = useMandaliQuery(userId, {
@@ -1690,7 +1681,6 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 }}
                 onHideContent={hideContentFromView}
                 onHideAuthor={hideAuthorFromView}
-                isPro={isPro}
                 composePreset={composePreset}
                 hideEmpty={posts.length === 0}
               />
@@ -1718,7 +1708,6 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                     onHideContent={hideContentFromView}
                     onHideAuthor={hideAuthorFromView}
                     allowCompose={false}
-                    isPro={isPro}
                   />
                 </div>
               )}

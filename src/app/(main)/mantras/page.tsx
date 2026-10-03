@@ -12,14 +12,13 @@ export default async function MantrasPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('tradition, is_pro')
+    .select('tradition')
     .eq('id', user.id)
     .single();
 
   return (
     <MantrasClient 
       tradition={profile?.tradition || 'hindu'}
-      isPro={profile?.is_pro || false}
     />
   );
 }

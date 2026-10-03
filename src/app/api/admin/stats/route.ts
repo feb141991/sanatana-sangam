@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
       mandaliCount,
       traditionsData,
       dharmVeerReviewCount,
-      proUsersCount,
     ] = await Promise.all([
       supabase.from("profiles").select("id", { count: "exact", head: true }),
       supabase.from("profiles").select("id", { count: "exact", head: true }).eq("onboarding_completed", true),
@@ -26,7 +25,6 @@ export async function GET(request: NextRequest) {
       supabase.from("mandalis").select("id", { count: "exact", head: true }),
       supabase.from("profiles").select("tradition").limit(2000),
       supabase.from("dharm_veers").select("slug", { count: "exact", head: true }).eq("review_status", "pending_review"),
-      supabase.from("profiles").select("id", { count: "exact", head: true }).eq("is_pro", true),
     ]);
 
     const traditionStats: Record<string, number> = {};
@@ -38,7 +36,6 @@ export async function GET(request: NextRequest) {
     const total = usersCount.count || 0;
     const onboarded = onboardedCount.count || 0;
     const active = activeCount.count || 0;
-    const proSubscribers = proUsersCount.count || 0;
     const retention = total > 0 ? Math.round((active / total) * 100) : 0;
 
     return NextResponse.json({
@@ -57,14 +54,6 @@ export async function GET(request: NextRequest) {
           { label: "Hanuman Chalisa", val: "8.2k views", _placeholder: true, status: "not_implemented" },
           { label: "Morning Sadhana", val: "5.1k views", _placeholder: true, status: "not_implemented" }
         ],
-        finance: {
-          mrr: 0,
-          proSubscribers,
-          churn: "0%",
-          renewalsDue: 0,
-          _placeholder: true,
-          status: "not_implemented"
-        }
       },
       health: {
         database: "up",

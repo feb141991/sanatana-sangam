@@ -12,7 +12,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import {
@@ -25,8 +25,6 @@ import {
 import toast from 'react-hot-toast';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { createClient } from '@/lib/supabase';
-import PremiumActivateModal from "@/components/premium/PremiumActivateModal";
-import { usePremium } from '@/hooks/usePremium';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { useLocation } from '@/lib/LocationContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
@@ -537,7 +535,6 @@ interface Props {
   meaningLanguage?: string;
   transliterationLanguage?: string;
   showTransliteration?: boolean;
-  isPro: boolean;
   shrutiStats?: any;
   communityRank?: number;
 }
@@ -563,15 +560,10 @@ export default function PathshalaClient({
   meaningLanguage,
   transliterationLanguage,
   showTransliteration = true,
-  isPro,
   shrutiStats,
   communityRank,
 }: Props) {
   const router        = useRouter();
-  const searchParams  = useSearchParams();
-  useEffect(() => {
-    if (searchParams.get('upgrade') === '1') setShowUpgradeModal(true);
-  }, [searchParams]);
   const supabase  = useRef(createClient()).current;
   const meta      = getTraditionMeta(tradition);
   const prefersReducedMotion = useReducedMotion();
@@ -604,7 +596,6 @@ export default function PathshalaClient({
   const [displayedVerse, setDisplayedVerse] = useState('');
   const [sharingVerse, setSharingVerse] = useState(false);
   const [diffFilter, setDiffFilter] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const scriptureRef = useRef<HTMLDivElement>(null);
   const pathsRef     = useRef<HTMLDivElement>(null);
   
@@ -820,17 +811,6 @@ export default function PathshalaClient({
   // ── Enroll — uses guided_path_progress directly ──────────────────────────────
   async function enroll(pathId: string) {
     if (enrolling) return;
-
-    const pathToEnroll = allPaths.find(p => p.id === pathId);
-
-    // Intermediate & Advanced paths require Pro
-    if (!isPro && pathToEnroll && pathToEnroll.proRequired) {
-      toast(t('upgradeToShoonayaPro'), {
-        duration: 4000,
-        style: { background: 'var(--divine-bg)', color: 'var(--brand-ink)' },
-      });
-      return;
-    }
 
     setEnrolling(pathId);
     playHaptic('medium');
@@ -1239,7 +1219,6 @@ export default function PathshalaClient({
   function BrowsePathCard({ path }: { path: typeof allPaths[0] }) {
     const enrollment = activePaths.find(e => e.path_id === path.id);
     const isEnrolled = !!enrollment;
-    const isProGated = !isPro && path.proRequired;
     const diff       = getDiffStyle(path.difficulty, isDark);
     const doneLessons = (enrollment?.completed_lessons ?? []).length;
     const progressPct = path.total_lessons > 0 ? Math.round((doneLessons / path.total_lessons) * 100) : 0;
@@ -1252,12 +1231,6 @@ export default function PathshalaClient({
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       >
-        {isProGated && !isEnrolled && (
-          <div className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-widest text-white px-2 py-1 rounded-full shadow-md z-10 flex items-center gap-1"
-            style={{ background: 'linear-gradient(135deg,#c5a059,#a07830)' }}>
-            <Lock size={8} /> Pro
-          </div>
-        )}
         <div className="flex items-start gap-3">
           <div className="relative flex-shrink-0">
             {isEnrolled ? (
@@ -1310,10 +1283,6 @@ export default function PathshalaClient({
             background: isDark ? 'rgba(34,197,94,0.1)' : 'rgba(34,197,94,0.08)',
             color: isDark ? '#4ade80' : '#16a34a',
             border: `1px solid ${isDark ? 'rgba(74,222,128,0.2)' : 'rgba(34,197,94,0.25)'}`,
-          } : isProGated ? {
-            background: `${meta.accentColour}10`,
-            color: meta.accentColour,
-            border: `1px solid ${meta.accentColour}20`,
           } : {
             background: `${meta.accentColour}12`,
             color: meta.accentColour,
@@ -1324,9 +1293,7 @@ export default function PathshalaClient({
             ? <Loader2 size={14} className="animate-spin" />
             : isEnrolled
               ? <><Star size={14} /> Enrolled</>
-              : isProGated
-                ? <><Lock size={14} /> Unlock with Pro</>
-                : <><Plus size={14} /> Enroll</>
+              : <><Plus size={14} /> Enroll</>
           }
         </button>
       </motion.div>
@@ -1734,23 +1701,6 @@ export default function PathshalaClient({
                       ))}
                     </div>
                   )}
-                  {!isPro && (
-                    <div className="flex items-center gap-3 rounded-[1.45rem] p-4 mt-3 border"
-                      style={{ background: `${meta.accentColour}0c`, borderColor: `${meta.accentColour}22` }}>
-                      <Lock size={16} style={{ color: meta.accentColour }} className="flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[12px] font-semibold" style={{ color: 'var(--brand-ink)' }}>Free Beginner Paths</p>
-                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-muted)' }}>
-                          Intermediate & Advanced paths require Shoonaya Pro
-                        </p>
-                      </div>
-                      <Link href="/profile"
-                        className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-bold text-[var(--divine-bg)]"
-                        style={{ background: meta.accentColour }}>
-                        <Sparkles size={9} /> Pro
-                      </Link>
-                    </div>
-                  )}
                 </motion.section>
               ) : (
                 /* Empty enrolled state: 3 beginner cards + see all paths trigger */
@@ -2056,10 +2006,6 @@ export default function PathshalaClient({
 
         {/* ── Reader modal ──────────────────────────────────────────────────────── */}
         <ReaderModal />
-        <PremiumActivateModal
-          open={showUpgradeModal}
-          onClose={() => setShowUpgradeModal(false)}
-        />
         <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
       </div>
     </div>

@@ -98,7 +98,6 @@ type LeaderboardUser = {
   weekly_seva?: number | null;
   monthly_seva?: number | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id?: string | null;
 };
 
@@ -108,7 +107,6 @@ type ShrutiLeaderboardUser = {
   username: string;
   avatar_url: string | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id?: string | null;
   avg_score_100: number;
   total_recordings: number;
@@ -123,7 +121,6 @@ type QuizLeaderboardUser = {
   username: string;
   avatar_url: string | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id?: string | null;
   total_karma: number;
   total_correct: number;
@@ -712,11 +709,6 @@ export default function ScoreboardClient({
                         </div>
                       )}
                     </div>
-                    {user.is_pro && (
-                      <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-yellow-500">
-                        <Star size={8} className="text-white" fill="currentColor" />
-                      </div>
-                    )}
                     {user.active_symbol_id && (
                       <div
                         className="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center border border-[rgba(0,0,0,0.15)] backdrop-blur-md z-10"
@@ -809,11 +801,6 @@ export default function ScoreboardClient({
                       </div>
                     )}
                   </div>
-                  {user.is_pro && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border border-white">
-                      <Star size={8} className="text-white" fill="currentColor" />
-                    </div>
-                  )}
                   {user.active_symbol_id && (
                     <div
                       className="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center border border-[rgba(0,0,0,0.15)] backdrop-blur-md z-10"
@@ -839,7 +826,6 @@ export default function ScoreboardClient({
                         className="rounded-full opacity-80"
                       />
                     )}
-                    {user.is_pro && <Crown size={12} className="text-yellow-600/60" />}
                   </div>
                   <p className="mt-0.5 truncate text-[10px] text-[var(--text-muted-warm)]">
                     @{user.username}
@@ -892,11 +878,6 @@ export default function ScoreboardClient({
                       </div>
                     )}
                   </div>
-                  {user.is_pro && (
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border border-white">
-                      <Star size={8} className="text-white" fill="currentColor" />
-                    </div>
-                  )}
                   {user.active_symbol_id && (
                     <div
                       className="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center border border-[rgba(0,0,0,0.15)] backdrop-blur-md z-10"
@@ -921,7 +902,6 @@ export default function ScoreboardClient({
                         className="rounded-full opacity-80"
                       />
                     )}
-                    {user.is_pro && <Crown size={12} className="text-yellow-600/60" />}
                   </div>
                   <div className="mt-0.5">
                     <TierBadge sevaScore={user.seva_score || 0} size="sm" />

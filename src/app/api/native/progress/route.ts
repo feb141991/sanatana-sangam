@@ -19,7 +19,7 @@ import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 // them is a cleanup, not a regression.
 //
 // Not built on top of /api/native/progress-summary (Profile-screen-shaped:
-// sevaScore/isPro/subscriptionStatus/completion%, single consumer is
+// sevaScore/completion%, single consumer is
 // app/(tabs)/profile.tsx) or /api/user/report (ProfileClient's 30-day
 // downloadable report: different window for nitya/heatmap, includes
 // community post/thread counts My Progress doesn't use, omits the 182-day

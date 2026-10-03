@@ -318,7 +318,6 @@ interface NityaHeroBannerProps {
   totalSteps:    number;
   progressPct:   number;
   streak?:       { current_streak: number; longest_streak: number } | null;
-  isPro:         boolean;
   panchang?:     any;
   vataDays?:     string | null;
 }
@@ -330,7 +329,6 @@ export default function NityaHeroBanner({
   totalSteps,
   progressPct,
   streak,
-  isPro,
   panchang,
   vataDays,
 }: NityaHeroBannerProps) {
@@ -451,7 +449,7 @@ export default function NityaHeroBanner({
           </p>
 
           {/* Streak — only if active */}
-          {isPro && streak && streak.current_streak > 0 && (
+          {streak && streak.current_streak > 0 && (
             <div className="flex items-center gap-1 mt-3">
               <Flame size={12} style={{ color: config.accentColor }} />
               <span className="text-[11px] font-semibold" style={{ color: config.accentColor }}>

@@ -62,7 +62,7 @@ export default async function MyProgressPage() {
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('full_name, username, tradition, is_pro, seva_score, karma_points, weekly_seva, monthly_seva')
+      .select('full_name, username, tradition, seva_score, karma_points, weekly_seva, monthly_seva')
       .eq('id', user.id)
       .single(),
 
@@ -279,7 +279,6 @@ export default async function MyProgressPage() {
     <MyProgressClient
       userName={profile?.full_name ?? profile?.username ?? 'Sanatani'}
       tradition={profile?.tradition ?? null}
-      isPro={(profile as any)?.is_pro ?? false}
       streak={streak}
       heatmap={heatmap}
       sixMonthHeatmap={sixMonthHeatmap}

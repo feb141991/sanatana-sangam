@@ -58,7 +58,7 @@ export default async function PathshalaPathPage({ params }: Props) {
           <p className="mt-4 text-sm capitalize" style={{ color: 'var(--text-dim)' }}>{path.tradition} · {path.difficulty}</p>
           <h1 className="mt-3 break-words font-serif text-3xl leading-tight sm:text-4xl">{path.title}</h1>
           <p className="mt-5 text-lg leading-relaxed" style={{ color: 'var(--text-dim)' }}>{path.description}</p>
-          <p className="mt-4 text-sm" style={{ color: 'var(--text-dim)' }}>{path.duration_days}-day suggested pace · {path.proRequired ? 'Shoonaya Pro' : 'Free course'}</p>
+          <p className="mt-4 text-sm" style={{ color: 'var(--text-dim)' }}>{path.duration_days}-day suggested pace · Open to everyone</p>
           <div className="mt-6 flex flex-wrap gap-4">
             <Link href={`/pathshala/${pathId}/lesson`} className="inline-flex min-h-11 items-center rounded-lg px-5 font-semibold" style={{ background: 'var(--brand-primary)', color: 'var(--divine-bg)' }}>Open lessons</Link>
             <Link href="/pathshala" className="inline-flex min-h-11 items-center underline underline-offset-4">Browse courses</Link>

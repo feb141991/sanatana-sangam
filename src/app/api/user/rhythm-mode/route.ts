@@ -25,23 +25,6 @@ export async function PATCH(req: NextRequest) {
     }
     const mode = body.mode;
 
-    if (mode === 'advanced') {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('is_pro')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-
-      if (!profile?.is_pro) {
-        return NextResponse.json(
-          { error: 'Advanced Dinacharya requires Pro' },
-          { status: 403 }
-        );
-      }
-    }
-
     const { error } = await supabase
       .from('profiles')
       .update({ nitya_rhythm_mode: mode } as never)

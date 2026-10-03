@@ -1,6 +1,15 @@
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { revokeAppleAuthorizationForUser } from '@/lib/apple-auth-service';
 
+export const DELETION_REASONS = [
+  { id: 'taking_break', label: 'Taking a temporary spiritual break' },
+  { id: 'too_many_notifications', label: 'Too many notifications or reminders' },
+  { id: 'privacy_concerns', label: 'Privacy or data concerns' },
+  { id: 'not_useful', label: 'Not finding the practice features helpful' },
+  { id: 'technical_issues', label: 'App performance or technical bugs' },
+  { id: 'other', label: 'Other reason', requireDetails: true },
+] as const;
+
 // Single source of truth for the account-deletion cool-off window, shared by
 // the request/cancel/status API routes (src/app/api/user/delete/*), the
 // account-deletion workflow, and the purge cron fallback so the window

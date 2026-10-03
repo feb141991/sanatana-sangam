@@ -9,7 +9,6 @@ import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives'
 interface DiscoverySectionProps {
   tradition: string | null;
   isDark: boolean;
-  isPro: boolean;
   pathshalaProgress: number;
   pathshalaDoneToday: boolean;
   pathshalaLabel: string;
@@ -31,7 +30,6 @@ const FEATURE_ICON_BG: Record<string, string> = {
 export function DiscoverySection({
   tradition,
   isDark,
-  isPro,
   pathshalaProgress,
   pathshalaDoneToday,
   pathshalaLabel,

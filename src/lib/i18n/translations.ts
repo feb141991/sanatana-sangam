@@ -48,7 +48,7 @@ export type TranslationKey =
   | 'library' | 'timer' | 'mixer' | 'deepMeaning' | 'dailyApp' | 'listen'
   | 'copy' | 'askAI' | 'transliteration' | 'currentKanda' | 'featuredPassages'
   | 'continueLesson' | 'enrollmentSuccess' | 'enrollmentError' | 'unenrollSuccess' | 'unenrollError' | 'resetSuccess' | 'resetError'
-  | 'proGatedIntermediate' | 'unlockWithPro' | 'pro' | 'copiedToClipboard' | 'unableToShare'
+  | 'copiedToClipboard' | 'unableToShare'
   | 'enroll' | 'start' | 'resume' | 'lesson' | 'mastered' | 'lessonsAhead' | 'done' | 'dayJourney'
   | 'recite' | 'startOver' | 'leave' | 'leaveThisPath' | 'lessons' | 'days' | 'sacredLearning'
   | 'explore' | 'paths' | 'loadingGurukul' | 'alsoEnrolled' | 'freeBeginnerPaths'
@@ -126,7 +126,7 @@ export type TranslationKey =
   | 'continueLesson' | 'viewDetails' | 'syllabus'
   | 'timed' | 'reveal' | 'tapRevealToCheck' | 'chapterBeingTranscribed'
   | 'sattvaModeActive' | 'micAccessDenied' | 'micAccessError' | 'recordingTooShort' | 'verseMarked'
-  | 'scoringFailed' | 'practiceRecordedOffline' | 'shrutiScore' | 'upgradeToShoonayaPro' | 'explainUnavailable' | 'listen' | 'copy' | 'enrolled' | 'complete' | 'exploreAll'
+  | 'scoringFailed' | 'practiceRecordedOffline' | 'shrutiScore' | 'explainUnavailable' | 'listen' | 'copy' | 'enrolled' | 'complete' | 'exploreAll'
   | 'pathCompleted' | 'lessonComplete' | 'couldNotSaveProgress' | 'nextLesson' | 'markLessonComplete' | 'nextVerse'
   | 'auto' | 'reciteFromMemory' | 'playing' | 'tapListenBack' | 'doneNextVerse'
   | 'yourRecording' | 'reRecord' | 'submitForShrutiScoring' | 'uploadingAndScoring' | 'markAndContinue' | 'scoringFailedConnection' | 'retry'
@@ -147,8 +147,6 @@ export type TranslationKey =
   | 'guidedAarti' | 'aartiStepOf' | 'previous' | 'nextStep' | 'completeAarti' | 'aartiSequence' | 'aartiComplete' | 'aartiCompleteDesc' | 'aartiCompleteQuote' | 'offerAgain' | 'donePranam' | 'aartiDoneLabel'
   // Daily Sadhana & Stotram specific
   | 'todayPractice' | 'dailyStripDesc' | 'openStatus' | 'shareVerse' | 'openVerse' | 'exploreFullHymn'
-  // Premium
-  | 'premiumPreviewTitle' | 'premiumHeadline' | 'premiumSubcopy' | 'premiumFreeBadge' | 'premiumDeeperRituals' | 'premiumDeeperRitualsTagline' | 'premiumDeeperRitualsF1' | 'premiumDeeperRitualsF2' | 'premiumDeeperRitualsF3' | 'premiumPersonalisedGuidance' | 'premiumPersonalisedGuidanceTagline' | 'premiumPersonalisedGuidanceF1' | 'premiumPersonalisedGuidanceF2' | 'premiumPersonalisedGuidanceF3' | 'premiumPracticeDepth' | 'premiumPracticeDepthTagline' | 'premiumPracticeDepthF1' | 'premiumPracticeDepthF2' | 'premiumPracticeDepthF3' | 'premiumKulSanskar' | 'premiumKulSanskarTagline' | 'premiumKulSanskarF1' | 'premiumKulSanskarF2' | 'premiumKulSanskarF3' | 'premiumComingSoon' | 'premiumComingSoonTagline' | 'premiumComingSoonF1' | 'premiumComingSoonF2' | 'premiumComingSoonF3' | 'premiumInDevelopment' | 'premiumAgreementText' | 'premiumButtonActivating' | 'premiumButtonStart' | 'premiumTrustLine';
 
 type TranslationMap = Record<TranslationKey, string>;
 
@@ -236,8 +234,6 @@ const en: TranslationMap = {
   enrollmentSuccess: 'Enrolled! Your journey begins. 🙏', enrollmentError: 'Could not enroll. Please try again.',
   unenrollSuccess: 'Removed from active paths. You can re-enroll anytime.', unenrollError: 'Could not unenroll. Please try again.',
   resetSuccess: 'Path reset! Starting fresh from Lesson 1. 🙏', resetError: 'Could not reset. Please try again.',
-  proGatedIntermediate: '🔒 Intermediate & Advanced paths require Shoonaya Pro. Upgrade to unlock all paths.',
-  unlockWithPro: 'Unlock with Pro', pro: 'Pro', copiedToClipboard: 'Copied to clipboard!', unableToShare: 'Unable to share',
   enroll: 'Enroll', resume: 'Resume', lesson: 'Lesson', mastered: 'mastered', lessonsAhead: 'lessons ahead',
   dayJourney: 'day journey', recite: 'Recite', startOver: 'Start Over', leave: 'Leave', leaveThisPath: 'Leave this path',
   lessons: 'lessons', days: 'days', sacredLearning: 'Sacred Learning', paths: 'Paths',
@@ -249,7 +245,7 @@ const en: TranslationMap = {
   scoringFailed: 'Scoring failed — please try again',
   practiceRecordedOffline: 'Practice recorded ✓ (Shruti scoring offline — engine loading)',
   shrutiScore: 'Shruti score',
-  upgradeToShoonayaPro: '🔒 Upgrade to Shoonaya Pro to unlock',
+  copiedToClipboard: 'Copied to clipboard!', unableToShare: 'Unable to share',
   explainUnavailable: 'Explain unavailable right now. Please try again shortly.',
 
   loadingGurukul: 'Loading your gurukul…', alsoEnrolled: 'Also enrolled', freeBeginnerPaths: 'Beginner paths are free',
@@ -580,41 +576,6 @@ const en: TranslationMap = {
   shareVerse: "Share Verse",
   openVerse: "Open Verse",
   exploreFullHymn: "Explore Full Hymn",
-  // Premium
-  premiumPreviewTitle: "Shoonaya Pro preview",
-  premiumHeadline: "A deeper\npractice awaits",
-  premiumSubcopy: "Shoonaya Pro is your invitation into a more intentional, supported, and meaningful spiritual life.",
-  premiumFreeBadge: "✦ Free to activate now · Pricing added later",
-  premiumDeeperRituals: "Deeper Daily Practice",
-  premiumDeeperRitualsTagline: "Your morning, sacred by design",
-  premiumDeeperRitualsF1: "Brahma Muhurta alert — timed to your location and tradition",
-  premiumDeeperRitualsF2: "All Nitya Karma plans + full journey view",
-  premiumDeeperRitualsF3: "Unlimited Dharma Mitra AI — your personal dharmic companion",
-  premiumPersonalisedGuidance: "Study & Wisdom",
-  premiumPersonalisedGuidanceTagline: "Knowledge without limits",
-  premiumPersonalisedGuidanceF1: "All Pathshala learning paths — at your own pace",
-  premiumPersonalisedGuidanceF2: "Full Bhakti library with audio recitation",
-  premiumPersonalisedGuidanceF3: "Quiz practice mode + in-depth analytics",
-  premiumPracticeDepth: "Progress & Community",
-  premiumPracticeDepthTagline: "Your journey, seen and celebrated",
-  premiumPracticeDepthF1: "Full Japa history with insights and export",
-  premiumPracticeDepthF2: "Mandali Pro circles + Seekers nearby",
-  premiumPracticeDepthF3: "Zenith badge — visible across the community",
-  premiumKulSanskar: "Kul & Sanskar",
-  premiumKulSanskarTagline: "Dharma flows through generations",
-  premiumKulSanskarF1: "Vansh family tree — unlimited generations",
-  premiumKulSanskarF2: "All 16 Sanskaras tracked + printable certificates",
-  premiumKulSanskarF3: "Shared Kul leaderboard and Kul Sabha",
-  premiumComingSoon: "Coming Soon",
-  premiumComingSoonTagline: "The sanctuary keeps growing",
-  premiumComingSoonF1: "Daily Rashiphal push alerts for your zodiac sign",
-  premiumComingSoonF2: "Sanskrit pronunciation with Bhashini native audio",
-  premiumComingSoonF3: "Seva matching & Tirtha pilgrimage guides",
-  premiumInDevelopment: "✦ In development",
-  premiumAgreementText: "I understand this is an early-access preview. Shoonaya Pro is free for now — pricing will be introduced later and I'll be notified before any charges apply.",
-  premiumButtonActivating: "Entering the sanctuary…",
-  premiumButtonStart: "✦ Begin Shoonaya Pro",
-  premiumTrustLine: "No credit card · No hidden charges · Your practice, uninterrupted",
 };
 
 const hi: TranslationMap = {
@@ -700,8 +661,6 @@ const hi: TranslationMap = {
   enrollmentSuccess: 'नामांकित! आपकी यात्रा शुरू होती है। 🙏', enrollmentError: 'नामांकन नहीं हो सका। कृपया पुनः प्रयास करें।',
   unenrollSuccess: 'सक्रिय पथों से हटा दिया गया। आप कभी भी फिर से नामांकन कर सकते हैं।', unenrollError: 'नामांकन रद्द नहीं हो सका। कृपया पुनः प्रयास करें।',
   resetSuccess: 'पथ रीसेट! पाठ 1 से फिर से शुरू। 🙏', resetError: 'रीसेट नहीं हो सका। कृपया पुनः प्रयास करें।',
-  proGatedIntermediate: '🔒 मध्यवर्ती और उन्नत पथों के लिए शून्य प्रो आवश्यक है। सभी पथों को अनलॉक करने के लिए अपग्रेड करें।',
-  unlockWithPro: 'प्रो के साथ अनलॉक करें', pro: 'प्रो', copiedToClipboard: 'क्लिपबोर्ड पर कॉपी किया गया!', unableToShare: 'साझा करने में असमर्थ',
   enroll: 'नामांकन करें', resume: 'फिर शुरू करें', lesson: 'पाठ', mastered: 'महारत हासिल की', lessonsAhead: 'पाठ आगे',
   dayJourney: 'दिन की यात्रा', recite: 'सुनाएं', startOver: 'फिर से शुरू करें', leave: 'छोड़ें', leaveThisPath: 'इस पथ को छोड़ें',
   lessons: 'पाठ', days: 'दिन',  sacredLearning: 'पवित्र शिक्षा', paths: 'मार्ग',
@@ -713,7 +672,7 @@ const hi: TranslationMap = {
   scoringFailed: 'स्कोरिंग विफल रही — कृपया पुनः प्रयास करें',
   practiceRecordedOffline: 'अभ्यास रिकॉर्ड किया गया ✓ (श्रुति स्कोरिंग ऑफ़लाइन)',
   shrutiScore: 'श्रुति स्कोर',
-  upgradeToShoonayaPro: '🔒 अनलॉक करने के लिए शून्य प्रो में अपग्रेड करें',
+  copiedToClipboard: 'क्लिपबोर्ड पर कॉपी किया गया!', unableToShare: 'साझा करने में असमर्थ',
   explainUnavailable: 'व्याख्या अभी उपलब्ध नहीं है। कृपया थोड़ी देर बाद फिर प्रयास करें।',
 
   loadingGurukul: 'आपका गुरुकुल लोड हो रहा है…', alsoEnrolled: 'इसमें भी नामांकित', freeBeginnerPaths: 'शुरुआती पथ मुफ्त हैं',
@@ -1043,41 +1002,6 @@ const hi: TranslationMap = {
   shareVerse: 'श्लोक साझा करें',
   openVerse: 'श्लोक खोलें',
   exploreFullHymn: 'पूरा स्तोत्र देखें',
-  // Premium
-  premiumPreviewTitle: "Shoonaya Pro पूर्वावलोकन",
-  premiumHeadline: "एक गहरा\nअभ्यास आपकी प्रतीक्षा कर रहा है",
-  premiumSubcopy: "Shoonaya Pro एक अधिक उद्देश्यपूर्ण, समर्थित और सार्थक आध्यात्मिक जीवन के लिए आपका निमंत्रण है।",
-  premiumFreeBadge: "✦ अभी मुफ्त में सक्रिय करें · मूल्य निर्धारण बाद में",
-  premiumDeeperRituals: "गहरे अनुष्ठान",
-  premiumDeeperRitualsTagline: "आपकी सुबह, पवित्र रूप से डिज़ाइन की गई",
-  premiumDeeperRitualsF1: "ब्रह्म मुहूर्त अलर्ट — आपके स्थान के अनुसार समयबद्ध",
-  premiumDeeperRitualsF2: "अपने नित्य कर्म के हर चरण को वैयक्तिकृत करें",
-  premiumDeeperRitualsF3: "आपके चुने हुए समय पर कस्टम साधना अनुस्मारक",
-  premiumPersonalisedGuidance: "व्यक्तिगत मार्गदर्शन",
-  premiumPersonalisedGuidanceTagline: "आपके चारों ओर आकार लिया गया एक मार्ग",
-  premiumPersonalisedGuidanceF1: "7-दिन और 21-दिन की निर्देशित साधना योजनाएं",
-  premiumPersonalisedGuidanceF2: "सात्विक एआई से अनुकूली अभ्यास सुझाव",
-  premiumPersonalisedGuidanceF3: "साप्ताहिक आध्यात्मिक समीक्षा और विकास अंतर्दृष्टि",
-  premiumPracticeDepth: "अभ्यास की गहराई",
-  premiumPracticeDepthTagline: "हर मंत्र। हर मील का पत्थर",
-  premiumPracticeDepthF1: "अंतर्दृष्टि और समय-सीमा के साथ पूर्ण जप इतिहास",
-  premiumPracticeDepthF2: "स्ट्रीक ट्रैकिंग, मील के पत्थर और उत्सव",
-  premiumPracticeDepthF3: "सभी पाठशाला अध्ययन पथ अनलॉक किए गए",
-  premiumKulSanskar: "कुल और संस्कार",
-  premiumKulSanskarTagline: "धर्म पीढ़ियों से बहता है",
-  premiumKulSanskarF1: "पारिवारिक अनुष्ठानों और कुल मील के पत्थर के लिए स्मार्ट अनुस्मारक",
-  premiumKulSanskarF2: "हर परिवार के सदस्य के लिए सभी 16 संस्कार ट्रैक किए गए",
-  premiumKulSanskarF3: "पितृ पक्ष और पैतृक स्मरण अनुस्मारक",
-  premiumComingSoon: "जल्द आ रहा है",
-  premiumComingSoonTagline: "अभयारण्य आपके साथ बढ़ता है",
-  premiumComingSoonF1: "धर्म मित्र एआई — आपका व्यक्तिगत धार्मिक साथी",
-  premiumComingSoonF2: "भाषिणी ऑडियो के साथ संस्कृत उच्चारण",
-  premiumComingSoonF3: "लाइव दर्शन अलर्ट, तीर्थयात्रा मार्गदर्शिकाएँ और सेवा स्मरण",
-  premiumInDevelopment: "✦ विकास में",
-  premiumAgreementText: "मैं समझता हूं कि यह एक प्रारंभिक-पहुंच पूर्वावलोकन है। Shoonaya Pro अभी मुफ्त है - मूल्य निर्धारण बाद में पेश किया जाएगा और कोई भी शुल्क लागू होने से पहले मुझे सूचित किया जाएगा।",
-  premiumButtonActivating: "अभयारण्य में प्रवेश कर रहे हैं...",
-  premiumButtonStart: "✦ Shoonaya Pro शुरू करें",
-  premiumTrustLine: "कोई क्रेडिट कार्ड नहीं · कोई छिपे हुए शुल्क नहीं · आपका अभ्यास, निर्बाध",
 };
 
 const pa: TranslationMap = {
@@ -1163,8 +1087,6 @@ const pa: TranslationMap = {
   enrollmentSuccess: 'ਨਾਮਾਂਕਿਤ! ਤੁਹਾਡੀ ਯਾਤਰਾ ਸ਼ੁਰੂ ਹੁੰਦੀ ਹੈ। 🙏', enrollmentError: 'ਨਾਮਾਂਕਣ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
   unenrollSuccess: 'ਸਰਗਰਮ ਮਾਰਗਾਂ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ। ਤੁਸੀਂ ਕਦੇ ਵੀ ਦੁਬਾਰਾ ਨਾਮਾਂਕਣ ਕਰ ਸਕਦੇ ਹੋ।', unenrollError: 'ਨਾਮਾਂਕਣ ਰੱਦ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
   resetSuccess: 'ਮਾਰਗ ਰੀਸੈਟ! ਪਾਠ 1 ਤੋਂ ਦੁਬਾਰਾ ਸ਼ੁਰੂ। 🙏', resetError: 'ਰੀਸੈਟ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
-  proGatedIntermediate: '🔒 ਮੱਧਵਰਤੀ ਅਤੇ ਉੱਨਤ ਮਾਰਗਾਂ ਲਈ ਸਿਫ਼ਰ ਪ੍ਰੋ ਦੀ ਲੋੜ ਹੈ। ਸਾਰੇ ਮਾਰਗਾਂ ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਅੱਪਗ੍ਰੇਡ ਕਰੋ।',
-  unlockWithPro: 'ਪ੍ਰੋ ਨਾਲ ਅਨਲੌਕ ਕਰੋ', pro: 'ਪ੍ਰੋ', copiedToClipboard: 'ਕਲਿੱਪਬੋਰਡ ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ!', unableToShare: 'ਸਾਂਝਾ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ',
   enroll: 'ਨਾਮਾਂਕਣ ਕਰੋ', resume: 'ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ', lesson: 'ਪਾਠ', mastered: 'ਮੁਹਾਰਤ ਹਾਸਲ ਕੀਤੀ', lessonsAhead: 'ਪਾਠ ਅੱਗੇ',
   dayJourney: 'ਦਿਨ ਦੀ ਯਾਤਰਾ', recite: 'ਸੁਣਾਓ', startOver: 'ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ', leave: 'ਛੱਡੋ', leaveThisPath: 'ਇਸ ਮਾਰਗ ਨੂੰ ਛੱਡੋ',
   lessons: 'ਪਾਠ', days: 'ਦਿਨ',  sacredLearning: 'ਪਵਿੱਤਰ ਸਿੱਖਿਆ', paths: 'ਮਾਰਗ',
@@ -1176,7 +1098,7 @@ const pa: TranslationMap = {
   scoringFailed: 'ਸਕੋਰਿੰਗ ਅਸਫਲ ਰਹੀ — ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ',
   practiceRecordedOffline: 'ਅਭਿਆਸ ਰਿਕਾਰਡ ਕੀਤਾ ਗਿਆ ✓ (ਸ਼ਰੁਤੀ ਸਕੋਰਿੰਗ ਔਫਲਾਈਨ)',
   shrutiScore: 'ਸ਼ਰੁਤੀ ਸਕੋਰ',
-  upgradeToShoonayaPro: '🔒 ਅਨਲੌਕ ਕਰਨ ਲਈ ਸ਼ੂਨਯਾ ਪ੍ਰੋ ਵਿੱਚ ਅੱਪਗ੍ਰੇਡ ਕਰੋ',
+  copiedToClipboard: 'ਕਲਿੱਪਬੋਰਡ ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ!', unableToShare: 'ਸਾਂਝਾ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ',
   explainUnavailable: 'ਵਿਆਖਿਆ ਇਸ ਵੇਲੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਸਮੇਂ ਬਾਅਦ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
 
   loadingGurukul: 'ਤੁਹਾਡਾ ਗੁਰੂਕੁਲ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…', alsoEnrolled: 'ਇਸ ਵਿੱਚ ਵੀ ਨਾਮਾਂਕਿਤ', freeBeginnerPaths: 'ਸ਼ੁਰੂਆਤੀ ਮਾਰਗ ਮੁਫਤ ਹਨ',
@@ -1506,41 +1428,6 @@ const pa: TranslationMap = {
   shareVerse: 'ਸ਼ਲੋਕ ਸਾਂਝਾ ਕਰੋ',
   openVerse: 'ਸ਼ਲੋਕ ਖੋਲ੍ਹੋ',
   exploreFullHymn: 'ਪੂਰਾ ਸਤੋਤਰ ਦੇਖੋ',
-  // Premium
-  premiumPreviewTitle: "Shoonaya Pro ਪੂਰਵਦਰਸ਼ਨ",
-  premiumHeadline: "ਇੱਕ ਡੂੰਘਾ\nਅਭਿਆਸ ਤੁਹਾਡੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ",
-  premiumSubcopy: "Shoonaya Pro ਇੱਕ ਵਧੇਰੇ ਉਦੇਸ਼ਪੂਰਨ, ਸਮਰਥਿਤ ਅਤੇ ਸਾਰਥਕ ਅਧਿਆਤਮਿਕ ਜੀਵਨ ਲਈ ਤੁਹਾਡਾ ਸੱਦਾ ਹੈ।",
-  premiumFreeBadge: "✦ ਹੁਣੇ ਮੁਫ਼ਤ ਵਿੱਚ ਸਰਗਰਮ ਕਰੋ · ਕੀਮਤ ਬਾਅਦ ਵਿੱਚ",
-  premiumDeeperRituals: "ਡੂੰਘੇ ਰੀਤੀ ਰਿਵਾਜ",
-  premiumDeeperRitualsTagline: "ਤੁਹਾਡੀ ਸਵੇਰ, ਪਵਿੱਤਰ ਰੂਪ ਵਿੱਚ ਤਿਆਰ ਕੀਤੀ ਗਈ",
-  premiumDeeperRitualsF1: "ਬ੍ਰਹਮਾ ਮੁਹੂਰਤ ਅਲਰਟ - ਤੁਹਾਡੇ ਸਥਾਨ ਅਨੁਸਾਰ",
-  premiumDeeperRitualsF2: "ਆਪਣੇ ਨਿਤ ਕਰਮ ਦੇ ਹਰ ਕਦਮ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ",
-  premiumDeeperRitualsF3: "ਤੁਹਾਡੇ ਚੁਣੇ ਹੋਏ ਸਮੇਂ 'ਤੇ ਕਸਟਮ ਸਾਧਨਾ ਰੀਮਾਈਂਡਰ",
-  premiumPersonalisedGuidance: "ਵਿਅਕਤੀਗਤ ਮਾਰਗਦਰਸ਼ਨ",
-  premiumPersonalisedGuidanceTagline: "ਤੁਹਾਡੇ ਆਲੇ ਦੁਆਲੇ ਬਣਾਇਆ ਗਿਆ ਇੱਕ ਮਾਰਗ",
-  premiumPersonalisedGuidanceF1: "7-ਦਿਨ ਅਤੇ 21-ਦਿਨ ਦੀ ਗਾਈਡਡ ਸਾਧਨਾ ਯੋਜਨਾਵਾਂ",
-  premiumPersonalisedGuidanceF2: "ਸਾਤਵਿਕ ਏਆਈ ਤੋਂ ਅਨੁਕੂਲ ਅਭਿਆਸ ਸੁਝਾਅ",
-  premiumPersonalisedGuidanceF3: "ਹਫਤਾਵਾਰੀ ਅਧਿਆਤਮਿਕ ਸਮੀਖਿਆ ਅਤੇ ਵਿਕਾਸ ਦੀ ਜਾਣਕਾਰੀ",
-  premiumPracticeDepth: "ਅਭਿਆਸ ਦੀ ਡੂੰਘਾਈ",
-  premiumPracticeDepthTagline: "ਹਰ ਮੰਤਰ। ਹਰ ਮੀਲ ਪੱਥਰ",
-  premiumPracticeDepthF1: "ਜਾਣਕਾਰੀ ਅਤੇ ਸਮਾਂ-ਸੀਮਾਵਾਂ ਦੇ ਨਾਲ ਪੂਰਾ ਜਪ ਇਤਿਹਾਸ",
-  premiumPracticeDepthF2: "ਸਟ੍ਰੀਕ ਟ੍ਰੈਕਿੰਗ, ਮੀਲ ਪੱਥਰ, ਅਤੇ ਜਸ਼ਨ",
-  premiumPracticeDepthF3: "ਸਾਰੇ ਪਾਠਸ਼ਾਲਾ ਅਧਿਐਨ ਮਾਰਗ ਅਨਲੌਕ ਕੀਤੇ ਗਏ",
-  premiumKulSanskar: "ਕੁਲ ਅਤੇ ਸੰਸਕਾਰ",
-  premiumKulSanskarTagline: "ਧਰਮ ਪੀੜ੍ਹੀਆਂ ਰਾਹੀਂ ਵਹਿੰਦਾ ਹੈ",
-  premiumKulSanskarF1: "ਪਰਿਵਾਰਕ ਰੀਤੀ-ਰਿਵਾਜਾਂ ਅਤੇ ਕੁਲ ਮੀਲ ਪੱਥਰਾਂ ਲਈ ਸਮਾਰਟ ਰੀਮਾਈਂਡਰ",
-  premiumKulSanskarF2: "ਹਰੇਕ ਪਰਿਵਾਰਕ ਮੈਂਬਰ ਲਈ ਸਾਰੇ 16 ਸੰਸਕਾਰ ਟ੍ਰੈਕ ਕੀਤੇ ਗਏ",
-  premiumKulSanskarF3: "ਪਿਤਰ ਪਕਸ਼ ਅਤੇ ਜੱਦੀ ਯਾਦਗਾਰ ਰੀਮਾਈਂਡਰ",
-  premiumComingSoon: "ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ",
-  premiumComingSoonTagline: "ਅਸਥਾਨ ਤੁਹਾਡੇ ਨਾਲ ਵਧਦਾ ਹੈ",
-  premiumComingSoonF1: "ਧਰਮ ਮਿੱਤਰ ਏਆਈ — ਤੁਹਾਡਾ ਨਿੱਜੀ ਧਾਰਮਿਕ ਸਾਥੀ",
-  premiumComingSoonF2: "ਭਾਸ਼ਿਨੀ ਆਡੀਓ ਦੇ ਨਾਲ ਸੰਸਕ੍ਰਿਤ ਉਚਾਰਨ",
-  premiumComingSoonF3: "ਲਾਈਵ ਦਰਸ਼ਨ ਅਲਰਟ, ਤੀਰਥ ਯਾਤਰਾ ਗਾਈਡ ਅਤੇ ਸੇਵਾ ਯਾਦ-ਦਿਵਾਉਣੇ",
-  premiumInDevelopment: "✦ ਵਿਕਾਸ ਵਿੱਚ",
-  premiumAgreementText: "ਮੈਂ ਸਮਝਦਾ ਹਾਂ ਕਿ ਇਹ ਇੱਕ ਸ਼ੁਰੂਆਤੀ-ਪਹੁੰਚ ਪੂਰਵਦਰਸ਼ਨ ਹੈ। Shoonaya Pro ਹੁਣੇ ਮੁਫ਼ਤ ਹੈ - ਕੀਮਤਾਂ ਬਾਅਦ ਵਿੱਚ ਪੇਸ਼ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ ਅਤੇ ਕੋਈ ਵੀ ਖਰਚੇ ਲਾਗੂ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਮੈਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।",
-  premiumButtonActivating: "ਅਸਥਾਨ ਵਿੱਚ ਦਾਖਲ ਹੋ ਰਿਹਾ ਹੈ...",
-  premiumButtonStart: "✦ Shoonaya Pro ਸ਼ੁਰੂ ਕਰੋ",
-  premiumTrustLine: "ਕੋਈ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਨਹੀਂ · ਕੋਈ ਲੁਕਵੇਂ ਖਰਚੇ ਨਹੀਂ · ਤੁਹਾਡਾ ਅਭਿਆਸ, ਨਿਰਵਿਘਨ",
 };
 
 export const TRANSLATIONS: Record<AppLang, TranslationMap> = { en, hi, pa };

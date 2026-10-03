@@ -20,13 +20,11 @@ export default async function PracticePage({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_pro, tradition, full_name')
+    .select('tradition, full_name')
     .eq('id', user.id)
     .single();
 
-  if (!profile?.is_pro) {
-    redirect('/quiz?upgrade=1');
-  }
+  if (!profile) redirect('/login');
 
   const { topic, difficulty } = await searchParams;
 

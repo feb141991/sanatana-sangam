@@ -30,7 +30,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronDown, Flame, CheckCircle2, Circle, Loader2,
-  Info, Lock, Trophy, Sunrise, Star, X, Settings2, Plus, Bell, BarChart2,
+  Info, Lock, Trophy, Sunrise, X, Settings2, Plus, Bell, BarChart2,
   GripVertical,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -41,8 +41,6 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { getAshramaDuties, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { localSpiritualDate, buildSpiritualDateRange } from '@/lib/sacred-time';
 import { calculatePanchang, getTodaySpiritualPulses, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
-import { usePremium } from '@/hooks/usePremium';
-const PremiumActivateModal = dynamic(() => import('@/components/premium/PremiumActivateModal'), { ssr: false });
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 const MilestoneShareCard = dynamic(() => import('@/components/home/MilestoneShareCard'), { ssr: false });
@@ -526,14 +524,13 @@ async function scheduleMorningAlert(time: string) {
 
 // ── Nitya Customization Sheet ─────────────────────────────────────────────────
 function NityaCustomSheet({
-  userId, steps, custom: initialCustom, accent, isPro,
+  userId, steps, custom: initialCustom, accent,
   onSave, onClose,
 }: {
   userId: string;
   steps: NityaSequenceStep[];
   custom: NityaCustom;
   accent: string;
-  isPro: boolean;
   onSave: (updated: NityaCustom) => void;
   onClose: () => void;
 }) {
@@ -695,7 +692,7 @@ function NityaCustomSheet({
             </div>
           </div>
 
-          {/* Extra steps (Pro only) */}
+          {/* Custom steps */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Plus size={14} style={{ color: accent }} />
@@ -818,82 +815,6 @@ function StreakCard({ streak, accent }: { streak: NityaKarmaStreak; accent: stri
         </p>
       </div>
     </div>
-  );
-}
-
-// ── Pro Upgrade Sheet ────────────────────────────────────────────────────────
-function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: string }) {
-  const PRO_FEATURES = [
-    '🔥 30-day streak analytics & heatmap',
-    '🤖 AI-personalised sadhana sequences',
-    '📿 Full Japa history & insights',
-    '🕉️ Sattvic Mode — guided prānāyāma & kīrtana',
-    '📅 Panchang-aware vrat & sandhyā reminders',
-    '☬ Tradition-specific step variations',
-  ];
-  return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-end"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      style={{ background: 'rgba(0,0,0,0.72)' }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 280 }}
-        className="w-full max-w-2xl mx-auto rounded-t-3xl p-6 space-y-4"
-        style={{
-          background: 'linear-gradient(180deg,#1a1408 0%,#110e04 100%)',
-          border: '1px solid rgba(197, 160, 89,0.22)',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Handle + close */}
-        <div className="flex items-center justify-between">
-          <div className="w-10 h-1 rounded-full bg-[var(--surface-soft)] mx-auto" />
-          <button onClick={onClose} className="absolute right-5 top-5 w-11 h-11 rounded-full flex items-center justify-center"
-            style={{ background: 'rgba(255,255,255,0.08)' }}>
-            <X size={16} className="text-white/50" />
-          </button>
-        </div>
-
-        {/* Hero */}
-        <div className="text-center space-y-2 pt-2">
-          <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 border border-amber-400/30 bg-amber-400/10 mb-2">
-            <Star size={12} className="text-amber-400 fill-amber-400" />
-            <span className="text-xs font-bold text-amber-400">SANGAM PRO</span>
-          </div>
-          <h2 className="font-bold text-2xl text-[color:var(--brand-ink)]">Unlock Your Full Journey</h2>
-          <p className="text-sm text-[color:var(--brand-muted)]">Everything you need for a deep, sustained sadhana.</p>
-        </div>
-
-        {/* Features */}
-        <div className="space-y-2">
-          {PRO_FEATURES.map(f => (
-            <div key={f} className="flex items-center gap-3 rounded-xl px-3 py-2.5 border border-[#C5A059]/15"
-              style={{ background: `${accent}0a` }}>
-              <span className="text-sm text-[color:var(--brand-ink)]">{f}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          className="w-full py-4 rounded-2xl font-bold text-base"
-          style={{
-            background: `linear-gradient(135deg, ${accent}, ${accent}cc)`,
-            color: '#1c1208',
-            boxShadow: `0 4px 28px ${accent}44`,
-          }}
-        >
-          Upgrade to Shoonaya Pro →
-        </motion.button>
-        <button onClick={onClose} className="w-full py-2 text-sm text-[color:var(--brand-muted)] text-center">
-          Maybe later
-        </button>
-      </motion.div>
-    </motion.div>
   );
 }
 
@@ -1051,7 +972,6 @@ interface Props {
   transliterationLanguage?: string | null;
   showTransliteration?: boolean;
   scriptureScript?: string | null;
-  isPro?:        boolean;
   nityaRhythmMode?: string | null;
   nityaSectionsEnabled?: Partial<NityaSectionsEnabled> | null;
 }
@@ -1070,7 +990,6 @@ export default function NityaKarmaClient({
   transliterationLanguage,
   showTransliteration,
   scriptureScript,
-  isPro: initialIsPro = false,
   nityaRhythmMode,
   nityaSectionsEnabled,
 }: Props) {
@@ -1083,8 +1002,6 @@ export default function NityaKarmaClient({
   const { engine, isReady } = useEngine();
   const meta                = getTraditionMeta(tradition);
   const accent              = meta.accentColour;
-  const livePremium         = usePremium();
-  const isPro               = initialIsPro || livePremium;
   const rhythmMode          = normalizeNityaRhythmMode(nityaRhythmMode);
   const _sectionsEnabled    = normalizeNityaSectionsEnabled(nityaSectionsEnabled);
   const nityaSubtitle       = rhythmMode === 'advanced' ? 'Nitya Karma · Advanced'
@@ -1227,7 +1144,6 @@ export default function NityaKarmaClient({
   const [busySteps,     setBusySteps]    = useState<Set<string>>(new Set());
   const [justCompleted, setJustCompleted]= useState<string | null>(null);
   const [dayRecords,    setDayRecords]   = useState<DayRecord[]>([]);
-  const [showProSheet,  setShowProSheet] = useState(false);
   const [showRhythmSheet, setShowRhythmSheet] = useState(false);
   const [showCustom,    setShowCustom]   = useState(false);
   const [custom,        setCustom]       = useState<NityaCustom>({ labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] });
@@ -1552,12 +1468,12 @@ export default function NityaKarmaClient({
   // useEffect hooks (that list displaySteps as a dependency) to re-run every render.
   const displaySteps: NityaSequenceStep[] = useMemo(() => [
     ...applyCustomLabels(steps, custom),
-    ...(isPro ? custom.extraSteps.map(es => ({
+    ...custom.extraSteps.map(es => ({
       id: es.id, label: es.label, icon: es.icon, minutes: es.minutes,
       description: 'Custom practice', completed: doneCustomIds.has(es.id),
-    } as NityaSequenceStep)) : []),
+    } as NityaSequenceStep)),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [steps, custom, isPro, doneCustomIds]);
+  ], [steps, custom, doneCustomIds]);
 
   const displayStepsRef = useRef(displaySteps);
   useEffect(() => { displayStepsRef.current = displaySteps; }, [displaySteps]);
@@ -1584,9 +1500,9 @@ export default function NityaKarmaClient({
   const middaySteps = buildExtendedSteps(MIDDAY_STEPS);
   const eveningSteps = buildExtendedSteps(EVENING_STEPS);
   const nightSteps = buildExtendedSteps(NIGHT_STEPS);
-  const shouldShowMidday = rhythmMode === 'full_day' || (rhythmMode === 'advanced' && isPro);
-  const shouldShowEvening = rhythmMode === 'full_day' || (rhythmMode === 'advanced' && isPro);
-  const shouldShowNight = rhythmMode === 'advanced' && isPro;
+  const shouldShowMidday = rhythmMode === 'full_day' || rhythmMode === 'advanced';
+  const shouldShowEvening = rhythmMode === 'full_day' || rhythmMode === 'advanced';
+  const shouldShowNight = rhythmMode === 'advanced';
   const activeExtendedSteps = [
     ...(shouldShowMidday ? middaySteps : []),
     ...(shouldShowEvening ? eveningSteps : []),
@@ -1799,7 +1715,7 @@ export default function NityaKarmaClient({
     });
   }
 
-  function RhythmUpgradeSheet() {
+  function RhythmModeInfoSheet() {
     return createPortal(
       <AnimatePresence>
         <motion.div
@@ -1993,52 +1909,38 @@ export default function NityaKarmaClient({
           <p className="text-xs text-[color:var(--brand-muted)]">{subtitle}</p>
         </div>
         <div className="flex items-center gap-2">
-          {streak && streak.current_streak > 0 && isPro && (
+          {streak && streak.current_streak > 0 && (
             <div className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-[#C5A059]/15"
               style={{ background: `${accent}14` }}>
               <Flame size={14} style={{ color: accent }} />
               <span className="text-xs font-semibold" style={{ color: accent }}>{streak.current_streak}d</span>
             </div>
           )}
-          {isPro ? (
-            <>
-              <Link href="/nitya-karma/insights"
-                className="w-9 h-9 rounded-full flex items-center justify-center border border-[#C5A059]/15"
-                style={{ background: `${accent}14` }}
-                title="Sadhana Insights"
-              >
-                <BarChart2 size={16} style={{ color: accent }} />
-              </Link>
-              {displayStreak >= 7 && (
-                <button
-                  type="button"
-                  onClick={shareMonthlyReportCard}
-                  disabled={sharingMonthCard}
-                  className="h-9 rounded-full flex items-center gap-1.5 px-3 border border-[#C5A059]/15 text-xs font-semibold"
-                  style={{ background: `${accent}14`, color: accent }}
-                  title="Share monthly report"
-                >
-                  <span aria-hidden="true">↗</span>
-                  {sharingMonthCard ? 'Sharing' : 'Share month'}
-                </button>
-              )}
-              {nityaScreen === 'dincharya' && (
-                <button onClick={() => setShowCustom(true)}
-                  className="w-9 h-9 rounded-full flex items-center justify-center border border-[#C5A059]/15"
-                  style={{ background: `${accent}14` }}>
-                  <Settings2 size={15} style={{ color: accent }} />
-                </button>
-              )}
-              <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/30 bg-amber-400/10">
-                <Star size={12} className="text-amber-400 fill-amber-400" />
-                <span className="text-[10px] font-bold text-amber-400">PRO</span>
-              </div>
-            </>
-          ) : (
-            <button onClick={() => setShowProSheet(true)}
-              className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border border-amber-400/20 bg-amber-400/8">
-              <Star size={11} className="text-amber-400/70" />
-              <span className="text-[10px] font-semibold text-amber-400/70">Pro</span>
+          <Link href="/nitya-karma/insights"
+            className="w-9 h-9 rounded-full flex items-center justify-center border border-[#C5A059]/15"
+            style={{ background: `${accent}14` }}
+            title="Sadhana Insights"
+          >
+            <BarChart2 size={16} style={{ color: accent }} />
+          </Link>
+          {displayStreak >= 7 && (
+            <button
+              type="button"
+              onClick={shareMonthlyReportCard}
+              disabled={sharingMonthCard}
+              className="h-9 rounded-full flex items-center gap-1.5 px-3 border border-[#C5A059]/15 text-xs font-semibold"
+              style={{ background: `${accent}14`, color: accent }}
+              title="Share monthly report"
+            >
+              <span aria-hidden="true">↗</span>
+              {sharingMonthCard ? 'Sharing' : 'Share month'}
+            </button>
+          )}
+          {nityaScreen === 'dincharya' && (
+            <button onClick={() => setShowCustom(true)}
+              className="w-9 h-9 rounded-full flex items-center justify-center border border-[#C5A059]/15"
+              style={{ background: `${accent}14` }}>
+              <Settings2 size={15} style={{ color: accent }} />
             </button>
           )}
         </div>
@@ -2082,20 +1984,6 @@ export default function NityaKarmaClient({
                 </p>
               </div>
               <div className="pointer-events-auto">
-                {isPro ? (
-                  <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border bg-[var(--surface-soft)] backdrop-blur-md"
-                    style={{ borderColor: 'var(--border-subtle)' }}>
-                    <Star size={12} style={{ color: accent, fill: accent }} />
-                    <span className="text-[10px] font-bold" style={{ color: accent }}>PRO</span>
-                  </div>
-                ) : (
-                  <button onClick={() => setShowProSheet(true)}
-                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border bg-[var(--surface-soft)] backdrop-blur-md"
-                    style={{ borderColor: 'var(--border-subtle)' }}>
-                    <Star size={11} className="text-[color:var(--brand-muted)]" />
-                    <span className="text-[10px] font-semibold text-[color:var(--brand-muted)]">Pro</span>
-                  </button>
-                )}
               </div>
             </div>
 
@@ -2107,7 +1995,6 @@ export default function NityaKarmaClient({
               totalSteps={totalSteps}
               progressPct={progressPct}
               streak={streak}
-              isPro={isPro}
               panchang={panchang}
               vataDays={vataDays}
             />
@@ -2225,89 +2112,66 @@ export default function NityaKarmaClient({
                 <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
               </motion.button>
 
-              {/* ② Sadhana Patha — Guided Plans — PRO (direct nav to /nitya-karma/plans) */}
+              {/* ② Sadhana Patha — Guided Plans */}
               <motion.button
-                onClick={() => isPro ? router.push('/nitya-karma/plans') : setShowProSheet(true)}
+                onClick={() => router.push('/nitya-karma/plans')}
                 whileTap={{ scale: 0.975 }}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.10, duration: 0.35 }}
                 className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 bg-[var(--surface-soft)]"
-                style={{ borderColor: isPro ? `${accent}28` : 'rgba(251,191,36,0.18)' }}
+                style={{ borderColor: `${accent}28` }}
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
-                  style={{ background: isPro ? `${accent}18` : 'rgba(251,191,36,0.10)' }}>
+                  style={{ background: `${accent}18` }}>
                   📿
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Sadhana Patha</p>
-                    {!isPro && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-400 flex items-center gap-0.5">
-                        <Lock size={8} /> Pro
-                      </span>
-                    )}
                   </div>
                   <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
                     7 & 21-day guided plans · structured daily practices
                   </p>
                 </div>
-                {isPro
-                  ? <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
-                  : <Lock size={16} className="text-amber-400/60 shrink-0" />
-                }
+                <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
               </motion.button>
 
-              {/* ③ Ashrama Dharma — PRO */}
+              {/* ③ Ashrama Dharma */}
               <motion.button
-                onClick={() => isPro ? goToScreen('ashrama') : setShowProSheet(true)}
+                onClick={() => goToScreen('ashrama')}
                 whileTap={{ scale: 0.975 }}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15, duration: 0.35 }}
                 className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 bg-[var(--surface-soft)]"
-                style={{ borderColor: isPro ? (localLifeStage ? `${(_stageMeta?.accent ?? accent)}28` : `${accent}28`) : 'rgba(251,191,36,0.18)' }}
+                style={{ borderColor: localLifeStage ? `${(_stageMeta?.accent ?? accent)}28` : `${accent}28` }}
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
-                  style={{ background: isPro ? `${(_stageMeta?.accent ?? accent)}18` : 'rgba(251,191,36,0.10)' }}>
-                  {isPro && _stageMeta
-  ? <SacredIcon name={_stageMeta.icon} size={20} strokeWidth={1.7} />
-  : <SacredIcon name="kul" size={20} strokeWidth={1.7} />}
+                  style={{ background: `${(_stageMeta?.accent ?? accent)}18` }}>
+                  {_stageMeta
+                    ? <SacredIcon name={_stageMeta.icon} size={20} strokeWidth={1.7} />
+                    : <SacredIcon name="kul" size={20} strokeWidth={1.7} />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="font-bold text-[15px] text-[color:var(--brand-ink)]">Ashrama Dharma</p>
-                    {isPro
-                      ? (!localLifeStage
-                        ? <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-400">Set up</span>
-                        : null)
-                      : <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-400 flex items-center gap-0.5">
-                          <Lock size={8} /> Pro
-                        </span>
-                    }
+                    {!localLifeStage && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-400">Set up</span>}
                   </div>
                   <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                    {isPro && _stageMeta
+                    {_stageMeta
                       ? `${_stageMeta.label} duties · ${ashramaDoneCount}/${_duties.length} reflected today`
                       : 'Life-stage duties personalised to your Ashrama'}
                   </p>
                 </div>
-                {isPro
-                  ? <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
-                  : <Lock size={16} className="text-amber-400/60 shrink-0" />
-                }
+                <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
               </motion.button>
 
               {/* Engine info */}
               <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 px-4 py-3 flex items-start gap-2.5">
                 <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
                 <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
-                  Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
-                  <button onClick={() => setShowProSheet(true)}
-                    className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
-                    Shoonaya Pro
-                  </button>
-                  {' '}unlocks AI-personalised sequences, Ashrama Dharma, and Guided Plans.
+                  Your sequence adapts to today&apos;s tithi, nakshatra, and vrat. Guided plans and life-stage practices are available to everyone.
                 </p>
               </div>
               </div>
@@ -2476,7 +2340,7 @@ export default function NityaKarmaClient({
                     style={{ background: `${accent}18`, color: accent }}>Japa Counter</Link>
                   <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
                     style={{ background: `${accent}18`, color: accent }}>Pathshala</Link>
-                  <button onClick={() => isPro ? goToScreen('journey') : setShowProSheet(true)}
+                  <button onClick={() => goToScreen('journey')}
                     className="px-4 py-2 rounded-xl text-xs font-semibold"
                     style={{ background: `${accent}18`, color: accent }}>✦ Guided Plans</button>
                 </div>
@@ -2577,7 +2441,7 @@ export default function NityaKarmaClient({
                 </p>
               </div>
               <span className="text-[10px] font-bold rounded-full px-2 py-1" style={{ background: `${accent}14`, color: accent }}>
-                {rhythmMode === 'advanced' && isPro ? 'Advanced' : 'Full-Day'}
+                {rhythmMode === 'advanced' ? 'Advanced' : 'Full-Day'}
               </span>
             </div>
           )}
@@ -2836,18 +2700,7 @@ export default function NityaKarmaClient({
               <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 px-4 py-3 flex items-start gap-2.5">
                 <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
                 <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
-                  {isPro ? (
-                    <>Your sequence adapts to today&apos;s tithi, nakshatra, and vrat. Guided plans and analytics are active on this account.</>
-                  ) : (
-                    <>
-                      Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
-                      <button onClick={() => setShowProSheet(true)}
-                        className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
-                        Shoonaya Pro
-                      </button>
-                      {' '}unlocks AI-personalised sequences, full analytics, and all Guided Plans.
-                    </>
-                  )}
+                  Your sequence adapts to today&apos;s tithi, nakshatra, and vrat. Guided plans, analytics, and custom practices are available to everyone.
                 </p>
               </div>
             </div>
@@ -2857,15 +2710,13 @@ export default function NityaKarmaClient({
       </AnimatePresence>
 
       {/* Modals */}
-      <PremiumActivateModal open={showProSheet} onClose={() => setShowProSheet(false)} />
-      {showRhythmSheet && <RhythmUpgradeSheet />}
-      {showCustom && isPro && (
+      {showRhythmSheet && <RhythmModeInfoSheet />}
+      {showCustom && (
         <NityaCustomSheet
           userId={userId}
           steps={steps}
           custom={custom}
           accent={accent}
-          isPro={isPro}
           onSave={updated => setCustom(updated)}
           onClose={() => setShowCustom(false)}
         />

@@ -8,7 +8,6 @@ interface CommunitySectionProps {
   userId: string;
   userName?: string;
   tradition: string | null;
-  isPro: boolean;
   sevaScore: number;
   isDark: boolean;
   onInviteClick?: () => void;

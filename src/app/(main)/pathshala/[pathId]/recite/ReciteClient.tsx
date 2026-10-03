@@ -12,14 +12,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Mic, MicOff, Play, Pause,
   Eye, EyeOff, Timer, Sparkles, BookOpen,
-  CheckCircle2, Volume2, VolumeX, Loader2, Lock, Share2, Check, Copy,
+  CheckCircle2, Volume2, VolumeX, Loader2, Share2, Check, Copy,
   RotateCcw,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { LibraryEntry } from '@/lib/library-content';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
 import { usePathshala, useSadhana } from '@/contexts/EngineContext';
-import { usePremium } from '@/hooks/usePremium';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import PermissionSheet from '@/components/ui/PermissionSheet';
@@ -189,7 +188,6 @@ export default function ReciteClient({
   const router    = useRouter();
   const pathshala = usePathshala();
   const engine    = useSadhana();
-  const isPro     = usePremium();
   const nativeAudio = useNativeAudio();
   const path      = SEED_PATHS.find(p => p.id === pathId);
   const verses    = useMemo(() => lessons[currentLesson]?.entries ?? [], [lessons, currentLesson]);
@@ -776,35 +774,22 @@ export default function ReciteClient({
       <div className="px-4 pt-4 pb-2">
         <div className="flex gap-1.5">
           {([
-            { id: 'read'   as ReciteMode, label: labels.readAlong, icon: BookOpen, pro: false },
-            { id: 'hidden' as ReciteMode, label: labels.fromMemory, icon: EyeOff,  pro: true  },
-            { id: 'timed'  as ReciteMode, label: labels.timed,       icon: Timer,   pro: true  },
-          ] as { id: ReciteMode; label: string; icon: any; pro: boolean }[]).map(({ id, label, icon: Icon, pro }) => {
-            const locked = pro && !isPro;
+            { id: 'read'   as ReciteMode, label: labels.readAlong, icon: BookOpen },
+            { id: 'hidden' as ReciteMode, label: labels.fromMemory, icon: EyeOff },
+            { id: 'timed'  as ReciteMode, label: labels.timed,       icon: Timer },
+          ] as { id: ReciteMode; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => {
             return (
               <button
                 key={id}
-                onClick={() => {
-                  if (locked) {
-                    toast(labels.upgradeToShoonayaPro, {
-                      style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
-                    });
-                    return;
-                  }
-                  setMode(id);
-                }}
+                onClick={() => setMode(id)}
                 className="flex-1 relative flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold transition-all overflow-hidden"
                 style={{
                   background: mode === id ? accentColour : 'rgba(255,255,255,0.06)',
-                  color: mode === id ? '#1c1c1a' : locked ? 'rgba(255,255,255,0.3)' : 'var(--brand-muted)',
-                  opacity: locked ? 0.65 : 1,
+                  color: mode === id ? '#1c1c1a' : 'var(--brand-muted)',
                 }}
               >
                 <Icon size={12} />
                 {label}
-                {locked && (
-                  <Lock size={9} className="absolute top-1 right-1.5 opacity-60" />
-                )}
               </button>
             );
           })}

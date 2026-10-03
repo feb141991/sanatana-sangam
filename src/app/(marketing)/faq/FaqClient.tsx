@@ -207,14 +207,9 @@ const FAQ_ITEMS: FaqItem[] = [
     id: "free-or-paid",
     category: "privacy",
     categoryLabel: "Privacy, Trust & Security",
-    question: "Is Shoonaya free to use, and why is there a subscription?",
+    question: "Is Shoonaya free to use?",
     answer:
-      "The foundational dharma tools on Shoonaya, including Daily Sadhana, Panchang, Japa Mala, Scripture readings, and the Tirtha Map, are completely free. We believe sacred wisdom should never be locked behind a mandatory paywall.",
-    bullets: [
-      "Core Dharma: Free forever for all seekers globally.",
-      "Optional Seva Subscriptions: Support scholarly translations, server infrastructure, and advanced multi-generational family space tools.",
-    ],
-    links: [{ label: "Pricing & Seva Details", href: "/pricing" }],
+      "Yes. Every feature currently available in Shoonaya is free to use. There are no paid plans or app subscriptions at this time.",
   },
   {
     id: "diaspora-support",

@@ -11,7 +11,6 @@ type ShrutiLeaderboardUser = {
   username: string;
   avatar_url: string | null;
   tradition: string | null;
-  is_pro: boolean;
   active_symbol_id?: string | null;
   avg_score_100: number;
   total_recordings: number;
@@ -62,7 +61,6 @@ export async function GET(request: NextRequest) {
         username: profile.username ?? '',
         avatar_url: profile.avatar_url ?? null,
         tradition: null,
-        is_pro: false,
         active_symbol_id: profile.active_symbol_id ?? null,
         avg_score_100: Math.round((Number(row.avg_overall_score ?? 0) || 0) * 20),
         total_recordings: Number(row.total_recordings ?? 0),

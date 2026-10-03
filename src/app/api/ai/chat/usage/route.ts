@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
-import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
+import { DAILY_AI_MESSAGE_LIMIT } from '@/lib/ai/chat-limits';
 
 export async function GET(req: NextRequest) {
   // Bearer-aware (see /api/ai/chat/route.ts) — this previously used
@@ -16,15 +16,7 @@ export async function GET(req: NextRequest) {
   const banned = await assertNotBanned(supabase, user.id);
   if (banned) return banned;
 
-  // Fetch Pro status
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_pro')
-    .eq('id', user.id)
-    .single();
-  const isPro = profile?.is_pro ?? false;
-
-  const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
+  const limit = DAILY_AI_MESSAGE_LIMIT;
 
   // Count today’s used messages (UTC midnight)
   const todayStart = new Date();
@@ -39,5 +31,5 @@ export async function GET(req: NextRequest) {
 
   const used = error ? 0 : (count ?? 0);
 
-  return NextResponse.json({ used, limit, isPro });
+  return NextResponse.json({ used, limit });
 }

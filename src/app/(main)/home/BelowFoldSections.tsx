@@ -11,7 +11,6 @@ interface BelowFoldSectionsProps {
   userName: string;
   tradition: string | null;
   sampradaya: string | null;
-  isPro: boolean;
   japaAlreadyDoneToday: boolean;
   nityaDoneToday: boolean;
   activeSankalpa: { id: string; text: string; start_date: string; end_date: string; tradition: string } | null;
@@ -58,7 +57,6 @@ export default function BelowFoldSections({
   userName,
   tradition,
   sampradaya,
-  isPro,
   japaAlreadyDoneToday,
   nityaDoneToday,
   activeSankalpa,
@@ -94,7 +92,6 @@ export default function BelowFoldSections({
         userName={userName}
         tradition={tradition}
         sampradaya={sampradaya}
-        isPro={isPro}
         japaAlreadyDoneToday={japaAlreadyDoneToday}
         nityaDoneToday={nityaDoneToday}
         activeSankalpa={activeSankalpa}
@@ -121,7 +118,6 @@ export default function BelowFoldSections({
         userId={userId}
         userName={userName}
         tradition={tradition}
-        isPro={isPro}
         sevaScore={sevaScore}
         isDark={isDark}
         onInviteClick={onInviteClick}
@@ -131,7 +127,6 @@ export default function BelowFoldSections({
       <DiscoverySection
         tradition={tradition}
         isDark={isDark}
-        isPro={isPro}
         pathshalaProgress={pathshalaProgress}
         pathshalaDoneToday={pathshalaDoneToday}
         pathshalaLabel={pathshalaLabel}

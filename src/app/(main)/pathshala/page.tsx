@@ -17,7 +17,7 @@ export default async function PathshalaPage({
   const [{ data: profile }, { data: shrutiStats }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('full_name, username, tradition, app_language, meaning_language, transliteration_language, show_transliteration, is_pro')
+      .select('full_name, username, tradition, app_language, meaning_language, transliteration_language, show_transliteration')
       .eq('id', user.id)
       .single(),
 
@@ -63,7 +63,6 @@ export default async function PathshalaPage({
       meaningLanguage={(profile as any)?.meaning_language ?? 'en'}
       transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
       showTransliteration={(profile as any)?.show_transliteration ?? true}
-      isPro={(profile as any)?.is_pro ?? false}
       shrutiStats={shrutiStats}
       communityRank={communityRank}
     />

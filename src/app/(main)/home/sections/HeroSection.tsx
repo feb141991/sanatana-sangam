@@ -95,7 +95,6 @@ interface HeroSectionProps {
   userName: string;
   userId: string;
   avatarUrl: string | null;
-  isPro: boolean;
   activeSymbolId: string | null;
   karmaPoints: number;
   japaAlreadyDoneToday: boolean;
@@ -331,7 +330,6 @@ export function HeroSection({
   userName,
   userId,
   avatarUrl,
-  isPro,
   activeSymbolId,
   karmaPoints,
   japaAlreadyDoneToday,
@@ -786,11 +784,6 @@ export function HeroSection({
                     )}
                   </div>
                 </div>
-                {isPro && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
-                    <Sparkles size={10} className="text-white" />
-                  </div>
-                )}
                 {activeSymbolId && (
                   <div
                     className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full border border-black/20 flex items-center justify-center backdrop-blur-md"

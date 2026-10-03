@@ -18,7 +18,6 @@ import type { Database } from '@/types/database';
 import InviteCard from '@/components/home/InviteCard';
 import PrivacyChoicesButton from '@/components/privacy/PrivacyChoicesButton';
 
-type SubscriptionStatus = Database['public']['Tables']['profiles']['Row']['subscription_status'];
 type TransliterationLanguage = Database['public']['Tables']['profiles']['Row']['transliteration_language'];
 
 type NotificationPreferencesState = {
@@ -65,12 +64,8 @@ type SectionCopy = {
   accountEyebrow: string;
   accountTitle: string;
   accountDescription: string;
-  subscriptionLink: string;
-  subscriptionHint: string;
   deleteAccountLink: string;
   deleteAccountHint: string;
-  freeBadge: string;
-  proBadge: string;
   saved: string;
   saveFailed: string;
   traditionWarning: string;
@@ -109,14 +104,10 @@ const COPY: Record<AppLang, SectionCopy> = {
     sankalpaReminder: 'Sankalpa midpoint reminder',
     sankalpaReminderHint: 'One gentle reminder halfway through an active vow. The vow text is never included.',
     accountEyebrow: 'Account',
-    accountTitle: 'Membership and control',
-    accountDescription: 'Manage your subscription or close the account permanently.',
-    subscriptionLink: 'Subscription',
-    subscriptionHint: 'Manage plan, billing, and renewal.',
+    accountTitle: 'Account',
+    accountDescription: 'Manage your account preferences or close your account permanently.',
     deleteAccountLink: 'Delete account',
     deleteAccountHint: 'Permanent removal of your progress and data.',
-    freeBadge: 'Free',
-    proBadge: 'Pro',
     saved: 'Saved ✓',
     saveFailed: 'Could not save',
     traditionWarning: 'Changing tradition will update your daily quiz and recommendations.',
@@ -153,14 +144,10 @@ const COPY: Record<AppLang, SectionCopy> = {
     sankalpaReminder: 'संकल्प के मध्य का स्मरण',
     sankalpaReminderHint: 'सक्रिय संकल्प के बीच में एक शांत स्मरण। संकल्प का मूल पाठ शामिल नहीं होगा।',
     accountEyebrow: 'खाता',
-    accountTitle: 'सदस्यता और नियंत्रण',
-    accountDescription: 'अपनी सदस्यता प्रबंधित करें या खाता स्थायी रूप से बंद करें।',
-    subscriptionLink: 'सदस्यता',
-    subscriptionHint: 'प्लान, बिलिंग और नवीनीकरण प्रबंधित करें।',
+    accountTitle: 'खाता',
+    accountDescription: 'खाते की पसंद सँभालें या खाता स्थायी रूप से बंद करें।',
     deleteAccountLink: 'खाता हटाएँ',
     deleteAccountHint: 'आपकी प्रगति और डेटा स्थायी रूप से हट जाएँगे।',
-    freeBadge: 'फ्री',
-    proBadge: 'प्रो',
     saved: 'सहेजा गया ✓',
     saveFailed: 'सहेजा नहीं जा सका',
     traditionWarning: 'परंपरा बदलने पर आपका दैनिक क्विज़ और सुझाव अपडेट होंगे।',
@@ -197,14 +184,10 @@ const COPY: Record<AppLang, SectionCopy> = {
     sankalpaReminder: 'ਸੰਕਲਪ ਦੇ ਅੱਧ ਵਿਚਕਾਰ ਯਾਦ ਦਿਹਾਣੀ',
     sankalpaReminderHint: 'ਚੱਲ ਰਹੇ ਸੰਕਲਪ ਦੇ ਅੱਧ ਵਿਚਕਾਰ ਇੱਕ ਨਰਮ ਯਾਦ ਦਿਹਾਣੀ। ਸੰਕਲਪ ਦਾ ਮੂਲ ਪਾਠ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋਵੇਗਾ।',
     accountEyebrow: 'ਖਾਤਾ',
-    accountTitle: 'ਮੈਂਬਰਸ਼ਿਪ ਅਤੇ ਨਿਯੰਤਰਣ',
-    accountDescription: 'ਆਪਣੀ ਮੈਂਬਰਸ਼ਿਪ ਸੰਭਾਲੋ ਜਾਂ ਖਾਤਾ ਸਦਾ ਲਈ ਬੰਦ ਕਰੋ।',
-    subscriptionLink: 'ਮੈਂਬਰਸ਼ਿਪ',
-    subscriptionHint: 'ਪਲਾਨ, ਬਿਲਿੰਗ ਅਤੇ ਰੀਨਿਊਅਲ ਸੰਭਾਲੋ।',
+    accountTitle: 'ਖਾਤਾ',
+    accountDescription: 'ਖਾਤੇ ਦੀਆਂ ਪਸੰਦਾਂ ਸੰਭਾਲੋ ਜਾਂ ਖਾਤਾ ਸਦਾ ਲਈ ਬੰਦ ਕਰੋ।',
     deleteAccountLink: 'ਖਾਤਾ ਮਿਟਾਓ',
     deleteAccountHint: 'ਤੁਹਾਡੀ ਤਰੱਕੀ ਅਤੇ ਡਾਟਾ ਸਦਾ ਲਈ ਮਿਟ ਜਾਣਗੇ।',
-    freeBadge: 'ਫ੍ਰੀ',
-    proBadge: 'ਪ੍ਰੋ',
     saved: 'ਸੰਭਾਲਿਆ ਗਿਆ ✓',
     saveFailed: 'ਸੰਭਾਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ',
     traditionWarning: 'ਪਰੰਪਰਾ ਬਦਲਣ ਨਾਲ ਤੁਹਾਡਾ ਰੋਜ਼ਾਨਾ ਕੁਇਜ਼ ਅਤੇ ਸਿਫ਼ਾਰਸ਼ਾਂ ਅੱਪਡੇਟ ਹੋਣਗੀਆਂ।',
@@ -431,7 +414,6 @@ export default function SettingsClient({
   initialWantsSankalpaMidpointReminders,
   initialConsentActivityPersonalization,
   initialNityaRhythmMode,
-  subscriptionStatus,
   initialConsentReligiousData,
 }: {
   userId: string;
@@ -451,7 +433,6 @@ export default function SettingsClient({
   initialWantsSankalpaMidpointReminders: boolean;
   initialConsentActivityPersonalization: boolean;
   initialNityaRhythmMode: string;
-  subscriptionStatus: SubscriptionStatus;
 }) {
   const router = useRouter();
   const { preference, setPreference } = useThemePreference();
@@ -553,7 +534,6 @@ export default function SettingsClient({
   );
 
   const traditionDirty = traditionState !== savedTraditionState;
-  const isProPlan = subscriptionStatus === 'pro' || subscriptionStatus === 'grace' || subscriptionStatus === 'kul_pro';
 
   async function handleSaveLanguage() {
     if (!languageDirty || savingLanguage) return;
@@ -912,35 +892,6 @@ export default function SettingsClient({
                 </button>
               </div>
             </div>
-            <Link
-              href="/settings/subscription"
-              className="flex items-center justify-between rounded-2xl border p-4"
-              style={{ background: 'var(--surface-soft)', borderColor: 'var(--card-border)' }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl" style={{ background: 'var(--brand-primary-soft)' }}>
-                  <Palette size={18} color="var(--brand-primary)" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-[color:var(--text-cream)]">{copy.subscriptionLink}</p>
-                  <p className="text-xs text-[color:var(--text-dim)]">{copy.subscriptionHint}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span
-                  className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em]"
-                  style={{
-                    background: isProPlan ? 'var(--brand-primary-soft)' : 'var(--surface-soft)',
-                    color: isProPlan ? 'var(--brand-primary)' : 'var(--text-dim)',
-                    border: '1px solid var(--card-border)',
-                  }}
-                >
-                  {isProPlan ? copy.proBadge : copy.freeBadge}
-                </span>
-                <ChevronRight size={18} color="var(--text-dim)" />
-              </div>
-            </Link>
-
             <Link
               href="/settings/delete-account"
               className="flex items-center justify-between rounded-2xl border p-4"

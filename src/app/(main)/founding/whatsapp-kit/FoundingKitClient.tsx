@@ -169,8 +169,8 @@ export default function FoundingKitClient({
           </div>
 
           <div className="space-y-3">
-            <Link href="/pricing" className="block w-full py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold text-sm shadow-lg active:scale-95 transition-all">
-              Become a Founding Member Now
+            <Link href="/beta/android" className="block w-full py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold text-sm shadow-lg active:scale-95 transition-all">
+              Join the Android Beta
             </Link>
             <Link href="/home" className="block w-full py-3.5 rounded-full border border-white/10 text-white/60 font-semibold text-sm active:scale-95 transition-all">
               Back to Home

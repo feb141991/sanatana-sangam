@@ -25,7 +25,6 @@ interface SadhanaSectionProps {
   userName: string;
   tradition: string | null;
   sampradaya: string | null;
-  isPro: boolean;
   japaAlreadyDoneToday: boolean;
   nityaDoneToday: boolean;
   activeSankalpa: { id: string; text: string; start_date: string; end_date: string; tradition: string; related_practice?: string | null } | null;
@@ -52,7 +51,6 @@ export function SadhanaSection({
   userName,
   tradition,
   sampradaya,
-  isPro,
   japaAlreadyDoneToday,
   nityaDoneToday,
   activeSankalpa,
@@ -242,7 +240,7 @@ export function SadhanaSection({
       </div>
 
       {/* ── Post-japa Dharma Mitra nudge ── */}
-      {japaAlreadyDoneToday && !isPro && (
+      {japaAlreadyDoneToday && (
         <div className="px-4 mb-4">
           <Link
             href="/ai-chat"
@@ -263,7 +261,7 @@ export function SadhanaSection({
                 Ask Dharma Mitra about today&apos;s mantra
               </p>
               <p className="text-[11px] mt-0.5" style={{ color: 'rgba(139,92,246,0.75)' }}>
-                5 free questions daily · Unlimited with Zenith
+                Continue your reflection with Dharma Mitra
               </p>
             </div>
             <ChevronRight size={14} style={{ color: 'rgba(139,92,246,0.55)', flexShrink: 0 }} />

@@ -3,18 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { getUnlockedRelics } from '@/lib/relics';
+import { DELETION_REASONS } from '@/lib/account-deletion';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-export const DELETION_REASONS = [
-  { id: 'taking_break', label: 'Taking a temporary spiritual break' },
-  { id: 'too_many_notifications', label: 'Too many notifications or reminders' },
-  { id: 'privacy_concerns', label: 'Privacy or data concerns' },
-  { id: 'not_useful', label: 'Not finding the practice features helpful' },
-  { id: 'technical_issues', label: 'App performance or technical bugs' },
-  { id: 'other', label: 'Other reason', requireDetails: true },
-] as const;
 
 export type DeletionPreviewResponse = {
   success: boolean;
@@ -26,7 +18,6 @@ export type DeletionPreviewResponse = {
   relicsCount: number;
   journalCount: number;
   activeSankalpas: number;
-  isPro: boolean;
   ownedKuls: Array<{ id: string; name: string }>;
   ownedMandalis: Array<{ id: string; name: string }>;
   reasons: typeof DELETION_REASONS;
@@ -35,7 +26,7 @@ export type DeletionPreviewResponse = {
 /**
  * Canonical snapshot preview route for account deletion cool-off.
  * Returns authentic stats (streak, genuine unlocked relics, journal count,
- * owned Kuls/Mandalis, and subscription status) so neither Native nor Web
+ * owned Kuls/Mandalis) so neither Native nor Web
  * ever fabricate or guess metrics client-side.
  */
 export async function GET(req: NextRequest) {
@@ -49,7 +40,7 @@ export async function GET(req: NextRequest) {
   const [profileRes, sadhanaRes, journalRes, kulsRes, mandalisRes, sankalpaRes] = await Promise.all([
     supabase
       .from('profiles')
-      .select('full_name, username, tradition, karma_points, seva_score, shloka_streak, is_pro, subscription_status')
+      .select('full_name, username, tradition, karma_points, seva_score, shloka_streak')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
@@ -86,7 +77,6 @@ export async function GET(req: NextRequest) {
   const userName = prof?.full_name || prof?.username || 'Seeker';
   const journalCount = journalRes.count ?? 0;
   const activeSankalpas = sankalpaRes.count ?? 0;
-  const isPro = Boolean(prof?.is_pro || prof?.subscription_status === 'active' || prof?.subscription_status === 'pro');
 
   // Real unlocked relics count computed canonically from @/lib/relics (Rule 3: Never Fabricate)
   const unlockedRelics = getUnlockedRelics(streak, sevaScore, tradition);
@@ -105,7 +95,6 @@ export async function GET(req: NextRequest) {
     relicsCount,
     journalCount,
     activeSankalpas,
-    isPro,
     ownedKuls,
     ownedMandalis,
     reasons: DELETION_REASONS,

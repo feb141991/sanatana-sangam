@@ -7,7 +7,6 @@ import { Check, X, ChevronDown, ChevronUp, Info, Lock, Sparkles, User, Users, Ch
 import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 import CircularProgress from '@/components/ui/CircularProgress';
-import { usePremium } from '@/hooks/usePremium';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 // ─── 16 Sanskaras data ───────────────────────────────────────────────────────
@@ -256,7 +255,6 @@ interface Props {
 
 // ─── Free-tier gate ────────────────────────────────────────────────────────────
 // Garbhadhana (#1, prenatal) is free for all users.
-// All 15 remaining sanskaras require Shoonaya Pro.
 const FREE_SANSKAR_IDS = new Set(['garbhadhana']);
 
 // ─── Milestone offsets (months from conception/birth) for notifications ───────
@@ -407,20 +405,16 @@ function MarkForm({
 function SanskaraCard({
   s,
   record,
-  isPro,
   onMark,
 }: {
   s: typeof SANSKARAS[number];
   record: CompletedRecord | undefined;
-  isPro: boolean;
   onMark: (id: string, data: { date: string; notes: string; performed_by: string; location: string; expected_date: string }) => Promise<void>;
 }) {
   const [expanded,  setExpanded]  = useState(false);
   const [marking,   setMarking]   = useState(false);
   const done    = Boolean(record);
   const stage   = STAGE_COLORS[s.stage] ?? STAGE_COLORS['Adult'];
-  const isFree  = FREE_SANSKAR_IDS.has(s.id);
-  const locked  = !isFree && !isPro;
 
   return (
     <motion.div
@@ -432,33 +426,13 @@ function SanskaraCard({
       style={{
         background: done ? 'rgba(80,200,100,0.06)' : 'var(--surface-raised)',
         border: `1px solid ${done ? 'rgba(80,200,100,0.2)' : 'rgba(197, 160, 89,0.10)'}`,
-        opacity: locked ? 0.7 : 1,
       }}
     >
-      {/* Pro lock badge */}
-      {locked && (
-        <div
-          className="absolute top-3 right-3 flex items-center gap-1 rounded-full px-2 py-0.5 z-10"
-          style={{ background: 'rgba(197, 160, 89,0.12)', border: '1px solid rgba(197, 160, 89,0.2)' }}
-        >
-          <Lock size={8} style={{ color: 'rgba(197, 160, 89,0.6)' }} />
-          <span className="text-[9px] font-semibold" style={{ color: 'rgba(197, 160, 89,0.6)' }}>Pro</span>
-        </div>
-      )}
 
       {/* Card header */}
       <button
         className="w-full flex items-start gap-3 px-4 py-3.5 text-left"
-        onClick={() => {
-          if (locked) {
-            toast('🔒 Upgrade to Shoonaya Pro to track all 16 Sanskaras', {
-              duration: 3000,
-              style: { background: '#1c1208', color: '#f5dfa0', border: '1px solid rgba(197, 160, 89,0.3)' },
-            });
-            return;
-          }
-          setExpanded(e => !e);
-        }}
+        onClick={() => setExpanded(e => !e)}
       >
         {/* Number / checkmark */}
         <div
@@ -544,7 +518,7 @@ function SanskaraCard({
               )}
 
               {/* Mark button */}
-              {!done && !marking && !locked && (
+              {!done && !marking && (
                 <button
                   onClick={() => setMarking(true)}
                   className="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold transition"
@@ -669,29 +643,6 @@ function SmartStartCard({
   );
 }
 
-// ─── Pro nudge card ────────────────────────────────────────────────────────────
-function ProNudgeCard() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl p-4"
-      style={{ background: 'linear-gradient(135deg, rgba(212,120,20,0.12), rgba(197, 160, 89,0.08))', border: '1px solid rgba(197, 160, 89,0.22)' }}
-    >
-      <div className="flex items-center gap-3">
-        <Sparkles size={18} style={{ color: '#d4a030' }} className="flex-shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold" style={{ color: '#d4a030' }}>Unlock all 16 Sanskaras</p>
-          <p className="text-[11px] mt-0.5" style={{ color: 'rgba(245,210,130,0.5)' }}>
-            Garbhadhana is free. Upgrade to Shoonaya Pro to track the complete lifecycle — for you and your family.
-          </p>
-        </div>
-        <ChevronRight size={14} style={{ color: 'rgba(197, 160, 89,0.5)' }} className="flex-shrink-0" />
-      </div>
-    </motion.div>
-  );
-}
-
 // ─── AI nudge card ────────────────────────────────────────────────────────────
 function AiNudgeCard({
   message,
@@ -750,7 +701,6 @@ export default function SanskaraClient({
 }: Props) {
   const router         = useRouter();
   const supabase       = createClient();
-  const isPro          = usePremium();
   const [completed,    setCompleted]    = useState<CompletedRecord[]>(initialCompleted);
   const [selectedMember, setSelectedMember] = useState<string | null>(null); // null = "Me"
   const [showSmartStart, setShowSmartStart] = useState(true);
@@ -760,7 +710,6 @@ export default function SanskaraClient({
   // Fetch AI nudge on mount (non-blocking, best-effort)
   useEffect(() => {
     const myCompleted = initialCompleted.filter(c => !c.kul_member_id).map(c => c.sanskara_id);
-    if (!isPro && myCompleted.length === 0) return; // Don't show AI nudge to free users with 0 progress — would spam
     if (myCompleted.length === 16) return; // All done
 
     fetch('/api/sanskar/suggest', {
@@ -946,9 +895,6 @@ export default function SanskaraClient({
         />
       )}
 
-      {/* Pro nudge — free users who haven't upgraded */}
-      {!isPro && <ProNudgeCard />}
-
       {/* Timeline grouped by life stage */}
       {stages.map((stage) => {
         const stageItems = SANSKARAS.filter(s => s.stage === stage);
@@ -968,7 +914,6 @@ export default function SanskaraClient({
                   key={s.id}
                   s={s}
                   record={getRecord(s.id)}
-                  isPro={isPro}
                   onMark={handleMark}
                 />
               ))}

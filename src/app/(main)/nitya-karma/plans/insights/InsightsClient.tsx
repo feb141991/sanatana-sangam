@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Lock, Flame, CheckCircle2, Trophy, TrendingUp, Calendar } from 'lucide-react';
+import { ChevronLeft, Flame, CheckCircle2, Trophy, TrendingUp, Calendar } from 'lucide-react';
 import type { GuidedPlan, GuidedPathStatus } from '@/lib/guided-paths';
 
 interface PlanEntry {
@@ -14,7 +14,6 @@ interface PlanEntry {
 }
 
 interface Props {
-  isPro:               boolean;
   planData:            PlanEntry[];
   totalDaysCompleted:  number;
   plansCompleted:      number;
@@ -35,28 +34,7 @@ function Ring({ pct, color, size = 44 }: { pct: number; color: string; size?: nu
   );
 }
 
-// Paywall blur overlay
-function ProBlur({ onUpgrade }: { onUpgrade: () => void }) {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.4rem] z-10"
-      style={{ background: 'rgba(10,7,3,0.70)', backdropFilter: 'blur(8px)' }}>
-      <Lock size={22} className="text-amber-400 mb-2" />
-      <p className="text-sm font-semibold text-amber-100 mb-1">Shoonaya Pro</p>
-      <p className="text-[11px] text-amber-200/70 text-center max-w-[160px] mb-3">
-        Unlock per-plan analytics, history & consistency score
-      </p>
-      <button
-        onClick={onUpgrade}
-        className="px-4 py-2 rounded-full text-xs font-bold"
-        style={{ background: 'linear-gradient(135deg, #C5A059, #e0a85a)', color: '#1a0c04' }}
-      >
-        Upgrade to Pro
-      </button>
-    </div>
-  );
-}
-
-export default function InsightsClient({ isPro, planData, totalDaysCompleted, plansCompleted, currentStreak }: Props) {
+export default function InsightsClient({ planData, totalDaysCompleted, plansCompleted, currentStreak }: Props) {
   const router = useRouter();
 
   const activePlan = planData.find(p => p.status === 'active');
@@ -167,17 +145,12 @@ export default function InsightsClient({ isPro, planData, totalDaysCompleted, pl
         </div>
       )}
 
-      {/* ── PRO SECTION — per-plan cards with day-by-day calendar ── */}
+      {/* ── Per-plan progress and day-by-day calendar ── */}
       <div className="px-4">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--brand-muted)' }}>
             Per-Plan History
           </p>
-          {!isPro && (
-            <div className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: 'rgba(251,191,36,0.85)' }}>
-              <Lock size={10} /> Pro only
-            </div>
-          )}
         </div>
 
         <div className="space-y-3">
@@ -235,51 +208,45 @@ export default function InsightsClient({ isPro, planData, totalDaysCompleted, pl
                     </p>
                   </div>
 
-                  {/* Consistency score — Pro only */}
+                  {/* Consistency score */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--text-dim)' }}>
                       <TrendingUp size={12} />
                       Consistency
                     </div>
-                    <p className="text-[11px] font-semibold" style={{ color: isPro ? plan.accentColor : 'var(--text-dim)' }}>
-                      {isPro ? `${pct}%` : '—'}
+                    <p className="text-[11px] font-semibold" style={{ color: plan.accentColor }}>
+                      {pct}%
                     </p>
                   </div>
 
-                  {/* Day dot grid — Pro only */}
-                  {isPro && (
-                    <div className="mt-3 pt-3 border-t" style={{ borderColor: `${plan.accentColor}10` }}>
-                      <p className="text-[9px] mb-2" style={{ color: 'var(--text-dim)' }}>Days completed</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {plan.days.map(d => {
-                          const done   = d.day < dayReached;
-                          const active = d.day === dayReached && status === 'active';
-                          return (
-                            <div
-                              key={d.day}
-                              title={`Day ${d.day}: ${d.title}`}
-                              className="w-5 h-5 rounded-md flex items-center justify-center text-[8px] font-bold"
-                              style={{
-                                background: done
-                                  ? (status === 'completed' ? 'rgba(80,200,80,0.25)' : `${plan.accentColor}30`)
-                                  : 'rgba(255,255,255,0.04)',
-                                color: done ? (status === 'completed' ? '#6ad87a' : plan.accentColor) : 'var(--text-dim)',
-                                border: active ? `1.5px solid ${plan.accentColor}` : '1px solid transparent',
-                              }}
-                            >
-                              {done ? '✓' : d.day}
-                            </div>
-                          );
-                        })}
-                      </div>
+                  {/* Day dot grid */}
+                  <div className="mt-3 pt-3 border-t" style={{ borderColor: `${plan.accentColor}10` }}>
+                    <p className="text-[9px] mb-2" style={{ color: 'var(--text-dim)' }}>Days completed</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {plan.days.map(d => {
+                        const done = d.day < dayReached;
+                        const active = d.day === dayReached && status === 'active';
+                        return (
+                          <div
+                            key={d.day}
+                            title={`Day ${d.day}: ${d.title}`}
+                            className="w-5 h-5 rounded-md flex items-center justify-center text-[8px] font-bold"
+                            style={{
+                              background: done
+                                ? (status === 'completed' ? 'rgba(80,200,80,0.25)' : `${plan.accentColor}30`)
+                                : 'rgba(255,255,255,0.04)',
+                              color: done ? (status === 'completed' ? '#6ad87a' : plan.accentColor) : 'var(--text-dim)',
+                              border: active ? `1.5px solid ${plan.accentColor}` : '1px solid transparent',
+                            }}
+                          >
+                            {done ? '✓' : d.day}
+                          </div>
+                        );
+                      })}
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                {/* Pro paywall blur */}
-                {!isPro && (
-                  <ProBlur onUpgrade={() => router.push('/premium')} />
-                )}
               </motion.div>
             );
           })}

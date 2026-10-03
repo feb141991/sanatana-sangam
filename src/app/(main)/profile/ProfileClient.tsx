@@ -26,10 +26,8 @@ import { MetricTile, SurfaceSection } from '@/components/ui';
 import CircularProgress from '@/components/ui/CircularProgress';
 import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
 import type { ProfileUpdate } from '@/lib/api/profile';
-import { usePremium } from '@/hooks/usePremium';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
-import { updateAppIcon } from '@/lib/app-icon';
 import { formatError } from '@/lib/error-handler';
 import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
@@ -277,7 +275,6 @@ export default function ProfileClient({
   const supabase    = useRef(createClient()).current;
   const { setLang, lang: contextLang } = useLanguage();
   const { preference: themePreference, resolvedTheme, setPreference: setThemePreference } = useThemePreference();
-  const isPro       = usePremium();
   const profileQuery = useProfileQuery(userId, profile);
   const updateProfileMutation = useUpdateProfileMutation(userId);
   const liveProfile = profileQuery.data ?? profile;
@@ -400,7 +397,6 @@ export default function ProfileClient({
     calendar_language: (liveProfile as any)?.calendar_language ?? '',
   });
 
-  const [localAppIcon, setLocalAppIcon] = useState<'normal' | 'pro'>('normal');
   const streak    = initialHighlightsStreak;
   const profileTradition = liveProfile?.tradition ?? 'hindu';
   const visibleRelics = SACRED_RELICS.filter((relic) => relic.tradition === 'universal' || relic.tradition === profileTradition);
@@ -431,17 +427,6 @@ export default function ProfileClient({
     localStorage.setItem('shoonaya_last_seen_relic_count', String(unlockedCount));
     setNewRelicIds([]);
   }, [koshOpen, unlockedCount]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('shoonaya_app_icon') as 'normal' | 'pro';
-      if (saved) setLocalAppIcon(saved);
-    }
-  }, []);
-
-  useEffect(() => {
-    updateAppIcon(localAppIcon === 'pro');
-  }, [localAppIcon]);
 
   const activeTradition = (form.tradition || 'hindu') as TraditionKey;
   const sampradayaOptions = SAMPRADAYAS_BY_TRADITION[activeTradition] ?? SAMPRADAYAS_BY_TRADITION['hindu'];
@@ -1148,12 +1133,6 @@ export default function ProfileClient({
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="profile-eyebrow opacity-90">@{liveProfile?.username}</span>
-                  {isPro && (
-                    <div className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-200/10 border border-amber-400/30 flex items-center gap-1.5 shadow-lg shadow-amber-900/20">
-                      <Star size={11} className="text-amber-400 fill-amber-400" />
-                      <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest">Pro Member</span>
-                    </div>
-                  )}
                 </div>
 
                 {activeRelic ? (
@@ -2172,35 +2151,6 @@ export default function ProfileClient({
       >
         <div className="space-y-8 py-6">
 
-          {/* Subscription & Billing */}
-          <div>
-            <p className="text-sm font-medium text-[var(--brand-primary)] mb-3">Plan & Billing</p>
-            <Link
-              href="/settings/subscription"
-              onClick={() => setSettingsOpen(false)}
-              className="flex items-center justify-between w-full px-4 py-3.5 rounded-2xl border transition-all"
-              style={{
-                background: 'rgba(197,160,89,0.06)',
-                borderColor: 'rgba(197,160,89,0.18)',
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(197,160,89,0.12)' }}>
-                  <span style={{ color: '#C5A059', fontSize: 14 }}>✦</span>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--divine-text)' }}>
-                    {isPro ? 'Zenith Plan' : 'Seeker (Free)'}
-                  </p>
-                  <p className="text-[11px]" style={{ color: 'rgba(197,160,89,0.6)' }}>
-                    {isPro ? 'Manage, cancel or change plan' : 'Upgrade to Zenith'}
-                  </p>
-                </div>
-              </div>
-              <span style={{ color: '#C5A059', fontSize: 18 }}>›</span>
-            </Link>
-          </div>
-
           {/* Theme */}
           <div className="space-y-4">
             <p className="text-sm font-medium text-[var(--brand-primary)]">Visual theme</p>
@@ -2226,37 +2176,6 @@ export default function ProfileClient({
                   </button>
                 );
               })}
-            </div>
-          </div>
-
-          {/* App Icon */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-[var(--brand-primary)]">App identity</p>
-            </div>
-            <div className="flex gap-4">
-              {[
-                { key: 'normal', img: '/icons/icon-192x192.png', label: 'Shoonaya' },
-              ].map((icon) => (
-                <button
-                  key={icon.key}
-                  onClick={() => {
-                    setLocalAppIcon(icon.key as any);
-                    localStorage.setItem('shoonaya_app_icon', icon.key);
-                    toast.success(`${icon.label} icon set!`);
-                  }}
-                  className={`flex-1 flex flex-col items-center gap-3 p-3 rounded-2xl border transition-all duration-300 ${
-                    localAppIcon === icon.key
-                      ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
-                      : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
-                  }`}
-                >
-                  <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                    <Image src={icon.img} alt={icon.label} fill className="object-cover" />
-                  </div>
-                  <span className={`text-sm font-medium ${localAppIcon === icon.key ? 'text-[var(--brand-primary-strong)]' : 'theme-muted'}`}>{icon.label}</span>
-                </button>
-              ))}
             </div>
           </div>
 

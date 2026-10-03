@@ -165,8 +165,6 @@ const TRAD_SHARE_COPY: Record<string, string> = {
 const FOUNDING_PERKS = [
   'A warm Shoonaya welcome for your profile',
   'Your practice, community, and learning tools in one place',
-  'First month of Shoonaya Pro free',
-  '20% lifetime discount on all Pro subscriptions',
   'Access to every new feature',
   'Access to Mandali community spaces as they expand',
   'Tradition-aware profile and daily practice experience',

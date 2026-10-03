@@ -215,7 +215,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
   const [portalTarget,    setPortalTarget]   = useState<Element | null>(null);
   const [menuObscuring,   setMenuObscuring]  = useState(false); // quick-action menu is open
   const [constraints,     setConstraints]    = useState({ left: 0, right: 0, top: 0, bottom: 0 });
-  const [aiUsage,         setAiUsage]        = useState<{ used: number; limit: number; isPro: boolean } | null>(null);
+  const [aiUsage,         setAiUsage]        = useState<{ used: number; limit: number } | null>(null);
   const [hasStreamedToken, setHasStreamedToken] = useState(false);
   const [responseLanguage, setResponseLanguage] = useState<string>(appLanguage);
 
@@ -330,12 +330,12 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
       if (res.status === 429) {
         const data = await res.json().catch(() => ({}));
         if (data?.error === 'daily_limit_reached') {
-          // Surface the limit hit as a system message with upgrade CTA
+          // Surface the operational rate limit without an upgrade CTA.
           const limit = data.limit ?? 25;
           setMessages(prev => [...prev.filter(m => m.id !== assistantId), {
             id:        newId(),
             role:      'model',
-            text:      `You've reached your ${limit}-message daily limit for Dharma Mitra.\n\nUpgrade to Zenith for 200 conversations per day — unlimited spiritual guidance, advanced analytics, monthly sadhana reports, and more.\n\nTap → Settings › Subscription to unlock the full path. 🙏`,
+            text:      `You've reached your ${limit}-message daily limit for Dharma Mitra. Your allowance resets daily. 🙏`,
             timestamp: new Date(),
             fromRag:   false,
           }]);
@@ -464,8 +464,8 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                 </div>
               </div>
 
-              {/* AI usage bar — only shown for free users */}
-              {aiUsage && !aiUsage.isPro && (
+              {/* Usage allowance is an operational rate limit, not a paid tier. */}
+              {aiUsage && (
                 <div className="px-4 pb-2.5">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(197,160,89,0.7)' }}>
@@ -473,10 +473,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                     </span>
                     <span className="text-[9px] tabular-nums" style={{ color: aiUsage.used >= aiUsage.limit ? '#f87171' : 'var(--text-dim)' }}>
                       {aiUsage.used}/{aiUsage.limit}
-                      {aiUsage.used >= aiUsage.limit && ' · '}
-                      {aiUsage.used >= aiUsage.limit && (
-                        <a href="/settings/subscription" className="underline" style={{ color: '#C5A059' }}>Upgrade</a>
-                      )}
+                      {aiUsage.used >= aiUsage.limit && ' · resets daily'}
                     </span>
                   </div>
                   <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.12)' }}>

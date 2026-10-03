@@ -45,9 +45,7 @@ function buildFallbackExplanation(input: {
 }
 
 export async function POST(req: NextRequest) {
-  // ── Auth + pro gate ─────────────────────────────────────────────────────────
-  // AI explanation is a Zenith (Pro) feature — free users fall back to the
-  // static meaning/translation already rendered in the reader.
+  // ── Authentication ──────────────────────────────────────────────────────────
   // Bearer-aware (see /api/ai/chat/route.ts) — this was cookie-only, which
   // made it unreachable from native; native's "explain this verse" now calls
   // this route directly instead of faking it through the generic chat screen.
@@ -55,18 +53,6 @@ export async function POST(req: NextRequest) {
   if (!user || !supabase) {
     return getApiAuthFailureResponse(authError);
   }
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_pro')
-    .eq('id', user.id)
-    .maybeSingle();
-  if (!profile?.is_pro) {
-    return NextResponse.json(
-      { error: 'Upgrade to Zenith to unlock AI verse explanations.', upgrade_required: true },
-      { status: 403 },
-    );
-  }
-
   const {
     sanskrit,
     originalText,

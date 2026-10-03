@@ -16,8 +16,6 @@ export async function GET(request: NextRequest) {
       onboardedUsers,
       streakUsers,
       bannedUsers,
-      proUsers,
-      earlyAccessUsers,
       contentReports,
       dharmVeerPending,
       mandalis,
@@ -30,12 +28,10 @@ export async function GET(request: NextRequest) {
       vratObservations,
       posts
     ] = await Promise.all([
-      supabase.from("profiles").select("id, created_at, tradition, city, is_pro, entitlement_source", { count: "exact" }),
+      supabase.from("profiles").select("id, created_at, tradition, city", { count: "exact" }),
       supabase.from("profiles").select("id", { count: "exact", head: true }).eq("onboarding_completed", true),
       supabase.from("profiles").select("id", { count: "exact", head: true }).gt("shloka_streak", 0),
       supabase.from("profiles").select("id", { count: "exact", head: true }).eq("is_banned", true),
-      supabase.from("profiles").select("id", { count: "exact", head: true }).eq("is_pro", true),
-      supabase.from("profiles").select("id", { count: "exact", head: true }).eq("entitlement_source", "early_access"),
       (supabase.from("content_reports") as any).select("id, status", { count: "exact" }),
       (supabase.from("dharm_veers") as any).select("slug", { count: "exact", head: true }).eq("review_status", "pending_review"),
       supabase.from("mandalis").select("id", { count: "exact", head: true }),
@@ -94,9 +90,6 @@ export async function GET(request: NextRequest) {
       { label: "Vrat & Observances Catalog", val: `${vratCount} completed observations` },
     ];
 
-    const activePros = proUsers.count || 0;
-    const earlyAccess = earlyAccessUsers.count || 0;
-
     return NextResponse.json({
       overview: {
         totalSeekers: total,
@@ -115,24 +108,6 @@ export async function GET(request: NextRequest) {
           { label: "Nitya Karma Rituals", val: `${nityaCount} performed` },
           { label: "Vrat Observations", val: `${vratCount} observed` },
         ],
-      },
-      finance: {
-        activeProSeekers: activePros,
-        earlyAccessGrants: earlyAccess,
-        launchStatus: "100% Free Launch",
-        churnRate: "0.0%",
-        renewalsDue7d: 0,
-        subscriptionItems: [
-          { label: "Active Pro Seekers", val: `${activePros} seekers` },
-          { label: "Early Access Pro Grants", val: `${earlyAccess} unlocked` },
-          { label: "Commercial Lifetime Paid", val: `${Math.max(0, activePros - earlyAccess)} orders` },
-          { label: "Free Seeker Tier", val: `${Math.max(0, total - activePros)} seekers` },
-        ],
-        renewalsList: [
-          { label: "Early Access Pro (Active)", val: `${earlyAccess} seekers (No charge)` },
-          { label: "Active Mandali Founders", val: `${mandalis.count || 0} leaders` },
-          { label: "Commercial Gateway", val: "Disabled for Free Launch" },
-        ]
       },
       governance: {
         goldenFixturesTotal: fixtureRows.length,

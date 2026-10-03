@@ -10,7 +10,6 @@ export interface Mantra {
   textMeaningHi?: string;   // Hindi translation of the meaning
   tags: Array<'daily' | 'healing' | 'protection' | 'prosperity' | 'peace' | 'devotion'>;
   countPerMala: 108;
-  isPremium: boolean;
 }
 
 export const MANTRAS: Mantra[] = [
@@ -26,7 +25,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'ॐ ब्रह्मांड की आदि ध्वनि है। यह परम सत्य, चेतना और समस्त सृष्टि के सार का प्रतीक है।',
     tags: ['daily', 'peace'],
     countPerMala: 108,
-    isPremium: false,
   },
 
   // ── Hindu ──
@@ -42,7 +40,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'हम सृष्टिकर्ता के उस दिव्य तेज का ध्यान करते हैं जो पूजनीय, ज्ञान और प्रकाश का स्वरूप, पाप और अज्ञान का नाशक है। वह हमारी बुद्धि को प्रेरित और प्रकाशित करे।',
     tags: ['daily', 'peace'],
     countPerMala: 108,
-    isPremium: false,
   },
   {
     id: 'om_namah_shivaya',
@@ -56,7 +53,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'मैं शिव को नमन करता हूँ — परम सत्य और अंतरात्मा को। यह पाँच अक्षरों का पंचाक्षरी मंत्र शुद्धि का महान साधन है।',
     tags: ['daily', 'devotion', 'healing'],
     countPerMala: 108,
-    isPremium: false,
   },
   {
     id: 'mahamrityunjaya',
@@ -70,7 +66,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'हम त्रिनेत्र शिव का ध्यान करते हैं जो समस्त जगत का पालन करते हैं। जैसे खीरा पकने पर लता से स्वतः अलग हो जाता है, वैसे ही हमें मृत्यु के बंधन से मुक्त करें — अमृत की ओर ले चलें, न कि विनाश की ओर।',
     tags: ['healing', 'protection'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'hare_krishna',
@@ -84,7 +79,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'हे हरि, हे कृष्ण, हे राम — यह महामंत्र आत्मा को माया के आवरण से मुक्त कर परम चेतना से जोड़ता है। इसके जप से मन शुद्ध होता है और भक्ति जागती है।',
     tags: ['daily', 'devotion'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'om_namo_bhagavate',
@@ -98,7 +92,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'हे भगवान वासुदेव, मैं आपको नमन करता हूँ। यह द्वादशाक्षर मंत्र मुक्ति प्रदान करने वाला है और विष्णु भक्ति का सर्वोच्च साधन है।',
     tags: ['devotion', 'peace'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'om_gam_ganapataye',
@@ -112,7 +105,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'हे गणपति, मैं आपको नमन करता हूँ। "गं" गणेश का बीज मंत्र है। यह मंत्र विघ्नों को दूर करता है और सभी शुभ कार्यों का मार्ग प्रशस्त करता है।',
     tags: ['prosperity', 'protection'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'maha_lakshmyai',
@@ -126,7 +118,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'महालक्ष्मी को नमन। यह मंत्र आध्यात्मिक और भौतिक समृद्धि, सौंदर्य और प्रचुरता की प्राप्ति के लिए जपा जाता है।',
     tags: ['prosperity'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'ram_naam',
@@ -140,7 +131,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'श्री राम का नाम जपो — जय राम! राम नाम परम सत्य है, यह तुलसीदास द्वारा महिमा-गायित मंत्र सभी कष्टों का निवारण करता है।',
     tags: ['daily', 'devotion', 'peace'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'om_asato_ma',
@@ -154,7 +144,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'हे प्रभु, मुझे असत्य से सत्य की ओर ले चलो। अंधकार से प्रकाश की ओर ले चलो। मृत्यु से अमृत की ओर ले चलो। शांति, शांति, शांति।',
     tags: ['daily', 'peace'],
     countPerMala: 108,
-    isPremium: false,
   },
   {
     id: 'lokah_samastah',
@@ -168,7 +157,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'सभी लोक सुखी हों। सभी प्राणी स्वतंत्र हों। मेरे विचार, वचन और कर्म इस स्वतंत्रता और आनंद में योगदान दें।',
     tags: ['daily', 'peace'],
     countPerMala: 108,
-    isPremium: false,
   },
 
   // ── Sikh ──
@@ -183,7 +171,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'वाहेगुरु — अद्भुत प्रभु। यह सिख परंपरा का सबसे पवित्र नाम-जप है जो ईश्वर की महिमा और आश्चर्य का भाव व्यक्त करता है। इसके सिमरन से मन शांत और आत्मा प्रकाशित होती है।',
     tags: ['daily', 'devotion'],
     countPerMala: 108,
-    isPremium: false,
   },
   {
     id: 'mool_mantar',
@@ -196,7 +183,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'ईश्वर एक है, उसका नाम सत्य है, वह कर्ता है, निर्भय है, निर्वैर है, अकाल मूरत है, अजन्मा है, स्वयंभू है और गुरु की कृपा से प्राप्त होता है।',
     tags: ['daily', 'protection'],
     countPerMala: 108,
-    isPremium: false,
   },
   {
     id: 'ik_onkar',
@@ -209,7 +195,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'ईश्वर एक है। यह मंत्र परमेश्वर की एकता और समस्त सृष्टि में उसकी सर्वव्यापकता पर बल देता है।',
     tags: ['peace'],
     countPerMala: 108,
-    isPremium: true,
   },
 
   // ── Jain ──
@@ -225,7 +210,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'मैं अरिहंतों को, सिद्धों को, आचार्यों को, उपाध्यायों को और सभी साधु-साध्वियों को नमन करता हूँ। यह जैन परंपरा का सर्वोच्च मंत्र है जो पाँच परमेष्ठियों की वंदना करता है।',
     tags: ['daily', 'devotion'],
     countPerMala: 108,
-    isPremium: false,
   },
   {
     id: 'logassa',
@@ -239,7 +223,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'मैं उन चौबीस तीर्थंकरों की वंदना करता हूँ जो ब्रह्मांड के प्रकाशक, धर्म के संस्थापक और राग-द्वेष के विजेता हैं।',
     tags: ['peace', 'protection'],
     countPerMala: 108,
-    isPremium: true,
   },
 
   // ── Buddhist ──
@@ -255,7 +238,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'ओम मणि पद्मे हूम — कमल में स्थित मणि को नमन। यह करुणा के बोधिसत्व अवलोकितेश्वर का मंत्र है। इसके जप से करुणा, ज्ञान और मुक्ति का मार्ग खुलता है।',
     tags: ['daily', 'peace', 'healing'],
     countPerMala: 108,
-    isPremium: false,
   },
   {
     id: 'green_tara',
@@ -269,7 +251,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'ओम तारे तुत्तारे तुरे स्वाहा — यह हरी तारा का मंत्र है। तारा बोधिसत्व शीघ्र सहायता, संरक्षण और मुक्ति प्रदान करती हैं। इस मंत्र के जप से भय, बाधाएँ और कष्ट दूर होते हैं।',
     tags: ['protection', 'healing'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'medicine_buddha',
@@ -283,7 +264,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'तथागत भैषज्यगुरु वैदूर्यप्रभ को नमन। भैषज्यगुरु — औषधि बुद्ध — शरीर, मन और आत्मा के समस्त रोगों को दूर करते हैं। यह मंत्र उपचार और स्वास्थ्य की कामना के लिए जपा जाता है।',
     tags: ['healing', 'peace'],
     countPerMala: 108,
-    isPremium: true,
   },
   {
     id: 'amitabha',
@@ -297,7 +277,6 @@ export const MANTRAS: Mantra[] = [
     textMeaningHi: 'नमो अमिताभ बुद्धाय — असीम प्रकाश के बुद्ध को नमन। अमिताभ बुद्ध सुखावती (शुद्ध भूमि) के स्वामी हैं। इस मंत्र के जप से पुनर्जन्म के चक्र से मुक्ति और शुद्ध भूमि में जन्म की कामना की जाती है।',
     tags: ['devotion', 'peace'],
     countPerMala: 108,
-    isPremium: true,
   },
 ];
 

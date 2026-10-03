@@ -92,7 +92,7 @@ export default function WhatIsShoonayaPage() {
           Is it free?
         </h2>
         <p>
-          Foundational tools including Daily Dharma, Panchang, Japa, Scripture, and the Tirtha Map are completely free. Sacred wisdom should never be locked behind a mandatory paywall. Optional subscriptions exist solely to support independent scholarship and server maintenance.
+          All Shoonaya features currently available in the app are free to use. We are rebuilding the product from the ground up, and there are no paid plans or subscriptions at this time.
         </p>
       </section>
 

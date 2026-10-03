@@ -17,13 +17,9 @@ export async function GET() {
     // ── 1. Fetch full profile (timezone + location + tradition + pro status) ────────
     const { data: profile } = await supabase
       .from('profiles')
-      .select('tradition, spiritual_level, full_name, username, timezone, latitude, longitude, is_pro, subscription_status, city, neighbourhood')
+      .select('tradition, spiritual_level, full_name, username, timezone, latitude, longitude, city, neighbourhood')
       .eq('id', user.id)
       .maybeSingle();
-
-    const isPro = profile?.is_pro === true ||
-      profile?.subscription_status === 'pro' ||
-      profile?.subscription_status === 'kul_pro';
 
     const today = localSpiritualDate(profile?.timezone, 4);
 
@@ -157,23 +153,6 @@ Return ONLY this JSON:
     ).then(({ error }) => {
       if (error) console.warn('[digest] cache write failed:', error.message);
     });
-
-    // ── 7. Tier-gate: Seeker gets headline + truncated body, no fact/action ──
-    if (!isPro) {
-      const bodyFull = (parsed as any).body as string ?? '';
-      const preview = {
-        headline:   (parsed as any).headline,
-        body:       bodyFull.length > 180 ? bodyFull.slice(0, 180) + '…' : bodyFull,
-        panchang:   (parsed as any).panchang,
-        fact:       null,   // Zenith only
-        action:     null,   // Zenith only
-        is_preview: true,
-        upgrade_url: '/settings/subscription',
-        upgrade_message: 'Upgrade to Zenith for the full personalised digest — panchang insights, sacred actions, and spiritual facts delivered every day.',
-        from_cache: false,
-      };
-      return NextResponse.json(preview);
-    }
 
     return NextResponse.json({ ...parsed, is_preview: false, from_cache: false });
   } catch (err: any) {

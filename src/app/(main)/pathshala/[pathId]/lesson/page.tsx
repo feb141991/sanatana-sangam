@@ -22,7 +22,7 @@ export default async function LessonPage({
   const [{ data: profile }, { data: enrollment }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('tradition, full_name, username, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro')
+      .select('tradition, full_name, username, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
       .eq('id', user.id)
       .single(),
     supabase
@@ -37,11 +37,7 @@ export default async function LessonPage({
     redirect('/pathshala');
   }
 
-  const pathMeta = (SEED_PATHS as unknown as { id: string; difficulty: string; title: string; proRequired: boolean }[]).find(p => p.id === pathId);
-  const userIsPro = (profile as any)?.is_pro ?? false;
-  if (pathMeta && pathMeta.proRequired && !userIsPro) {
-    redirect('/pathshala?upgrade=1');
-  }
+  const pathMeta = SEED_PATHS.find(p => p.id === pathId);
 
   const tradition = profile?.tradition ?? 'hindu';
   const meta = getTraditionMeta(tradition);
@@ -63,7 +59,7 @@ export default async function LessonPage({
 
   // ── Build lesson data SERVER-SIDE (keeps ~900 KB out of client bundle) ───
   const lessons = getPathLessons(pathId);
-  // pathMeta already declared above for pro-gate check
+  // path metadata is shared with the browse surface.
   const pathTitle = pathMeta?.title ?? pathId;
 
   return (

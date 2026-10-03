@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 import { generateTTSCacheKey, getCachedAudio, setCachedAudio, fetchFromStorage, uploadToStorage } from '@/lib/tts/cache';
 import { synthesizeBhashini } from '@/lib/tts/bhashini';
@@ -42,25 +41,6 @@ export async function POST(req: NextRequest) {
 
   let textLanguage: string | null = null; // 'sa' = Sanskrit, 'hi' = Hindi, null = auto-detect
 
-  // ── Pro gate: check before parsing body (fast-fail for free users on premium voices)
-  let isPro = false;
-  try {
-    const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: ttsProfile } = await supabase
-        .from('profiles')
-        .select('is_pro, subscription_status')
-        .eq('id', user.id)
-        .single();
-      isPro = ttsProfile?.is_pro === true ||
-        ttsProfile?.subscription_status === 'pro' ||
-        ttsProfile?.subscription_status === 'kul_pro';
-    }
-  } catch {
-    // Non-blocking — if auth fails, fall back to free tier behaviour
-  }
-
   try {
     const body = await req.json();
     text = String(body.text ?? '').trim();
@@ -68,13 +48,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'text is too long' }, { status: 413 });
     }
 
-    // pandit / akash voices = Zenith only. Downgrade silently for free users.
     const requestedQuality = body.quality === 'pandit'
       ? 'pandit'
       : body.quality === 'akash'
         ? 'akash'
         : 'standard';
-    quality = (requestedQuality !== 'standard' && !isPro) ? 'standard' : requestedQuality;
+    quality = requestedQuality;
     requestedRate = body.rate
       ? Number(body.rate)
       : body.speed

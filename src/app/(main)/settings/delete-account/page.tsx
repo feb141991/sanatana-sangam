@@ -50,7 +50,7 @@ export default async function DeleteAccountPage() {
       .maybeSingle(),
   ]);
 
-  if (!profile) redirect('/settings/subscription');
+  if (!profile) redirect('/settings');
 
   const streak = streakRow?.streak_count ?? profile.shloka_streak ?? 0;
   const sevaScore = profile.seva_score ?? 0;

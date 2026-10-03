@@ -2,20 +2,18 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { MANTRAS, Mantra } from '@/data/mantras';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface MantrasClientProps {
   tradition: string;
-  isPro: boolean;
 }
 
 type TabType = 'all' | 'tradition' | 'others';
 
-export default function MantrasClient({ tradition, isPro }: MantrasClientProps) {
+export default function MantrasClient({ tradition }: MantrasClientProps) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
@@ -41,18 +39,6 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
   const localTextColor = isDark ? 'rgba(245,223,160,0.7)' : 'rgba(80,45,10,0.7)';
 
   const handleCardClick = (mantra: Mantra) => {
-    if (mantra.isPremium && !isPro) {
-      toast.success('Unlock with Zenith →', {
-        icon: '🔒',
-        style: {
-          borderRadius: '10px',
-          background: isDark ? '#1C150A' : '#fff',
-          color: isDark ? '#F0EDE6' : '#333',
-          border: '1px solid rgba(197,160,89,0.3)',
-        },
-      });
-      return;
-    }
     router.push(`/bhakti/mala?mantraId=${mantra.id}`);
   };
 
@@ -96,9 +82,7 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
 
       {/* Grid */}
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredMantras.map((mantra) => {
-          const isLocked = mantra.isPremium && !isPro;
-          return (
+        {filteredMantras.map((mantra) => (
             <motion.div
               key={mantra.id}
               whileTap={{ scale: 0.98 }}
@@ -107,18 +91,12 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
               style={{
                 backgroundColor: cardBg,
                 border: `1px solid ${cardBorder}`,
-                opacity: isLocked ? 0.6 : 1,
+                opacity: 1,
               }}
             >
-              {isLocked ? (
-                <div className="absolute bottom-4 right-4 text-[#C5A059]">
-                  <Lock size={18} />
-                </div>
-              ) : (
-                <div className="absolute bottom-4 right-4" style={{ color: 'var(--text-dim)' }}>
-                  <ChevronRight size={18} />
-                </div>
-              )}
+              <div className="absolute bottom-4 right-4" style={{ color: 'var(--text-dim)' }}>
+                <ChevronRight size={18} />
+              </div>
               <h3 className="text-lg font-bold font-serif mb-1" style={{ color: 'var(--text-base)' }}>{mantra.nameEn}</h3>
               <p className="text-sm font-serif mb-3" style={{ color: localTextColor, fontFamily: 'var(--font-devanagari), var(--font-serif)' }}>{mantra.nameLocal}</p>
               
@@ -138,8 +116,7 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
                 ))}
               </div>
             </motion.div>
-          );
-        })}
+          ))}
       </div>
 
     </div>

@@ -14,7 +14,7 @@ import Link from "next/link";
 function ReportCenterContent() {
   const searchParams = useSearchParams();
   const [timeframe, setTimeframe] = useState("7d");
-  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") === "finance" ? "overview" : searchParams.get("tab") || "overview");
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +60,7 @@ function ReportCenterContent() {
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center bg-black/5 p-1 rounded-xl">
-              {["overview", "content", "finance", "lifecycle", "export"].map((tab) => (
+              {["overview", "content", "lifecycle", "export"].map((tab) => (
                 <button 
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -152,7 +152,6 @@ function ReportCenterContent() {
                     <ReportButton label="Calendar Governance Audit" onClick={() => setActiveTab("governance")} />
                     <ReportButton label="Content Usage & Sadhana" onClick={() => setActiveTab("content")} />
                     <ReportButton label="Seeker Lifecycle & Traditions" onClick={() => setActiveTab("lifecycle")} />
-                    <ReportButton label="Subscription & Early Access Health" onClick={() => setActiveTab("finance")} />
                     <ReportButton label="Platform Data Extraction" onClick={() => setActiveTab("export")} />
                   </div>
                 </div>
@@ -260,67 +259,6 @@ function ReportCenterContent() {
           </div>
         )}
 
-        {/* FINANCE / SUBSCRIPTION HEALTH TAB */}
-        {activeTab === "finance" && (
-          <div className="space-y-8">
-            <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <GrowthCard 
-                href="/admin/users"
-                label="Monthly Recurring Revenue" 
-                value="₹0 (Free Launch)" 
-                trend="Early Access" 
-                up={true} 
-                icon={TrendingUp} 
-                color="emerald" 
-              />
-              <GrowthCard 
-                href="/admin/users"
-                label="Subscription Renewals" 
-                value={stats?.finance?.activeProSeekers ?? 0} 
-                trend="Active Pro" 
-                up={true} 
-                icon={RefreshCw} 
-                color="blue" 
-              />
-              <GrowthCard 
-                href="/admin/users"
-                label="Churn Rate" 
-                value="0.0%" 
-                trend="100% Retained" 
-                up={true} 
-                icon={CheckCircle} 
-                color="emerald" 
-              />
-            </section>
-
-            <div className="glass-panel rounded-[3rem] border border-black/5 p-10 bg-white/40">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-xl font-bold theme-ink">Subscription Health & Entitlements</h3>
-                  <p className="text-xs text-[var(--brand-muted)]">Live seeker entitlement telemetry across Early Access and Free tiers</p>
-                </div>
-                <button 
-                  onClick={() => triggerExport("subscriptions")}
-                  className="px-4 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-xs font-bold theme-ink flex items-center gap-1.5 transition-all"
-                >
-                  <Download size={14} /> Export Subscriptions CSV
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <ReportList 
-                  title="Subscription Health" 
-                  items={stats?.finance?.subscriptionItems || []} 
-                />
-                <ReportList 
-                  title="Renewals Due (Next 7 Days)" 
-                  items={stats?.finance?.renewalsList || []} 
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* LIFECYCLE & TRADITION DISTRIBUTION TAB */}
         {activeTab === "lifecycle" && (
           <div className="space-y-8">
@@ -406,11 +344,6 @@ function ReportCenterContent() {
                     title="Seeker Registry" 
                     desc="Full list of registered users with tradition, location, streak, onboarding, and auth status." 
                     onExport={() => triggerExport("seekers")}
-                  />
-                  <ExportCard 
-                    title="Financial & Entitlements Audit" 
-                    desc="Pro entitlement grants, Early Access records, and membership duration." 
-                    onExport={() => triggerExport("subscriptions")}
                   />
                 </div>
                 <div className="space-y-6">

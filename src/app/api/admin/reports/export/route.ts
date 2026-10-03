@@ -19,12 +19,12 @@ export async function GET(request: NextRequest) {
     if (type === "seekers") {
       const { data: users } = await supabase
         .from("profiles")
-        .select("id, username, full_name, tradition, city, country, is_pro, entitlement_source, onboarding_completed, shloka_streak, is_banned, created_at")
+        .select("id, username, full_name, tradition, city, country, onboarding_completed, shloka_streak, is_banned, created_at")
         .order("created_at", { ascending: false });
 
-      csvContent = "ID,Username,Full Name,Tradition,City,Country,Is Pro,Entitlement,Onboarded,Streak,Is Banned,Created At\n";
+      csvContent = "ID,Username,Full Name,Tradition,City,Country,Onboarded,Streak,Is Banned,Created At\n";
       (users || []).forEach((u: any) => {
-        csvContent += `"${u.id}","${u.username || ""}","${(u.full_name || "").replace(/"/g, "''")}","${u.tradition || ""}","${u.city || ""}","${u.country || ""}","${u.is_pro ? "Yes" : "No"}","${u.entitlement_source || "free"}","${u.onboarding_completed ? "Yes" : "No"}","${u.shloka_streak || 0}","${u.is_banned ? "Yes" : "No"}","${u.created_at}"\n`;
+        csvContent += `"${u.id}","${u.username || ""}","${(u.full_name || "").replace(/"/g, "''")}","${u.tradition || ""}","${u.city || ""}","${u.country || ""}","${u.onboarding_completed ? "Yes" : "No"}","${u.shloka_streak || 0}","${u.is_banned ? "Yes" : "No"}","${u.created_at}"\n`;
       });
     } else if (type === "sadhana") {
       const [
@@ -46,16 +46,6 @@ export async function GET(request: NextRequest) {
       });
       (nitya || []).forEach((n: any) => {
         csvContent += `"Nitya Karma","${n.id}","${n.user_id}","Karma: ${n.karma_key}","${n.completed_at}"\n`;
-      });
-    } else if (type === "subscriptions") {
-      const { data: pros } = await supabase
-        .from("profiles")
-        .select("id, username, full_name, is_pro, entitlement_source, created_at")
-        .eq("is_pro", true);
-
-      csvContent = "User ID,Username,Full Name,Plan Status,Entitlement Source,Member Since\n";
-      (pros || []).forEach((p: any) => {
-        csvContent += `"${p.id}","${p.username || ""}","${(p.full_name || "").replace(/"/g, "''")}","Active Pro","${p.entitlement_source || "early_access"}","${p.created_at}"\n`;
       });
     } else if (type === "moderation") {
       const { data: reports } = await (supabase.from("content_reports") as any)

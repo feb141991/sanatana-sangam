@@ -34,8 +34,6 @@ type ProfileRow = {
   wants_community_notifications: boolean | null;
   wants_family_notifications: boolean | null;
   shloka_streak: number | null;
-  is_pro: boolean | null;
-  subscription_status: string | null;
   timezone: string | null;
   rashi: string | null;
   nakshatra: string | null;
@@ -136,7 +134,7 @@ export async function GET(request: NextRequest) {
   const profileStartedAt = performance.now();
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, observance_reminder_lead_days, observance_reminder_time, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
+    .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, observance_reminder_lead_days, observance_reminder_time, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
     .eq("id", user.id)
     .maybeSingle();
   const profileMs = performance.now() - profileStartedAt;
@@ -167,7 +165,7 @@ export async function GET(request: NextRequest) {
     }
     const { data: refetched, error: refetchError } = await supabase
       .from("profiles")
-      .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, observance_reminder_lead_days, observance_reminder_time, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
+      .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, observance_reminder_lead_days, observance_reminder_time, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
       .eq("id", user.id)
       .maybeSingle();
     if (refetchError) {
@@ -476,8 +474,6 @@ export async function GET(request: NextRequest) {
       appLanguage: profile?.app_language ?? "en",
       activeSymbolId: profile?.active_symbol_id,
       sevaScore: profile?.seva_score ?? 0,
-      isPro: profile?.is_pro ?? false,
-      subscriptionStatus: profile?.subscription_status ?? "free",
       activeRelic: profile?.active_symbol_id ? SACRED_RELICS.find(r => r.id === profile.active_symbol_id) ?? null : null,
       rashi: profile?.rashi ?? null,
       nakshatra: profile?.nakshatra ?? null,

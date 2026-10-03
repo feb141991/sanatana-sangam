@@ -70,7 +70,7 @@ vi.mock('@supabase/supabase-js', () => ({
 
 vi.mock('@/lib/observance-notification-source', () => ({
   OCCURRENCE_BACKED_TITHI_SLUGS: new Set<string>(),
-  deduplicateTithiVrats: (obs) => obs,
+  deduplicateTithiVrats: <T extends { date: string; slug?: string | null; name?: string | null; route_slug?: string | null }>(obs: T[]) => obs,
   isWomenFocusedVrat: () => false,
   fetchReviewedObservancesForNotifications: async () => ({
     observances: [{
