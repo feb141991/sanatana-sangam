@@ -26,13 +26,14 @@ describe("AEO & SEO JSON-LD Configuration", () => {
   });
 
   it("keeps Shoonaya distinct in the raw HTML homepage identity", () => {
-    expect(landingHtml).toContain(
-      '<title>Shoonaya — Daily Dharmic Practice, Sacred Calendar &amp; Scripture</title>',
-    );
+    expect(landingHtml).toContain('<title>Shoonaya — Find your infinite.</title>');
     expect(landingHtml).toMatch(
-      /<h1 id="splash-title">Shoonaya\.<em>Daily dharma\.<\/em><\/h1>/,
+      /<h1 id="splash-title">Shoonaya\.<em>Find your infinite\.<\/em><\/h1>/,
     );
     expect(softwareApplication?.name).toBe("Shoonaya");
+    expect(softwareApplication?.description).toContain(
+      "A daily spiritual sanctuary for sacred time, practice, and connection.",
+    );
     expect(softwareApplication?.alternateName).toBeUndefined();
     expect(softwareApplication?.sameAs).toEqual([
       "https://apps.apple.com/app/shoonaya/id6793055966",

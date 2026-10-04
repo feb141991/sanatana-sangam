@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import PublicPageShell from "@/components/public/PublicPageShell";
 
 export const metadata: Metadata = {
-  title: "What is Shoonaya? | Spiritual Companion for Daily Dharma",
+  title: "What Is Shoonaya? | Find your infinite.",
   description:
-    "What is Shoonaya? A dharmic companion app for daily practice, sacred calendar, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
+    "Shoonaya is a daily spiritual sanctuary for sacred time, practice, and connection. Explore Panchang, observances, Japa, scripture, reflection, family, and community.",
   alternates: {
     canonical: "https://www.shoonaya.com/what-is-shoonaya",
   },
   openGraph: {
-    title: "What is Shoonaya? | Spiritual Companion for Daily Dharma",
+    title: "What Is Shoonaya? | Find your infinite.",
     description:
-      "What is Shoonaya? A dharmic companion app for daily practice, sacred calendar, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
+      "Shoonaya is a daily spiritual sanctuary for sacred time, practice, and connection. Explore Panchang, observances, Japa, scripture, reflection, family, and community.",
     url: "https://www.shoonaya.com/what-is-shoonaya",
   },
 };
@@ -21,16 +21,16 @@ export default function WhatIsShoonayaPage() {
     <PublicPageShell
       eyebrow="About the App"
       title="What is Shoonaya?"
-      intro="Shoonaya is a modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions."
+      intro="Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. It helps people with full lives notice sacred days, understand their local context, and make room for practice."
       asideTitle="The Name"
-      asideBody="The name Shoonaya is inspired by the Sanskrit term śūnya (शून्य), associated with zero and emptiness. Shoonaya is the name of this dharmic companion for daily practice, sacred time, scripture, family, and community."
+      asideBody="Shoonaya draws inspiration from śūnya (शून्य), a Sanskrit word associated with zero and emptiness. ‘Find your infinite’ is an invitation to pause, return inward, and make space for what matters."
     >
       <section>
         <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">
           Who is it for?
         </h2>
         <p>
-          Shoonaya is for anyone living a dharmic life, whether you grew up in the tradition or came to it later in life. It is especially meaningful for the global diaspora: families and individuals who live far from temples, gurduwaras, and viharas, but want to stay grounded in daily practice, sacred texts, and community.
+          Shoonaya is for people who want to stay connected to sacred time and spiritual practice while living full, modern lives. It can also help families and diaspora communities keep meaningful practices, learning, and connection close across distance.
         </p>
       </section>
 
@@ -40,31 +40,28 @@ export default function WhatIsShoonayaPage() {
         </h2>
         <ul className="list-disc pl-5 space-y-1">
           <li>
-            <strong>Daily Dharma:</strong> a thoughtful morning practice with scripture, contemplation, and japa.
+            <strong>Daily practice:</strong> make room for Japa, sadhana, and reflection at a pace that fits your day.
           </li>
           <li>
-            <strong>Panchang:</strong> astronomical calculations with tithi, nakshatra, yoga, and auspicious timings.
+            <strong>Panchang and sacred time:</strong> see daily tithi, nakshatra, and selected timings with local context.
           </li>
           <li>
-            <strong>Japa Counter:</strong> a tactile mala counter with streak tracking and gentle feedback.
+            <strong>Observances:</strong> notice sacred days such as Ekadashi and Amavasya, with guidance where available.
           </li>
           <li>
-            <strong>Scripture Library:</strong> the Bhagavad Gita, Upanishads, Guru Granth Sahib, Dhammapada, and Jain Agamas.
+            <strong>Japa:</strong> use a mala counter to support a focused mantra practice.
           </li>
           <li>
-            <strong>Tirtha Map:</strong> find Hindu mandirs, Sikh gurduwaras, Buddhist viharas, and Jain deris near you worldwide.
+            <strong>Scripture and Pathshala:</strong> explore texts and guided learning, including the Bhagavad Gita, Upanishads, Gurbani, Dhammapada, and Jain texts.
           </li>
           <li>
-            <strong>Festivals and Vrats:</strong> authentic sacred calendar dates with preparation guidance.
+            <strong>Rashiphal and Kundali:</strong> explore chart views and reflective astrology features.
           </li>
           <li>
-            <strong>Kul Family Spaces:</strong> preserve your family gotra, ancestral stories, and generational sanskaras.
+            <strong>Live Darshan and sacred places:</strong> explore available streams and discover sacred places.
           </li>
           <li>
-            <strong>Pathshala:</strong> verse-by-verse learning with original scripts and transliterations.
-          </li>
-          <li>
-            <strong>Mandali:</strong> find and connect with your local spiritual community.
+            <strong>Kul and Mandali:</strong> connect with family and community, and preserve family stories and lineage details.
           </li>
         </ul>
       </section>
@@ -74,7 +71,7 @@ export default function WhatIsShoonayaPage() {
           Why not just use social media or video apps?
         </h2>
         <p>
-          Most seekers use an ad-hoc mix of video streams for bhajans, chat groups for announcements, search engines for panchang, and generic apps for meditation. Shoonaya brings all of that together, shaped for your tradition, your language, and your local sunrise. No commercials interrupting kirtan, and no algorithmic feeds pulling you away from prayer.
+          Sacred dates, daily practice, learning, and community often live in separate places. Shoonaya brings these experiences together in one space, so you can notice what is unfolding and choose how you want to engage. It is a companion for practice and discovery, not a substitute for personal guidance or tradition-specific teachers.
         </p>
       </section>
 
@@ -83,7 +80,7 @@ export default function WhatIsShoonayaPage() {
           Which traditions does it support?
         </h2>
         <p>
-          Shoonaya supports four living traditions: <strong>Sanatan (Hindu)</strong>, <strong>Sikh</strong>, <strong>Jain</strong>, and <strong>Buddhist</strong>. The platform adapts its vocabulary, calendar calculations, scripture, and community features based on your path. You can follow multiple traditions or switch whenever you wish.
+          Shoonaya is rooted in <strong>Sanatan (Hindu)</strong> traditions and includes distinct content and experiences for <strong>Sikh</strong>, <strong>Jain</strong>, and <strong>Buddhist</strong> paths. These traditions have their own teachings and practices; available content and tools vary by feature.
         </p>
       </section>
 
@@ -92,7 +89,7 @@ export default function WhatIsShoonayaPage() {
           Is it free?
         </h2>
         <p>
-          All Shoonaya features currently available in the app are free to use. We are rebuilding the product from the ground up, and there are no paid plans or subscriptions at this time.
+          All features currently available in Shoonaya are free to use. There are no paid plans or subscriptions at this time.
         </p>
       </section>
 
@@ -101,7 +98,7 @@ export default function WhatIsShoonayaPage() {
           Is it live?
         </h2>
         <p>
-          Shoonaya is live today on the web at shoonaya.com. You are welcome to begin your daily practice and explore the scriptures right now.
+          Shoonaya is available on the web at shoonaya.com. You can explore its current features and begin a daily practice there.
         </p>
       </section>
     </PublicPageShell>

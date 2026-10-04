@@ -30,9 +30,9 @@ export default async function JoinPage({
         <h1 className="font-display text-3xl font-bold text-[color:var(--text-cream)] mb-2">
           Join Shoonaya
         </h1>
-        <p className="text-xs uppercase tracking-[0.16em] text-[#7B1A1A]/50 mb-3">Find your infinite</p>
+        <p className="text-xs uppercase tracking-[0.16em] text-[#7B1A1A]/50 mb-3">Find your infinite.</p>
         <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed mb-6">
-          A friend has invited you to discover ancient wisdom for seekers — community, scripture, bhakti, and local sangam across Hindu, Sikh, Buddhist, and Jain dharma.
+          A friend has invited you to Shoonaya — a daily spiritual sanctuary for sacred time, practice, and connection. Explore current features at your own pace.
         </p>
 
         <div className="hidden sm:flex flex-wrap justify-center gap-2 mb-6">

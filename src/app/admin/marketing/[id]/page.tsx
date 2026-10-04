@@ -563,7 +563,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                       rows={2}
                       value={aiPrompt}
                       onChange={e => setAiPrompt(e.target.value)}
-                      placeholder="e.g. Concise, punchy WhatsApp message on finding your infinity and daily dharma wherever life takes you..."
+                      placeholder="e.g. A warm, concise post about sacred time, daily practice, and connection..."
                       className="w-full p-2.5 rounded-lg border border-amber-500/30 text-xs font-medium outline-none focus:border-amber-600 bg-white"
                     />
                     <div className="flex items-center justify-end gap-2">

@@ -36,10 +36,10 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
   {
     id: "traditions",
     title: "Traditions & Lineages",
-    summary: "Authentic living traditions preserved with distinct vocabularies and sources.",
+    summary: "Shoonaya’s Sanatan roots and selected content for distinct traditions, each in its own context.",
     icon: Compass,
     links: [
-      { label: "Four Traditions Overview", href: "/traditions", description: "One Sangam for Sanatan, Sikh, Bauddha, and Jain paths." },
+      { label: "Explore Traditions", href: "/traditions", description: "Explore teachings and selected experiences from distinct traditions." },
       { label: "Sanatan Dharma", href: "/traditions/hindu", description: "Vedas, Upanishads, Gita, Nitya Karma, and Vrats." },
       { label: "Sikh Dharma", href: "/traditions/sikh", description: "Guru Granth Sahib, Nitnem, Hukamnama, Simran, and Seva." },
       { label: "Buddhist Dharma", href: "/traditions/buddhist", description: "Noble Eightfold Path, mindfulness, Suttas, and Dhamma." },
@@ -95,7 +95,7 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
     summary: "Connect through shared practice, family memory, and pilgrimage.",
     icon: Users,
     links: [
-      { label: "Global Sangam & The Zeroists", href: "/community", description: "One home, many paths: respectful community without social noise." },
+      { label: "Shoonaya Community", href: "/community", description: "Local Mandali, shared practice, and family connection with respect for distinct paths." },
       { label: "Local Mandali Circles", href: "/features/mandali", description: "Find and participate in nearby practice groups." },
       { label: "Tirtha Pilgrimage Map", href: "/features/tirtha", description: "Explore sacred temples, gurdwaras, and pilgrimage sites." },
       { label: "Kul & Family Lineage", href: "/features/family-lineage", description: "Preserve sacred family traditions and memories privately." },
@@ -129,7 +129,7 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
     summary: "Our commitment to privacy, scholar council oversight, and transparency.",
     icon: ShieldCheck,
     links: [
-      { label: "About Shoonaya", href: "/about", description: "The vision, founders, and journey of building a digital home for dharma." },
+      { label: "About Shoonaya", href: "/about", description: "Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection." },
       { label: "Editorial & Scholarly Guidelines", href: "/guidelines", description: "Rigorous standards for scriptural translation and tradition accuracy." },
       { label: "Privacy Policy", href: "/privacy", description: "Zero ad tracking, zero user data sale, strict privacy standards." },
       { label: "Terms of Service", href: "/terms", description: "Terms governing use of the Shoonaya website and mobile app." },

@@ -13,7 +13,7 @@ type TraditionItem = {
   glowColor: string;
   bgSoft: string;
   borderSoft: string;
-  date: string;
+  contextLabel: string;
   script: string;
   scriptStyle?: React.CSSProperties;
   translation: string;
@@ -33,7 +33,7 @@ const TRADITIONS: TraditionItem[] = [
     glowColor: "rgba(216, 138, 28, 0.45)",
     bgSoft: "rgba(216, 138, 28, 0.1)",
     borderSoft: "rgba(200, 146, 74, 0.3)",
-    date: "Vaishakha, Shukla Tritiya · Vikrama 2083",
+    contextLabel: "Selected teaching",
     script:
       "यदा यदा हि धर्मस्य ग्लानिर्भवति भारत। अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥",
     scriptStyle: {
@@ -44,15 +44,15 @@ const TRADITIONS: TraditionItem[] = [
       '"Whenever righteousness declines and unrighteousness rises, I manifest myself anew."',
     source: "Bhagavad Gita · Chapter 4, Verse 7",
     features: [
-      "Daily Shloka",
-      "Vedic Panchang",
-      "18 Puranas",
-      "12 Jyotirlingas",
-      "Sanskrit Library",
-      "Temple Directory",
+      "Bhagavad Gita",
+      "Upanishads",
+      "Panchang",
+      "Japa",
+      "Bhakti",
+      "Rashiphal & Kundali",
     ],
     description:
-      "From the Vedas to the Upanishads, from daily puja to grand utsavs, Shoonaya gives every Hindu a digital home for their spiritual life, wherever they are in the world.",
+      "Shoonaya is rooted in Sanatan Dharma. Explore selected scripture, sacred-time context, and daily practice tools; sources and feature availability vary.",
   },
   {
     key: "sikh",
@@ -64,7 +64,7 @@ const TRADITIONS: TraditionItem[] = [
     glowColor: "rgba(27, 94, 139, 0.45)",
     bgSoft: "rgba(27, 94, 139, 0.1)",
     borderSoft: "rgba(91, 164, 212, 0.3)",
-    date: "Vaishakha, Shukla Tritiya · Nanakshahi 558",
+    contextLabel: "Selected teaching",
     script: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥",
     scriptStyle: {
       fontFamily:
@@ -74,15 +74,15 @@ const TRADITIONS: TraditionItem[] = [
       '"O my mind, you are the very form of Divine Light: recognise your own origin."',
     source: "Guru Granth Sahib Ji · Ang 441",
     features: [
-      "Nitnem Banis",
-      "Gurpurab Calendar",
-      "Gurdwara Finder",
-      "Kirtan Library",
-      "Ardas Reminders",
-      "Hukamnama Daily",
+      "Gurbani",
+      "Nitnem",
+      "Gurpurab",
+      "Seva",
+      "Simran",
+      "Sikh history",
     ],
     description:
-      "Track daily nitnem, get Gurpurab reminders, find your nearest Gurdwara, and connect with the global Sikh sangat in one shared place, infused with the spirit of Seva.",
+      "Find selected Sikh scripture, observance, and community experiences in their own context. Content and feature availability vary.",
   },
   {
     key: "buddhist",
@@ -94,7 +94,7 @@ const TRADITIONS: TraditionItem[] = [
     glowColor: "rgba(139, 45, 62, 0.45)",
     bgSoft: "rgba(139, 45, 62, 0.1)",
     borderSoft: "rgba(212, 130, 122, 0.3)",
-    date: "Vaishakha, Shukla Tritiya · Buddhist Era 2569",
+    contextLabel: "Selected teaching",
     script: "Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.",
     scriptStyle: {
       fontFamily: "Georgia, 'Times New Roman', serif",
@@ -105,14 +105,14 @@ const TRADITIONS: TraditionItem[] = [
     source: "Dhammapada · Verse 1",
     features: [
       "Dhammapada",
-      "Meditation Timer",
-      "Buddhist Calendar",
-      "Pali Canon",
-      "Sangha Finder",
-      "Buddha Purnima",
+      "Dhamma",
+      "Uposatha",
+      "Pali texts",
+      "Mindfulness",
+      "Meditation",
     ],
     description:
-      "Walk the Eightfold Path with daily reflections from the Dhammapada, guided meditation sessions, and a global Buddhist community united in the pursuit of liberation.",
+      "Explore selected Buddhist teachings and reflective practices. Content and feature availability vary, and the traditions are not presented as interchangeable.",
   },
   {
     key: "jain",
@@ -124,7 +124,7 @@ const TRADITIONS: TraditionItem[] = [
     glowColor: "rgba(42, 107, 74, 0.45)",
     bgSoft: "rgba(42, 107, 74, 0.1)",
     borderSoft: "rgba(106, 185, 154, 0.3)",
-    date: "Vaishakha, Shukla Tritiya · Vira Nirvana Samvat 2552",
+    contextLabel: "Selected teaching",
     script: "परस्परोपग्रहो जीवानाम् ।",
     scriptStyle: {
       fontFamily:
@@ -134,14 +134,14 @@ const TRADITIONS: TraditionItem[] = [
     source: "Tattvartha Sutra · 5.21 · Umasvati",
     features: [
       "Agama Texts",
+      "Ahimsa",
       "Paryushana",
-      "Tirtha Locations",
-      "Pratikraman Guide",
-      "Samayasara",
-      "Vrat Tracker",
+      "Pratikraman",
+      "Jain philosophy",
+      "Vrats",
     ],
     description:
-      "Explore Jain Agamas, track Paryushana observances, locate sacred Tirthas, and practice Ahimsa daily, guided by the eternal teachings of the 24 Tirthankaras.",
+      "Explore selected Jain teachings, observances, and practice references. Content and feature availability vary.",
   },
 ];
 
@@ -183,15 +183,15 @@ export function TraditionsSectionClient() {
       {/* Header */}
       <div className="mb-10 text-center max-w-3xl mx-auto space-y-3">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--brand-primary-strong)]">
-          Choose Your Tradition
+          Explore traditions
         </p>
         <h2 className="font-display text-4xl font-medium leading-tight sm:text-5xl text-[var(--text-cream)]">
-          Four paths, one Sangam.
+          Distinct traditions, their own context.
         </h2>
         <p className="text-base leading-8 text-[var(--text-muted-warm)] sm:text-lg">
-          Shoonaya honours the full breadth of dharmic wisdom across Hindu, Sikh,
-          Buddhist, and Jain. Each tradition has its own dedicated experience
-          within one shared community.
+          Shoonaya is rooted in Sanatan Dharma and includes selected experiences
+          for Sikh, Jain, and Buddhist paths. Each has its own teachings and
+          practices; availability varies by feature.
         </p>
       </div>
 
@@ -412,7 +412,7 @@ export function TraditionsSectionClient() {
             style={{ borderColor: activeTrad.borderSoft }}
           >
             <div className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-[var(--text-dim)] mb-2">
-              {activeTrad.date}
+              {activeTrad.contextLabel}
             </div>
             <div
               className="text-lg sm:text-2xl leading-relaxed text-[var(--text-cream)] mb-2"
@@ -429,7 +429,7 @@ export function TraditionsSectionClient() {
             </div>
           </div>
 
-          {/* Feature pill chips */}
+          {/* Topics and source areas, rather than a promise of complete feature coverage */}
           <div className="flex flex-wrap gap-2 mb-5">
             {activeTrad.features.map((feat) => (
               <span

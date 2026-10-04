@@ -83,7 +83,7 @@ export function InviteModal({ userId, onClose }: InviteModalProps) {
   };
 
   const handleShare = async () => {
-    const shareText = `Join me on Shoonaya — your home for dharma, Panchang, scriptures, and community.\n\nUse my invite: ${code}\n${link}`;
+    const shareText = `Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.\n\nUse my invite: ${code}\n${link}`;
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({ title: 'Join me on Shoonaya 🙏', text: shareText, url: link });

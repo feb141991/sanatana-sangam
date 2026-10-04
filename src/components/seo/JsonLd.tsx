@@ -166,7 +166,7 @@ export function OrganizationJsonLd() {
         "name": "Shoonaya",
         "url": "https://www.shoonaya.com",
         "logo": "https://www.shoonaya.com/icons/icon-512x512.png",
-        "description": "Shoonaya is a modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
+        "description": "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
         "sameAs": [
           OFFICIAL_SOCIAL_LINKS.linkedin,
           OFFICIAL_SOCIAL_LINKS.instagram,

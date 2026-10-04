@@ -13,7 +13,7 @@ import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 export const metadata: Metadata = {
   title: "Shoonaya Community | Belonging Without Noise",
   description:
-    "Discover Shoonaya’s approach to local Mandali, shared practice, family continuity and respectful dharmic community.",
+    "Discover Shoonaya’s approach to local Mandali, shared practice, family continuity, and community that respects distinct spiritual paths.",
   alternates: { canonical: "https://www.shoonaya.com/community" },
 };
 
@@ -88,9 +88,11 @@ export default function CommunityPage() {
             Seekers returning to the source.
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[var(--text-muted-warm)]">
-            Zeroists is a humble community identity: one home, many paths. It is
-            an invitation to belonging, never a rank, sect or claim of
-            superiority.
+            Zeroists is a community identity for seekers who value stillness,
+            humility, and compassion. It is an invitation to belonging, never a
+            rank, sect, or claim of superiority. Shoonaya is rooted in Sanatan
+            Dharma and includes selected experiences from Sikh, Jain, and
+            Buddhist traditions in their own context where available.
           </p>
         </div>
       </section>

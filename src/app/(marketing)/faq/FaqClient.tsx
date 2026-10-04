@@ -35,15 +35,15 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Traditions & Philosophy",
     question: "What is Shoonaya and what is the vision behind it?",
     answer:
-      "Shoonaya is a calm, contemplative spiritual companion for seekers of Sanatan, Sikh, Jain, and Buddhist wisdom. It brings together daily sadhana, astronomical panchang, sacred scriptures, tactile japa, and living community into one digital space, shaped around your tradition, language, and timezone.",
+      "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. It helps people with full lives notice what is unfolding in their local Panchang, understand sacred days, and make room for daily practice.",
     bullets: [
-      "Derived from Shoonya: The Sanskrit word for zero, emptiness, and the boundless potential where all paths return to source.",
-      "Built for the global diaspora: Maintaining authentic spiritual practice whether in India, North America, the UK, Europe, or beyond.",
-      "Ad-free and sacred: No corporate algorithms, no commercial popups, and no distractions during meditation or prayer.",
+      "Notice upcoming observances such as Ekadashi and Amavasya, with local context where available.",
+      "Return to Japa, daily sadhana, scripture, and reflection at a pace that fits your life.",
+      "Stay connected through family spaces, sacred-place discovery, and community features.",
     ],
     links: [
       { label: "What is Shoonaya Philosophy", href: "/what-is-shoonaya" },
-      { label: "Four Traditions Overview", href: "/traditions" },
+      { label: "Explore Traditions", href: "/traditions" },
     ],
   },
   {
@@ -52,16 +52,14 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Services & Practice",
     question: "What services and spiritual tools are included in Shoonaya?",
     answer:
-      "Shoonaya offers a comprehensive suite of dedicated services designed to ground your spiritual routine throughout the day:",
+      "Shoonaya brings together experiences for sacred time, daily practice, learning, reflection, family, and community:",
     bullets: [
-      "Daily Dharma & Sadhana: Structured morning contemplation, daily verses, and guided ritual reflections.",
-      "Panchang & Sacred Time: Drik Ganita astronomical calculations for your exact city, including tithi, nakshatra, rahu kalam, and auspicious muhurats.",
-      "Tactile Japa Mala: Mala counter (27, 54, 108 beads) with responsive haptic feedback, mantra audio, and daily streak tracking.",
-      "Pathshala & Scripture Study: Verse-by-verse learning across the Bhagavad Gita, Upanishads, Guru Granth Sahib, Dhammapada, and Jain Agamas with Devanagari, Gurmukhi, Roman transliterations, and scholarly translations.",
-      "Gyan Chaupar: The original Indian philosophical board game demonstrating karmic ascent and the spiritual ladder of virtues.",
-      "Tirtha Map: A global sacred directory to locate nearby mandirs, gurduwaras, viharas, and Jain deris anywhere in the world.",
-      "Kul (Family Spaces): A sacred sanctuary to preserve your family gotra, ancestral lineage, sanskaras, and generational blessings.",
-      "Mandali: Local spiritual circles, satsang discovery, and community connection.",
+      "Panchang and observances: Daily sacred-time context and upcoming days such as Ekadashi and Amavasya.",
+      "Daily practice and Japa: Tools for mantra practice, sadhana, and reflection.",
+      "Scripture and Pathshala: Sacred texts and guided learning, with content varying by tradition and feature.",
+      "Rashiphal and Kundali: Chart views and reflective astrology features.",
+      "Live Darshan and Tirtha: Available streams and sacred-place discovery.",
+      "Kul and Mandali: Family, lineage, and community spaces.",
     ],
     links: [
       { label: "Explore Daily Sadhana", href: "/features/daily-sadhana" },
@@ -75,11 +73,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Services & Practice",
     question: "How does the Sacred Calendar and Panchang calculate timings?",
     answer:
-      "Shoonaya relies on an astronomical calculation engine grounded in the Drik Ganita system. Rather than using generic timezone approximations, our engine computes celestial positions relative to your exact latitude, longitude, and local sunrise/sunset.",
+      "Shoonaya combines astronomical context with tradition-specific calendar rules. Some observance dates vary by location, calendar profile, or tradition, so a date should be read with the context and review information shown in the app.",
     bullets: [
-      "Observes solar and lunar transitions down to the precise minute.",
-      "Accounts for tradition-specific observance rules (e.g. Smartha vs. Vaishnava Ekadashi, regional masa start rules).",
-      "Zero hardcoded guesswork: disputed astronomical events carry transparent council and lineage notices.",
+      "Panchang views include tithi, nakshatra, and selected timings based on available location settings.",
+      "Recognized tradition and regional rules can produce different observance dates.",
+      "Check the displayed notes and sources where available; unresolved occurrences may be withheld.",
     ],
     links: [{ label: "View Today's Panchang", href: "/panchang" }],
   },
@@ -89,11 +87,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Services & Practice",
     question: "How does the Tactile Japa Mala counter work?",
     answer:
-      "The Japa Mala recreates the tactile mindfulness of traditional rudraksha, tulsi, and crystal beads on your mobile device. As you chant, tapping produces custom-tuned micro-vibrations simulating the physical passing of a bead through your fingertips.",
+      "The Japa counter offers a digital mala interface for mantra repetition. You can use it to keep count and support a focused practice; available feedback depends on your device and app settings.",
     bullets: [
-      "Configurable mala sizes: 27 beads, 54 beads, or the traditional 108 beads.",
-      "Auditory chanting support: listen to authentic mantra recitations or practice in silent absorption.",
-      "Offline tracking: your japa counts and streaks record seamlessly even in remote retreats without internet.",
+      "Choose from available counter lengths, including 27, 54, and 108 beads.",
+      "Use available audio support or practice in silence.",
+      "Progress and synchronization can depend on device connectivity and account state.",
     ],
     links: [{ label: "Read Japa Guide", href: "/features/japa" }],
   },
@@ -103,11 +101,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Services & Practice",
     question: "How does Pathshala and scripture recitation work?",
     answer:
-      "Pathshala transforms sacred texts from static books into an active daily learning path. Each text is presented in original scripts (Devanagari, Gurmukhi, Pali, Prakrit), alongside phonetic Roman transliterations and authentic verse-by-verse commentaries.",
+      "Pathshala offers guided study experiences for selected sacred texts. Depending on the text, a lesson may include original script, transliteration, translation, commentary, or audio.",
     bullets: [
-      "Listen and recite: audio recitations assist with correct Sanskrit, Gurmukhi, and Pali pronunciation and meter.",
-      "Preserves multiple commentaries: explore traditional bhasyas from historic acharyas without editorial bias.",
-      "Bookmark verses and track memorization progress at your own pace.",
+      "Study the sources and translations available for each text.",
+      "Use recitation audio where it is available.",
+      "Bookmark and track learning progress in supported lessons.",
     ],
     links: [{ label: "Review Sources & Provenance", href: "/sources" }],
   },
@@ -117,11 +115,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Services & Practice",
     question: "What is Gyan Chaupar and how can I play it?",
     answer:
-      "Gyan Chaupar (the Game of Wisdom) is the ancient Indian philosophical board game that gave birth to modern Snakes and Ladders. Designed by rishis as an educational contemplation tool, each square represents a virtue (ladder) or a vice (snake). Playing the game teaches the dynamics of karma, ego, patience, and liberation (Moksha).",
+      "Gyan Chaupar is an interactive adaptation of a traditional wisdom-game format. It offers a playful way to explore themes and reflections associated with the board.",
     bullets: [
-      "Fully interactive board playable directly in your browser without installs.",
-      "Rich spiritual descriptions for every square detailing scriptural virtues and karmic pitfalls.",
-      "Available as an educational tool for youth and adults alike.",
+      "Play the browser-based version from the Shoonaya website.",
+      "Explore reflections associated with the spaces on the board.",
+      "Availability and content may change as the experience develops.",
     ],
     links: [{ label: "Play Gyan Chaupar Online", href: "/play/gyan-chaupar" }],
   },
@@ -131,11 +129,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Services & Practice",
     question: "What is the Tirtha Map and how does it locate mandirs and gurduwaras?",
     answer:
-      "The Tirtha Map helps seekers locate sacred places of worship anywhere in the world. Whether looking for a Hindu mandir, Sikh gurduwara, Buddhist vihara, or Jain derasar in your home city or while traveling abroad, the map provides verified directions, timings, and community contacts.",
+      "The Tirtha directory helps you explore sacred places and community-submitted listings. Coverage and listing details vary by location, so confirm practical details with the place before travelling.",
     bullets: [
-      "Crowdsourced and council-verified data for global diaspora accuracy.",
-      "Filters by specific tradition, deity, or sampradaya.",
-      "Includes community-submitted updates for festive celebrations and langar/prasad timings.",
+      "Explore available listings for different traditions.",
+      "Use location and tradition filters where supported.",
+      "Check current hours and event details with the venue.",
     ],
     links: [{ label: "Explore Traditions", href: "/traditions" }],
   },
@@ -145,11 +143,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Services & Practice",
     question: "What is Kul (Family Spaces)?",
     answer:
-      "Kul is a private, family-centric sanctuary within Shoonaya dedicated to preserving heritage across generations. In modern diaspora life, family stories, gotra knowledge, and ancestral sanskaras are often lost over time; Kul creates an enduring digital record for your lineage.",
+      "Kul is a family space for keeping lineage details, family dates, shared practices, and stories together across generations.",
     bullets: [
-      "Preserve ancestral gotra, kuldevi/kuldevta, and pravara lineages.",
-      "Document important family rites, shraddha observances, and birth sanskaras.",
-      "Invite family elders to record oral histories and spiritual memories for future generations.",
+      "Add family members and lineage details.",
+      "Keep family dates and remembrances together.",
+      "Share practices and stories with invited family members.",
     ],
   },
   {
@@ -158,12 +156,10 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Traditions & Philosophy",
     question: "Is Shoonaya only for Hindus, or does it support other traditions?",
     answer:
-      "Shoonaya is built for four living dharmic traditions: Sanatan (Hindu), Sikh, Jain, and Buddhist. The platform respects the distinctive theology, sacred texts, calendar rules, and vocabulary of each path rather than homogenizing them into a generic blend.",
+      "Shoonaya is rooted in Sanatan (Hindu) traditions and includes distinct content and experiences for Sikh, Jain, and Buddhist paths. Each tradition has its own teachings and practices; the content and tools available vary by feature.",
     bullets: [
-      "Sikh practitioners receive Gurbani verses, Nitnem schedules, and Gurpurab commemorations.",
-      "Buddhist seekers find Dhammapada verses, Pali canon reflections, and mindfulness tools.",
-      "Jain followers observe Paryushana, Tirthankara teachings, and Ahimsa-centered guidelines.",
-      "Sanatan followers access Vedic hymns, Upanishads, Gita wisdom, and sampradaya calendars.",
+      "Tradition-specific content is presented in its own context where available.",
+      "Calendar and practice features may differ by tradition and selected profile.",
     ],
     links: [
       { label: "Sanatan Dharma", href: "/traditions/hindu" },
@@ -178,7 +174,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Traditions & Philosophy",
     question: "Who are the Zeroists?",
     answer:
-      "Zeroists are the seekers and practitioners who make up the Shoonaya community. A Zeroist is someone who strives to return to the primordial zero (Shoonya), setting aside mental clutter, ego, and sectarian animosity to discover inner quiet and pure awareness. Zeroism embraces daily discipline, intellectual humility, and compassion across all dharmic lineages.",
+      "Zeroists is a community identity for Shoonaya seekers who value returning to stillness, humility, and compassion. It describes shared values; it is not a separate spiritual tradition or a claim that distinct paths are the same.",
     links: [{ label: "About Shoonaya Community", href: "/community" }],
   },
   {
@@ -187,11 +183,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Privacy, Trust & Security",
     question: "Is my spiritual practice and personal reflection data kept private?",
     answer:
-      "Absolutely. We believe that spiritual sadhana is deeply personal and must never be commercialized. Shoonaya adheres strictly to our Zeroists Privacy Charter:",
+      "Review the Privacy Policy for details about data handling. What other people can see depends on the feature and on what you choose to share.",
     bullets: [
-      "Zero behavioral advertising: We do not display ad banners, tracking pixels, or sell user behavior to advertising brokers.",
-      "Encrypted reflections: Private journal entries, japa counts, and family Kul records remain private and secure.",
-      "Transparent data ownership: You can export your sadhana history or delete your account with one click at any time.",
+      "Use the app's available privacy and sharing controls.",
+      "Check the Privacy Policy for what information is stored and how it is used.",
+      "Contact support if you need help with your account or data request.",
     ],
     links: [{ label: "Privacy Policy", href: "/privacy" }],
   },
@@ -201,7 +197,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Privacy, Trust & Security",
     question: "Can I use Shoonaya offline while meditating or during retreats?",
     answer:
-      "Yes. Shoonaya features an offline-first architectural model. Your active sadhana routines, japa counters, daily panchang calculations, and downloaded scripture texts remain accessible without an active internet connection. When you reconnect, your progress synchronizes automatically.",
+      "Offline availability depends on the feature and on what is already stored on your device. Features that need fresh calendar data, account sync, location lookup, or live streams require an internet connection.",
   },
   {
     id: "free-or-paid",
@@ -217,7 +213,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Platform & Access",
     question: "Does Shoonaya work accurately outside India?",
     answer:
-      "Yes. Shoonaya was built from the ground up for the global diaspora. Whether you live in London, Toronto, Dubai, New York, Singapore, Sydney, or Johannesburg, your Panchang is computed for your city's local coordinates, ensuring that sunrise-dependent vrats and muhurats are 100% accurate for your real-world location.",
+      "Shoonaya provides location-aware Panchang context for supported locations. Calendar results can depend on the selected place, calendar profile, and tradition; review the context shown in the app for your location.",
   },
   {
     id: "available-platforms",
@@ -225,11 +221,11 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Platform & Access",
     question: "Which platforms and devices can I use Shoonaya on?",
     answer:
-      "Shoonaya is accessible today across all modern platforms:",
+      "Shoonaya is available on the web. Current mobile access options are listed on the website and may vary by platform.",
     bullets: [
-      "Web App (Live Now): Works instantly on any browser (Chrome, Safari, Firefox, Edge) on phones, tablets, and laptops.",
-      "Android App: Verified beta is currently open for early adopters.",
-      "iPhone & iPad (iOS): Add to Home Screen directly from Safari for a native, app-like standalone experience. A dedicated iOS app is planned for future release.",
+      "Open shoonaya.com in a supported web browser.",
+      "See the Android beta page for current enrollment details.",
+      "Follow the store links on the site for current app availability.",
     ],
     links: [{ label: "Android Beta Access", href: "/beta/android" }],
   },

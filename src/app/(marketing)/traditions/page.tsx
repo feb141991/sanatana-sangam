@@ -4,9 +4,9 @@ import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { TraditionsSectionClient } from "./TraditionsSectionClient";
 
 export const metadata: Metadata = {
-  title: "Dharmic Traditions & 5,000-Year Story | Shoonaya",
+  title: "Traditions & Teachings | Shoonaya",
   description:
-    "Explore four living traditions: Sanatan, Sikh, Buddhist, and Jain, united in one home across 5,000 years of unbroken wisdom.",
+    "Shoonaya is rooted in Sanatan Dharma and includes selected, distinct Sikh, Jain, and Buddhist experiences where available. Explore traditions and teachings in their own context.",
   alternates: { canonical: "https://www.shoonaya.com/traditions" },
 };
 
@@ -17,7 +17,7 @@ const TIMELINE_NODES = [
     tradition: "Sanatan Dharma",
     color: "#D88A1C",
     bgSoft: "rgba(216, 138, 28, 0.12)",
-    description: "The oldest known human text. Sanskrit. Oral. Eternal.",
+    description: "Hymns preserved through oral and textual traditions in Sanskrit.",
   },
   {
     year: "c. 500 BCE",
@@ -25,7 +25,7 @@ const TIMELINE_NODES = [
     tradition: "Buddhist Dharma",
     color: "#8B2D3E",
     bgSoft: "rgba(139, 45, 62, 0.12)",
-    description: "The Buddha's teachings. Pali. Preserved across Asia.",
+    description: "Teachings associated with the Buddha, preserved in several canons.",
   },
   {
     year: "c. 200 CE",
@@ -33,7 +33,7 @@ const TIMELINE_NODES = [
     tradition: "Jain Dharma",
     color: "#2A6B4A",
     bgSoft: "rgba(42, 107, 74, 0.12)",
-    description: "Jain cosmology and ethics. The science of liberation.",
+    description: "A foundational Jain text on philosophy and conduct.",
   },
   {
     year: "1604 CE",
@@ -41,15 +41,15 @@ const TIMELINE_NODES = [
     tradition: "Sikh Dharma",
     color: "#1B5E8B",
     bgSoft: "rgba(27, 94, 139, 0.12)",
-    description: "The living Guru. Multi-faith. The ultimate sangam.",
+    description: "The central Sikh scripture, revered as the living Guru.",
   },
   {
     year: "2026 CE",
     name: "Shoonaya",
-    tradition: "The Living Sangam",
+    tradition: "A daily spiritual sanctuary",
     color: "#C5A059",
     bgSoft: "rgba(197, 160, 89, 0.2)",
-    description: "One home for all four paths. The next chapter begins now.",
+    description: "Sacred time, practice, and connection for everyday life.",
     isCurrent: true,
   },
 ];
@@ -57,14 +57,14 @@ const TIMELINE_NODES = [
 export default function TraditionsPage() {
   return (
     <main>
-      {/* 1. START WITH: A 5,000-YEAR STORY */}
+      {/* Begin with the distinct traditions Shoonaya draws from. */}
       <MarketingPageHero
-        eyebrow="A 5,000-Year Story"
-        title="Four traditions. One home. For the first time."
-        intro="The Bhagavad Gita. The Guru Granth Sahib Ji. The Dhammapada. The Agamas. Four living traditions, each with thousands of years of wisdom, millions of daily practitioners, and a global diaspora seeking connection with their roots. They have always deserved a home worthy of them. Shoonaya is that home."
+        eyebrow="Traditions and teachings"
+        title="Distinct paths, honored in their own context."
+        intro="Shoonaya is rooted in Sanatan Dharma and includes selected experiences from Sikh, Jain, and Buddhist traditions. Each path has its own teachings, history, and practice; Shoonaya presents them distinctly where available and does not treat them as interchangeable."
       />
 
-      {/* 5,000-Year Story Timeline & Stats Section */}
+      {/* Selected texts and traditions through time */}
       <section className="border-b border-[var(--card-border)] bg-[var(--surface-soft)] px-5 py-16 sm:px-8 lg:px-10 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
@@ -72,13 +72,13 @@ export default function TraditionsPage() {
             <div className="space-y-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--brand-primary-strong)]">
-                  Living Continuity
+                  Distinct traditions
                 </p>
                 <h2 className="mt-3 font-display text-4xl font-medium leading-tight text-[var(--text-cream)] sm:text-5xl">
-                  Unbroken wisdom across millennia.
+                  Each path has its own roots.
                 </h2>
                 <p className="mt-5 text-base leading-relaxed text-[var(--text-muted-warm)] sm:text-lg">
-                  Each path brings distinct vocabulary, scriptural canon, sacred dates, and ritual nuance. Shoonaya never flattens them into a generic blend, providing dedicated, tradition-qualified experiences grounded in source provenance (Pramana).
+                  Traditions have their own vocabularies, texts, observances, and practices. Shoonaya’s Sanatan roots are clear, and selected Sikh, Jain, and Buddhist content is presented in its own context where available.
                 </p>
               </div>
 
@@ -86,28 +86,28 @@ export default function TraditionsPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
                   <div className="font-display text-3xl font-semibold text-[var(--brand-primary-strong)]">
-                    1.5B+
+                    Sanatan roots
                   </div>
                   <div className="mt-1 text-xs uppercase tracking-wider text-[var(--text-muted-warm)]">
-                    Dharmic Souls Worldwide
+                    Shoonaya’s spiritual foundation
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
                   <div className="font-display text-3xl font-semibold text-[var(--brand-primary-strong)]">
-                    Pramana
+                    Distinct paths
                   </div>
                   <div className="mt-1 text-xs uppercase tracking-wider text-[var(--text-muted-warm)]">
-                    Source-Grounded Wisdom
+                    Selected content in its own context
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
                   <div className="font-display text-3xl font-semibold text-[var(--brand-primary-strong)]">
-                    5,000
+                    Daily practice
                   </div>
                   <div className="mt-1 text-xs uppercase tracking-wider text-[var(--text-muted-warm)]">
-                    Years of Wisdom
+                    Sacred time, reflection, and learning
                   </div>
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function TraditionsPage() {
             {/* Right: Chronological Timeline */}
             <div className="rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] p-6 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-dim)] mb-6">
-                Chronological Lineage
+                Selected texts and traditions
               </p>
               <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-[var(--card-border)]">
                 {TIMELINE_NODES.map((node, i) => (

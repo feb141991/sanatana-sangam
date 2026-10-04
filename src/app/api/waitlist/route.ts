@@ -128,29 +128,23 @@ const TRAD_VERSE: Record<string, TradVerse> = {
 
 // ─── Tradition-specific welcome paragraph ─────────────────────────────────────
 const TRAD_WELCOME: Record<string, string> = {
-  sikh: `In Gurbani, <em>Sunn</em> is not absence — it is the fullness that holds all of creation.
-    The silence before the Shabad. The stillness from which Kirtan rises. You have joined a space
-    built to honour that stillness — a living sangam where the Sikh seeker finds community,
-    scripture, and practice gathered in one place. Your Shoonaya account is ready.`,
+  sikh: `Shoonaya includes selected Sikh teachings and experiences in their own context where available.
+    Explore the sources and guidance shown within each feature. Your Shoonaya account is ready.`,
 
-  hindu: `The Rigveda knew it before the traditions divided — <em>Ekaṃ sat</em>, one truth,
-    many rivers flowing toward it. This sangam is where those rivers meet. Built for the
-    Sanatani seeker who holds the full breadth of dharma: from Veda to Vedanta, from puja
-    to Japa, from your Kul lineage to the global sangam. You are one of the first to arrive.`,
-
-  buddhist: `The Heart Sutra's great teaching — that form and void are not two — is the ground
-    this platform stands on. <em>Śūnyatā</em> is not emptiness as loss; it is openness as possibility.
-    This sangam was built in that spirit: a community of practitioners seeing clearly, across
-    every path of dharma, together. Your presence here matters.`,
-
-  jain: `Jain dharma's most radical teaching is that every soul is bound to every other by
-    the sacred duty of <em>upagṛaha</em> — mutual upliftment. This sangam was built in exactly
-    that spirit: a place where every tradition lifts the others, where ahimsa is not just
-    a practice but an architecture. You are among the first souls to take that vow here.`,
-
-  default: `You are among the very first to arrive — a space where the ancient streams of
-    Hindu, Sikh, Buddhist, and Jain wisdom flow together into one living community.
+  hindu: `Shoonaya is rooted in Sanatan Dharma. Explore local sacred-time context, daily practice,
+    scripture, and selected learning tools, with sources and feature availability shown where available.
     Your Shoonaya account is ready.`,
+
+  buddhist: `Shoonaya includes selected Buddhist teachings and reflective practices where available.
+    Buddhist content is presented in its own context; explore the sources and guidance shown in each
+    feature. Your Shoonaya account is ready.`,
+
+  jain: `Shoonaya includes selected Jain teachings, observances, and practice references where available.
+    Jain content is presented in its own context; explore the sources and guidance shown in each
+    feature. Your Shoonaya account is ready.`,
+
+  default: `Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and
+    connection. Your account is ready to explore at your own pace.`,
 };
 
 // ─── Tradition-specific share copy ────────────────────────────────────────────
@@ -159,7 +153,7 @@ const TRAD_SHARE_COPY: Record<string, string> = {
   hindu:    'Share your spot with fellow Sanatani seekers.',
   buddhist: 'Share your spot with fellow practitioners.',
   jain:     'Share your spot — parasparopagṛaho jīvānām.',
-  default:  'Help us build the sangam. Share your founding spot with fellow seekers.',
+  default:  'Share Shoonaya with fellow seekers.',
 };
 
 const FOUNDING_PERKS = [
@@ -168,7 +162,7 @@ const FOUNDING_PERKS = [
   'Access to every new feature',
   'Access to Mandali community spaces as they expand',
   'Tradition-aware profile and daily practice experience',
-  'A calmer home for daily dharma',
+  'A daily spiritual sanctuary for sacred time, practice, and connection',
 ];
 
 type WaitlistRow = {
@@ -308,10 +302,10 @@ function buildEmailHtml(opts: {
 
   const shareUrl = encodeURIComponent(BASE_URL);
   const twitterText = encodeURIComponent(
-    `I joined Shoonaya — a home for Hindu, Sikh, Buddhist & Jain dharma:`
+    `I joined Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection:`
   );
   const waText = encodeURIComponent(
-    `I joined Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Enter Shoonaya: ${BASE_URL}`
+    `I joined Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Explore Shoonaya: ${BASE_URL}`
   );
 
   const verseBlock = verse ? `

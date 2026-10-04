@@ -23,20 +23,29 @@ Before brand or copy work, read:
 
 ## Brand Positioning
 
-Core positioning:
+Approved public brand expression:
 
-Shoonaya is a modern dharmic companion for daily sadhana, sacred time, scripture, community, and family tradition across Hindu, Sikh, Buddhist, and Jain paths.
+**Shoonaya**
+
+*Find your infinite.*
+
+**A daily spiritual sanctuary for sacred time, practice, and connection.**
+
+Explain the product through the user's lived need: busy people can miss Ekadashi, Amavasya, and other sacred days. Shoonaya helps them notice what is unfolding in their local Panchang, understand why it matters, and make room for Japa, daily practice, scripture, and connection. Rashiphal, Kundali, Live Darshan, Kul, Mandali, and Tirtha are supporting experiences within that sanctuary.
+
+Shoonaya is rooted in Sanatan Dharma and may include distinct experiences for Sikh, Jain, and Buddhist paths. Keep traditions and their teachings distinct; do not say or imply they are interchangeable or all return to one doctrine.
 
 Useful shorthand:
 
-- Ancient foundation, modern doorway.
-- One home, many dharmic paths.
-- Daily practice, living wisdom, sacred community.
-- Return to zero, return to source.
+- Sacred time, noticed.
+- Practice that fits a full life.
+- A spiritual sanctuary for daily life.
 
 Avoid:
 
 - Generic spirituality without dharmic specificity.
+- Replacing the approved spiritual-shelter voice with a heavy or preachy religious tone.
+- Saying Shoonaya is “the void that holds all traditions” or flattening distinct traditions into one shared doctrine.
 - Unsupported claims about scriptural authority, calendar precision, AI correctness, global coverage, or community scale.
 - Waitlist, launch-era, or founding-member framing on live public surfaces unless explicitly scoped.
 - Fake stats, fake testimonials, fake screenshots, fake product state, or implied traction not backed by data.

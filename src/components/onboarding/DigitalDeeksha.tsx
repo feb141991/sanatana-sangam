@@ -6,19 +6,19 @@ const steps = [
   {
     title: "The Vision",
     icon: <Sunrise className="w-8 h-8 text-[#C5A059]" />,
-    description: "Find your infinite. Shoonaya is the void that holds all traditions — Hindu, Sikh, Buddhist, and Jain dharma breathing together in one sacred space.",
+    description: "Shoonaya is a daily spiritual sanctuary for sacred time, practice, and connection. Notice the day’s sacred rhythm, understand what matters, and make room for a practice that fits your life.",
     accent: "from-[#C5A059]/20 to-[#D4784A]/20"
   },
   {
     title: "Sacred Community",
     icon: <User className="w-8 h-8 text-[#C5A059]" />,
-    description: "Connect with verified gurus and a global sangha of seekers. Authenticity in every interaction.",
+    description: "Connect with family and seekers through spaces for shared practice, learning, and respectful community.",
     accent: "from-[#D4784A]/20 to-[#E18C5A]/20"
   },
   {
     title: "Daily Sadhana",
     icon: <Shield className="w-8 h-8 text-[#C5A059]" />,
-    description: "Personalized rituals, authentic scriptures, and precise astronomical timings for your spiritual growth.",
+    description: "Explore Panchang, Japa, scripture, and reflection at your own pace. Choose the practices that support your path.",
     accent: "from-[#E18C5A]/20 to-[#C5A059]/20"
   }
 ];

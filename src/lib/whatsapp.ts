@@ -16,6 +16,6 @@ export function shareScoreToWhatsApp(name: string, score: number, rank: number) 
 }
 
 export function inviteFriendsToWhatsApp(name: string) {
-  const text = `🙏 Namaste! ${name} is inviting you to join Shoonaya, the digital home for your spiritual journey. \n\nTrack your Sadhana, join a Kul, and connect with the Mandali. \n\nDownload here: ${APP_URL}`;
+  const text = `🙏 Namaste! ${name} is inviting you to join Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.\n\nExplore daily practice, family spaces, and community at your own pace.\n\nJoin here: ${APP_URL}`;
   return getWhatsAppShareLink(text);
 }

@@ -48,12 +48,14 @@ const fontVars = [
   notoGurmukhi.variable,
 ].join(" ");
 
+const brandDescription =
+  "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Follow your local Panchang, notice observances, and make room for daily practice.";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.shoonaya.com"),
-  title: "Shoonaya — Daily Dharmic Practice, Sacred Calendar & Scripture",
+  title: "Shoonaya — Find your infinite.",
   applicationName: "Shoonaya",
-  description:
-    "Shoonaya is a modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
+  description: brandDescription,
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -67,16 +69,15 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Shoonaya — Daily Dharmic Practice, Sacred Calendar & Scripture",
-    description:
-      "A modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
+    title: "Shoonaya — Find your infinite.",
+    description: brandDescription,
     siteName: "Shoonaya",
     images: [
       {
-        url: "https://www.shoonaya.com/og-image.png?v=2",
+        url: "https://www.shoonaya.com/og-image.png?v=3",
         width: 1200,
         height: 630,
-        alt: "Shoonaya: Your Sacred Dharmic Companion for Hindu, Sikh, Buddhist and Jain traditions.",
+        alt: "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
       },
     ],
     type: "website",
@@ -84,10 +85,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shoonaya — Daily Dharmic Practice, Sacred Calendar & Scripture",
-    description:
-      "A modern dharmic companion for daily practice, sacred time, scripture, family, and community across Hindu, Sikh, Jain, and Buddhist traditions.",
-    images: ["https://www.shoonaya.com/og-image.png?v=2"],
+    title: "Shoonaya — Find your infinite.",
+    description: brandDescription,
+    images: ["https://www.shoonaya.com/og-image.png?v=3"],
   },
   itunes: {
     appId: "6793055966",

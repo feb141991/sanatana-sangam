@@ -173,7 +173,7 @@ const en: TranslationMap = {
   // Bhakti
   bhakti: 'Bhakti', pathOfDevotion: 'The path of devotion', sacredSounds: 'Sacred Sounds',
   // Onboarding
-  welcomeTitle: 'Shoonaya', welcomeSub: 'A home for Dharma',
+  welcomeTitle: 'Shoonaya', welcomeSub: 'A daily spiritual sanctuary',
   yourTradition: 'Your Tradition', yourLanguage: 'Your Language',
   yourLocation: 'Your Location', whatBringsYou: 'What brings you here?',
   enterApp: 'Enter Shoonaya',
@@ -251,7 +251,7 @@ const en: TranslationMap = {
   loadingGurukul: 'Loading your gurukul…', alsoEnrolled: 'Also enrolled', freeBeginnerPaths: 'Beginner paths are free',
   guidedStudy: 'Guided Study', recitationComplete: 'Recitation Complete', recitationSuccess: 'Your recitation practice has been successfully registered. You have earned sadhana points. Keep moving forward!', continuePractice: 'Continue Practice', resetRecitation: 'Reset Recitation',
   // Brand
-  brandTagline: 'Find your infinite',
+  brandTagline: 'Find your infinite.',
   // Sacred Pulse
   pulseEkadashi: 'Ekadashi',
   pulseEkadashiDesc: 'Sacred day for fasting and deep bhajan.',

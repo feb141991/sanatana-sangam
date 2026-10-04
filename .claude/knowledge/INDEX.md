@@ -50,6 +50,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 
 ### Decisions
 
+- [Shoonaya Brand Positioning](decisions/shoonaya-brand-positioning.md) — approved tagline and descriptor, daily sacred-time job, tradition-distinct voice, and claims to avoid
 - [Shoonaya Agent Operating Model](decisions/shoonaya-agent-operating-model.md) — How role agents, graphify, and knowledge curation support the team
 - [Marketing Feature Routing](decisions/feature-card-routing.md) — Feature cards link to public detail pages and convert through the verified Android beta gateway
 - [Nav and Footer Branding](decisions/nav-footer-branding.md) — river-light-horizontal.png is canonical; no text fallbacks

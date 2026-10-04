@@ -22,10 +22,10 @@ interface InviteCardProps {
 }
 
 const SHARE_COPY: Record<string, string> = {
-  hindu:    "I've been using Shoonaya for daily sadhana — japa, panchang, Gita study. Join me 🕉️",
-  sikh:     "Shoonaya is a beautiful space for Nitnem, Gurbani study and connecting with the sangat ☬",
-  buddhist: "Using Shoonaya to track daily practice — meditation, Dhammapada study and more ☸️",
-  jain:     "Shoonaya brings dharmic practice to daily life — japa, pathshala and community 🤲",
+  hindu:    "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+  sikh:     "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+  buddhist: "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+  jain:     "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
 };
 
 const BASE_URL = typeof window !== 'undefined'
@@ -53,7 +53,7 @@ export default function InviteCard({ userId, userName, tradition }: InviteCardPr
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Shoonaya — Daily Dharmic Practice',
+          title: 'Shoonaya — Find your infinite.',
           text:  shareText,
           url:   refUrl,
         });

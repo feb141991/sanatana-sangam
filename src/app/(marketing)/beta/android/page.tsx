@@ -7,7 +7,7 @@ import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 export const metadata: Metadata = {
   title: "Join the Shoonaya Android Beta",
   description:
-    "Join the Shoonaya Android beta and help test the native dharmic companion on a real device.",
+    "Join the Shoonaya Android beta: a daily spiritual sanctuary for sacred time, practice, and connection.",
   alternates: { canonical: "https://www.shoonaya.com/beta/android" },
   robots: { index: true, follow: true },
 };

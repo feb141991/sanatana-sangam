@@ -52,8 +52,8 @@ export function MarketingFooter() {
             </span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-7 text-[var(--text-muted-warm)]">
-            A modern dharmic companion for daily practice, sacred time,
-            scripture, family and community across living traditions.
+            Find your infinite. A daily spiritual sanctuary for sacred time,
+            practice, and connection.
           </p>
           <Link
             href="/beta/android"
