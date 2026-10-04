@@ -4,7 +4,7 @@
 
 export const NATIVE_TELEMETRY_ROUTES = [
   'home', 'mandali', 'settings', 'notifications', 'bhakti', 'dharm_veer',
-  'pathshala', 'panchang', 'vrat', 'japa', 'profile',
+  'pathshala', 'panchang', 'vrat', 'japa', 'profile', 'kul',
 ] as const;
 export type NativeTelemetryRoute = (typeof NATIVE_TELEMETRY_ROUTES)[number];
 
@@ -21,7 +21,7 @@ export const NATIVE_TELEMETRY_FAILURE_REASONS = [
 ] as const;
 export type NativeTelemetryFailureReason = (typeof NATIVE_TELEMETRY_FAILURE_REASONS)[number];
 
-export const NATIVE_TELEMETRY_INTERACTION_NAMES = ['mandali_comment_expand'] as const;
+export const NATIVE_TELEMETRY_INTERACTION_NAMES = ['mandali_comment_expand', 'kul_mutation', 'kul_tirtha_search'] as const;
 export type NativeTelemetryInteractionName = (typeof NATIVE_TELEMETRY_INTERACTION_NAMES)[number];
 
 export type NativeTelemetryRouteSummary = {

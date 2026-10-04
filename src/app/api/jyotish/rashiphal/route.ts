@@ -103,11 +103,10 @@ export async function GET(request: NextRequest) {
   });
 
   return NextResponse.json({ ...dailyHoroscope, dashaContextStatus }, {
-    // Any request that supplied Bearer credentials -- regardless of outcome
-    // -- gets a response whose body can vary by identity (dashaContext or
-    // just dashaContextStatus), so it is never safe to cache publicly. Only
-    // the pure anonymous path, which is identical for every visitor, keeps
-    // today's public caching.
-    headers: { 'Cache-Control': hasBearerCredentials ? 'private, no-store' : 'public, max-age=3600' },
+    // The response is spiritual-date-sensitive (4 a.m. in the requested
+    // timezone), and authenticated responses may include Dasha context. Do
+    // not let CDN/client caches serve yesterday's reading across that
+    // boundary or reuse a personalized body for another request.
+    headers: { 'Cache-Control': 'private, no-store' },
   });
 }

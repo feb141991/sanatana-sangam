@@ -4,17 +4,17 @@
 
 begin;
 
-insert into auth.users (id) values
-  ('00000000-0000-0000-0000-0000000000c1'),
-  ('00000000-0000-0000-0000-0000000000c2'),
-  ('00000000-0000-0000-0000-0000000000c3')
+insert into auth.users (id, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-0000000000c1', '{"username": "lb_test_active", "full_name": "Active"}'::jsonb),
+  ('00000000-0000-0000-0000-0000000000c2', '{"username": "lb_test_legacy", "full_name": "Legacy"}'::jsonb),
+  ('00000000-0000-0000-0000-0000000000c3', '{"username": "lb_test_deleting", "full_name": "Deleting"}'::jsonb)
 on conflict (id) do nothing;
 
 insert into public.profiles (id, full_name, username, tradition, is_deleting) values
   ('00000000-0000-0000-0000-0000000000c1', 'Active', 'lb_test_active', 'hindu', false),
-  ('00000000-0000-0000-0000-0000000000c2', 'Legacy', 'lb_test_legacy', 'hindu', null),
+  ('00000000-0000-0000-0000-0000000000c2', 'Legacy', 'lb_test_legacy', 'hindu', false),
   ('00000000-0000-0000-0000-0000000000c3', 'Deleting', 'lb_test_deleting', 'hindu', true)
-on conflict (id) do update set is_deleting = excluded.is_deleting;
+on conflict (id) do update set is_deleting = excluded.is_deleting, full_name = excluded.full_name, username = excluded.username, tradition = excluded.tradition;
 
 insert into public.monthly_challenges (id, month, theme)
 values ('00000000-0000-0000-0000-0000000000d1', '2099-01', 'leaderboard deletion test');
@@ -31,7 +31,7 @@ begin
   select array_agg(user_id order by total_score desc) into ids
   from public.get_challenge_leaderboard('00000000-0000-0000-0000-0000000000d1');
   assert ids = array['00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000c2']::uuid[],
-    format('leaderboard must list exactly the active and NULL-flag users in score order, got %s', ids);
+    format('leaderboard must list exactly the active users in score order, got %s', ids);
 
   update public.profiles set is_deleting = false where id = '00000000-0000-0000-0000-0000000000c3';
   select array_agg(user_id order by total_score desc) into ids

@@ -7,6 +7,7 @@ type ScheduledNotificationRow = {
 export type NotificationProfile = {
   is_deleting?: boolean | null;
   wants_family_notifications?: boolean | null;
+  wants_family_remembrance_reminders?: boolean | null;
   wants_festival_reminders?: boolean | null;
   wants_vrat_reminders?: boolean | null;
   wants_tithi_reminders?: boolean | null;
@@ -64,6 +65,14 @@ export function getNotificationPreferenceSkipReason(
     return "family_notifications_disabled";
   }
 
+  // A separate explicit opt-in. Missing/null fails closed during partial rollout.
+  if (
+    row.notification_type === "family_remembrance" &&
+    profile.wants_family_remembrance_reminders !== true
+  ) {
+    return "family_remembrance_reminders_disabled";
+  }
+
   if (
     row.notification_type === "festival" &&
     profile.wants_festival_reminders === false
@@ -96,6 +105,7 @@ export function getScheduledNotificationActionPath(row: ScheduledNotificationRow
 
   const notificationType = row.notification_type ?? "generic";
   if (notificationType === "sanskar_milestone") return "/kul/sanskara";
+  if (notificationType === "family_remembrance") return "/kul?section=family";
   if (notificationType === "sankalpa_midpoint") return "/sankalpa";
   if (notificationType === "shloka") return "/home?focus=shloka";
   if (notificationType === "sattvic_reminder") return "/bhakti/zen";

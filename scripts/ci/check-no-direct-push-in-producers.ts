@@ -34,16 +34,32 @@ function scanProducers(): { violations: Array<{ file: string; line: number; text
   const libDir = path.resolve(process.cwd(), 'src/lib');
   const files = fs.readdirSync(libDir);
 
-  const producerFiles = files.filter(
+  const producerPaths = files.filter(
     (file) =>
       file.endsWith('-candidate-producer.ts') ||
       file === 'series-candidate-producer.ts'
+  ).map((file) => `src/lib/${file}`);
+
+  // Some producers intentionally keep their pure candidate builder and its
+  // orchestration route under domain-specific names. Include both pieces so
+  // the architectural gate cannot silently miss them based on filename.
+  producerPaths.push(
+    'src/lib/kul-family-remembrance-candidate.ts',
+    'src/app/api/cron/kul-family-remembrance/route.ts',
   );
 
   const violations: Array<{ file: string; line: number; text: string }> = [];
 
-  for (const filename of producerFiles) {
-    const fullPath = path.join(libDir, filename);
+  for (const relativePath of producerPaths) {
+    const fullPath = path.resolve(process.cwd(), relativePath);
+    if (!fs.existsSync(fullPath)) {
+      violations.push({
+        file: relativePath,
+        line: 0,
+        text: 'Producer isolation target is missing from the repository',
+      });
+      continue;
+    }
     const content = fs.readFileSync(fullPath, 'utf-8');
     const lines = content.split('\n');
 
@@ -51,7 +67,7 @@ function scanProducers(): { violations: Array<{ file: string; line: number; text
       for (const pattern of FORBIDDEN_IMPORT_PATTERNS) {
         if (pattern.test(line)) {
           violations.push({
-            file: `src/lib/${filename}`,
+            file: relativePath,
             line: index + 1,
             text: line.trim(),
           });
@@ -60,7 +76,7 @@ function scanProducers(): { violations: Array<{ file: string; line: number; text
     });
   }
 
-  return { violations, scannedFiles: producerFiles };
+  return { violations, scannedFiles: producerPaths };
 }
 
 function main() {
@@ -68,7 +84,7 @@ function main() {
   const { violations, scannedFiles } = scanProducers();
 
   console.log(`Scanned ${scannedFiles.length} candidate producer files:`);
-  scannedFiles.forEach((f) => console.log(`  - src/lib/${f}`));
+  scannedFiles.forEach((f) => console.log(`  - ${f}`));
 
   if (violations.length > 0) {
     console.error('\n[FAILED] Architectural violation detected! Candidate producers must NOT import or dispatch push directly:');

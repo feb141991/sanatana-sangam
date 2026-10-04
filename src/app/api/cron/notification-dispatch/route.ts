@@ -129,7 +129,7 @@ export async function GET(request: Request) {
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
     let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date")
+      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date")
       .in("id", userIds);
 
     if (profileErr && (profileErr as any).code === "42703") {

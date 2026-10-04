@@ -8,6 +8,13 @@ import {
   resolveNativeKulMembership,
   textField,
 } from "@/lib/native-kul";
+import {
+  getKulLocalDate,
+  kulTithiRequestKey,
+  resolveKulRecurringGregorianDate,
+  resolveNextKulTithiDates,
+  type KulTithiRequest,
+} from "@/lib/native-kul-tithi";
 
 export const runtime = "nodejs";
 
@@ -19,6 +26,19 @@ type KulRow = {
   invite_code: string;
   avatar_emoji: string;
   created_at: string;
+  gotra: string | null;
+  pravara: string | null;
+  kuldevi_name: string | null;
+  kuldevta_name: string | null;
+  kuldevi_place_id: string | null;
+  kuldevta_place_id: string | null;
+  ancestral_origin: string | null;
+  kulachara_notes: string | null;
+  calendar_latitude: number;
+  calendar_longitude: number;
+  calendar_reference_label: string;
+  calendar_timezone: string;
+  calendar_month_system: "amanta" | "purnimanta";
 };
 type MemberRow = {
   id: string;
@@ -70,6 +90,22 @@ type EventRow = {
   recurring: boolean;
   description: string | null;
   member_id: string | null;
+  date_system: "gregorian" | "tithi";
+  masa: number | null;
+  paksha: "shukla" | "krishna" | null;
+  tithi: number | null;
+  month_system: "amanta" | "purnimanta" | null;
+  masa_is_adhika: boolean;
+  tithi_resolution: "sunrise";
+};
+type KulTirthaRow = {
+  id: string;
+  place_id: string;
+  status: "wishlist" | "visited";
+  visited_at: string | null;
+  notes: string | null;
+  created_at: string;
+  place: { id: string; name: string; tradition: string; deity: string | null; address: string | null; lat: number; lon: number } | Array<{ id: string; name: string; tradition: string; deity: string | null; address: string | null; lat: number; lon: number }> | null;
 };
 
 function fail(message: string, status: number) {
@@ -83,19 +119,18 @@ function fail(message: string, status: number) {
 }
 
 export async function GET(request: NextRequest) {
+  const requestStartedAt = performance.now();
   const { user, error: authError, supabase } = await getApiUser(request);
   if (!user || !supabase) return getApiAuthFailureResponse(authError);
 
   try {
-    const requestedToday = request.nextUrl.searchParams.get("today");
-    const today = isIsoDate(requestedToday)
-      ? requestedToday
-      : new Date().toISOString().slice(0, 10);
+    const membershipStartedAt = performance.now();
     const membership = await resolveNativeKulMembership(supabase, user.id);
     if (!membership) {
       return NextResponse.json(
         {
           userId: user.id,
+          today: new Date().toISOString().slice(0, 10),
           kul: null,
           role: null,
           members: [],
@@ -103,24 +138,35 @@ export async function GET(request: NextRequest) {
           messages: [],
           familyMembers: [],
           events: [],
+          tirthaWishes: [],
         },
-        { headers: { "Cache-Control": "private, no-store" } },
+        { headers: {
+          "Cache-Control": "private, no-store",
+          "Server-Timing": `membership;dur=${(performance.now() - membershipStartedAt).toFixed(2)}, total;dur=${(performance.now() - requestStartedAt).toFixed(2)}`,
+        } },
       );
     }
 
+    const kulResult = await supabase
+      .from("kuls")
+      .select("id, name, invite_code, avatar_emoji, created_at, gotra, pravara, kuldevi_name, kuldevta_name, kuldevi_place_id, kuldevta_place_id, ancestral_origin, kulachara_notes, calendar_latitude, calendar_longitude, calendar_reference_label, calendar_timezone, calendar_month_system")
+      .eq("id", membership.kulId)
+      .maybeSingle();
+    if (kulResult.error) throw new Error("KUL lookup failed");
+    const kul = kulResult.data as KulRow | null;
+    if (!kul)
+      return fail("Your family circle could not be found. Refresh and try again.", 409);
+
+    const today = getKulLocalDate(new Date(), kul.calendar_timezone);
+    const dataStartedAt = performance.now();
     const [
-      kulResult,
       membersResult,
       tasksResult,
       messagesResult,
       familyResult,
       eventsResult,
+      tirthaResult,
     ] = await Promise.all([
-      supabase
-        .from("kuls")
-        .select("id, name, invite_code, avatar_emoji, created_at")
-        .eq("id", membership.kulId)
-        .maybeSingle(),
       supabase
         .from("kul_members")
         .select("id, user_id, role, joined_at")
@@ -152,29 +198,30 @@ export async function GET(request: NextRequest) {
       supabase
         .from("kul_events")
         .select(
-          "id, title, event_type, event_date, recurring, description, member_id",
+          "id, title, event_type, event_date, recurring, description, member_id, date_system, masa, paksha, tithi, month_system, masa_is_adhika, tithi_resolution",
         )
         .eq("kul_id", membership.kulId)
-        .or(`event_date.gte.${today},recurring.eq.true`)
+        .or(`event_date.gte.${today},recurring.eq.true,date_system.eq.tithi`)
         .order("event_date", { ascending: true })
+        .limit(100),
+      supabase
+        .from("kul_tirtha_wishes")
+        .select("id, place_id, status, visited_at, notes, created_at, place:tirtha_places(id, name, tradition, deity, address, lat, lon)")
+        .eq("kul_id", membership.kulId)
+        .order("created_at", { ascending: false })
         .limit(100),
     ]);
 
     const queryError =
-      kulResult.error ||
       membersResult.error ||
       tasksResult.error ||
       messagesResult.error ||
       familyResult.error ||
-      eventsResult.error;
+      eventsResult.error ||
+      tirthaResult.error;
     if (queryError) throw new Error("KUL snapshot query failed");
-    const kul = kulResult.data as KulRow | null;
-    if (!kul)
-      return fail(
-        "Your family circle could not be found. Refresh and try again.",
-        409,
-      );
-
+    const dataDurationMs = performance.now() - dataStartedAt;
+    const profileStartedAt = performance.now();
     const memberRows = (membersResult.data ?? []) as MemberRow[];
     const memberIds = memberRows.map((member) => member.user_id);
     const profilesResult =
@@ -188,6 +235,7 @@ export async function GET(request: NextRequest) {
         : { data: [], error: null };
     if (profilesResult.error)
       throw new Error("KUL member profile query failed");
+    const profileDurationMs = performance.now() - profileStartedAt;
     const profiles = (profilesResult.data ?? []) as ProfileRow[];
     const profileById = new Map(
       profiles.map((profile) => [profile.id, profile]),
@@ -196,9 +244,62 @@ export async function GET(request: NextRequest) {
     const messages = ((messagesResult.data ?? []) as MessageRow[]).reverse();
     const tasks = (tasksResult.data ?? []) as TaskRow[];
     const familyMembers = (familyResult.data ?? []) as FamilyRow[];
-    const events = (eventsResult.data ?? []) as EventRow[];
+    const eventRows = (eventsResult.data ?? []) as EventRow[];
+    const tithiRows = eventRows.filter(
+      (event) => event.date_system === "tithi" && event.masa !== null &&
+        event.paksha !== null && event.tithi !== null && event.month_system !== null,
+    );
+    const tithiRequests: KulTithiRequest[] = tithiRows.flatMap((event) =>
+      event.masa !== null && event.paksha !== null && event.tithi !== null && event.month_system !== null
+        ? [{ masa: event.masa, paksha: event.paksha, tithi: event.tithi, monthSystem: event.month_system, masaIsAdhika: event.masa_is_adhika }]
+        : [],
+    );
+    const calendarStartedAt = performance.now();
+    const tithiResolutions = resolveNextKulTithiDates(
+      tithiRequests,
+      today,
+      { lat: kul.calendar_latitude, lon: kul.calendar_longitude, tz: kul.calendar_timezone },
+    );
+    const events = eventRows.map((event) => {
+      if (event.date_system === "tithi") {
+        const request: KulTithiRequest | null =
+          event.masa !== null && event.paksha !== null && event.tithi !== null && event.month_system !== null
+            ? { masa: event.masa, paksha: event.paksha, tithi: event.tithi, monthSystem: event.month_system, masaIsAdhika: event.masa_is_adhika }
+            : null;
+        const resolution = request ? tithiResolutions.get(kulTithiRequestKey(request)) : null;
+        return {
+          ...event,
+          resolved_civil_date: resolution?.civilDate ?? null,
+          tithi_label: resolution?.tithiLabel ?? null,
+          calculation_location: kul.calendar_reference_label,
+        };
+      }
+      return {
+        ...event,
+        resolved_civil_date: resolveKulRecurringGregorianDate(event.event_date, today, event.recurring),
+        tithi_label: null,
+        calculation_location: null,
+      };
+    });
+    const tirthaWishes = ((tirthaResult.data ?? []) as KulTirthaRow[]).map((wish) => {
+      const place = Array.isArray(wish.place) ? wish.place[0] : wish.place;
+      return {
+        id: wish.id,
+        placeId: wish.place_id,
+        name: place?.name ?? "Sacred place",
+        tradition: place?.tradition ?? "other",
+        deity: place?.deity ?? null,
+        address: place?.address ?? null,
+        latitude: place?.lat ?? 0,
+        longitude: place?.lon ?? 0,
+        status: wish.status,
+        visitedAt: wish.visited_at,
+        notes: wish.notes,
+        createdAt: wish.created_at,
+      };
+    });
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         userId: user.id,
         kul: {
@@ -207,7 +308,25 @@ export async function GET(request: NextRequest) {
           avatarEmoji: kul.avatar_emoji,
           createdAt: kul.created_at,
           inviteCode: membership.role === "guardian" ? kul.invite_code : null,
+          lineage: {
+            gotra: kul.gotra,
+            pravara: kul.pravara,
+            kuldeviName: kul.kuldevi_name,
+            kuldevtaName: kul.kuldevta_name,
+            kuldeviPlaceId: kul.kuldevi_place_id,
+            kuldevtaPlaceId: kul.kuldevta_place_id,
+            ancestralOrigin: kul.ancestral_origin,
+            kulacharaNotes: kul.kulachara_notes,
+          },
+          calendarReference: {
+            label: kul.calendar_reference_label,
+            timezone: kul.calendar_timezone,
+            monthSystem: kul.calendar_month_system,
+            latitude: membership.role === "guardian" ? kul.calendar_latitude : null,
+            longitude: membership.role === "guardian" ? kul.calendar_longitude : null,
+          },
         },
+        today,
         role: membership.role,
         members: memberRows.map((member) => ({
           id: member.id,
@@ -220,9 +339,14 @@ export async function GET(request: NextRequest) {
         messages,
         familyMembers,
         events,
+        tirthaWishes,
       },
-      { headers: { "Cache-Control": "private, no-store" } },
+      { headers: {
+        "Cache-Control": "private, no-store",
+        "Server-Timing": `membership;dur=${(dataStartedAt - membershipStartedAt).toFixed(2)}, data;dur=${dataDurationMs.toFixed(2)}, profiles;dur=${profileDurationMs.toFixed(2)}, calendar;dur=${(performance.now() - calendarStartedAt).toFixed(2)}, total;dur=${(performance.now() - requestStartedAt).toFixed(2)}`,
+      } },
     );
+    return response;
   } catch (error) {
     console.error("[native-kul] snapshot failed", { userId: user.id, error });
     return fail("Could not load your KUL right now. Please retry.", 503);

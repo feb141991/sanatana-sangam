@@ -157,86 +157,95 @@ describe("/api/native/kul", () => {
   });
 
   it("bounds every returned family collection and does not read practice history", async () => {
-    const { supabase, limits, filters, selections } = createSupabase({
-      profiles: [
-        { data: { kul_id: "kul-1" }, error: null },
-        {
-          data: [
-            {
-              id: "user-1",
-              full_name: "Prince",
-              username: "prince",
-              avatar_url: null,
-              tradition: "hindu",
-              sampradaya: null,
-            },
-          ],
-          error: null,
-        },
-      ],
-      kul_members: [
-        { data: { kul_id: "kul-1", role: "guardian" }, error: null },
-        {
-          data: [
-            {
-              id: "member-1",
-              user_id: "user-1",
-              role: "guardian",
-              joined_at: "2026-10-01T00:00:00Z",
-            },
-          ],
-          error: null,
-        },
-      ],
-      kuls: [
-        {
-          data: {
-            id: "kul-1",
-            name: "Sharma Family",
-            invite_code: "A1B2C3D4E5F6",
-            avatar_emoji: "🏡",
-            created_at: "2026-01-01T00:00:00Z",
+    // Keep the event-window assertion independent of the developer's local
+    // timezone and the date on which this suite happens to run.
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-10-03T12:00:00.000Z"));
+    try {
+      const { supabase, limits, filters, selections } = createSupabase({
+        profiles: [
+          { data: { kul_id: "kul-1" }, error: null },
+          {
+            data: [
+              {
+                id: "user-1",
+                full_name: "Prince",
+                username: "prince",
+                avatar_url: null,
+                tradition: "hindu",
+                sampradaya: null,
+              },
+            ],
+            error: null,
           },
-          error: null,
-        },
-      ],
-      kul_tasks: [{ data: [], error: null }],
-      kul_messages: [{ data: [], error: null }],
-      kul_family_members: [{ data: [], error: null }],
-      kul_events: [{ data: [], error: null }],
-    });
-    getApiUser.mockResolvedValue({
-      user: { id: "user-1" },
-      error: null,
-      supabase,
-    });
+        ],
+        kul_members: [
+          { data: { kul_id: "kul-1", role: "guardian" }, error: null },
+          {
+            data: [
+              {
+                id: "member-1",
+                user_id: "user-1",
+                role: "guardian",
+                joined_at: "2026-10-01T00:00:00Z",
+              },
+            ],
+            error: null,
+          },
+        ],
+        kuls: [
+          {
+            data: {
+              id: "kul-1",
+              name: "Sharma Family",
+              invite_code: "A1B2C3D4E5F6",
+              avatar_emoji: "🏡",
+              created_at: "2026-01-01T00:00:00Z",
+            },
+            error: null,
+          },
+        ],
+        kul_tasks: [{ data: [], error: null }],
+        kul_messages: [{ data: [], error: null }],
+        kul_family_members: [{ data: [], error: null }],
+        kul_events: [{ data: [], error: null }],
+      });
+      getApiUser.mockResolvedValue({
+        user: { id: "user-1" },
+        error: null,
+        supabase,
+      });
 
-    const response = await GET(
-      request("https://shoonaya.com/api/native/kul?today=2026-10-03"),
-    );
-    const json = await response.json();
-    expect(response.status).toBe(200);
-    expect(json.kul.inviteCode).toBe("A1B2C3D4E5F6");
-    expect(json.members[0].profile.full_name).toBe("Prince");
-    expect(limits).toEqual(
-      expect.arrayContaining([
-        { table: "kul_members", value: 6 },
-        { table: "kul_tasks", value: 25 },
-        { table: "kul_messages", value: 30 },
-        { table: "kul_family_members", value: 100 },
-        { table: "kul_events", value: 100 },
-      ]),
-    );
-    expect(filters).toContainEqual({
-      table: "kul_events",
-      value: "event_date.gte.2026-10-03,recurring.eq.true",
-    });
-    expect(
-      selections.every(
-        (entry) =>
-          entry.table !== "daily_sadhana" && entry.table !== "mala_sessions",
-      ),
-    ).toBe(true);
+      const response = await GET(
+        request("https://shoonaya.com/api/native/kul?today=2026-10-03"),
+      );
+      const json = await response.json();
+      expect(response.status).toBe(200);
+      expect(json.kul.inviteCode).toBe("A1B2C3D4E5F6");
+      expect(json.members[0].profile.full_name).toBe("Prince");
+      expect(limits).toEqual(
+        expect.arrayContaining([
+          { table: "kul_members", value: 6 },
+          { table: "kul_tasks", value: 25 },
+          { table: "kul_messages", value: 30 },
+          { table: "kul_family_members", value: 100 },
+          { table: "kul_events", value: 100 },
+        ]),
+      );
+      expect(filters).toContainEqual({
+        table: "kul_events",
+        value:
+          "event_date.gte.2026-10-03,recurring.eq.true,date_system.eq.tithi",
+      });
+      expect(
+        selections.every(
+          (entry) =>
+            entry.table !== "daily_sadhana" && entry.table !== "mala_sessions",
+        ),
+      ).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("creates a circle through the authenticated RPC with a cryptographically generated invite code", async () => {
@@ -396,6 +405,60 @@ describe("/api/native/kul", () => {
       expect(response.status).toBe(403);
       expect(writes).toHaveLength(0);
     }
+  });
+
+  it("requires a remembrance date to link to a deceased person in the same KUL", async () => {
+    const memberId = "22222222-2222-4222-8222-222222222222";
+    const { supabase, writes, selections } = createSupabase({
+      profiles: [{ data: { kul_id: "kul-1" }, error: null }],
+      kul_members: [
+        { data: { kul_id: "kul-1", role: "guardian" }, error: null },
+      ],
+      kul_family_members: [
+        { data: { id: memberId, is_alive: true }, error: null },
+      ],
+    });
+    getApiUser.mockResolvedValue({
+      user: { id: "user-1" },
+      error: null,
+      supabase,
+    });
+    const response = await postEvent(
+      request("https://shoonaya.com/api/native/kul/events", "POST", {
+        title: "Aaji's remembrance",
+        eventType: "death_anniversary",
+        eventDate: "2000-10-20",
+        recurring: true,
+        memberId,
+      }),
+    );
+    expect(response.status).toBe(400);
+    expect(selections).toContainEqual({
+      table: "kul_family_members",
+      columns: "id, is_alive",
+    });
+    expect(writes).toHaveLength(0);
+  });
+
+  it("rejects a one-time death-anniversary date before database access", async () => {
+    const { supabase, selections, writes } = createSupabase({});
+    getApiUser.mockResolvedValue({
+      user: { id: "user-1" },
+      error: null,
+      supabase,
+    });
+    const response = await postEvent(
+      request("https://shoonaya.com/api/native/kul/events", "POST", {
+        title: "Remembrance",
+        eventType: "death_anniversary",
+        eventDate: "2000-10-20",
+        recurring: false,
+        memberId: "22222222-2222-4222-8222-222222222222",
+      }),
+    );
+    expect(response.status).toBe(400);
+    expect(selections).toHaveLength(0);
+    expect(writes).toHaveLength(0);
   });
 
   it("prevents another family member from completing an assigned task", async () => {

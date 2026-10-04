@@ -48,6 +48,7 @@ describe('notification resolver & engagement policy', () => {
       expect(resolvePriorityClass(makeCandidate({ event_type: 'sankalpa_midpoint' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'japa' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'sanskar_milestone' }))).toBe('explicit_user_requested');
+      expect(resolvePriorityClass(makeCandidate({ event_type: 'family_remembrance' }))).toBe('explicit_user_requested');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'brahma_muhurta' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'aarti' }))).toBe('approved_ritual_window');
       expect(resolvePriorityClass(makeCandidate({ event_type: 'nitya' }))).toBe('approved_ritual_window');

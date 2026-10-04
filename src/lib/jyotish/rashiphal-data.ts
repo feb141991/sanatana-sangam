@@ -31,6 +31,10 @@ export interface RashiHoroscope {
   transitHighlights: Array<{ title: string; detail: string; tone: 'support' | 'discipline' | 'neutral'; structure?: Array<'kendra' | 'trikona' | 'upachaya' | 'dusthana'> }>;
   sadhanaPlan:       Array<{ label: string; action: string }>;
   accuracyNote:      string;
+  // The spiritual-day key uses the same 4 a.m. local boundary as the
+  // observance calendar. Native uses it to label the reading consistently;
+  // the PWA call shape remains unchanged.
+  spiritualDate?:    string;
   // Only present when the caller opted into useDistinctGuidance (native's
   // REST route). Absent for the PWA's direct getDailyHoroscope() call.
   dashaContext?:       { planet: string; endDate: string; note: string } | null;
@@ -173,116 +177,109 @@ function houseFromRashi(transitRashiIndex: number, referenceRashiIndex: number):
 // buckets) produce near-identical text. This table is keyed by BOTH planet
 // and house, so every one of the 72 combinations has its own text.
 //
-// Content status: originally a first-pass synthesis (not a transcription of
-// a named classical source), reviewed and approved by a Jyotish-literate
-// human reviewer. Completeness/distinctness are still enforced by the type
-// below and by rashiphal-data.test.ts, but those checks were never a
-// substitute for that review -- they confirm the table's shape, not its
-// astrological correctness, which the human review is what actually vouches
-// for.
+// Content status: these are product-approved editorial reflections, not
+// quotations or a source-defined classical gochara model. On 2026-09-29 the
+// product owner confirmed the Native content was reviewed and could be
+// ungated, and explicitly confirmed House 1 as Kendra + Trikona. The repo
+// does not preserve a named Jyotish reviewer, lineage, source-by-source
+// review, or a Vedha convention; see docs/jyotish/RASHIPHAL_NATIVE_GUIDANCE_RECORD.md.
+// Tests below enforce data shape and distinctness, not astrological validity.
 export type GuidancePlanet = 'Chandra' | 'Guru' | 'Shani' | 'Mangal' | 'Rahu' | 'Ketu';
 export type HouseNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
-// `tone` is an editorial display cue only. It is not a classical dignity,
-// prediction, or input to lucky-color or other calculations.
-export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, { text: string; tone: 'support' | 'discipline' | 'neutral' }>> = {
+export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, { text: string }>> = {
   Chandra: {
-    1: { text: "The mind sits close to the surface -- your mood shapes how you come across more than usual today. Let feelings pass rather than acting on the first one.", tone: 'neutral' },
-    2: { text: "Emotion may colour your words. A gentler tone in close conversations can help you express yourself clearly.", tone: 'neutral' },
-    3: { text: "Communication may feel more natural; listening patiently can help a conversation. Courage today can be quiet rather than bold.", tone: 'support' },
-    4: { text: "Home and inner comfort may draw more attention than usual. Make room for rest and familiar surroundings if that feels helpful.", tone: 'support' },
-    5: { text: "Intuition and devotional feeling may be more noticeable than analysis. A short mantra practice can offer a gentle focus.", tone: 'support' },
-    6: { text: "Small irritations may feel larger than they are. A steady routine and quiet service can help you respond without argument.", tone: 'neutral' },
-    7: { text: "Emotional exchange with others is heightened -- listen for what's underneath the words in any conversation or agreement today.", tone: 'neutral' },
-    8: { text: "The mind turns inward and old feelings may surface unexpectedly. Avoid major emotional decisions; let what comes up settle first.", tone: 'discipline' },
-    9: { text: "A natural pull toward meaning and guidance may arise. Time with a teacher or sacred text can offer a grounding perspective.", tone: 'support' },
-    10: { text: "Your emotional tone may color how you approach responsibilities. A pause before responding can help keep choices measured.", tone: 'neutral' },
-    11: { text: "Emotional warmth in friendships and community brings real fulfilment today. A gathering or shared goal will feel nourishing.", tone: 'support' },
-    12: { text: "The mind wants withdrawal, not engagement. Honour the pull toward rest, quiet reflection, or a longer sleep tonight.", tone: 'discipline' },
+    1: { text: "The mind sits close to the surface -- your mood shapes how you come across more than usual today. Let feelings pass rather than acting on the first one." },
+    2: { text: "Emotion may colour your words. A gentler tone in close conversations can help you express yourself clearly." },
+    3: { text: "Communication may feel more natural; listening patiently can help a conversation. Courage today can be quiet rather than bold." },
+    4: { text: "Home and inner comfort may draw more attention than usual. Make room for rest and familiar surroundings if that feels helpful." },
+    5: { text: "Intuition and devotional feeling may be more noticeable than analysis. A short mantra practice can offer a gentle focus." },
+    6: { text: "Small irritations may feel larger than they are. A steady routine and quiet service can help you respond without argument." },
+    7: { text: "You may notice more feeling in conversations or agreements. Listen for what matters to the other person as well as to you." },
+    8: { text: "The mind turns inward and old feelings may surface unexpectedly. Avoid major emotional decisions; let what comes up settle first." },
+    9: { text: "A natural pull toward meaning and guidance may arise. Time with a teacher or sacred text can offer a grounding perspective." },
+    10: { text: "Your emotional tone may color how you approach responsibilities. A pause before responding can help keep choices measured." },
+    11: { text: "Time with friends or community may feel meaningful. A shared activity can be a gentle way to connect." },
+    12: { text: "The mind wants withdrawal, not engagement. Honour the pull toward rest, quiet reflection, or a longer sleep tonight." },
   },
   Guru: {
-    1: { text: "Confidence and optimism expand today -- you carry yourself with unusual faith in your own path. Don't let it tip into overreach.", tone: 'support' },
-    2: { text: "Words may carry extra warmth and weight. Honest, encouraging conversation can help you express what matters clearly.", tone: 'support' },
-    3: { text: "General transit readings treat Guru here as quieter for initiative. Pace yourself and give steady effort room to develop.", tone: 'neutral' },
-    4: { text: "A reflective focus on home and contentment may be welcome. Give a family matter or domestic task patient attention.", tone: 'support' },
-    5: { text: "Study, teaching, mantra, and creative learning are traditional themes associated with Guru here. Choose one to explore with care.", tone: 'support' },
-    6: { text: "When a task feels complex, avoid assuming that optimism alone will resolve it. Break it into steps and seek sound information.", tone: 'discipline' },
-    7: { text: "If a partnership conversation or negotiation is on your mind, clear expectations and fair dealing can support a constructive exchange.", tone: 'support' },
-    8: { text: "Guru's expansive symbolism meets a private, sensitive house. Use curiosity to reflect on complex matters without rushing to conclusions.", tone: 'neutral' },
-    9: { text: "Jupiter is traditionally associated with dharma and learning here. Study, reflection, or guidance from a trusted teacher may be meaningful.", tone: 'support' },
-    10: { text: "Bring fairness and generosity to your responsibilities. Focus on the quality of the work rather than expecting recognition.", tone: 'support' },
-    11: { text: "Community and shared aims are traditional themes for this placement. Consider which connections support meaningful, steady goals.", tone: 'support' },
-    12: { text: "A generous impulse may be present. Direct it toward time, service, or practice in a way that fits your capacity.", tone: 'discipline' },
+    1: { text: "You may feel more hopeful about your direction. Let optimism encourage you while keeping plans realistic." },
+    2: { text: "Words may carry extra warmth and weight. Honest, encouraging conversation can help you express what matters clearly." },
+    3: { text: "If a new initiative feels slow to take shape, give it time and focus on one steady next step." },
+    4: { text: "A reflective focus on home and contentment may be welcome. Give a family matter or domestic task patient attention." },
+    5: { text: "Study, teaching, mantra, or creative learning may be useful themes for reflection. Choose one to explore with care." },
+    6: { text: "When a task feels complex, avoid assuming that optimism alone will resolve it. Break it into steps and seek sound information." },
+    7: { text: "If a partnership conversation or negotiation is on your mind, clear expectations and fair dealing can support a constructive exchange." },
+    8: { text: "Guru's expansive symbolism meets a private, sensitive house. Use curiosity to reflect on complex matters without rushing to conclusions." },
+    9: { text: "Questions of dharma, learning, or guidance may feel more prominent. Study or reflection with a trusted teacher may be meaningful." },
+    10: { text: "Bring fairness and generosity to your responsibilities. Focus on the quality of the work rather than expecting recognition." },
+    11: { text: "Community and shared aims may invite reflection. Consider which connections align with meaningful, steady goals." },
+    12: { text: "A generous impulse may be present. Direct it toward time, service, or practice in a way that fits your capacity." },
   },
   Shani: {
-    1: { text: "Saturn presses on self-confidence and energy today -- move at a measured pace and don't judge yourself by today's mood alone.", tone: 'discipline' },
-    2: { text: "Watch for clipped or harsh words. A measured tone can help keep close conversations constructive.", tone: 'discipline' },
-    3: { text: "Steady, unglamorous effort fits this placement. Value consistency even when results are not immediate.", tone: 'support' },
-    4: { text: "Home life may feel heavier or more restrictive than usual. Tend to a practical duty there rather than an emotional one.", tone: 'discipline' },
-    5: { text: "Creative and devotional energy feels blocked or effortful today -- persistence in a simple practice matters more than inspiration.", tone: 'discipline' },
-    6: { text: "This is traditionally counted among Saturn's more constructive transit positions. Patient, structured effort can help with a persistent responsibility.", tone: 'support' },
-    7: { text: "Relationships and negotiations demand patience and realism today -- don't expect warmth, expect fairness.", tone: 'neutral' },
-    8: { text: "This placement is often treated as demanding in Jyotish. Give complex changes time, verify important details, and avoid rushing a decision.", tone: 'discipline' },
-    9: { text: "Questions of belief, learning, or duty may call for patience. Make room for reflection without treating uncertainty as a verdict.", tone: 'discipline' },
-    10: { text: "Consistent work and patience fit this placement. Progress may be gradual, so focus on the next practical step.", tone: 'support' },
-    11: { text: "Long-term aims and steady collaboration are useful themes to reflect on. Value dependable connections without assuming a particular outcome.", tone: 'support' },
-    12: { text: "A quieter pace may help you review priorities. Give yourself space to reflect before drawing conclusions from a difficult mood.", tone: 'discipline' },
+    1: { text: "If confidence or energy feels lower, move at a measured pace and avoid judging yourself by one day's mood." },
+    2: { text: "Watch for clipped or harsh words. A measured tone can help keep close conversations constructive." },
+    3: { text: "Steady, unglamorous effort fits this placement. Value consistency even when results are not immediate." },
+    4: { text: "Home life may feel heavier or more restrictive than usual. Tend to a practical duty there rather than an emotional one." },
+    5: { text: "If creative or devotional practice feels effortful, keep it simple and let consistency matter more than inspiration." },
+    6: { text: "Patient, structured effort may help you work through a persistent responsibility." },
+    7: { text: "Relationships and negotiations demand patience and realism today -- don't expect warmth, expect fairness." },
+    8: { text: "Complex changes may benefit from patience. Give important details a second look before making a decision." },
+    9: { text: "Questions of belief, learning, or duty may call for patience. Make room for reflection without treating uncertainty as a verdict." },
+    10: { text: "Consistent work and patience fit this placement. Progress may be gradual, so focus on the next practical step." },
+    11: { text: "Long-term aims and steady collaboration are useful themes to reflect on. Value dependable connections without assuming a particular outcome." },
+    12: { text: "A quieter pace may help you review priorities. Give yourself space to reflect before drawing conclusions from a difficult mood." },
   },
   Mangal: {
-    1: { text: "Energy and initiative run high today -- channel it into direct action rather than letting frustration take the lead.", tone: 'discipline' },
-    2: { text: "Words can come out more sharply than intended. Pause before replying, especially in close conversations.", tone: 'discipline' },
-    3: { text: "This is traditionally counted among Mars's more constructive transit positions. Channel courage and initiative into a clear, manageable task.", tone: 'support' },
-    4: { text: "Home projects or practical responsibilities may call for extra patience. Clarify expectations and channel energy into useful tasks.", tone: 'discipline' },
-    5: { text: "Restlessness may compete with study or creative focus. A brief pause or change of pace may help you reset.", tone: 'neutral' },
-    6: { text: "This is traditionally counted among Mars's more constructive transit positions. Direct effort can help you work through a practical challenge.", tone: 'support' },
-    7: { text: "Bring directness to partnership conversations with care. Make room for another perspective before deciding how to proceed.", tone: 'discipline' },
-    8: { text: "This placement is often treated as demanding. Pause before reacting, check important details, and keep plans measured.", tone: 'discipline' },
-    9: { text: "Energy toward belief or duty may come out as impatience rather than conviction -- temper zeal with respect for tradition.", tone: 'neutral' },
-    10: { text: "Drive and initiative in work are well supported -- a good day to push a stalled project forward with direct effort.", tone: 'support' },
-    11: { text: "A clear, purposeful approach can help you make progress on a shared goal. Keep collaboration direct and respectful.", tone: 'support' },
-    12: { text: "A restless mood can make it harder to settle. A gentle wind-down and fewer late-day demands may feel supportive.", tone: 'discipline' },
+    1: { text: "Energy and initiative run high today -- channel it into direct action rather than letting frustration take the lead." },
+    2: { text: "Words can come out more sharply than intended. Pause before replying, especially in close conversations." },
+    3: { text: "A clear, manageable task may be a useful place to direct courage and initiative." },
+    4: { text: "Home projects or practical responsibilities may call for extra patience. Clarify expectations and channel energy into useful tasks." },
+    5: { text: "Restlessness may compete with study or creative focus. A brief pause or change of pace may help you reset." },
+    6: { text: "Direct effort may help you work through a practical challenge." },
+    7: { text: "Bring directness to partnership conversations with care. Make room for another perspective before deciding how to proceed." },
+    8: { text: "When plans feel complex, pause before reacting, check details, and keep your next step measured." },
+    9: { text: "Energy toward belief or duty may come out as impatience rather than conviction -- temper zeal with respect for tradition." },
+    10: { text: "You may feel ready to move work forward. Choose one stalled task and give it focused effort." },
+    11: { text: "A clear, purposeful approach can help you make progress on a shared goal. Keep collaboration direct and respectful." },
+    12: { text: "A restless mood can make it harder to settle. A gentle wind-down and fewer late-day demands may feel supportive." },
   },
   Rahu: {
-    1: { text: "An unusual restlessness or hunger for something more colours your self-image today -- question whether the desire is really yours.", tone: 'discipline' },
-    2: { text: "A strong urge to persuade may arise. Check details and choose precise words before making a commitment.", tone: 'discipline' },
-    3: { text: "Bold, unconventional ideas and outreach are favoured today -- Rahu supports ambition here more than it disturbs it.", tone: 'support' },
-    4: { text: "If home plans feel unsettled, give yourself time to distinguish curiosity from urgency before choosing a next step.", tone: 'discipline' },
-    5: { text: "Distraction may compete with study or creative focus. An unconventional approach can be worth exploring if you keep it simple.", tone: 'discipline' },
-    6: { text: "This is traditionally treated as a more constructive Rahu transit position. Use careful, original thinking to approach a practical challenge.", tone: 'support' },
-    7: { text: "Read terms carefully and ask questions when expectations are unclear. Clarity is more useful than assumption.", tone: 'discipline' },
-    8: { text: "When a subject feels complex, verify information and avoid drawing conclusions before you have enough context.", tone: 'discipline' },
-    9: { text: "Unconventional beliefs or a foreign teacher may attract you today -- stay grounded in your own tradition before adopting a new one.", tone: 'discipline' },
-    10: { text: "Ambition for recognition may feel heightened. Choose transparent steps and realistic timelines over shortcuts.", tone: 'discipline' },
-    11: { text: "New connections can introduce unfamiliar ideas. Prioritise clear expectations and shared aims over promises of quick results.", tone: 'support' },
-    12: { text: "If attention feels scattered, quiet planning or reflection can help channel the urge for novelty.", tone: 'discipline' },
+    1: { text: "An unusual restlessness or hunger for something more colours your self-image today -- question whether the desire is really yours." },
+    2: { text: "A strong urge to persuade may arise. Check details and choose precise words before making a commitment." },
+    3: { text: "You may feel drawn to bold or unfamiliar approaches. Check their fit and impact before committing." },
+    4: { text: "If home plans feel unsettled, give yourself time to distinguish curiosity from urgency before choosing a next step." },
+    5: { text: "Distraction may compete with study or creative focus. An unconventional approach can be worth exploring if you keep it simple." },
+    6: { text: "Careful, original thinking may help you approach a practical challenge." },
+    7: { text: "Read terms carefully and ask questions when expectations are unclear. Clarity is more useful than assumption." },
+    8: { text: "When a subject feels complex, verify information and avoid drawing conclusions before you have enough context." },
+    9: { text: "Unconventional beliefs or a foreign teacher may attract you today -- stay grounded in your own tradition before adopting a new one." },
+    10: { text: "Ambition for recognition may feel heightened. Choose transparent steps and realistic timelines over shortcuts." },
+    11: { text: "New connections can introduce unfamiliar ideas. Prioritise clear expectations and shared aims over promises of quick results." },
+    12: { text: "If attention feels scattered, quiet planning or reflection can help channel the urge for novelty." },
   },
   Ketu: {
-    1: { text: "A quieter or more detached mood may arise. Treat it as a prompt for reflection, not as a verdict on your confidence.", tone: 'neutral' },
-    2: { text: "Words may be fewer or more direct today. Simplicity in conversation may suit the moment.", tone: 'neutral' },
-    3: { text: "Motivation for ordinary effort or outreach feels thin today -- Ketu withdraws energy here rather than fuelling it.", tone: 'discipline' },
-    4: { text: "A pull toward solitude may arise, even in familiar surroundings. Treat it as a preference for quiet, not as a conclusion about others.", tone: 'neutral' },
-    5: { text: "Quiet practice may feel more appealing than analysis. If it suits your tradition, try a short period of reflection or meditation.", tone: 'support' },
-    6: { text: "A reflective approach may help you release attention from a recurring practical concern and focus on what is manageable now.", tone: 'support' },
-    7: { text: "A quieter exchange can invite more listening. Avoid assuming you know what another person means without asking.", tone: 'neutral' },
-    8: { text: "A reflective approach may help you examine a complex subject. Treat impressions as prompts for thought, not certainty.", tone: 'support' },
-    9: { text: "Questions of belief or practice may invite deeper reflection. Explore at your own pace and within the boundaries of your tradition.", tone: 'support' },
-    10: { text: "Recognition may feel less important than meaningful effort. Consider which responsibilities deserve your attention today.", tone: 'neutral' },
-    11: { text: "Reflect on what feels meaningful beyond outward measures. Let your own priorities guide that reflection.", tone: 'neutral' },
-    12: { text: "Withdrawal, rest, and spiritual reflection are traditional themes associated with Ketu here. Choose a quieter practice if it suits you.", tone: 'support' },
+    1: { text: "A quieter or more detached mood may arise. Treat it as a prompt for reflection, not as a verdict on your confidence." },
+    2: { text: "Words may be fewer or more direct today. Simplicity in conversation may suit the moment." },
+    3: { text: "If ordinary effort or outreach feels less appealing, choose one small task and give yourself room to begin." },
+    4: { text: "A pull toward solitude may arise, even in familiar surroundings. Treat it as a preference for quiet, not as a conclusion about others." },
+    5: { text: "Quiet practice may feel more appealing than analysis. If it suits your tradition, try a short period of reflection or meditation." },
+    6: { text: "A reflective approach may help you release attention from a recurring practical concern and focus on what is manageable now." },
+    7: { text: "A quieter exchange can invite more listening. Avoid assuming you know what another person means without asking." },
+    8: { text: "A reflective approach may help you examine a complex subject. Treat impressions as prompts for thought, not certainty." },
+    9: { text: "Questions of belief or practice may invite deeper reflection. Explore at your own pace and within the boundaries of your tradition." },
+    10: { text: "Recognition may feel less important than meaningful effort. Consider which responsibilities deserve your attention today." },
+    11: { text: "Reflect on what feels meaningful beyond outward measures. Let your own priorities guide that reflection." },
+    12: { text: "You may feel drawn to rest, quiet, or spiritual reflection. Choose a quieter practice if it suits you." },
   },
 };
 
-// Parashari structural classification (Kendra/Trikona/Upachaya/Dusthana) --
-// the near-universal convention across Jyotish reference works, not pinned to
-// a single unverified page/verse citation. Houses genuinely overlap
-// categories (10th is both Kendra and Upachaya; 6th is both Upachaya and
-// Dusthana), so this returns a list, never a single tag -- and a house
-// outside all four groups (2nd) returns an empty list, not "neutral": absence
-// of a classification isn't itself a classification.
-//
-// House 1 was the one disputed case across sources seen during this
-// feature's review (Kendra-only vs Kendra+Trikona) -- resolved by
-// Jyotish-literate human review as Kendra+Trikona.
+// Structural house tags are descriptive labels shown alongside the Native
+// editorial reflections; they do not determine a planet's strength or
+// prediction. Overlapping tags are retained (for example, 10th is Kendra and
+// Upachaya; 6th is Upachaya and Dusthana). House 1 is Kendra + Trikona per
+// the product owner's explicit confirmation on 2026-09-29; provenance limits
+// are recorded in docs/jyotish/RASHIPHAL_NATIVE_GUIDANCE_RECORD.md.
 export function getHouseStructure(house: HouseNumber): Array<'kendra' | 'trikona' | 'upachaya' | 'dusthana'> {
   const tags: Array<'kendra' | 'trikona' | 'upachaya' | 'dusthana'> = [];
   if (house === 1 || house === 4 || house === 7 || house === 10) tags.push('kendra');
@@ -371,7 +368,9 @@ function buildTransitHighlights(
         return {
           title: `${planet} in ${ordinal(house)} from ${RASHI_LIST[rashiIndex].sa}`,
           detail: entry.text,
-          tone: entry.tone,
+          // The distinct Native guidance path is intentionally visually
+          // neutral; its reflections are not a favorable/unfavorable score.
+          tone: 'neutral' as const,
           structure: getHouseStructure(house as HouseNumber),
         };
       }
@@ -497,7 +496,9 @@ export function getDailyHoroscope(
   const shaniHouse = houseFromRashi(transits.Shani.rashiIndex, rashi.index);
   const spiritualDate = localSpiritualDate(timeZone, 4, date);
   const moonEmphasis = useDistinctGuidance ? PLANET_HOUSE_GUIDANCE.Chandra[moonHouse as HouseNumber].text : HOUSE_MEANINGS[moonHouse];
-  const baseInsight = `For ${spiritualDate}, Moon emphasizes ${moonEmphasis}, Guru works through the ${ordinal(guruHouse)} house, and Shani presses through the ${ordinal(shaniHouse)} house from your Chandra rashi.`;
+  const baseInsight = useDistinctGuidance
+    ? `For ${spiritualDate}, the current sidereal positions place Chandra in the ${ordinal(moonHouse)}, Guru in the ${ordinal(guruHouse)}, and Shani in the ${ordinal(shaniHouse)} house from ${rashi.sa}.`
+    : `For ${spiritualDate}, Moon emphasizes ${moonEmphasis}, Guru works through the ${ordinal(guruHouse)} house, and Shani presses through the ${ordinal(shaniHouse)} house from your Chandra rashi.`;
   const panditAiOracle = `${baseInsight} ${primary?.detail ?? ''} ${sadeSati.isActive ? `Sade Sati remains active in the ${sadeSati.phase} phase, so patience and duty matter more than speed.` : 'Saturn is not triggering Sade Sati from the current transit position.'}`;
 
   // Resolve Beeja Mantra Details
@@ -522,13 +523,16 @@ export function getDailyHoroscope(
     panditAiOracle,
     beejaMantra: beejaData.mantra,
     beejaFrequency: beejaData.freq,
-    gocharSummary: `This daily read is derived from live sidereal graha transits, with ${rashi.sa} treated as the reference Chandra rashi. Guidance is general until connected to a saved Kundali.`,
+    gocharSummary: useDistinctGuidance
+      ? `Six selected grahas from ${rashi.sa}: Chandra, Guru, Shani, Mangal, Rahu, and Ketu. Surya, Budha, and Shukra are not shown; this is not a complete Navagraha reading.`
+      : `This daily read is derived from live sidereal graha transits, with ${rashi.sa} treated as the reference Chandra rashi. Guidance is general until connected to a saved Kundali.`,
     moonTransit,
     transitHighlights: highlights,
     sadhanaPlan: buildSadhanaPlan(rashi.key, transits, rashi.index),
     accuracyNote: useDistinctGuidance
-      ? 'These are general, editorial Jyotish-inspired reflections based on Chandra-rashi transits, not source quotations or certain predictions. It is not medical, financial, legal, or safety advice, or a complete personal chart analysis.'
+      ? 'These are editorial reflections, not source-defined classical gochara rules, quotations, or certain predictions. House tags show structure, not planetary strength. This is not a full personal Kundali reading or medical, financial, legal, or safety advice.'
       : 'This is a Chandra-rashi transit layer, not a personal chart reading. For precise guidance, combine it with the user’s saved Kundali, dasha, and exact Moon/Lagna.',
+    ...(useDistinctGuidance ? { spiritualDate } : {}),
     ...(useDistinctGuidance ? { dashaContext } : {}),
   };
 }

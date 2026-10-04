@@ -6,10 +6,10 @@
 
 begin;
 
-insert into auth.users (id) values ('00000000-0000-0000-0000-0000000000b1') on conflict (id) do nothing;
+insert into auth.users (id, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000b1', '{"username": "push_deletion_test", "full_name": "Push Deletion Test"}'::jsonb) on conflict (id) do nothing;
 insert into public.profiles (id, full_name, username)
 values ('00000000-0000-0000-0000-0000000000b1', 'Push Deletion Test', 'push_deletion_test')
-on conflict (id) do nothing;
+on conflict (id) do update set full_name = excluded.full_name, username = excluded.username;
 
 -- 1. An active account registers exactly one token.
 do $t$

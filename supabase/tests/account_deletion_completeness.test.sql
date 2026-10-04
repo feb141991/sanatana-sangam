@@ -8,15 +8,15 @@
 
 begin;
 
-insert into auth.users (id) values
-  ('00000000-0000-0000-0000-0000000000a1'),
-  ('00000000-0000-0000-0000-0000000000a2')
+insert into auth.users (id, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-0000000000a1', '{"username": "deletion_test_active", "full_name": "Active Test"}'::jsonb),
+  ('00000000-0000-0000-0000-0000000000a2', '{"username": "deletion_test_deleting", "full_name": "Deleting Test"}'::jsonb)
 on conflict (id) do nothing;
 
 insert into public.profiles (id, full_name, username) values
   ('00000000-0000-0000-0000-0000000000a1', 'Active Test', 'deletion_test_active'),
   ('00000000-0000-0000-0000-0000000000a2', 'Deleting Test', 'deletion_test_deleting')
-on conflict (id) do nothing;
+on conflict (id) do update set full_name = excluded.full_name, username = excluded.username;
 
 update public.profiles set is_deleting = true, deletion_requested_at = now()
 where id = '00000000-0000-0000-0000-0000000000a2';

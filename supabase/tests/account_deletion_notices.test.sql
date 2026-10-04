@@ -3,7 +3,7 @@
 
 begin;
 
-insert into auth.users (id) values ('00000000-0000-0000-0000-0000000000f1') on conflict (id) do nothing;
+insert into auth.users (id, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000f1', '{"username": "notices_test_f1"}'::jsonb) on conflict (id) do nothing;
 
 do $t$
 declare n integer;

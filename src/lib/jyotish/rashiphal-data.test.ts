@@ -7,6 +7,7 @@ import {
   type GuidancePlanet,
   type HouseNumber,
 } from './rashiphal-data';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 const PLANETS: GuidancePlanet[] = ['Chandra', 'Guru', 'Shani', 'Mangal', 'Rahu', 'Ketu'];
 const HOUSES: HouseNumber[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -20,6 +21,12 @@ describe('getDailyHoroscope PWA/legacy path is unaffected by the native opt-in',
     const withNoOptions = getDailyHoroscope('virgo', date, 'Asia/Kolkata');
     const withEmptyOptions = getDailyHoroscope('virgo', date, 'Asia/Kolkata', {});
     expect(withNoOptions).toEqual(withEmptyOptions);
+  });
+
+  it('preserves the legacy output when the Native-only option is explicitly disabled', () => {
+    const date = new Date('2026-06-15T10:00:00Z');
+    expect(getDailyHoroscope('virgo', date, 'Asia/Kolkata', { useDistinctGuidance: false }))
+      .toEqual(getDailyHoroscope('virgo', date, 'Asia/Kolkata'));
   });
 
   it('never includes dashaContext or structure fields unless useDistinctGuidance is true', () => {
@@ -42,10 +49,21 @@ describe('getDailyHoroscope PWA/legacy path is unaffected by the native opt-in',
     const legacy = getDailyHoroscope('virgo', date, 'Asia/Kolkata');
     const native = getDailyHoroscope('virgo', date, 'Asia/Kolkata', { useDistinctGuidance: true });
     expect(legacy.accuracyNote).not.toContain('editorial Jyotish-inspired');
-    expect(native.accuracyNote).toContain('editorial Jyotish-inspired');
-    expect(native.accuracyNote).toContain('not medical, financial, legal, or safety advice');
+    expect(native.accuracyNote).toContain('editorial reflection');
+    expect(native.accuracyNote).toContain('not source-defined classical gochara rules');
+    expect(native.accuracyNote).toContain('not a full personal Kundali reading');
+    expect(native.accuracyNote).toContain('medical, financial, legal, or safety advice');
+    expect(native.gocharSummary).toContain('Surya, Budha, and Shukra are not shown');
+    expect(native.gocharSummary).toContain('not a complete Navagraha reading');
+    expect(native.transitHighlights).toHaveLength(6);
+    expect(native.transitHighlights.map(({ title }) => title.split(' ')[0]).sort()).toEqual(
+      ['Chandra', 'Guru', 'Ketu', 'Mangal', 'Rahu', 'Shani'].sort(),
+    );
+    expect(native.transitHighlights.every(({ tone }) => tone === 'neutral')).toBe(true);
     expect(native.luckyColor).toBe(legacy.luckyColor);
     expect(native.health).toContain('cannot assess health');
+    expect(native.spiritualDate).toBe(localSpiritualDate('Asia/Kolkata', 4, date));
+    expect(legacy.spiritualDate).toBeUndefined();
   });
 });
 
@@ -56,7 +74,8 @@ describe('PLANET_HOUSE_GUIDANCE completeness and distinctness', () => {
         const entry = PLANET_HOUSE_GUIDANCE[planet][house];
         expect(entry, `${planet} house ${house}`).toBeDefined();
         expect(entry.text.length, `${planet} house ${house} text`).toBeGreaterThan(0);
-        expect(['support', 'discipline', 'neutral']).toContain(entry.tone);
+        expect(Object.keys(entry), `${planet} house ${house} must not carry a favorable/unfavorable score`)
+          .toEqual(['text']);
       }
     }
   });
@@ -94,7 +113,7 @@ describe('getHouseStructure', () => {
     expect(getHouseStructure(6).sort()).toEqual(['dusthana', 'upachaya'].sort());
   });
 
-  it('classifies house 1 as both Kendra and Trikona, per Jyotish-literate human review', () => {
+  it('classifies house 1 as Kendra and Trikona per the recorded 2026-09-29 product decision', () => {
     expect(getHouseStructure(1).sort()).toEqual(['kendra', 'trikona'].sort());
   });
 

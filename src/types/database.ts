@@ -284,6 +284,12 @@ export interface Database {
           wants_nitya_reminders: boolean;
           wants_community_notifications: boolean;
           wants_family_notifications: boolean;
+          // Added by 20261003174633_native_kul_deceased_remembrance_notifications.sql.
+          // Optional in this partial contract because the database supplies
+          // defaults and this type predates the migration being applied.
+          wants_family_remembrance_reminders?: boolean;
+          family_remembrance_time?: string;
+          family_remembrance_opt_in_generation?: number;
           notification_quiet_hours_start: number | null;
           notification_quiet_hours_end: number | null;
           is_admin: boolean;

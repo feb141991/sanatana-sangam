@@ -102,6 +102,10 @@
       "schedule": "0 3 * * *"
     },
     {
+      "path": "/api/cron/kul-family-remembrance",
+      "schedule": "0 17 * * *"
+    },
+    {
       "path": "/api/cron/vrat-reminder",
       "schedule": "30 4 * * *"
     },

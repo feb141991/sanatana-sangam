@@ -24,6 +24,33 @@ describe("notification delivery policy", () => {
       .toBeNull();
   });
 
+  it("fails closed on family remembrance unless its dedicated opt-in is true", () => {
+    const row = { notification_type: "family_remembrance", notification_key: "family-remembrance:annual" };
+    expect(getNotificationPreferenceSkipReason(row, {})).toBe("family_remembrance_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_family_remembrance_reminders: false }))
+      .toBe("family_remembrance_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_family_remembrance_reminders: true }))
+      .toBeNull();
+    // The legacy family activity toggle is independent; this feature has its
+    // own explicit, default-off consent gate.
+    expect(getNotificationPreferenceSkipReason(row, {
+      wants_family_notifications: false,
+      wants_family_remembrance_reminders: true,
+    })).toBeNull();
+  });
+
+  it("routes family remembrance into the KUL family dates and keeps push data generic", () => {
+    const row = {
+      notification_type: "family_remembrance",
+      notification_key: "family-remembrance:annual",
+    };
+    expect(getScheduledNotificationActionPath(row)).toBe("/kul?section=family");
+    expect(getScheduledNotificationPushData(row)).toEqual({
+      type: "family_remembrance",
+      notification_key: "family-remembrance:annual",
+    });
+  });
+
   it("fails closed for Japa if the reminder was turned off after scheduling", () => {
     const row = { notification_type: "japa", notification_key: "japa:2026-09-29" };
     expect(getNotificationPreferenceSkipReason(row, {})).toBe("japa_reminders_disabled");

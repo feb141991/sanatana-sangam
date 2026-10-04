@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 const mocks = vi.hoisted(() => ({ getApiUser: vi.fn() }));
 vi.mock('@/lib/api-auth', async (importOriginal) => ({
@@ -30,22 +31,38 @@ function req(url: string, headers: Record<string, string> = {}) {
 const REQUEST_URL = 'https://shoonaya.com/api/jyotish/rashiphal?rashi=virgo';
 
 describe('GET /api/jyotish/rashiphal', () => {
-  it('never calls getApiUser for a plain anonymous request, and keeps public caching', async () => {
+  it('never calls getApiUser for an anonymous request and prevents stale spiritual-day cache responses', async () => {
     const { GET } = await import('./route');
     const response = await GET(req(REQUEST_URL));
     expect(mocks.getApiUser).not.toHaveBeenCalled();
-    expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
     const body = await response.json();
     expect(body.dashaContextStatus).toBe('not_requested');
     expect(body.dashaContext).toBeNull();
+    expect(body.transitHighlights).toHaveLength(6);
+    expect(body.transitHighlights.every((highlight: { tone: string }) => highlight.tone === 'neutral')).toBe(true);
+    expect(body.gocharSummary).toContain('not a complete Navagraha reading');
+    expect(body.spiritualDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
   it('never calls getApiUser for a present-but-malformed (non-Bearer) Authorization header', async () => {
     const { GET } = await import('./route');
     const response = await GET(req(REQUEST_URL, { authorization: 'Basic abc123' }));
     expect(mocks.getApiUser).not.toHaveBeenCalled();
-    expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
     expect((await response.json()).dashaContextStatus).toBe('not_requested');
+  });
+
+  it('returns the spiritual date for the requested timezone across the 4 a.m. day boundary', async () => {
+    const { GET } = await import('./route');
+    // 23:00 UTC is 04:30 in Kolkata on the next civil date, so the 4 a.m.
+    // spiritual day is June 15 even though the UTC date is still June 14.
+    const requestedAt = new Date('2026-06-14T23:00:00.000Z');
+    const response = await GET(req(`${REQUEST_URL}&tz=Asia/Kolkata&date=${encodeURIComponent(requestedAt.toISOString())}`));
+    const body = await response.json();
+
+    expect(body.spiritualDate).toBe(localSpiritualDate('Asia/Kolkata', 4, requestedAt));
+    expect(body.spiritualDate).toBe('2026-06-15');
   });
 
   it('attaches dashaContext when the exactly-one primary profile matches the requested sign and has an active Dasha', async () => {

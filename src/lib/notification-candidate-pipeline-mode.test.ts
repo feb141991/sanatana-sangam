@@ -32,6 +32,18 @@ describe('notification-candidate-pipeline-mode', () => {
     expect(getCandidateTypePipelineMode('quiz')).toBe('disabled');
     expect(getCandidateTypePipelineMode('streak')).toBe('disabled');
     expect(getCandidateTypePipelineMode('sankalpa_midpoint')).toBe('disabled');
+    expect(getCandidateTypePipelineMode('family_remembrance')).toBe('disabled');
+  });
+
+  it('requires both global resolver and family-remembrance type gates', () => {
+    process.env.NOTIFICATION_CANDIDATE_MODE_FAMILY_REMEMBRANCE = 'candidate';
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    expect(shouldProcessCandidateType('family_remembrance')).toBe(true);
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'false';
+    expect(shouldProcessCandidateType('family_remembrance')).toBe(false);
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    process.env.NOTIFICATION_CANDIDATE_MODE_FAMILY_REMEMBRANCE = 'disabled';
+    expect(shouldProcessCandidateType('family_remembrance')).toBe(false);
   });
 
   it('respects per-type candidate mode override', () => {
