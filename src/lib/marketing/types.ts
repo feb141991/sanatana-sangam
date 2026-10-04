@@ -110,6 +110,7 @@ export interface ConsentDecision {
     | "whatsapp_opt_in_disabled"
     | "invalid_whatsapp_number"
     | "missing_email"
+    | "missing_unsubscribe_token"
     | "placeholder_email"
     | "account_banned"
     | "account_deleted"

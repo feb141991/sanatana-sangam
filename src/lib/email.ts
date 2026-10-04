@@ -1,10 +1,10 @@
-import { TRADITION_SIGNS } from '@/lib/utils'; // Assuming this exists or we define locally
+import { APP } from '@/lib/config';
 
 const SHOONAYA_GOLD = '#C5A059';
 const SHOONAYA_IVORY = '#FAF6EF';
 const SHOONAYA_TEXT = '#1A140E';
 
-interface EmailOptions {
+export interface EmailOptions {
   to: string;
   subject: string;
   shloka: string;
@@ -14,12 +14,46 @@ interface EmailOptions {
   ctaText: string;
   ctaUrl: string;
   unsubUrl?: string;
+  unsubType?: 'newsletter' | 'festivals';
 }
+
+export type EmailSendResult =
+  | { success: true; id?: string }
+  | { success: false; error: string; retryable: boolean; status?: number };
 
 /**
  * Builds the Shoonaya Zenith-themed HTML wrapper for all emails.
  */
-function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsubUrl }: EmailOptions) {
+export function escapeEmailHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character]!);
+}
+
+function safeHttpUrl(value: string): URL | null {
+  try {
+    const url = new URL(value, APP.BASE_URL);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsubUrl, unsubType }: EmailOptions) {
+  const safeCtaUrl = safeHttpUrl(ctaUrl) ?? new URL('https://www.shoonaya.com');
+  const safeUnsubUrl = unsubUrl ? safeHttpUrl(unsubUrl) : null;
+  const categoryUnsubUrl = safeUnsubUrl ? new URL(safeUnsubUrl) : null;
+  categoryUnsubUrl?.searchParams.set('type', unsubType ?? 'all');
+  const unsubscribeLabel = unsubType === 'newsletter'
+    ? 'Unsubscribe from the digest'
+    : unsubType === 'festivals'
+      ? 'Unsubscribe from festival emails'
+      : 'Unsubscribe from optional emails';
+
   return `
     <!DOCTYPE html>
     <html>
@@ -44,23 +78,24 @@ function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsub
       <div class="container">
         <div class="header">
           <div class="logo-text">Shoonaya</div>
-          <div class="subtitle">Find Your Infinity</div>
+          <div class="subtitle">Find your infinite.</div>
+          <div style="font-size:12px;color:#854F0B;margin-top:8px;">A daily spiritual sanctuary for sacred time, practice, and connection.</div>
         </div>
         <div class="content">
-          ${shloka ? `<div class="shloka">“${shloka}”</div>` : ''}
-          ${meaning ? `<div class="meaning">${meaning}</div>` : ''}
+          ${shloka ? `<div class="shloka">“${escapeEmailHtml(shloka)}”</div>` : ''}
+          ${meaning ? `<div class="meaning">${escapeEmailHtml(meaning)}</div>` : ''}
 
-          <h2 style="font-size: 24px; margin-bottom: 16px;">${title}</h2>
+          <h2 style="font-size: 24px; margin-bottom: 16px;">${escapeEmailHtml(title)}</h2>
           <p style="font-size: 15px; line-height: 1.6; color: #444; margin-bottom: 40px;">
-            ${body}
+            ${escapeEmailHtml(body)}
           </p>
           
-          <a href="${ctaUrl}" class="button">${ctaText}</a>
+          <a href="${escapeEmailHtml(safeCtaUrl.toString())}" class="button">${escapeEmailHtml(ctaText)}</a>
         </div>
         <div class="footer">
           <div class="signs">🕉️ ☬ ☸️ 🤲</div>
-          <p class="legal">Join the Shoonaya Mandali.<br>© 2026 Shoonaya. All rights reserved.</p>
-          ${unsubUrl ? `<p class="legal"><a href="${unsubUrl}&type=newsletter">Unsubscribe from digest</a> · <a href="${unsubUrl}&type=festivals">Unsubscribe from festivals</a></p>` : ''}
+          <p class="legal">A daily spiritual sanctuary for sacred time, practice, and connection.<br>© 2026 Shoonaya. All rights reserved.</p>
+          ${categoryUnsubUrl ? `<p class="legal"><a href="${escapeEmailHtml(categoryUnsubUrl.toString())}">${unsubscribeLabel}</a></p>` : ''}
         </div>
       </div>
     </body>
@@ -69,39 +104,98 @@ function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsub
 }
 
 /**
- * Sends a premium themed email via Resend.
+ * Sends a premium themed email via Resend. An outbox idempotency key is
+ * forwarded to Resend so a retry after an ambiguous network response does not
+ * create a second message during Resend's 24-hour idempotency window.
  */
-export async function sendShoonayaEmail(options: EmailOptions) {
+async function sendResendEmail(input: {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+  idempotencyKey?: string;
+  unsubUrl?: string;
+  unsubType?: 'newsletter' | 'festivals';
+}): Promise<EmailSendResult> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.warn('[Shoonaya Email] No RESEND_API_KEY found. Skipping email.');
-    return;
+    return { success: false, error: 'email_provider_not_configured', retryable: true };
   }
 
   try {
+    const headers: Record<string, string> = {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    };
+    if (input.idempotencyKey) headers['Idempotency-Key'] = input.idempotencyKey;
+
+    const requestHeaders: Record<string, string> = {};
+    if (input.unsubUrl) {
+      const oneClickUrl = safeHttpUrl(input.unsubUrl);
+      if (oneClickUrl) {
+        oneClickUrl.searchParams.set('type', input.unsubType ?? 'all');
+        requestHeaders['List-Unsubscribe'] = `<${oneClickUrl.toString()}>`;
+        requestHeaders['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+      }
+    }
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
+      signal: AbortSignal.timeout(10_000),
       body: JSON.stringify({
-        from: 'Shoonaya <noreply@shoonaya.app>',
-        to: [options.to],
-        subject: options.subject,
-        html: buildPremiumHtml(options),
+        from: input.from ?? process.env.SHOONAYA_EMAIL_FROM ?? 'Shoonaya <noreply@shoonaya.app>',
+        to: [input.to],
+        subject: input.subject,
+        html: input.html,
+        ...(Object.keys(requestHeaders).length > 0 ? { headers: requestHeaders } : {}),
       }),
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error('[Shoonaya Email] Failed to send:', error);
-      return { success: false, error };
+      // Resend returns 409 when the same idempotency key is reused with a
+      // different request body. Retrying that unchanged row cannot recover.
+      const retryable = response.status === 408 || response.status === 429 || response.status >= 500;
+      return {
+        success: false,
+        error: response.status === 429 ? 'provider_rate_limited' : `provider_http_${response.status}`,
+        retryable,
+        status: response.status,
+      };
     }
 
-    return { success: true };
+    const body: unknown = await response.json().catch(() => null);
+    const id = typeof body === 'object' && body !== null && 'id' in body && typeof body.id === 'string'
+      ? body.id
+      : undefined;
+    return { success: true, ...(id ? { id } : {}) };
   } catch (err) {
-    console.error('[Shoonaya Email] Fetch error:', err);
-    return { success: false, error: err };
+    const isTimeout = err instanceof Error && err.name === 'TimeoutError';
+    return { success: false, error: isTimeout ? 'provider_timeout' : 'provider_network_error', retryable: true };
   }
+}
+
+export async function sendShoonayaEmail(
+  options: EmailOptions,
+  delivery: { idempotencyKey?: string } = {},
+): Promise<EmailSendResult> {
+  return sendResendEmail({
+    to: options.to,
+    subject: options.subject,
+    html: buildPremiumHtml(options),
+    idempotencyKey: delivery.idempotencyKey,
+    unsubUrl: options.unsubUrl,
+    unsubType: options.unsubType,
+  });
+}
+
+/** Internal worker-only transport for HTML generated by a trusted template. */
+export async function sendShoonayaHtmlEmail(input: {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+  idempotencyKey: string;
+}): Promise<EmailSendResult> {
+  return sendResendEmail(input);
 }

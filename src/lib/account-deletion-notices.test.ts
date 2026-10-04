@@ -1,66 +1,56 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { EnqueueEmailInput } from './email-outbox';
 
 vi.mock('@/lib/admin', () => ({ createServiceRoleSupabaseClient: () => { throw new Error('not used'); } }));
-vi.mock('@/lib/apple-auth-service', () => ({ revokeAppleAuthorizationForUser: vi.fn() }));
-vi.mock('@/lib/email', () => ({ sendShoonayaEmail: vi.fn() }));
 
-import { buildDeletionNotice, dueDeletionReminder, sendDeletionNotice, sendDueDeletionReminders } from './account-deletion-notices';
+import { buildDeletionNotice, dueDeletionReminder } from './account-deletion-email';
+import { enqueueDeletionCompletedNotice, enqueueDeletionNotice, enqueueDueDeletionReminders } from './account-deletion-notices';
 
 const DAY = 24 * 60 * 60 * 1000;
 const REQUESTED = '2026-10-01T10:00:00.000Z';
 const PURGE = Date.parse(REQUESTED) + 30 * DAY;
 
 type Profile = { id: string; is_deleting: boolean; deletion_requested_at: string | null };
-type Notice = { user_id: string; deletion_requested_at: string; kind: string };
 
-function fakeAdmin(state: { profiles: Profile[]; notices: Notice[]; emails: Record<string, string | null> }) {
+function fakeAdmin(state: { profiles: Profile[]; emails: Record<string, string | null> }) {
   return {
     auth: { admin: { getUserById: async (id: string) => ({ data: { user: { email: state.emails[id] ?? null } }, error: null }) } },
-    from(table: string) {
+    from() {
       const filters: Array<(row: Record<string, unknown>) => boolean> = [];
-      let pendingUpsert: Notice | null = null;
-      let deleting = false;
-      const rows = () => (table === 'profiles' ? state.profiles : state.notices) as unknown as Array<Record<string, unknown>>;
-      const matching = () => rows().filter((r) => filters.every((f) => f(r)));
+      const matching = () => state.profiles.filter((row) => filters.every((filter) => filter(row as unknown as Record<string, unknown>)));
       const builder: Record<string, unknown> = {
         select: () => builder,
-        eq: (c: string, v: unknown) => { filters.push((r) => r[c] === v); return builder; },
-        gt: (c: string, v: string) => { filters.push((r) => typeof r[c] === 'string' && (r[c] as string) > v); return builder; },
-        lte: (c: string, v: string) => { filters.push((r) => typeof r[c] === 'string' && (r[c] as string) <= v); return builder; },
+        eq: (column: string, value: unknown) => { filters.push((row) => row[column] === value); return builder; },
+        gt: (column: string, value: string) => { filters.push((row) => typeof row[column] === 'string' && (row[column] as string) > value); return builder; },
+        lte: (column: string, value: string) => { filters.push((row) => typeof row[column] === 'string' && (row[column] as string) <= value); return builder; },
         maybeSingle: async () => ({ data: matching()[0] ?? null, error: null }),
-        upsert: (row: Notice) => { pendingUpsert = row; return builder; },
-        delete: () => { deleting = true; return builder; },
-        then: (resolve: (v: unknown) => unknown) => {
-          if (pendingUpsert) {
-            const row = pendingUpsert;
-            const exists = state.notices.some((n) => n.user_id === row.user_id && n.deletion_requested_at === row.deletion_requested_at && n.kind === row.kind);
-            if (!exists) state.notices.push(row);
-            return Promise.resolve({ data: exists ? [] : [{ user_id: row.user_id }], error: null }).then(resolve);
-          }
-          if (deleting) {
-            const keep = state.notices.filter((n) => !filters.every((f) => f(n as unknown as Record<string, unknown>)));
-            state.notices.splice(0, state.notices.length, ...keep);
-            return Promise.resolve({ data: null, error: null }).then(resolve);
-          }
-          return Promise.resolve({ data: matching(), error: null }).then(resolve);
-        },
+        then: (resolve: (value: unknown) => unknown) => Promise.resolve({ data: matching(), error: null }).then(resolve),
       };
       return builder;
     },
   } as unknown as SupabaseClient;
 }
 
-let state: { profiles: Profile[]; notices: Notice[]; emails: Record<string, string | null> };
-const okSend = vi.fn(async () => ({ success: true }));
+let state: { profiles: Profile[]; emails: Record<string, string | null> };
+let queuedKeys: Set<string>;
+const enqueue = vi.fn(async (input: EnqueueEmailInput) => {
+  if (queuedKeys.has(input.idempotencyKey)) return 'already_queued' as const;
+  queuedKeys.add(input.idempotencyKey);
+  return 'queued' as const;
+});
 
 beforeEach(() => {
   state = {
     profiles: [{ id: 'u1', is_deleting: true, deletion_requested_at: REQUESTED }],
-    notices: [],
     emails: { u1: 'seeker@example.com' },
   };
-  okSend.mockClear();
+  queuedKeys = new Set();
+  enqueue.mockClear();
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
 });
 
 describe('dueDeletionReminder', () => {
@@ -75,59 +65,92 @@ describe('dueDeletionReminder', () => {
   });
 });
 
-describe('sendDeletionNotice', () => {
-  it('sends once per request and kind; a repeat is already_sent with no second email', async () => {
+describe('enqueueDeletionNotice', () => {
+  it('queues a deterministic transactional message without calling the provider', async () => {
     const admin = fakeAdmin(state);
-    expect(await sendDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'scheduled' }, okSend)).toBe('sent');
-    expect(await sendDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'scheduled' }, okSend)).toBe('already_sent');
-    expect(okSend).toHaveBeenCalledTimes(1);
-    expect(state.notices).toEqual([{ user_id: 'u1', deletion_requested_at: REQUESTED, kind: 'scheduled' }]);
+    expect(await enqueueDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'scheduled' }, enqueue)).toBe('queued');
+    expect(await enqueueDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'scheduled' }, enqueue)).toBe('already_queued');
+    expect(enqueue).toHaveBeenCalledTimes(2);
+    expect(enqueue).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      idempotencyKey: `account-deletion:u1:${REQUESTED}:scheduled`,
+      to: 'seeker@example.com',
+      recipientUserId: 'u1',
+      templateKey: 'account_deletion',
+      emailClass: 'transactional',
+      context: { deletionRequestedAt: REQUESTED },
+      content: expect.objectContaining({ subject: 'Your Shoonaya account is scheduled for deletion', shloka: '', meaning: '' }),
+    }));
   });
 
-  it('releases the claim when the provider fails (or no key), so the next run retries', async () => {
+  it('queues nothing for a cancelled or superseded request', async () => {
     const admin = fakeAdmin(state);
-    for (const failing of [vi.fn(async () => ({ success: false })), vi.fn(async () => undefined)]) {
-      expect(await sendDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'reminder_7d' }, failing)).toBe('failed');
-      expect(state.notices).toHaveLength(0);
-    }
-    expect(await sendDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'reminder_7d' }, okSend)).toBe('sent');
-    expect(state.notices).toHaveLength(1);
-  });
-
-  it('sends nothing for a cancelled request or a superseded request time', async () => {
-    const admin = fakeAdmin(state);
-    expect(await sendDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: '2026-09-01T00:00:00.000Z', kind: 'scheduled' }, okSend)).toBe('not_pending');
+    expect(await enqueueDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: '2026-09-01T00:00:00.000Z', kind: 'scheduled' }, enqueue)).toBe('not_pending');
     state.profiles[0] = { ...state.profiles[0], is_deleting: false, deletion_requested_at: null };
-    expect(await sendDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'scheduled' }, okSend)).toBe('not_pending');
-    expect(okSend).toHaveBeenCalledTimes(0);
-    expect(state.notices).toHaveLength(0);
+    expect(await enqueueDeletionNotice(admin, { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'scheduled' }, enqueue)).toBe('not_pending');
+    expect(enqueue).not.toHaveBeenCalled();
   });
 
-  it('reports no_email without claiming when the account has no email', async () => {
+  it('reports a missing auth email without queueing', async () => {
     state.emails.u1 = null;
-    expect(await sendDeletionNotice(fakeAdmin(state), { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'scheduled' }, okSend)).toBe('no_email');
-    expect(state.notices).toHaveLength(0);
+    expect(await enqueueDeletionNotice(fakeAdmin(state), { userId: 'u1', deletionRequestedAt: REQUESTED, kind: 'reminder_7d' }, enqueue)).toBe('no_email');
+    expect(enqueue).not.toHaveBeenCalled();
   });
 });
 
-describe('sendDueDeletionReminders across the whole cool-off', () => {
-  it('daily runs send exactly one 7-day and one 1-day reminder, to the right address', async () => {
+describe('enqueueDeletionCompletedNotice', () => {
+  it('queues a privacy-preserving receipt after deletion without retaining the user id', async () => {
+    vi.stubEnv('EMAIL_SUPPRESSION_HMAC_KEY', 'test-only-email-key');
+
+    expect(await enqueueDeletionCompletedNotice('u1', 'seeker@example.com', enqueue)).toBe('queued');
+    expect(enqueue).toHaveBeenCalledTimes(1);
+
+    const [input] = enqueue.mock.calls[0];
+    expect(input).toMatchObject({
+      to: 'seeker@example.com',
+      recipientUserId: null,
+      templateKey: 'account_deletion',
+      emailClass: 'transactional',
+      content: expect.objectContaining({
+        subject: 'Your Shoonaya account has been deleted',
+        title: 'Account deletion complete',
+        body: expect.stringContaining('have been deleted'),
+        shloka: '',
+        meaning: '',
+      }),
+    });
+    expect(input.idempotencyKey).toMatch(/^account-deletion-completed:[a-f0-9]{64}$/);
+    expect(input.idempotencyKey).not.toContain('u1');
+    expect(await enqueueDeletionCompletedNotice('u1', 'seeker@example.com', enqueue)).toBe('already_queued');
+    expect(enqueue).toHaveBeenCalledTimes(2);
+  });
+
+  it('fails closed when the stable privacy key is not configured', async () => {
+    vi.stubEnv('EMAIL_SUPPRESSION_HMAC_KEY', '');
+    expect(await enqueueDeletionCompletedNotice('u1', 'seeker@example.com', enqueue)).toBe('failed');
+    expect(enqueue).not.toHaveBeenCalled();
+  });
+});
+
+describe('enqueueDueDeletionReminders across the whole cool-off', () => {
+  it('queues only one 7-day and one 1-day reminder despite daily cron retries', async () => {
     const admin = fakeAdmin(state);
     const firstRun = Date.parse('2026-10-02T09:15:00.000Z');
-    for (let day = 0; day < 30; day += 1) await sendDueDeletionReminders(admin, firstRun + day * DAY, okSend);
-    expect(state.notices.map((n) => n.kind).sort()).toEqual(['reminder_1d', 'reminder_7d']);
-    expect(okSend).toHaveBeenCalledTimes(2);
-    for (const call of okSend.mock.calls as unknown as Array<[{ to: string; shloka: string }]>) {
-      expect(call[0].to).toBe('seeker@example.com');
-      expect(call[0].shloka).toBe('');
+    for (let day = 0; day < 30; day += 1) await enqueueDueDeletionReminders(admin, firstRun + day * DAY, enqueue);
+    const keys = enqueue.mock.calls.map(([input]) => input.idempotencyKey);
+    expect(keys.filter((key) => key.endsWith(':reminder_7d'))).toHaveLength(6);
+    expect(keys.filter((key) => key.endsWith(':reminder_1d'))).toHaveLength(1);
+    expect(queuedKeys.size).toBe(2);
+    for (const [input] of enqueue.mock.calls as unknown as Array<[EnqueueEmailInput]>) {
+      expect(input.to).toBe('seeker@example.com');
+      expect(input.content).toMatchObject({ shloka: '', meaning: '' });
     }
   });
 
-  it('sends nothing to an account that cancelled during the cool-off', async () => {
+  it('does not enqueue reminders after the user cancels deletion', async () => {
     state.profiles[0].is_deleting = false;
-    const admin = fakeAdmin(state);
-    for (let day = 0; day < 30; day += 1) await sendDueDeletionReminders(admin, Date.parse(REQUESTED) + day * DAY, okSend);
-    expect(okSend).toHaveBeenCalledTimes(0);
+    const result = await enqueueDueDeletionReminders(fakeAdmin(state), Date.parse(REQUESTED) + DAY, enqueue);
+    expect(result.queued).toBe(0);
+    expect(enqueue).not.toHaveBeenCalled();
   });
 });
 

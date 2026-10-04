@@ -311,6 +311,10 @@ export interface Database {
           nitya_reminder_enabled?: boolean;
           nitya_reminder_time?: string;
           wants_sankalpa_midpoint_reminders: boolean;
+          email_newsletter: boolean | null;
+          email_festivals: boolean | null;
+          marketing_consent: boolean | null;
+          unsubscribe_token: string | null;
           // Account-deletion cool-off (supabase/migrations/20260711000000_account_deletion_cooloff.sql).
           // Server-managed: only written by src/app/api/user/delete/{request,cancel}/route.ts
           // via getApiUser's RLS-scoped client -- never by a direct client-side
@@ -318,7 +322,12 @@ export interface Database {
           is_deleting: boolean;
           deletion_requested_at: string | null;
         };
-        Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'streak_freeze_count' | 'last_freeze_used'>;
+        Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'streak_freeze_count' | 'last_freeze_used' | 'email_newsletter' | 'email_festivals' | 'marketing_consent' | 'unsubscribe_token'> & {
+          email_newsletter?: boolean | null;
+          email_festivals?: boolean | null;
+          marketing_consent?: boolean | null;
+          unsubscribe_token?: string | null;
+        };
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
       };
       public_profiles: {
@@ -1281,6 +1290,117 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['dharm_veer_generation_log']['Row']>;
       };
+      email_outbox: {
+        Row: {
+          id: string;
+          idempotency_key: string;
+          recipient_email: string | null;
+          recipient_user_id: string | null;
+          template_key: 'waitlist_welcome' | 'onboarding_welcome' | 'kul_invite' | 'festival_reminder' | 'account_deletion' | 'new_device_login';
+          email_class: 'transactional' | 'marketing';
+          marketing_category: 'newsletter' | 'festivals' | null;
+          payload: Json;
+          status: 'pending' | 'processing' | 'sent' | 'suppressed' | 'dead';
+          priority: number;
+          attempt_count: number;
+          max_attempts: number;
+          available_at: string;
+          locked_until: string | null;
+          locked_by: string | null;
+          provider_message_id: string | null;
+          last_error_code: string | null;
+          created_at: string;
+          updated_at: string;
+          sent_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          idempotency_key: string;
+          recipient_email: string;
+          recipient_user_id?: string | null;
+          template_key: Database['public']['Tables']['email_outbox']['Row']['template_key'];
+          email_class: 'transactional' | 'marketing';
+          marketing_category?: 'newsletter' | 'festivals' | null;
+          payload?: Json;
+          status?: 'pending';
+          priority?: number;
+          attempt_count?: number;
+          max_attempts?: number;
+          available_at?: string;
+          locked_until?: null;
+          locked_by?: null;
+          provider_message_id?: null;
+          last_error_code?: null;
+          created_at?: string;
+          updated_at?: string;
+          sent_at?: null;
+        };
+        Update: {
+          recipient_email?: string | null;
+          recipient_user_id?: string | null;
+          payload?: Json;
+          status?: 'pending' | 'processing' | 'sent' | 'suppressed' | 'dead';
+          attempt_count?: number;
+          available_at?: string;
+          locked_until?: string | null;
+          locked_by?: string | null;
+          provider_message_id?: string | null;
+          last_error_code?: string | null;
+          updated_at?: string;
+          sent_at?: string | null;
+        };
+        Relationships: [];
+      };
+      email_suppressions: {
+        Row: { email_hash: string; reason: 'hard_bounce' | 'complaint' | 'manual'; provider_event_id: string | null; created_at: string };
+        Insert: { email_hash: string; reason: 'hard_bounce' | 'complaint' | 'manual'; provider_event_id?: string | null; created_at?: string };
+        Update: { reason?: 'hard_bounce' | 'complaint' | 'manual'; provider_event_id?: string | null };
+        Relationships: [];
+      };
+      email_provider_events: {
+        Row: { event_id: string; event_type: string; received_at: string; processed_at: string };
+        Insert: { event_id: string; event_type: string; received_at?: string; processed_at?: string };
+        Update: never;
+        Relationships: [];
+      };
+      email_security_devices: {
+        Row: { user_id: string; device_hash: string; platform: 'ios' | 'android' | 'other'; first_seen_at: string };
+        Insert: { user_id: string; device_hash: string; platform: 'ios' | 'android' | 'other'; first_seen_at?: string };
+        Update: never;
+        Relationships: [];
+      };
+      waitlist: {
+        Row: {
+          id: string;
+          email: string;
+          name: string | null;
+          tradition: string | null;
+          source: string | null;
+          timezone: string | null;
+          founding_number: number | null;
+          email_sent: boolean;
+          referred_by_number: number | null;
+          referral_source: string | null;
+          country_hint: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          name?: string | null;
+          tradition?: string | null;
+          source?: string | null;
+          timezone?: string | null;
+          founding_number?: number | null;
+          email_sent?: boolean;
+          referred_by_number?: number | null;
+          referral_source?: string | null;
+          country_hint?: string | null;
+          created_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['waitlist']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -1345,6 +1465,18 @@ export interface Database {
           deleted_at: string | null;
           total_count: number;
         }[];
+      };
+      claim_email_outbox: {
+        Args: { p_worker_id: string; p_limit?: number; p_lease_seconds?: number };
+        Returns: Database['public']['Tables']['email_outbox']['Row'][];
+      };
+      process_resend_email_suppression_event: {
+        Args: { p_event_id: string; p_event_type: string; p_suppression_reason?: string | null; p_email_hashes?: string[] };
+        Returns: boolean;
+      };
+      register_email_security_device: {
+        Args: { p_user_id: string; p_device_hash: string; p_platform: 'ios' | 'android' | 'other' };
+        Returns: boolean;
       };
     };
     Enums: Record<string, never>;

@@ -32,8 +32,8 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const sendShoonayaEmail = vi.fn().mockResolvedValue(undefined);
-vi.mock('@/lib/email', () => ({ sendShoonayaEmail: (...a: unknown[]) => sendShoonayaEmail(...a) }));
+const enqueueShoonayaEmail = vi.fn().mockResolvedValue('queued');
+vi.mock('@/lib/email-outbox', () => ({ enqueueShoonayaEmail: (...a: unknown[]) => enqueueShoonayaEmail(...a) }));
 
 let occurrenceRows: any[] = [];
 // profiles carries no email column -- only fields that actually exist there.
@@ -102,8 +102,9 @@ function targetDate(): string {
 }
 
 /** Every field the query/filters touch, defaulted to the "should send" case. */
-function row(overrides: Partial<{ date: string; publication_status: string; slug: string; display_name: string; description: string | null }> = {}) {
+function row(overrides: Partial<{ id: string; date: string; publication_status: string; slug: string; display_name: string; description: string | null }> = {}) {
   return {
+    id: overrides.id ?? `occurrence-${Math.random().toString(36).slice(2)}`,
     date: overrides.date ?? targetDate(),
     publication_status: overrides.publication_status ?? 'published',
     observance_definitions: {
@@ -115,7 +116,8 @@ function row(overrides: Partial<{ date: string; publication_status: string; slug
 }
 
 beforeEach(() => {
-  sendShoonayaEmail.mockClear();
+  enqueueShoonayaEmail.mockReset();
+  enqueueShoonayaEmail.mockResolvedValue('queued');
   occurrenceRows = [];
 });
 
@@ -128,8 +130,8 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
     const res = await GET(makeRequest());
     const body = await res.json();
 
-    expect(body.sent).toBe(0);
-    expect(sendShoonayaEmail).not.toHaveBeenCalled();
+    expect(body.queued).toBe(0);
+    expect(enqueueShoonayaEmail).not.toHaveBeenCalled();
   });
 
   it('does not email users about a manual-seed slug with NO rules.json entry at all', async () => {
@@ -143,8 +145,8 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
     const res = await GET(makeRequest());
     const body = await res.json();
 
-    expect(body.sent).toBe(0);
-    expect(sendShoonayaEmail).not.toHaveBeenCalled();
+    expect(body.queued).toBe(0);
+    expect(enqueueShoonayaEmail).not.toHaveBeenCalled();
   });
 
   it('does not email users about a row that is not publication_status: published', async () => {
@@ -156,18 +158,30 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
     const res = await GET(makeRequest());
     const body = await res.json();
 
-    expect(body.sent).toBe(0);
-    expect(sendShoonayaEmail).not.toHaveBeenCalled();
+    expect(body.queued).toBe(0);
+    expect(enqueueShoonayaEmail).not.toHaveBeenCalled();
   });
 
-  it('still emails users about a real, publishable, published festival', async () => {
+  it('queues users for a real, publishable, published festival', async () => {
     occurrenceRows = [row()];
 
     const res = await GET(makeRequest());
     const body = await res.json();
 
-    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
-    expect(body.sent).toBe(1);
+    expect(enqueueShoonayaEmail).toHaveBeenCalledTimes(1);
+    expect(body.queued).toBe(1);
+    expect(body.failed).toBe(0);
+  });
+
+  it('reports an enqueue failure without claiming delivery', async () => {
+    occurrenceRows = [row()];
+    enqueueShoonayaEmail.mockRejectedValueOnce(new Error('queue unavailable'));
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(body.queued).toBe(0);
+    expect(body.failed).toBe(1);
   });
 
   it('a valid 4th festival is not crowded out by 3 withheld ones sharing its date', async () => {
@@ -187,9 +201,9 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
     const res = await GET(makeRequest());
     const body = await res.json();
 
-    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
-    expect(body.sent).toBe(1);
-    expect(sendShoonayaEmail.mock.calls[0][0].subject.toLowerCase()).toContain('diwali');
+    expect(enqueueShoonayaEmail).toHaveBeenCalledTimes(1);
+    expect(body.queued).toBe(1);
+    expect(enqueueShoonayaEmail.mock.calls[0][0].content.subject.toLowerCase()).toContain('diwali');
   });
 
   it('excludes a candidate profile with no resolvable email (auth.users has none) rather than emailing "undefined"', async () => {
@@ -201,9 +215,9 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
       const res = await GET(makeRequest());
       const body = await res.json();
 
-      expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
-      expect(body.sent).toBe(1);
-      expect(sendShoonayaEmail.mock.calls[0][0].to).toBe('user@example.com');
+      expect(enqueueShoonayaEmail).toHaveBeenCalledTimes(1);
+      expect(body.queued).toBe(1);
+      expect(enqueueShoonayaEmail.mock.calls[0][0].to).toBe('user@example.com');
     } finally {
       profileRows.pop();
     }
@@ -214,32 +228,34 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
 
     await GET(makeRequest());
 
-    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
-    const call = sendShoonayaEmail.mock.calls[0][0];
+    expect(enqueueShoonayaEmail).toHaveBeenCalledTimes(1);
+    const call = enqueueShoonayaEmail.mock.calls[0][0].content;
     expect(call.subject).not.toContain('undefined');
     expect(call.subject.toLowerCase()).toContain('diwali');
+    expect(enqueueShoonayaEmail.mock.calls[0][0].marketingCategory).toBe('festivals');
+    expect(enqueueShoonayaEmail.mock.calls[0][0].idempotencyKey).toContain('occurrence-');
   });
 });
 
 describe('GET /api/cron/festival-email — body content', () => {
-  it('sends the sourced description and CTA, and no placeholder practice lines', async () => {
+  it('queues the sourced description and CTA, and no placeholder practice lines', async () => {
     occurrenceRows = [row({ description: 'The festival of lights, celebrating the victory of light over darkness.' })];
 
     await GET(makeRequest());
 
-    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
-    const { body } = sendShoonayaEmail.mock.calls[0][0] as { body: string };
+    expect(enqueueShoonayaEmail).toHaveBeenCalledTimes(1);
+    const { body } = enqueueShoonayaEmail.mock.calls[0][0].content as { body: string };
     expect(body).toBe('The festival of lights, celebrating the victory of light over darkness.\n\nSet your reminder in Shoonaya → https://www.shoonaya.com/panchang');
     expect(body).not.toMatch(/Practice \d related to/);
   });
 
-  it('sends only the CTA when the definition has no description, never filler', async () => {
+  it('queues only the CTA when the definition has no description, never filler', async () => {
     occurrenceRows = [row({ description: null })];
 
     await GET(makeRequest());
 
-    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
-    const { body } = sendShoonayaEmail.mock.calls[0][0] as { body: string };
+    expect(enqueueShoonayaEmail).toHaveBeenCalledTimes(1);
+    const { body } = enqueueShoonayaEmail.mock.calls[0][0].content as { body: string };
     expect(body).toBe('Set your reminder in Shoonaya → https://www.shoonaya.com/panchang');
   });
 });

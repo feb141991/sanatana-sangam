@@ -26,6 +26,7 @@ describe("Marketing Consent Policy", () => {
         email: "seeker@shoonaya.com",
         marketing_consent: true,
         email_newsletter: true,
+        unsubscribe_token: 'token-1',
         is_banned: false,
       };
       const decision = evaluateMarketingConsent(profile, "email", "newsletter");
@@ -38,6 +39,7 @@ describe("Marketing Consent Policy", () => {
         email: "seeker@shoonaya.com",
         marketing_consent: false,
         email_newsletter: true,
+        unsubscribe_token: 'token-1',
         is_banned: false,
       };
       const decision = evaluateMarketingConsent(profile, "email", "newsletter");
@@ -50,6 +52,7 @@ describe("Marketing Consent Policy", () => {
         email: "seeker@shoonaya.com",
         marketing_consent: true,
         email_newsletter: false,
+        unsubscribe_token: 'token-1',
         is_banned: false,
       };
       const decision = evaluateMarketingConsent(profile, "email", "newsletter");
@@ -62,6 +65,7 @@ describe("Marketing Consent Policy", () => {
         email: "user_12345@whatsapp.shoonaya.app",
         marketing_consent: true,
         email_newsletter: true,
+        unsubscribe_token: 'token-1',
         is_banned: false,
       };
       const decision = evaluateMarketingConsent(profile, "email", "newsletter");
@@ -74,10 +78,25 @@ describe("Marketing Consent Policy", () => {
         email: "banned@shoonaya.com",
         marketing_consent: true,
         email_newsletter: true,
+        unsubscribe_token: 'token-1',
         is_banned: true,
       };
       const decision = evaluateMarketingConsent(profile, "email", "newsletter");
       expect(decision).toEqual({ eligible: false, reasonCode: "account_banned" });
+    });
+
+    it("suppresses marketing email if the account has no unsubscribe token", () => {
+      const profile: RecipientProfile = {
+        id: "u1",
+        email: "seeker@shoonaya.com",
+        marketing_consent: true,
+        email_newsletter: true,
+        is_banned: false,
+      };
+      expect(evaluateMarketingConsent(profile, "email", "newsletter")).toEqual({
+        eligible: false,
+        reasonCode: "missing_unsubscribe_token",
+      });
     });
   });
 
@@ -87,6 +106,7 @@ describe("Marketing Consent Policy", () => {
         id: "u1",
         email: "seeker@shoonaya.com",
         email_festivals: true,
+        unsubscribe_token: 'token-1',
         is_banned: false,
       };
       const decision = evaluateMarketingConsent(profile, "email", "festival_reminder");
@@ -98,10 +118,24 @@ describe("Marketing Consent Policy", () => {
         id: "u1",
         email: "seeker@shoonaya.com",
         email_festivals: false,
+        unsubscribe_token: 'token-1',
         is_banned: false,
       };
       const decision = evaluateMarketingConsent(profile, "email", "festival_reminder");
       expect(decision).toEqual({ eligible: false, reasonCode: "email_festivals_disabled" });
+    });
+
+    it("suppresses festival email when no unsubscribe token exists", () => {
+      const profile: RecipientProfile = {
+        id: "u1",
+        email: "seeker@shoonaya.com",
+        email_festivals: true,
+        is_banned: false,
+      };
+      expect(evaluateMarketingConsent(profile, "email", "festival_reminder")).toEqual({
+        eligible: false,
+        reasonCode: "missing_unsubscribe_token",
+      });
     });
   });
 

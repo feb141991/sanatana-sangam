@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { escapeEmailHtml } from '@/lib/email';
+import { enqueueShoonayaEmail } from '@/lib/email-outbox';
 
 // ─── /api/waitlist ─────────────────────────────────────────────────────────────
 // GET  — returns { count: number } (waitlist size for the landing page counter)
@@ -167,6 +169,8 @@ const FOUNDING_PERKS = [
 
 type WaitlistRow = {
   id: string;
+  email: string;
+  name?: string | null;
   founding_number: number | null;
   tradition: string | null;
   email_sent?: boolean | null;
@@ -192,7 +196,7 @@ function buildShareText(): string {
 async function findRegistration(email: string): Promise<WaitlistRow | null> {
   const { data, error } = await db()
     .from('waitlist')
-    .select('id, founding_number, tradition, email_sent')
+    .select('id, email, name, founding_number, tradition, email_sent')
     .ilike('email', email)
     .order('created_at', { ascending: true })
     .limit(1)
@@ -280,8 +284,8 @@ function buildEmailHtml(opts: {
 }): string {
   const { name, tradition, foundingNumber } = opts;
   const t            = tradition ?? 'default';
-  const displayName  = name || 'Dear Sadhak';
-  const tradLabel    = tradition ? (TRAD_LABEL[tradition] ?? tradition) : '';
+  const displayName  = escapeEmailHtml(name || 'Dear Sadhak');
+  const tradLabel    = tradition ? escapeEmailHtml(TRAD_LABEL[tradition] ?? tradition) : '';
   const greeting     = TRAD_GREETING[t] ?? TRAD_GREETING.default;
   const accent       = TRAD_COLOR[t]        ?? TRAD_COLOR.default;
   const symbol       = TRAD_SYMBOL[t]       ?? TRAD_SYMBOL.default;
@@ -335,6 +339,8 @@ function buildEmailHtml(opts: {
   <tr><td align="center" style="padding-bottom:32px;">
     <div style="font-size:32px;margin-bottom:12px;">${symbol}</div>
     <div style="font-size:10px;letter-spacing:0.35em;text-transform:uppercase;color:${accent};opacity:0.80;">SHOONAYA</div>
+    <div style="font-size:13px;color:rgba(250,246,239,0.78);margin-top:8px;">Find your infinite.</div>
+    <div style="font-size:11px;color:rgba(250,246,239,0.52);margin-top:4px;">A daily spiritual sanctuary for sacred time, practice, and connection.</div>
     ${tradLabel ? `<div style="font-size:11px;letter-spacing:0.12em;color:rgba(250,246,239,0.35);margin-top:4px;">${tradLabel}</div>` : ''}
   </td></tr>
 
@@ -401,7 +407,7 @@ function buildEmailHtml(opts: {
     <div style="font-size:11px;color:rgba(250,246,239,0.28);line-height:1.7;">
       Shoonaya · Live Now<br>
       Questions? Reply to this email or write to <a href="mailto:info@shoonaya.com" style="color:${accent};text-decoration:none;opacity:0.7;">info@shoonaya.com</a><br>
-      <a href="#" style="color:rgba(250,246,239,0.28);text-decoration:underline;">Unsubscribe from founding member communications</a>
+      This is a one-time welcome for your Shoonaya waitlist registration.
     </div>
   </td></tr>
 
@@ -412,39 +418,28 @@ function buildEmailHtml(opts: {
 </html>`;
 }
 
-// ─── Send email via Resend (graceful no-op if key not configured) ──────────────
-async function sendWelcomeEmail(opts: {
+// ─── Queue welcome email; delivery happens in the durable email worker ────────
+async function queueWelcomeEmail(opts: {
+  waitlistId: string;
   email: string;
   name?: string;
   tradition?: string;
   foundingNumber: number;
 }): Promise<void> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    console.log(`[waitlist] RESEND_API_KEY not set — skipping email to ${opts.email} (#${opts.foundingNumber})`);
-    return;
-  }
-  try {
-    const tradGreeting = TRAD_GREETING[opts.tradition ?? 'default'] ?? TRAD_GREETING.default;
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from:    `Shoonaya <noreply@${DOMAIN}>`,
-        to:      [opts.email],
-        subject: `${tradGreeting} — आपका स्वागत है 🪔`,
-        html:    buildEmailHtml(opts),
-      }),
-    });
-    if (!res.ok) {
-      const err = await res.text();
-      console.error('[waitlist] Resend error:', err);
-    } else {
-      console.log(`[waitlist] Welcome email sent to ${opts.email} (#${opts.foundingNumber})`);
-    }
-  } catch (e) {
-    console.error('[waitlist] Email send failed (non-blocking):', e);
-  }
+  const tradGreeting = TRAD_GREETING[opts.tradition ?? 'default'] ?? TRAD_GREETING.default;
+  await enqueueShoonayaEmail({
+    idempotencyKey: `waitlist-welcome:${opts.waitlistId}`,
+    to: opts.email,
+    templateKey: 'waitlist_welcome',
+    emailClass: 'transactional',
+    content: {
+      subject: `${tradGreeting} — आपका स्वागत है 🪔`,
+      html: buildEmailHtml(opts),
+      from: process.env.SHOONAYA_EMAIL_FROM ?? `Shoonaya <noreply@${DOMAIN.replace(/^www\./, '')}>`,
+    },
+    context: { waitlistId: opts.waitlistId },
+    priority: 40,
+  });
 }
 
 // ─── POST — register on waitlist ──────────────────────────────────────────────
@@ -483,6 +478,19 @@ export async function POST(req: NextRequest) {
     if (existing) {
       await updateExistingRegistration(existing, { tradition, name, source, timezone, referred_by_number, referral_source });
       const foundingNumber = await ensureFoundingNumber(existing);
+      if (existing.email_sent !== true) {
+        try {
+          await queueWelcomeEmail({
+            waitlistId: existing.id,
+            email: emailLower,
+            name: name ?? existing.name ?? undefined,
+            tradition: tradition ?? existing.tradition ?? undefined,
+            foundingNumber,
+          });
+        } catch (queueError) {
+          console.error('[waitlist] welcome email enqueue failed', queueError instanceof Error ? queueError.message : 'unknown');
+        }
+      }
 
       return NextResponse.json(
         {
@@ -508,7 +516,7 @@ export async function POST(req: NextRequest) {
         referred_by_number,
         referral_source,
       })
-      .select('id, founding_number, tradition, email_sent')
+      .select('id, email, name, founding_number, tradition, email_sent')
       .single();
 
     if (insertError) {
@@ -535,14 +543,21 @@ export async function POST(req: NextRequest) {
 
     const foundingNumber = await ensureFoundingNumber(inserted as WaitlistRow);
 
-    // ── Mark email as sent + send async (don't block the response) ──────────
-    void sendWelcomeEmail({ email: emailLower, name: name ?? undefined, tradition: tradition ?? undefined, foundingNumber });
-
-    // Mark email_sent flag (best-effort)
-    void db()
-      .from('waitlist')
-      .update({ email_sent: true })
-      .eq('email', emailLower);
+    // Enqueue before acknowledging; provider delivery remains asynchronous.
+    // `email_sent` is updated only after the worker receives provider success.
+    try {
+      await queueWelcomeEmail({
+        waitlistId: inserted.id,
+        email: emailLower,
+        name: name ?? undefined,
+        tradition: tradition ?? undefined,
+        foundingNumber,
+      });
+    } catch (queueError) {
+      // The registration itself is durable and remains successful. A repeat
+      // submission sees email_sent=false and retries this idempotent enqueue.
+      console.error('[waitlist] welcome email enqueue failed', queueError instanceof Error ? queueError.message : 'unknown');
+    }
 
     return NextResponse.json(
       {

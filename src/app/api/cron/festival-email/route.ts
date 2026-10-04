@@ -1,7 +1,7 @@
 // Festival Email Cron – sends reminder emails 3 days before festivals
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendShoonayaEmail } from '@/lib/email';
+import { enqueueShoonayaEmail } from '@/lib/email-outbox';
 import { filterEligibleMarketingObservances } from '@/lib/marketing/sources/published-observance';
 import { resolveRecipientEmails } from '@/lib/server/recipient-emails';
 
@@ -80,7 +80,7 @@ export async function GET(request: Request) {
   // count against it.
   const publishable = eligible.slice(0, 3);
   if (!publishable.length) {
-    return NextResponse.json({ message: 'No festivals in 3 days', sent: 0 });
+    return NextResponse.json({ message: 'No festivals in 3 days', queued: 0, alreadyQueued: 0, failed: 0 });
   }
 
   // ----- Users opted-in for festival emails -----
@@ -115,7 +115,8 @@ export async function GET(request: Request) {
     .filter((u): u is EmailableProfile => Boolean(u.email) && !u.email.endsWith('@whatsapp.shoonaya.app'));
 
   const userBatches = chunk(users ?? [], 50);
-  let totalSent = 0;
+  let totalQueued = 0;
+  let totalAlreadyQueued = 0;
   let totalFailed = 0;
 
   const subjects: Record<string, string> = {
@@ -146,25 +147,39 @@ export async function GET(request: Request) {
     for (const batch of userBatches) {
       const results = await Promise.allSettled(
         batch.map(async user => {
-          const unsub = `${APP_BASE}/api/unsubscribe?token=${user.unsubscribe_token}`;
-          await sendShoonayaEmail({
-            to: user.email!,
-            subject,
-            shloka: '',
-            meaning: '',
-            title: subject,
-            body: `${lead}${cta}`,
-            ctaText: 'Explore',
-            ctaUrl: `${APP_BASE}/panchang`,
-            unsubUrl: unsub,
+          const unsub = new URL('/api/unsubscribe', APP_BASE);
+          if (user.unsubscribe_token) unsub.searchParams.set('token', user.unsubscribe_token);
+          const outcome = await enqueueShoonayaEmail({
+            idempotencyKey: `festival-reminder:${user.id}:${fest.id}`,
+            to: user.email,
+            recipientUserId: user.id,
+            templateKey: 'festival_reminder',
+            emailClass: 'marketing',
+            marketingCategory: 'festivals',
+            content: {
+              subject,
+              shloka: '',
+              meaning: '',
+              title: subject,
+              body: `${lead}${cta}`,
+              ctaText: 'Explore',
+              ctaUrl: new URL('/panchang', APP_BASE).toString(),
+              ...(user.unsubscribe_token ? { unsubUrl: unsub.toString(), unsubType: 'festivals' as const } : {}),
+            },
           });
+          return outcome;
         })
       );
-      totalSent += results.filter(r => r.status === 'fulfilled').length;
-      totalFailed += results.filter(r => r.status === 'rejected').length;
+      for (const result of results) {
+        if (result.status === 'rejected') totalFailed += 1;
+        else if (result.value === 'queued') totalQueued += 1;
+        else totalAlreadyQueued += 1;
+      }
       await new Promise(r => setTimeout(r, 200)); // rate‑limit buffer
     }
   }
 
-  return NextResponse.json({ sent: totalSent, failed: totalFailed });
+  // A queued row is not yet a delivered email. The outbox worker owns provider
+  // delivery and records sent/suppressed/retried/dead outcomes separately.
+  return NextResponse.json({ queued: totalQueued, alreadyQueued: totalAlreadyQueued, failed: totalFailed });
 }

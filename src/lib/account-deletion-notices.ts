@@ -1,70 +1,53 @@
+import { createHmac } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import { ACCOUNT_DELETION_COOL_OFF_DAYS, purgeAfterFromRequestedAt } from '@/lib/account-deletion';
-import { APP } from '@/lib/config';
-import { sendShoonayaEmail } from '@/lib/email';
+import { ACCOUNT_DELETION_COOL_OFF_DAYS, purgeAfterFromRequestedAt } from '@/lib/account-deletion-policy';
+import { enqueueShoonayaEmail, type EnqueueEmailInput } from '@/lib/email-outbox';
+import { buildDeletionNotice, dueDeletionReminder, type DeletionNoticeKind } from '@/lib/account-deletion-email';
 
-// Account-deletion emails: a confirmation when deletion is scheduled and
-// reminders 7 days and 1 day before the purge. Transactional (about the
-// user's own account), so not gated on marketing opt-ins and allowed while
-// is_deleting is true. Each is sent at most once per deletion request via the
-// account_deletion_notices ledger (migration 20261003150400). No scripture or
-// spiritual content -- plain account information only.
+export { buildDeletionNotice, dueDeletionReminder } from '@/lib/account-deletion-email';
+export type { DeletionNoticeKind } from '@/lib/account-deletion-email';
 
-export type DeletionNoticeKind = 'scheduled' | 'reminder_7d' | 'reminder_1d';
+type EnqueueEmail = (input: EnqueueEmailInput) => Promise<'queued' | 'already_queued'>;
+type QueueOutcome = 'queued' | 'already_queued' | 'not_pending' | 'no_email' | 'failed';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-type SendEmail = (options: Parameters<typeof sendShoonayaEmail>[0]) => Promise<{ success: boolean } | undefined | unknown>;
-
-/** Which reminder is due, if any, for a purge at `purgeAfter` as of `now`. */
-export function dueDeletionReminder(purgeAfter: string, now: number): Exclude<DeletionNoticeKind, 'scheduled'> | null {
-  const msLeft = new Date(purgeAfter).getTime() - now;
-  if (!(msLeft > 0)) return null;
-  const daysLeft = Math.ceil(msLeft / DAY_MS);
-  if (daysLeft <= 1) return 'reminder_1d';
-  if (daysLeft <= 7) return 'reminder_7d';
-  return null;
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-}
-
-export function buildDeletionNotice(kind: DeletionNoticeKind, deletionRequestedAt: string) {
-  const purgeDate = formatDate(purgeAfterFromRequestedAt(deletionRequestedAt));
-  const cancelHow = 'To keep your account, sign in to Shoonaya and tap "Cancel deletion" on your Profile or in Settings before then. Everything will be restored.';
-  const notYou = "If you didn't ask to delete your account, sign in and cancel now.";
-  const ctaUrl = `${APP.BASE_URL}/profile`;
-
-  if (kind === 'scheduled') {
-    return {
-      subject: 'Your Shoonaya account is scheduled for deletion',
-      title: 'Account deletion scheduled',
-      body: `We received a request to delete your Shoonaya account on ${formatDate(deletionRequestedAt)}. Reminders have stopped and nothing is deleted yet. Your account and data will be permanently deleted on ${purgeDate} (after ${ACCOUNT_DELETION_COOL_OFF_DAYS} days). ${cancelHow} ${notYou}`,
-      ctaText: 'Keep my account',
-      ctaUrl,
-    };
+/** Queues a final receipt after profile and auth-user deletion have succeeded. */
+export async function enqueueDeletionCompletedNotice(
+  userId: string,
+  email: string,
+  enqueue: EnqueueEmail = enqueueShoonayaEmail,
+): Promise<'queued' | 'already_queued' | 'failed'> {
+  try {
+    const privacyKey = process.env.EMAIL_SUPPRESSION_HMAC_KEY;
+    if (!privacyKey) throw new Error('email_suppression_key_not_configured');
+    const dedupeDigest = createHmac('sha256', privacyKey).update(`account-deletion-completed:${userId}`).digest('hex');
+    return await enqueue({
+      idempotencyKey: `account-deletion-completed:${dedupeDigest}`,
+      to: email,
+      // The account is already gone. Keep the recipient address only until
+      // provider acceptance, with no deleted profile lookup or retained user id.
+      recipientUserId: null,
+      templateKey: 'account_deletion',
+      emailClass: 'transactional',
+      content: { shloka: '', meaning: '', ...buildDeletionNotice('completed') },
+      priority: 10,
+    });
+  } catch (error) {
+    console.error('[account-deletion-notices] completion receipt enqueue failed:', error instanceof Error ? error.message : 'unknown');
+    return 'failed';
   }
-  const when = kind === 'reminder_1d' ? 'tomorrow' : 'in 7 days';
-  return {
-    subject: `Your Shoonaya account will be deleted ${when}`,
-    title: `Account deletion ${when}`,
-    body: `Your Shoonaya account and data will be permanently deleted on ${purgeDate}. This cannot be undone afterwards. ${cancelHow} ${notYou}`,
-    ctaText: 'Keep my account',
-    ctaUrl,
-  };
 }
 
 /**
- * Sends one notice if it has not been sent for this deletion request and the
- * request is still pending. Returns what happened; never throws.
+ * Queues a deletion notice only while this exact deletion request is active.
+ * The queue's unique idempotency key replaces the old claim/send/release race;
+ * provider delivery and retry are owned by the email-outbox worker.
  */
-export async function sendDeletionNotice(
+export async function enqueueDeletionNotice(
   admin: SupabaseClient,
   input: { userId: string; deletionRequestedAt: string; kind: DeletionNoticeKind },
-  send: SendEmail = sendShoonayaEmail,
-): Promise<'sent' | 'already_sent' | 'not_pending' | 'no_email' | 'failed'> {
+  enqueue: EnqueueEmail = enqueueShoonayaEmail,
+): Promise<QueueOutcome> {
   try {
     const { data: pending, error: pendingError } = await admin
       .from('profiles')
@@ -81,59 +64,56 @@ export async function sendDeletionNotice(
     const email = authUser?.user?.email;
     if (!email) return 'no_email';
 
-    // Claim first; the primary key makes a concurrent or repeated claim a no-op.
-    const { data: claimed, error: claimError } = await admin
-      .from('account_deletion_notices')
-      .upsert(
-        { user_id: input.userId, deletion_requested_at: input.deletionRequestedAt, kind: input.kind },
-        { onConflict: 'user_id,deletion_requested_at,kind', ignoreDuplicates: true },
-      )
-      .select('user_id');
-    if (claimError) return 'failed';
-    if (!claimed || claimed.length === 0) return 'already_sent';
-
+    const canonicalRequestAt = new Date(input.deletionRequestedAt).toISOString();
     const message = buildDeletionNotice(input.kind, input.deletionRequestedAt);
-    const result = await send({ to: email, shloka: '', meaning: '', ...message });
-    const ok = !!result && typeof result === 'object' && (result as { success?: unknown }).success === true;
-    if (!ok) {
-      // Release the claim so the next run retries.
-      await admin
-        .from('account_deletion_notices')
-        .delete()
-        .eq('user_id', input.userId)
-        .eq('deletion_requested_at', input.deletionRequestedAt)
-        .eq('kind', input.kind);
-      return 'failed';
-    }
-    return 'sent';
+    return await enqueue({
+      idempotencyKey: `account-deletion:${input.userId}:${canonicalRequestAt}:${input.kind}`,
+      to: email,
+      recipientUserId: input.userId,
+      templateKey: 'account_deletion',
+      emailClass: 'transactional',
+      content: { shloka: '', meaning: '', ...message },
+      context: { deletionRequestedAt: canonicalRequestAt },
+      priority: 10,
+    });
   } catch (error) {
-    console.error('[account-deletion-notices] send failed:', error instanceof Error ? error.message : error);
+    console.error('[account-deletion-notices] enqueue failed:', error instanceof Error ? error.message : 'unknown');
     return 'failed';
   }
 }
 
-/** Daily: sends any due 7-day / 1-day reminders for pending deletions. */
-export async function sendDueDeletionReminders(admin: SupabaseClient, now = Date.now(), send: SendEmail = sendShoonayaEmail) {
-  const earliest = new Date(now - ACCOUNT_DELETION_COOL_OFF_DAYS * DAY_MS).toISOString();
-  const latest = new Date(now - (ACCOUNT_DELETION_COOL_OFF_DAYS - 7) * DAY_MS).toISOString();
+/** Daily: enqueue due 7-day / 1-day reminders for still-pending deletions. */
+export async function enqueueDueDeletionReminders(
+  admin: SupabaseClient,
+  now = Date.now(),
+  enqueue: EnqueueEmail = enqueueShoonayaEmail,
+) {
+  const earliest = new Date(now - ACCOUNT_DELETION_COOL_OFF_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const latest = new Date(now - (ACCOUNT_DELETION_COOL_OFF_DAYS - 7) * 24 * 60 * 60 * 1000).toISOString();
   const { data, error } = await admin
     .from('profiles')
     .select('id, deletion_requested_at')
     .eq('is_deleting', true)
     .gt('deletion_requested_at', earliest)
     .lte('deletion_requested_at', latest);
-  if (error) return { checked: 0, sent: 0, failed: 0, error: error.message };
+  if (error) return { checked: 0, queued: 0, alreadyQueued: 0, failed: 0, error: error.message };
 
-  let sent = 0;
+  let queued = 0;
+  let alreadyQueued = 0;
   let failed = 0;
   const rows = (data ?? []) as Array<{ id: string; deletion_requested_at: string | null }>;
   for (const row of rows) {
     if (!row.deletion_requested_at) continue;
     const kind = dueDeletionReminder(purgeAfterFromRequestedAt(row.deletion_requested_at), now);
     if (!kind) continue;
-    const outcome = await sendDeletionNotice(admin, { userId: row.id, deletionRequestedAt: row.deletion_requested_at, kind }, send);
-    if (outcome === 'sent') sent += 1;
+    const outcome = await enqueueDeletionNotice(admin, {
+      userId: row.id,
+      deletionRequestedAt: row.deletion_requested_at,
+      kind,
+    }, enqueue);
+    if (outcome === 'queued') queued += 1;
+    if (outcome === 'already_queued') alreadyQueued += 1;
     if (outcome === 'failed') failed += 1;
   }
-  return { checked: rows.length, sent, failed, error: null };
+  return { checked: rows.length, queued, alreadyQueued, failed, error: null };
 }

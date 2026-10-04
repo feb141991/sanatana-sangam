@@ -30,7 +30,7 @@ export async function GET() {
 
     const confirmed7d = recent7DaysUsers.filter((u) => u.email_confirmed_at).length;
     const unconfirmed7d = recent7DaysUsers.filter((u) => !u.email_confirmed_at).length;
-    const bounceRiskRate7d = recent7DaysUsers.length > 0
+    const unconfirmedRate7d = recent7DaysUsers.length > 0
       ? Math.round((unconfirmed7d / recent7DaysUsers.length) * 100)
       : 0;
 
@@ -65,20 +65,17 @@ export async function GET() {
         full_name: u.user_metadata?.full_name || u.user_metadata?.name || null,
       }));
 
-    // Check Resend configuration status
+    // This server can verify only whether the Resend API key is configured.
+    // It cannot infer Supabase Auth SMTP or DNS authentication from an API key.
     const resendApiKey = process.env.RESEND_API_KEY || "";
     const hasResendConfig = Boolean(resendApiKey && resendApiKey.startsWith("re_"));
 
-    // Health Assessment
-    let healthStatus: "healthy" | "warning" | "critical" = "healthy";
-    let healthMessage = "Transactional email delivery healthy.";
-    if (bounceRiskRate7d > 20) {
-      healthStatus = "critical";
-      healthMessage = `High bounce risk (${bounceRiskRate7d}% unconfirmed in last 7 days). Supabase shared mailer may flag project.`;
-    } else if (bounceRiskRate7d > 5 || unconfirmed7d >= 2) {
-      healthStatus = "warning";
-      healthMessage = `Moderate bounce risk (${unconfirmed7d} unconfirmed signups in last 7 days). Ensure Custom SMTP is active.`;
-    }
+    // Configuration visibility is not a delivery health check. Keep this at
+    // warning until real provider delivery/bounce telemetry is available.
+    const healthStatus: "warning" = "warning";
+    const healthMessage = hasResendConfig
+      ? "Resend API key is configured. Delivery, domain authentication, and Supabase Auth SMTP are not verified by this view."
+      : "Resend API is not configured. Supabase Auth mail settings must be checked separately.";
 
     return NextResponse.json({
       overview: {
@@ -88,14 +85,16 @@ export async function GET() {
         recent7DaysCount: recent7DaysUsers.length,
         confirmed7d,
         unconfirmed7d,
-        bounceRiskRate7d,
+        unconfirmedRate7d,
         recent30DaysCount: recent30DaysUsers.length,
       },
       health: {
         status: healthStatus,
         message: healthMessage,
-        customSmtpConfigured: hasResendConfig,
-        provider: hasResendConfig ? "Resend (smtp.resend.com)" : "Default Supabase Shared Pool",
+        resendApiConfigured: hasResendConfig,
+        authSmtpStatus: "unknown",
+        domainAuthenticationStatus: "not_verified",
+        provider: hasResendConfig ? "Resend Email API" : "Not configured",
       },
       domains: Object.entries(domains)
         .map(([domain, stats]) => ({ domain, ...stats }))

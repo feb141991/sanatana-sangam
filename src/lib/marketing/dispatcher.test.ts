@@ -193,7 +193,7 @@ describe("Marketing Campaign Dispatcher", () => {
         { id: "d-2", recipient_user_id: "u-2" }
       ],
       profiles: {
-        "u-1": { id: "u-1", marketing_consent: true, email_newsletter: true, is_banned: false },
+        "u-1": { id: "u-1", marketing_consent: true, email_newsletter: true, is_banned: false, unsubscribe_token: "t1" },
         "u-2": { id: "u-2", marketing_consent: false, email_newsletter: true, is_banned: false }
       },
       emails: { "u-1": "user1@shoonaya.com", "u-2": "user2@shoonaya.com" }
@@ -213,7 +213,7 @@ describe("Marketing Campaign Dispatcher", () => {
   });
 
   it("live dispatch claims a batch, sends only to consent-eligible recipients, and marks the rest suppressed without a provider call", async () => {
-    sendShoonayaEmail.mockResolvedValue({ success: true });
+    sendShoonayaEmail.mockResolvedValue({ success: true, id: "resend_msg_1" });
 
     const { supabase, dispatchUpdates, claimCalls } = createMockSupabase({
       claimedRows: [
@@ -236,9 +236,13 @@ describe("Marketing Campaign Dispatcher", () => {
     expect(claimCalls).toHaveLength(1);
     expect(claimCalls[0]).toMatchObject({ p_campaign_id: "c-1", p_variant_id: "v-1", p_channel: "email" });
     expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
+    expect(sendShoonayaEmail.mock.calls[0][1]).toEqual({ idempotencyKey: "marketing-dispatch:d-1" });
+    expect(sendShoonayaEmail.mock.calls[0][0]).toMatchObject({ unsubType: "newsletter" });
+    expect(sendShoonayaEmail.mock.calls[0][0].unsubUrl).toContain("token=t1");
     expect(result.sent).toBe(1);
     expect(result.suppressed).toBe(1);
     expect(dispatchUpdates.some(u => u.status === "sent")).toBe(true);
+    expect(dispatchUpdates.some(u => u.provider_message_id === "resend_msg_1")).toBe(true);
     expect(dispatchUpdates.some(u => u.status === "suppressed")).toBe(true);
   });
 
@@ -253,8 +257,8 @@ describe("Marketing Campaign Dispatcher", () => {
         { id: "d-2", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-2", channel: "email", status: "claimed" } as any
       ],
       profiles: {
-        "u-1": { id: "u-1", marketing_consent: true, email_newsletter: true, is_banned: false },
-        "u-2": { id: "u-2", marketing_consent: true, email_newsletter: true, is_banned: false }
+        "u-1": { id: "u-1", marketing_consent: true, email_newsletter: true, is_banned: false, unsubscribe_token: "t1" },
+        "u-2": { id: "u-2", marketing_consent: true, email_newsletter: true, is_banned: false, unsubscribe_token: "t2" }
       },
       emails: { "u-1": "user1@shoonaya.com", "u-2": "user2@shoonaya.com" }
     });

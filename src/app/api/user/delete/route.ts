@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { enqueueDeletionCompletedNotice } from '@/lib/account-deletion-notices';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -50,6 +51,8 @@ export async function POST(req: NextRequest) {
   if (profileDeleteError) {
     return NextResponse.json({ success: false, error: profileDeleteError.message }, { status: 500 });
   }
+
+  if (user.email) await enqueueDeletionCompletedNotice(user.id, user.email);
 
   return NextResponse.json({ success: true });
 }

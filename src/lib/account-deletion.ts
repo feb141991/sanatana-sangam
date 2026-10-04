@@ -1,20 +1,15 @@
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { revokeAppleAuthorizationForUser } from '@/lib/apple-auth-service';
+import { enqueueDeletionCompletedNotice } from '@/lib/account-deletion-notices';
+import { ACCOUNT_DELETION_COOL_OFF_DAYS, purgeAfterFromRequestedAt } from '@/lib/account-deletion-policy';
 
 export { DELETION_REASONS } from '@/lib/account-deletion-reasons';
+export { ACCOUNT_DELETION_COOL_OFF_DAYS, purgeAfterFromRequestedAt } from '@/lib/account-deletion-policy';
 
 // Single source of truth for the account-deletion cool-off window, shared by
 // the request/cancel/status API routes (src/app/api/user/delete/*), the
 // account-deletion workflow, and the purge cron fallback so the window
 // promised to the user in copy always matches what the backend enforces.
-export const ACCOUNT_DELETION_COOL_OFF_DAYS = 30;
-
-export function purgeAfterFromRequestedAt(deletionRequestedAt: string): string {
-  return new Date(
-    new Date(deletionRequestedAt).getTime() + ACCOUNT_DELETION_COOL_OFF_DAYS * 24 * 60 * 60 * 1000
-  ).toISOString();
-}
-
 type PendingDeletionRow = { id: string; deletion_requested_at: string };
 
 export async function purgeDeletedAccountById(userId: string, expectedDeletionRequestedAt?: string) {
@@ -162,6 +157,13 @@ async function deleteUserStorageObjects(admin: StorageAdmin, userId: string) {
 
 async function hardDeleteAccount(userId: string): Promise<{ id: string; success: boolean; error?: string }> {
   const admin = createServiceRoleSupabaseClient();
+  let accountEmail: string | null = null;
+  try {
+    const { data: authUser } = await admin.auth.admin.getUserById(userId);
+    accountEmail = authUser?.user?.email ?? null;
+  } catch {
+    // Deletion must be able to proceed if a confirmation address cannot be read.
+  }
 
   // ── Apple TN3194 revocation (best-effort, never blocks deletion) ─────────
   // Must be called BEFORE auth.admin.deleteUser so the auth.identities record
@@ -193,6 +195,11 @@ async function hardDeleteAccount(userId: string): Promise<{ id: string; success:
   if (profileDeleteError) {
     console.error(`account-deletion: profile delete failed for ${userId}:`, profileDeleteError);
     return { id: userId, success: false, error: profileDeleteError.message };
+  }
+
+  if (accountEmail) {
+    const queued = await enqueueDeletionCompletedNotice(userId, accountEmail);
+    if (queued === 'failed') console.error('account-deletion: completion receipt could not be queued');
   }
 
   return { id: userId, success: true };

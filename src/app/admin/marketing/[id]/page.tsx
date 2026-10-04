@@ -527,7 +527,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                 <div className="p-6 rounded-2xl bg-white border border-slate-200 text-slate-800 space-y-4 shadow-sm">
                   <div className="text-center border-b pb-4">
                     <p className="font-serif font-bold text-lg text-[#1A140E]">Shoonaya</p>
-                    <p className="text-[9px] uppercase tracking-widest text-[#854F0B]">Find Your Infinity</p>
+                    <p className="text-[9px] uppercase tracking-widest text-[#854F0B]">Find your infinite.</p>
                   </div>
                   <h4 className="font-bold text-sm text-center">{emailSubject || "Weekly Subject Line"}</h4>
                   <div className="text-xs leading-relaxed text-slate-700 whitespace-pre-wrap">

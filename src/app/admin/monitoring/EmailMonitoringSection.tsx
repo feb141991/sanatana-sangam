@@ -15,13 +15,15 @@ interface EmailMonitoringData {
     recent7DaysCount: number;
     confirmed7d: number;
     unconfirmed7d: number;
-    bounceRiskRate7d: number;
+    unconfirmedRate7d: number;
     recent30DaysCount: number;
   };
   health: {
     status: "healthy" | "warning" | "critical";
     message: string;
-    customSmtpConfigured: boolean;
+    resendApiConfigured: boolean;
+    authSmtpStatus: "unknown";
+    domainAuthenticationStatus: "not_verified";
     provider: string;
   };
   domains: Array<{ domain: string; total: number; confirmed: number; unconfirmed: number }>;
@@ -139,7 +141,7 @@ export default function EmailMonitoringSection() {
           </div>
           <div>
             <div className="flex items-center gap-3">
-              <h3 className="text-lg font-bold text-white">Auth & Transactional Email Deliverability</h3>
+              <h3 className="text-lg font-bold text-white">Email Configuration & Signup Health</h3>
               <span
                 className={`px-2.5 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1.5 ${
                   health.status === "healthy"
@@ -159,9 +161,11 @@ export default function EmailMonitoringSection() {
             </div>
             <p className="text-sm text-neutral-400 mt-1">{health.message}</p>
             <div className="flex items-center gap-4 mt-2 text-xs text-neutral-500">
-              <span>Active Gateway: <strong className="text-neutral-300 font-medium">{health.provider}</strong></span>
+              <span>App email API: <strong className="text-neutral-300 font-medium">{health.provider}</strong></span>
               <span>•</span>
-              <span>DKIM/SPF Insulation: <strong className="text-emerald-400 font-medium">Enabled (Resend)</strong></span>
+              <span>Domain authentication: <strong className="text-amber-300 font-medium">Verify in Resend</strong></span>
+              <span>•</span>
+              <span>Supabase Auth SMTP: <strong className="text-amber-300 font-medium">Verify in Supabase</strong></span>
             </div>
           </div>
         </div>
@@ -189,7 +193,7 @@ export default function EmailMonitoringSection() {
             rel="noreferrer"
             className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-xl border border-amber-500/30 flex items-center gap-2 transition"
           >
-            Supabase SMTP <ExternalLink className="w-3.5 h-3.5" />
+            Supabase Auth mail <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
       </div>
@@ -222,14 +226,14 @@ export default function EmailMonitoringSection() {
 
         <div className="p-4 bg-neutral-900/90 border border-neutral-800 rounded-xl">
           <div className="flex items-center justify-between text-neutral-400 text-xs font-medium">
-            <span>7-Day Bounce Risk</span>
-            <AlertTriangle className={`w-4 h-4 ${overview.bounceRiskRate7d > 10 ? "text-amber-400" : "text-emerald-400"}`} />
+            <span>7-Day Unverified Signups</span>
+            <AlertTriangle className={`w-4 h-4 ${overview.unconfirmedRate7d > 10 ? "text-amber-400" : "text-neutral-500"}`} />
           </div>
-          <div className={`text-2xl font-bold mt-2 ${overview.bounceRiskRate7d > 10 ? "text-amber-400" : "text-emerald-400"}`}>
-            {overview.bounceRiskRate7d}%
+          <div className={`text-2xl font-bold mt-2 ${overview.unconfirmedRate7d > 10 ? "text-amber-400" : "text-neutral-200"}`}>
+            {overview.unconfirmedRate7d}%
           </div>
           <div className="text-xs text-neutral-500 mt-1">
-            {overview.bounceRiskRate7d > 10 ? "Above 10% threshold" : "Safe deliverability floor"}
+            Of signups in the last 7 days; not a bounce metric
           </div>
         </div>
 
@@ -249,10 +253,10 @@ export default function EmailMonitoringSection() {
         <div className="lg:col-span-2 p-5 bg-neutral-900/90 border border-neutral-800 rounded-2xl">
           <div className="flex items-center gap-2 mb-2">
             <Send className="w-4 h-4 text-amber-400" />
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Live SMTP Dispatch Tester</h4>
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Live Resend API Test</h4>
           </div>
           <p className="text-xs text-neutral-400 mb-4">
-            Send an instant test email through your connected <strong>Resend API</strong> pipe to verify deliverability and inbox latency in real-time.
+            Send a test through the configured Resend API. Provider acceptance does not confirm inbox placement or domain authentication.
           </p>
 
           <form onSubmit={handleSendTest} className="flex flex-col sm:flex-row gap-3">
@@ -347,7 +351,7 @@ export default function EmailMonitoringSection() {
             <span className="text-xs text-neutral-500">{unconfirmedUsers.length} total</span>
           </div>
           <p className="text-xs text-neutral-400 mb-4">
-            Accounts created without email confirmation. Unconfirmed dummy emails are the primary source of mailer hard bounces.
+            These accounts have not completed email verification. This list does not indicate whether a message bounced.
           </p>
 
           {unconfirmedUsers.length === 0 ? (

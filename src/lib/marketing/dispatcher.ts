@@ -1,6 +1,7 @@
 import { evaluateMarketingConsent } from "./consent";
 import { computeContentHash } from "./campaign-service";
 import { sendShoonayaEmail } from "@/lib/email";
+import { APP } from "@/lib/config";
 import { createWhatsAppProvider } from "@/lib/whatsapp/provider";
 import { resolveRecipientEmails } from "@/lib/server/recipient-emails";
 import type {
@@ -253,6 +254,12 @@ export async function dispatchMarketingBatch(
     //    response is deduped provider-side too, not just by this row's own status.
     try {
       if (variant.channel === "email") {
+        let unsubscribeUrl: string | undefined;
+        if (profile!.unsubscribe_token) {
+          const url = new URL("/api/unsubscribe", APP.BASE_URL);
+          url.searchParams.set("token", profile!.unsubscribe_token);
+          unsubscribeUrl = url.toString();
+        }
         const sendRes = await sendShoonayaEmail({
           to: profile!.email!,
           subject: variant.subject ?? "Shoonaya Weekly Dharma",
@@ -262,23 +269,28 @@ export async function dispatchMarketingBatch(
           body: variant.body,
           ctaText: variant.cta_text ?? "Open Shoonaya",
           ctaUrl: variant.cta_url ?? "https://www.shoonaya.com",
-          unsubUrl: profile!.unsubscribe_token
-            ? `https://www.shoonaya.com/api/unsubscribe?token=${profile!.unsubscribe_token}`
-            : undefined
-        });
+          unsubUrl: unsubscribeUrl,
+          unsubType: campaign.campaign_type === "festival_reminder" ? "festivals" : "newsletter"
+        }, { idempotencyKey: `marketing-dispatch:${row.id}` });
 
         if (!sendRes || sendRes.success !== true) {
           throw new Error(sendRes?.error ? String(sendRes.error) : "Resend delivery failed");
         }
 
         result.sent++;
-        result.dispatches.push({ recipient_user_id: row.recipient_user_id, channel: "email", status: "sent" });
+        result.dispatches.push({
+          recipient_user_id: row.recipient_user_id,
+          channel: "email",
+          status: "sent",
+          provider_message_id: sendRes.id ?? null
+        });
 
         await supabase
           .from("marketing_dispatches")
           .update({
             status: "sent",
             provider: "resend",
+            provider_message_id: sendRes.id ?? null,
             sent_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })

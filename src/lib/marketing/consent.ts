@@ -33,6 +33,10 @@ export function evaluateMarketingConsent(
       return { eligible: false, reasonCode: "missing_email" };
     }
 
+    if (!profile.unsubscribe_token) {
+      return { eligible: false, reasonCode: "missing_unsubscribe_token" };
+    }
+
     if (rawEmail.endsWith("@whatsapp.shoonaya.app") || rawEmail.includes("placeholder")) {
       return { eligible: false, reasonCode: "placeholder_email" };
     }
