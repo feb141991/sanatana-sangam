@@ -1,0 +1,23 @@
+-- The corrected_2026_festival_migration batch (54 rows, all calendar_profile='legacy-ujjain')
+-- was audited against real-world sources (drikpanchang.com, and for regional cases
+-- newsonair.gov.in / Rashtriya Panchang Saka 1948) and found wrong on every checked row,
+-- including one falsely citing drikpanchang.com as its source and one 11-day error.
+-- 5 of the slugs (losar-tibetan-new-year, hanuman-jayanti, akshaya-tritiya, onam,
+-- kartik-purnima) additionally have launch_status: 'deferred' on their rule definitions --
+-- the engine deliberately withholds them (engine.ts:183), so this migration also bypassed
+-- that governance gate by hand-inserting rows stamped review_status: reviewed,
+-- verification_status: verified, audit_status: completed.
+--
+-- Verified via calculateOccurrencesWithEvaluator(2026) (a pure, DB-free re-run of the
+-- production engine) that the other 6 slugs (maha-shivaratri, ram-navami,
+-- krishna-janmashtami, guru-ravidas-jayanti, guru-nanak-gurpurab) already compute the
+-- correct real-world date once this override is removed -- see corresponding
+-- lazy_materialize_on_read rows already present under calendar_profile
+-- 'north_indian_purnimanta' for the same slugs/year.
+--
+-- Deleting restores the engine's own governance-correct behavior: the 6 live-rule
+-- festivals self-heal to the correct date via ensureYearMaterialized on next read: the 5
+-- deferred-rule festivals correctly stop showing a date until their rule review is
+-- completed and launch_status is flipped to 'included'.
+delete from observance_occurrences
+where calculated_by = 'corrected_2026_festival_migration';
