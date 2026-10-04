@@ -7,7 +7,7 @@ SELECT has_column('public', 'profiles', 'family_remembrance_opt_in_generation', 
 SELECT has_column('public', 'kul_family_members', 'remembrance_generation', 'alive-state changes invalidate old reminders');
 SELECT has_column('public', 'kul_events', 'remembrance_generation', 'event edits receive a new reminder generation');
 SELECT has_column('public', 'kuls', 'remembrance_generation', 'calendar edits receive a new reminder generation');
-SELECT has_constraint('public', 'profiles', 'profiles_family_remembrance_time_check', 'reminder time is validated by the database');
+SELECT ok(EXISTS(SELECT 1 FROM pg_constraint WHERE conname = 'profiles_family_remembrance_time_check'), 'reminder time is validated by the database');
 SELECT has_trigger('public', 'kul_events', 'validate_kul_death_anniversary_event', 'death-anniversary events require a recurring date for a deceased KUL member');
 SELECT has_trigger('public', 'notification_candidates', 'validate_family_remembrance_candidate', 'candidate insert checks its current source snapshot');
 SELECT has_trigger('public', 'profiles', 'handle_family_remembrance_preference_change', 'preference changes invalidate queued reminders');
@@ -17,7 +17,7 @@ SELECT has_trigger('public', 'kul_family_members', 'handle_kul_remembrance_membe
 SELECT has_trigger('public', 'kuls', 'handle_kul_remembrance_calendar_change', 'family calendar changes cancel queued reminders');
 SELECT has_trigger('public', 'kuls', 'guard_kul_calendar_remembrance_generation', 'calendar generation changes are server-managed');
 SELECT ok(public.notification_is_budget_exempt('family_remembrance', 'family_remembrance:example'), 'family remembrance is exempt from the shared engagement budget');
-SELECT has_trigger('public', 'kul_members', 'handle_kul_remembrance_membership_delete', 'leaving a KUL cancels that user's queued reminders');
+SELECT has_trigger('public', 'kul_members', 'handle_kul_remembrance_membership_delete', 'leaving a KUL cancels that user''s queued reminders');
 
 SELECT * FROM finish();
 ROLLBACK;

@@ -6,20 +6,20 @@ SELECT has_column('public', 'kuls', 'gotra', 'family lineage has a gotra field')
 SELECT has_column('public', 'kuls', 'calendar_timezone', 'KUL stores a calendar timezone');
 SELECT has_column('public', 'kul_events', 'date_system', 'family events distinguish Gregorian dates from tithi dates');
 SELECT has_column('public', 'kul_events', 'tithi', 'family events can store a lunar tithi');
-SELECT has_policy('public', 'kul_tirtha_wishes', 'kul_tirtha_wishes_select', 'Tirtha wishes are member-scoped');
+SELECT ok(EXISTS(SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'kul_tirtha_wishes' AND policyname = 'kul_tirtha_wishes_select'), 'Tirtha wishes are member-scoped');
 SELECT has_trigger('public', 'kul_members', 'trg_preserve_kul_after_member_delete', 'member deletion runs KUL lifecycle preservation');
 SELECT has_function('public', 'transfer_kul_guardian', ARRAY['uuid'], 'guardian transfer RPC exists');
 
-INSERT INTO auth.users (id) VALUES
-  ('00000000-0000-0000-0000-000000009301'),
-  ('00000000-0000-0000-0000-000000009302'),
-  ('00000000-0000-0000-0000-000000009303')
+INSERT INTO auth.users (id, raw_user_meta_data) VALUES
+  ('00000000-0000-0000-0000-000000009301', '{"username": "test_user_9301"}'::jsonb),
+  ('00000000-0000-0000-0000-000000009302', '{"username": "test_user_9302"}'::jsonb),
+  ('00000000-0000-0000-0000-000000009303', '{"username": "test_user_9303"}'::jsonb)
 ON CONFLICT (id) DO NOTHING;
-INSERT INTO public.profiles (id, timezone) VALUES
-  ('00000000-0000-0000-0000-000000009301', 'UTC'),
-  ('00000000-0000-0000-0000-000000009302', 'UTC'),
-  ('00000000-0000-0000-0000-000000009303', 'UTC')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.profiles (id, full_name, username, timezone) VALUES
+  ('00000000-0000-0000-0000-000000009301', 'User 9301', 'test_user_9301', 'UTC'),
+  ('00000000-0000-0000-0000-000000009302', 'User 9302', 'test_user_9302', 'UTC'),
+  ('00000000-0000-0000-0000-000000009303', 'User 9303', 'test_user_9303', 'UTC')
+ON CONFLICT (id) DO UPDATE SET full_name = excluded.full_name, username = excluded.username, timezone = excluded.timezone;
 
 INSERT INTO public.kuls (id, name, invite_code, created_by)
 VALUES ('00000000-0000-0000-0000-000000009399', 'Lifecycle KUL', 'LIFECYCLE9301', '00000000-0000-0000-0000-000000009301');
