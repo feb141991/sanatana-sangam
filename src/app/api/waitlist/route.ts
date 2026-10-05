@@ -1,27 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createHmac } from 'node:crypto';
+import { checkDurableRateLimit, clientIp, rejectLargeRequest } from '@/lib/api-security';
+import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { escapeEmailHtml } from '@/lib/email';
-import { enqueueShoonayaEmail } from '@/lib/email-outbox';
+import { boundedText, isValidIanaTimezone, normalizeWaitlistEmail } from '@/lib/early-access-policy';
 
 // ─── /api/waitlist ─────────────────────────────────────────────────────────────
 // GET  — returns { count: number } (waitlist size for the landing page counter)
-// POST — saves a pre-registration; returns { success, foundingNumber, alreadyRegistered }
-//        Sends a Shoonaya welcome email via Resend (if RESEND_API_KEY is set).
+// POST — atomically records a waitlist request and queues its confirmation email.
 // Body: { email, tradition?, name?, source?, timezone? }
 // ──────────────────────────────────────────────────────────────────────────────
 
 export const dynamic = 'force-dynamic';
 
-// Lazily initialized — createClient is never called at module import time
-// (which happens during Next.js build when env vars are absent).
-// biome-ignore lint: untyped DB schema
-let _sb: ReturnType<typeof createClient<any>> | undefined;
+// Lazily initialized so route imports remain safe during builds without env vars.
+let _sb: ReturnType<typeof createServiceRoleSupabaseClient> | undefined;
 function db() {
-  return (_sb ??= createClient<any>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } }
-  ));
+  return (_sb ??= createServiceRoleSupabaseClient());
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
@@ -32,6 +27,10 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
+
+const MAX_BODY_BYTES = 8 * 1024;
+const IP_RATE_LIMIT = { limit: 10, windowMs: 60 * 60_000 };
+const EMAIL_RATE_LIMIT = { limit: 3, windowMs: 24 * 60 * 60_000 };
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
@@ -130,161 +129,45 @@ const TRAD_VERSE: Record<string, TradVerse> = {
 
 // ─── Tradition-specific welcome paragraph ─────────────────────────────────────
 const TRAD_WELCOME: Record<string, string> = {
-  sikh: `Shoonaya includes selected Sikh teachings and experiences in their own context where available.
-    Explore the sources and guidance shown within each feature. Your Shoonaya account is ready.`,
+  sikh: `Thank you for your interest in Shoonaya. Selected Sikh teachings and experiences are presented
+    in their own context where available. This confirms your request; it does not create an account or
+    invitation, or guarantee an access date.`,
 
-  hindu: `Shoonaya is rooted in Sanatan Dharma. Explore local sacred-time context, daily practice,
-    scripture, and selected learning tools, with sources and feature availability shown where available.
-    Your Shoonaya account is ready.`,
+  hindu: `Thank you for your interest in Shoonaya. Explore local sacred-time context, daily practice,
+    scripture, and selected learning tools as they become available. This confirms your request; it does
+    not create an account or invitation, or guarantee an access date.`,
 
-  buddhist: `Shoonaya includes selected Buddhist teachings and reflective practices where available.
-    Buddhist content is presented in its own context; explore the sources and guidance shown in each
-    feature. Your Shoonaya account is ready.`,
+  buddhist: `Thank you for your interest in Shoonaya. Selected Buddhist teachings and reflective practices
+    are presented in their own context where available. This confirms your request; it does not create an
+    account or invitation, or guarantee an access date.`,
 
-  jain: `Shoonaya includes selected Jain teachings, observances, and practice references where available.
-    Jain content is presented in its own context; explore the sources and guidance shown in each
-    feature. Your Shoonaya account is ready.`,
+  jain: `Thank you for your interest in Shoonaya. Selected Jain teachings, observances, and practice
+    references are presented in their own context where available. This confirms your request; it does
+    not create an account or invitation, or guarantee an access date.`,
 
-  default: `Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and
-    connection. Your account is ready to explore at your own pace.`,
+  default: `Thank you for your interest in Shoonaya — Find your infinite. This confirms your interest request
+    only; it does not create an account or invitation, or guarantee an access date.`,
 };
 
-// ─── Tradition-specific share copy ────────────────────────────────────────────
-const TRAD_SHARE_COPY: Record<string, string> = {
-  sikh:     'Share your spot with the Sangat.',
-  hindu:    'Share your spot with fellow Sanatani seekers.',
-  buddhist: 'Share your spot with fellow practitioners.',
-  jain:     'Share your spot — parasparopagṛaho jīvānām.',
-  default:  'Share Shoonaya with fellow seekers.',
-};
-
-const FOUNDING_PERKS = [
-  'A warm Shoonaya welcome for your profile',
-  'Your practice, community, and learning tools in one place',
-  'Access to every new feature',
-  'Access to Mandali community spaces as they expand',
-  'Tradition-aware profile and daily practice experience',
-  'A daily spiritual sanctuary for sacred time, practice, and connection',
+const WHAT_TO_EXPECT = [
+  'Your request is recorded on the Shoonaya early-access list',
+  'It does not create an account, whitelist, or invitation',
+  'No access date or availability is guaranteed',
 ];
 
-type WaitlistRow = {
-  id: string;
-  email: string;
-  name?: string | null;
-  founding_number: number | null;
-  tradition: string | null;
-  email_sent?: boolean | null;
-};
-
-const VALID_TRADITIONS = new Set(['hindu', 'sikh', 'buddhist', 'jain']);
-
-function textOrNull(value: unknown): string | null {
-  if (typeof value !== 'string') return null;
-  const trimmed = value.trim();
-  return trimmed.length ? trimmed : null;
-}
-
-function normaliseTradition(value: unknown): string | null {
-  const tradition = textOrNull(value)?.toLowerCase() ?? null;
-  return tradition && VALID_TRADITIONS.has(tradition) ? tradition : null;
-}
-
 function buildShareText(): string {
-  return `I joined Shoonaya — a home for Hindu, Sikh, Buddhist and Jain dharma. Enter Shoonaya: ${BASE_URL}`;
+  return `I joined Shoonaya's early-access list — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection: ${BASE_URL}`;
 }
 
-async function findRegistration(email: string): Promise<WaitlistRow | null> {
-  const { data, error } = await db()
-    .from('waitlist')
-    .select('id, email, name, founding_number, tradition, email_sent')
-    .ilike('email', email)
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) throw error;
-  return data as WaitlistRow | null;
-}
-
-async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
-  if (typeof row.founding_number === 'number' && row.founding_number > 0) {
-    return row.founding_number;
-  }
-
-  const { data: latest } = await db()
-    .from('waitlist')
-    .select('founding_number')
-    .not('founding_number', 'is', null)
-    .order('founding_number', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const nextNumber = ((latest?.founding_number as number | null | undefined) ?? 0) + 1;
-
-
-  const { data: updated, error } = await db()
-    .from('waitlist')
-    .update({ founding_number: nextNumber })
-    .eq('id', row.id)
-    .is('founding_number', null)
-    .select('founding_number')
-    .maybeSingle();
-
-  if (!error && typeof updated?.founding_number === 'number') {
-    return updated.founding_number;
-  }
-
-  const { data: reread } = await db()
-    .from('waitlist')
-    .select('founding_number')
-    .eq('id', row.id)
-    .maybeSingle();
-
-  return (reread?.founding_number as number | null | undefined) ?? nextNumber;
-}
-
-async function updateExistingRegistration(
-  row: WaitlistRow,
-  updates: {
-    tradition: string | null;
-    name: string | null;
-    source: string | null;
-    timezone: string | null;
-    referred_by_number?: number | null;
-    referral_source?: string | null;
-  }
-): Promise<void> {
-  const patch: Record<string, any> = {};
-
-  if (updates.tradition && updates.tradition !== row.tradition) {
-    patch.tradition = updates.tradition;
-  }
-  if (updates.name) patch.name = updates.name;
-  if (updates.source) patch.source = updates.source;
-  if (updates.timezone) patch.timezone = updates.timezone;
-  if (updates.referred_by_number) patch.referred_by_number = updates.referred_by_number;
-  if (updates.referral_source) patch.referral_source = updates.referral_source;
-
-  if (!Object.keys(patch).length) return;
-
-  const { error } = await db()
-    .from('waitlist')
-    .update(patch)
-    .eq('id', row.id);
-
-  if (error) throw error;
-}
 
 // ─── Welcome email HTML ────────────────────────────────────────────────────────
 function buildEmailHtml(opts: {
   name?: string;
-  email: string;
   tradition?: string;
-  foundingNumber: number;
 }): string {
-  const { name, tradition, foundingNumber } = opts;
+  const { name, tradition } = opts;
   const t            = tradition ?? 'default';
-  const displayName  = escapeEmailHtml(name || 'Dear Sadhak');
+  const displayName  = escapeEmailHtml(name || 'there');
   const tradLabel    = tradition ? escapeEmailHtml(TRAD_LABEL[tradition] ?? tradition) : '';
   const greeting     = TRAD_GREETING[t] ?? TRAD_GREETING.default;
   const accent       = TRAD_COLOR[t]        ?? TRAD_COLOR.default;
@@ -292,7 +175,6 @@ function buildEmailHtml(opts: {
   const badgeLabel   = TRAD_NATIVE_LABEL[t] ?? TRAD_NATIVE_LABEL.default;
   const verse        = TRAD_VERSE[t]        ?? null;
   const welcomePara  = TRAD_WELCOME[t]      ?? TRAD_WELCOME.default;
-  const shareCopy    = TRAD_SHARE_COPY[t]   ?? TRAD_SHARE_COPY.default;
 
   // Derived rgba values from accent (hardcoded per tradition for email client compat)
   const accentBg  = t === 'sikh'     ? 'rgba(27,94,139,0.12)'
@@ -306,10 +188,10 @@ function buildEmailHtml(opts: {
 
   const shareUrl = encodeURIComponent(BASE_URL);
   const twitterText = encodeURIComponent(
-    `I joined Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection:`
+    `I joined Shoonaya's early-access list — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection:`
   );
   const waText = encodeURIComponent(
-    `I joined Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Explore Shoonaya: ${BASE_URL}`
+    `I joined Shoonaya's early-access list — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Explore Shoonaya: ${BASE_URL}`
   );
 
   const verseBlock = verse ? `
@@ -328,7 +210,7 @@ function buildEmailHtml(opts: {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Welcome to Shoonaya</title>
+<title>Your Shoonaya early-access request</title>
 </head>
 <body style="margin:0;padding:0;background:#0d0805;font-family:Georgia,serif;color:#FAF6EF;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0805;">
@@ -347,7 +229,7 @@ function buildEmailHtml(opts: {
   <!-- Welcome Badge -->
   <tr><td align="center" style="padding-bottom:32px;">
     <div style="background:${accentBg};border:1px solid ${accentBdr};border-radius:20px;padding:36px 24px;display:inline-block;min-width:260px;">
-      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(250,246,239,0.50);margin-bottom:14px;">Your Shoonaya Welcome</div>
+      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(250,246,239,0.50);margin-bottom:14px;">Early Access</div>
       <div style="font-size:42px;font-weight:700;color:${accent};line-height:1;font-family:'Georgia',serif;">शून्य</div>
       <div style="font-size:13px;color:rgba(250,246,239,0.45);margin-top:10px;letter-spacing:0.12em;">${badgeLabel}</div>
     </div>
@@ -357,7 +239,7 @@ function buildEmailHtml(opts: {
   <tr><td style="padding-bottom:28px;text-align:center;">
     <div style="font-size:12px;letter-spacing:0.1em;color:${accent};margin-bottom:8px;opacity:0.85;">${greeting}</div>
     <h1 style="font-size:26px;font-weight:400;color:#FAF6EF;margin:0 0 18px;line-height:1.3;">
-      ${t === 'sikh' ? 'ਜੀ ਆਇਆਂ ਨੂੰ' : 'आपका स्वागत है'}, ${displayName}
+      ${t === 'sikh' ? 'ਜੀ ਆਇਆਂ ਨੂੰ' : 'नमस्ते'}, ${displayName}
     </h1>
     <p style="font-size:15px;color:rgba(250,246,239,0.72);line-height:1.80;margin:0;text-align:left;">
       ${welcomePara}
@@ -369,10 +251,10 @@ function buildEmailHtml(opts: {
   <!-- Divider -->
   <tr><td style="padding:8px 0 32px;"><div style="height:1px;background:${accentBdr};opacity:0.4;"></div></td></tr>
 
-  <!-- Perks -->
+  <!-- What to expect -->
   <tr><td style="padding-bottom:32px;">
-    <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:${accent};opacity:0.80;margin-bottom:20px;">Your Shoonaya Welcome</div>
-    ${FOUNDING_PERKS.map(p => `
+    <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:${accent};opacity:0.80;margin-bottom:20px;">What to expect</div>
+    ${WHAT_TO_EXPECT.map(p => `
     <div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
       <span style="color:${accent};font-size:14px;margin-right:10px;">${symbol}</span>
       <span style="font-size:14px;color:rgba(250,246,239,0.78);line-height:1.5;">${p}</span>
@@ -382,7 +264,7 @@ function buildEmailHtml(opts: {
   <!-- Share prompt -->
   <tr><td style="padding:24px;text-align:center;background:rgba(255,255,255,0.03);border-radius:12px;margin-bottom:32px;">
     <div style="font-size:14px;color:rgba(250,246,239,0.65);line-height:1.6;margin-bottom:20px;">
-      ${shareCopy}
+      Share Shoonaya with someone who may value a little more connection to sacred time and daily practice.
     </div>
     <a href="https://twitter.com/intent/tweet?text=${twitterText}&url=${shareUrl}"
        style="display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#FAF6EF;text-decoration:none;padding:10px 24px;border-radius:100px;font-size:13px;margin:4px;">
@@ -396,18 +278,18 @@ function buildEmailHtml(opts: {
 
   <!-- CTA Button -->
   <tr><td align="center" style="padding:32px 0;">
-    <a href="${BASE_URL}/join"
+    <a href="${BASE_URL}"
        style="display:inline-block;background:${accent};color:#fff;font-weight:700;padding:16px 48px;border-radius:100px;text-decoration:none;font-size:15px;letter-spacing:0.02em;">
-      Enter Shoonaya →
+      Explore Shoonaya →
     </a>
   </td></tr>
 
   <!-- Footer -->
   <tr><td align="center" style="border-top:1px solid ${accentBdr};opacity:0.5;padding-top:24px;">
     <div style="font-size:11px;color:rgba(250,246,239,0.28);line-height:1.7;">
-      Shoonaya · Live Now<br>
+      Shoonaya · Early-access request received<br>
       Questions? Reply to this email or write to <a href="mailto:info@shoonaya.com" style="color:${accent};text-decoration:none;opacity:0.7;">info@shoonaya.com</a><br>
-      This is a one-time welcome for your Shoonaya waitlist registration.
+      This is a one-time confirmation for your early-access request. It does not create an account or promise a release date.
     </div>
   </td></tr>
 
@@ -418,162 +300,145 @@ function buildEmailHtml(opts: {
 </html>`;
 }
 
-// ─── Queue welcome email; delivery happens in the durable email worker ────────
-async function queueWelcomeEmail(opts: {
-  waitlistId: string;
-  email: string;
+function buildWelcomeEmailPayload(opts: {
   name?: string;
   tradition?: string;
-  foundingNumber: number;
-}): Promise<void> {
+}): { subject: string; html: string; from: string } {
   const tradGreeting = TRAD_GREETING[opts.tradition ?? 'default'] ?? TRAD_GREETING.default;
-  await enqueueShoonayaEmail({
-    idempotencyKey: `waitlist-welcome:${opts.waitlistId}`,
-    to: opts.email,
-    templateKey: 'waitlist_welcome',
-    emailClass: 'transactional',
-    content: {
-      subject: `${tradGreeting} — आपका स्वागत है 🪔`,
-      html: buildEmailHtml(opts),
-      from: process.env.SHOONAYA_EMAIL_FROM ?? `Shoonaya <noreply@${DOMAIN.replace(/^www\./, '')}>`,
-    },
-    context: { waitlistId: opts.waitlistId },
-    priority: 40,
-  });
+  return {
+    subject: `${tradGreeting} — your Shoonaya early-access request`,
+    html: buildEmailHtml(opts),
+    from: process.env.SHOONAYA_EMAIL_FROM ?? `Shoonaya <noreply@${DOMAIN.replace(/^www\./, '')}>`,
+  };
 }
 
 // ─── POST — register on waitlist ──────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email } = body;
+    const sizeRejection = rejectLargeRequest(req, MAX_BODY_BYTES);
+    if (sizeRejection) return sizeRejection;
 
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return NextResponse.json(
-        { error: 'A valid email address is required.' },
-        { status: 400, headers: CORS_HEADERS }
-      );
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceKey) {
+      return NextResponse.json({ error: 'Early access is temporarily unavailable.' }, { status: 503, headers: CORS_HEADERS });
     }
-    const emailLower = email.toLowerCase().trim();
-    const tradition = normaliseTradition(body.tradition);
-    const name = textOrNull(body.name);
-    const source = textOrNull(body.source) ?? 'landing';
-    const timezone = textOrNull(body.timezone);
+
+    const supabase = db();
+    const ipDigest = createHmac('sha256', serviceKey).update(`early-access-ip:${clientIp(req)}`).digest('hex');
+    const ipRateRejection = await checkDurableRateLimit(
+      `early-access-ip:${ipDigest}`,
+      IP_RATE_LIMIT.limit,
+      IP_RATE_LIMIT.windowMs,
+      supabase,
+    );
+    if (ipRateRejection) return ipRateRejection;
+
+    const rawBody = await req.text();
+    if (Buffer.byteLength(rawBody, 'utf8') > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: 'Request body too large.' }, { status: 413, headers: CORS_HEADERS });
+    }
+
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return NextResponse.json({ error: 'Invalid request body.' }, { status: 400, headers: CORS_HEADERS });
+    }
+    if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Invalid request body.' }, { status: 400, headers: CORS_HEADERS });
+    }
+    const input = body as Record<string, unknown>;
+    const email = normalizeWaitlistEmail(input.email);
+    if (!email) {
+      return NextResponse.json({ error: 'A valid email address is required.' }, { status: 400, headers: CORS_HEADERS });
+    }
+
+    const emailDigest = createHmac('sha256', serviceKey).update(`early-access-email:${email}`).digest('hex');
+    const emailRateRejection = await checkDurableRateLimit(
+      `early-access-email:${emailDigest}`,
+      EMAIL_RATE_LIMIT.limit,
+      EMAIL_RATE_LIMIT.windowMs,
+      supabase,
+    );
+    if (emailRateRejection) return emailRateRejection;
+
+    // A filled honeypot receives the same acknowledgement as a real request,
+    // while avoiding database writes and email delivery.
+    if (boundedText(input.company_website, 200)) {
+      return NextResponse.json({ success: true, message: 'Your request has been received.' }, { status: 200, headers: CORS_HEADERS });
+    }
+
+    const traditionValue = boundedText(input.tradition, 20)?.toLowerCase() ?? null;
+    if (traditionValue && !['hindu', 'sikh', 'buddhist', 'jain', 'universal'].includes(traditionValue)) {
+      return NextResponse.json({ error: 'Please choose a listed tradition.' }, { status: 400, headers: CORS_HEADERS });
+    }
+    const tradition = traditionValue === 'universal' ? null : traditionValue;
+    const name = boundedText(input.name, 80);
+    if (input.name !== undefined && input.name !== null && String(input.name).trim() && !name) {
+      return NextResponse.json({ error: 'Name must be 80 characters or fewer.' }, { status: 400, headers: CORS_HEADERS });
+    }
+    const source = boundedText(input.source, 120) ?? 'landing';
+    const timezoneValue = boundedText(input.timezone, 80);
+    if (timezoneValue && !isValidIanaTimezone(timezoneValue)) {
+      return NextResponse.json({ error: 'Please provide a valid timezone.' }, { status: 400, headers: CORS_HEADERS });
+    }
+    const timezone = timezoneValue;
 
     const url = new URL(req.url);
-    const queryRef = url.searchParams.get('ref')?.trim();
-    const querySource = url.searchParams.get('utm_source')?.trim() ?? url.searchParams.get('source')?.trim();
-
-    const refRaw = body.ref ? String(body.ref).trim() : (queryRef || null);
-    const referred_by_number = refRaw && /^\d+$/.test(refRaw) ? parseInt(refRaw, 10) : null;
-    
-    const referral_source = textOrNull(body.referral_source) 
-      ?? textOrNull(body.utm_source) 
-      ?? textOrNull(querySource) 
+    const queryRef = boundedText(url.searchParams.get('ref'), 10);
+    const querySource = boundedText(url.searchParams.get('utm_source') ?? url.searchParams.get('source'), 120);
+    const refRaw = boundedText(input.ref, 10) ?? queryRef;
+    const referredByNumber = refRaw && /^\d{1,10}$/.test(refRaw) ? Number(refRaw) : null;
+    const referralSource = boundedText(input.referral_source, 120)
+      ?? boundedText(input.utm_source, 120)
+      ?? querySource
       ?? (refRaw ? 'direct' : null);
 
-    // ── Check if already registered ─────────────────────────────────────────
-    const existing = await findRegistration(emailLower);
-
-    if (existing) {
-      await updateExistingRegistration(existing, { tradition, name, source, timezone, referred_by_number, referral_source });
-      const foundingNumber = await ensureFoundingNumber(existing);
-      if (existing.email_sent !== true) {
-        try {
-          await queueWelcomeEmail({
-            waitlistId: existing.id,
-            email: emailLower,
-            name: name ?? existing.name ?? undefined,
-            tradition: tradition ?? existing.tradition ?? undefined,
-            foundingNumber,
-          });
-        } catch (queueError) {
-          console.error('[waitlist] welcome email enqueue failed', queueError instanceof Error ? queueError.message : 'unknown');
-        }
-      }
-
+    const emailPayload = buildWelcomeEmailPayload({
+      name: name ?? undefined,
+      tradition: tradition ?? undefined,
+    });
+    const { data, error } = await supabase.rpc('register_waitlist_with_welcome', {
+      p_email: email,
+      p_tradition: tradition,
+      p_name: name,
+      p_source: source,
+      p_timezone: timezone,
+      p_referred_by_number: referredByNumber,
+      p_referral_source: referralSource,
+      p_email_payload: emailPayload,
+    });
+    if (error) {
+      console.error('[waitlist] registration transaction failed', { code: error.code ?? 'unknown' });
       return NextResponse.json(
-        {
-          success: true,
-          foundingNumber,
-          alreadyRegistered: true,
-          message: 'This email is already registered with Shoonaya.',
-          shareText: buildShareText(),
-        },
-        { status: 200, headers: CORS_HEADERS }
+        { error: 'Could not save your request. Please try again shortly.' },
+        { status: 503, headers: { ...CORS_HEADERS, 'Cache-Control': 'no-store' } },
       );
     }
 
-    // ── Insert new registration (founding_number auto-assigned via sequence) ─
-    const { data: inserted, error: insertError } = await db()
-      .from('waitlist')
-      .insert({
-        email:     emailLower,
-        tradition,
-        name,
-        source,
-        timezone,
-        referred_by_number,
-        referral_source,
-      })
-      .select('id, email, name, founding_number, tradition, email_sent')
-      .single();
-
-    if (insertError) {
-      if (insertError.code === '23505') {
-        const duplicate = await findRegistration(emailLower);
-        if (duplicate) {
-          await updateExistingRegistration(duplicate, { tradition, name, source, timezone });
-          const foundingNumber = await ensureFoundingNumber(duplicate);
-
-          return NextResponse.json(
-            {
-              success: true,
-              foundingNumber,
-              alreadyRegistered: true,
-              message: 'This email is already registered with Shoonaya.',
-              shareText: buildShareText(),
-            },
-            { status: 200, headers: CORS_HEADERS }
-          );
-        }
-      }
-      throw insertError;
-    }
-
-    const foundingNumber = await ensureFoundingNumber(inserted as WaitlistRow);
-
-    // Enqueue before acknowledging; provider delivery remains asynchronous.
-    // `email_sent` is updated only after the worker receives provider success.
-    try {
-      await queueWelcomeEmail({
-        waitlistId: inserted.id,
-        email: emailLower,
-        name: name ?? undefined,
-        tradition: tradition ?? undefined,
-        foundingNumber,
-      });
-    } catch (queueError) {
-      // The registration itself is durable and remains successful. A repeat
-      // submission sees email_sent=false and retries this idempotent enqueue.
-      console.error('[waitlist] welcome email enqueue failed', queueError instanceof Error ? queueError.message : 'unknown');
+    const result = data && typeof data === 'object' && !Array.isArray(data) ? data : null;
+    if (!result || typeof result.email !== 'string') {
+      console.error('[waitlist] registration transaction returned invalid data');
+      return NextResponse.json(
+        { error: 'Could not confirm your request. Please try again shortly.' },
+        { status: 503, headers: { ...CORS_HEADERS, 'Cache-Control': 'no-store' } },
+      );
     }
 
     return NextResponse.json(
       {
         success: true,
-        foundingNumber,
-        alreadyRegistered: false,
-        message: 'You are registered with Shoonaya.',
+        foundingNumber: typeof result.founding_number === 'number' ? result.founding_number : null,
+        message: 'Your early-access interest request has been recorded.',
         shareText: buildShareText(),
       },
-      { status: 200, headers: CORS_HEADERS }
+      { status: 200, headers: { ...CORS_HEADERS, 'Cache-Control': 'no-store' } },
     );
   } catch (err) {
-    console.error('[waitlist] POST error:', err);
+    console.error('[waitlist] POST failed', { error: err instanceof Error ? err.name : 'unknown' });
     return NextResponse.json(
-      { error: 'Could not save registration. Please try again.' },
-      { status: 500, headers: CORS_HEADERS }
+      { error: 'Could not save your request. Please try again shortly.' },
+      { status: 503, headers: { ...CORS_HEADERS, 'Cache-Control': 'no-store' } },
     );
   }
 }

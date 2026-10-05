@@ -31,6 +31,9 @@ interface EarlyAccessSeeker {
   timezone: string | null;
   founding_number: number | null;
   email_sent: boolean;
+  email_status: "accepted" | "queued" | "sending" | "suppressed" | "needs_attention" | "not_queued";
+  email_error_code: string | null;
+  email_accepted_at: string | null;
   referred_by_number: number | null;
   referral_source: string | null;
   created_at: string;
@@ -40,8 +43,9 @@ interface EarlyAccessStats {
   total: number;
   today: number;
   thisWeek: number;
-  androidCount: number;
-  iosCount: number;
+  androidInterestCount: number;
+  iosInterestCount: number;
+  webInterestCount: number;
   traditions: Record<string, number>;
 }
 
@@ -66,6 +70,7 @@ export default function EarlyAccessAdminPage() {
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const limit = 50;
 
@@ -81,14 +86,17 @@ export default function EarlyAccessAdminPage() {
       params.set("limit", String(limit));
 
       const res = await fetch(`/api/admin/early-access?${params.toString()}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to load early access list");
+      const payload: unknown = await res.json();
+      const data = typeof payload === "object" && payload !== null
+        ? payload as { seekers?: EarlyAccessSeeker[]; total?: number; stats?: EarlyAccessStats; error?: unknown }
+        : {};
+      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "Failed to load early access list");
 
       setSeekers(data.seekers || []);
       setTotalCount(data.total || 0);
       setStats(data.stats || null);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to load seekers");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to load seekers");
     } finally {
       setLoading(false);
     }
@@ -111,53 +119,39 @@ export default function EarlyAccessAdminPage() {
     setTimeout(() => setCopiedEmail(null), 2000);
   };
 
-  const exportCSV = () => {
-    if (!seekers.length) {
-      toast.error("No seekers to export");
-      return;
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (query.trim()) params.set("query", query.trim());
+      if (tradition !== "all") params.set("tradition", tradition);
+      if (device !== "all") params.set("device", device);
+      if (sort !== "newest") params.set("sort", sort);
+      params.set("format", "csv");
+
+      const response = await fetch(`/api/admin/early-access?${params.toString()}`);
+      if (!response.ok) {
+        const payload: unknown = await response.json();
+        const message = typeof payload === "object" && payload !== null && "error" in payload && typeof payload.error === "string"
+          ? payload.error
+          : "Could not export early-access requests.";
+        throw new Error(message);
+      }
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = `shoonaya-early-access-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1_000);
+      toast.success("Filtered CSV export downloaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not export early-access requests.");
+    } finally {
+      setExporting(false);
     }
-
-    const headers = [
-      "Founding Number",
-      "Email",
-      "Name",
-      "Tradition",
-      "Device",
-      "Source",
-      "Timezone",
-      "Referred By",
-      "Email Sent",
-      "Registered At",
-    ];
-
-    const rows = seekers.map((s) => {
-      const isAndroid = s.source?.toLowerCase().includes("android");
-      const isIos = s.source?.toLowerCase().includes("ios");
-      const detectedDevice = isAndroid ? "Android" : isIos ? "iOS" : "Web";
-
-      return [
-        s.founding_number ?? "",
-        s.email,
-        s.name ?? "",
-        s.tradition ?? "universal",
-        detectedDevice,
-        s.source ?? "",
-        s.timezone ?? "",
-        s.referred_by_number ?? "",
-        s.email_sent ? "Yes" : "No",
-        s.created_at,
-      ].map((val) => `"${String(val).replace(/"/g, '""')}"`);
-    });
-
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `shoonaya-early-access-${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("CSV export downloaded");
   };
 
   const totalPages = Math.ceil(totalCount / limit);
@@ -176,7 +170,7 @@ export default function EarlyAccessAdminPage() {
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-gray-600 mt-1">
-            Founding seekers, platform waitlist signups, tradition distribution, and referral attribution.
+            Early-access requests, self-reported platform interest, tradition preferences, and referral attribution.
           </p>
         </div>
 
@@ -192,24 +186,24 @@ export default function EarlyAccessAdminPage() {
             onClick={exportCSV}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-700 to-amber-900 hover:from-amber-800 hover:to-amber-950 text-white shadow-xs transition"
           >
-            <Download className="w-3.5 h-3.5" />
-            Export CSV
+            <Download className={`w-3.5 h-3.5 ${exporting ? "animate-pulse" : ""}`} />
+            {exporting ? "Preparing CSV…" : "Export filtered CSV"}
           </button>
         </div>
       </div>
 
       {/* 2. Key Metrics Cards */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4">
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Total Registered</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Total Requests</span>
               <Users className="w-4 h-4 text-amber-700" />
             </div>
             <div className="text-2xl font-bold font-serif text-gray-900">{stats.total.toLocaleString()}</div>
             <div className="text-[10px] text-gray-500 mt-1 flex items-center gap-1">
               <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              Founding seeker spots reserved
+              Requests recorded
             </div>
           </div>
 
@@ -220,29 +214,40 @@ export default function EarlyAccessAdminPage() {
             </div>
             <div className="text-2xl font-bold font-serif text-gray-900">+{stats.thisWeek.toLocaleString()}</div>
             <div className="text-[10px] text-gray-500 mt-1">
-              +{stats.today} registered today
+              +{stats.today} requests today
             </div>
           </div>
 
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Android</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Android Interest</span>
               <Smartphone className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="text-2xl font-bold font-serif text-gray-900">{stats.androidCount.toLocaleString()}</div>
+            <div className="text-2xl font-bold font-serif text-gray-900">{stats.androidInterestCount.toLocaleString()}</div>
             <div className="text-[10px] text-gray-500 mt-1">
-              {stats.total > 0 ? Math.round((stats.androidCount / stats.total) * 100) : 0}% of waitlist
+              Self-reported · {stats.total > 0 ? Math.round((stats.androidInterestCount / stats.total) * 100) : 0}%
             </div>
           </div>
 
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">iOS / Other</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">iOS Interest</span>
               <Smartphone className="w-4 h-4 text-stone-600" />
             </div>
-            <div className="text-2xl font-bold font-serif text-gray-900">{stats.iosCount.toLocaleString()}</div>
+            <div className="text-2xl font-bold font-serif text-gray-900">{stats.iosInterestCount.toLocaleString()}</div>
             <div className="text-[10px] text-gray-500 mt-1">
-              {stats.total > 0 ? Math.round((stats.iosCount / stats.total) * 100) : 0}% of waitlist
+              Self-reported · {stats.total > 0 ? Math.round((stats.iosInterestCount / stats.total) * 100) : 0}%
+            </div>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
+            <div className="flex items-center justify-between text-gray-500 mb-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Web Interest</span>
+              <Smartphone className="w-4 h-4 text-indigo-600" />
+            </div>
+            <div className="text-2xl font-bold font-serif text-gray-900">{stats.webInterestCount.toLocaleString()}</div>
+            <div className="text-[10px] text-gray-500 mt-1">
+              Self-reported · {stats.total > 0 ? Math.round((stats.webInterestCount / stats.total) * 100) : 0}%
             </div>
           </div>
         </div>
@@ -257,7 +262,7 @@ export default function EarlyAccessAdminPage() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by email, name, or founding #..."
+              placeholder="Search by email, name, or request #..."
               className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
             />
           </div>
@@ -287,10 +292,10 @@ export default function EarlyAccessAdminPage() {
               }}
               className="px-3 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
-              <option value="all">All Devices</option>
-              <option value="android">Android</option>
-              <option value="ios">iOS</option>
-              <option value="web">Web Landing</option>
+              <option value="all">All Platform Interests</option>
+              <option value="android">Android Interest</option>
+              <option value="ios">iOS Interest</option>
+              <option value="web">Web Interest</option>
             </select>
 
             <select
@@ -303,8 +308,8 @@ export default function EarlyAccessAdminPage() {
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
-              <option value="founding_asc">Founding # (Low → High)</option>
-              <option value="founding_desc">Founding # (High → Low)</option>
+              <option value="founding_asc">Request # (Low → High)</option>
+              <option value="founding_desc">Request # (High → Low)</option>
             </select>
 
             <button
@@ -323,10 +328,11 @@ export default function EarlyAccessAdminPage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-amber-50/50 border-b border-[rgba(197,160,89,0.2)] text-amber-950/70 uppercase text-[10px] font-bold tracking-wider">
               <tr>
-                <th className="py-3.5 px-4">Founding #</th>
+                <th className="py-3.5 px-4">Request #</th>
                 <th className="py-3.5 px-4">Seeker</th>
                 <th className="py-3.5 px-4">Tradition</th>
-                <th className="py-3.5 px-4">Device / Platform</th>
+                <th className="py-3.5 px-4">Platform Interest</th>
+                <th className="py-3.5 px-4">Confirmation Email</th>
                 <th className="py-3.5 px-4">Source Page</th>
                 <th className="py-3.5 px-4">Timezone</th>
                 <th className="py-3.5 px-4">Registered</th>
@@ -335,14 +341,14 @@ export default function EarlyAccessAdminPage() {
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-500">
+                  <td colSpan={8} className="py-12 text-center text-gray-500">
                     <RefreshCw className="w-5 h-5 animate-spin mx-auto text-amber-700 mb-2" />
                     Loading early access seekers...
                   </td>
                 </tr>
               ) : seekers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-500">
+                  <td colSpan={8} className="py-12 text-center text-gray-500">
                     <Mail className="w-8 h-8 mx-auto text-gray-300 mb-2" />
                     <p className="font-semibold text-gray-700">No seekers found</p>
                     <p className="text-gray-400 text-[11px] mt-0.5">Try clearing or adjusting your search filters.</p>
@@ -353,7 +359,15 @@ export default function EarlyAccessAdminPage() {
                   const traditionInfo = TRADITION_BADGES[seeker.tradition || "universal"] || TRADITION_BADGES.universal;
                   const isAndroid = seeker.source?.toLowerCase().includes("android");
                   const isIos = seeker.source?.toLowerCase().includes("ios");
-                  const deviceLabel = isAndroid ? "Android" : isIos ? "iOS" : "Web";
+                  const deviceLabel = isAndroid ? "Android interest" : isIos ? "iOS interest" : "Web interest";
+                  const emailStatusLabel: Record<EarlyAccessSeeker["email_status"], string> = {
+                    accepted: "Provider accepted",
+                    queued: "Queued",
+                    sending: "Sending",
+                    suppressed: "Suppressed",
+                    needs_attention: "Needs attention",
+                    not_queued: seeker.email_sent ? "Provider accepted" : "Not queued",
+                  };
 
                   return (
                     <tr key={seeker.id} className="hover:bg-amber-50/20 transition-colors">
@@ -404,6 +418,20 @@ export default function EarlyAccessAdminPage() {
                         }`}>
                           <Smartphone className="w-3 h-3" />
                           {deviceLabel}
+                        </span>
+                      </td>
+
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span
+                          title={seeker.email_error_code ? `Last provider error: ${seeker.email_error_code}` : seeker.email_accepted_at ? `Provider accepted at ${seeker.email_accepted_at}` : "Provider acceptance does not confirm inbox delivery"}
+                          className={`inline-flex rounded-lg border px-2 py-1 text-[10px] font-semibold ${
+                            seeker.email_status === "accepted" ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                              : seeker.email_status === "needs_attention" ? "border-rose-200 bg-rose-50 text-rose-800"
+                                : seeker.email_status === "suppressed" ? "border-stone-200 bg-stone-100 text-stone-700"
+                                  : "border-amber-200 bg-amber-50 text-amber-900"
+                          }`}
+                        >
+                          {emailStatusLabel[seeker.email_status]}
                         </span>
                       </td>
 

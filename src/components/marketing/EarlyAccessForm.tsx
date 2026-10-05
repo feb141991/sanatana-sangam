@@ -19,13 +19,14 @@ export function EarlyAccessForm({
   const [name, setName] = useState("");
   const [tradition, setTradition] = useState<string>("hindu");
   const [device, setDevice] = useState<string>("android");
+  const [companyWebsite, setCompanyWebsite] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [foundingNumber, setFoundingNumber] = useState<number | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !email.includes("@")) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim()) || email.trim().length > 254) {
       setErrorMessage("Please enter a valid email address.");
       setStatus("error");
       return;
@@ -44,19 +45,23 @@ export function EarlyAccessForm({
           tradition: tradition !== "universal" ? tradition : undefined,
           source: `${activeSource}-${device}`,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata",
+          company_website: companyWebsite,
         }),
       });
 
-      const data = await res.json();
+      const responseBody: unknown = await res.json();
+      const data = typeof responseBody === "object" && responseBody !== null
+        ? responseBody as { error?: unknown; foundingNumber?: unknown; message?: unknown }
+        : {};
 
       if (!res.ok) {
-        throw new Error(data.error || "Unable to register. Please try again.");
+        throw new Error(typeof data.error === "string" ? data.error : "Unable to register. Please try again.");
       }
 
-      setFoundingNumber(data.foundingNumber || null);
+      setFoundingNumber(typeof data.foundingNumber === "number" ? data.foundingNumber : null);
       setStatus("success");
-    } catch (err: any) {
-      setErrorMessage(err.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setStatus("error");
     }
   }
@@ -69,18 +74,18 @@ export function EarlyAccessForm({
         </div>
         <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-primary)]/30 bg-[var(--brand-primary-soft)] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[var(--brand-primary-strong)] mb-4">
           <Sparkles className="size-3.5" />
-          {foundingNumber ? `Founding Seeker #${foundingNumber}` : "Access Queued"}
+          {foundingNumber ? `Request #${foundingNumber}` : "Request Received"}
         </div>
         <h3 className="font-display text-2xl font-semibold text-[var(--text-cream)] sm:text-3xl">
-          Early Access Request Received
+          Your Request Has Been Received
         </h3>
         <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base sm:leading-8">
-          Thank you for joining our private testing circle. Our engineering team reviews applicant cohorts and provisions accounts in the background. As soon as your device batch is ready, we will deliver your direct installation link and setup instructions straight to <span className="font-semibold text-[var(--text-cream)]">{email}</span>.
+          Thank you for your interest in Shoonaya. Your request is recorded; it does not create an account, whitelist, or invitation, and it does not guarantee access or a date.
         </p>
 
         <div className="mt-6 flex items-center gap-2 text-xs text-[var(--text-dim)] border-t border-[var(--card-border)] pt-4">
           <ShieldCheck className="size-4 text-[var(--brand-primary-strong)]" />
-          <span>No spam, no public listing. Your email remains strictly confidential.</span>
+          <span>Your email is not shown publicly and is used to respond to this early-access request.</span>
         </div>
       </div>
     );
@@ -91,19 +96,29 @@ export function EarlyAccessForm({
       <div className="flex items-center justify-between gap-4 mb-6">
         <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider bg-[rgba(216,138,28,0.12)] text-[var(--brand-primary-strong)] border border-[rgba(216,138,28,0.25)]">
           <span className="size-1.5 rounded-full bg-[var(--brand-primary)] animate-pulse" />
-          Private Testing Cohort
+          Early Access
         </span>
-        <span className="text-xs text-[var(--text-dim)]">Step 1 of 2</span>
       </div>
 
       <h3 className="font-display text-2xl font-semibold tracking-tight text-[var(--text-cream)] sm:text-3xl">
-        Register for Private Early Access
+        Join the Early-Access List
       </h3>
       <p className="mt-2.5 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base">
-        We are actively testing Shoonaya with select seekers before general release. Register below to have your account whitelisted and receive your private app link.
+        Tell us where to reach you. This records your interest in Shoonaya; it does not create or whitelist an account, issue an invitation, or guarantee access or timing.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        <div aria-hidden="true" className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden">
+          <label htmlFor="company-website">Leave this field empty</label>
+          <input
+            id="company-website"
+            type="text"
+            value={companyWebsite}
+            onChange={(event) => setCompanyWebsite(event.target.value)}
+            autoComplete="off"
+            tabIndex={-1}
+          />
+        </div>
         <div>
           <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-cream)] mb-2">
             Email Address <span className="text-[var(--brand-primary-strong)]">*</span>
@@ -138,7 +153,7 @@ export function EarlyAccessForm({
 
           <div>
             <label htmlFor="device" className="block text-xs font-semibold uppercase tracking-wider text-[var(--text-cream)] mb-2">
-              Primary Device
+              Platform Interest
             </label>
             <select
               id="device"
@@ -147,9 +162,9 @@ export function EarlyAccessForm({
               disabled={status === "loading"}
               className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-4 py-3 text-sm text-[var(--text-cream)] focus:border-[var(--brand-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)] transition"
             >
-              <option value="android">Android (APK / Play Internal)</option>
-              <option value="ios">iOS (Apple TestFlight)</option>
-              <option value="web">Web Browser (PWA Sanctuary)</option>
+              <option value="android">Android</option>
+              <option value="ios">iPhone or iPad</option>
+              <option value="web">Web browser</option>
             </select>
           </div>
         </div>
@@ -199,14 +214,14 @@ export function EarlyAccessForm({
             </>
           ) : (
             <>
-              Request Private Early Access
+              Join the Early-Access List
               <ArrowRight className="size-4" />
             </>
           )}
         </button>
 
         <p className="text-center text-xs text-[var(--text-dim)]">
-          Early access is provisioned in batches. You will receive an email as soon as your access slot opens.
+          We send a one-time request confirmation. Access timing depends on release availability; no date is promised.
         </p>
       </form>
     </div>
