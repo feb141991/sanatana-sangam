@@ -31,7 +31,7 @@ create table if not exists public.email_outbox (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   sent_at timestamptz,
-  constraint email_outbox_marketing_category_check check (
+  constraint email_outbox_marketing_class_category_check check (
     (email_class = 'marketing' and marketing_category is not null)
     or (email_class = 'transactional' and marketing_category is null)
   ),
