@@ -32,6 +32,10 @@ export function getPublishableFestivalSlugs(): string[] {
   return FESTIVAL_CONTENT.filter(isFestivalPublishable).map(festival => festival.definitionKey);
 }
 
+export function getPublishableFestivalContent(): FestivalContent[] {
+  return FESTIVAL_CONTENT.filter(isFestivalPublishable);
+}
+
 /** Exact-slug lookup — festivals are not fuzzy/alias-matched like recurring vrats. */
 export function lookupFestivalData(slug: string): FestivalContent | null {
   return FESTIVAL_CONTENT_BY_SLUG[slug] ?? null;

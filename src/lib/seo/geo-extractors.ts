@@ -2,6 +2,12 @@ import type { GeoModel, GeoQA, GeoFact } from './geo-model';
 import type { VratData } from '@/lib/vrat-data';
 import type { Katha } from '@/lib/katha-library';
 import type { Stotram } from '@/lib/stotrams';
+import {
+  isFestivalPublishable,
+  resolveFestivalList,
+  resolveFestivalText,
+  type FestivalContent,
+} from '@/lib/festival-data';
 // Assuming Pathshala data can be passed as a generic type or any if specific types aren't strictly exported.
 // We'll use an intersection for Pathshala to keep it generic enough if the type is complex.
 
@@ -99,6 +105,69 @@ export function extractStotramGeo(stotram: Stotram): GeoModel {
     facts,
     qa,
     relatedLinks: [],
+  };
+}
+
+export function extractFestivalGeo(festival: FestivalContent): GeoModel {
+  if (!isFestivalPublishable(festival)) {
+    throw new Error(`Festival GEO requested before publication approval: ${festival.definitionKey}`);
+  }
+
+  const name = resolveFestivalText(festival.name);
+  const summary = resolveFestivalText(festival.tagline);
+  const significance = resolveFestivalText(festival.significance);
+  const rituals = resolveFestivalList(festival.rituals);
+  const dos = resolveFestivalList(festival.dos);
+  const donts = resolveFestivalList(festival.donts);
+  const pujaItems = resolveFestivalList(festival.pujaItems);
+  const facts: GeoFact[] = [
+    { label: 'Tradition', value: festival.tradition },
+  ];
+
+  if (pujaItems.length > 0) {
+    facts.push({ label: 'Puja Items', value: pujaItems.join(', ') });
+  }
+
+  const qa: GeoQA[] = [];
+  if (significance) {
+    qa.push({
+      question: `What is the significance of ${name}?`,
+      answer: significance,
+    });
+  }
+  if (rituals.length > 0) {
+    qa.push({
+      question: `How is ${name} observed?`,
+      answer: rituals.join(' '),
+    });
+  }
+  if (dos.length > 0) {
+    qa.push({
+      question: `What should be done during ${name}?`,
+      answer: dos.join(' '),
+    });
+  }
+  if (donts.length > 0) {
+    qa.push({
+      question: `What should be avoided during ${name}?`,
+      answer: donts.join(' '),
+    });
+  }
+
+  const sourceNames = [...festival.significance.sourceRefs, ...festival.rituals.sourceRefs]
+    .map(source => source.sourceName)
+    .filter((sourceName, index, all) => all.indexOf(sourceName) === index);
+
+  return {
+    title: name,
+    summary,
+    provenance: sourceNames.length > 0
+      ? sourceNames.join('; ')
+      : `Shoonaya reviewed editorial for the ${festival.tradition} tradition`,
+    facts,
+    qa,
+    relatedLinks: [],
+    canonicalUrl: `https://www.shoonaya.com/festival/${festival.definitionKey}`,
   };
 }
 

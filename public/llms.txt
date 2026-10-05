@@ -35,6 +35,7 @@ The festival dates are calculated using an astronomy-backed rule engine. Dates a
 ## Key URLs
 
 - [Home](https://www.shoonaya.com/)
+- [Full public AI corpus](https://www.shoonaya.com/llms-full.txt)
 - [Daily Panchang](https://www.shoonaya.com/panchang)
 - [Vrat Pages](https://www.shoonaya.com/vrat/ekadashi)
 - [Stotram Library](https://www.shoonaya.com/bhakti/stotram/vishnu-sahasranama)

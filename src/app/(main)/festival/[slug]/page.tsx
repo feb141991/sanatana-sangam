@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import FestivalClient from './FestivalClient';
 import { lookupFestivalData, isFestivalPublishable, resolveFestivalText } from '@/lib/festival-data';
-import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { GeoArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { extractFestivalGeo } from '@/lib/seo/geo-extractors';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -40,8 +41,7 @@ export default async function FestivalPage({ params }: Props) {
   const url = `https://www.shoonaya.com/festival/${decodedSlug}`;
   return <>
     {isFestivalPublishable(festival) && <>
-      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'WebPage', url,
-        name: resolveFestivalText(festival.name), description: resolveFestivalText(festival.tagline) }} />
+      <GeoArticleJsonLd geo={extractFestivalGeo(festival)} url={url} />
       <BreadcrumbJsonLd items={[{ name: 'Home', url: 'https://www.shoonaya.com' },
         { name: resolveFestivalText(festival.name), url }]} />
     </>}

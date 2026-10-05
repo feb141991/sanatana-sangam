@@ -1416,6 +1416,11 @@ At home: light a diya, recite Japji Sahib (especially at dawn), and sing or list
 
 };
 
+/** Canonical public guides used by routes and generated discovery artifacts. */
+export function getCanonicalVratData(): VratData[] {
+  return [...Object.values(VRAT_DATABASE), ...Object.values(NAMED_VRAT_DATABASE)];
+}
+
 const NAMED_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
 
   { canonical: 'chaitra-navratri', aliases: ['chaitra navratri', 'vasant navratri', 'chaitra-navratri', 'vasant-navratri'] },
