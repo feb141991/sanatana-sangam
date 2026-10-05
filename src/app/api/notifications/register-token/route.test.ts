@@ -20,9 +20,10 @@ import { POST } from './route';
 const TOKEN = 'ExponentPushToken[abc123]';
 const VERSION = '6f1c2a3b-4d5e-4f60-8a7b-9c0d1e2f3a4b';
 
-function post() {
+function post(requestId?: string) {
   return POST(new NextRequest('http://localhost/api/notifications/register-token', {
     method: 'POST',
+    ...(requestId ? { headers: { 'x-request-id': requestId } } : {}),
     body: JSON.stringify({ token: TOKEN, platform: 'ios', registrationReason: 'auth' }),
   }));
 }
@@ -46,12 +47,23 @@ describe('POST /api/notifications/register-token and account deletion', () => {
   });
 
   it('keeps other RPC failures retryable (503)', async () => {
+    const requestId = '719b46e6-69b5-40a4-9b33-31476417dc5b';
     rpc.mockResolvedValue({ data: null, error: { code: '57014', message: 'canceling statement' } });
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
-    const response = await post();
+    try {
+      const response = await post(requestId);
 
-    expect(response.status).toBe(503);
-    expect((await response.json()).code).toBe('PUSH_REGISTRATION_UNAVAILABLE');
+      expect(response.status).toBe(503);
+      expect((await response.json()).code).toBe('PUSH_REGISTRATION_UNAVAILABLE');
+      expect(response.headers.get('x-request-id')).toBe(requestId);
+      expect(warning).toHaveBeenCalledWith('[push-registration] atomic registration failed', {
+        stage: 'register_native_push_token', code: '57014', requestId,
+      });
+      expect(JSON.stringify(warning.mock.calls)).not.toContain('canceling statement');
+    } finally {
+      warning.mockRestore();
+    }
   });
 
   it('registers normally for an account that is not deleting', async () => {

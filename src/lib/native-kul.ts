@@ -8,6 +8,18 @@ export type NativeKulMembership = {
 type ProfileKulRow = { kul_id: string | null };
 type MemberKulRow = { kul_id: string; role: "guardian" | "sadhak" };
 
+export class NativeKulDependencyError extends Error {
+  readonly stage: string;
+  readonly code: string;
+
+  constructor(stage: string, code: string | null | undefined) {
+    super(`KUL dependency failed during ${stage}`);
+    this.name = "NativeKulDependencyError";
+    this.stage = stage;
+    this.code = code && /^[A-Za-z0-9_-]{1,32}$/.test(code) ? code : "unknown";
+  }
+}
+
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -41,7 +53,7 @@ export async function resolveNativeKulMembership(
     .select("kul_id")
     .eq("id", userId)
     .maybeSingle();
-  if (profileResult.error) throw new Error("KUL profile lookup failed");
+  if (profileResult.error) throw new NativeKulDependencyError("profile_membership", profileResult.error.code);
 
   let kulId = (profileResult.data as ProfileKulRow | null)?.kul_id ?? null;
   if (!kulId) {
@@ -50,7 +62,7 @@ export async function resolveNativeKulMembership(
       .select("kul_id")
       .eq("user_id", userId)
       .limit(2);
-    if (membershipResult.error) throw new Error("KUL membership lookup failed");
+    if (membershipResult.error) throw new NativeKulDependencyError("membership_lookup", membershipResult.error.code);
     const memberships = (membershipResult.data ?? []) as Array<{
       kul_id: string;
     }>;
@@ -59,7 +71,7 @@ export async function resolveNativeKulMembership(
     if (!kulId) return null;
 
     const repairResult = await supabase.rpc("repair_kul_membership");
-    if (repairResult.error) throw new Error("KUL membership repair failed");
+    if (repairResult.error) throw new NativeKulDependencyError("membership_repair", repairResult.error.code);
 
     const repairedProfile = await supabase
       .from("profiles")
@@ -70,6 +82,9 @@ export async function resolveNativeKulMembership(
       repairedProfile.error ||
       (repairedProfile.data as ProfileKulRow | null)?.kul_id !== kulId
     ) {
+      if (repairedProfile.error) {
+        throw new NativeKulDependencyError("membership_repair_verification", repairedProfile.error.code);
+      }
       throw new Error("KUL membership could not be confirmed");
     }
   }
@@ -80,7 +95,7 @@ export async function resolveNativeKulMembership(
     .eq("kul_id", kulId)
     .eq("user_id", userId)
     .maybeSingle();
-  if (roleResult.error) throw new Error("KUL role lookup failed");
+  if (roleResult.error) throw new NativeKulDependencyError("role_lookup", roleResult.error.code);
   const membership = roleResult.data as MemberKulRow | null;
   if (!membership || membership.kul_id !== kulId) {
     throw new Error("KUL membership link is inconsistent");

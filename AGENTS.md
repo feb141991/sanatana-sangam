@@ -60,6 +60,11 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
 - Every migration requires RLS review, privilege review, rollback guidance,
   generated type updates and applied/unapplied environment reporting.
 - Never expose service-role credentials or production secrets.
+- Private Native API responses must stay `private, no-store`. For backend
+  dependency failures, log an allowlisted operation stage, provider error code,
+  duration and middleware request ID; never log raw provider messages, tokens,
+  user content or user IDs. Return a stable retryable error code and preserve
+  the request ID so it can be matched to the Native API-diagnostic record.
 
 ### 5. Cache and Identity Isolation
 - Every persisted client cache must define its key dimensions: user, guest,

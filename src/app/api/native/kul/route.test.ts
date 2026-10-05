@@ -106,9 +106,10 @@ function createSupabase(
   };
 }
 
-function request(url: string, method = "GET", body?: unknown) {
+function request(url: string, method = "GET", body?: unknown, headers?: Record<string, string>) {
   return new NextRequest(url, {
     method,
+    ...(headers ? { headers } : {}),
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
 }
@@ -154,6 +155,37 @@ describe("/api/native/kul", () => {
       "profiles",
       "kul_members",
     ]);
+  });
+
+  it("correlates PostgREST snapshot failures by request id and safe query stage", async () => {
+    const requestId = "719b46e6-69b5-40a4-9b33-31476417dc5b";
+    const { supabase } = createSupabase({
+      profiles: [{ data: null, error: Object.assign(new Error("database unavailable"), { code: "PGRST002" }) }],
+    });
+    getApiUser.mockResolvedValue({ user: { id: "user-1" }, error: null, supabase });
+    const errorLog = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    try {
+      const response = await GET(request(
+        "https://shoonaya.com/api/native/kul",
+        "GET",
+        undefined,
+        { "x-request-id": requestId },
+      ));
+      const json = await response.json();
+      expect(response.status).toBe(503);
+      expect(json).toMatchObject({ code: "KUL_BACKEND_UNAVAILABLE", requestId });
+      expect(response.headers.get("x-request-id")).toBe(requestId);
+      expect(errorLog).toHaveBeenCalledWith("[native-kul] snapshot failed", expect.objectContaining({
+        stage: "profile_membership",
+        code: "PGRST002",
+        requestId,
+      }));
+      expect(JSON.stringify(errorLog.mock.calls)).not.toContain("database unavailable");
+      expect(JSON.stringify(errorLog.mock.calls)).not.toContain("user-1");
+    } finally {
+      errorLog.mockRestore();
+    }
   });
 
   it("bounds every returned family collection and does not read practice history", async () => {

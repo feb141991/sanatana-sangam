@@ -8,8 +8,27 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 const REASONS = new Set(['auth', 'foreground', 'heartbeat', 'settings', 'permission', 'rotation', 'retry']);
 const FAILURE_STAGES = new Set(['check_permission', 'fetch_expo_push_token', 'post_register_token', 'remove_registration']);
 
-function json(body: Record<string, unknown>, status = 200) {
-  return NextResponse.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
+function json(body: Record<string, unknown>, status = 200, requestId?: string) {
+  return NextResponse.json(body, {
+    status,
+    headers: {
+      'Cache-Control': 'no-store',
+      ...(requestId && requestId !== 'unavailable' ? { 'X-Request-ID': requestId } : {}),
+    },
+  });
+}
+
+function requestIdFor(request: NextRequest): string {
+  const candidate = request.headers.get('x-request-id');
+  return candidate && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(candidate)
+    ? candidate
+    : 'unavailable';
+}
+
+function safeDependencyCode(error: unknown): string {
+  if (!error || typeof error !== 'object' || !('code' in error)) return 'unknown';
+  const code = error.code;
+  return typeof code === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(code) ? code : 'unknown';
 }
 
 async function parseBody(request: NextRequest): Promise<Record<string, unknown> | null> {
@@ -27,6 +46,7 @@ function tokenFrom(body: Record<string, unknown>): string | null {
 
 /** Canonical Native contract. Binding version comes from the atomic database upsert. */
 export async function POST(request: NextRequest) {
+  const requestId = requestIdFor(request);
   const { user, error } = await getApiUser(request);
   if (!user) return getApiAuthFailureResponse(error);
   const body = await parseBody(request);
@@ -78,16 +98,24 @@ export async function POST(request: NextRequest) {
       return json({ error: 'Account deletion is pending', code: 'ACCOUNT_DELETION_PENDING' }, 409);
     }
     if (rpcError || typeof data !== 'string' || !UUID.test(data)) {
-      console.warn('[push-registration] atomic registration failed', { code: rpcError?.code ?? 'invalid_acknowledgement' });
-      return json({ error: 'Push registration is temporarily unavailable', code: 'PUSH_REGISTRATION_UNAVAILABLE' }, 503);
+      console.warn('[push-registration] atomic registration failed', {
+        stage: 'register_native_push_token',
+        code: rpcError ? safeDependencyCode(rpcError) : 'invalid_acknowledgement',
+        requestId,
+      });
+      return json({ error: 'Push registration is temporarily unavailable', code: 'PUSH_REGISTRATION_UNAVAILABLE' }, 503, requestId);
     }
     const reason = typeof body.registrationReason === 'string' && REASONS.has(body.registrationReason) ? body.registrationReason : 'legacy';
     await recordPushTokenEvent({ userId: user.id, token, eventType: 'registered',
       reason: `platform:${platform} | trigger:${reason}`, source: '/api/notifications/register-token' });
     return json({ registered: true, bindingVersion: data });
-  } catch {
-    console.warn('[push-registration] registration failed');
-    return json({ error: 'Push registration is temporarily unavailable', code: 'PUSH_REGISTRATION_UNAVAILABLE' }, 503);
+  } catch (registrationError) {
+    console.warn('[push-registration] registration failed', {
+      stage: 'register_native_push_token',
+      code: safeDependencyCode(registrationError),
+      requestId,
+    });
+    return json({ error: 'Push registration is temporarily unavailable', code: 'PUSH_REGISTRATION_UNAVAILABLE' }, 503, requestId);
   }
 }
 

@@ -1,10 +1,11 @@
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getApiAuthFailureResponse, getApiUser } from "@/lib/api-auth";
 import {
   isIsoDate,
   isRecord,
+  NativeKulDependencyError,
   resolveNativeKulMembership,
   textField,
 } from "@/lib/native-kul";
@@ -108,18 +109,29 @@ type KulTirthaRow = {
   place: { id: string; name: string; tradition: string; deity: string | null; address: string | null; lat: number; lon: number } | Array<{ id: string; name: string; tradition: string; deity: string | null; address: string | null; lat: number; lon: number }> | null;
 };
 
-function fail(message: string, status: number) {
+function fail(message: string, status: number, diagnostic?: { code: string; requestId: string }) {
   return NextResponse.json(
-    { error: message },
+    { error: message, ...(diagnostic ?? {}) },
     {
       status,
-      headers: { "Cache-Control": "private, no-store" },
+      headers: {
+        "Cache-Control": "private, no-store",
+        ...(diagnostic ? { "X-Request-ID": diagnostic.requestId } : {}),
+      },
     },
   );
 }
 
+function requestIdFor(request: NextRequest): string {
+  const candidate = request.headers.get("x-request-id");
+  return candidate && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(candidate)
+    ? candidate
+    : randomUUID();
+}
+
 export async function GET(request: NextRequest) {
   const requestStartedAt = performance.now();
+  const requestId = requestIdFor(request);
   const { user, error: authError, supabase } = await getApiUser(request);
   if (!user || !supabase) return getApiAuthFailureResponse(authError);
 
@@ -152,7 +164,7 @@ export async function GET(request: NextRequest) {
       .select("id, name, invite_code, avatar_emoji, created_at, gotra, pravara, kuldevi_name, kuldevta_name, kuldevi_place_id, kuldevta_place_id, ancestral_origin, kulachara_notes, calendar_latitude, calendar_longitude, calendar_reference_label, calendar_timezone, calendar_month_system")
       .eq("id", membership.kulId)
       .maybeSingle();
-    if (kulResult.error) throw new Error("KUL lookup failed");
+    if (kulResult.error) throw new NativeKulDependencyError("kul_lookup", kulResult.error.code);
     const kul = kulResult.data as KulRow | null;
     if (!kul)
       return fail("Your family circle could not be found. Refresh and try again.", 409);
@@ -212,14 +224,18 @@ export async function GET(request: NextRequest) {
         .limit(100),
     ]);
 
-    const queryError =
-      membersResult.error ||
-      tasksResult.error ||
-      messagesResult.error ||
-      familyResult.error ||
-      eventsResult.error ||
-      tirthaResult.error;
-    if (queryError) throw new Error("KUL snapshot query failed");
+    const queryFailures = [
+      ["member_list", membersResult.error],
+      ["task_list", tasksResult.error],
+      ["message_list", messagesResult.error],
+      ["family_list", familyResult.error],
+      ["event_list", eventsResult.error],
+      ["tirtha_list", tirthaResult.error],
+    ] as const;
+    const queryFailure = queryFailures.find(([, error]) => error !== null);
+    if (queryFailure) {
+      throw new NativeKulDependencyError(queryFailure[0], queryFailure[1]?.code);
+    }
     const dataDurationMs = performance.now() - dataStartedAt;
     const profileStartedAt = performance.now();
     const memberRows = (membersResult.data ?? []) as MemberRow[];
@@ -233,8 +249,9 @@ export async function GET(request: NextRequest) {
             )
             .in("id", memberIds)
         : { data: [], error: null };
-    if (profilesResult.error)
-      throw new Error("KUL member profile query failed");
+    if (profilesResult.error) {
+      throw new NativeKulDependencyError("member_profiles", profilesResult.error.code);
+    }
     const profileDurationMs = performance.now() - profileStartedAt;
     const profiles = (profilesResult.data ?? []) as ProfileRow[];
     const profileById = new Map(
@@ -348,8 +365,18 @@ export async function GET(request: NextRequest) {
     );
     return response;
   } catch (error) {
-    console.error("[native-kul] snapshot failed", { userId: user.id, error });
-    return fail("Could not load your KUL right now. Please retry.", 503);
+    const stage = error instanceof NativeKulDependencyError ? error.stage : "snapshot_processing";
+    const code = error instanceof NativeKulDependencyError ? error.code : "KUL_SNAPSHOT_FAILED";
+    console.error("[native-kul] snapshot failed", {
+      stage,
+      code,
+      requestId,
+      durationMs: Math.round(performance.now() - requestStartedAt),
+    });
+    return fail("Could not load your KUL right now. Please retry.", 503, {
+      code: "KUL_BACKEND_UNAVAILABLE",
+      requestId,
+    });
   }
 }
 
