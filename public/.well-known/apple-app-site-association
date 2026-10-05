@@ -1,0 +1,25 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["3K78ST7PG3.com.shoonaya.app"],
+        "components": [
+          { "/": "/panchang", "comment": "Daily Panchang" },
+          { "/": "/panchang/*", "comment": "Panchang detail" },
+          { "/": "/vrat", "comment": "Vrat catalogue" },
+          { "/": "/vrat/*", "comment": "Vrat guides" },
+          { "/": "/festival/*", "comment": "Festival guides" },
+          { "/": "/bhakti", "comment": "Bhakti library" },
+          { "/": "/bhakti/*", "comment": "Bhakti readers and practices" },
+          { "/": "/pathshala", "comment": "Pathshala" },
+          { "/": "/pathshala/*", "comment": "Pathshala courses" },
+          { "/": "/dharm-veer", "comment": "Dharm Veer" },
+          { "/": "/dharm-veer/*", "comment": "Dharm Veer profiles" },
+          { "/": "/live-darshan", "comment": "Live Darshan" },
+          { "/": "/seva", "comment": "Seva" },
+          { "/": "/mantras", "comment": "Mantras" }
+        ]
+      }
+    ]
+  }
+}

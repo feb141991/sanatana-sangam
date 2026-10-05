@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.shoonaya.app",
+      "sha256_cert_fingerprints": [
+        "44:C4:9E:E8:73:BD:B1:94:EB:53:62:64:90:82:D9:D9:B0:03:9B:FE:74:CD:BD:FC:6D:34:97:93:EE:31:B8:9A"
+      ]
+    }
+  }
+]

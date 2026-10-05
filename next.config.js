@@ -41,6 +41,21 @@ const nextConfig = {
   },
   async headers() {
     return [
+      // ── Verified Native app associations ────────────────────────────────
+      {
+        source: '/.well-known/apple-app-site-association',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
+      {
+        source: '/.well-known/assetlinks.json',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
       // ── PWA static assets — long cache ───────────────────────────────────
       {
         source: '/icons/(.*)',

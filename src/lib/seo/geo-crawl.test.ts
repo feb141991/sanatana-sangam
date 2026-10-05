@@ -62,3 +62,32 @@ describe('AI crawler discovery', () => {
     ]));
   });
 });
+
+describe('verified Native app associations', () => {
+  it('associates the canonical web domain with the production iOS app', () => {
+    const association = JSON.parse(
+      readFileSync('public/.well-known/apple-app-site-association', 'utf8'),
+    ) as { applinks: { details: Array<{ appIDs: string[]; components: Array<{ '/': string }> }> } };
+    const detail = association.applinks.details[0];
+
+    expect(detail.appIDs).toContain('3K78ST7PG3.com.shoonaya.app');
+    expect(detail.components.map(component => component['/'])).toEqual(expect.arrayContaining([
+      '/panchang',
+      '/vrat/*',
+      '/festival/*',
+      '/bhakti/*',
+      '/pathshala/*',
+    ]));
+  });
+
+  it('associates the canonical web domain with the EAS-signed Android app', () => {
+    const statements = JSON.parse(
+      readFileSync('public/.well-known/assetlinks.json', 'utf8'),
+    ) as Array<{ target: { package_name: string; sha256_cert_fingerprints: string[] } }>;
+
+    expect(statements[0].target.package_name).toBe('com.shoonaya.app');
+    expect(statements[0].target.sha256_cert_fingerprints).toContain(
+      '44:C4:9E:E8:73:BD:B1:94:EB:53:62:64:90:82:D9:D9:B0:03:9B:FE:74:CD:BD:FC:6D:34:97:93:EE:31:B8:9A',
+    );
+  });
+});
