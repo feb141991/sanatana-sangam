@@ -125,12 +125,12 @@ export default function CommunityPage() {
             Request Early Access
             <ArrowRight className="size-3.5" />
           </a>
-          <a
+          <Link
             href="/journal"
             className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] px-6 text-xs font-semibold uppercase tracking-wider text-[var(--text-cream)] hover:border-[var(--brand-primary)]/40 transition active:scale-95"
           >
             Read Wisdom Journal
-          </a>
+          </Link>
         </div>
       </MarketingPageHero>
 
