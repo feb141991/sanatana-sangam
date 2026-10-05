@@ -135,6 +135,16 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     iconName: "Users",
   },
   {
+    id: "early-access",
+    path: "/admin/early-access",
+    title: "Early Access & Waitlist",
+    shortTitle: "Early Access",
+    description: "Founding seekers, platform waitlist signups & referral attribution",
+    group: "content_community",
+    iconName: "Sparkles",
+    badge: "Waitlist",
+  },
+  {
     id: "tirtha",
     path: "/admin/tirtha",
     title: "Mandali & Tirtha Hub",

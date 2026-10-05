@@ -10,7 +10,7 @@ import {
 describe("Admin Route Registry", () => {
   describe("Structure & Coverage", () => {
     it("contains all operational routes including log explorer", () => {
-      expect(ADMIN_ROUTES.length).toBe(16);
+      expect(ADMIN_ROUTES.length).toBe(18);
       const paths = ADMIN_ROUTES.map((r) => r.path);
       expect(paths).toContain("/admin");
       expect(paths).toContain("/admin/moderation");
@@ -18,10 +18,12 @@ describe("Admin Route Registry", () => {
       expect(paths).toContain("/admin/dharm-veer-review");
       expect(paths).toContain("/admin/monitoring");
       expect(paths).toContain("/admin/logs");
+      expect(paths).toContain("/admin/rag-retrieval");
       expect(paths).toContain("/admin/crons");
       expect(paths).toContain("/admin/notifications");
       expect(paths).toContain("/admin/observance-content");
       expect(paths).toContain("/admin/users");
+      expect(paths).toContain("/admin/early-access");
       expect(paths).toContain("/admin/tirtha");
       expect(paths).toContain("/admin/broadcast");
       expect(paths).toContain("/admin/marketing");
