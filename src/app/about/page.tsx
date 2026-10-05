@@ -18,7 +18,7 @@ import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 export const metadata: Metadata = {
   title: "About Shoonaya | Find your infinite.",
   description:
-    "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Local Panchang, daily Japa, scripture, family spaces, and community.",
+    "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Local Panchang, daily Japa, scripture, family spaces, and community.",
   alternates: {
     canonical: "https://www.shoonaya.com/about",
   },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 const SANCTUARY_TOOLS = [
   {
     name: "Local Panchang and Sacred Calendar",
-    imageSrc: "/images/clay-relics/panchang-relic.png",
+    imageSrc: "/relics/diya-bronze.png",
     icon: Calendar,
     href: "/panchang",
     description:
@@ -41,7 +41,7 @@ const SANCTUARY_TOOLS = [
   },
   {
     name: "Daily Practice and Japa",
-    imageSrc: "/images/clay-relics/japa-relic.png",
+    imageSrc: "/relics/mala.png",
     icon: Sparkles,
     href: "/japa",
     description:
@@ -49,7 +49,7 @@ const SANCTUARY_TOOLS = [
   },
   {
     name: "Scripture and Pathshala",
-    imageSrc: "/images/clay-relics/pathshala-relic.png",
+    imageSrc: "/relics/prarthana-pothi.png",
     icon: BookOpen,
     href: "/library",
     description:
@@ -57,7 +57,7 @@ const SANCTUARY_TOOLS = [
   },
   {
     name: "Rashiphal and Kundali",
-    imageSrc: "/images/clay-relics/astrology-relic.png",
+    imageSrc: "/relics/chakra.png",
     icon: Compass,
     href: "/kundali",
     description:
@@ -65,7 +65,7 @@ const SANCTUARY_TOOLS = [
   },
   {
     name: "Live Darshan and Sacred Places",
-    imageSrc: "/images/clay-relics/darshan-relic.png",
+    imageSrc: "/relics/camphor-flame.png",
     icon: Eye,
     href: "/darshan",
     description:
@@ -73,7 +73,7 @@ const SANCTUARY_TOOLS = [
   },
   {
     name: "Kul Family Spaces",
-    imageSrc: "/images/clay-relics/kul-relic.png",
+    imageSrc: "/relics/clay-kalash.png",
     icon: Users,
     href: "/kul",
     description:
@@ -81,7 +81,7 @@ const SANCTUARY_TOOLS = [
   },
   {
     name: "Mandali Community",
-    imageSrc: "/images/clay-relics/mandali-relic.png",
+    imageSrc: "/relics/lotus-bloom.png",
     icon: HeartHandshake,
     href: "/community",
     description:

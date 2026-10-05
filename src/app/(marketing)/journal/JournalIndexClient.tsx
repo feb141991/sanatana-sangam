@@ -36,6 +36,20 @@ export function JournalIndexClient({ essays }: JournalIndexClientProps) {
     });
   }, [essays, selectedTradition, searchQuery]);
 
+  if (essays.length === 0) {
+    return (
+      <div className="rounded-3xl border border-[var(--card-border)] bg-[var(--surface-soft)] p-12 text-center">
+        <BookOpen className="mx-auto size-10 text-[var(--text-dim)]" />
+        <h2 className="mt-4 font-display text-lg font-semibold text-[var(--text-cream)]">
+          Reflections are being prepared
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted-warm)]">
+          We are reviewing the sources and attributions for our first essays. Please check back soon.
+        </p>
+      </div>
+    );
+  }
+
   const featured = essays[0];
 
   return (

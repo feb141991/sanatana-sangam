@@ -66,7 +66,7 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
     "@type": "BlogPosting",
     headline: essay.title,
     description: essay.excerpt,
-    datePublished: "2026-01-15T00:00:00Z",
+    ...(essay.publishedAt ? { datePublished: essay.publishedAt } : {}),
     author: {
       "@type": "Person",
       name: essay.author,
@@ -299,7 +299,7 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
               href="/journal"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:underline"
             >
-              <span>View All 8 Essays</span>
+              <span>View All Reflections</span>
               <ArrowRight className="size-3.5" />
             </Link>
           </div>

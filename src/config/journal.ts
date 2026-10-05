@@ -14,6 +14,16 @@ export type JournalSection = {
 };
 
 export type JournalEssay = {
+  /** Essays stay out of public routes until a human has verified the text and citations. */
+  publicationStatus: "pending_review" | "published";
+  /** Exact ISO date is optional until publication metadata has been verified. */
+  publishedAt?: string;
+  /** Publication requires a named, dated human check of the text and its sources. */
+  editorialReview?: {
+    reviewerName: string;
+    reviewedAt: string;
+    sourcesVerified: true;
+  };
   slug: string;
   title: string;
   subtitle: string;
@@ -39,8 +49,9 @@ export type JournalEssay = {
   relatedSlugs: string[];
 };
 
-export const journalEssays: JournalEssay[] = [
+const journalEssays: JournalEssay[] = [
   {
+    "publicationStatus": "pending_review",
     "slug": "architecture-of-silence-ancient-mandirs",
     "title": "The Architecture of Silence: Why Ancient Mandirs Were Built for Resonance",
     "subtitle": "How the sacred geometry of the Garbhagriha, granite mass, and progressive circumambulation reset the modern nervous system.",
@@ -127,6 +138,7 @@ export const journalEssays: JournalEssay[] = [
     ]
   },
   {
+    "publicationStatus": "pending_review",
     "slug": "seva-as-stillness-unconditional-presence",
     "title": "Seva as Stillness: The Art of Unconditional Presence in Daily Action",
     "subtitle": "Why selfless physical service dissolves the grasping ego and anchors the wandering mind faster than solitary meditation.",
@@ -214,6 +226,7 @@ export const journalEssays: JournalEssay[] = [
     ]
   },
   {
+    "publicationStatus": "pending_review",
     "slug": "aparigraha-in-the-screen-age",
     "title": "Aparigraha in the Screen Age: Decluttering the Modern Seeker Mind",
     "subtitle": "How ancient Jain insights on internal and external possession liberate our attention from digital consumerism and endless notifications.",
@@ -301,6 +314,7 @@ export const journalEssays: JournalEssay[] = [
     ]
   },
   {
+    "publicationStatus": "pending_review",
     "slug": "rhythm-of-sacred-time-panchang",
     "title": "The Rhythm of Sacred Time: Understanding the Panchang Beyond Astrology",
     "subtitle": "How the five limbs of the Vedic calendar calibrate human physiology with celestial mechanics rather than fatalistic prediction.",
@@ -389,6 +403,7 @@ export const journalEssays: JournalEssay[] = [
     ]
   },
   {
+    "publicationStatus": "pending_review",
     "slug": "metta-in-age-of-reaction",
     "title": "Metta in an Age of Reaction: The Radical Psychology of Loving-Kindness",
     "subtitle": "How the four immeasurable states of mind neutralize online outrage and decondition habitual hostility.",
@@ -478,6 +493,7 @@ export const journalEssays: JournalEssay[] = [
     ]
   },
   {
+    "publicationStatus": "pending_review",
     "slug": "alchemy-of-the-name-japa",
     "title": "The Alchemy of the Name: Neurological and Spiritual Dimensions of Japa",
     "subtitle": "How the sacred repetition of mantra rewires neural pathways, quietens the default mode network, and awakens subtle awareness.",
@@ -566,6 +582,7 @@ export const journalEssays: JournalEssay[] = [
     ]
   },
   {
+    "publicationStatus": "pending_review",
     "slug": "anekantavada-antidote-to-polarization",
     "title": "Anekantavada: The Ancient Antidote to Polarization and Intellectual Arrogance",
     "subtitle": "How the Jain doctrine of manifold viewpoints and conditional assertion cultivates intellectual humility in a dogmatic world.",
@@ -654,6 +671,7 @@ export const journalEssays: JournalEssay[] = [
     ]
   },
   {
+    "publicationStatus": "pending_review",
     "slug": "gyan-chaupar-cosmic-game-soul",
     "title": "Gyan Chaupar: The Cosmic Board Game as an Allegory of the Soul",
     "subtitle": "How a 13th-century Saint turned rolling dice into a profound contemplative map of human karma, virtues, and spiritual liberation.",
@@ -742,22 +760,42 @@ export const journalEssays: JournalEssay[] = [
   }
 ];
 
+function isPublishableJournalEssay(essay: JournalEssay): boolean {
+  const review = essay.editorialReview;
+  const validUtcTimestamp = (value: string | undefined) =>
+    Boolean(
+      value &&
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value) &&
+        Number.isFinite(Date.parse(value)),
+    );
+
+  return (
+    essay.publicationStatus === "published" &&
+    validUtcTimestamp(essay.publishedAt) &&
+    Boolean(review?.reviewerName.trim()) &&
+    validUtcTimestamp(review?.reviewedAt) &&
+    review?.sourcesVerified === true &&
+    essay.citations.length > 0 &&
+    essay.citations.every((citation) => citation.text.trim() && citation.reference.trim())
+  );
+}
 
 export function getAllJournalEssays(): JournalEssay[] {
-  return journalEssays;
+  return journalEssays.filter(isPublishableJournalEssay);
 }
 
 export function findJournalEssay(slug: string): JournalEssay | undefined {
-  return journalEssays.find((essay) => essay.slug === slug);
+  return getAllJournalEssays().find((essay) => essay.slug === slug);
 }
 
-export function getFeaturedJournalEssay(): JournalEssay {
-  return journalEssays[0];
+export function getFeaturedJournalEssay(): JournalEssay | undefined {
+  return getAllJournalEssays()[0];
 }
 
 export function getRelatedEssays(currentSlug: string, count = 3): JournalEssay[] {
+  const publishedEssays = getAllJournalEssays();
   const current = findJournalEssay(currentSlug);
-  if (!current) return journalEssays.slice(0, count);
+  if (!current) return publishedEssays.slice(0, count);
 
   const directRelated = current.relatedSlugs
     .map((s) => findJournalEssay(s))
@@ -767,7 +805,7 @@ export function getRelatedEssays(currentSlug: string, count = 3): JournalEssay[]
     return directRelated.slice(0, count);
   }
 
-  const remaining = journalEssays.filter(
+  const remaining = publishedEssays.filter(
     (e) => e.slug !== currentSlug && !directRelated.some((d) => d.slug === e.slug)
   );
 
