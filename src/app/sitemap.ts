@@ -1,3 +1,4 @@
+import { getAllJournalEssays } from "@/config/journal";
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { VRAT_DATABASE } from "@/lib/vrat-data";
@@ -32,6 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     { url: `${BASE_URL}/community`, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/journal`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/blog`, changeFrequency: "weekly", priority: 0.8 },
     {
       url: `${BASE_URL}/beta/android`,
       changeFrequency: "weekly",
@@ -222,6 +225,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...SEED_PATHS.map((path) => ({ url: `${BASE_URL}/pathshala/${path.id}` })),
     ...getPublishableFestivalSlugs().map((slug) => ({
       url: `${BASE_URL}/festival/${slug}`,
+    })),
+    ...getAllJournalEssays().map((essay) => ({
+      url: `${BASE_URL}/journal/${essay.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     })),
   ]);
 }

@@ -1,3 +1,4 @@
+import { getAllJournalEssays } from "@/config/journal";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,38 +29,7 @@ export const metadata: Metadata = {
   },
 };
 
-const journalEssays = [
-  {
-    title: "The Architecture of Silence: Why Ancient Mandirs Were Built for Resonance",
-    tradition: "Sanatan Dharma",
-    traditionColor: "text-[var(--brand-primary-strong)] border-[var(--brand-primary)]/30 bg-[var(--brand-primary-soft)]",
-    readTime: "6 min read",
-    author: "Acharya V. Ramanathan",
-    excerpt:
-      "Far beyond stone and symmetry, traditional temple sanctums were designed as acoustic containers of quietude — resetting our internal nervous system from sensory overload.",
-    emblem: "/relics/om.png",
-  },
-  {
-    title: "Seva as Stillness: The Art of Unconditional Presence in Daily Action",
-    tradition: "Sikh Panth",
-    traditionColor: "text-[#c0607a] border-[#c0607a]/30 bg-[#c0607a]/10",
-    readTime: "5 min read",
-    author: "Harpreet Kaur",
-    excerpt:
-      "In the langar hall and daily life, seva is not merely charity — it is the swiftest antidote to ego and digital exhaustion. When the hands serve, the mind falls quiet.",
-    emblem: "/relics/khanda.png",
-  },
-  {
-    title: "Aparigraha in the Screen Age: Decluttering the Modern Seeker Mind",
-    tradition: "Jain Dharma",
-    traditionColor: "text-[#3d8a60] border-[#3d8a60]/30 bg-[#3d8a60]/10",
-    readTime: "7 min read",
-    author: "Dr. Shrenik Shah",
-    excerpt:
-      "Ancient Jain masters recognized that possessiveness extends beyond material wealth to digital tabs, endless feeds, and opinions. Discover the freedom of conscious spiritual minimalism.",
-    emblem: "/relics/ahimsa_hand.png",
-  },
-];
+const journalEssays = getAllJournalEssays();
 
 const sankalpaMetrics = [
   {
@@ -156,7 +126,7 @@ export default function CommunityPage() {
             <ArrowRight className="size-3.5" />
           </a>
           <a
-            href="#the-sanctuary-journal"
+            href="/journal"
             className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] px-6 text-xs font-semibold uppercase tracking-wider text-[var(--text-cream)] hover:border-[var(--brand-primary)]/40 transition active:scale-95"
           >
             Read Wisdom Journal
@@ -228,9 +198,11 @@ export default function CommunityPage() {
                     </div>
                   </div>
 
-                  <h3 className="mt-4 font-display text-xl font-semibold leading-snug tracking-tight text-[var(--text-cream)] group-hover:text-[var(--brand-primary-strong)] transition-colors">
-                    {essay.title}
-                  </h3>
+                  <Link href={`/journal/${essay.slug}`} className="block mt-4">
+                    <h3 className="font-display text-xl font-semibold leading-snug tracking-tight text-[var(--text-cream)] group-hover:text-[var(--brand-primary-strong)] transition-colors">
+                      {essay.title}
+                    </h3>
+                  </Link>
 
                   <p className="mt-3 text-xs leading-relaxed text-[var(--text-muted-warm)] line-clamp-3">
                     {essay.excerpt}
@@ -238,9 +210,13 @@ export default function CommunityPage() {
                 </div>
 
                 <div className="mt-6 border-t border-[var(--card-border)] pt-4 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[var(--brand-primary-strong)] group-hover:underline">
-                    Read Reflection →
-                  </span>
+                  <Link
+                    href={`/journal/${essay.slug}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:underline"
+                  >
+                    <span>Read Reflection</span>
+                    <ArrowRight className="size-3" />
+                  </Link>
                   <span className="size-2 rounded-full bg-[var(--brand-primary)] opacity-40 group-hover:opacity-100 transition-opacity" />
                 </div>
               </article>
@@ -342,6 +318,16 @@ export default function CommunityPage() {
                 </article>
               );
             })}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              href="/journal"
+              className="inline-flex min-h-12 items-center gap-2.5 rounded-full border border-[var(--brand-primary)] bg-[var(--brand-primary)] px-8 text-xs font-semibold uppercase tracking-wider text-black shadow-md hover:brightness-110 transition active:scale-95"
+            >
+              <span>Explore All 8 Essays in The Sanctuary Journal</span>
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
         </div>
       </section>

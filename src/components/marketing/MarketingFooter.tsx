@@ -84,6 +84,7 @@ const FOOTER_COLUMNS = [
   {
     title: "Ecosystem & Explore",
     links: [
+      { href: "/journal", label: "The Sanctuary Journal & Blog" },
       { href: "/features", label: "All Living Features & Roadmap" },
       { href: "/features/sacred-calendar", label: "Astronomical Calendar" },
       { href: "/about", label: "About Sanctuary" },
