@@ -30,6 +30,27 @@ export async function POST(req: NextRequest) {
     completedCount,
     totalLessons
   } = await req.json().catch(() => ({}));
+  const responseLanguage = language === 'hi' || language === 'pa' ? language : 'en';
+  const fallbackCopy = responseLanguage === 'hi'
+    ? {
+        bridge: 'आज की एक शिक्षा को अपनी अगली बातचीत में साथ लेकर जाएँ।',
+        next: completedCount < totalLessons
+          ? 'अगला पाठ आपकी यात्रा को आगे बढ़ाएगा — जब आप तैयार हों, लौटें।'
+          : 'आपने यह पथ पूरा कर लिया है। अगला आरंभ करने से पहले इस पर मनन करें।',
+      }
+    : responseLanguage === 'pa'
+      ? {
+          bridge: 'ਅੱਜ ਦੀ ਇੱਕ ਸਿੱਖਿਆ ਨੂੰ ਆਪਣੀ ਅਗਲੀ ਗੱਲਬਾਤ ਵਿੱਚ ਨਾਲ ਲੈ ਕੇ ਜਾਓ।',
+          next: completedCount < totalLessons
+            ? 'ਅਗਲਾ ਪਾਠ ਤੁਹਾਡੀ ਯਾਤਰਾ ਨੂੰ ਅੱਗੇ ਵਧਾਏਗਾ — ਤਿਆਰ ਹੋਵੋ ਤਾਂ ਵਾਪਸ ਆਓ।'
+            : 'ਤੁਸੀਂ ਇਹ ਰਾਹ ਪੂਰਾ ਕਰ ਲਿਆ ਹੈ। ਅਗਲਾ ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਸ ਉੱਤੇ ਮਨਨ ਕਰੋ।',
+        }
+      : {
+          bridge: 'Carry one teaching from today into the next conversation you have.',
+          next: completedCount < totalLessons
+            ? 'The next lesson continues this journey — return when you are ready.'
+            : 'You have completed this path. Sit with it before beginning the next.',
+        };
 
   const startTime = Date.now();
 
@@ -38,7 +59,7 @@ export async function POST(req: NextRequest) {
       lessonTitle,
       pathTitle,
       tradition,
-      language,
+      language: responseLanguage,
       lastEntryMeaning,
       completedCount,
       totalLessons,
@@ -47,10 +68,8 @@ export async function POST(req: NextRequest) {
     let bridgeData = extractBridge(result.raw);
     if (!bridgeData || !bridgeData.bridge || !bridgeData.next_step) {
       bridgeData = {
-        bridge: "Carry one teaching from today into the next conversation you have.",
-        next_step: completedCount < totalLessons
-          ? "The next lesson continues this journey — return when you are ready."
-          : "You have completed this path. Sit with it before beginning the next."
+        bridge: fallbackCopy.bridge,
+        next_step: fallbackCopy.next,
       };
     }
 
@@ -71,6 +90,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       bridge: bridgeData.bridge,
       next_step: bridgeData.next_step,
+      language: responseLanguage,
       ai: result.metadata,
     });
   } catch (err: any) {
@@ -78,10 +98,9 @@ export async function POST(req: NextRequest) {
     const msg = err?.message ?? 'Bridge generation failed';
 
     return NextResponse.json({
-      bridge: "Carry one teaching from today into the next conversation you have.",
-      next_step: completedCount < totalLessons
-        ? "The next lesson continues this journey — return when you are ready."
-        : "You have completed this path. Sit with it before beginning the next.",
+      bridge: fallbackCopy.bridge,
+      next_step: fallbackCopy.next,
+      language: responseLanguage,
       ai: {
         provider: 'fallback',
         degraded: true,
