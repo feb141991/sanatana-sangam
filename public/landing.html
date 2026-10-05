@@ -2101,6 +2101,31 @@
       .fc-3::before {
         background: linear-gradient(90deg, var(--c-jain), #2a5c45);
       }
+            .festival-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .festival-emblem-badge {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: radial-gradient(circle at 50% 30%, rgba(216, 138, 28, 0.15), rgba(255, 255, 255, 0.05));
+        border: 1px solid rgba(216, 138, 28, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        flex-shrink: 0;
+      }
+      .festival-emblem-badge img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+      }
       .festival-date-badge {
         display: inline-flex;
         align-items: center;
@@ -4000,6 +4025,586 @@
         }
       }
     </style>
+  
+    <!-- ── LUXURY ANIMATIONS & MOTION ENGINE ──────────────────────────────── -->
+    <style id="luxury-animations-and-motion">
+      @keyframes sacredFloat {
+        0%, 100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-5px) rotate(1deg);
+        }
+      }
+
+      @keyframes sacredFloatReverse {
+        0%, 100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(5px) rotate(-1deg);
+        }
+      }
+
+      @keyframes auroraPulse {
+        0% {
+          transform: scale(1) translate(0, 0);
+          opacity: 0.16;
+        }
+        50% {
+          transform: scale(1.1) translate(15px, -10px);
+          opacity: 0.28;
+        }
+        100% {
+          transform: scale(1) translate(0, 0);
+          opacity: 0.16;
+        }
+      }
+
+      @keyframes pulseDotLive {
+        0% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(42, 107, 74, 0.6);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 8px rgba(42, 107, 74, 0);
+        }
+        100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(42, 107, 74, 0);
+        }
+      }
+
+      @keyframes goldPulseDot {
+        0% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(216, 138, 28, 0.6);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 0 7px rgba(216, 138, 28, 0);
+        }
+        100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(216, 138, 28, 0);
+        }
+      }
+
+      @keyframes textShimmerGleam {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* Sacred Clay Relic Motion */
+      .festival-emblem-badge img,
+      .relic-motion {
+        animation: sacredFloat 4.8s ease-in-out infinite;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+      }
+      .festival-card:hover .festival-emblem-badge img,
+      .festival-card:hover .relic-motion {
+        transform: scale(1.14) translateY(-2px);
+        filter: drop-shadow(0 6px 14px rgba(216, 138, 28, 0.45));
+      }
+
+      /* Hero Observance Card Enhanced Hover */
+      .hero-observance-card {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.35s ease !important;
+      }
+      .hero-observance-card:hover {
+        transform: translateY(-5px) !important;
+        border-color: rgba(216, 138, 28, 0.48) !important;
+        box-shadow: 0 16px 36px -10px rgba(62, 42, 31, 0.12),
+                    0 0 20px -4px rgba(216, 138, 28, 0.22) !important;
+      }
+
+      /* Hero Live Indicator Dot */
+      .hero-live-dot {
+        animation: pulseDotLive 2.2s infinite ease-in-out;
+      }
+
+      /* Festival Cards Luxury Hover */
+      .festival-card {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.35s ease !important;
+      }
+      .festival-card:hover {
+        transform: translateY(-6px) !important;
+        border-color: rgba(216, 138, 28, 0.45) !important;
+        box-shadow: 0 22px 45px -12px rgba(62, 42, 31, 0.14),
+                    0 0 25px -4px rgba(216, 138, 28, 0.18) !important;
+      }
+
+      /* 5,000 Years Timeline Node Hover */
+      .ft-node {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+        border-radius: 12px;
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+      }
+      .ft-node:hover {
+        transform: translateX(8px);
+        background: rgba(200, 160, 110, 0.08);
+      }
+      .ft-dot {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+      }
+      .ft-node:hover .ft-dot {
+        transform: scale(1.35);
+        box-shadow: 0 0 12px var(--saffron);
+      }
+
+      /* Community Member Card Lift */
+      .member-card {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.35s ease !important;
+      }
+      .member-card:hover {
+        transform: translateY(-4px) !important;
+        border-color: rgba(216, 138, 28, 0.38) !important;
+        box-shadow: 0 14px 32px -8px rgba(62, 42, 31, 0.12) !important;
+      }
+
+      /* Primary Buttons Radiant Glow */
+      .hero-nav-beta,
+      .splash-primary-link,
+      .early-access-submit-btn {
+        box-shadow: 0 6px 24px -4px rgba(216, 138, 28, 0.35);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease !important;
+      }
+      .hero-nav-beta:hover,
+      .splash-primary-link:hover,
+      .early-access-submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px -4px rgba(216, 138, 28, 0.5);
+      }
+
+      /* Text Gold Shimmer */
+      .gold-shimmer-title {
+        background: linear-gradient(135deg, var(--ink) 0%, var(--saffron-dk) 50%, var(--saffron) 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textShimmerGleam 8s ease infinite;
+      }
+
+      /* ── LUXURY EXPANSIVE FOOTER STYLES ──────────────────────────────────── */
+      .luxury-footer-wrap {
+        position: relative;
+        overflow: hidden;
+        border-top: 1px solid rgba(200, 160, 110, 0.24);
+        background: linear-gradient(180deg, #FAF7F0 0%, #F5EFE4 100%);
+        color: var(--ink);
+        padding: 0 0 40px;
+        font-family: var(--fb);
+      }
+
+      .luxury-footer-ambient-aura {
+        position: absolute;
+        top: -120px;
+        right: 15%;
+        width: 480px;
+        height: 480px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(216, 138, 28, 0.12) 0%, rgba(197, 160, 89, 0.04) 50%, transparent 70%);
+        filter: blur(80px);
+        pointer-events: none;
+        animation: auroraPulse 12s ease-in-out infinite alternate;
+      }
+
+      .luxury-footer-container {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 0 24px;
+        position: relative;
+        z-index: 2;
+      }
+
+      @media (min-width: 640px) {
+        .luxury-footer-container {
+          padding: 0 40px;
+        }
+      }
+      @media (min-width: 1024px) {
+        .luxury-footer-container {
+          padding: 0 60px;
+        }
+      }
+
+      /* Early Access Banner Card */
+      .footer-early-access-card {
+        margin: 60px 0 40px;
+        padding: 40px 32px;
+        border-radius: 28px;
+        border: 1px solid rgba(216, 138, 28, 0.28);
+        background: rgba(255, 253, 248, 0.85);
+        box-shadow: 0 20px 48px -15px rgba(62, 42, 31, 0.1);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+      }
+
+      @media (min-width: 1024px) {
+        .footer-early-access-card {
+          flex-direction: row;
+          text-align: left;
+          justify-content: space-between;
+          padding: 44px 52px;
+        }
+      }
+
+      .footer-early-access-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 14px;
+        border-radius: 999px;
+        background: rgba(216, 138, 28, 0.12);
+        border: 1px solid rgba(216, 138, 28, 0.28);
+        color: var(--saffron-dk);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+      }
+
+      .footer-early-access-pill span.live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--saffron-dk);
+        animation: goldPulseDot 2s infinite;
+      }
+
+      .footer-early-access-title {
+        font-family: var(--fd);
+        font-size: clamp(24px, 2.4vw, 34px);
+        font-weight: 600;
+        color: var(--ink);
+        margin: 8px 0 4px;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+      }
+
+      .footer-early-access-desc {
+        color: var(--ink-mid);
+        font-size: 14px;
+        max-width: 520px;
+        line-height: 1.6;
+      }
+
+      .footer-early-access-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+        max-width: 440px;
+        justify-content: center;
+      }
+
+      @media (min-width: 640px) {
+        .footer-early-access-form {
+          flex-wrap: nowrap;
+        }
+      }
+
+      .footer-early-access-input {
+        flex: 1;
+        min-width: 220px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(200, 160, 110, 0.35);
+        background: #FFFFFF;
+        color: var(--ink);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      .footer-early-access-input:focus {
+        border-color: var(--saffron);
+        box-shadow: 0 0 0 3px rgba(216, 138, 28, 0.16);
+      }
+
+      .footer-early-access-btn {
+        min-height: 48px;
+        padding: 0 24px;
+        border-radius: 999px;
+        border: 0;
+        background: var(--saffron);
+        color: #FFFFFF;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        white-space: nowrap;
+        box-shadow: 0 6px 20px -4px rgba(216, 138, 28, 0.35);
+        transition: transform 0.2s, opacity 0.2s;
+        text-decoration: none;
+      }
+
+      .footer-early-access-btn:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+      }
+
+      /* 4-Traditions Ribbon */
+      .footer-traditions-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 24px 0;
+        border-top: 1px solid rgba(200, 160, 110, 0.2);
+        border-bottom: 1px solid rgba(200, 160, 110, 0.2);
+        margin-bottom: 48px;
+      }
+
+      @media (min-width: 640px) {
+        .footer-traditions-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1024px) {
+        .footer-traditions-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .footer-tradition-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 253, 248, 0.6);
+        border: 1px solid rgba(200, 160, 110, 0.16);
+        transition: transform 0.25s, border-color 0.25s;
+      }
+
+      .footer-tradition-item:hover {
+        transform: translateY(-2px);
+        border-color: rgba(216, 138, 28, 0.35);
+      }
+
+      .footer-tradition-emblem {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: radial-gradient(circle, rgba(216, 138, 28, 0.15), rgba(255, 255, 255, 0.05));
+        border: 1px solid rgba(216, 138, 28, 0.24);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+        flex-shrink: 0;
+      }
+
+      .footer-tradition-emblem img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .footer-tradition-name {
+        font-family: var(--fd);
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--ink);
+        line-height: 1.2;
+      }
+
+      .footer-tradition-desc {
+        font-size: 11px;
+        color: var(--ink-light);
+        margin-top: 2px;
+      }
+
+      /* 5-Column Navigation Grid */
+      .footer-columns-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 36px 24px;
+        padding-bottom: 48px;
+        border-bottom: 1px solid rgba(200, 160, 110, 0.18);
+      }
+
+      @media (min-width: 640px) {
+        .footer-columns-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 900px) {
+        .footer-columns-grid {
+          grid-template-columns: 1.3fr repeat(4, 1fr);
+        }
+      }
+
+      .footer-brand-col {
+        max-width: 320px;
+      }
+
+      .footer-brand-logo-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--ink);
+      }
+
+      .footer-brand-logo-row img {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+      }
+
+      .footer-brand-name {
+        font-family: var(--fd);
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        line-height: 1;
+      }
+
+      .footer-brand-bio {
+        margin-top: 14px;
+        color: var(--ink-mid);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .footer-brand-badges {
+        margin-top: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .footer-brand-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink-mid);
+      }
+
+      .footer-brand-badge span.dot-green {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #2A6B4A;
+      }
+
+      .footer-col-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--saffron-dk);
+        margin-bottom: 16px;
+      }
+
+      .footer-links-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .footer-links-list a {
+        text-decoration: none;
+        font-size: 13px;
+        color: var(--ink-mid);
+        transition: color 0.2s, transform 0.2s;
+        display: inline-block;
+      }
+
+      .footer-links-list a:hover {
+        color: var(--ink);
+        transform: translateX(2px);
+      }
+
+      /* Footer Bottom Bar */
+      .footer-bottom-bar {
+        padding-top: 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        font-size: 12px;
+        color: var(--ink-light);
+      }
+
+      @media (min-width: 768px) {
+        .footer-bottom-bar {
+          flex-direction: row;
+        }
+      }
+
+      .footer-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: rgba(42, 107, 74, 0.08);
+        border: 1px solid rgba(42, 107, 74, 0.2);
+        color: #2A6B4A;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .footer-status-pill span.dot-pulse {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #2A6B4A;
+        animation: pulseDotLive 2s infinite;
+      }
+
+      .footer-social-links {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .footer-social-links a {
+        color: var(--ink-mid);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .footer-social-links a:hover {
+        color: var(--saffron-dk);
+      }
+    </style>
+
   </head>
   <body>
     <script>
@@ -4011,6 +4616,7 @@
       })();
     </script>
     <div id="splash">
+      <div class="splash-ambient-aura" aria-hidden="true"></div>
       <nav class="hero-nav" aria-label="Homepage navigation">
         <a class="hero-nav-brand" href="/" aria-label="Shoonaya home">
           <img src="/icons/icon-192x192.png" alt="" />
@@ -4021,10 +4627,10 @@
           <a href="/traditions">Traditions</a>
           <a href="#festivals" onclick="event.preventDefault();openLandingSection('festivals')">Festivals</a>
           <a href="#community" onclick="event.preventDefault();openLandingSection('community')">Community</a>
-          <a href="#features" onclick="event.preventDefault();openLandingSection('features')">Features</a>
+          <a href="/features">Features</a>
           <a href="/about">About</a>
         </div>
-        <a class="hero-nav-beta" href="/beta/android">Join Android Beta →</a>
+        <a class="hero-nav-beta" href="/early-access">Request Early Access →</a>
         <details class="hero-nav-mobile">
           <summary>Menu</summary>
           <div class="hero-nav-mobile-menu">
@@ -4032,9 +4638,9 @@
             <a href="/traditions">Traditions</a>
             <a href="#festivals" onclick="openLandingSection('festivals')">Festivals</a>
             <a href="#community" onclick="openLandingSection('community')">Community</a>
-            <a href="#features" onclick="openLandingSection('features')">Features</a>
+            <a href="/features">Features</a>
             <a href="/about">About</a>
-            <a href="/beta/android">Join Android Beta</a>
+            <a href="/early-access">Request Early Access</a>
           </div>
         </details>
       </nav>
@@ -6840,14 +7446,65 @@
                   "en-GB",
                   { day: "numeric", month: "short", year: "numeric" },
                 );
+                var relicMap = {
+                  "diwali": "/relics/diya-bronze.png",
+                  "deepawali": "/relics/diya-bronze.png",
+                  "maha-shivratri": "/relics/trishula-gold.png",
+                  "mahashivratri": "/relics/trishula-gold.png",
+                  "pradosh-vrat": "/relics/shiva-damaru.png",
+                  "ganesh-chaturthi": "/relics/ganesha-modak.png",
+                  "vinayaka-chaturthi": "/relics/ganesha-modak.png",
+                  "krishna-janmashtami": "/relics/krishna-flute.png",
+                  "janmashtami": "/relics/krishna-flute.png",
+                  "ram-navami": "/relics/rama-bow.png",
+                  "dussehra": "/relics/rama-bow.png",
+                  "vijayadashami": "/relics/rama-bow.png",
+                  "hanuman-jayanti": "/relics/hanuman-gada.png",
+                  "navratri": "/relics/clay-kalash.png",
+                  "chaitra-navratri": "/relics/clay-kalash.png",
+                  "durga-puja": "/relics/durga-shield.png",
+                  "makar-sankranti": "/relics/ganga-kalash.png",
+                  "chhath": "/relics/ganga-kalash.png",
+                  "raksha-bandhan": "/relics/diya-bronze.png",
+                  "holi": "/relics/camphor-flame.png",
+                  "vasant-panchami": "/relics/lotus-bloom.png",
+                  "nag-panchami": "/relics/ananta-shesha.png",
+                  "guru-purnima": "/relics/mala.png",
+                  "guru-nanak-gurpurab": "/relics/khanda-gold.png",
+                  "baisakhi": "/relics/sacred-kirpan.png",
+                  "vesak-buddha-purnima": "/relics/bodhi-leaf.png",
+                  "mahavir-jayanti": "/relics/ahimsa-hand.png",
+                  "paryushana": "/relics/siddhachakra-wheel.png"
+                };
+
+                var itemSlug = (item.slug || "").toLowerCase();
+                var relicSrc = "/relics/diya-bronze.png";
+                if (relicMap[itemSlug]) {
+                  relicSrc = relicMap[itemSlug];
+                } else if (itemSlug.indexOf("ekadashi") !== -1) {
+                  relicSrc = "/relics/tulsi-leaf.png";
+                } else if (itemSlug.indexOf("navratri") !== -1) {
+                  relicSrc = "/relics/clay-kalash.png";
+                } else if (itemSlug.indexOf("shiva") !== -1 || itemSlug.indexOf("pradosh") !== -1) {
+                  relicSrc = "/relics/trishula-gold.png";
+                } else if (tradition === "sikh") {
+                  relicSrc = "/relics/khanda-gold.png";
+                } else if (tradition === "buddhist") {
+                  relicSrc = "/relics/dharma-wheel.png";
+                } else if (tradition === "jain") {
+                  relicSrc = "/relics/ahimsa-hand.png";
+                }
+
                 return (
                   '<article class="festival-card" style="border-top:3px solid ' +
                   color +
-                  '"><div class="festival-date-badge"><div class="dot" style="background:' +
+                  '"><div class="festival-header-row"><div class="festival-date-badge"><div class="dot" style="background:' +
                   color +
                   '"></div>' +
                   escapeText(dateLabel) +
-                  '</div><div class="festival-name">' +
+                  '</div><div class="festival-emblem-badge"><img src="' +
+                  relicSrc +
+                  '" alt="Sacred Relic" width="30" height="30" loading="lazy" /></div></div><div class="festival-name">' +
                   escapeText(item.display_name) +
                   '</div><div class="festival-deva">' +
                   escapeText(tradition === "all" ? "All traditions" : tradition.charAt(0).toUpperCase() + tradition.slice(1)) +
@@ -7051,501 +7708,15 @@
           </div>
         </div>
       </section>
-      <section class="section" id="features">
-        <div class="s-label reveal">The Platform</div>
-        <div class="s-title reveal">The Sangam, wherever you are</div>
-        <div class="s-sub reveal">
-          Daily sadhana, community, scripture, and sacred-time tools are live
-          now, with deeper native experiences planned later.
-        </div>
-        <div class="features-grid reveal">
-          <a class="feature-card" href="/home">
-            <div class="feature-icon fi-s">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#C8924A"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <path
-                  d="M12 2L13.8 8.2L20 8.2L14.9 11.8L16.7 18L12 14.4L7.3 18L9.1 11.8L4 8.2L10.2 8.2Z"
-                />
-              </svg>
-            </div>
-            <div class="feature-name">Daily Wisdom Feed</div>
-            <div class="feature-desc">
-              Morning wisdom, practice prompts, and tradition-aware daily
-              context inside your home dashboard.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/japa">
-            <div class="feature-icon fi-ja">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#9B6FB5"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <circle cx="12" cy="12" r="9" />
-                <circle cx="12" cy="5" r="1.5" fill="#9B6FB5" />
-                <circle cx="17.2" cy="8" r="1.5" fill="#9B6FB5" />
-                <circle cx="19" cy="13.5" r="1.5" fill="#9B6FB5" />
-                <circle cx="16" cy="18.5" r="1.5" fill="#9B6FB5" />
-                <circle cx="12" cy="20" r="1.5" fill="#9B6FB5" />
-              </svg>
-            </div>
-            <div class="feature-name">Japa &amp; Mala Counter</div>
-            <div class="feature-desc">
-              Mantra counter with 27/54/108-bead malas, ambient sounds, streak
-              tracking, and session insights for your daily practice.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/panchang/today">
-            <div class="feature-icon fi-k">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#D4784A"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <path d="M16 2v4M8 2v4M3 10h18" />
-                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
-              </svg>
-            </div>
-            <div class="feature-name">Sacred Calendar</div>
-            <div class="feature-desc">
-              Daily Panchang context with tithi, nakshatra, rahu kalam, and
-              sacred observance reminders by tradition.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/pathshala">
-            <div class="feature-icon fi-l">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#C0607A"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path
-                  d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
-                />
-              </svg>
-            </div>
-            <div class="feature-name">Pathshala: Scripture</div>
-            <div class="feature-desc">
-              Guided scripture study paths with readings, audio practice where
-              available, and reflection prompts.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/mandali">
-            <div class="feature-icon fi-p">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#9d7a50"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <circle cx="12" cy="12" r="3" />
-                <circle cx="12" cy="3" r="1.5" />
-                <circle cx="12" cy="21" r="1.5" />
-                <circle cx="3" cy="12" r="1.5" />
-                <circle cx="21" cy="12" r="1.5" />
-                <circle cx="5.6" cy="5.6" r="1.5" />
-                <circle cx="18.4" cy="18.4" r="1.5" />
-                <circle cx="18.4" cy="5.6" r="1.5" />
-                <circle cx="5.6" cy="18.4" r="1.5" />
-              </svg>
-            </div>
-            <div class="feature-name">Mandali &amp; Community</div>
-            <div class="feature-desc">
-              Discover local Mandali spaces and join conversations where
-              community features are available.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/nitya-karma">
-            <div class="feature-icon fi-g">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#C89B3C"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v6l4 2" />
-              </svg>
-            </div>
-            <div class="feature-name">Daily Sadhana</div>
-            <div class="feature-desc">
-              Your morning routine with Nitya Karma, Ashrama duties,
-              guided sadhana plans, and dincharya tracker with streaks.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/kul">
-            <div class="feature-icon fi-kl">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#7A5126"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
-            <div class="feature-name">Kul: Family Dharma</div>
-            <div class="feature-desc">
-              Create your family Kul, track Vansh lineage, share Gotra, and
-              celebrate Sanskars together across generations and continents.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/ai-chat">
-            <div class="feature-icon fi-ai">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#5B8FB9"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <path
-                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-                />
-              </svg>
-            </div>
-            <div class="feature-name">Dharma AI Guide</div>
-            <div class="feature-desc">
-              Ask for practice guidance and scripture context with a
-              tradition-aware AI guide grounded in Shoonaya sources where
-              available.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-          <a class="feature-card" href="/mandali">
-            <div class="feature-icon fi-vs">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#6B8E5A"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              >
-                <path
-                  d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
-                />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
-            <div class="feature-name">Mandali</div>
-            <div class="feature-desc">
-              Sacred community circles to connect with fellow seekers, join events,
-              participate in satsangs and share tradition-aligned wisdom.
-            </div>
-            <span class="feature-live">✦ Live Now</span>
-          </a>
-        </div>
-      </section>
-      <section
-        id="kids-zone"
-        style="
-          background: #0c0a07;
-          padding: 100px 40px;
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-        "
-      >
-        <style>
-          #kids-zone::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(
-              ellipse 75% 65% at 50% 40%,
-              rgba(197, 160, 89, 0.07) 0,
-              transparent 65%
-            );
-            pointer-events: none;
-          }
-          .kz-inner {
-            position: relative;
-            z-index: 1;
-            max-width: 760px;
-            margin: 0 auto;
-          }
-          .kz-coming-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(197, 160, 89, 0.1);
-            border: 1px solid rgba(197, 160, 89, 0.3);
-            border-radius: 100px;
-            padding: 6px 18px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #c5a059;
-            margin-bottom: 28px;
-          }
-          .kz-title {
-            font-family: var(--fd);
-            font-size: clamp(32px, 5.5vw, 62px);
-            font-weight: 300;
-            color: #faf6ef;
-            line-height: 1.08;
-            letter-spacing: -0.01em;
-            margin-bottom: 16px;
-          }
-          .kz-title em {
-            color: #c5a059;
-            font-style: italic;
-          }
-          .kz-sub {
-            font-size: 15px;
-            color: rgba(250, 246, 239, 0.45);
-            line-height: 1.7;
-            max-width: 540px;
-            margin: 0 auto 48px;
-          }
-          .kz-features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            max-width: 680px;
-            margin: 0 auto 48px;
-          }
-          .kz-feat {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(197, 160, 89, 0.14);
-            border-radius: 16px;
-            padding: 24px 20px;
-            text-align: left;
-          }
-          .kz-feat-icon {
-            font-size: 26px;
-            margin-bottom: 12px;
-          }
-          .kz-feat-name {
-            font-family: var(--fd);
-            font-size: 16px;
-            font-weight: 600;
-            color: #faf6ef;
-            margin-bottom: 6px;
-          }
-          .kz-feat-desc {
-            font-size: 11px;
-            color: rgba(250, 246, 239, 0.4);
-            line-height: 1.55;
-          }
-          .kz-beta-box {
-            background: rgba(197, 160, 89, 0.08);
-            border: 1px solid rgba(197, 160, 89, 0.25);
-            border-radius: 20px;
-            padding: 32px 40px;
-            max-width: 520px;
-            margin: 0 auto;
-          }
-          .kz-beta-title {
-            font-family: var(--fd);
-            font-size: 22px;
-            font-weight: 400;
-            color: #faf6ef;
-            margin-bottom: 8px;
-          }
-          .kz-beta-sub {
-            font-size: 13px;
-            color: rgba(250, 246, 239, 0.45);
-            margin-bottom: 20px;
-            line-height: 1.6;
-          }
-          .kz-beta-perks {
-            text-align: left;
-            margin-bottom: 24px;
-          }
-          .kz-perk {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 12px;
-            color: rgba(250, 246, 239, 0.58);
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(197, 160, 89, 0.1);
-            line-height: 1.5;
-          }
-          .kz-perk:last-child {
-            border-bottom: none;
-          }
-          .kz-perk-dot {
-            color: #c5a059;
-            font-size: 14px;
-            flex-shrink: 0;
-            margin-top: 1px;
-          }
-          .kz-cta-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #c5a059, #d4784a);
-            color: #0c0a07;
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 0.04em;
-            padding: 13px 36px;
-            border-radius: 100px;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            transition: opacity 0.2s;
-          }
-          .kz-cta-btn:hover {
-            opacity: 0.88;
-          }
-          @media (max-width: 600px) {
-            #kids-zone {
-              padding: 64px 20px;
-            }
-            .kz-features {
-              grid-template-columns: 1fr 1fr;
-            }
-            .kz-beta-box {
-              padding: 24px 20px;
-            }
-          }
-        </style>
-        <div class="kz-inner">
-          <div class="kz-coming-pill reveal">🌱 Coming Soon · Beta Access</div>
-          <div class="kz-title reveal">
-            A dharmic world<br />built for <em>little seekers.</em>
-          </div>
-          <p class="kz-sub reveal">
-            The Kids Zone gives every child a living connection to their
-            tradition through stories, songs, and sacred play. Parents get a
-            child who knows who they are.
-          </p>
-          <div class="kz-features reveal" id="kz-features-grid">
-            <div class="kz-feat">
-              <div class="kz-feat-icon">📖</div>
-              <div class="kz-feat-name">Dharma Stories</div>
-              <div class="kz-feat-desc">
-                Ramayana, Jataka Tales, Sikh Saakhis, Jain Panchtantra,
-                narrated and illustrated for ages 4–14.
-              </div>
-            </div>
-            <div class="kz-feat">
-              <div class="kz-feat-icon">🎵</div>
-              <div class="kz-feat-name">Kids Mantras</div>
-              <div class="kz-feat-desc">
-                Guided shloka and shabad learning, phonetically broken down for
-                young voices. Parents get notified on completion.
-              </div>
-            </div>
-            <div class="kz-feat">
-              <div class="kz-feat-icon">🗓️</div>
-              <div class="kz-feat-name">Festival Explorer</div>
-              <div class="kz-feat-desc">
-                Age-appropriate explanations of every festival, with a "Tell
-                your grandparent" prompt built in.
-              </div>
-            </div>
-            <div class="kz-feat">
-              <div class="kz-feat-icon">🌍</div>
-              <div class="kz-feat-name">Dharma Explorers</div>
-              <div class="kz-feat-desc">
-                A gentle discovery game exploring selected stories and ideas
-                while keeping each tradition distinct.
-              </div>
-            </div>
-            <div class="kz-feat">
-              <div class="kz-feat-icon">👨‍👩‍👧</div>
-              <div class="kz-feat-name">Parent Dashboard</div>
-              <div class="kz-feat-desc">
-                See what your child learned this week, with conversation
-                starters to bring it home.
-              </div>
-            </div>
-            <div class="kz-feat">
-              <div class="kz-feat-icon">🏆</div>
-              <div class="kz-feat-name">Sharable Milestones</div>
-              <div class="kz-feat-desc">
-                When your child completes a story, they get a shareable card
-                designed to delight grandparents.
-              </div>
-            </div>
-          </div>
-          <div class="kz-beta-box reveal">
-            <div class="kz-beta-title">Kids Zone is coming next.</div>
-            <div class="kz-beta-sub">
-              Kids Zone is in development, with beta access planned when it is
-              ready.
-            </div>
-            <div class="kz-beta-perks">
-              <div class="kz-perk">
-                <span class="kz-perk-dot">✦</span
-                ><span>Kids Zone beta access when it is ready</span>
-              </div>
-              <div class="kz-perk">
-                <span class="kz-perk-dot">✦</span
-                ><span
-                  >Parent-friendly learning paths for stories, songs, festivals,
-                  and values</span
-                >
-              </div>
-              <div class="kz-perk">
-                <span class="kz-perk-dot">✦</span
-                ><span
-                  >Beta feedback opportunities when the Kids Zone opens</span
-                >
-              </div>
-            </div>
-            <button class="kz-cta-btn" onclick="scrollToCta()">
-              Explore Shoonaya →
-            </button>
-          </div>
-        </div>
-      </section>
+
       <section class="cta-section" id="cta-section">
         <div class="cta-bg"></div>
         <div class="reveal" style="position: relative">
           <h2 class="cta-h">Start Your Journey</h2>
           <p class="cta-sub">Begin your daily sadhana inside Shoonaya.</p>
           <div class="cta-direct-actions">
-            <a class="cta-fields-submit cta-direct-link" href="/beta/android"
-              >Join the Android beta</a
+            <a class="cta-fields-submit cta-direct-link" href="/early-access"
+              >Request Early Access</a
             >
             <a class="cta-note cta-signin-link" href="/login"
               >Already have an account? Sign in</a
@@ -7721,7 +7892,7 @@
               >
                 <div class="faq-a-inner" itemprop="text">
                   Shoonaya is available on the web at <strong>shoonaya.com</strong>.
-                  Visit the <a href="/beta/android">Android beta page</a> for
+                  Visit the <a href="/early-access">Early access page</a> for
                   current mobile access details.
                 </div>
               </div>
@@ -7744,71 +7915,188 @@
           </div>
         </div>
       </section>
-      <footer>
-        <div class="footer-top">
-          <div
-            style="display: flex; align-items: center; gap: 10px; opacity: 0.9"
-          >
-            <img
-              src="/icons/icon-192x192.png"
-              alt="Shoonaya"
-              style="
-                width: 32px;
-                height: 32px;
-                border-radius: 10px;
-                display: block;
-                object-fit: cover;
-              "
-            />
-            <span
-              style="
-                font-family: var(--fd);
-                font-size: 22px;
-                font-weight: 700;
-                color: var(--ink);
-                letter-spacing: 0.03em;
-                line-height: 1;
-              "
-              >Shoonaya</span
+      
+      <!-- ── LUXURY HIGH-CRAFT EXPANSIVE FOOTER ─────────────────────────────── -->
+      <footer class="luxury-footer-wrap">
+        <div class="luxury-footer-ambient-aura" aria-hidden="true"></div>
+
+        <div class="luxury-footer-container">
+          <!-- 1. Early Access Callout Card -->
+          <div class="footer-early-access-card">
+            <div>
+              <div class="footer-early-access-pill">
+                <span class="live-dot"></span>
+                Private Testing Queue Open
+              </div>
+              <h3 class="footer-early-access-title">Join the Inner Circle of Early Seekers</h3>
+              <p class="footer-early-access-desc">
+                We are currently onboarding early seekers into private testing. Register your email, and our team will whitelist your access and send your direct invitation link.
+              </p>
+            </div>
+            <form
+              class="footer-early-access-form"
+              onsubmit="event.preventDefault(); var email=this.querySelector('input').value; window.location.href='/early-access?email=' + encodeURIComponent(email);"
             >
+              <input
+                type="email"
+                required
+                placeholder="Enter your email address…"
+                class="footer-early-access-input"
+                aria-label="Your email address"
+              />
+              <button type="submit" class="footer-early-access-btn">
+                Request Early Access →
+              </button>
+            </form>
           </div>
-          <div class="footer-links">
-            <a href="/about">About</a> <a href="/privacy">Privacy</a>
-            <a href="/terms">Terms</a>
-            <a href="/faq">FAQ</a>
-            <a href="/sitemap">Site Map</a>
-            <a href="mailto:info@shoonaya.com">info@shoonaya.com</a>
-            <a href="https://www.instagram.com/shoonayaapp" target="_blank" rel="noreferrer">Instagram</a>
-            <a href="https://www.facebook.com/profile.php?id=61590436598797" target="_blank" rel="noreferrer">Facebook</a>
-            <a href="https://www.linkedin.com/company/shoonaya" target="_blank" rel="noreferrer">LinkedIn</a>
+
+          <!-- 2. Four Traditions Harmony Ribbon -->
+          <div class="footer-traditions-grid">
+            <div class="footer-tradition-item">
+              <div class="footer-tradition-emblem">
+                <img src="/relics/om.png" alt="Sanatan Dharma" />
+              </div>
+              <div>
+                <div class="footer-tradition-name">Sanatan Dharma</div>
+                <div class="footer-tradition-desc">Vedanta, Smarta, Vaishnava &amp; Shaiva</div>
+              </div>
+            </div>
+
+            <div class="footer-tradition-item">
+              <div class="footer-tradition-emblem">
+                <img src="/relics/khanda.png" alt="Sikh Panth" />
+              </div>
+              <div>
+                <div class="footer-tradition-name">Sikh Panth</div>
+                <div class="footer-tradition-desc">Gurbani, Gurpurabs &amp; living Seva</div>
+              </div>
+            </div>
+
+            <div class="footer-tradition-item">
+              <div class="footer-tradition-emblem">
+                <img src="/relics/ahimsa_hand.png" alt="Jain Dharma" />
+              </div>
+              <div>
+                <div class="footer-tradition-name">Jain Dharma</div>
+                <div class="footer-tradition-desc">24 Tirthankaras, Agamas &amp; Ahimsa</div>
+              </div>
+            </div>
+
+            <div class="footer-tradition-item">
+              <div class="footer-tradition-emblem">
+                <img src="/relics/bodhi_leaf.png" alt="Buddhist Sangha" />
+              </div>
+              <div>
+                <div class="footer-tradition-name">Buddhist Sangha</div>
+                <div class="footer-tradition-desc">Dhammapada, Vipassana &amp; Mindfulness</div>
+              </div>
+            </div>
           </div>
-          <div class="footer-deva">सनातन धर्म</div>
-        </div>
-        <div class="footer-bottom">
-          <div class="footer-badges">
-            <div class="made-india">
-              <div class="india-flag">🇮🇳</div>
-              <span>Proudly Built in India</span>
+
+          <!-- 3. Five Organized Columns -->
+          <div class="footer-columns-grid">
+            <!-- Brand Column -->
+            <div class="footer-brand-col">
+              <a href="/" class="footer-brand-logo-row">
+                <img src="/icons/icon-192x192.png" alt="Shoonaya" />
+                <span class="footer-brand-name">Shoonaya</span>
+              </a>
+              <p class="footer-brand-bio">
+                A non-profit research and spiritual foundation honoring timeless wisdom across Sanatan, Sikh, Jain, and Buddhist traditions.
+              </p>
+              <div class="footer-brand-badges">
+                <div class="footer-brand-badge">
+                  <span class="dot-green"></span>
+                  100% Ad-Free Devotional Space
+                </div>
+                <div class="footer-brand-badge">
+                  <span class="dot-green"></span>
+                  Zero-Tracking &amp; Complete Privacy
+                </div>
+                <div class="footer-brand-badge">
+                  <span class="dot-green"></span>
+                  Open Ephemeris Research Architecture
+                </div>
+              </div>
             </div>
-            <div class="trust-badge">
-              <div
-                class="trust-dot"
-                style="background: var(--saffron-dk)"
-              ></div>
-              GDPR Friendly
+
+            <!-- Col 1: Living Dharmic Tools -->
+            <div>
+              <div class="footer-col-title">Living Tools</div>
+              <ul class="footer-links-list">
+                <li><a href="/panchang">Vedic Ephemeris &amp; Panchang</a></li>
+                <li><a href="/ai-chat">Dharma Mitra AI Companion</a></li>
+                <li><a href="/features/japa">Digital Japa Mala &amp; Sadhana</a></li>
+                <li><a href="/darshan">Sacred Mandir Geo-Darshan</a></li>
+                <li><a href="/library">Holy Scripture Library</a></li>
+                <li><a href="/panchang">Choghadiya &amp; Muhurta</a></li>
+              </ul>
             </div>
-            <div class="trust-badge">
-              <div class="trust-dot" style="background: var(--saffron)"></div>
-              Open to All Dharmic Paths
+
+            <!-- Col 2: Traditions & Paths -->
+            <div>
+              <div class="footer-col-title">Traditions</div>
+              <ul class="footer-links-list">
+                <li><a href="/traditions/hindu">Sanatan Dharma</a></li>
+                <li><a href="/traditions/sikh">Sikh Panth</a></li>
+                <li><a href="/traditions/jain">Jain Dharma</a></li>
+                <li><a href="/traditions/buddhist">Buddhist Sangha</a></li>
+                <li><a href="/sources">Ephemeris Methodology</a></li>
+                <li><a href="/features">Tradition Comparison</a></li>
+              </ul>
+            </div>
+
+            <!-- Col 3: Ecosystem & Explore -->
+            <div>
+              <div class="footer-col-title">Ecosystem</div>
+              <ul class="footer-links-list">
+                <li><a href="/features">Explore All Features</a></li>
+                <li><a href="/community">Seeker Sanctuary &amp; Mandali</a></li>
+                <li><a href="/early-access">Early Access Testing</a></li>
+                <li><a href="/faq">Interfaith Dharma FAQ</a></li>
+                <li><a href="/sitemap">Full Sacred Sitemap</a></li>
+                <li><a href="/community#the-sanctuary-journal">The Sanctuary Journal</a></li>
+              </ul>
+            </div>
+
+            <!-- Col 4: Trust & Governance -->
+            <div>
+              <div class="footer-col-title">Trust &amp; Ethics</div>
+              <ul class="footer-links-list">
+                <li><a href="/about">About Our Foundation</a></li>
+                <li><a href="/privacy">Privacy &amp; Zero-Tracking</a></li>
+                <li><a href="/terms">Terms of Devotion</a></li>
+                <li><a href="/sources">Scriptural Source Repository</a></li>
+                <li><a href="mailto:info@shoonaya.com">Spiritual Support Contact</a></li>
+                <li><a href="/community#zeroists-covenant">The Zeroists Covenant</a></li>
+              </ul>
             </div>
           </div>
-          <div class="footer-copy">
-            © 2026 Shoonaya App · Daily Dharma, Panchang, Scripture &amp;
-            Community for Sanatan, Sikh, Jain and Buddhist seekers. Made with 🙏
-            in Bharat
+
+          <!-- 4. Bottom Trust & Copyright Bar -->
+          <div class="footer-bottom-bar">
+            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+              <div class="footer-status-pill">
+                <span class="dot-pulse"></span>
+                Ephemeris Engine 2026: Operational (Ayanamsha Lahiri)
+              </div>
+              <span>🇮🇳 Proudly Crafted with Devotion in Bharat</span>
+            </div>
+
+            <div class="footer-social-links">
+              <a href="https://www.instagram.com/shoonayaapp" target="_blank" rel="noreferrer">Instagram</a>
+              <a href="https://www.facebook.com/profile.php?id=61590436598797" target="_blank" rel="noreferrer">Facebook</a>
+              <a href="https://www.linkedin.com/company/shoonaya" target="_blank" rel="noreferrer">LinkedIn</a>
+              <a href="mailto:info@shoonaya.com">Email Support</a>
+            </div>
+
+            <div style="text-align: right;">
+              © 2026 Shoonaya Foundation · Find Your Infinite.
+            </div>
           </div>
         </div>
       </footer>
+
     </div>
     <script>
       const API_BASE = "";
@@ -8278,7 +8566,7 @@
           })),
           L(),
           (window.scrollToCta = function () {
-            window.location.href = "/beta/android";
+            window.location.href = "/early-access";
           }),
           (window.switchTrad = x),
           (window.switchShloka = $));
@@ -9176,7 +9464,7 @@
             margin: 10px 0;
           "
         ></div>
-        <a href="/beta/android" class="drawer-highlight" onclick="closeDrawer()"
+        <a href="/early-access" class="drawer-highlight" onclick="closeDrawer()"
           >Join Android Beta</a
         >
         <div style="margin-top: auto; padding-top: 24px">

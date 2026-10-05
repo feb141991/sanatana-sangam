@@ -1,5 +1,7 @@
 'use client';
 
+import { FestivalEmblem } from '@/components/festivals/FestivalEmblem';
+
 import { useEffect, useState } from 'react';
 import { ChevronLeft, Share2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
@@ -80,9 +82,15 @@ export default function FestivalClient({ festival, originalSlug }: FestivalClien
         </div>
       )}
 
-      <section className="space-y-3 text-center">
-        <div className="text-5xl">{festival.emoji}</div>
-        <h1 className="text-2xl font-bold">{name}</h1>
+      <section className="space-y-4 text-center flex flex-col items-center">
+        <FestivalEmblem
+          slug={festival.definitionKey || originalSlug}
+          name={name}
+          tradition={festival.tradition}
+          fallbackEmoji={festival.emoji}
+          size="xl"
+        />
+        <h1 className="text-3xl font-display font-bold tracking-tight text-[var(--text-cream)]">{name}</h1>
         {tagline && <p className="italic opacity-80">&ldquo;{tagline}&rdquo;</p>}
 
         {calendarObservance && (

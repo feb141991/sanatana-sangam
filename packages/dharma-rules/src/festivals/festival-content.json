@@ -3,7 +3,7 @@
   "festivals": [
     {
       "definitionKey": "raksha-bandhan",
-      "emoji": "🧵",
+      "emoji": "🪔",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -134,7 +134,7 @@
     },
     {
       "definitionKey": "ganesh-chaturthi",
-      "emoji": "🐘",
+      "emoji": "ॐ",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -1345,7 +1345,7 @@
     },
     {
       "definitionKey": "holi",
-      "emoji": "🎨",
+      "emoji": "🔥",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -1613,7 +1613,7 @@
     },
     {
       "definitionKey": "hanuman-jayanti",
-      "emoji": "🐒",
+      "emoji": "🔱",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -1748,7 +1748,7 @@
     },
     {
       "definitionKey": "makar-sankranti",
-      "emoji": "🪁",
+      "emoji": "🌅",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -2824,7 +2824,7 @@
     },
     {
       "definitionKey": "nag-panchami",
-      "emoji": "🐍",
+      "emoji": "ॐ",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -8519,7 +8519,7 @@
     },
     {
       "definitionKey": "chhath-kharna",
-      "emoji": "🥣",
+      "emoji": "🌅",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -9037,7 +9037,7 @@
     },
     {
       "definitionKey": "vivah-panchami",
-      "emoji": "💍",
+      "emoji": "🪔",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -10571,7 +10571,7 @@
     },
     {
       "definitionKey": "vaikunta-ekadashi",
-      "emoji": "🚪",
+      "emoji": "🐚",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -10700,7 +10700,7 @@
     },
     {
       "definitionKey": "devshayani-ekadashi",
-      "emoji": "🛏️",
+      "emoji": "ॐ",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -11081,7 +11081,7 @@
     },
     {
       "definitionKey": "amalaki-ekadashi",
-      "emoji": "🍈",
+      "emoji": "🌿",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -11589,7 +11589,7 @@
     },
     {
       "definitionKey": "shravana-putrada-ekadashi",
-      "emoji": "👶",
+      "emoji": "🪷",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -11843,7 +11843,7 @@
     },
     {
       "definitionKey": "parivartini-ekadashi",
-      "emoji": "🔄",
+      "emoji": "🪷",
       "tradition": "hindu",
       "name": {
         "value": {
@@ -12224,7 +12224,7 @@
     },
     {
       "definitionKey": "saphala-ekadashi",
-      "emoji": "🎯",
+      "emoji": "🪷",
       "tradition": "hindu",
       "name": {
         "value": {

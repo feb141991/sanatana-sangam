@@ -1,5 +1,7 @@
 'use client';
 
+import { FestivalEmblem } from '@/components/festivals/FestivalEmblem';
+
 /**
  * VratCarousel — swipeable card carousel for upcoming sacred days & multi-day observance series.
  *
@@ -254,13 +256,13 @@ function VratCard({
         style={{ background: 'radial-gradient(circle at 85% 15%, var(--brand-primary-soft), transparent 40%)' }}
         aria-hidden="true" />
 
-      <span
-        className="drop-shadow-md select-none shrink-0"
-        style={{ fontSize: '2.6rem', lineHeight: 1 }}
-        aria-hidden="true"
-      >
-        {festival.emoji}
-      </span>
+      <FestivalEmblem
+        slug={festival.slug || ''}
+        name={festival.name}
+        tradition={festival.tradition}
+        fallbackEmoji={festival.emoji}
+        size="md"
+      />
 
       <div className="flex-1 min-w-0 pr-12">
         <h3

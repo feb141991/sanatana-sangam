@@ -9,7 +9,7 @@ export function MarketingShell({ children }: { children: ReactNode }) {
     <div className="marketing-site min-h-dvh bg-[var(--surface-base)] text-[var(--text-cream)]">
       <NotchNavbar
         items={marketingNavItems}
-        cta={{ href: "/beta/android", label: "Join Android Beta" }}
+        cta={{ href: "/beta/android", label: "Request Early Access" }}
       />
       {children}
       <MarketingFooter />
