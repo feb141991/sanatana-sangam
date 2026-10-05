@@ -4,14 +4,17 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2, Sparkles, ShieldCheck } from "lucide-react";
 
 interface EarlyAccessFormProps {
+  source?: string;
   defaultSource?: string;
   className?: string;
 }
 
 export function EarlyAccessForm({
+  source,
   defaultSource = "early-access-page",
   className = "",
 }: EarlyAccessFormProps) {
+  const activeSource = source || defaultSource;
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [tradition, setTradition] = useState<string>("hindu");
@@ -39,7 +42,7 @@ export function EarlyAccessForm({
           email: email.trim(),
           name: name.trim() || undefined,
           tradition: tradition !== "universal" ? tradition : undefined,
-          source: `${defaultSource}-${device}`,
+          source: `${activeSource}-${device}`,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata",
         }),
       });

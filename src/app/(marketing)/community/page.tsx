@@ -407,7 +407,7 @@ export default function CommunityPage() {
             </p>
 
             <div className="mt-8 max-w-md mx-auto text-left">
-              <EarlyAccessForm source="community-sanctuary" />
+              <EarlyAccessForm defaultSource="community-sanctuary" />
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm ci --legacy-peer-deps",
+  "installCommand": "ONNXRUNTIME_NODE_INSTALL=skip npm ci --legacy-peer-deps",
   "crons": [
     {
       "path": "/api/cron/panchang-revalidate",
