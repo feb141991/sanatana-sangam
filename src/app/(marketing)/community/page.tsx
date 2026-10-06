@@ -31,33 +31,15 @@ export const metadata: Metadata = {
 
 const journalEssays = getAllJournalEssays();
 
-const sankalpaMetrics = [
-  {
-    value: "1,420,000+",
-    label: "Japa Malas Turned",
-    detail: "Discrete rotations counted across personal digital malas",
-  },
-  {
-    value: "48,500+",
-    label: "Vedic Muhurtas Observed",
-    detail: "Astronomically aligned timings followed for sacred acts",
-  },
-  {
-    value: "2,100+",
-    label: "Sacred Mandirs Documented",
-    detail: "Historical temple profiles verified with geo-coordinates",
-  },
-  {
-    value: "18,400+",
-    label: "Hours of Scripture Contemplation",
-    detail: "Dedicated verse reading across Gita, Granth Sahib & Agamas",
-  },
-];
-
+// These circles are planned, not available: no scheduling, membership, or
+// session feature exists yet (today's community feature is city-level Mandali).
+// Every card is labelled "Planned" below. Do not describe them as running or as
+// being in testing until a circles feature ships, and do not add usage tallies
+// here that are not computed from real data.
 const localCircles = [
   {
     title: "Brahma Muhurta Dhyana",
-    time: "Daily · 5:30 AM",
+    time: "Daily · 5:30 AM local",
     focus: "Pranayama & Silent Meditation",
     description: "Start the day in collective stillness before the digital world awakens.",
     icon: Sparkles,
@@ -77,9 +59,9 @@ const localCircles = [
     icon: Users,
   },
   {
-    title: "Ahimsa & Prakrit Text Circle",
+    title: "Ahimsa Text Circle",
     time: "Monthly · Full Moon",
-    focus: "Ethical & Sutta Contemplation",
+    focus: "Ethical Contemplation",
     description: "Explore canonical Jain & Buddhist texts on non-violence and mindfulness.",
     icon: Compass,
   },
@@ -225,48 +207,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      {/* ── 2. Live Global Practice Tally (Animated Counters) ───────────────── */}
-      <section className="relative w-full overflow-hidden border-y border-[var(--card-border)] bg-[var(--surface-soft)] px-6 py-16 sm:px-10 lg:px-14 xl:px-20 lg:py-24">
-        <div
-          className="pointer-events-none absolute top-1/2 left-1/3 h-96 w-96 rounded-full bg-[radial-gradient(circle,rgba(216,138,28,0.1)_0%,transparent_70%)] blur-3xl animate-float-slow"
-          aria-hidden="true"
-        />
-
-        <div className="mx-auto max-w-[1440px]">
-          <div className="mb-12 text-center max-w-2xl mx-auto">
-            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--brand-primary-strong)]">
-              Communal Practice
-            </p>
-            <h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-[var(--text-cream)] sm:text-4xl lg:text-5xl">
-              Together in Quiet Dedication
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base">
-              A glimpse into collective sadhana occurring worldwide through Shoonaya every day.
-            </p>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {sankalpaMetrics.map((metric) => (
-              <div
-                key={metric.label}
-                className="relative rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-6 text-center shadow-[var(--shadow-soft)] card-lift"
-              >
-                <div className="font-display text-4xl font-bold tracking-tight text-gradient-gold sm:text-5xl">
-                  {metric.value}
-                </div>
-                <h3 className="mt-3 text-sm font-semibold uppercase tracking-wider text-[var(--text-cream)]">
-                  {metric.label}
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-[var(--text-muted-warm)]">
-                  {metric.detail}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 3. Local Mandali Circles ────────────────────────────────────────── */}
+      {/* ── 2. Planned Circles ──────────────────────────────────────────────── */}
       <section className="relative w-full px-6 py-16 sm:px-10 lg:px-14 xl:px-20 lg:py-24">
         <div className="mx-auto max-w-[1440px]">
           <div className="mb-12 max-w-3xl">
@@ -277,7 +218,7 @@ export default function CommunityPage() {
               Quiet Circles, Close to Home
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base">
-              Connect with fellow seekers for early morning dhyana, scriptural contemplation, and sacred service — maintained with complete privacy.
+              Small, private circles for early-morning dhyana, scriptural contemplation, and sacred service are planned. They are not open yet. Today, Mandali connects seekers in your city.
             </p>
           </div>
 
@@ -312,7 +253,7 @@ export default function CommunityPage() {
 
                   <div className="mt-4 pt-3 border-t border-[var(--card-border)]">
                     <span className="text-[11px] font-medium text-[var(--text-dim)] group-hover:text-[var(--text-cream)] transition-colors">
-                      Circle in Private Testing
+                      Planned · not yet open
                     </span>
                   </div>
                 </article>
@@ -325,7 +266,7 @@ export default function CommunityPage() {
               href="/journal"
               className="inline-flex min-h-12 items-center gap-2.5 rounded-full border border-[var(--brand-primary)] bg-[var(--brand-primary)] px-8 text-xs font-semibold uppercase tracking-wider text-black shadow-md hover:brightness-110 transition active:scale-95"
             >
-              <span>Explore All 8 Essays in The Sanctuary Journal</span>
+              <span>Explore All {journalEssays.length} Essays in The Sanctuary Journal</span>
               <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -383,13 +324,13 @@ export default function CommunityPage() {
           <div className="rounded-3xl border border-[var(--brand-primary)]/30 bg-[var(--card-bg)] p-8 sm:p-12 shadow-[var(--shadow-glow)] card-lift text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-primary)]/30 bg-[var(--brand-primary-soft)] px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--brand-primary-strong)] mb-4">
               <span className="size-1.5 rounded-full bg-[var(--brand-primary-strong)] animate-pulse" />
-              Private Testing Queue Open
+              Early-Access List
             </div>
             <h2 className="font-display text-3xl font-semibold tracking-tight text-[var(--text-cream)] sm:text-4xl">
-              Join the Inner Circle of Seekers
+              Register Your Interest
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted-warm)] max-w-xl mx-auto">
-              We are currently onboarding early seekers into private testing. Register your email below, and our team will whitelist your access and send your direct invitation link.
+              Leave your email to join the early-access list. Registering records your interest only; it does not create an account, issue an invitation, or guarantee access or timing.
             </p>
 
             <div className="mt-8 max-w-md mx-auto text-left">
