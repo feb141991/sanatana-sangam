@@ -11,9 +11,15 @@
  * Explicit "Gita 2.47"-style citations are routed to the manifest retriever by
  * PramanaDenseEmbeddingRetriever and are covered by run_evals.py instead.
  *
+ * Hindi and Punjabi cases (`language` "hi"/"pa") are searched the way the chat
+ * route searches them: translated to English first (src/lib/ai/query-language).
+ * That calls the paid Sarvam API, so they only run with --translate and a
+ * SARVAM_API_KEY; otherwise they are reported as skipped.
+ *
  * Usage:
- *   npx tsx scripts/eval_retrieval_quality.ts            # report only
- *   npx tsx scripts/eval_retrieval_quality.ts --gate     # exit 1 if dense hit@5 or MRR falls below sparse on any corpus
+ *   npx tsx scripts/eval_retrieval_quality.ts            # English cases
+ *   npx tsx scripts/eval_retrieval_quality.ts --gate     # exit 1 if dense hit@5 or MRR falls below sparse on any corpus (English cases)
+ *   SARVAM_API_KEY=... npx tsx scripts/eval_retrieval_quality.ts --translate   # also Hindi/Punjabi via translation
  *   npx tsx scripts/eval_retrieval_quality.ts --json out.json
  */
 import fs from 'fs';
@@ -25,10 +31,11 @@ import {
   PramanaUpanishadsEmbeddingRetriever,
 } from '../src/lib/ai/retrieval';
 import { rankOfFirstExpected, summariseRetrieval } from '../src/lib/ai/retrieval-eval-metrics';
+import { toRetrievalQuery } from '../src/lib/ai/query-language';
 
-type GoldCase = { case_id: string; corpus: string; query: string; expected_ids: string[]; kind: string };
+type GoldCase = { case_id: string; corpus: string; query: string; expected_ids: string[]; kind: string; language?: string };
 type Retriever = PramanaDenseEmbeddingRetriever | PramanaGitaEmbeddingRetriever | PramanaUpanishadsEmbeddingRetriever;
-type CaseOutcome = { caseId: string; corpus: string; retriever: string; rank: number | null; topIds: string[] };
+type CaseOutcome = { caseId: string; corpus: string; language: string; retriever: string; rank: number | null; topIds: string[] };
 
 const K = 5;
 const root = process.cwd();
@@ -73,36 +80,53 @@ async function main() {
   const gate = args.includes('--gate');
   const jsonIndex = args.indexOf('--json');
   const jsonOut = jsonIndex !== -1 ? args[jsonIndex + 1] : null;
+  const translate = args.includes('--translate');
+  const apiKey = process.env.SARVAM_API_KEY?.trim();
+  if (translate && !apiKey) throw new Error('--translate needs SARVAM_API_KEY in the environment.');
 
   const cases: GoldCase[] = fs.readFileSync(datasetPath, 'utf-8').split('\n').filter(Boolean).map((line) => JSON.parse(line));
   const retrievers = buildRetrievers();
   const outcomes: CaseOutcome[] = [];
 
+  let skipped = 0;
   for (const testCase of cases) {
     const corpus = retrievers[testCase.corpus];
     if (!corpus) throw new Error(`No retrievers configured for corpus "${testCase.corpus}" (case ${testCase.case_id}).`);
+    const language = testCase.language ?? 'en';
+    let queryText = testCase.query;
+    if (language !== 'en') {
+      if (!translate) { skipped += 1; continue; }
+      const retrievalQuery = await toRetrievalQuery(testCase.query, { apiKey });
+      if (!retrievalQuery.translated) throw new Error(`Translation failed for ${testCase.case_id}: ${retrievalQuery.fallbackReason}`);
+      queryText = retrievalQuery.text;
+    }
     for (const [name, retriever] of [['sparse', corpus.sparse], ['dense', corpus.dense]] as const) {
-      const result = await retriever.retrieve({ text: testCase.query, filters: { source: corpus.source }, topK: K });
+      const result = await retriever.retrieve({ text: queryText, filters: { source: corpus.source }, topK: K });
       const topIds = result.documents.slice(0, K).map((doc) => doc.id).filter((id): id is string => typeof id === 'string');
-      outcomes.push({ caseId: testCase.case_id, corpus: testCase.corpus, retriever: name, rank: rankOfFirstExpected(topIds, testCase.expected_ids), topIds });
+      outcomes.push({ caseId: testCase.case_id, corpus: testCase.corpus, language, retriever: name, rank: rankOfFirstExpected(topIds, testCase.expected_ids), topIds });
     }
   }
 
+  // English rows are the gated baseline; Hindi/Punjabi rows are reported per language.
   const report: Record<string, Record<string, ReturnType<typeof summariseRetrieval>>> = {};
   for (const corpus of Object.keys(retrievers)) {
-    report[corpus] = {};
-    for (const name of ['sparse', 'dense']) {
-      report[corpus][name] = summariseRetrieval(outcomes.filter((o) => o.corpus === corpus && o.retriever === name));
+    for (const language of ['en', 'hi', 'pa']) {
+      const rows = outcomes.filter((o) => o.corpus === corpus && o.language === language);
+      if (!rows.length) continue;
+      const key = language === 'en' ? corpus : `${corpus} [${language}]`;
+      report[key] = {};
+      for (const name of ['sparse', 'dense']) report[key][name] = summariseRetrieval(rows.filter((o) => o.retriever === name));
     }
   }
 
   console.log('Retrieval quality (paraphrase queries, top', K, ')');
-  console.log('corpus                 retriever  cases  hit@1  hit@3  hit@5  MRR');
+  console.log('corpus                      retriever  cases  hit@1  hit@3  hit@5  MRR');
   for (const [corpus, byRetriever] of Object.entries(report)) {
     for (const [name, s] of Object.entries(byRetriever)) {
-      console.log(`${corpus.padEnd(22)} ${name.padEnd(10)} ${String(s.cases).padStart(5)}  ${String(s.hit1).padStart(5)}  ${String(s.hit3).padStart(5)}  ${String(s.hit5).padStart(5)}  ${s.mrr.toFixed(3)}`);
+      console.log(`${corpus.padEnd(27)} ${name.padEnd(10)} ${String(s.cases).padStart(5)}  ${String(s.hit1).padStart(5)}  ${String(s.hit3).padStart(5)}  ${String(s.hit5).padStart(5)}  ${s.mrr.toFixed(3)}`);
     }
   }
+  if (skipped) console.log(`\n${skipped} Hindi/Punjabi cases skipped (run with --translate and SARVAM_API_KEY to include them).`);
 
   const misses = outcomes.filter((o) => o.retriever === 'dense' && o.rank === null);
   if (misses.length) {
@@ -113,7 +137,7 @@ async function main() {
   if (jsonOut) fs.writeFileSync(jsonOut, JSON.stringify({ k: K, report, outcomes }, null, 2));
 
   if (gate) {
-    const regressions = Object.entries(report).filter(([, r]) => r.dense.hit5 < r.sparse.hit5 || r.dense.mrr < r.sparse.mrr);
+    const regressions = Object.entries(report).filter(([key, r]) => !key.includes('[') && (r.dense.hit5 < r.sparse.hit5 || r.dense.mrr < r.sparse.mrr));
     if (regressions.length) {
       console.error(`\nGATE FAILED: dense retrieval is below sparse on ${regressions.map(([c]) => c).join(', ')}.`);
       process.exit(1);

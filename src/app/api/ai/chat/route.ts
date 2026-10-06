@@ -9,6 +9,7 @@ import { DAILY_AI_MESSAGE_LIMIT } from '@/lib/ai/chat-limits';
 import { getFallbackFestivalCalendar } from '@/lib/festivals';
 import { dharamVeerRetriever, festivalRulesRetriever } from '@/lib/ai/retrieval';
 import { retrieveDharmaChatGrounding } from '@/lib/ai/chat-grounding';
+import { toRetrievalQuery } from '@/lib/ai/query-language';
 import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 import { classifyChatIntent, getConversationalResponse } from '@/lib/ai/chat-intent';
 
@@ -436,9 +437,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'figure_id is required' }, { status: 400 });
     }
 
-    // Retrieve passages for the figure
+    // Retrieve passages for the figure. The indexes are English, so a Hindi or
+    // Punjabi question is searched by its English translation.
+    const retrievalQuery = await toRetrievalQuery(message, { apiKey: sarvamKey });
     const result = await dharamVeerRetriever.retrieve({
-        text: message,
+        text: retrievalQuery.text,
         filters: { title: figureId },
         topK: 5
     });
@@ -585,8 +588,13 @@ User Question: ${message}
 
     // Dynamic tradition-aware Pramana scripture, hero, & festival RAG grounding
     const ragStart = Date.now();
+    // The intent gate, source routing and scripture indexes are English, so a
+    // Hindi or Punjabi question is grounded via its English translation. The
+    // model still receives the original message and replies in the user's
+    // language; a failed translation falls back to the original text.
+    const retrievalQuery = await toRetrievalQuery(message, { apiKey: sarvamKey });
     const grounding = await retrieveDharmaChatGrounding({
-      message,
+      message: retrievalQuery.text,
       tradition,
     });
     const ragLatencyMs = Date.now() - ragStart;
@@ -629,6 +637,9 @@ User Question: ${message}
         rag_corpus: grounding.corpus,
         chunks_count: grounding.documents.length,
         rag_latency_ms: ragLatencyMs,
+        rag_query_language: retrievalQuery.language,
+        rag_query_translated: retrievalQuery.translated,
+        rag_query_fallback: retrievalQuery.fallbackReason ?? null,
       },
     });
 

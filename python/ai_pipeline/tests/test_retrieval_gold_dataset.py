@@ -19,6 +19,7 @@ CORPUS_INDEXES = {
     "pathshala_upanishads": PIPELINE / "corpus" / "upanishads_index_dense.json",
 }
 REQUIRED_FIELDS = {"case_id", "corpus", "query", "expected_ids", "kind", "verified"}
+LANGUAGES = {"en", "hi", "pa", "hi-latn"}
 
 
 def load_cases() -> list[dict]:
@@ -46,6 +47,7 @@ class RetrievalGoldDatasetTest(unittest.TestCase):
             self.assertIn(case["corpus"], CORPUS_INDEXES, f"{case['case_id']} names an unknown corpus")
             self.assertTrue(case["query"].strip(), f"{case['case_id']} has an empty query")
             self.assertTrue(case["expected_ids"], f"{case['case_id']} has no expected ids")
+            self.assertIn(case.get("language", "en"), LANGUAGES, f"{case['case_id']} has an unknown language")
 
     def test_every_expected_id_exists_exactly_once_in_its_index(self) -> None:
         for case in self.cases:

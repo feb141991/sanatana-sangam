@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   generateWithProvider: vi.fn(),
   getApiUser: vi.fn(),
   retrieveDharmaChatGrounding: vi.fn(),
+  generateSarvamTranslation: vi.fn(),
 }));
 
 vi.mock('@/lib/api-auth', async (importOriginal) => ({
@@ -45,6 +46,9 @@ vi.mock('@/lib/ai/retrieval', () => ({
 vi.mock('@/lib/ai/chat-grounding', () => ({
   retrieveDharmaChatGrounding: mocks.retrieveDharmaChatGrounding,
 }));
+vi.mock('@/lib/ai/providers/sarvam-translate', () => ({
+  generateSarvamTranslation: mocks.generateSarvamTranslation,
+}));
 vi.mock('@/lib/api-security', () => ({
   asBoundedString: (value: unknown, maxLength: number) =>
     typeof value === 'string' && value.trim() && value.length <= maxLength ? value.trim() : null,
@@ -57,6 +61,7 @@ vi.mock('@/lib/ai/chat-intent', () => ({
 }));
 
 import { POST } from './route';
+import { clearRetrievalQueryCache } from '@/lib/ai/query-language';
 
 const originalSarvamApiKey = process.env.SARVAM_API_KEY;
 
@@ -101,6 +106,7 @@ function createSupabaseStub() {
 describe('POST /api/ai/chat RAG integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearRetrievalQueryCache();
     process.env.SARVAM_API_KEY = 'test-key';
 
     mocks.getApiUser.mockResolvedValue({
@@ -189,5 +195,60 @@ describe('POST /api/ai/chat RAG integration', () => {
         chunks_count: 0,
       }),
     }));
+  });
+
+  it('grounds a Hindi question via its English translation but answers the original message', async () => {
+    const hindi = 'गीता में फल की इच्छा के बिना कर्म करने के बारे में क्या कहा गया है?';
+    mocks.generateSarvamTranslation.mockResolvedValue('What does the Gita say about performing actions without desiring the fruit?');
+
+    const response = await POST(new NextRequest('http://localhost/api/ai/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ message: hindi, language: 'hi' }),
+    }));
+
+    expect(response.status).toBe(200);
+    expect(mocks.generateSarvamTranslation).toHaveBeenCalledWith('test-key', expect.objectContaining({
+      input: hindi,
+      source_language_code: 'hi-IN',
+      target_language_code: 'en-IN',
+    }));
+    expect(mocks.retrieveDharmaChatGrounding).toHaveBeenCalledWith({
+      message: 'What does the Gita say about performing actions without desiring the fruit?',
+      tradition: 'hindu',
+    });
+    expect(mocks.generateWithProvider).toHaveBeenCalledWith(
+      expect.objectContaining({ user: hindi }),
+      { providerOverride: 'sarvam-hosted' }
+    );
+    expect(mocks.emitEvent).toHaveBeenCalledWith(expect.objectContaining({
+      context: expect.objectContaining({ rag_query_language: 'hi', rag_query_translated: true, rag_query_fallback: null }),
+    }));
+  });
+
+  it('falls back to grounding on the original Punjabi text when translation fails', async () => {
+    const punjabi = 'ਗੀਤਾ ਵਿੱਚ ਕਰਮ ਬਾਰੇ ਕੀ ਕਿਹਾ ਗਿਆ ਹੈ?';
+    mocks.generateSarvamTranslation.mockRejectedValue(new Error('Sarvam Translate API failed with status 503'));
+
+    const response = await POST(new NextRequest('http://localhost/api/ai/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ message: punjabi, language: 'pa' }),
+    }));
+
+    expect(response.status).toBe(200);
+    expect(mocks.retrieveDharmaChatGrounding).toHaveBeenCalledWith({ message: punjabi, tradition: 'hindu' });
+    expect(mocks.emitEvent).toHaveBeenCalledWith(expect.objectContaining({
+      context: expect.objectContaining({ rag_query_language: 'pa', rag_query_translated: false, rag_query_fallback: 'translation_error' }),
+    }));
+  });
+
+  it('does not call the translator for English questions', async () => {
+    await POST(new NextRequest('http://localhost/api/ai/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ message: 'What is karma?' }),
+    }));
+    expect(mocks.generateSarvamTranslation).not.toHaveBeenCalled();
   });
 });
