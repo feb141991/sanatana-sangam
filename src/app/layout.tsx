@@ -49,11 +49,11 @@ const fontVars = [
 ].join(" ");
 
 const brandDescription =
-  "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Follow your local Panchang, notice observances, and make room for daily practice.";
+  "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Follow your local Panchang, notice observances, and make room for daily practice.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.shoonaya.com"),
-  title: "Shoonaya — Find your infinite.",
+  title: "Shoonaya: Find your infinite.",
   applicationName: "Shoonaya",
   description: brandDescription,
   icons: {
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Shoonaya — Find your infinite.",
+    title: "Shoonaya: Find your infinite.",
     description: brandDescription,
     siteName: "Shoonaya",
     images: [
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
         url: "https://www.shoonaya.com/og-image.png?v=3",
         width: 1200,
         height: 630,
-        alt: "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+        alt: "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
       },
     ],
     type: "website",
@@ -85,12 +85,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shoonaya — Find your infinite.",
+    title: "Shoonaya: Find your infinite.",
     description: brandDescription,
     images: ["https://www.shoonaya.com/og-image.png?v=3"],
   },
   itunes: {
     appId: "6793055966",
+  },
+  verification: {
+    google: "IHVjfHkB6vTUw1x8DwkvzMjI9duZwupDNX_8iStS1mc",
   },
 };
 
