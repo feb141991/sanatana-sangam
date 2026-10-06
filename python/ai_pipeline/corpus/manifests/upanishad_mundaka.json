@@ -13,260 +13,325 @@
   "content": [
     {
       "ref": "1.1.1",
-      "text": "Brahma arose as the first of the gods —\nThe maker of all, the protector of the world.\nHe told the knowledge of Brahma ( brahma-vidya ), the founda-\ntion of all knowledge,\nTo Atharva[n], his eldest son."
+      "sanskrit": "ब्रह्मा देवानां प्रथमः संबभूव विश्वस्य कर्ताभुवनस्य गोप्ता ।\nस ब्रह्मविद्यां सर्वविद्याप्रतिष्ठामथर्वाय ज्येष्ठपुत्राय प्राह",
+      "text": "Brahma arose as the first of the gods —\nThe maker of all, the protector of the world.\nHe told the knowledge of Brahma ( brahma-vidya ), the foundation of all knowledge,\nTo Atharva[n], his eldest son."
     },
     {
       "ref": "1.1.2",
-      "text": "What Brahma taught to Atharvan,\nEven that knowledge of Brahma, Atharvan told in ancient\ntime to Angir.\nHe told it to Bharadvaja Satyavaha;\nBharadvaja, to Angiras — both the higher and the lower [know-\nledge]."
+      "sanskrit": "अथर्वणे यां प्रवदेत ब्रह्माऽथर्वा तां पुरोवाचाङ्गिरे ब्रह्मविद्याम् ।\nस भारद्वाजाय सत्यवाहाय प्राह भारद्वाजोऽङ्गिरसे परावराम्",
+      "text": "What Brahma taught to Atharvan,\nEven that knowledge of Brahma, Atharvan told in ancient\ntime to Angir.\nHe told it to Bharadvaja Satyavaha;\nBharadvaja, to Angiras — both the higher and the lower [knowledge]."
     },
     {
       "ref": "1.1.3",
-      "text": "Saunaka, verily, indeed, a great householder, approached\nAngiras according to rule, and asked : ‘ Through understand-\ning of what, pray, does all this world become understood, Sir?’"
+      "sanskrit": "शौनको ह वै महाशालोऽङ्गिरसं विधिवदुपसन्नः पप्रच्छ\nकस्मिन्नु भगवो विज्ञाते सर्वमिदं विज्ञातं भवतीति",
+      "text": "Saunaka, verily, indeed, a great householder, approached\nAngiras according to rule, and asked : ‘ Through understanding of what, pray, does all this world become understood, Sir?’"
     },
     {
       "ref": "1.1.4",
+      "sanskrit": "तस्मै स होवाच । द्वे विद्ये वेदितव्ये इति ह स्म\nयद्ब्रह्मविदो वदन्ति परा चैवापरा च",
       "text": "To him then he said : ‘There are two knowledges to be\nknown — as indeed the knowers of Brahma are wont to say:\na higher (para) and also a lower (apara)."
     },
     {
       "ref": "1.1.5",
-      "text": "Of these, the lower is the Rig-Veda, the Yajur-Veda, the\nSama-Veda, the Atharva-Veda,\nPronunciation (siksa), Ritual ( kalpa ), Grammar ( vyakarana ),\nDefinition ( nirukta ), Metrics ( chandas ), and Astrology\n(Jy oil's a)}\nNow, the higher is that whereby that Imperishable ( aksara )\nis apprehended."
+      "sanskrit": "तत्रापरा, ऋग्वेदो यजुर्वेदः सामवेदोऽथर्ववेदः\nशिक्षा कल्पो व्याकरणं निरुक्तं छन्दो ज्योतिषमिति ।\nअथ परा यया तदक्षरमधिगम्यते",
+      "text": "Of these, the lower is the Rig-Veda, the Yajur-Veda, the\nSama-Veda, the Atharva-Veda,\nPronunciation (siksa), Ritual ( kalpa ), Grammar ( vyakarana ),\nDefinition ( nirukta ), Metrics ( chandas ), and Astrology\n(jyotisa)\nNow, the higher is that whereby that Imperishable ( aksara )\nis apprehended."
     },
     {
       "ref": "1.1.6",
+      "sanskrit": "यत्तदद्रेश्यमग्राह्यमगोत्रमवर्णमचक्षुःश्रोत्रं तदपाणिपादम् ।\nनित्यं विभुं सर्वगतं सुसूक्ष्मं तदव्ययं यद्भूतयोनिं परिपश्यन्ति धीराः",
       "text": "That which is invisible, ungraspable, without family, without\ncaste ( a-varna ) —\nWithout sight or hearing is It, without hand or foot,\nEternal, all-pervading, omnipresent, exceedingly subtile;\nThat is the Imperishable, which the wise j perceive as the\nsource of beings."
     },
     {
       "ref": "1.1.7",
+      "sanskrit": "यथोर्णनाभिः सृजते गृह्णते च यथा पृथिव्यामोषधयः संभवन्ति ।\nयथा सतः पुरुषात्केशलोमानि तथाऽक्षरात्संभवतीह विश्वम्",
       "text": "As a spider emits and draws in [its thread],\nAs herbs arise on the earth,\nAs the hairs of the head and body from a living person,\nSo from the Imperishable arises everything here."
     },
     {
       "ref": "1.1.8",
+      "sanskrit": "तपसा चीयते ब्रह्म ततोऽन्नमभिजायते ।\nअन्नात्प्राणो मनः सत्यं लोकाः कर्मसु चामृतम्",
       "text": "By austerity ( tapas ) Brahma becomes built up.\nFrom that, food is produced;\nFrom food — life-breath, mind, truth,\nThe worlds, immortality too in works."
     },
     {
       "ref": "1.1.9",
+      "sanskrit": "यः सर्वज्ञः सर्वविद्यस्य ज्ञानमयं तपः ।\nतस्मादेतद्ब्रह्म नाम रूपमन्नं च जायाते",
       "text": "He who is all-knowing, all- wise,\nWhose austerity consists of knowledge —\nFrom Him are produced the Brahma here,\n[Namely] name and form, and food."
     },
     {
       "ref": "1.2.1",
-      "text": "This is the truth : —\nThe works which the sages ( kavi ) saw in the sacred sayings\n( mantra , i.e. Vedic hymns)\nAre manifoldly spread forth in the triad [of the Vedas].\nFollow them ( acaratha ) constantly, ye lovers of truth ( satya -\nkdma ) !\nThis is your path to the world of good deeds."
+      "sanskrit": "तदेतत्सत्यं मन्त्रेषु कर्माणि कवयो यान्यपश्यंस्तानि त्रेतायां बहुधा संततानि ।\nतान्याचरथ नियतं सत्यकामा एष वः पन्थाः सुकृतस्य लोके",
+      "text": "This is the truth : —\nThe works which the sages ( kavi ) saw in the sacred sayings\n( mantra , i.e. Vedic hymns)\nAre manifoldly spread forth in the triad [of the Vedas].\nFollow them ( acaratha ) constantly, ye lovers of truth ( satya-kama ) !\nThis is your path to the world of good deeds."
     },
     {
       "ref": "1.2.2",
+      "sanskrit": "यदा लेलायते ह्यर्चिः समिद्धे हव्यवाहने ।\nतदाऽऽज्यभागावन्तरेणाऽऽहुतीः प्रतिपादयेत्",
       "text": "When the flame flickers,\nAfter the oblation fire has been kindled,\nThen, between the two portions of melted butter, his oblations\nOne should throw — an offering made with faith ( sraddha )."
     },
     {
       "ref": "1.2.3",
-      "text": "If one’s Agnihotra sacrifice is not followed by the sacri-\nfice of the new moon and of the full moon, by the four-months\nsacrifice, by the harvest sacrifice, if it is unattended by guests,\nor not offered at all, or without the ceremony to all the gods,\nor not according to rule, it destroys his seven worlds."
+      "sanskrit": "यस्याग्निहोत्रमदर्शमपौर्णमासमचातुर्मास्यमनाग्रयणमतिथिवर्जितं च ।\nअहुतमवैश्वदेवमविधिना हुतमासप्तमांस्तस्य लोकान्हिनस्ति",
+      "text": "If one’s Agnihotra sacrifice is not followed by the sacrifice of the new moon and of the full moon, by the four-months\nsacrifice, by the harvest sacrifice, if it is unattended by guests,\nor not offered at all, or without the ceremony to all the gods,\nor not according to rule, it destroys his seven worlds."
     },
     {
       "ref": "1.2.4",
-      "text": "The Black {kali), and the Terrible, and the Swift-as-Thought,\nThe Very-red, and the Very-smoky-colored,\nThe Scintillating, and the All-formed, divine one,\nAre the seven so-called flickering tongues [of flame]."
+      "sanskrit": "काली कराली च मनोजवा च सुलोहिता या च सुधूम्रवर्णा ।\nस्फुलिङ्गिनी विश्वरुची च देवी लेलायमाना इति सप्त जिह्वाः",
+      "text": "The Black (kali), and the Terrible, and the Swift-as-Thought,\nThe Very-red, and the Very-smoky-colored,\nThe Scintillating, and the All-formed, divine one,\nAre the seven so-called flickering tongues [of flame]."
     },
     {
       "ref": "1.2.5",
-      "text": "If one performs sacrifices when these are shining,\nOffering the oblations at the proper time, too,\nThese (flames) as rays of the sun lead him\nTo where is resident the one lord {pall) of the gods."
+      "sanskrit": "एतेषु यश्चरते भ्राजमानेषु यथाकालं चाहुतयो ह्याददायन् ।\nतं नयन्त्येताः सूर्यस्य रश्मयो यत्र देवानां पतिरेकोऽधिवासः",
+      "text": "If one performs sacrifices when these are shining,\nOffering the oblations at the proper time, too,\nThese (flames) as rays of the sun lead him\nTo where is resident the one lord (pati) of the gods."
     },
     {
       "ref": "1.2.6",
+      "sanskrit": "एह्येहीति तमाहुतयः सुवर्चसः सूर्यस्य रश्मिभिर्यजमानं वहन्ति ।\nप्रियां वाचमभिवदन्त्योऽर्चयन्त्य एष वः पुण्यः सुकृतो ब्रह्मलोकः",
       "text": "Saying to him “ Come Come ! ” the splendid offerings\nCarry the sacrificer with the rays of the sun,\nAddressing pleasant speech, praising, and saying :\n“ This is your meritorious ( punya ) Brahma-world, gained by\ngood works.”"
     },
     {
       "ref": "1.2.7",
+      "sanskrit": "प्लवा ह्येते अदृढा यज्ञरूपा अष्टादशोक्तमवरं येषु कर्म ।\nएतच्छ्रेयो येऽभिनन्दन्ति मूढा जरामृत्युं ते पुनरेवापि यन्ति",
       "text": "Unsafe boats, however, are these sacrificial forms,\nThe eighteen, in which is expressed the lower work.\nThe fools who approve that as the better,\nGo again to old age and death."
     },
     {
       "ref": "1.2.8",
+      "sanskrit": "अविद्यायामन्तरे वर्तमानाः स्वयं धीराः पण्डितं मन्यमानाः ।\nजङ्घन्यमानाः परियन्ति मूढा अन्धेनैव नीयमाना यथान्धाः",
       "text": "Those abiding in the midst of ignorance,\nSelf-wise, thinking themselves learned,\nHard smitten, go around deluded,\nLike blind men led by one who is himself blind."
     },
     {
       "ref": "1.2.9",
+      "sanskrit": "अविद्यायां बहुधा वर्तमानाः वयं कृतार्था इत्यभिमन्यन्ति बालाः ।\nयत्कर्मिणो न प्रवेदयन्ति रागात्तेनातुराः क्षीणलोकाश्च्यवन्ते",
       "text": "Manifoldly living in ignorance,\nThey think to themselves, childishly : “ We have accomplished\nour aim”\nSince doers of deeds ( karmin ) do not understand, because of\npassion ( raga ),\nTherefore, when their worlds are exhausted, they sink down\nwretched."
     },
     {
       "ref": "1.2.10",
+      "sanskrit": "इष्टापूर्तं मन्यमाना वरिष्ठं नान्यच्छ्रेयो वेदयन्ते प्रमूढाः ।\nनाकस्य पृष्ठे ते सुकृतेऽनुभूत्वेमं लोकं हीनतरं वा विशन्ति",
       "text": "Thinking sacrifice and merit is the chiefest thing,\nNaught better do they know — deluded !\nHaving had enjoyment on the top of the heaven won by good\nworks,\nThey re-enter this world, or a lower."
     },
     {
       "ref": "1.2.11",
-      "text": "They who practise austerity ( tapas ) and faith ( sraddha ) in the\nforest,\nThe peaceful ( sduta ) knowers who live on alms,\nDepart passionless ( vi-raga ) through the door of the sun,\nTo where is that immortal Person (Purusha), e’en the im-\nperishable Spirit (Atman)."
+      "sanskrit": "तपःश्रद्धे ये ह्युपवसन्त्यरण्ये शान्ता विद्वांसो भैक्ष्यचर्यां चरन्तः ।\nसूर्यद्वारेण ते विरजाः प्रयान्ति यत्रामृतः स पुरुषो ह्यव्ययात्मा",
+      "text": "They who practise austerity ( tapas ) and faith ( sraddha ) in the\nforest,\nThe peaceful ( santa ) knowers who live on alms,\nDepart passionless ( vi-raga ) through the door of the sun,\nTo where is that immortal Person (Purusha), e’en the imperishable Spirit (Atman)."
     },
     {
       "ref": "1.2.12",
+      "sanskrit": "परीक्ष्य लोकान्कर्मचितान्ब्राह्मणो निर्वेदमायान्नास्त्यकृतः कृतेन ।\nतद्विज्ञानार्थं स गुरुमेवाभिगच्छेत् समित्पाणिः श्रोत्रियं ब्रह्मनिष्ठम्",
       "text": "Having scrutinized the worlds that are built up by work, a\nBrahman\nShould arrive at indifference. The [world] that was not made\nis not [won] by what is done.\nFor the sake of this knowledge let him go, fuel in hand,\nTo a spiritual teacher (guru) who is learned in the scriptures\nand established on Brahma."
     },
     {
       "ref": "1.2.13",
+      "sanskrit": "तस्मै स विद्वानुपसन्नाय सम्यक् प्रशान्तचित्ताय शमान्विताय ।\nयेनाक्षरं पुरुषं वेद सत्यं प्रोवाच तां तत्त्वतो ब्रह्मविद्याम्",
       "text": "Such a knowing [teacher], unto one who has approached\nproperly,\nWhose thought is tranquilized, who has reached peace,\nTeaches in its very truth that knowledge of Brahma\nWhereby one knows the Imperishable, the Person, the True."
     },
     {
       "ref": "2.1.1",
+      "sanskrit": "तदेतत्सत्यं यथा सुदीप्तात् पावकाद्विस्फुलिङ्गाः सहस्रशः प्रभवन्ते सरूपाः ।\nतथाऽक्षराद्विविधाः सोम्य भावाः प्रजायन्ते तत्र चैवापि यन्ति",
       "text": "This is the truth : —\nAs, from a well-blazing fire, sparks\nBy the thousand issue forth of like form,\nSo from the Imperishable, my friend, beings manifold\nAre produced, and thither also go."
     },
     {
       "ref": "2.1.2",
-      "text": "Heavenly ( diiya ), formless ( a-murtta ) is the Person (Purusha).\nHe is without and within, unborn,\nBreathless ( a-prana ), mindless {a-manas), pure ( subhra ),\nHigher than the high Imperishable."
+      "sanskrit": "दिव्यो ह्यमूर्तः पुरुषः सबाह्याभ्यन्तरो ह्यजः ।\nअप्राणो ह्यमनाः शुभ्रो ह्यक्षरात्परतः परः",
+      "text": "Heavenly ( divya ), formless ( a-murtta ) is the Person (Purusha).\nHe is without and within, unborn,\nBreathless ( a-prana ), mindless (a-manas), pure ( subhra ),\nHigher than the high Imperishable."
     },
     {
       "ref": "2.1.3",
-      "text": "From Him is produced breath {prana),\nMind ( manas ), and all the senses ( indriya ),\nSpace {kha), wind, light, water,\nAnd earth, the supporter ol all."
+      "sanskrit": "एतस्माज्जायते प्राणो मनः सर्वेन्द्रियाणि च ।\nखं वायुर्ज्योतिरापः पृथिवी विश्वस्य धारिणी",
+      "text": "From Him is produced breath (prana),\nMind ( manas ), and all the senses ( indriya ),\nSpace (kha), wind, light, water,\nAnd earth, the supporter of all."
     },
     {
       "ref": "2.1.4",
-      "text": "Fire is His head ; His eyes, the moon and sun ;\nThe regions of space, His ears ; His voice, the revealed Vedas ;\nWind, His breath {prana); His heart, the whole world. Out of\nHis feet,\nThe earth. Truly, He is the Inner Soul (Atman) of all."
+      "sanskrit": "अग्नीर्मूर्धा चक्षुषी चन्द्रसूर्यौ दिशः श्रोत्रे वाग् विवृताश्च वेदाः ।\nवायुः प्राणो हृदयं विश्वमस्य पद्भ्यां पृथिवी ह्येष सर्वभूतान्तरात्मा",
+      "text": "Fire is His head ; His eyes, the moon and sun ;\nThe regions of space, His ears ; His voice, the revealed Vedas ;\nWind, His breath (prana); His heart, the whole world. Out of\nHis feet,\nThe earth. Truly, He is the Inner Soul (Atman) of all."
     },
     {
       "ref": "2.1.5",
+      "sanskrit": "तस्मादग्निः समिधो यस्य सूर्यः सोमात्पर्जन्य ओषधयः पृथिव्याम् ।\nपुमान् रेतः सिञ्चति योषितायां बह्वीः प्रजाः पुरुषात्सम्प्रसूताः",
       "text": "From Him [proceeds] fire, whose fuel is the sun ;\nFrom the moon (Soma), rain ; herbs, on the earth.\nThe male pours seed in the female.\nMany creatures are produced from the Person (Purusha)."
     },
     {
       "ref": "2.1.6",
-      "text": "From Him the Rig Verses, the Saman Chant, the sacrificial\nformulas {yajus), the initiation rite {diksa).\nAnd all the sacrifices, ceremonies, and sacrificial gifts ( daksina ),\nThe year too, and the sacrificer, the worlds\nWhere the moon (Soma) shines brightly, and where the sun."
+      "sanskrit": "तस्मादृचः साम यजूषि दीक्षा यज्ञाश्च सर्वे क्रतवो दक्षिणाश्च ।\nसंवत्सरश्च यजमानश्च लोकाः सोमो यत्र पवते यत्र सूर्यः",
+      "text": "From Him the Rig Verses, the Saman Chant, the sacrificial\nformulas (yajus), the initiation rite (diksa).\nAnd all the sacrifices, ceremonies, and sacrificial gifts ( daksina ),\nThe year too, and the sacrificer, the worlds\nWhere the moon (Soma) shines brightly, and where the sun."
     },
     {
       "ref": "2.1.7",
-      "text": "From Him, too, gods are manifoldly produced,\nThe celestials (Sadhyas), men, cattle, birds,\nThe in-breath and the out-breath ( prandpanau ), rice and\nbarley, austerity (/ apas ),\nFaith ( sraddha ), truth, chastity, and the law ( vidhi )."
+      "sanskrit": "तस्माच्च देवा बहुधा सम्प्रसूताः साध्या मनुष्याः पशवो वयांसि ।\nप्राणापानौ व्रीहियवौ तपश्च श्रद्धा सत्यं ब्रह्मचर्यं विधिश्च",
+      "text": "From Him, too, gods are manifoldly produced,\nThe celestials (Sadhyas), men, cattle, birds,\nThe in-breath and the out-breath ( pranapanau ), rice and\nbarley, austerity (/ apas ),\nFaith ( sraddha ), truth, chastity, and the law ( vidhi )."
     },
     {
       "ref": "2.1.8",
+      "sanskrit": "सप्त प्राणाः प्रभवन्ति तस्मात्सप्तार्चिषः समिधः सप्त होमाः ।\nसप्तेमे लोका येषु चरन्ति प्राणा गुहाशया निहिताः सप्त सप्त",
       "text": "From Him come forth the seven life-breaths ( prana ),\nThe seven flames, their fuel, the seven oblations,\nThese seven worlds, wherein do move\nThe life-breaths that dwell in the secret place [of the heart],\nplaced seven and seven."
     },
     {
       "ref": "2.1.9",
-      "text": "From Him, the seas and the mountains all.\nFrom Him roll rivers of every kind.\nAnd from Him all herbs, the essence, too,\nWhereby that Inner Soul (antaralman) dwells in beings."
+      "sanskrit": "अतः समुद्रा गिरयश्च सर्वे अस्मात्स्यन्दन्ते सिन्धवः सर्वरूपाः ।\nअतश्च सर्वा ओषधयो रसश्च येनैष भूतैस्तिष्ठते ह्यन्तरात्मा",
+      "text": "From Him, the seas and the mountains all.\nFrom Him roll rivers of every kind.\nAnd from Him all herbs, the essence, too,\nWhereby that Inner Soul (antaratman) dwells in beings."
     },
     {
       "ref": "2.1.10",
-      "text": "The Person (Purusha) himself is everything here:\nWork ( karman ) and austerity {/apas) and Brahma, beyond\ndeath.\nHe who knows That, set in the secret place [of the heart] —\nHe here on earth, my friend, rends asunder the knot of ignorance."
+      "sanskrit": "पुरुष एवेदं विश्वं कर्म तपो ब्रह्म परामृतम् ।\nएतद्यो वेद निहितं गुहायां सोऽविद्याग्रन्थिं विकिरतीह सोम्य",
+      "text": "The Person (Purusha) himself is everything here:\nWork ( karman ) and austerity (tapas) and Brahma, beyond\ndeath.\nHe who knows That, set in the secret place [of the heart] —\nHe here on earth, my friend, rends asunder the knot of ignorance."
     },
     {
       "ref": "2.2.1",
-      "text": "Manifest, [yet] hidden; called ‘Moving-in-secret’;\nThe great abode! Therein is placed that\nWhich moves and breathes and winks.\nWhat that is, know as Being (sacf) and Non-being ( a-sad ),\nAs the object of desire, higher than understanding,\nAs what is the best of creatures !"
+      "sanskrit": "आविः संनिहितं गुहाचरं नाम महत्पदमत्रैतत्समर्पितम् ।\nएजत्प्राणन्निमिषच्च यदेतज्जानथ सदसद्वरेण्यं परं विज्ञानाद्यद्वरिष्ठं प्रजानाम्",
+      "text": "Manifest, [yet] hidden; called ‘Moving-in-secret’;\nThe great abode! Therein is placed that\nWhich moves and breathes and winks.\nWhat that is, know as Being (sad) and Non-being ( a-sad ),\nAs the object of desire, higher than understanding,\nAs what is the best of creatures !"
     },
     {
       "ref": "2.2.2",
+      "sanskrit": "यदर्चिमद्यदणुभ्योऽणु च यस्मिंल्लोका निहिता लोकिनश्च ।\nतदेतदक्षरं ब्रह्म स प्राणस्तदु वाङ्मनः तदेतत्सत्यं तदमृतं तद्वेद्धव्यं सोम्य विद्धि",
       "text": "That which is flaming, which is subtler than the subtle,\nOn which the worlds are set, and their inhabitants —\nThat is the imperishable Brahma.\nIt is life (prana), and It is speech and mind.\nThat is the real. It is immortal.\nIt is [a mark] to be penetrated. Penetrate It, my friend!"
     },
     {
       "ref": "2.2.3",
+      "sanskrit": "धनुर्गृहीत्वौपनिषदं महास्त्रं शरं ह्युपासानिशितं सन्दधीत ।\nआयम्य तद्भावगतेन चेतसा लक्ष्यं तदेवाक्षरं सोम्य विद्धि",
       "text": "Taking as a bow the great weapon of the Upanishad,\nOne should put upon it an arrow sharpened by meditation.\nStretching it with a thought directed to the essence of That,\nPenetrate that Imperishable as the mark, my friend."
     },
     {
       "ref": "2.2.4",
-      "text": "The mystic syllable Om (pranava) is the bow. The arrow\nis the soul (d/man).\nBrahma is said to be the mark ( laksya ).\nBy the undistracted man is It to be penetrated.\nOne should come to be in It, as the arrow [in the mark]."
+      "sanskrit": "प्रणवो धनुः शरो ह्यात्मा ब्रह्म तल्लक्ष्यमुच्यते ।\nअप्रमत्तेन वेद्धव्यं शरवत्तन्मयो भवेत्",
+      "text": "The mystic syllable Om (pranava) is the bow. The arrow\nis the soul (atman).\nBrahma is said to be the mark ( laksya ).\nBy the undistracted man is It to be penetrated.\nOne should come to be in It, as the arrow [in the mark]."
     },
     {
       "ref": "2.2.5",
+      "sanskrit": "यस्मिन्द्यौः पृथिवी चान्तरिक्षमोतं मनः सह प्राणैश्च सर्वैः ।\nतमेवैकं जानथ आत्मानमन्या वाचो विमुञ्चथामृतस्यैष सेतुः",
       "text": "He on whom the sky, the earth, and the atmosphere\nAre woven, and the mind, together with all the life-breaths\n(prana),\nHim alone know as the one Soul (Atman). Other\nWords dismiss. He is the bridge to immortality."
     },
     {
       "ref": "2.2.6",
+      "sanskrit": "अरा इव रथनाभौ संहता यत्र नाड्यः। स एषोऽन्तश्चरते बहुधा जायमानः ।\nओमित्येवं ध्यायथ आत्मानं स्वस्ति वः पाराय तमसः परस्तात्",
       "text": "Where the arteries are brought together\nLike the spokes in the hub of a wheel —\nTherein he moves about,\nBecoming manifold.\nOm ! — Thus meditate upon the Soul (Atman).\nSuccess to you in crossing to the farther shore beyond darkness!"
     },
     {
       "ref": "2.2.7",
+      "sanskrit": "यः सर्वज्ञः सर्वविद्यस्यैष महिमा भुवि । दिव्ये ब्रह्मपुरे ह्येष व्योमन्यात्मा प्रतिष्ठितः ॥\nमनोमयः प्राणशरीरनेता\nप्रतिष्ठितोऽन्ने हृदयं सन्निधाय ।\nतद्विज्ञानेन परिपश्यन्ति धीरा\nआनन्दरूपममृतं यद्विभाति",
       "text": "He who is all-knowing, all-wise,\nWhose is this greatness on the earth —\nHe is in the divine Brahma city\nAnd in the heaven established ! The Soul (Atman) !\nConsisting of mind, leader of the life-breaths and of the\nbody,\nHe is established on food, controlling the heart.\nBy this knowledge the wise perceive\nThe blissful Immortal that gleams forth."
     },
     {
       "ref": "2.2.8",
+      "sanskrit": "भिद्यते हृदयग्रन्थिश्छिद्यन्ते सर्वसंशयाः ।\nक्षीयन्ते चास्य कर्माणि तस्मिन्दृष्टे परावरे",
       "text": "The knot of the heart is loosened,\nAll doubts are cut off,\nAnd one’s deeds ( karman ) cease\nWhen He is seen — both the higher and the lower."
     },
     {
       "ref": "2.2.9",
+      "sanskrit": "हिरण्मये परे कोशे विरजं ब्रह्म निष्कलम् ।\nतच्छुभ्रं ज्योतिषां ज्योतिस्तद्यदात्मविदो विदुः",
       "text": "In the highest golden sheath\nIs Brahma, without stain, without parts.\nBrilliant is It, the light of lights —\nThat which knowers of the Soul (Atman) do know !"
     },
     {
       "ref": "2.2.10",
+      "sanskrit": "न तत्र सूर्यो भाति न चन्द्रतारकं\nनेमा विद्युतो भान्ति कुतोऽयमग्निः ।\nतमेव भान्तमनुभाति सर्वं\nतस्य भासा सर्वमिदं विभाति",
       "text": "The sun shines not there, nor the moon and stars;\nThese lightnings shine not, much less this [earthly] fire !\nAfter Him, as He shines, doth everything shine.\nThis whole world is illumined with His light."
     },
     {
       "ref": "2.2.11",
+      "sanskrit": "ब्रह्मैवेदममृतं पुरस्ताद् ब्रह्म पश्चाद् ब्रह्म दक्षिणतश्चोत्तरेण ।\nअधश्चोर्ध्वं च प्रसृतं ब्रह्मैवेदं विश्वमिदं वरिष्ठम्",
       "text": "Brahma, indeed, is this immortal. Brahma before,\nBrahma behind, to right and to left.\nStretched forth below and above,\nBrahma, indeed, is this whole world, this widest extent."
     },
     {
       "ref": "3.1.1",
+      "sanskrit": "द्वा सुपर्णा सयुजा सखाया समानं वृक्षं परिषस्वजाते ।\nतयोरन्यः पिप्पलं स्वाद्वत्ति अनश्नन्नन्योऽभिचाकशीति",
       "text": "Two birds, fast bound companions,\nClasp close the self-same tree.\nOf these two, the one eats sweet fruit;\nThe other looks on without eating."
     },
     {
       "ref": "3.1.2",
+      "sanskrit": "समाने वृक्षे पुरुषो निमग्नोऽनीशया शोचति मुह्यमानः ।\nजुष्टं यदा पश्यत्यन्यमीशमस्य महिमानमिति वीतशोकः",
       "text": "On the self-same tree a person, sunken,\nGrieves for his impotence, deluded ;\nWhen he sees the other, the Lord (is), contented,\nAnd his greatness, he becomes freed from sorrow."
     },
     {
       "ref": "3.1.3",
-      "text": "When a seer sees the brilliant\nMaker, Lord, Person, the Brahma-source,\nThen, being a knower, shaking off good and evil,\nStainless, he attains supreme identity ( sdmya ) [with Him]."
+      "sanskrit": "यदा पश्यः पश्यते रुक्मवर्णं कर्तारमीशं पुरुषं ब्रह्मयोनिम् ।\nतदा विद्वान्पुण्यपापे विधूय निरञ्जनः परमं साम्यमुपैति",
+      "text": "When a seer sees the brilliant\nMaker, Lord, Person, the Brahma-source,\nThen, being a knower, shaking off good and evil,\nStainless, he attains supreme identity ( samya ) [with Him]."
     },
     {
       "ref": "3.1.4",
+      "sanskrit": "प्राणो ह्येष यः सर्वभूतैर्विभाति विजानन्विद्वान्भवते नातिवादी ।\nआत्मक्रीड आत्मरतिः क्रियावानेष ब्रह्मविदां वरिष्ठः",
       "text": "Truly, it is Life (Prana) that shines forth in all things!\nUnderstanding this, one becomes a knower. There is no\nsuperior speaker.\nHaving delight in the Soul (Atman), having pleasure in the\nSoul, doing the rites,\nSuch a one is the best of Brahma-knowers."
     },
     {
       "ref": "3.1.5",
-      "text": "This Soul (Atman) is obtainable by truth, by austerity ( tapas ),\nBy proper knowledge (jhana ), by the student’s life of chastity\n( brahmacarya ) constantly [practised].\nWithin the body, consisting of light, pure is He\nWhom the ascetics (yaii), with imperfections done away,\nbehold."
+      "sanskrit": "सत्येन लभ्यस्तपसा ह्येष आत्मा सम्यग्ज्ञानेन ब्रह्मचर्येण नित्यम् ।\nअन्तः शरीरे ज्योतिर्मयो हि शुभ्रो यं पश्यन्ति यतयः क्षीणदोषाः",
+      "text": "This Soul (Atman) is obtainable by truth, by austerity ( tapas ),\nBy proper knowledge (jnana ), by the student’s life of chastity\n( brahmacarya ) constantly [practised].\nWithin the body, consisting of light, pure is He\nWhom the ascetics (yati), with imperfections done away,\nbehold."
     },
     {
       "ref": "3.1.6",
+      "sanskrit": "सत्यमेव जयते नानृतं सत्येन पन्था विततो देवयानः ।\nयेनाऽऽक्रमन्त्यृषयो ह्याप्तकामा यत्र तत्सत्यस्य परमं निधानम्",
       "text": "Truth alone conquers, not falsehood.\nBy truth is laid out the path leading to the gods ( devayana )\nBy which the sages whose desire is satisfied ascend\nTo where is the highest repository of truth."
     },
     {
       "ref": "3.1.7",
+      "sanskrit": "बृहच्च तद्दिव्यमचिन्त्यरूपं सूक्ष्माच्च तत्सूक्ष्मतरं विभाति ।\nदूरात्सुदूरे तदिहान्तिके च पश्यन्त्विहैव निहितं गुहायाम्",
       "text": "Vast, heavenly, of unthinkable form,\nAnd more minute than the minute, It shines forth.\nIt is farther than the far, yet here near at hand,\nSet down in the secret place [of the heart], even here among\nthose who behold [It]."
     },
     {
       "ref": "3.1.8",
-      "text": "Not by sight is It grasped, not even by speech,\nNot by any other sense-organs ( dev a ), austerity, or work.\nBy the peace of knowledge ( jnana-prasada ), one’s nature\npurified —\nIn that way, however, by meditating, one does behold Him\nwho is without parts."
+      "sanskrit": "न चक्षुषा गृह्यते नापि वाचा नान्यैर्देवैस्तपसा कर्मणा वा ।\nज्ञानप्रसादेन विशुद्धसत्त्वस्ततस्तु तं पश्यते निष्कलं ध्यायमानः",
+      "text": "Not by sight is It grasped, not even by speech,\nNot by any other sense-organs ( deva ), austerity, or work.\nBy the peace of knowledge ( jnana-prasada ), one’s nature\npurified —\nIn that way, however, by meditating, one does behold Him\nwho is without parts."
     },
     {
       "ref": "3.1.9",
+      "sanskrit": "एषोऽणुरात्मा चेतसा वेदितव्यो यस्मिन्प्राणः पञ्चधा संविवेश ।\nप्राणैश्चित्तं सर्वमोतं प्रजानां यस्मिन्विशुद्धे विभवत्येष आत्मा",
       "text": "That subtile Soul (Atman) is to be known by thought ( cetas )\nWherein the senses [prana) fivefoldly have entered.\nThe whole of men’s thinking is interwoven with the senses.\nWhen that is purified, the Soul (Atman) shines forth."
     },
     {
       "ref": "3.1.10",
+      "sanskrit": "यं यं लोकं मनसा संविभाति विशुद्धसत्त्वः कामयते यांश्च कामान् ।\nतं तं लोकं जयते तांश्च कामांस्तस्मादात्मज्ञं ह्यर्चयेत्भूतिकामः",
       "text": "Whatever world a man of purified nature makes clear in mind,\nAnd whatever desires he desires for himself —\nThat world he wins, those desires too.\nTherefore he who is desirous of welfare should praise the\nknower of the Soul (Atman)."
     },
     {
       "ref": "3.2.1",
-      "text": "He knows that Supreme Brahma-abode,\nFounded on which the whole world shines radiantly.\nThey who, being without desire, worship the Person (Purusha)\nAnd are wise, pass beyond the seed [snkra) [of rebirth] here."
+      "sanskrit": "स वेदैतत्परमं ब्रह्म धाम यत्र विश्वं निहितं भाति शुभ्रम् ।\nउपासते पुरुषं ये ह्यकामास्ते शुक्रमेतदतिवर्तन्ति धीराः",
+      "text": "He knows that Supreme Brahma-abode,\nFounded on which the whole world shines radiantly.\nThey who, being without desire, worship the Person (Purusha)\nAnd are wise, pass beyond the seed (sukra) [of rebirth] here."
     },
     {
       "ref": "3.2.2",
+      "sanskrit": "कामान्यः कामयते मन्यमानः स कामभिर्जायते तत्र तत्र ।\nपर्याप्तकामस्य कृतात्मनस्तु इहैव सर्वे प्रविलीयन्ति कामाः",
       "text": "He who in fancy forms desires,\nBecause of his desires is born [again] here and there.\nBut of him whose desire is satisfied, who is a perfected soul\n( krtatman ),\nAll desires even here on earth vanish away."
     },
     {
       "ref": "3.2.3",
+      "sanskrit": "नायमात्मा प्रवचनेन लभ्यो न मेधया न बहुना श्रुतेन ।\nयमेवैष वृणुते तेन लभ्यस्तस्यैष आत्मा विवृणुते तनूं स्वाम्",
       "text": "This Soul (Atman) is not to be obtained by instruction,\nNor by intellect, nor by much learning.\nHe is to be obtained only by the one -whom He chooses ;"
     },
     {
       "ref": "3.2.4",
-      "text": "This Soul (Atman) is not to be obtained by one destitute of\nfortitude,\nNor through heedlessness, nor through a false notion of\nausterity ( lapas ).\nBut he who strives by these means, provided he knows —\nInto his Brahma-abode this Soul (Atman) enters."
+      "sanskrit": "नायमात्मा बलहीनेन लभ्यो न च प्रमादात्तपसो वाप्यलिङ्गात् ।\nएतैरुपायैर्यतते यस्तु विद्वांस्तस्यैष आत्मा विशते ब्रह्मधाम",
+      "text": "This Soul (Atman) is not to be obtained by one destitute of\nfortitude,\nNor through heedlessness, nor through a false notion of\nausterity ( tapas ).\nBut he who strives by these means, provided he knows —\nInto his Brahma-abode this Soul (Atman) enters."
     },
     {
       "ref": "3.2.5",
-      "text": "Attaining Him, the seers (rst) who are satisfied with knowledge,\nWho are perfected souls ( krtatman ), from passion free (viia-\nraga), tranquil —\nAttaining Him who is the universally omnipresent, those wise,\nDevout souls ( yuktdtman ) into the All itself do enter."
+      "sanskrit": "सम्प्राप्यैनमृषयो ज्ञानतृप्ताः कृतात्मानो वीतरागाः प्रशान्ताः\nते सर्वगं सर्वतः प्राप्य धीराः युक्तात्मानः सर्वमेवाविशन्ति",
+      "text": "Attaining Him, the seers (rsi) who are satisfied with knowledge,\nWho are perfected souls ( krtatman ), from passion free (vita-raga), tranquil —\nAttaining Him who is the universally omnipresent, those wise,\nDevout souls ( yuktatman ) into the All itself do enter."
     },
     {
       "ref": "3.2.6",
-      "text": "They who have ascertained the meaning of the Vedanta-\nknowledge,\nAscetics ( yati ) with natures purified .through the application of\nrenunciation ( samnyasa-yoga ) —\nThey in the Brahma-worlds at the end of time\nAre all liberated beyond death."
+      "sanskrit": "वेदान्तविज्ञानसुनिश्चितार्थाः संन्यासयोगाद्यतयः शुद्धसत्त्वाः ।\nते ब्रह्मलोकेषु परान्तकाले परामृताः परिमुच्यन्ति सर्वे",
+      "text": "They who have ascertained the meaning of the Vedanta-knowledge,\nAscetics ( yati ) with natures purified .through the application of\nrenunciation ( samnyasa-yoga ) —\nThey in the Brahma-worlds at the end of time\nAre all liberated beyond death."
     },
     {
       "ref": "3.2.7",
-      "text": "Gone are the fifteen parts according to their station,\nEven all the sense-organs ( deva ) in their corresponding\ndivinities !\nOne’s deeds ( karmari ) and the self that consists of understand-\ning ( yijnana-maya diman ) —\nAll become unified in the supreme Imperishable."
+      "sanskrit": "गताः कलाः पञ्चदश प्रतिष्ठा देवाश्च सर्वे प्रतिदेवतासु ।\nकर्माणि विज्ञानमयश्च आत्मा परेऽव्यये सर्व एकीभवन्ति",
+      "text": "Gone are the fifteen parts according to their station,\nEven all the sense-organs ( deva ) in their corresponding\ndivinities !\nOne’s deeds ( karman ) and the self that consists of understanding ( vijnana-maya atman ) —\nAll become unified in the supreme Imperishable."
     },
     {
       "ref": "3.2.8",
-      "text": "As the flowing rivers in the oceap\nDisappear, quitting name and form,\nSo the knower, being liberated from name and form,\nGoes unto the heavenly Person, higher than the high."
+      "sanskrit": "यथा नद्यः स्यन्दमानाः समुद्रेऽस्तं गच्छन्ति नामरूपे विहाय ।\nतथा विद्वान्नामरूपाद्विमुक्तः परात्परं पुरुषमुपैति दिव्यम्",
+      "text": "As the flowing rivers in the ocean\nDisappear, quitting name and form,\nSo the knower, being liberated from name and form,\nGoes unto the heavenly Person, higher than the high."
     },
     {
       "ref": "3.2.9",
+      "sanskrit": "स यो ह वै तत्परमं ब्रह्म वेद ब्रह्मैव भवति नास्याब्रह्मवित्कुले भवति ।\nतरति शोकं तरति पाप्मानं गुहाग्रन्थिभ्यो विमुक्तोऽमृतो भवति",
       "text": "He, verily, who knows that supreme Brahma, becomes\nvery Brahma. In his family no one ignorant of Brahma\narises. He crosses over sorrow. He crosses over sin (pap-man).\nLiberated from the knots of the heart, he becomes immortal."
     },
     {
       "ref": "3.2.10",
+      "sanskrit": "तदेतदृचाऽभ्युक्तम् –\nक्रियावन्तः श्रोत्रिया ब्रह्मनिष्ठाः स्वयं जुह्वत एकर्षिं श्रद्धयन्तः ।\nतेषामेवैतां ब्रह्मविद्यां वदेत शिरोव्रतं विधिवद्यैस्तु चीर्णम्",
       "text": "This very [doctrine] has been declared in the verse : —\nThey who do the rites, who are learned in the Vedas, who\nare intent on Brahma,\nThey who, possessing faith ( sraddhayan ), make oblation of\nthemselves, even of the one seer —\nTo them indeed one may declare this knowledge of Brahma,\nWhen, however, the Mundaka-vow has been performed by\nthem according to rule.’"
     },
     {
       "ref": "3.2.11",
+      "sanskrit": "तदेतत्सत्यमृषिरङ्गिराः पुरोवाच नैतदचीर्णव्रतोऽधीते ।\nनमः परमऋषिभ्यो नमः परमऋषिभ्यः",
       "text": "This is the truth. The seer (rsi) Angiras declared it in\nancient time. One who has not performed the vow does not\nread this.\nAdoration to the highest seers !\nAdoration to the highest seers !"
     }
   ],
-  "scale_readiness": "Expanded canon (64 verses)"
+  "scale_readiness": "Expanded canon (64 verses)",
+  "sanskrit_source": "Vedic Heritage Portal (src/lib/upanishads-original-data.ts), paired by the source's own verse markers and section colophons"
 }

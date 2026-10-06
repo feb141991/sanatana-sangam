@@ -233,7 +233,75 @@ def _leading_subtitle_trim(raw: str) -> str:
     return "\n\n".join(paragraphs)
 
 
+# OCR corrections for Hume's text, keyed by (text, three-level ref). Each fix
+# restores a word the scan garbled where the intended word is certain from its
+# context: an English non-word with one reading, a word split by a line-break
+# hyphen, or a Sanskrit gloss beside its own English meaning, written the way
+# Hume's clean glosses in the same texts are (e.g. "( tapas )", "( yati )").
+# Hume's diacritics are not restored. Every entry must still match, so a
+# change to the source text or splitter fails loudly instead of skipping fixes.
+OCR_CORRECTIONS: dict[tuple[str, str], list[tuple[str, str]]] = {
+    ("katha", "1.1.3"): [("a-jianda", "a-nanda")],
+    ("katha", "1.1.6"): [("{a- jay ate)", "(a-jayate)")],
+    ("katha", "1.1.9"): [("brahma?i", "brahman")],
+    ("katha", "1.1.14"): [("establish-\nment", "establishment")],
+    ("katha", "1.1.16"): [("mahatmcin", "mahatman"), ("srhka", "srnka")],
+    ("katha", "1.1.26"): [("/ ejas", "tejas")],
+    ("katha", "1.2.4"): [("avidyd", "avidya")],
+    ("katha", "1.2.9"): [("stead-\nfastness", "steadfastness"), ("larka", "tarka"), ("( mail )", "( mati )"), ("(prasia)", "(prasta)")],
+    ("katha", "1.2.11"): [("[thesel go", "[these] go")],
+    ("katha", "1.2.14"): [("unquali-\nfied", "unqualified")],
+    ("katha", "1.2.20"): [("dhair", "dhatr")],
+    ("katha", "1.2.21"): [("(niad)", "(mad)")],
+    ("katha", "1.2.23"): [("tanuvi svam", "tanum svam")],
+    ("katha", "1.2.24"): [("prajnd", "prajna")],
+    ("katha", "1.3.10"): [("mafias", "manas")],
+    ("katha", "1.3.12"): [("sfynes", "shines")],
+    ("katha", "1.3.13"): [("jiidna diman", "jnana atman"), ("sanla atman", "santa atman")],
+    ("katha", "2.1.1"): [("svayambhii", "svayambhu")],
+    ("katha", "2.2.6"): [("{alman)", "(atman)")],
+    ("katha", "2.3.7"): [("vianas", "manas")],
+    ("katha", "2.3.8"): [("a-lihga", "a-linga")],
+    ("katha", "2.3.13"): [("‘ HeTisj’", "‘He is’"), ("{ash)", "(asti)"), ("compre-\nhensibility", "comprehensibility")],
+    ("mundaka", "1.1.1"): [("founda-\ntion", "foundation")],
+    ("mundaka", "1.1.2"): [("know-\nledge", "knowledge")],
+    ("mundaka", "1.1.3"): [("understand-\ning", "understanding")],
+    ("mundaka", "1.1.5"): [("(Jy oil's a)}", "(jyotisa)")],
+    ("mundaka", "1.2.1"): [("satya -\nkdma", "satya-kama")],
+    ("mundaka", "1.2.3"): [("sacri-\nfice", "sacrifice")],
+    ("mundaka", "1.2.5"): [("{pall)", "(pati)")],
+    ("mundaka", "1.2.11"): [("sduta", "santa"), ("im-\nperishable", "imperishable")],
+    ("mundaka", "2.1.2"): [("diiya", "divya")],
+    ("mundaka", "2.1.3"): [("supporter ol all", "supporter of all")],
+    ("mundaka", "2.1.7"): [("prandpanau", "pranapanau")],
+    ("mundaka", "2.1.9"): [("antaralman", "antaratman")],
+    ("mundaka", "2.1.10"): [("{/apas)", "(tapas)")],
+    ("mundaka", "2.2.1"): [("(sacf)", "(sad)")],
+    ("mundaka", "2.2.4"): [("(d/man)", "(atman)")],
+    ("mundaka", "3.1.3"): [("sdmya", "samya")],
+    ("mundaka", "3.1.5"): [("(jhana )", "(jnana )"), ("(yaii)", "(yati)")],
+    ("mundaka", "3.1.8"): [("( dev a )", "( deva )")],
+    ("mundaka", "3.2.1"): [("[snkra)", "(sukra)")],
+    ("mundaka", "3.2.4"): [("( lapas )", "( tapas )")],
+    ("mundaka", "3.2.5"): [("yuktdtman", "yuktatman"), ("(viia-\nraga)", "(vita-raga)"), ("(rst)", "(rsi)")],
+    ("mundaka", "3.2.6"): [("Vedanta-\nknowledge", "Vedanta-knowledge")],
+    ("mundaka", "3.2.7"): [("understand-\ning", "understanding"), ("yijnana-maya diman", "vijnana-maya atman"), ("karmari", "karman")],
+    ("mundaka", "3.2.8"): [("oceap", "ocean")],
+}
+
+
+def _apply_ocr_corrections(text_key: str, ref: str, text: str) -> str:
+    # Hume never prints "{"; the scan renders his opening parenthesis that way.
+    text = text.replace("{", "(")
+    for wrong, right in OCR_CORRECTIONS.get((text_key, ref), []):
+        if wrong.replace("{", "(") not in text:
+            raise ValueError(f"{text_key} {ref}: OCR correction target {wrong!r} not found")
+        text = text.replace(wrong.replace("{", "("), right)
+    return text
+
+
 def _expand_three_level(full_text: str, heading: str, layout: list[tuple[int, int, int]], label: str) -> list[dict]:
+    text_key = label.lower()
     sections = _split_sections(full_text, heading)
     if len(sections) != len(layout):
         raise ValueError(f"{label}: found {len(sections)} section headings, expected {len(layout)}")
@@ -244,6 +312,7 @@ def _expand_three_level(full_text: str, heading: str, layout: list[tuple[int, in
             if unnumbered:
                 raw = _leading_subtitle_trim(raw)
             text, speaker = _clean_verse(raw)
+            text = _apply_ocr_corrections(text_key, f"{major}.{minor}.{number}", text)
             if carried_speaker:
                 text = f"{carried_speaker}\n{text}"
             carried_speaker = speaker
@@ -263,37 +332,95 @@ def expand_mundaka(full_text: str, original_text: str) -> list[dict]:
     return _expand_three_level(full_text, r"(?:First|Second) (?:Khanda|Rwanda)", MUNDAKA_SECTIONS, "Mundaka")
 
 
-def katha_sanskrit_by_ref(original_text: str) -> dict[str, str]:
-    """Sanskrit Katha shlokas keyed by adhyaya.valli.verse, using the source's
-    own "॥ n॥" verse markers and "इति ... वल्ली" section colophons."""
+# Closing peace chants the Sanskrit source numbers after a text's last verse;
+# they are recitation, not part of the canonical verse count.
+_SHANTI_OPENINGS = ("सह नाववतु", "ॐ सह नाववतु", "ॐ भद्रं")
+
+
+def _clean_sanskrit(raw: str) -> str:
+    """Join hyphenated line breaks, drop a leading "॥ ... ॥" section heading
+    (no verse starts with ॥) and collapse blank lines; the wording is untouched."""
+    text = re.sub(r"-\s*\n\s*", "", raw)
+    text = re.sub(r"^\s*(?:॥[^॥]*॥\s*)+", "", text)
+    text = re.sub(r"\n\s*\n", "\n", text)
+    return text.strip()
+
+
+def _sanskrit_by_ref(body: str, colophon: str, layout: list[tuple[int, int, int]], label: str) -> dict[str, str]:
+    """Sanskrit verses keyed by three-level ref, using the source's own "॥ n॥"
+    verse markers and per-section colophons. Every section must yield exactly
+    its canonical verse count (a trailing peace chant is dropped) or this
+    raises rather than mis-pairing Sanskrit with the wrong translation."""
+    chunks = re.split(colophon, body)
+    if len(chunks) < len(layout):
+        raise ValueError(f"{label} Sanskrit: found {len(chunks) - 1} section colophons, expected {len(layout)}")
     out: dict[str, str] = {}
-    body = original_text[original_text.find("॥ अथ कठोपनिषद् ॥") + len("॥ अथ कठोपनिषद् ॥"):] if "॥ अथ कठोपनिषद् ॥" in original_text else original_text
-    chunks = re.split(r"इति[^॥]*?वल्ली\s*॥", body)
-    for (major, minor, count), chunk in zip(KATHA_SECTIONS, chunks):
+    for (major, minor, count), chunk in zip(layout, chunks):
         parts = re.split(r"॥\s*([०-९]+)\s*॥", chunk)
-        for i in range(1, len(parts), 2):
-            out[f"{major}.{minor}.{dev_to_int(parts[i])}"] = re.sub(r"-\s*\n\s*", "", parts[i - 1]).strip()
+        verses = [(dev_to_int(parts[i]), _clean_sanskrit(parts[i - 1])) for i in range(1, len(parts), 2)]
+        if len(verses) == count + 1 and verses[-1][1].startswith(_SHANTI_OPENINGS):
+            verses = verses[:-1]
+        numbers = [number for number, _ in verses]
+        if numbers != list(range(1, count + 1)):
+            raise ValueError(f"{label} Sanskrit {major}.{minor}: verse markers {numbers[:5]}... do not run 1..{count}")
+        for number, text in verses:
+            out[f"{major}.{minor}.{number}"] = text
     return out
 
 
-def replace_manifest_content(filename: str, verses: list[dict], sanskrit: dict[str, str] | None = None, keep_sanskrit_refs: set[str] | None = None) -> None:
+def katha_sanskrit_by_ref(original_text: str) -> dict[str, str]:
+    """Katha Sanskrit by adhyaya.valli.verse ("इति काठकोपनिषदि ... वल्ली ॥" colophons)."""
+    start = "॥ अथ कठोपनिषद् ॥"
+    body = original_text[original_text.find(start) + len(start):] if start in original_text else original_text
+    return _sanskrit_by_ref(body, r"इति[^॥]*?वल्ली\s*॥", KATHA_SECTIONS, "Katha")
+
+
+def mundaka_sanskrit_by_ref(original_text: str) -> dict[str, str]:
+    """Mundaka Sanskrit by mundaka.khanda.verse ("इति मुण्डकोपनिषदि ... खण्डः ॥" colophons)."""
+    first_verse = original_text.find("ब्रह्मा देवानां")
+    body = original_text[first_verse:] if first_verse != -1 else original_text
+    return _sanskrit_by_ref(body, r"इति मुण्डकोपनिषदि[^॥]*?खण्डः\s*॥", MUNDAKA_SECTIONS, "Mundaka")
+
+
+SANSKRIT_SOURCE = "Vedic Heritage Portal (src/lib/upanishads-original-data.ts), paired by the source's own verse markers and section colophons"
+
+
+def replace_manifest_content(filename: str, verses: list[dict], sanskrit: dict[str, str] | None = None) -> None:
     """Replace a manifest's content wholesale (refs changed scheme, so a ref-keyed
-    merge with old entries would pair text across different verses)."""
+    merge with old entries would pair text across different verses).
+
+    An existing entry's Sanskrit and transliteration are kept when its Sanskrit is
+    the same verse as the source's (same opening), since earlier hand-curated
+    entries are cleaner than the source scan; otherwise the source text is used."""
     path = MANIFESTS_DIR / filename
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
+    curated = {}
+    for entry in data.get("content", []):
+        if entry.get("sanskrit") and sanskrit:
+            opening = entry["sanskrit"].split()[0]
+            for ref, text in sanskrit.items():
+                if text.startswith(opening):
+                    curated[ref] = entry
     content = []
     for verse in verses:
         entry = {"ref": verse["ref"]}
-        if sanskrit and keep_sanskrit_refs and verse["ref"] in keep_sanskrit_refs:
-            entry["sanskrit"] = sanskrit[verse["ref"]]
+        if sanskrit:
+            if verse["ref"] in curated:
+                entry["sanskrit"] = curated[verse["ref"]]["sanskrit"]
+                if curated[verse["ref"]].get("transliteration"):
+                    entry["transliteration"] = curated[verse["ref"]]["transliteration"]
+            else:
+                entry["sanskrit"] = sanskrit[verse["ref"]]
         entry["text"] = verse["text"]
         content.append(entry)
     data["content"] = content
     data["scale_readiness"] = f"Expanded canon ({len(content)} verses)"
+    if sanskrit:
+        data["sanskrit_source"] = SANSKRIT_SOURCE
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"Replaced {filename}: {len(content)} verses")
+    print(f"Replaced {filename}: {len(content)} verses ({len(curated)} with curated Sanskrit kept)")
 
 def expand_prashna(full_text: str, original_text: str) -> list[dict]:
     lines = full_text.split('\n')
@@ -384,13 +511,12 @@ def main():
     # 3. Katha (three-level refs; content replaced, not ref-merged)
     katha_original = u_orig.get("upa-katha-full", {}).get("original", "")
     katha_v = expand_katha(u_full["upa-katha-full"]["fullText"], katha_original)
-    # Only the shlokas previously shown in the app are re-attached, now to the
-    # verse their source markers identify (1.2.1, 1.3.14).
-    replace_manifest_content("upanishad_katha.json", katha_v, katha_sanskrit_by_ref(katha_original), {"1.2.1", "1.3.14"})
+    replace_manifest_content("upanishad_katha.json", katha_v, katha_sanskrit_by_ref(katha_original))
 
     # 4. Mundaka (three-level refs; content replaced, not ref-merged)
-    mundaka_v = expand_mundaka(u_full["upa-mundaka-full"]["fullText"], u_orig.get("upa-mundaka-full", {}).get("original", ""))
-    replace_manifest_content("upanishad_mundaka.json", mundaka_v)
+    mundaka_original = u_orig.get("upa-mundaka-full", {}).get("original", "")
+    mundaka_v = expand_mundaka(u_full["upa-mundaka-full"]["fullText"], mundaka_original)
+    replace_manifest_content("upanishad_mundaka.json", mundaka_v, mundaka_sanskrit_by_ref(mundaka_original))
 
     # 5. Prashna
     prashna_v = expand_prashna(u_full["upa-prashna-full"]["fullText"], u_orig.get("upa-prashna-full", {}).get("original", ""))
