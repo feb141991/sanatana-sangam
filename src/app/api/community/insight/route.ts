@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 86400; // Cache for 24 hours (once per day)
 
 export async function GET() {
@@ -43,7 +44,7 @@ export async function GET() {
     return NextResponse.json({
       insight: 'The sangha is quiet today. Be the first to light the lamp of sadhana.',
       stats: { active_users: 0, perfect_days: 0, japa_count: 0 }
-    });
+    }, { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' } });
   }
 
   const systemPrompt = `You are Dharma Mitra speaking to the Shoonaya community — a global sangha of Zeroists and Shoonyas from all dharmic traditions. Write ONE inspiring sentence (under 120 chars) about today's collective sadhana: ${active_users} practitioners active, ${perfectDays} achieved Shuddha Din, ${japaCount} completed japa. Use 'we/our/together'. Include one Sanskrit word.`;
@@ -63,12 +64,12 @@ export async function GET() {
     return NextResponse.json({
       insight,
       stats: { active_users, perfect_days: perfectDays, japa_count: japaCount }
-    });
+    }, { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' } });
   } catch (err) {
     console.error('Failed to generate community insight', err);
     return NextResponse.json({
       insight: `Together our sangha grows: ${active_users} practitioners active today.`,
       stats: { active_users, perfect_days: perfectDays, japa_count: japaCount }
-    });
+    }, { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400' } });
   }
 }
