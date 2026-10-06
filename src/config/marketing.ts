@@ -57,6 +57,7 @@ export const marketingNavItems = [
   { label: "Play", href: "/play/gyan-chaupar" },
   { label: "Traditions", href: "/traditions" },
   { label: "Festivals", href: "/features/sacred-calendar" },
+  { label: "Journal", href: "/journal" },
   { label: "Community", href: "/community" },
   { label: "Features", href: "/features" },
   { label: "About", href: "/about" },
