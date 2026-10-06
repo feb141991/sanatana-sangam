@@ -10,6 +10,7 @@ import {
   type PramanaRetrievalResult,
 } from '@sangam/pramana-serve';
 import { emitEvent } from '@/lib/monitoring/events';
+import { adjacentVerseRefs } from './verse-refs';
 
 export type RetrievalChunkMetadata = {
   chunkId: string;
@@ -842,12 +843,12 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     // TF-IDF-derived guess ported over unchanged.
     if (topDocItem.score >= 0.5) {
       const topDoc = topDocItem.doc;
-      const refParts = String(topDoc.ref).split('.');
-      if (refParts.length >= 2) {
-        const ch = parseInt(refParts[0], 10);
-        const v = parseInt(refParts[1], 10);
-        const prevRef = `${ch}.${v - 1}`;
-        const nextRef = `${ch}.${v + 1}`;
+      // Two-part (Gita 2.47) and three-part (Katha 1.3.3) refs both splice
+      // the adjacent verses of the same section.
+      const adjacent = adjacentVerseRefs(String(topDoc.ref));
+      if (adjacent) {
+        const prevRef = adjacent.prev;
+        const nextRef = adjacent.next;
         const sameDoc = (d: any) => (d.upanishad ?? d.chapter) === (topDoc.upanishad ?? topDoc.chapter);
 
         const prevDoc = index.documents.find((d: any) => d.ref === prevRef && sameDoc(d));
