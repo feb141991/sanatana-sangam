@@ -1,14 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getDailyHoroscope, RASHI_LIST, findActiveDashaEntry } from '@/lib/jyotish/rashiphal-data';
+import { getDailyHoroscope, RASHI_LIST, findActiveDashaEntry, normalizeRashiKey } from '@/lib/jyotish/rashiphal-data';
 import { getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
-
-function normalizeRashi(value: unknown): string | null {
-  if (typeof value !== 'string') return null;
-  const normalized = value.trim().toLowerCase();
-  return RASHI_LIST.some((r) => r.key === normalized) ? normalized : null;
-}
 
 type DashaContextStatus = 'not_requested' | 'available' | 'unavailable';
 
@@ -70,7 +64,9 @@ export async function GET(request: NextRequest) {
         console.warn('[rashiphal] birth_profiles read failed', { requestId, code: error.code });
       } else if (profiles && profiles.length === 1) {
         const profile = profiles[0] as { rashi: unknown; chart_data: unknown };
-        if (normalizeRashi(profile.rashi) === rashi) {
+        // birth_profiles.rashi is written by the chart engine as a Sanskrit
+        // name ("Makara"); the request carries the English key ("capricorn").
+        if (normalizeRashiKey(profile.rashi) === rashi) {
           const active = findActiveDashaEntry(profile.chart_data, parsedDate);
           if (active) {
             const formattedEndDate = new Date(active.endDate).toLocaleDateString('en-IN', {
