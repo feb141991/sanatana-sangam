@@ -145,7 +145,7 @@ const TRAD_WELCOME: Record<string, string> = {
     references are presented in their own context where available. This confirms your request; it does
     not create an account or invitation, or guarantee an access date.`,
 
-  default: `Thank you for your interest in Shoonaya — Find your infinite. This confirms your interest request
+  default: `Thank you for your interest in Shoonaya: Find your infinite. This confirms your interest request
     only; it does not create an account or invitation, or guarantee an access date.`,
 };
 
@@ -156,7 +156,7 @@ const WHAT_TO_EXPECT = [
 ];
 
 function buildShareText(): string {
-  return `I joined Shoonaya's early-access list — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection: ${BASE_URL}`;
+  return `I joined Shoonaya's early-access list. Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection: ${BASE_URL}`;
 }
 
 
@@ -188,10 +188,10 @@ function buildEmailHtml(opts: {
 
   const shareUrl = encodeURIComponent(BASE_URL);
   const twitterText = encodeURIComponent(
-    `I joined Shoonaya's early-access list — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection:`
+    `I joined Shoonaya's early-access list. Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection:`
   );
   const waText = encodeURIComponent(
-    `I joined Shoonaya's early-access list — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Explore Shoonaya: ${BASE_URL}`
+    `I joined Shoonaya's early-access list. Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Explore Shoonaya: ${BASE_URL}`
   );
 
   const verseBlock = verse ? `
@@ -306,7 +306,7 @@ function buildWelcomeEmailPayload(opts: {
 }): { subject: string; html: string; from: string } {
   const tradGreeting = TRAD_GREETING[opts.tradition ?? 'default'] ?? TRAD_GREETING.default;
   return {
-    subject: `${tradGreeting} — your Shoonaya early-access request`,
+    subject: `${tradGreeting}: your Shoonaya early-access request`,
     html: buildEmailHtml(opts),
     from: process.env.SHOONAYA_EMAIL_FROM ?? `Shoonaya <noreply@${DOMAIN.replace(/^www\./, '')}>`,
   };
@@ -408,15 +408,84 @@ export async function POST(req: NextRequest) {
       p_referral_source: referralSource,
       p_email_payload: emailPayload,
     });
-    if (error) {
-      console.error('[waitlist] registration transaction failed', { code: error.code ?? 'unknown' });
-      return NextResponse.json(
-        { error: 'Could not save your request. Please try again shortly.' },
-        { status: 503, headers: { ...CORS_HEADERS, 'Cache-Control': 'no-store' } },
-      );
-    }
+    let result: { founding_number?: number | null; email?: string } | null = null;
 
-    const result = data && typeof data === 'object' && !Array.isArray(data) ? data : null;
+    if (error) {
+      if (error.code === 'PGRST202') {
+        // Fallback for environments where migration 20261005160000 has not been applied yet.
+        // Performs direct table operations so early-access signups are never blocked.
+        console.warn('[waitlist] RPC register_waitlist_with_welcome missing (PGRST202); using direct table fallback');
+        const { data: existing } = await supabase
+          .from('waitlist')
+          .select('*')
+          .ilike('email', email)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        let row: any = existing;
+        if (existing) {
+          const { data: updated } = await supabase
+            .from('waitlist')
+            .update({
+              tradition: tradition ?? existing.tradition,
+              name: name ?? existing.name,
+              source: source ?? existing.source,
+              timezone: timezone ?? existing.timezone,
+              referred_by_number: referredByNumber ?? existing.referred_by_number,
+              referral_source: referralSource ?? existing.referral_source,
+            })
+            .eq('id', existing.id)
+            .select()
+            .single();
+          row = updated ?? existing;
+        } else {
+          const { data: inserted, error: insertError } = await supabase
+            .from('waitlist')
+            .insert({
+              email,
+              tradition,
+              name,
+              source,
+              timezone,
+              referred_by_number: referredByNumber,
+              referral_source: referralSource,
+            })
+            .select()
+            .single();
+          if (insertError) {
+            console.error('[waitlist] direct fallback insert failed', insertError);
+            throw insertError;
+          }
+          row = inserted;
+        }
+
+        if (row && row.email_sent !== true) {
+          try {
+            await supabase.from('email_outbox').insert({
+              idempotency_key: `waitlist-welcome:${row.id}`,
+              recipient_email: email,
+              template_key: 'waitlist_welcome',
+              email_class: 'transactional',
+              payload: { ...emailPayload, waitlistId: row.id },
+              priority: 40,
+            });
+          } catch (outboxErr) {
+            console.warn('[waitlist] outbox fallback enqueue warning:', outboxErr);
+          }
+        }
+
+        result = row;
+      } else {
+        console.error('[waitlist] registration transaction failed', { code: error.code ?? 'unknown' });
+        return NextResponse.json(
+          { error: 'Could not save your request. Please try again shortly.' },
+          { status: 503, headers: { ...CORS_HEADERS, 'Cache-Control': 'no-store' } },
+        );
+      }
+    } else {
+      result = data && typeof data === 'object' && !Array.isArray(data) ? (data as { founding_number?: number | null; email?: string }) : null;
+    }
     if (!result || typeof result.email !== 'string') {
       console.error('[waitlist] registration transaction returned invalid data');
       return NextResponse.json(
