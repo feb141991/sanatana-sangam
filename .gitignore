@@ -46,3 +46,6 @@ venv/
 .env.production
 .env*
 .indexnow/
+
+# Supabase CLI temp files
+supabase/.temp/
