@@ -752,6 +752,21 @@ export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<Ret
  * distributions, not the TF-IDF-tuned 0.4/0.1 values the sparse retrievers
  * above use -- dense cosine scores have a different distribution shape.
  */
+/**
+ * Forms of address and speaker labels that recur through the verses ("O Arjuna", "O Krishna",
+ * "The Blessed Lord said"). They say nothing about a verse's topic, so they must not earn the
+ * lexical lift: with them, a question mentioning Krishna lifted 6.34 ("... O Krishna") above 6.26.
+ */
+const ADDRESS_TERMS: ReadonlySet<string> = new Set([
+  'krishna', 'arjuna', 'partha', 'bharata', 'kaunteya', 'dhananjaya', 'keshava', 'madhava',
+  'govinda', 'kunti', 'pritha', 'pandava', 'lord', 'blessed', 'said',
+]);
+
+/** Dense results scoring below this cosine never enter the result list (noise ceiling was ~0.21). */
+const TAIL_MIN_SCORE = 0.35;
+/** How many results are ranked purely by relevance before any neighbouring verse is added. */
+const RANKED_RESULTS_BEFORE_NEIGHBOURS = 3;
+
 export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
   private fallbackRetriever: PramanaManifestRetriever;
   private indexPath: string;
@@ -826,7 +841,7 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     const queryVector = await embedQuery(queryText);
 
     const docsWithScores: Array<{ doc: any; score: number; rankingScore: number }> = [];
-    const queryTerms = new Set(queryText.toLowerCase().match(/[a-z]{3,}/g) ?? []);
+    const queryTerms = new Set((queryText.toLowerCase().match(/[a-z]{3,}/g) ?? []).filter((term) => !ADDRESS_TERMS.has(term)));
     for (const doc of index.documents) {
       const score = PramanaDenseEmbeddingRetriever.cosine(queryVector, doc.vector);
       if (score > 0) {
@@ -857,6 +872,17 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     const topDocItem = docsWithScores[0];
     augmentedDocs.push(topDocItem);
 
+    // The best-ranked verses come first. Chat reads only the first three results, and
+    // the neighbour splice used to take slots 2 and 3 whenever the top verse scored
+    // >= 0.5, so a confident but wrong top verse pushed the right one (often rank 2 or
+    // 3) out of what the model saw. Measured on the first 44 Gita gold cases that cost
+    // 6 hits in the top 3 (26 vs 32) and 5 in the top 5; ranking first and appending
+    // neighbours after the third result recovers them and still returns the surrounding verses.
+    // Same relevance floor as the tail below, so noise cannot enter early.
+    for (const item of docsWithScores.slice(1, RANKED_RESULTS_BEFORE_NEIGHBOURS)) {
+      if (item.score >= TAIL_MIN_SCORE) augmentedDocs.push(item);
+    }
+
     // Neighbor splice, guarded by doc id so a multi-book corpus (Upanishads)
     // never pulls in a different book's adjacent verse. Threshold re-tuned
     // (plan step 4) against real dense-score data: off-topic negative
@@ -881,8 +907,12 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
         const prevDoc = index.documents.find((d: any) => d.ref === prevRef && sameDoc(d));
         const nextDoc = index.documents.find((d: any) => d.ref === nextRef && sameDoc(d));
 
-        if (prevDoc) augmentedDocs.push({ doc: prevDoc, score: topDocItem.score - 0.1 });
-        if (nextDoc) augmentedDocs.push({ doc: nextDoc, score: topDocItem.score - 0.12 });
+        if (prevDoc && !augmentedDocs.some((x) => x.doc.id === prevDoc.id)) {
+          augmentedDocs.push({ doc: prevDoc, score: topDocItem.score - 0.1 });
+        }
+        if (nextDoc && !augmentedDocs.some((x) => x.doc.id === nextDoc.id)) {
+          augmentedDocs.push({ doc: nextDoc, score: topDocItem.score - 0.12 });
+        }
       }
     }
 
@@ -893,7 +923,7 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     // paraphrase query, several scoring 0.4-0.55) while adding real headroom
     // above pure noise.
     for (const item of docsWithScores.slice(1)) {
-      if (!augmentedDocs.some((x) => x.doc.id === item.doc.id) && item.score >= 0.35) {
+      if (!augmentedDocs.some((x) => x.doc.id === item.doc.id) && item.score >= TAIL_MIN_SCORE) {
         augmentedDocs.push(item);
       }
     }

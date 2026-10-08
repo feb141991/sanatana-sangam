@@ -185,6 +185,33 @@ function includesAnyTerm(text: string, terms: readonly string[]): boolean {
   return terms.some((term) => includesTerm(text, term));
 }
 
+/**
+ * Minimum dense cosine for grounding a question that names no Dharmic concept. Measured on
+ * the Gita index (MiniLM, `scripts/eval_retrieval_quality.ts` corpus): 30 everyday and
+ * borderline life questions ("what should I eat for breakfast", "I feel anxious about my
+ * exams") score at most 0.40 (median 0.19), while scripture questions the word list used
+ * to refuse have a median of 0.50. At 0.50 none of the 30 controls is admitted (0.10 clear
+ * of the highest) and 12 of 22 blocked questions are, with the right verse among the three
+ * shown for 10 of them. Raise it to be stricter; do not lower it below ~0.45.
+ */
+const UNPROMPTED_GROUNDING_MIN_SCORE = 0.5;
+
+/**
+ * The question as the dense retriever should read it: the whole sentence, minus the
+ * scripture's own name. "in the Gita" already routed the question to the Gita corpus, and no
+ * verse's meaning contains it, so to an embedding of the verse alone it is pure noise
+ * (it pushed 6.26 from rank 1 to 14 for "what does Krishna say about the wavering mind in the
+ * Gita?"). Falls back to the original when nothing meaningful would be left.
+ */
+export function toDenseQuery(message: string): string {
+  const stripped = message
+    .replace(/\b(?:in\s+)?(?:the\s+)?(?:bhagavad\s+gita|bhagavad|gita)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\s+([?.!,])/g, '$1')
+    .trim();
+  return extractMeaningfulTokens(stripped).length >= 1 ? stripped : message;
+}
+
 export interface ChatGroundingResult {
   isGrounded: boolean;
   corpus: string | null;
@@ -382,7 +409,23 @@ export async function retrieveDharmaChatGrounding(input: {
 
   // 3. Check for general Dharmic / scriptural intent
   // If the query is off-topic, emotional check-in, or daily life without spiritual context, do not force scripture
-  if (!hasDharmicIntent(message, meaningfulTokens) || meaningfulTokens.length === 0) {
+  if (meaningfulTokens.length === 0) {
+    return { isGrounded: false, corpus: null, documents: [], groundingPromptText: null };
+  }
+  const hasIntent = hasDharmicIntent(message, meaningfulTokens);
+  // A spiritual question can be phrased without any word on the Dharmic-concepts list
+  // ("why does God take birth age after age"): on the 44-case Gita gold set the word
+  // list alone stopped 22 questions before retrieval, so half of them were never grounded.
+  // Rather than refuse those outright, the default dense Gita corpus gets one chance, and
+  // only a confident match is accepted (UNPROMPTED_GROUNDING_MIN_SCORE, below). It is
+  // never tried for a saved non-Hindu tradition (their corpora score on a different scale)
+  // or for bare verse-like numbers ("app version 2.47"), which would be mistaken for a citation.
+  const canProbeWithoutIntent = namedCorpus === null
+    && !hasVersePattern
+    && input.tradition !== 'sikh'
+    && input.tradition !== 'buddhist'
+    && input.tradition !== 'jain';
+  if (!hasIntent && !canProbeWithoutIntent) {
     return { isGrounded: false, corpus: null, documents: [], groundingPromptText: null };
   }
 
@@ -416,12 +459,22 @@ export async function retrieveDharmaChatGrounding(input: {
     };
   }
 
+  // A probe that finds nothing confident must look exactly like the old gate refusing:
+  // no corpus is reported for a question that was never recognised as scriptural.
+  const ungroundedCorpus = hasIntent ? targetCorpus : null;
+
   try {
-    // For vector retrieval, use meaningful keywords to prevent stopword dilution,
-    // while retaining verse numbering if present.
+    const isDenseRoutedCorpus = targetCorpus === 'pathshala_gita' || targetCorpus === 'pathshala_upanishads';
+    // The sparse TF-IDF corpora match on keywords, so they get the meaningful tokens
+    // (stopwords would dilute them). The dense corpora match on meaning: a sentence
+    // embedding reads the whole question, and stripping it to "work worrying results"
+    // costs retrieval quality (33 vs 35 of 44 gold queries found in the top 5). Verse
+    // numbering is kept either way.
     const queryForSearch = hasVersePattern
       ? message
-      : (meaningfulTokens.length >= 2 ? meaningfulTokens.join(' ') : message);
+      : isDenseRoutedCorpus
+        ? toDenseQuery(message)
+        : (meaningfulTokens.length >= 2 ? meaningfulTokens.join(' ') : message);
 
     const docs = await retrievePathshalaContext({
       title: queryForSearch,
@@ -430,7 +483,7 @@ export async function retrieveDharmaChatGrounding(input: {
     });
 
     if (!docs || docs.length === 0) {
-      return { isGrounded: false, corpus: targetCorpus, documents: [], groundingPromptText: null };
+      return { isGrounded: false, corpus: ungroundedCorpus, documents: [], groundingPromptText: null };
     }
 
     const topScore = docs[0]?.score ?? 0;
@@ -452,13 +505,14 @@ export async function retrieveDharmaChatGrounding(input: {
     // reference and routes to the manifest/heuristic retriever before ever running a
     // dense query, so hasVersePattern's topScore is a manifest-lookup score (0.6-1.0
     // range) regardless of which corpus -- the existing 0.15 floor already covers it.
-    const isDenseRoutedCorpus = targetCorpus === 'pathshala_gita' || targetCorpus === 'pathshala_upanishads';
-    const isRelevant = hasVersePattern
-      ? topScore >= 0.15
-      : topScore >= (isDenseRoutedCorpus ? 0.3 : 0.04);
+    const isRelevant = !hasIntent
+      ? topScore >= UNPROMPTED_GROUNDING_MIN_SCORE
+      : hasVersePattern
+        ? topScore >= 0.15
+        : topScore >= (isDenseRoutedCorpus ? 0.3 : 0.04);
 
     if (!isRelevant) {
-      return { isGrounded: false, corpus: targetCorpus, documents: [], groundingPromptText: null };
+      return { isGrounded: false, corpus: ungroundedCorpus, documents: [], groundingPromptText: null };
     }
 
     const topDocs = docs.slice(0, 3);
@@ -471,6 +525,6 @@ export async function retrieveDharmaChatGrounding(input: {
       groundingPromptText: promptText,
     };
   } catch {
-    return { isGrounded: false, corpus: targetCorpus, documents: [], groundingPromptText: null };
+    return { isGrounded: false, corpus: ungroundedCorpus, documents: [], groundingPromptText: null };
   }
 }

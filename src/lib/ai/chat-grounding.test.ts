@@ -78,7 +78,10 @@ describe('chat-grounding', () => {
       expect(res.isGrounded).toBe(true);
       expect(res.corpus).toBe('pathshala_gita');
       expect(res.documents.length).toBeGreaterThan(0);
-      expect(res.documents[0].id).toContain('6.26');
+      // Within the three the model reads, not necessarily first: embedding the verse text
+      // alone (retrieval.ts / build-dense-embeddings.mts) moved this one query from rank 1 to
+      // a lower place in the top 3, while lifting 16 of the 67 gold queries and slipping 2.
+      expect(res.documents.some((d) => d.id?.includes('6.26'))).toBe(true);
       expect(res.groundingPromptText).toContain('PRAMANA GROUNDING');
       expect(res.groundingPromptText).toContain('6.26');
     });
@@ -212,6 +215,59 @@ describe('chat-grounding', () => {
       expect(res.isGrounded).toBe(false);
       expect(res.corpus).toBeNull();
       expect(res.documents).toHaveLength(0);
+    });
+  });
+
+  // A spiritual question need not contain a word from the Dharmic-concepts list. On the
+  // Gita gold set that list alone stopped 22 of 44 questions before retrieval. A
+  // confident dense match (UNPROMPTED_GROUNDING_MIN_SCORE) now admits them, while the
+  // everyday and emotional questions below must keep failing closed.
+  describe('unprompted spiritual questions', () => {
+    it.each([
+      ['God accepts a leaf, a flower or water offered with love', 'gita_chapter_9_9.26'],
+      ['the wise do not mourn for the living or for the dead', 'gita_chapter_2_2.11'],
+    ])('grounds %s with the right verse first', async (message, expectedId) => {
+      const res = await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
+      expect(res.corpus).toBe('pathshala_gita');
+      expect(res.isGrounded).toBe(true);
+      expect(res.documents[0].id).toBe(expectedId);
+      expect(res.groundingPromptText).toContain('PRAMANA GROUNDING');
+    });
+
+    it('puts the right verse among the three the model reads even when it is not first', async () => {
+      const res = await retrieveDharmaChatGrounding({
+        message: 'whatever you eat or do or give, dedicate it to God',
+        tradition: 'hindu',
+      });
+      expect(res.isGrounded).toBe(true);
+      expect(res.documents).toHaveLength(3);
+      expect(res.documents.map((d) => d.id)).toContain('gita_chapter_9_9.27');
+    });
+
+    it.each([
+      'Recommend a good movie for tonight',
+      'What is the weather like in Delhi in July?',
+      'Who won the cricket match yesterday?',
+      'How do I improve my sleep?',
+      'I feel anxious about my exams',
+      'My friend betrayed me, what should I do?',
+      'How to stay calm during a stressful presentation?',
+      'How do I deal with the loss of a pet?',
+    ])('still fails closed on an everyday or emotional question: %s', async (message) => {
+      const res = await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
+      expect(res.isGrounded).toBe(false);
+      expect(res.corpus).toBeNull();
+      expect(res.documents).toHaveLength(0);
+      expect(res.groundingPromptText).toBeNull();
+    });
+
+    it.each(['sikh', 'buddhist', 'jain'])('does not probe the Gita for a saved %s tradition', async (tradition) => {
+      const res = await retrieveDharmaChatGrounding({
+        message: 'God accepts a leaf, a flower or water offered with love',
+        tradition,
+      });
+      expect(res.isGrounded).toBe(false);
+      expect(res.corpus).toBeNull();
     });
   });
 

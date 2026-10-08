@@ -62,6 +62,24 @@ async function embedAll(embedder: any, inputs: { meta: Omit<DenseDoc, 'vector'>;
   return out;
 }
 
+/**
+ * The text a verse is embedded as: its meaning only. The "Bhagavad Gita 2.47." label,
+ * the trailing "(47)" verse number and the "The Blessed Lord said:" speaker preamble say
+ * nothing about what a verse means, and the model has to read past all three when it
+ * matches a question like "how do I stop worrying about results". Measured on the 67 Gita
+ * gold queries (44 of them written before this change was tried), together with the ranking
+ * changes in retrieval.ts: top-1 34 -> 40, top-3 43 -> 52, top-5 49 -> 55, MRR 0.593 -> 0.687
+ * versus embedding `Bhagavad Gita {ref}. {text}`; 16 queries improved and 2 slipped within
+ * the top 3. Only the embedding input changes: the stored `text`, shown and cited to users,
+ * is untouched.
+ */
+function gitaEmbeddingInput(text: string): string {
+  return text
+    .replace(/\s*\(\d+\)\s*$/, '')
+    .replace(/^The Blessed Lord said:\s*/i, '')
+    .trim();
+}
+
 async function buildGita(embedder: any) {
   const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
   let manifestCount = 0;
@@ -81,7 +99,7 @@ async function buildGita(embedder: any) {
 
       pending.push({
         meta: { id: `${docId}_${ref}`, ref, chapter: ch, sanskrit, transliteration, text },
-        text: `Bhagavad Gita ${ref}. ${text}`,
+        text: gitaEmbeddingInput(text),
       });
     }
   }
