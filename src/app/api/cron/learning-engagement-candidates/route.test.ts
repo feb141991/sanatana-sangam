@@ -32,7 +32,7 @@ describe('learning engagement candidate cron route', () => {
     });
   });
 
-  it('is default-off when neither per-type candidate mode is set', async () => {
+  it('is default-off when the Dharm Veer candidate mode is not set', async () => {
     process.env.CRON_SECRET = 'test-secret';
     process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
     delete process.env.NOTIFICATION_CANDIDATE_MODE_DHARM_VEER;
@@ -47,7 +47,6 @@ describe('learning engagement candidate cron route', () => {
       skipped: true,
       reason: 'learning_candidates_not_enabled',
       dharmVeerMode: 'disabled',
-      quizMode: 'disabled',
     });
   });
 

@@ -74,6 +74,40 @@ describe('notification resolver & engagement policy', () => {
   });
 
   describe('engagement budget enforcement', () => {
+    it('allows the opted-in Daily Quiz stages at 08:00 and 18:00 without bursting', () => {
+      const available = makeCandidate({
+        id: 'quiz-available',
+        event_type: 'quiz',
+        event_id: 'daily-2026-11-08',
+        event_instance: 'available',
+        scheduled_for: '2026-11-08T02:30:00.000Z',
+        expires_at: '2026-11-08T03:30:00.000Z',
+        metadata: { priority_class: 'routine_engagement', quiz_reminder_stage: 'available' },
+      });
+      const evening = makeCandidate({
+        id: 'quiz-evening',
+        event_type: 'quiz',
+        event_id: 'daily-2026-11-08',
+        event_instance: 'evening_nudge',
+        scheduled_for: '2026-11-08T12:30:00.000Z',
+        expires_at: '2026-11-08T15:15:00.000Z',
+        metadata: { priority_class: 'routine_engagement', quiz_reminder_stage: 'evening_nudge' },
+      });
+
+      const res = resolveCandidates({
+        candidates: [available, evening],
+        now: fixedNow,
+        allowDeferrals: false,
+      });
+
+      expect(res.accepted.map((candidate) => candidate.id)).toEqual(['quiz-available', 'quiz-evening']);
+      expect(res.suppressed).toHaveLength(0);
+      expect(res.accepted.map((candidate) => candidate.scheduled_for)).toEqual([
+        '2026-11-08T02:30:00.000Z',
+        '2026-11-08T12:30:00.000Z',
+      ]);
+    });
+
     it('applies one shared five-push budget across routine and devotional engagement', () => {
       const routine1 = makeCandidate({
         id: 'routine-1',

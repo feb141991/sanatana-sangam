@@ -141,6 +141,47 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(updatedUserFilter).toBe("user-japa");
   });
 
+  it("persists Daily Quiz reminder opt-in and its validated local time", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-quiz" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ quiz_reminder_enabled: true, quiz_reminder_time: "08:30" }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({ quiz_reminder_enabled: true, quiz_reminder_time: "08:30" });
+    expect(updatedUserFilter).toBe("user-quiz");
+  });
+
+  it.each(["8:30", "06:59", "15:01", "24:00", "12:60", 830])("rejects invalid Daily Quiz reminder time %s", async (time) => {
+    getApiUser.mockResolvedValue({ user: { id: "user-quiz" }, error: null, supabase: mockSupabase });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ quiz_reminder_time: time }),
+    }));
+
+    expect(res.status).toBe(400);
+    expect(updatedPayload).toBeNull();
+  });
+
+  it("accepts the final supported Daily Quiz reminder minute at 15:00", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-quiz" }, error: null, supabase: mockSupabase });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ quiz_reminder_time: "15:00" }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({ quiz_reminder_time: "15:00" });
+  });
+
   it.each(["7:00", "24:00", "12:60", 700])("rejects invalid Japa reminder time %s", async (time) => {
     getApiUser.mockResolvedValue({ user: { id: "user-japa" }, error: null, supabase: mockSupabase });
 

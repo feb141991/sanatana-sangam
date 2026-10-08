@@ -13,6 +13,7 @@ const EDITABLE_TEXT_FIELDS = new Set(["full_name", "sampradaya", "ishta_devata",
 const EDITABLE_LANGUAGE_FIELDS = new Set(["app_language", "meaning_language", "transliteration_language"]);
 const EDITABLE_BOOLEAN_FIELDS = new Set([
   "japa_reminder_enabled",
+  "quiz_reminder_enabled",
   "wants_festival_reminders",
   "wants_vrat_reminders",
   "wants_tithi_reminders",
@@ -54,6 +55,13 @@ const VALID_GOALS = new Set([
 
 const HINDU_ONLY_FIELDS = ["rashi", "nakshatra", "gotra", "calendar_profile", "calendar_scope"] as const;
 const USERNAME_RE = /^[a-z0-9_]{3,24}$/;
+
+function isValidQuizReminderTime(value: unknown): value is string {
+  if (!isValidObservanceReminderTime(value)) return false;
+  const [hour, minute] = value.split(':').map(Number);
+  const totalMinutes = hour * 60 + minute;
+  return totalMinutes >= 7 * 60 && totalMinutes <= 15 * 60;
+}
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -210,6 +218,14 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: "japa_reminder_time must be in HH:MM 24-hour format" }, { status: 400 });
       }
       updates.japa_reminder_time = value;
+    }
+
+    if ("quiz_reminder_time" in rawBody) {
+      const value = rawBody.quiz_reminder_time;
+      if (!isValidQuizReminderTime(value)) {
+        return NextResponse.json({ error: "quiz_reminder_time must be between 07:00 and 15:00 in HH:MM 24-hour format" }, { status: 400 });
+      }
+      updates.quiz_reminder_time = value;
     }
 
     if ("date_of_birth" in rawBody) {

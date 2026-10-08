@@ -15,6 +15,7 @@ export type NotificationProfile = {
   wants_nitya_reminders?: boolean | null;
   wants_sankalpa_midpoint_reminders?: boolean | null;
   japa_reminder_enabled?: boolean | null;
+  quiz_reminder_enabled?: boolean | null;
 };
 
 export function getNotificationPreferenceSkipReason(
@@ -30,6 +31,15 @@ export function getNotificationPreferenceSkipReason(
     profile.japa_reminder_enabled !== true
   ) {
     return "japa_reminders_disabled";
+  }
+
+  // Quiz reminders are explicit opt-in and default-off. Recheck at delivery
+  // so a row queued before opt-out cannot still be delivered.
+  if (
+    row.notification_type === "quiz" &&
+    profile.quiz_reminder_enabled !== true
+  ) {
+    return "quiz_reminders_disabled";
   }
 
   if (
@@ -108,6 +118,7 @@ export function getScheduledNotificationActionPath(row: ScheduledNotificationRow
   if (notificationType === "family_remembrance") return "/kul?section=family";
   if (notificationType === "sankalpa_midpoint") return "/sankalpa";
   if (notificationType === "shloka") return "/home?focus=shloka";
+  if (notificationType === "quiz") return "/quiz";
   if (notificationType === "sattvic_reminder") return "/bhakti/zen";
   if (notificationType.startsWith("nitya")) return "/nitya-karma";
   if (notificationType === "festival" || notificationType === "tithi") return "/panchang";

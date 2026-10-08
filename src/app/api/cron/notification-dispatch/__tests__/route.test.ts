@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
   profileError: null as { message: string; code?: string } | null,
   sadhanaResponse: { data: null, error: null } as { data: unknown[] | null; error: { message: string } | null },
   sadhanaDates: [] as string[],
+  quizResponse: { data: null, error: null } as { data: unknown[] | null; error: { message: string } | null },
+  quizDates: [] as string[],
   updates: [] as Array<{ table: string; update: unknown; ids?: string[] }>,
 }));
 
@@ -21,15 +23,16 @@ vi.mock('@supabase/supabase-js', () => ({
     rpc: vi.fn().mockImplementation(async () => ({ data: mocks.claimedRows, error: null })),
     from: (table: string) => {
       const response = () => ({
-        data: table === 'profiles' ? mocks.profiles : mocks.sadhanaResponse.data,
-        error: table === 'profiles' ? mocks.profileError : table === 'daily_sadhana' ? mocks.sadhanaResponse.error : null,
+        data: table === 'profiles' ? mocks.profiles : table === 'quiz_responses' ? mocks.quizResponse.data : mocks.sadhanaResponse.data,
+        error: table === 'profiles' ? mocks.profileError : table === 'daily_sadhana' ? mocks.sadhanaResponse.error : table === 'quiz_responses' ? mocks.quizResponse.error : null,
       });
       return {
         select: vi.fn().mockReturnValue({
           in: vi.fn().mockImplementation(() => table === 'profiles'
             ? Promise.resolve(response())
             : { eq: vi.fn().mockImplementation(async (_column: string, date: string) => {
-                mocks.sadhanaDates.push(date);
+                if (table === 'quiz_responses') mocks.quizDates.push(date);
+                else mocks.sadhanaDates.push(date);
                 return response();
               }) }),
         }),
@@ -88,8 +91,10 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       last_shloka_date: '2026-09-28',
     }];
     mocks.sadhanaResponse = { data: [{ user_id: 'user-1', japa_done: true }], error: null };
+    mocks.quizResponse = { data: [], error: null };
     mocks.profileError = null;
     mocks.sadhanaDates = [];
+    mocks.quizDates = [];
     mocks.updates = [];
     vi.clearAllMocks();
   });
@@ -212,6 +217,60 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       table: 'notification_schedule',
       update: { status: 'skipped', error: 'shloka_reminders_disabled' },
       ids: ['schedule-shloka-2'],
+    });
+  });
+
+  it('skips an opted-in quiz reminder when the quiz was completed after scheduling', async () => {
+    mocks.claimedRows[0] = {
+      id: 'schedule-quiz-1',
+      user_id: 'user-1',
+      notification_type: 'quiz',
+      notification_key: 'quiz:daily-2026-09-29:available:2026-09-29:en',
+      title: 'Today’s Daily Quiz is ready',
+      body: 'Take a moment to explore today’s question.',
+      send_at: '2026-09-29T07:00:00.000Z',
+      metadata: { local_date: '2026-09-29', timezone: 'Europe/London', action_url: '/quiz' },
+      retry_count: 0,
+    };
+    mocks.profiles[0].quiz_reminder_enabled = true;
+    mocks.quizResponse = { data: [{ user_id: 'user-1' }], error: null };
+
+    const response = await GET(request());
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ claimed: 1, succeeded: 0, skipped: 1 });
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.quizDates).toContain('2026-09-29');
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule',
+      update: { status: 'skipped', error: 'quiz_completed_before_delivery' },
+      ids: ['schedule-quiz-1'],
+    });
+  });
+
+  it('requeues rather than sending when quiz completion cannot be checked', async () => {
+    mocks.claimedRows[0] = {
+      id: 'schedule-quiz-2',
+      user_id: 'user-1',
+      notification_type: 'quiz',
+      notification_key: 'quiz:daily-2026-09-29:evening_nudge:2026-09-29:en',
+      title: 'A gentle quiz reminder',
+      body: 'There is still time to try today’s quiz.',
+      send_at: '2026-09-29T18:00:00.000Z',
+      metadata: { local_date: '2026-09-29', timezone: 'Europe/London', action_url: '/quiz' },
+      retry_count: 0,
+    };
+    mocks.profiles[0].quiz_reminder_enabled = true;
+    mocks.quizResponse = { data: null, error: { message: 'database unavailable' } };
+
+    const response = await GET(request());
+
+    expect(response.status).toBe(503);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule',
+      update: { status: 'pending', claimed_at: null, error: 'quiz_completion_lookup_retry' },
+      ids: ['schedule-quiz-2'],
     });
   });
 });

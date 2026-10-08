@@ -129,13 +129,13 @@ export async function GET(request: Request) {
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
     let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date")
+      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, quiz_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date")
       .in("id", userIds);
 
     if (profileErr && (profileErr as any).code === "42703") {
       const fallbackRes = await supabase
         .from("profiles")
-        .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, japa_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date")
+        .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_festival_reminders, japa_reminder_enabled, quiz_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date")
         .in("id", userIds);
       profiles = (fallbackRes.data ?? []).map((p: any) => ({
         ...p,
@@ -253,6 +253,66 @@ export async function GET(request: Request) {
       }
     }
 
+    // Quiz reminders are generated in the morning and, if unfinished, at
+    // 18:00 local time. Recheck the authoritative response table immediately
+    // before delivery so a quiz completed after scheduling suppresses a stale
+    // push. Unknown completion state fails closed.
+    const quizRows = claimedRows.filter((row) => row.notification_type === 'quiz');
+    const quizMissingDateIds = new Set<string>();
+    const quizRowsByDate = new Map<string, typeof quizRows>();
+    for (const row of quizRows) {
+      const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
+        ? row.metadata as Record<string, unknown>
+        : {};
+      const timezone = resolveTimeZone(
+        typeof metadata.timezone === 'string'
+          ? metadata.timezone
+          : profileMap.get(row.user_id)?.timezone
+      );
+      const scheduledAt = typeof row.send_at === 'string' ? new Date(row.send_at) : null;
+      const localDate = typeof metadata.local_date === 'string'
+        ? metadata.local_date
+        : scheduledAt && !Number.isNaN(scheduledAt.getTime())
+          ? getLocalDateIso(scheduledAt, timezone)
+          : null;
+      if (!localDate) {
+        quizMissingDateIds.add(row.id);
+        continue;
+      }
+      const group = quizRowsByDate.get(localDate) ?? [];
+      group.push(row);
+      quizRowsByDate.set(localDate, group);
+    }
+
+    const completedQuizIds = new Set<string>();
+    try {
+      for (const [localDate, rows] of quizRowsByDate) {
+        const rowUserIds = Array.from(new Set(rows.map((row) => row.user_id)));
+        const { data: completedRows, error: completionError } = await supabase
+          .from('quiz_responses')
+          .select('user_id')
+          .in('user_id', rowUserIds)
+          .eq('date', localDate);
+        if (completionError) throw completionError;
+        const completedUsers = new Set((completedRows ?? []).map((item: { user_id: string }) => item.user_id));
+        for (const row of rows) {
+          if (completedUsers.has(row.user_id)) completedQuizIds.add(row.id);
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'completion_lookup_failed';
+      console.error('[notification-dispatch] Quiz completion lookup failed; requeuing claimed batch:', message);
+      const { error: requeueError } = await supabase
+        .from('notification_schedule')
+        .update({ status: 'pending', claimed_at: null, error: 'quiz_completion_lookup_retry' })
+        .in('id', claimedRows.map((row) => row.id))
+        .eq('status', 'sending');
+      if (requeueError) {
+        console.error('[notification-dispatch] Could not requeue after quiz completion lookup failure:', requeueError.message);
+      }
+      return NextResponse.json({ error: 'Could not verify quiz completion; delivery will retry' }, { status: 503 });
+    }
+
     for (const row of claimedRows) {
       const profile = profileMap.get(row.user_id);
       if (!profile || profile.is_deleting) {
@@ -322,6 +382,32 @@ export async function GET(request: Request) {
           notificationType: row.notification_type,
           decision: 'skipped',
           reason: 'shloka_completion_date_missing',
+          provider: 'expo',
+        });
+        continue;
+      }
+
+      if (quizMissingDateIds.has(row.id)) {
+        skippedRows.push({ id: row.id, reason: 'quiz_completion_date_missing' });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: 'skipped',
+          reason: 'quiz_completion_date_missing',
+          provider: 'expo',
+        });
+        continue;
+      }
+
+      if (completedQuizIds.has(row.id)) {
+        skippedRows.push({ id: row.id, reason: 'quiz_completed_before_delivery' });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: 'skipped',
+          reason: 'quiz_completed_before_delivery',
           provider: 'expo',
         });
         continue;
