@@ -64,8 +64,16 @@ describe('Multi-Day Observance Series Content — Sourced Provenance & Zero Fabr
         expect(c.canonicalTitle.value.pa).toBeTruthy();
       }
     }
-    const expectedCount = rules.reduce((total, series) => total + series.children.length, 0);
-    expect(count).toBe(expectedCount);
+    expect(Object.fromEntries(rules.map((series) => [series.definitionKey, series.children.length]))).toEqual({
+      'sharad-navratri': 10,
+      'diwali-five-days': 5,
+      'paryushana-parva': 8,
+      ganeshotsav: 11,
+      'chhath-puja-four-days': 4,
+      'chaitra-navratri': 9,
+      'pitru-paksha': 14,
+    });
+    expect(count).toBe(61);
   });
 
   it('5. source separation: Rashtriya Panchang is NOT cited as author of narrative significance paragraphs', () => {
