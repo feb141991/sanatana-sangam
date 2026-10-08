@@ -6,7 +6,7 @@ import { GET } from './route';
 const policyEnvironmentKeys = [
   'NATIVE_APP_LATEST_VERSION',
   'NATIVE_APP_MIN_SUPPORTED_VERSION',
-  'NATIVE_APP_LATEST_BUILD_IOS',
+  'NATIVE_APP_LATEST_BUILD_IOS', // retired: still cleaned up so a leftover value cannot leak between tests
   'NATIVE_APP_LATEST_BUILD_ANDROID',
   'NATIVE_APP_FORCE_UPDATE',
   'NATIVE_APP_RELEASE_NOTES',
@@ -19,8 +19,6 @@ const previousEnvironment = new Map<string, string | undefined>();
 function setCompletePolicyEnvironment() {
   process.env.NATIVE_APP_LATEST_VERSION = '1.2.0';
   process.env.NATIVE_APP_MIN_SUPPORTED_VERSION = '1.0.0';
-  process.env.NATIVE_APP_LATEST_BUILD_IOS = '12';
-  process.env.NATIVE_APP_LATEST_BUILD_ANDROID = '15';
   process.env.NATIVE_APP_FORCE_UPDATE = 'false';
   process.env.NATIVE_APP_RELEASE_NOTES = 'Improved sacred calendar reliability.';
   process.env.NATIVE_APP_STORE_URL_IOS = 'https://apps.apple.com/app/shoonaya/id6793055966';
@@ -53,7 +51,7 @@ describe('GET /api/native/app-version', () => {
     expect(missing.headers.get('cache-control')).toBe('no-store');
   });
 
-  it('returns platform-specific build policy and store links', async () => {
+  it('returns the version policy and store links, and never a build number', async () => {
     setCompletePolicyEnvironment();
     const ios = await GET(new NextRequest('https://shoonaya.com/api/native/app-version?platform=ios'));
     const android = await GET(new NextRequest('https://shoonaya.com/api/native/app-version?platform=android'));
@@ -61,12 +59,25 @@ describe('GET /api/native/app-version', () => {
     const androidBody = await android.json();
 
     expect(ios.status).toBe(200);
-    expect(iosBody.latestBuildNumber).toBe(12);
+    expect(iosBody).not.toHaveProperty('latestBuildNumber');
     expect(iosBody.storeUrls.ios).toBe('https://apps.apple.com/app/shoonaya/id6793055966');
     expect(android.status).toBe(200);
-    expect(androidBody.latestBuildNumber).toBe(15);
+    expect(androidBody).not.toHaveProperty('latestBuildNumber');
     expect(androidBody.storeUrls.android).toBe('https://play.google.com/store/apps/details?id=com.shoonaya.app');
     expect(ios.headers.get('cache-control')).toContain('s-maxage=60');
+  });
+
+  it('ignores leftover retired build-number variables, valid or malformed, instead of serving or rejecting on them', async () => {
+    setCompletePolicyEnvironment();
+    for (const leftover of ['15', '15.1', 'abc']) {
+      process.env.NATIVE_APP_LATEST_BUILD_IOS = leftover;
+      process.env.NATIVE_APP_LATEST_BUILD_ANDROID = leftover;
+      for (const platform of ['ios', 'android']) {
+        const response = await GET(new NextRequest(`https://shoonaya.com/api/native/app-version?platform=${platform}`));
+        expect(response.status, `${platform} with leftover ${leftover}`).toBe(200);
+        expect(await response.json()).not.toHaveProperty('latestBuildNumber');
+      }
+    }
   });
 
   it('fails closed when the policy is incomplete or malformed', async () => {

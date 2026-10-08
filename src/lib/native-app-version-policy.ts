@@ -3,7 +3,6 @@ export type NativeStorePlatform = 'android' | 'ios';
 export type NativeAppVersionPolicy = {
   latestVersion: string;
   minSupportedVersion: string;
-  latestBuildNumber?: number;
   forceUpdate: boolean;
   storeUrls: { android: string; ios: string };
   releaseNotes: string;
@@ -43,29 +42,25 @@ function parseStoreUrl(value: string | undefined, platform: NativeStorePlatform)
   }
 }
 
-function parseBuildNumber(value: string | undefined): number | null | 'invalid' {
-  if (value === undefined || value === '') return null;
-  if (!/^\d+$/.test(value)) return 'invalid';
-  const parsed = Number(value);
-  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : 'invalid';
-}
-
-/** Resolves and validates the public app-version contract from server config. */
-export function resolveNativeAppVersionPolicy(
-  env: Record<string, string | undefined>,
-  platform: NativeStorePlatform
-): PolicyResult {
+/**
+ * Resolves and validates the public app-version contract from server config.
+ *
+ * Build numbers are deliberately NOT part of this contract. Every store build of
+ * a release shares one version and differs only by an auto-incremented build
+ * number, and nothing automatic tells the server which build is live, so a
+ * build-number field needed a manual env change after every release and silently
+ * did nothing when forgotten. Routine builds reach users through Google Play and
+ * the App Store's own update notice; this policy only nudges or forces a
+ * deliberate VERSION change. The retired NATIVE_APP_LATEST_BUILD_IOS/ANDROID
+ * variables are ignored, whatever their value, so leftover config cannot break it.
+ */
+export function resolveNativeAppVersionPolicy(env: Record<string, string | undefined>): PolicyResult {
   const latestVersionValue = env.NATIVE_APP_LATEST_VERSION;
   const minSupportedVersionValue = env.NATIVE_APP_MIN_SUPPORTED_VERSION;
   const latestVersion = parseStableVersion(latestVersionValue);
   const minSupportedVersion = parseStableVersion(minSupportedVersionValue);
   const androidStoreUrl = parseStoreUrl(env.NATIVE_APP_STORE_URL_ANDROID, 'android');
   const iosStoreUrl = parseStoreUrl(env.NATIVE_APP_STORE_URL_IOS, 'ios');
-  const latestBuildNumber = parseBuildNumber(
-    platform === 'ios'
-      ? env.NATIVE_APP_LATEST_BUILD_IOS
-      : env.NATIVE_APP_LATEST_BUILD_ANDROID
-  );
 
   if (!latestVersionValue || !minSupportedVersionValue || !latestVersion || !minSupportedVersion) {
     return { ok: false, reason: 'App version policy needs valid latest and minimum versions.' };
@@ -75,9 +70,6 @@ export function resolveNativeAppVersionPolicy(
   }
   if (!androidStoreUrl || !iosStoreUrl) {
     return { ok: false, reason: 'App store URLs are missing or invalid.' };
-  }
-  if (latestBuildNumber === 'invalid') {
-    return { ok: false, reason: 'Platform latest build number must be a positive integer.' };
   }
 
   const forceValue = env.NATIVE_APP_FORCE_UPDATE;
@@ -94,7 +86,6 @@ export function resolveNativeAppVersionPolicy(
     policy: {
       latestVersion: latestVersionValue,
       minSupportedVersion: minSupportedVersionValue,
-      ...(latestBuildNumber === null ? {} : { latestBuildNumber }),
       forceUpdate: forceValue === 'true',
       storeUrls: { android: androidStoreUrl, ios: iosStoreUrl },
       releaseNotes,
