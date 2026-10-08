@@ -162,6 +162,10 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
 - `KNOWN_BROKEN_IMAGES` in `src/lib/image-asset-scan.ts` may only shrink. Never
   add a file to it; fix the artwork and delete the entry
   (`src/lib/image-asset-integrity.test.ts` enforces both directions).
+- Art that arrives with a baked-in checkerboard is cut out with the Native app's
+  `scripts/relic-cutout/` (shoonaya-mobile), then must pass `npm run check:assets`
+  and be viewed over a bright contrast colour. Prefer the generator's original
+  export with a real alpha channel.
 - This is the twin of shoonaya-mobile's `lib/assetFormat.ts` and its AGENTS.md
   section 11; keep the rules in step.
 - Why this rule exists: Android production build 46 of the Native app
@@ -171,8 +175,9 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   are referenced by `public/landing.html`, the about page, the journal and
   marketing config, the festival emblem map and the kosh page; the live about
   page serves them as fully opaque JPEGs with grey or dark checker backgrounds
-  (pixel-checked 2026-10-07). No step checked them. This applies equally to
-  human and AI-agent contributors.
+  (pixel-checked 2026-10-07). No step checked them. They were replaced with real
+  transparent cut-outs on 2026-10-08. This applies equally to human and AI-agent
+  contributors.
 
 ## Required Behavior
 

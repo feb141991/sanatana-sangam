@@ -10,34 +10,18 @@ const SKIPPED_DIRS = new Set(['node_modules', 'graphify-out', 'dist', 'coverage'
 /**
  * Known offenders, tolerated by `npm run check:assets` (but not `--strict`) so
  * that existing debt does not block deploys while any NEW offender does. This
- * list may only SHRINK: `image-asset-integrity.test.ts` fails if a file here
- * is fixed and not removed, or if a problem exists that is not listed. Never
- * add a file to hide a problem; fix the artwork.
+ * list is EMPTY and may only ever shrink: `image-asset-integrity.test.ts` fails
+ * if a file listed here has been fixed, or if a problem exists that is not
+ * listed. Never add a file to hide a problem; fix the artwork.
  *
- * - The eight `public/relics` files are JPEGs named .png with a checkerboard
- *   "transparency" grid baked into the pixels (no alpha channel). Byte-identical
- *   copies live in the Native app, where they broke Android build 46. Used by
- *   landing.html, the about page, journal and marketing config, the festival
- *   emblem map and the kosh page.
- * - The three `clay-relics` files are unreferenced copies of the same art
- *   (japa-relic = mala, panchang-relic = diya-bronze, astrology-relic = chakra).
- * - `bhakti-hero.png` is an opaque 1024px hero photo that is a JPEG named .png;
- *   unreferenced. For a photo, saving it as `.jpg` is the right fix.
+ * History: it once listed twelve files -- the eight `public/relics` files that
+ * broke the Native app's Android build 46 (JPEGs named .png with a checkerboard
+ * "transparency" grid baked into the pixels), three unreferenced `clay-relics`
+ * copies of the same art, and `bhakti-hero.png` (an opaque photo that was a JPEG
+ * named .png). On 2026-10-08 the relics and copies were replaced with real
+ * transparent cut-outs and the photo was renamed `.jpg`.
  */
-export const KNOWN_BROKEN_IMAGES: readonly string[] = [
-  'public/images/bhakti-hero.png',
-  'public/images/clay-relics/astrology-relic.png',
-  'public/images/clay-relics/japa-relic.png',
-  'public/images/clay-relics/panchang-relic.png',
-  'public/relics/chakra.png',
-  'public/relics/dharma-wheel.png',
-  'public/relics/diya-bronze.png',
-  'public/relics/halo.png',
-  'public/relics/khanda-gold.png',
-  'public/relics/khanda.png',
-  'public/relics/mala.png',
-  'public/relics/trishula-gold.png',
-];
+export const KNOWN_BROKEN_IMAGES: readonly string[] = [];
 
 /** Repo-relative paths (forward slashes) of every raster image under `root`. */
 export function listImageFiles(root: string): string[] {

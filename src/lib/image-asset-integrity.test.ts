@@ -261,10 +261,11 @@ describe('scanner (filesystem walk, no git needed)', () => {
 
 // ── Repo-wide ratchet ───────────────────────────────────────────────────────────
 //
-// KNOWN_BROKEN_IMAGES (image-asset-scan.ts) lists the twelve known offenders.
-// It may only SHRINK: a new offender fails here, and fixing one forces its entry
-// to be deleted. The same eight relics, copied into the Native app, broke
-// Android build 46.
+// KNOWN_BROKEN_IMAGES (image-asset-scan.ts) is EMPTY and may only ever shrink: a
+// new offender fails here, and a listed file that has been fixed must be removed.
+// It once listed twelve files, including the eight relics that, copied into the
+// Native app, broke Android build 46; they were replaced with real transparent
+// cut-outs on 2026-10-08.
 describe('repo image assets', () => {
   const root = fileURLToPath(new URL('../../', import.meta.url));
   const { scanned, problems } = scanImageAssets(root);
