@@ -7,10 +7,10 @@ SELECT ok(
     SELECT 1 FROM pg_proc p
     JOIN pg_namespace n ON n.oid = p.pronamespace
     WHERE n.nspname = 'public' AND p.proname = 'auth_kul_id'
-      AND p.prosecdef
-      AND EXISTS (SELECT 1 FROM unnest(p.proconfig) cfg WHERE cfg = 'search_path=""')
+      AND NOT p.prosecdef
+      AND EXISTS (SELECT 1 FROM unnest(p.proconfig) cfg WHERE cfg = 'search_path=public')
   ),
-  'KUL identity helper is SECURITY DEFINER with an empty search_path'
+  'KUL identity helper matches production: SECURITY INVOKER with search_path=public'
 );
 SELECT ok(has_function_privilege('authenticated', 'public.auth_kul_id()', 'EXECUTE'), 'authenticated policy callers can execute the KUL identity helper');
 SELECT ok(NOT has_function_privilege('anon', 'public.auth_kul_id()', 'EXECUTE'), 'anonymous callers cannot execute the KUL identity helper');

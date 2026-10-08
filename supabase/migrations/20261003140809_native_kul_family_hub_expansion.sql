@@ -4,19 +4,20 @@
 
 -- This helper existed in the live database and schema dump, but its original
 -- migration was archived. Re-declare it before any current migration policy
--- depends on it so a clean migration replay is self-contained. Fully qualify
--- referenced objects and use an empty search_path for SECURITY DEFINER safety.
+-- depends on it so a clean migration replay is self-contained.
+--
+-- This must match production exactly (pg_get_functiondef on 2026-10-09):
+-- SECURITY INVOKER, search_path = public. A replay must not create a more
+-- privileged function than production runs. Making it SECURITY DEFINER would
+-- let it read profiles past RLS; if that hardening is wanted, ship it as a new,
+-- reviewed migration, not as an edit to this already-applied one.
 CREATE OR REPLACE FUNCTION public.auth_kul_id()
 RETURNS uuid
 LANGUAGE sql
 STABLE
-SECURITY DEFINER
-SET search_path = ''
+SET search_path TO 'public'
 AS $$
-  SELECT p.kul_id
-  FROM public.profiles AS p
-  WHERE p.id = (SELECT auth.uid())
-  LIMIT 1;
+  SELECT kul_id FROM profiles WHERE id = auth.uid() LIMIT 1;
 $$;
 
 ALTER FUNCTION public.auth_kul_id() OWNER TO postgres;
