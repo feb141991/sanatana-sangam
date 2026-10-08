@@ -10,8 +10,6 @@ Configure these server-side variables before deploying the route:
 | --- | --- |
 | `NATIVE_APP_LATEST_VERSION` | Latest released marketing version, as `major.minor.patch`. |
 | `NATIVE_APP_MIN_SUPPORTED_VERSION` | Oldest version allowed to continue. Keep equal to latest unless an actual compatibility/security cutoff is needed. |
-| `NATIVE_APP_LATEST_BUILD_IOS` | Optional latest iOS build number for that marketing version. |
-| `NATIVE_APP_LATEST_BUILD_ANDROID` | Optional latest Android version code for that marketing version. |
 | `NATIVE_APP_STORE_URL_IOS` | HTTPS URL on `apps.apple.com` for Shoonaya. |
 | `NATIVE_APP_STORE_URL_ANDROID` | HTTPS Play Store details URL for package `com.shoonaya.app`. |
 | `NATIVE_APP_FORCE_UPDATE` | Optional literal `true` or `false`; `true` forces every client to update. |
@@ -19,10 +17,16 @@ Configure these server-side variables before deploying the route:
 
 The route responds with `503 UPDATE_POLICY_UNAVAILABLE` when required policy is
 missing or invalid. It intentionally does not invent a version or store URL.
-Build numbers are returned for the requested platform and are compared only
-when the installed marketing version equals the latest marketing version.
-This catches a rebuilt binary whose marketing version did not change without
-misclassifying a newer development version.
+The policy compares marketing VERSIONS only; it carries no build number.
+Every store build of a release shares one version and differs only by an
+auto-incremented build number, and nothing automatic tells the server which
+build is live, so a build-number field needed a manual change after every
+release and silently did nothing when forgotten. Routine same-version builds
+reach users through Google Play and the App Store's own update notice and
+auto-update. This policy is for a deliberate version bump (an optional nudge when
+`NATIVE_APP_LATEST_VERSION` is raised) or forcing one. The retired
+`NATIVE_APP_LATEST_BUILD_IOS` / `NATIVE_APP_LATEST_BUILD_ANDROID` variables are
+ignored if still set; remove them from Vercel at your convenience.
 
 The client owns the prompt and rollout behavior. Keep force-update disabled by
 default; use the minimum-version gate for a real compatibility cutoff and the

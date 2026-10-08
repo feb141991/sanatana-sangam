@@ -125,6 +125,25 @@ export const RASHI_LIST = [
   { key: 'pisces',      en: 'Pisces',      sa: 'Meena',      symbol: '🐟', lord: 'Jupiter (Guru)',   index: 11 },
 ];
 
+/**
+ * Resolves any spelling of a rashi that this system stores to its canonical
+ * RASHI_LIST key. Two vocabularies are in use: the English key ("capricorn",
+ * the Rashiphal API's request value; the English name "Capricorn" is the same
+ * word in different case, so case-folding covers it) and the Sanskrit name
+ * ("Makara"). The chart engine writes the Sanskrit name into
+ * birth_profiles.rashi, and profiles.rashi holds it lowercased, so comparing
+ * either to an English key without this never matched and silently disabled
+ * Dasha personalization for every real user. Case and surrounding whitespace
+ * are ignored; anything else returns null.
+ */
+export function normalizeRashiKey(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return null;
+  const match = RASHI_LIST.find((rashi) => rashi.key === normalized || rashi.sa.toLowerCase() === normalized);
+  return match?.key ?? null;
+}
+
 const SHLOKAS: Record<string, { shloka: string; trans: string }> = {
   mangal: {
     shloka: 'धरणीगर्भसम्भूतं विद्युत्कान्तिसमप्रभम् । कुमारं शक्तिहस्तं च मङ्गलं प्रणमाम्यहम् ॥',

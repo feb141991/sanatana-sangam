@@ -3,10 +3,13 @@ import {
   getDailyHoroscope,
   getHouseStructure,
   findActiveDashaEntry,
+  normalizeRashiKey,
   PLANET_HOUSE_GUIDANCE,
+  RASHI_LIST,
   type GuidancePlanet,
   type HouseNumber,
 } from './rashiphal-data';
+import { getTransitsForDate } from './astro-engine';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
 const PLANETS: GuidancePlanet[] = ['Chandra', 'Guru', 'Shani', 'Mangal', 'Rahu', 'Ketu'];
@@ -208,5 +211,43 @@ describe('findActiveDashaEntry', () => {
   it('never throws on a non-object chart_data', () => {
     expect(() => findActiveDashaEntry('garbage', new Date())).not.toThrow();
     expect(findActiveDashaEntry('garbage', new Date())).toBeNull();
+  });
+});
+
+describe('normalizeRashiKey', () => {
+  it('maps the English key, English name and Sanskrit name of every sign to that sign\'s key (36 inputs, 12 distinct keys)', () => {
+    const results = RASHI_LIST.flatMap((rashi) =>
+      [rashi.key, rashi.en, rashi.sa].map((spelling) => ({ spelling, expected: rashi.key, actual: normalizeRashiKey(spelling) })),
+    );
+    expect(results).toHaveLength(36);
+    for (const { spelling, expected, actual } of results) expect(actual, spelling).toBe(expected);
+    expect(new Set(results.map((result) => result.actual)).size).toBe(12);
+  });
+
+  it('relies on each English name being its key in different capitalisation; revisit the matcher if that ever stops being true', () => {
+    for (const rashi of RASHI_LIST) expect(rashi.en.toLowerCase(), rashi.en).toBe(rashi.key);
+  });
+
+  it('ignores case and surrounding whitespace, as profiles.rashi stores lowercase Sanskrit ("makara")', () => {
+    expect(normalizeRashiKey('makara')).toBe('capricorn');
+    expect(normalizeRashiKey('  MAKARA ')).toBe('capricorn');
+    expect(normalizeRashiKey('\tCapricorn\n')).toBe('capricorn');
+  });
+
+  it('rejects non-strings, blanks, partial and unknown names rather than guessing', () => {
+    for (const bad of [null, undefined, 7, {}, [], '', '   ', 'unknown', 'makar', 'capricornus', 'maka ra']) {
+      expect(normalizeRashiKey(bad), String(bad)).toBeNull();
+    }
+  });
+
+  it('understands every spelling the chart engine really writes (drift guard against the live engine)', () => {
+    // The Moon visits all 12 signs in about 27 days, so 40 daily samples cover every sign.
+    const seen = new Set<number>();
+    for (let day = 0; day < 40; day++) {
+      const moon = getTransitsForDate(new Date(Date.UTC(2026, 0, 1 + day, 12))).Chandra;
+      seen.add(moon.rashiIndex);
+      expect(normalizeRashiKey(moon.rashiName), `${moon.rashiName} (sign ${moon.rashiIndex})`).toBe(RASHI_LIST[moon.rashiIndex].key);
+    }
+    expect(seen.size).toBe(12);
   });
 });

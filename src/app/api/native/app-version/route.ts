@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const result = resolveNativeAppVersionPolicy(process.env, platformValue);
+  const result = resolveNativeAppVersionPolicy(process.env);
   if (!result.ok) {
     console.error('[native-app-version] Update policy is not configured:', result.reason);
     return NextResponse.json(

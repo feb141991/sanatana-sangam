@@ -341,7 +341,12 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         const bV = parseInt(b.chunk.metadata!.chunkId.split('.').pop() || '0', 10);
         return aV - bV;
       });
-      documents.push(...neighbors.map(n => n.chunk));
+      // Exact-reference callers expect the verse they named first; include
+      // adjacent context after it in canonical order.
+      documents.push(
+        targetChunk,
+        ...neighbors.filter((neighbor) => neighbor.chunk.id !== targetChunk.id).map((neighbor) => neighbor.chunk),
+      );
     } else {
       documents.push(...candidates.slice(0, 5).map(c => c.chunk));
     }
@@ -753,6 +758,7 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
   private sourceName: string;
   private tradition: string;
   private indexData: any = null;
+  private documentFrequency: Map<string, number> | null = null;
 
   constructor(fallbackRetriever: PramanaManifestRetriever, indexPath: string, sourceName: string, tradition: string) {
     this.fallbackRetriever = fallbackRetriever;
@@ -767,6 +773,15 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     try {
       const data = fs.readFileSync(this.indexPath, 'utf-8');
       this.indexData = JSON.parse(data);
+      // Cache document frequencies once per process. A small lexical lift lets
+      // exact topical words win near-tied dense matches (for example, "wavering
+      // mind" should rank Gita 6.26 above the semantically adjacent 8.8).
+      const frequencies = new Map<string, number>();
+      for (const doc of this.indexData.documents ?? []) {
+        const terms = new Set(String(doc.text ?? '').toLowerCase().match(/[a-z]{3,}/g) ?? []);
+        for (const term of terms) frequencies.set(term, (frequencies.get(term) ?? 0) + 1);
+      }
+      this.documentFrequency = frequencies;
       return this.indexData;
     } catch {
       return null;
@@ -810,11 +825,23 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     const { embedQuery } = await import('./embedding-model');
     const queryVector = await embedQuery(queryText);
 
-    const docsWithScores: Array<{ doc: any; score: number }> = [];
+    const docsWithScores: Array<{ doc: any; score: number; rankingScore: number }> = [];
+    const queryTerms = new Set(queryText.toLowerCase().match(/[a-z]{3,}/g) ?? []);
     for (const doc of index.documents) {
       const score = PramanaDenseEmbeddingRetriever.cosine(queryVector, doc.vector);
       if (score > 0) {
-        docsWithScores.push({ doc, score });
+        const documentText = String(doc.text ?? '').toLowerCase();
+        let lexicalLift = 0;
+        for (const term of queryTerms) {
+          if (!new RegExp(`\\b${term}\\b`).test(documentText)) continue;
+          const frequency = this.documentFrequency?.get(term) ?? 0;
+          const inverseDocumentFrequency = Math.log((index.documents.length + 1) / (frequency + 1));
+          lexicalLift += inverseDocumentFrequency * 0.01;
+        }
+        // Keep dense cosine as the relevance gate and public score; lexical
+        // evidence only breaks close ranking ties and cannot make an off-topic
+        // result pass the grounding threshold by itself.
+        docsWithScores.push({ doc, score, rankingScore: score + Math.min(0.08, lexicalLift) });
       }
     }
 
@@ -822,7 +849,7 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
       return this.fallbackRetriever.retrieve(query);
     }
 
-    docsWithScores.sort((a, b) => b.score - a.score);
+    docsWithScores.sort((a, b) => b.rankingScore - a.rankingScore);
 
     const limit = query.topK || 5;
     const augmentedDocs: Array<{ doc: any; score: number }> = [];

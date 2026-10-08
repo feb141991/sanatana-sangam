@@ -1,17 +1,27 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getDailyHoroscope, RASHI_LIST, findActiveDashaEntry, toNativeRashiHoroscope } from '@/lib/jyotish/rashiphal-data';
+import {
+  getDailyHoroscope,
+  RASHI_LIST,
+  findActiveDashaEntry,
+  normalizeRashiKey,
+  toNativeRashiHoroscope,
+} from '@/lib/jyotish/rashiphal-data';
 import { isSupportedTransitDate } from '@/lib/jyotish/astro-engine';
 import { isValidTimeZone } from '@/lib/sacred-time';
 import { getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
-function normalizeRashi(value: unknown): string | null {
-  if (typeof value !== 'string') return null;
+/**
+ * Request contract: the `rashi` query parameter is the English RASHI_LIST key
+ * ("capricorn"), case-insensitive. Sanskrit or display names are not accepted
+ * here; stored profile values (which hold Sanskrit names) are resolved
+ * separately with normalizeRashiKey.
+ */
+function parseRequestRashiKey(value: string | null): string | null {
+  if (value === null) return null;
   const normalized = value.trim().toLowerCase();
-  return RASHI_LIST.find((r) =>
-    r.key === normalized || r.en.toLowerCase() === normalized || r.sa.toLowerCase() === normalized,
-  )?.key ?? null;
+  return RASHI_LIST.some((r) => r.key === normalized) ? normalized : null;
 }
 
 function isValidIsoDatePart(value: string): boolean {
@@ -37,7 +47,7 @@ type DashaContextStatus = 'not_requested' | 'available' | 'unavailable';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const rashiParam = searchParams.get('rashi');
-  const rashi = normalizeRashi(rashiParam);
+  const rashi = parseRequestRashiKey(rashiParam);
   const dateParam = searchParams.get('date');
   const timeZoneParam = searchParams.get('tz');
   const timeZone = timeZoneParam ?? 'Asia/Kolkata';
@@ -105,7 +115,9 @@ export async function GET(request: NextRequest) {
         console.warn('[rashiphal] birth_profiles read failed', { requestId, code: error.code });
       } else if (profiles && profiles.length === 1) {
         const profile = profiles[0] as { rashi: unknown; chart_data: unknown };
-        if (normalizeRashi(profile.rashi) === rashi) {
+        // birth_profiles.rashi is written by the chart engine as a Sanskrit
+        // name ("Makara"); the request carries the English key ("capricorn").
+        if (normalizeRashiKey(profile.rashi) === rashi) {
           const active = findActiveDashaEntry(profile.chart_data, parsedDate);
           if (active) {
             const formattedEndDate = new Date(active.endDate).toLocaleDateString('en-IN', {

@@ -136,6 +136,49 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   src/lib/ai` should return nothing but incidental comments/docstrings) rather
   than assuming a partially-present provider is intentional.
 
+### 12. Image and Binary Asset Integrity
+- An image's real format must match its file extension. Browsers and Next's
+  image optimiser sniff content, so a JPEG named `.png` appears to work on the
+  web, but the Native app copies assets from `public/relics/`, and Android's
+  resource compiler (AAPT2) rejects such a file and fails the whole release
+  build. Re-export the file in the format its name claims; for an opaque photo
+  the matching extension (`.jpg`) is the right fix.
+- Cut-out art (`public/relics/`, `public/images/clay-relics/`) must be a real
+  PNG or WebP with a true alpha channel. Never commit a generator's
+  checkerboard "transparency" preview, a screenshot or a flattened JPEG; open
+  the file on a contrasting background before committing it. JPEG cannot carry
+  transparency, so renaming cut-out art is not a fix.
+- `npm run check:assets` runs first in `prebuild`, so a new offender fails the
+  Vercel build instead of reaching users. Run it before committing or copying
+  any image, in either repository; `npm run check:assets -- --strict` also
+  lists the known offenders.
+- Do not report image work as done, or call assets "transparent" or "verified"
+  in a commit message, until the check passes and the art has been viewed on
+  the page that uses it, in light and dark. A green test suite does not cover
+  assets (see 7: committed is not built is not smoke-tested).
+- Record provenance for generated or third-party art: tool, date and rights
+  status (see 3). Assets copied between repositories carry their defects with
+  them; run the check in both.
+- `KNOWN_BROKEN_IMAGES` in `src/lib/image-asset-scan.ts` may only shrink. Never
+  add a file to it; fix the artwork and delete the entry
+  (`src/lib/image-asset-integrity.test.ts` enforces both directions).
+- Art that arrives with a baked-in checkerboard is cut out with the Native app's
+  `scripts/relic-cutout/` (shoonaya-mobile), then must pass `npm run check:assets`
+  and be viewed over a bright contrast colour. Prefer the generator's original
+  export with a real alpha channel.
+- This is the twin of shoonaya-mobile's `lib/assetFormat.ts` and its AGENTS.md
+  section 11; keep the rules in step.
+- Why this rule exists: Android production build 46 of the Native app
+  (2026-10-06) failed after a ~3 hour EAS queue because eight JPEGs named
+  `.png`, each with a checkerboard baked into its pixels, had been copied from
+  `public/relics/`. They entered this repository on 2026-05-14 (`1723fa6`) and
+  are referenced by `public/landing.html`, the about page, the journal and
+  marketing config, the festival emblem map and the kosh page; the live about
+  page serves them as fully opaque JPEGs with grey or dark checker backgrounds
+  (pixel-checked 2026-10-07). No step checked them. They were replaced with real
+  transparent cut-outs on 2026-10-08. This applies equally to human and AI-agent
+  contributors.
+
 ## Required Behavior
 
 - Read the relevant `.claude/agents/*.md` role file before implementing specialized work.

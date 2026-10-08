@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import { deriveDenormalizedBirthProfileFields, generateAstroChart } from '@/lib/jyotish/astro-engine';
+import { findActiveDashaEntry, RASHI_LIST } from '@/lib/jyotish/rashiphal-data';
 
 const mocks = vi.hoisted(() => ({ getApiUser: vi.fn() }));
 vi.mock('@/lib/api-auth', async (importOriginal) => ({
@@ -52,6 +54,21 @@ describe('GET /api/jyotish/rashiphal', () => {
     ]) {
       expect(body).not.toHaveProperty(legacyField);
     }
+  });
+
+  it('accepts only the English key as the rashi request parameter (any case), not Sanskrit names', async () => {
+    const { GET } = await import('./route');
+    const accepted: string[] = [];
+    for (const rashi of RASHI_LIST) {
+      for (const value of [rashi.key, rashi.key.toUpperCase(), ` ${rashi.en} `, rashi.sa]) {
+        const response = await GET(req(`https://shoonaya.com/api/jyotish/rashiphal?rashi=${encodeURIComponent(value)}&contract=2`));
+        if (response.status === 200) accepted.push(value);
+      }
+    }
+    // 12 signs x 3 English-key spellings accepted; none of the 12 Sanskrit names
+    // (the stored-profile vocabulary) is a valid request value.
+    expect(accepted).toHaveLength(36);
+    for (const rashi of RASHI_LIST) expect(accepted).not.toContain(rashi.sa);
   });
 
   it('never calls getApiUser for a present-but-malformed (non-Bearer) Authorization header', async () => {
@@ -229,5 +246,58 @@ describe('GET /api/jyotish/rashiphal', () => {
     const response = await GET(req(REQUEST_URL, { authorization: 'Bearer valid-token' }));
     expect(response.status).toBe(200);
     expect((await response.json()).dashaContextStatus).toBe('unavailable');
+  });
+});
+
+// birth_profiles.rashi is written by chart/route.ts from the chart engine, which
+// emits the Sanskrit name ("Makara"), while this route takes the English key
+// ("capricorn"). The fixtures above use English keys the real writer never
+// produces, which is how a total mismatch went unnoticed: no stored value ever
+// matched, so no user could ever receive a Dasha. These use a real chart,
+// stored the way the writer stores it.
+describe('GET /api/jyotish/rashiphal Dasha matching against what the chart writer really stores', () => {
+  const chart = generateAstroChart({ date: '1990-05-17', time: '06:30', lat: 28.6139, lng: 77.209, timezone: 'Asia/Kolkata' });
+  const storedRashi = deriveDenormalizedBirthProfileFields(chart).rashi as string;
+  // Derived from the Sanskrit column only, so this does not lean on the matcher under test.
+  const storedKey = RASHI_LIST.find((rashi) => rashi.sa === storedRashi)?.key as string;
+  const DATE = '2026-10-06';
+
+  async function dashaStatus(rowRashi: string, requestedKey: string) {
+    const client = mockBirthProfilesClient({ data: [{ rashi: rowRashi, chart_data: chart }], error: null });
+    mocks.getApiUser.mockResolvedValue({ user: { id: 'user-1' }, error: null, supabase: client });
+    const { GET } = await import('./route');
+    const response = await GET(req(`https://shoonaya.com/api/jyotish/rashiphal?rashi=${requestedKey}&date=${DATE}`, { authorization: 'Bearer valid-token' }));
+    const body = await response.json();
+    return { status: body.dashaContextStatus as string, dashaContext: body.dashaContext as { planet: string } | null };
+  }
+
+  it('uses a fixture that is genuinely valid: the writer stores a Sanskrit name, and the chart has an active Dasha on the test date', () => {
+    expect(RASHI_LIST.map((rashi) => rashi.sa)).toContain(storedRashi);
+    expect(storedKey).toBeDefined();
+    expect(storedRashi).not.toBe(storedKey);
+    expect(findActiveDashaEntry(chart, new Date(`${DATE}T00:00:00.000Z`))).not.toBeNull();
+  });
+
+  it('attaches the Dasha when the user views the sign their real chart stored', async () => {
+    const result = await dashaStatus(storedRashi, storedKey);
+    expect(result.status).toBe('available');
+    expect(result.dashaContext?.planet).toBe(findActiveDashaEntry(chart, new Date(`${DATE}T00:00:00.000Z`))?.planet);
+  });
+
+  it('attaches it for exactly one of the 12 signs, the stored one, and for none of the other 11', async () => {
+    const outcomes = await Promise.all(RASHI_LIST.map(async (rashi) => ({ key: rashi.key, ...(await dashaStatus(storedRashi, rashi.key)) })));
+    expect(outcomes.filter((outcome) => outcome.status === 'available').map((outcome) => outcome.key)).toEqual([storedKey]);
+    expect(outcomes.filter((outcome) => outcome.status === 'unavailable')).toHaveLength(11);
+  });
+
+  it('matches whichever of the three spellings is stored: Sanskrit as written, lowercased Sanskrit as profiles.rashi holds it, English name or key', async () => {
+    const english = RASHI_LIST.find((rashi) => rashi.key === storedKey)?.en as string;
+    for (const spelling of [storedRashi, storedRashi.toLowerCase(), english, storedKey]) {
+      expect((await dashaStatus(spelling, storedKey)).status, spelling).toBe('available');
+    }
+  });
+
+  it('still refuses a value that is not a sign at all', async () => {
+    expect((await dashaStatus('not-a-sign', storedKey)).status).toBe('unavailable');
   });
 });
