@@ -40,6 +40,76 @@ export interface RashiHoroscope {
   dashaContext?:       { planet: string; endDate: string; note: string } | null;
 }
 
+export type NativeRashiHoroscope = Pick<
+  RashiHoroscope,
+  | 'rashi'
+  | 'rashiSanskrit'
+  | 'symbol'
+  | 'lord'
+  | 'shloka'
+  | 'shlokaTranslation'
+  | 'panditAiOracle'
+  | 'gocharSummary'
+  | 'moonTransit'
+  | 'transitHighlights'
+  | 'accuracyNote'
+  | 'spiritualDate'
+  | 'dashaContext'
+> & {
+  lifeReflections: Array<{ title: string; detail: string }>;
+  practiceFocus: string;
+  practiceSteps: Array<{ label: string; action: string }>;
+};
+
+/**
+ * Project the shared legacy horoscope into the contract actually displayed by
+ * Native. The PWA continues to call getDailyHoroscope directly; this adapter
+ * deliberately omits legacy lucky-value, health, and house-derived practice
+ * fields from the Native REST response.
+ */
+export function toNativeRashiHoroscope(horoscope: RashiHoroscope): NativeRashiHoroscope {
+  return {
+    rashi: horoscope.rashi,
+    rashiSanskrit: horoscope.rashiSanskrit,
+    symbol: horoscope.symbol,
+    lord: horoscope.lord,
+    shloka: horoscope.shloka,
+    shlokaTranslation: horoscope.shlokaTranslation,
+    panditAiOracle: horoscope.panditAiOracle,
+    gocharSummary: horoscope.gocharSummary,
+    moonTransit: horoscope.moonTransit,
+    transitHighlights: horoscope.transitHighlights,
+    accuracyNote: horoscope.accuracyNote,
+    spiritualDate: horoscope.spiritualDate,
+    dashaContext: horoscope.dashaContext,
+    lifeReflections: [
+      {
+        title: 'Work & Responsibility',
+        detail: 'Consider one responsibility you can handle with care. A transit reflection does not determine a work outcome.',
+      },
+      {
+        title: 'Wellbeing',
+        detail: 'This general reflection cannot assess health or energy. Choose routines that suit your needs and consult a qualified professional for medical concerns.',
+      },
+      {
+        title: 'Relationships',
+        detail: 'A transit cannot determine another person’s response. Clear communication and attentive listening remain choices you can make.',
+      },
+    ],
+    practiceFocus: 'Choose a practice already meaningful in your own tradition. Keep it optional and within your comfort.',
+    practiceSteps: [
+      {
+        label: 'Choose',
+        action: 'Select prayer, japa, scripture study, or quiet reflection that is already part of your practice.',
+      },
+      {
+        label: 'Keep it manageable',
+        action: 'Set a duration that fits your day, and follow guidance from your own tradition or teacher.',
+      },
+    ],
+  };
+}
+
 export const RASHI_LIST = [
   { key: 'aries',       en: 'Aries',       sa: 'Mesha',      symbol: '🐏', lord: 'Mars (Mangal)',    index: 0 },
   { key: 'taurus',      en: 'Taurus',      sa: 'Vrishabha',  symbol: '🐂', lord: 'Venus (Shukra)',   index: 1 },
@@ -177,19 +247,20 @@ function houseFromRashi(transitRashiIndex: number, referenceRashiIndex: number):
 // buckets) produce near-identical text. This table is keyed by BOTH planet
 // and house, so every one of the 72 combinations has its own text.
 //
-// Content status: these are product-approved editorial reflections, not
-// quotations or a source-defined classical gochara model. On 2026-09-29 the
-// product owner confirmed the Native content was reviewed and could be
-// ungated, and explicitly confirmed House 1 as Kendra + Trikona. The repo
-// does not preserve a named Jyotish reviewer, lineage, source-by-source
-// review, or a Vedha convention; see docs/jyotish/RASHIPHAL_NATIVE_GUIDANCE_RECORD.md.
+// Content status: editorial reflections, not quotations or a source-defined
+// classical gochara model. On 2026-09-29 the product owner said the Native
+// content had been reviewed and could be ungated, and explicitly confirmed
+// House 1 as Kendra + Trikona. Commit bfe2692 later reworded some table entries;
+// this repo cannot prove that exact revision was re-reviewed. It also does not
+// record a named Jyotish reviewer, lineage, per-entry sources, or Vedha rule;
+// see docs/jyotish/RASHIPHAL_NATIVE_GUIDANCE_RECORD.md.
 // Tests below enforce data shape and distinctness, not astrological validity.
 export type GuidancePlanet = 'Chandra' | 'Guru' | 'Shani' | 'Mangal' | 'Rahu' | 'Ketu';
 export type HouseNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, { text: string }>> = {
   Chandra: {
-    1: { text: "The mind sits close to the surface -- your mood shapes how you come across more than usual today. Let feelings pass rather than acting on the first one." },
+    1: { text: "The mind sits close to the surface — your mood shapes how you come across more than usual today. Let feelings pass rather than acting on the first one." },
     2: { text: "Emotion may colour your words. A gentler tone in close conversations can help you express yourself clearly." },
     3: { text: "Communication may feel more natural; listening patiently can help a conversation. Courage today can be quiet rather than bold." },
     4: { text: "Home and inner comfort may draw more attention than usual. Make room for rest and familiar surroundings if that feels helpful." },
@@ -223,7 +294,7 @@ export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, {
     4: { text: "Home life may feel heavier or more restrictive than usual. Tend to a practical duty there rather than an emotional one." },
     5: { text: "If creative or devotional practice feels effortful, keep it simple and let consistency matter more than inspiration." },
     6: { text: "Patient, structured effort may help you work through a persistent responsibility." },
-    7: { text: "Relationships and negotiations demand patience and realism today -- don't expect warmth, expect fairness." },
+    7: { text: "Relationships and negotiations demand patience and realism today — don't expect warmth, expect fairness." },
     8: { text: "Complex changes may benefit from patience. Give important details a second look before making a decision." },
     9: { text: "Questions of belief, learning, or duty may call for patience. Make room for reflection without treating uncertainty as a verdict." },
     10: { text: "Consistent work and patience fit this placement. Progress may be gradual, so focus on the next practical step." },
@@ -231,7 +302,7 @@ export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, {
     12: { text: "A quieter pace may help you review priorities. Give yourself space to reflect before drawing conclusions from a difficult mood." },
   },
   Mangal: {
-    1: { text: "Energy and initiative run high today -- channel it into direct action rather than letting frustration take the lead." },
+    1: { text: "Energy and initiative run high today — channel it into direct action rather than letting frustration take the lead." },
     2: { text: "Words can come out more sharply than intended. Pause before replying, especially in close conversations." },
     3: { text: "A clear, manageable task may be a useful place to direct courage and initiative." },
     4: { text: "Home projects or practical responsibilities may call for extra patience. Clarify expectations and channel energy into useful tasks." },
@@ -239,13 +310,13 @@ export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, {
     6: { text: "Direct effort may help you work through a practical challenge." },
     7: { text: "Bring directness to partnership conversations with care. Make room for another perspective before deciding how to proceed." },
     8: { text: "When plans feel complex, pause before reacting, check details, and keep your next step measured." },
-    9: { text: "Energy toward belief or duty may come out as impatience rather than conviction -- temper zeal with respect for tradition." },
+    9: { text: "Energy toward belief or duty may come out as impatience rather than conviction — temper zeal with respect for tradition." },
     10: { text: "You may feel ready to move work forward. Choose one stalled task and give it focused effort." },
     11: { text: "A clear, purposeful approach can help you make progress on a shared goal. Keep collaboration direct and respectful." },
     12: { text: "A restless mood can make it harder to settle. A gentle wind-down and fewer late-day demands may feel supportive." },
   },
   Rahu: {
-    1: { text: "An unusual restlessness or hunger for something more colours your self-image today -- question whether the desire is really yours." },
+    1: { text: "An unusual restlessness or hunger for something more colours your self-image today — question whether the desire is really yours." },
     2: { text: "A strong urge to persuade may arise. Check details and choose precise words before making a commitment." },
     3: { text: "You may feel drawn to bold or unfamiliar approaches. Check their fit and impact before committing." },
     4: { text: "If home plans feel unsettled, give yourself time to distinguish curiosity from urgency before choosing a next step." },
@@ -253,7 +324,7 @@ export const PLANET_HOUSE_GUIDANCE: Record<GuidancePlanet, Record<HouseNumber, {
     6: { text: "Careful, original thinking may help you approach a practical challenge." },
     7: { text: "Read terms carefully and ask questions when expectations are unclear. Clarity is more useful than assumption." },
     8: { text: "When a subject feels complex, verify information and avoid drawing conclusions before you have enough context." },
-    9: { text: "Unconventional beliefs or a foreign teacher may attract you today -- stay grounded in your own tradition before adopting a new one." },
+    9: { text: "Unconventional beliefs or a foreign teacher may attract you today — stay grounded in your own tradition before adopting a new one." },
     10: { text: "Ambition for recognition may feel heightened. Choose transparent steps and realistic timelines over shortcuts." },
     11: { text: "New connections can introduce unfamiliar ideas. Prioritise clear expectations and shared aims over promises of quick results." },
     12: { text: "If attention feels scattered, quiet planning or reflection can help channel the urge for novelty." },

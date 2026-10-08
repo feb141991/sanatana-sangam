@@ -323,6 +323,22 @@ export function toJulianDay(utcDate: Date): number {
   return jdn + (h - 12) / 24;
 }
 
+/**
+ * Checks the transit engine's supported instant range using the same Lahiri
+ * implementation that getTransitsForDate uses. This lets API callers reject
+ * unsupported dates as client errors without duplicating astronomy bounds.
+ */
+export function isSupportedTransitDate(date: Date): boolean {
+  if (!(date instanceof Date) || !Number.isFinite(date.getTime())) return false;
+  try {
+    getLahiriAyanamsa(toJulianDay(date));
+    return true;
+  } catch (error) {
+    if (error instanceof RangeError) return false;
+    throw error;
+  }
+}
+
 // ── Lahiri Ayanamsa ───────────────────────────────────────────────────────────
 // Standard formula based on Chitrapaksha (Lahiri) definition.
 // Accurate to ~0.1° which is sufficient for consumer Jyotish.

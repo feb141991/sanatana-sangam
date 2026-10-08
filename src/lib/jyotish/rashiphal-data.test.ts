@@ -104,6 +104,14 @@ describe('PLANET_HOUSE_GUIDANCE completeness and distinctness', () => {
       }
     }
   });
+
+  it('uses typographic em dashes in every user-facing planet-house reflection', () => {
+    for (const planet of PLANETS) {
+      for (const house of HOUSES) {
+        expect(PLANET_HOUSE_GUIDANCE[planet][house].text, `${planet} house ${house}`).not.toContain('--');
+      }
+    }
+  });
 });
 
 describe('getHouseStructure', () => {

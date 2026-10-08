@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getDailyHoroscope, RASHI_LIST, findActiveDashaEntry } from '@/lib/jyotish/rashiphal-data';
+import { getDailyHoroscope, RASHI_LIST, findActiveDashaEntry, toNativeRashiHoroscope } from '@/lib/jyotish/rashiphal-data';
+import { isSupportedTransitDate } from '@/lib/jyotish/astro-engine';
+import { isValidTimeZone } from '@/lib/sacred-time';
 import { getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
@@ -7,29 +9,62 @@ export const runtime = 'nodejs';
 function normalizeRashi(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const normalized = value.trim().toLowerCase();
-  return RASHI_LIST.some((r) => r.key === normalized) ? normalized : null;
+  return RASHI_LIST.find((r) =>
+    r.key === normalized || r.en.toLowerCase() === normalized || r.sa.toLowerCase() === normalized,
+  )?.key ?? null;
+}
+
+function isValidIsoDatePart(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+function parseDateParameter(value: string | null): Date | null {
+  if (value === null) return new Date();
+
+  if (isValidIsoDatePart(value)) return new Date(`${value}T00:00:00.000Z`);
+
+  const dateTime = /^(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})$/i.exec(value);
+  if (!dateTime || !isValidIsoDatePart(dateTime[1])) return null;
+
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) ? parsed : null;
 }
 
 type DashaContextStatus = 'not_requested' | 'available' | 'unavailable';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const rashi = searchParams.get('rashi')?.toLowerCase();
+  const rashiParam = searchParams.get('rashi');
+  const rashi = normalizeRashi(rashiParam);
   const dateParam = searchParams.get('date');
-  const timeZone = searchParams.get('tz') ?? 'Asia/Kolkata';
+  const timeZoneParam = searchParams.get('tz');
+  const timeZone = timeZoneParam ?? 'Asia/Kolkata';
+  const contractVersion = searchParams.get('contract');
 
-  if (!rashi) {
+  if (!rashiParam) {
     return NextResponse.json({ error: 'Missing rashi query parameter' }, { status: 400 });
   }
 
-  const rashiExists = RASHI_LIST.some(r => r.key === rashi);
-  if (!rashiExists) {
+  if (!rashi) {
     return NextResponse.json({ error: `Invalid rashi sign. Must be one of: ${RASHI_LIST.map(r => r.key).join(', ')}` }, { status: 400 });
   }
 
-  const parsedDate = dateParam ? new Date(dateParam) : new Date();
-  if (Number.isNaN(parsedDate.getTime())) {
+  if (contractVersion !== null && contractVersion !== '1' && contractVersion !== '2') {
+    return NextResponse.json({ error: 'Unsupported Rashiphala response contract' }, { status: 400 });
+  }
+
+  if (timeZoneParam !== null && !isValidTimeZone(timeZoneParam)) {
+    return NextResponse.json({ error: 'Invalid timezone query parameter' }, { status: 400 });
+  }
+
+  const parsedDate = parseDateParameter(dateParam);
+  if (!parsedDate) {
     return NextResponse.json({ error: 'Invalid date query parameter' }, { status: 400 });
+  }
+  if (!isSupportedTransitDate(parsedDate)) {
+    return NextResponse.json({ error: 'Date is outside the supported Rashiphala calculation range' }, { status: 400 });
   }
 
   // Bearer-format check, not mere presence -- a malformed/non-Bearer header
@@ -74,6 +109,7 @@ export async function GET(request: NextRequest) {
           const active = findActiveDashaEntry(profile.chart_data, parsedDate);
           if (active) {
             const formattedEndDate = new Date(active.endDate).toLocaleDateString('en-IN', {
+              timeZone: 'UTC',
               day: 'numeric', month: 'long', year: 'numeric',
             });
             dashaContext = {
@@ -97,12 +133,26 @@ export async function GET(request: NextRequest) {
     // horoscope below is still returned regardless.
   }
 
-  const dailyHoroscope = getDailyHoroscope(rashi, parsedDate, timeZone, {
-    dashaContext,
-    useDistinctGuidance: true,
-  });
+  let dailyHoroscope: ReturnType<typeof getDailyHoroscope>;
+  try {
+    dailyHoroscope = getDailyHoroscope(rashi, parsedDate, timeZone, {
+      dashaContext,
+      useDistinctGuidance: true,
+    });
+  } catch (error) {
+    // Keep any future, non-range engine faults visible to the normal error
+    // handling path instead of disguising them as bad client input.
+    if (error instanceof RangeError) {
+      return NextResponse.json({ error: 'Date is outside the supported Rashiphala calculation range' }, { status: 400 });
+    }
+    throw error;
+  }
 
-  return NextResponse.json({ ...dailyHoroscope, dashaContextStatus }, {
+  const responseBody = contractVersion === '2'
+    ? { ...toNativeRashiHoroscope(dailyHoroscope), dashaContextStatus }
+    : { ...dailyHoroscope, dashaContextStatus };
+
+  return NextResponse.json(responseBody, {
     // The response is spiritual-date-sensitive (4 a.m. in the requested
     // timezone), and authenticated responses may include Dasha context. Do
     // not let CDN/client caches serve yesterday's reading across that

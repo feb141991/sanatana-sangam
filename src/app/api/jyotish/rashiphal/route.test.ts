@@ -29,11 +29,12 @@ function req(url: string, headers: Record<string, string> = {}) {
 }
 
 const REQUEST_URL = 'https://shoonaya.com/api/jyotish/rashiphal?rashi=virgo';
+const NATIVE_V2_URL = `${REQUEST_URL}&contract=2`;
 
 describe('GET /api/jyotish/rashiphal', () => {
   it('never calls getApiUser for an anonymous request and prevents stale spiritual-day cache responses', async () => {
     const { GET } = await import('./route');
-    const response = await GET(req(REQUEST_URL));
+    const response = await GET(req(NATIVE_V2_URL));
     expect(mocks.getApiUser).not.toHaveBeenCalled();
     expect(response.headers.get('cache-control')).toBe('private, no-store');
     const body = await response.json();
@@ -43,11 +44,19 @@ describe('GET /api/jyotish/rashiphal', () => {
     expect(body.transitHighlights.every((highlight: { tone: string }) => highlight.tone === 'neutral')).toBe(true);
     expect(body.gocharSummary).toContain('not a complete Navagraha reading');
     expect(body.spiritualDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(body.lifeReflections).toHaveLength(3);
+    expect(body.practiceSteps).toHaveLength(2);
+    for (const legacyField of [
+      'luckyColor', 'luckyNumber', 'luckyTime', 'karma', 'health', 'love',
+      'sadhanaFocus', 'sadhanaPlan', 'beejaMantra', 'beejaFrequency',
+    ]) {
+      expect(body).not.toHaveProperty(legacyField);
+    }
   });
 
   it('never calls getApiUser for a present-but-malformed (non-Bearer) Authorization header', async () => {
     const { GET } = await import('./route');
-    const response = await GET(req(REQUEST_URL, { authorization: 'Basic abc123' }));
+    const response = await GET(req(NATIVE_V2_URL, { authorization: 'Basic abc123' }));
     expect(mocks.getApiUser).not.toHaveBeenCalled();
     expect(response.headers.get('cache-control')).toBe('private, no-store');
     expect((await response.json()).dashaContextStatus).toBe('not_requested');
@@ -58,11 +67,66 @@ describe('GET /api/jyotish/rashiphal', () => {
     // 23:00 UTC is 04:30 in Kolkata on the next civil date, so the 4 a.m.
     // spiritual day is June 15 even though the UTC date is still June 14.
     const requestedAt = new Date('2026-06-14T23:00:00.000Z');
-    const response = await GET(req(`${REQUEST_URL}&tz=Asia/Kolkata&date=${encodeURIComponent(requestedAt.toISOString())}`));
+    const response = await GET(req(`${NATIVE_V2_URL}&tz=Asia/Kolkata&date=${encodeURIComponent(requestedAt.toISOString())}`));
     const body = await response.json();
 
     expect(body.spiritualDate).toBe(localSpiritualDate('Asia/Kolkata', 4, requestedAt));
     expect(body.spiritualDate).toBe('2026-06-15');
+  });
+
+  it('rejects malformed dates, unsupported engine dates, and explicitly invalid timezones before auth or database work', async () => {
+    const { GET } = await import('./route');
+
+    const malformedDate = await GET(req(`${REQUEST_URL}&date=2026-02-31`));
+    expect(malformedDate.status).toBe(400);
+
+    const unsupportedDate = await GET(req(`${REQUEST_URL}&date=2500-01-01`));
+    expect(unsupportedDate.status).toBe(400);
+    expect((await unsupportedDate.json()).error).toContain('supported Rashiphala calculation range');
+
+    const invalidTimeZone = await GET(req(`${REQUEST_URL}&tz=Not%2FA_Timezone`));
+    expect(invalidTimeZone.status).toBe(400);
+    expect((await invalidTimeZone.json()).error).toBe('Invalid timezone query parameter');
+
+    const emptyTimeZone = await GET(req(`${REQUEST_URL}&tz=`));
+    expect(emptyTimeZone.status).toBe(400);
+    expect(mocks.getApiUser).not.toHaveBeenCalled();
+  });
+
+  it('keeps the existing v1 response for installed clients and rejects unknown explicit versions', async () => {
+    const { GET } = await import('./route');
+    const v1 = await GET(req(REQUEST_URL));
+    const v1Body = await v1.json();
+    expect(v1.status).toBe(200);
+    expect(v1Body).toHaveProperty('luckyColor');
+    expect(v1Body).toHaveProperty('sadhanaPlan');
+    expect(v1Body).not.toHaveProperty('lifeReflections');
+
+    const unsupported = await GET(req(`${REQUEST_URL}&contract=3`));
+    expect(unsupported.status).toBe(400);
+  });
+
+  it('matches a real stored Sanskrit Chandra-rashi name (Makara) to the requested English sign', async () => {
+    const chartData = {
+      schemaVersion: 2,
+      dasha: { timeline: [{ planet: 'Shani', startDate: '2020-01-01', endDate: '2039-01-01' }] },
+    };
+    const client = mockBirthProfilesClient({ data: [{ rashi: 'Makara', chart_data: chartData }], error: null });
+    mocks.getApiUser.mockResolvedValue({ user: { id: 'user-1' }, error: null, supabase: client });
+    const localeSpy = vi.spyOn(Date.prototype, 'toLocaleDateString');
+
+    const { GET } = await import('./route');
+    const response = await GET(req(
+      'https://shoonaya.com/api/jyotish/rashiphal?rashi=Capricorn&date=2026-06-15&contract=2',
+      { authorization: 'Bearer valid-token' },
+    ));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.dashaContextStatus).toBe('available');
+    expect(body.dashaContext).toMatchObject({ planet: 'Shani', endDate: '2039-01-01' });
+    expect(body.dashaContext.note).toContain('1 January 2039');
+    expect(localeSpy).toHaveBeenCalledWith('en-IN', expect.objectContaining({ timeZone: 'UTC' }));
   });
 
   it('attaches dashaContext when the exactly-one primary profile matches the requested sign and has an active Dasha', async () => {
