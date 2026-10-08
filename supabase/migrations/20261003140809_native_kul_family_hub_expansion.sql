@@ -2,6 +2,27 @@
 -- add private family lineage and tithi-date metadata, and connect family yatra
 -- wishes to the canonical Tirtha catalog.
 
+-- This helper existed in the live database and schema dump, but its original
+-- migration was archived. Re-declare it before any current migration policy
+-- depends on it so a clean migration replay is self-contained. Fully qualify
+-- referenced objects and use an empty search_path for SECURITY DEFINER safety.
+CREATE OR REPLACE FUNCTION public.auth_kul_id()
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT p.kul_id
+  FROM public.profiles AS p
+  WHERE p.id = (SELECT auth.uid())
+  LIMIT 1;
+$$;
+
+ALTER FUNCTION public.auth_kul_id() OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.auth_kul_id() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.auth_kul_id() TO authenticated, service_role;
+
 -- A KUL belongs to its members, not permanently to the account that created it.
 ALTER TABLE public.kuls
   ALTER COLUMN created_by DROP NOT NULL;

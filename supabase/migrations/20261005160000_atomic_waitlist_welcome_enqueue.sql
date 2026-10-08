@@ -16,7 +16,7 @@ CREATE OR REPLACE FUNCTION public.register_waitlist_with_welcome(
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = pg_catalog, public
+SET search_path = ''
 AS $$
 DECLARE
   v_email text := lower(btrim(p_email));
