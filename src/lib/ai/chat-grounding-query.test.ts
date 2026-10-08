@@ -52,6 +52,12 @@ describe('query shape sent to the retriever', () => {
     expect(sent.title).not.toBe(message);
   });
 
+  it('probes the Gita with the whole sentence for a question naming no Dharmic word', async () => {
+    const message = 'God accepts a leaf, a flower or water offered with love';
+    await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
+    expect(retrieveMock.mock.calls[0][0]).toMatchObject({ corpus: 'pathshala_gita', title: message });
+  });
+
   it('does not search at all for a mundane question when the tradition has no dense corpus', async () => {
     await retrieveDharmaChatGrounding({ message: 'What should I eat for breakfast?', tradition: 'sikh' });
     expect(retrieveMock).not.toHaveBeenCalled();
