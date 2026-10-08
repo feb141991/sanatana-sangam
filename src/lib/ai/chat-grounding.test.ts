@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
+  SCRIPTURE_ROUTES,
   extractMeaningfulTokens,
+  findNamedScriptureCorpus,
   matchDharmVeerFigure,
   isFestivalRuleQuery,
   hasDharmicIntent,
@@ -210,6 +212,103 @@ describe('chat-grounding', () => {
       expect(res.isGrounded).toBe(false);
       expect(res.corpus).toBeNull();
       expect(res.documents).toHaveLength(0);
+    });
+  });
+
+  // A scripture named in the message must reach its own corpus. These pin the
+  // three gaps found by the offline routing baseline, and the class behind them:
+  // the intent gate and the router once kept separate term lists that disagreed.
+  describe('named scripture routing', () => {
+    it.each([
+      "Summarize the Sundara Kanda's account of Hanuman meeting Sita.",
+      'What does the Ramayana say about Hanuman?',
+      'Which events are told in Bala Kanda?',
+      'What is Bal Kanda about?',
+      'Explain Sunderkand path',
+    ])('fails closed on the withheld Ramayana instead of answering from a biography: %s', async (message) => {
+      const res = await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
+      expect(res.corpus).toBe('valmiki_ramayana');
+      expect(res.isGrounded).toBe(false);
+      expect(res.documents).toHaveLength(0);
+      expect(res.groundingPromptText).toContain('APPROVED SOURCE COVERAGE UNAVAILABLE');
+      expect(res.groundingPromptText).not.toContain('AUTHENTIC DHARMIC SOURCE PASSAGES');
+    });
+
+    it.each([
+      ['Where can I read Rehras Sahib with its meaning?', 'sikh'],
+      ['Where can I read Rehras Sahib with its meaning?', 'hindu'],
+      ['What is Japji Sahib?', 'sikh'],
+    ])('reaches the Gurbani corpus for a Nitnem bani named alone: %s (%s)', async (message, tradition) => {
+      const res = await retrieveDharmaChatGrounding({ message, tradition });
+      expect(res.corpus).toBe('sikh_gurbani');
+      expect(res.isGrounded).toBe(true);
+      expect(res.documents.length).toBeGreaterThan(0);
+    });
+
+    it('reaches the Upanishads corpus for an Upanishad named alone', async () => {
+      const res = await retrieveDharmaChatGrounding({ message: 'Tell me about Taittiriya', tradition: 'hindu' });
+      expect(res.corpus).toBe('pathshala_upanishads');
+    });
+
+    it('still answers a hero question from the Dharm Veer record when no withheld source is named', async () => {
+      const res = await retrieveDharmaChatGrounding({ message: 'Tell me about Hanuman', tradition: 'hindu' });
+      expect(res.corpus).toBe('dharam_veer');
+      expect(res.isGrounded).toBe(true);
+      expect(res.documents.length).toBeGreaterThan(0);
+    });
+
+    it.each([
+      'Bal Kanda', 'Bala Kanda', 'Sundara-Kanda', 'Sunderkand', 'Kishkindha Kand', 'Aranya Kanda',
+      'Uttara Kanda', 'Lanka Kanda', 'Yudh Kand', 'Ayodhya Kanda',
+    ])('recognises the kanda spelling "%s"', (kanda) => {
+      expect(findNamedScriptureCorpus(`What happens in ${kanda}?`)).toBe('valmiki_ramayana');
+    });
+
+    it.each([
+      'Tell me about Sri Lanka',
+      'What is the weather in Uttar Pradesh?',
+      'Sundar Pichai announced a new policy',
+      'Give me a kanda poha recipe',
+      'Who was Bal Gangadhar Tilak?',
+    ])('does not mistake an ordinary message for a scripture: %s', async (message) => {
+      expect(findNamedScriptureCorpus(message)).toBeNull();
+      const res = await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
+      expect(res.corpus).not.toBe('valmiki_ramayana');
+    });
+
+    it('lets a message with no other Dharmic word through the gate when it names a scripture', () => {
+      const message = 'Where can I read Rehras Sahib with its meaning?';
+      expect(hasDharmicIntent(message, extractMeaningfulTokens(message))).toBe(true);
+    });
+
+    // The class sweep: every term the router knows must also pass the gate on its own
+    // and route to the family that lists it. A term another family claims first fails
+    // here too, which is the signal to move or drop it.
+    it.each(SCRIPTURE_ROUTES.map((route) => [route.corpus, route] as const))(
+      'every %s term passes the Dharmic-intent gate and routes to its own corpus',
+      (_corpus, route) => {
+        const failures: string[] = [];
+        for (const term of route.terms) {
+          const message = `What is ${term}?`;
+          if (!hasDharmicIntent(message, extractMeaningfulTokens(message))) failures.push(`${term}: refused by the intent gate`);
+          const routed = findNamedScriptureCorpus(message);
+          if (routed !== route.corpus) failures.push(`${term}: routed to ${routed}`);
+        }
+        expect(failures).toEqual([]);
+      }
+    );
+
+    it('keeps every family non-empty and distinct so the sweep cannot pass vacuously', () => {
+      expect(SCRIPTURE_ROUTES.map((route) => route.corpus)).toEqual([
+        'pathshala_gita',
+        'pathshala_upanishads',
+        'valmiki_ramayana',
+        'sikh_gurbani',
+        'buddhist_dhamma',
+        'jain_dharma',
+      ]);
+      for (const route of SCRIPTURE_ROUTES) expect(route.terms.length).toBeGreaterThan(0);
+      expect(SCRIPTURE_ROUTES.find((route) => route.corpus === 'valmiki_ramayana')!.terms.length).toBeGreaterThan(50);
     });
   });
 });

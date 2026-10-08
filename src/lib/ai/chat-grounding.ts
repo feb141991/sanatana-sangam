@@ -105,13 +105,27 @@ const GITA_TERMS = ['bhagavad gita', 'bhagavad', 'gita'];
 const UPANISHAD_TERMS = [
   'upanishad', 'upanishads', 'vedanta', 'mandukya', 'katha upanishad', 'nachiketa',
   'isha upanishad', 'ishavasya', 'kena upanishad', 'mundaka', 'prashna upanishad',
-  'chandogya', 'brihadaranyaka',
+  'chandogya', 'brihadaranyaka', 'aitareya', 'taittiriya', 'shvetashvatara', 'svetasvatara',
+];
+// The kandas of the Ramayana, as the repo's own content spells them: "Bal Kanda"
+// (not "Bala") is the commonest, "Kand" and joined forms ("Sunderkand") are routine
+// in Hindi usage, and slugs are hyphenated.
+const RAMAYANA_KANDA_STEMS = [
+  'bala', 'bal', 'ayodhya', 'aranya', 'kishkindha', 'kishkinda', 'sundara', 'sundar',
+  'sunder', 'yuddha', 'yudh', 'lanka', 'uttara', 'uttar',
 ];
 const RAMAYANA_TERMS = [
-  'ramayana', 'valmiki', 'sundara kanda', 'bala kanda', 'ayodhya kanda', 'yuddha kanda',
+  'ramayana', 'valmiki',
+  ...RAMAYANA_KANDA_STEMS.flatMap((stem) =>
+    ['kanda', 'kand'].flatMap((suffix) => [' ', '-', ''].map((joiner) => `${stem}${joiner}${suffix}`))
+  ),
 ];
+// Titles come from src/lib/data/sikh-nitnem-banis.ts. Bare "jaap", "chaupai" and
+// "sohila" are deliberately absent: they are common words and names on their own.
 const SIKH_SCRIPTURE_TERMS = [
-  'gurbani', 'guru granth', 'japji', 'rehras', 'waheguru', 'shabad',
+  'gurbani', 'guru granth', 'japji', 'rehras', 'rehraas', 'rahras', 'jaap sahib',
+  'tav prasad', 'tav-prasad', 'chaupai sahib', 'anand sahib', 'kirtan sohila',
+  'waheguru', 'shabad',
 ];
 const BUDDHIST_SCRIPTURE_TERMS = [
   'buddha', 'buddhism', 'dhamma', 'dhammapada', 'eightfold', 'nirvana',
@@ -121,9 +135,50 @@ const JAIN_SCRIPTURE_TERMS = [
   'navkar', 'namokar',
 ];
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function includesTerm(text: string, term: string): boolean {
-  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`\\b${escaped}\\b`, 'i').test(text);
+  return new RegExp(`\\b${escapeRegExp(term)}\\b`, 'i').test(text);
+}
+
+export interface ScriptureRoute {
+  corpus: string;
+  terms: readonly string[];
+  pattern: RegExp;
+}
+
+function scriptureRoute(corpus: string, terms: readonly string[]): ScriptureRoute {
+  return { corpus, terms, pattern: new RegExp(`\\b(?:${terms.map(escapeRegExp).join('|')})\\b`, 'i') };
+}
+
+/**
+ * The one table that says which corpus a named scripture belongs to. Both the
+ * Dharmic-intent gate and the corpus choice read it, so a text the router can
+ * route can never be refused by the gate (that is how "Rehras Sahib" and
+ * "Bala Kanda" used to fall through to ungrounded chat). Order matters: the first
+ * family named in a message wins.
+ */
+export const SCRIPTURE_ROUTES: readonly ScriptureRoute[] = [
+  scriptureRoute('pathshala_gita', GITA_TERMS),
+  scriptureRoute('pathshala_upanishads', UPANISHAD_TERMS),
+  scriptureRoute('valmiki_ramayana', RAMAYANA_TERMS),
+  scriptureRoute('sikh_gurbani', SIKH_SCRIPTURE_TERMS),
+  scriptureRoute('buddhist_dhamma', BUDDHIST_SCRIPTURE_TERMS),
+  scriptureRoute('jain_dharma', JAIN_SCRIPTURE_TERMS),
+];
+
+/**
+ * Corpora recognised by name but with no source-audited passages yet. For these the
+ * fail-closed "coverage unavailable" notice must be what the model receives, so no
+ * other grounding path (a hero's biography, say) may answer in its place.
+ */
+const WITHHELD_CORPORA: ReadonlySet<string> = new Set(['valmiki_ramayana']);
+
+/** The corpus of the first scripture family named in the text, or null if none is. */
+export function findNamedScriptureCorpus(text: string): string | null {
+  return SCRIPTURE_ROUTES.find((route) => route.pattern.test(text))?.corpus ?? null;
 }
 
 function includesAnyTerm(text: string, terms: readonly string[]): boolean {
@@ -183,6 +238,8 @@ export function isFestivalRuleQuery(text: string): boolean {
 export function hasDharmicIntent(text: string, meaningfulTokens: string[]): boolean {
   if (/\b(?:verse|chapter)\s+\d+(?:[.:]\d+)*\b/i.test(text)) return true;
   if (isFestivalRuleQuery(text) || isKathaQuery(text)) return true;
+  // Naming a scripture is itself scriptural intent, whatever else the message holds.
+  if (findNamedScriptureCorpus(text) !== null) return true;
   return meaningfulTokens.some((token) => DHARMIC_CONCEPTS.has(token));
 }
 
@@ -247,11 +304,15 @@ export async function retrieveDharmaChatGrounding(input: {
   }
 
   const meaningfulTokens = extractMeaningfulTokens(message);
-  const lower = message.toLowerCase();
   const hasVersePattern = /\b\d+(?:[.:]\d+)+\b/.test(message);
+  const namedCorpus = findNamedScriptureCorpus(message);
 
-  // 1. Check for Dharm Veer historical hero mention
-  const matchedHero = matchDharmVeerFigure(message);
+  // 1. Check for Dharm Veer historical hero mention. A hero's name must not
+  // answer in place of a withheld source the user named ("Hanuman" in the Sundara
+  // Kanda): that would present a biography as the Ramayana and skip the notice
+  // telling the model not to quote it.
+  const sourceIsWithheld = namedCorpus !== null && WITHHELD_CORPORA.has(namedCorpus);
+  const matchedHero = sourceIsWithheld ? null : matchDharmVeerFigure(message);
   if (matchedHero) {
     try {
       const res = await dharamVeerRetriever.retrieve({
@@ -330,18 +391,8 @@ export async function retrieveDharmaChatGrounding(input: {
   // explicitly identify a source family in this question.
   let targetCorpus = 'pathshala_gita';
 
-  if (includesAnyTerm(lower, GITA_TERMS)) {
-    targetCorpus = 'pathshala_gita';
-  } else if (includesAnyTerm(lower, UPANISHAD_TERMS)) {
-    targetCorpus = 'pathshala_upanishads';
-  } else if (includesAnyTerm(lower, RAMAYANA_TERMS)) {
-    targetCorpus = 'valmiki_ramayana';
-  } else if (includesAnyTerm(lower, SIKH_SCRIPTURE_TERMS)) {
-    targetCorpus = 'sikh_gurbani';
-  } else if (includesAnyTerm(lower, BUDDHIST_SCRIPTURE_TERMS)) {
-    targetCorpus = 'buddhist_dhamma';
-  } else if (includesAnyTerm(lower, JAIN_SCRIPTURE_TERMS)) {
-    targetCorpus = 'jain_dharma';
+  if (namedCorpus !== null) {
+    targetCorpus = namedCorpus;
   } else if (kathaRequested) {
     targetCorpus = 'bhakti_katha';
   } else if (input.tradition === 'sikh') {
