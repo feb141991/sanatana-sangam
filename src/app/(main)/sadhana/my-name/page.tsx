@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import MyNameClient from './MyNameClient';
 
 export const metadata = {
-  title: 'Dharmic Name Story — Shoonaya',
+  title: 'Dharmic Name Story | Shoonaya',
   description: 'Discover and share the spiritual etymology and scripture of your name.',
 };
 

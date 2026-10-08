@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -28,7 +28,13 @@ function createSupabase(result: { data: unknown[] | null; error: Error | null })
 }
 
 describe('GET /api/mood/checkin status', () => {
-  beforeEach(() => getApiUser.mockReset());
+  beforeEach(() => {
+    getApiUser.mockReset();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-02T12:00:00.000Z'));
+  });
+
+  afterEach(() => vi.useRealTimers());
 
   it('returns persisted mood state for the requested spiritual-day window', async () => {
     const { supabase, query } = createSupabase({

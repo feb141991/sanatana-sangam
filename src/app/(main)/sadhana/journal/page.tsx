@@ -4,7 +4,7 @@ import JournalClient from './JournalClient';
 import { resolveObservanceLocation } from '@/lib/panchang';
 
 export const metadata = {
-  title: 'Spiritual Progress Journal — Shoonaya',
+  title: 'Spiritual Progress Journal | Shoonaya',
   description: 'Write your private spiritual autobiography, note daily moods, and receive wise AI reflections.',
 };
 

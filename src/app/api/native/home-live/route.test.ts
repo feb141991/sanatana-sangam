@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -23,7 +23,13 @@ function createSupabase(result: { data: unknown[] | null; error: Error | null })
 }
 
 describe('GET /api/native/home-live mood status', () => {
-  beforeEach(() => getApiUser.mockReset());
+  beforeEach(() => {
+    getApiUser.mockReset();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-02T12:00:00.000Z'));
+  });
+
+  afterEach(() => vi.useRealTimers());
 
   it('returns spiritual-day mood and dismissal status using the requested timezone', async () => {
     const { supabase, query } = createSupabase({

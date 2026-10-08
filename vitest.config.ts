@@ -37,6 +37,23 @@ export default defineConfig({
     // Only app-level tests. The packages own their suites; picking them up here
     // would run them twice under different resolution and invite drift.
     include: ['src/**/*.{test,spec}.ts'],
+    // These contract checks deliberately use node:test and run through the
+    // dedicated test:node-contracts script below; Vitest reports them as
+    // "No test suite found" if it tries to load them as Vitest suites.
+    exclude: [
+      '**/DharmVeerClient.test.ts',
+      '**/apple-auth-service.test.ts',
+      '**/client-error-contract.test.ts',
+      '**/japa-completion-contract.test.ts',
+      '**/japa-context-reminder-contract.test.ts',
+      '**/native-api-diagnostic-contract.test.ts',
+      '**/native-auth-diagnostic-contract.test.ts',
+      '**/native-telemetry-contract.test.ts',
+      '**/public-source-disclosures.test.ts',
+      '**/three-fiber-scheduler-dedupe.test.ts',
+      '**/web-consent.test.ts',
+      '**/age-guidance.test.ts',
+    ],
     environment: 'node',
     // Commit-mode materialisation computes a full year of panchanga per run, so
     // a single test can legitimately take tens of seconds. The default 5 s is

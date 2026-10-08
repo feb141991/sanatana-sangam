@@ -6,6 +6,7 @@ const state = vi.hoisted(() => ({
   // bucket -> every object path in it
   buckets: {} as Record<string, Set<string>>,
   listErrorFor: null as string | null,
+  removeErrorFor: null as string | null,
   removeBatches: [] as Array<{ bucket: string; size: number }>,
   deletedTables: [] as string[],
   authDeleted: [] as string[],
@@ -43,6 +44,7 @@ vi.mock('@/lib/admin', () => ({
           return { data: entries.slice(opts.offset, opts.offset + opts.limit), error: null };
         },
         remove: async (paths: string[]) => {
+          if (state.removeErrorFor && paths.includes(state.removeErrorFor)) return { error: { message: 'remove failed' } };
           state.removeBatches.push({ bucket, size: paths.length });
           for (const path of paths) state.buckets[bucket]?.delete(path);
           return { error: null };
@@ -61,11 +63,13 @@ const fill = (prefix: string, count: number) => Array.from({ length: count }, (_
 beforeEach(() => {
   state.buckets = {};
   state.listErrorFor = null;
+  state.removeErrorFor = null;
   state.removeBatches = [];
   state.deletedTables = [];
   state.authDeleted = [];
   state.profileRow = { id: ME, deletion_requested_at: OLD_REQUEST };
   vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  vi.spyOn(console, 'error').mockImplementation(() => undefined);
 });
 
 describe('account purge: storage cleanup', () => {
@@ -100,7 +104,7 @@ describe('account purge: storage cleanup', () => {
     expect(state.removeBatches.map((b) => b.size)).toEqual([100, 100, 50]);
   });
 
-  it('a storage failure on one prefix does not stop the other prefixes or the account deletion', async () => {
+  it('keeps deletion pending when listing a storage prefix fails', async () => {
     state.buckets = {
       avatars: new Set([`${ME}/avatar.jpg`]),
       'pathshala-recordings': new Set([`${ME}/a.m4a`]),
@@ -108,10 +112,33 @@ describe('account purge: storage cleanup', () => {
     state.listErrorFor = `avatars/${ME}`;
     const result = await purgeDeletedAccountById(ME);
 
-    expect(result).toMatchObject({ id: ME, success: true });
-    expect(state.buckets['pathshala-recordings'].size).toBe(0);
-    expect(state.authDeleted).toEqual([ME]);
-    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(`avatars/${ME}`), 'list failed');
+    expect(result).toMatchObject({ id: ME, success: false, error: 'storage_cleanup_failed' });
+    expect(state.buckets.avatars).toEqual(new Set([`${ME}/avatar.jpg`]));
+    expect(state.buckets['pathshala-recordings']).toEqual(new Set([`${ME}/a.m4a`]));
+    expect(state.authDeleted).toEqual([]);
+    expect(state.deletedTables).toEqual([]);
+    expect(console.error).toHaveBeenCalledWith('[account-deletion] storage cleanup failed', { stage: 'storage_list_failed' });
+  });
+
+  it('keeps deletion pending when storage removal fails so the cron can retry', async () => {
+    state.buckets = { 'pathshala-recordings': new Set([`${ME}/a.m4a`]) };
+    state.removeErrorFor = `${ME}/a.m4a`;
+    const result = await purgeDeletedAccountById(ME);
+
+    expect(result).toMatchObject({ id: ME, success: false, error: 'storage_cleanup_failed' });
+    expect(state.authDeleted).toEqual([]);
+    expect(state.deletedTables).toEqual([]);
+  });
+
+  it('fails closed when an object path exceeds the supported folder depth', async () => {
+    const deepPath = `${ME}/a/b/c/d/e/f/file.m4a`;
+    state.buckets = { 'pathshala-recordings': new Set([deepPath]) };
+    const result = await purgeDeletedAccountById(ME);
+
+    expect(result).toMatchObject({ id: ME, success: false, error: 'storage_cleanup_failed' });
+    expect(state.authDeleted).toEqual([]);
+    expect(state.buckets['pathshala-recordings'].has(deepPath)).toBe(true);
+    expect(console.error).toHaveBeenCalledWith('[account-deletion] storage cleanup failed', { stage: 'storage_folder_depth_exceeded' });
   });
 
   it('touches no storage while the cool-off is still running', async () => {

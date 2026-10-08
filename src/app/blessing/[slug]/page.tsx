@@ -18,12 +18,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const b = getBlessingBySlug(slug);
-  if (!b) return { title: 'Blessing — Shoonaya' };
+  if (!b) return { title: 'Blessing | Shoonaya' };
 
   const desc = `${b.greeting} — ${b.translation.replace(/"/g, '')} · ${b.source}`;
 
   return {
-    title: `${b.emoji} ${b.name} — Shoonaya`,
+    title: `${b.emoji} ${b.name} | Shoonaya`,
     description: desc,
     openGraph: {
       title: `${b.emoji} ${b.shareTitle}`,
@@ -293,7 +293,7 @@ export default async function BlessingPage({
 
         <div className="cta-divider" />
         <div className="cta-text">
-          Shoonaya — Find your infinite.<br />
+          Shoonaya: Find your infinite.<br />
           A daily spiritual sanctuary for sacred time, practice, and connection.
         </div>
         <Link className="cta-btn" href={ref ? `/?ref=${encodeURIComponent(ref)}&from=blessing` : "/?from=blessing"}>

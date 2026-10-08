@@ -21,10 +21,10 @@ export async function generateMetadata({
     .eq('is_public', true)
     .maybeSingle();
 
-  if (!story) return { title: 'Dharmic Name Story — Shoonaya' };
+  if (!story) return { title: 'Dharmic Name Story | Shoonaya' };
 
   const name = story.normalized_first_name || story.name_input;
-  const title = `Spiritual Name Story of ${name} — Shoonaya`;
+  const title = `Spiritual Name Story of ${name} | Shoonaya`;
   const desc = story.sacred_meaning || story.meaning_summary || `Discover the first-name story, scripture connection, and blessing for ${name} on Shoonaya.`;
   const canonicalUrl = `https://www.shoonaya.com/name/${share_slug}`;
 
@@ -416,7 +416,7 @@ export default async function NameStorySharePage({
 
         <div className="cta-divider" />
         <p className="cta-text">
-          Shoonaya — Find your infinite.<br />
+          Shoonaya: Find your infinite.<br />
           A daily spiritual sanctuary for sacred time, practice, and connection.
         </p>
         <Link className="cta-btn" href={ref ? `/?ref=${encodeURIComponent(ref)}&from=name_story` : "/?from=name_story"}>

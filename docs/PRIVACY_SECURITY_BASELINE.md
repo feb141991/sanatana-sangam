@@ -1,8 +1,8 @@
 # Machine-Generated Privacy and Security Engineering Baseline
 
 **Schema version:** 2
-**Source fingerprint:** `45e04fbf512d99dc08e432dc1f90489926393c33dd9986f3cd6b37619c414afe`
-**Repositories:** Backend `d8d039e18f` (modified), Native `a543765ccf` (modified)
+**Source fingerprint:** `7589f70a8fd2b0be571fa5d13ef06d385f970b81da77c9ed2ab30fbcc756d8c6`
+**Repositories:** Backend `1233a17b96` (modified), Native `60124fc59a` (modified)
 
 > This is an engineering evidence inventory, not legal advice. UNKNOWN and
 > ERROR states are never equivalent to a secure or compliant result.
@@ -11,9 +11,9 @@
 
 - Audited data categories: 14
 - Inventory checks: 12
-- Scanned files: backend 2580, Native 462
-- Literal storage keys: backend 44, Native 39
-- Providers/SDKs discovered: 10
+- Scanned files: backend 3048, Native 1458
+- Literal storage keys: backend 42, Native 70
+- Providers/SDKs discovered: 11
 - Check VERIFIED: 11
 - Check NOT_FOUND: 0
 - Check DRIFT: 0
@@ -48,7 +48,7 @@
 
 - Profiles state: **SECURED**
 - Anonymous row count: unavailable
-- Administrative row count: 7
+- Administrative row count: 14
 - Explanation: The anonymous role was explicitly denied access.
 - Limitation: The Data API probes verify effective anonymous access and aggregate counts. Exact live PostgreSQL grants, policy expressions, view security and RPC privileges require a separate metadata query through an approved database connection or Supabase MCP.
 
@@ -59,19 +59,19 @@
 | INV-PROF-01 | VERIFIED | Sensitive profile access | Anonymous profiles access probe | 20 |
 | INV-PROF-02 | VERIFIED | Sensitive profile access | Profile read and write paths | 30 |
 | INV-SDK-01 | VERIFIED | Third-party SDKs and trackers | Web tracker initialization | 11 |
-| INV-SDK-02 | VERIFIED | Third-party SDKs and trackers | Native analytics consent control | 7 |
+| INV-SDK-02 | VERIFIED | Third-party SDKs and trackers | Native analytics consent control | 12 |
 | INV-CACHE-01 | VERIFIED | Client storage and identity | Discovered browser and native storage keys | 30 |
 | INV-AGE-01 | VERIFIED | DOB, birth and location | Centralized age-policy enforcement | 30 |
-| INV-TERMS-01 | VERIFIED | Terms and consent | Versioned Terms acceptance receipts | 18 |
+| INV-TERMS-01 | VERIFIED | Terms and consent | Versioned Terms acceptance receipts | 22 |
 | INV-CONSENT-01 | NEEDS_POLICY_DECISION | Terms and consent | Religious-profile consent | 30 |
 | INV-UGC-01 | VERIFIED | UGC safety | Mandali safety paths | 30 |
-| INV-UGC-02 | VERIFIED | UGC safety | Published support path | 15 |
+| INV-UGC-02 | VERIFIED | UGC safety | Published support path | 30 |
 | INV-LIFE-01 | VERIFIED | Data lifecycle | Account deletion and export paths | 30 |
-| INV-LIFE-02 | VERIFIED | Data lifecycle | Guest birth-profile retention | 5 |
+| INV-LIFE-02 | VERIFIED | Data lifecycle | Guest birth-profile retention | 9 |
 
 ## Profile Contract
 
-Generated types expose 79 profile columns:
+Generated types expose 92 profile columns:
 
 | Column | Type | Engineering classification |
 |---|---|---|
@@ -84,6 +84,7 @@ Generated types expose 79 profile columns:
 | `calendar_profile` | `string \| null` | unclassified |
 | `calendar_scope` | `'major_only' \| 'all_observances' \| null` | unclassified |
 | `city` | `string \| null` | unclassified |
+| `consent_activity_personalization` | `boolean` | sensitive_candidate |
 | `consent_religious_data` | `boolean` | sensitive_candidate |
 | `consent_updated_at` | `string \| null` | sensitive_candidate |
 | `country` | `string \| null` | unclassified |
@@ -92,8 +93,12 @@ Generated types expose 79 profile columns:
 | `custom_greeting` | `string \| null` | unclassified |
 | `date_of_birth` | `string \| null` | sensitive_candidate |
 | `deletion_requested_at` | `string \| null` | sensitive_candidate |
+| `email_festivals` | `boolean \| null` | unclassified |
+| `email_newsletter` | `boolean \| null` | unclassified |
 | `entitlement_source` | `string \| null` | internal_candidate |
 | `entitlement_updated_at` | `string \| null` | internal_candidate |
+| `family_remembrance_opt_in_generation` | `number` | unclassified |
+| `family_remembrance_time` | `string` | unclassified |
 | `full_name` | `string` | unclassified |
 | `gender_context` | `string \| null` | sensitive_candidate |
 | `gotra` | `string \| null` | sensitive_candidate |
@@ -121,6 +126,7 @@ Generated types expose 79 profile columns:
 | `life_stage_locked` | `boolean` | unclassified |
 | `longitude` | `number \| null` | sensitive_candidate |
 | `mandali_id` | `string \| null` | unclassified |
+| `marketing_consent` | `boolean \| null` | sensitive_candidate |
 | `meaning_language` | `string` | unclassified |
 | `monthly_seva` | `number` | internal_candidate |
 | `nitya_reminder_enabled` | `boolean` | internal_candidate |
@@ -128,6 +134,8 @@ Generated types expose 79 profile columns:
 | `notification_quiet_hours_end` | `number \| null` | internal_candidate |
 | `notification_quiet_hours_start` | `number \| null` | internal_candidate |
 | `observance_location_source` | `'manual' \| 'device' \| 'unset' \| null` | unclassified |
+| `observance_reminder_lead_days` | `number[]` | internal_candidate |
+| `observance_reminder_time` | `string` | internal_candidate |
 | `onboarding_completed` | `boolean` | unclassified |
 | `onboarding_goal` | `string \| null` | unclassified |
 | `onesignal_player_id` | `string \| null` | sensitive_candidate |
@@ -146,13 +154,18 @@ Generated types expose 79 profile columns:
 | `timezone` | `string \| null` | sensitive_candidate |
 | `tradition` | `string \| null` | sensitive_candidate |
 | `transliteration_language` | `string` | unclassified |
+| `unsubscribe_token` | `string \| null` | sensitive_candidate |
 | `updated_at` | `string` | unclassified |
 | `username` | `string` | public_candidate |
 | `wants_community_notifications` | `boolean` | internal_candidate |
 | `wants_family_notifications` | `boolean` | internal_candidate |
+| `wants_family_remembrance_reminders` | `boolean` | internal_candidate |
 | `wants_festival_reminders` | `boolean` | internal_candidate |
 | `wants_nitya_reminders` | `boolean` | internal_candidate |
+| `wants_sankalpa_midpoint_reminders` | `boolean` | internal_candidate |
 | `wants_shloka_reminders` | `boolean` | internal_candidate |
+| `wants_tithi_reminders` | `boolean` | internal_candidate |
+| `wants_vrat_reminders` | `boolean` | internal_candidate |
 | `weekly_seva` | `number` | internal_candidate |
 
 ## Providers And SDKs
@@ -161,8 +174,9 @@ Generated types expose 79 profile columns:
 - Google Analytics 4: 1 evidence locations
 - Google AdSense: 4 evidence locations
 - OneSignal: 100 evidence locations
-- Expo Notifications: 7 evidence locations
-- Razorpay: 79 evidence locations
+- Firebase Analytics: 1 evidence locations
+- Expo Notifications: 24 evidence locations
+- Razorpay: 5 evidence locations
 - Twilio: 24 evidence locations
 - Sarvam AI: 100 evidence locations
 - Vercel Analytics: 2 evidence locations

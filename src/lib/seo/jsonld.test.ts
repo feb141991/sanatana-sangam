@@ -26,7 +26,7 @@ describe("AEO & SEO JSON-LD Configuration", () => {
   });
 
   it("keeps Shoonaya distinct in the raw HTML homepage identity", () => {
-    expect(landingHtml).toContain('<title>Shoonaya — Find your infinite.</title>');
+    expect(landingHtml).toContain('<title>Shoonaya: Find your infinite.</title>');
     expect(landingHtml).toMatch(
       /<h1 id="splash-title">Shoonaya\.<em>Find your infinite\.<\/em><\/h1>/,
     );

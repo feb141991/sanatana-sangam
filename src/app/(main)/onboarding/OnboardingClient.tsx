@@ -66,10 +66,10 @@ function getGoalHeading(tradition: string) {
 }
 
 const LIFE_STAGES = [
-  { key: 'brahmacharya', label: 'Brahmacharya', age: '0–25', desc: 'Student — learn, build, purify', emoji: '⭐' },
-  { key: 'grihastha',    label: 'Grihastha',    age: '25–50', desc: 'Householder — work, family, dharma', emoji: '🏡' },
-  { key: 'vanaprastha',  label: 'Vanaprastha',  age: '50–75', desc: 'Forest Dweller — mentor, withdraw', emoji: '🌳' },
-  { key: 'sannyasa',     label: 'Sannyasa',     age: '75+',   desc: 'Renunciate — release, liberation', emoji: '💨' },
+  { key: 'brahmacharya', label: 'Brahmacharya', age: '0–25', desc: 'Student: learn, build, purify', emoji: '⭐' },
+  { key: 'grihastha',    label: 'Grihastha',    age: '25–50', desc: 'Householder: work, family, dharma', emoji: '🏡' },
+  { key: 'vanaprastha',  label: 'Vanaprastha',  age: '50–75', desc: 'Forest Dweller: mentor, withdraw', emoji: '🌳' },
+  { key: 'sannyasa',     label: 'Sannyasa',     age: '75+',   desc: 'Renunciate: release, liberation', emoji: '💨' },
 ] as const;
 
 const GENDERS = [
@@ -576,12 +576,12 @@ export default function OnboardingClient({
                 <div className="max-w-sm space-y-4">
                   <p className="text-[17px] leading-relaxed text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                     I didn&apos;t set out to build an app. I noticed I&apos;d quietly stopped doing the
-                    things that once grounded me — a few minutes of japa, a shloka before sleep — not
+                    things that once grounded me, like a few minutes of japa or a shloka before sleep, not
                     all at once, just the way most things drift over busy years.
                   </p>
                   <p className="text-[17px] leading-relaxed text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                     Shoonaya isn&apos;t meant to be one more app competing for your attention. It&apos;s
-                    the one I wished existed when I noticed — small enough to fit into a real day,
+                    the one I wished existed when I noticed, small enough to fit into a real day,
                     honest enough to know some days you&apos;ll miss.
                   </p>
                   <p className="text-[17px] leading-relaxed text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
@@ -633,7 +633,7 @@ export default function OnboardingClient({
                   Your sacred journey begins
                 </h1>
                 <p className="text-[var(--brand-muted)] mb-10 text-sm leading-relaxed max-w-xs">
-                  A daily companion for dharmic living — across all traditions
+                  A daily companion for dharmic living across all traditions
                 </p>
                 <button onClick={() => goNext(2)}
                   className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 text-[15px] hover:opacity-90 transition-opacity">
@@ -983,7 +983,7 @@ export default function OnboardingClient({
                   What calls you here?
                 </h1>
                 <p className="text-[var(--brand-muted)] text-sm mb-6">
-                  This shapes everything — your feed, your guidance, your path.
+                  This shapes everything: your feed, your guidance, and your path.
                 </p>
 
                 <div className="space-y-3">
@@ -993,7 +993,7 @@ export default function OnboardingClient({
                     { key: 'community', emoji: '👥', label: 'Find my Mandali', sub: 'Sangat, community, belonging' },
                     { key: 'peace', emoji: '🌌', label: "Questions science can't answer", sub: 'Philosophy, meaning, moksha' },
                     { key: 'knowledge', emoji: '📚', label: 'Study the sacred texts', sub: 'Gita, Granth, Dhammapada, Agamas' },
-                    { key: 'new_guide', emoji: '🌱', label: "I'm new — guide me gently", sub: 'Begin from the very first step' }
+                    { key: 'new_guide', emoji: '🌱', label: "I'm new, guide me gently", sub: 'Begin from the very first step' }
                   ].map((item) => {
                     const selected = goals.includes(item.key);
                     return (
@@ -1087,10 +1087,10 @@ export default function OnboardingClient({
                   Your Birth Nakshatra
                 </h1>
                 <p className="text-[var(--brand-muted)] text-sm mb-2 leading-relaxed">
-                  The lunar mansion at your birth — more precise than your Rashi. Shapes your mantra, muhurta timing, and daily guidance.
+                  The lunar mansion at your birth, more precise than your Rashi. Shapes your mantra, muhurta timing, and daily guidance.
                 </p>
                 <p className="text-[10px] text-[var(--brand-muted)] opacity-70 mb-5 leading-normal">
-                  Not sure? Check a Janma Kundali app with your birth date, time and place — or skip for now.
+                  Not sure? Check a Janma Kundali app with your birth date, time and place, or skip for now.
                 </p>
 
                 {/* Scrollable Nakshatras Grid */}

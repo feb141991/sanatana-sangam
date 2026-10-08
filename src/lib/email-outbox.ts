@@ -219,7 +219,7 @@ function premiumContentForRow(row: EmailOutboxRow): PremiumContent | null {
     const name = isRecord(row.payload) ? readString(row.payload.name)?.trim() : null;
     const greeting = name ? `Welcome, ${name}` : 'Welcome to Shoonaya';
     return {
-      subject: 'Welcome to Shoonaya — Find your infinite',
+      subject: 'Welcome to Shoonaya: Find your infinite',
       shloka: '',
       meaning: '',
       title: greeting,

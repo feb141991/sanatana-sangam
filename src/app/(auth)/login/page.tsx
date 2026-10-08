@@ -74,7 +74,7 @@ function LoginForm() {
       toast.success('Confirmation email resent. Check your inbox and spam folder.');
     }
     if (errorCode === 'email_verification_failed') {
-      toast.error('Email verification failed — please try signing up again.');
+      toast.error('Email verification failed. Please try signing up again.');
     }
     if (errorCode === 'password_reset_failed') {
       toast.error('Password reset link was invalid or expired. Request a fresh one.');

@@ -35,7 +35,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Traditions & Philosophy",
     question: "What is Shoonaya and what is the vision behind it?",
     answer:
-      "Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. It helps people with full lives notice what is unfolding in their local Panchang, understand sacred days, and make room for daily practice.",
+      "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. It helps people with full lives notice what is unfolding in their local Panchang, understand sacred days, and make room for daily practice.",
     bullets: [
       "Notice upcoming observances such as Ekadashi and Amavasya, with local context where available.",
       "Return to Japa, daily sadhana, scripture, and reflection at a pace that fits your life.",

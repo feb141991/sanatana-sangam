@@ -111,13 +111,14 @@ async function collectObjectPaths(
     const { data: entries, error } = await admin.storage
       .from(bucket)
       .list(prefix, { limit: STORAGE_LIST_PAGE_SIZE, offset });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error('storage_list_failed');
     if (!entries || entries.length === 0) break;
 
     for (const entry of entries) {
       const fullPath = `${prefix}/${entry.name}`;
       if (entry.id === null) {
-        if (depth < STORAGE_MAX_FOLDER_DEPTH) paths.push(...await collectObjectPaths(admin, bucket, fullPath, depth + 1));
+        if (depth >= STORAGE_MAX_FOLDER_DEPTH) throw new Error('storage_folder_depth_exceeded');
+        paths.push(...await collectObjectPaths(admin, bucket, fullPath, depth + 1));
       } else {
         paths.push(fullPath);
       }
@@ -129,27 +130,19 @@ async function collectObjectPaths(
   return paths;
 }
 
-// Deletes the user's own storage objects. Best-effort per prefix: a Storage
-// failure is logged but never blocks the account deletion itself, so a
-// transient Storage outage can't leave a user stuck mid-deletion.
+// Delete all user-owned storage before removing their identity. A partial
+// storage failure leaves the deletion request pending so the purge cron can
+// retry; deleting the account first would make any remaining private files
+// difficult to find and remove later.
 async function deleteUserStorageObjects(admin: StorageAdmin, userId: string) {
   for (const { bucket, prefixes } of userStorageTargets(userId)) {
     for (const prefix of prefixes) {
-      try {
-        const paths = await collectObjectPaths(admin, bucket, prefix);
-        for (let index = 0; index < paths.length; index += STORAGE_REMOVE_BATCH_SIZE) {
-          const { error: removeError } = await admin.storage
-            .from(bucket)
-            .remove(paths.slice(index, index + STORAGE_REMOVE_BATCH_SIZE));
-          if (removeError) {
-            console.warn(`account-deletion: storage remove failed for ${bucket}/${prefix}:`, removeError.message);
-          }
-        }
-      } catch (err) {
-        console.warn(
-          `account-deletion: storage cleanup exception for ${bucket}/${prefix}:`,
-          err instanceof Error ? err.message : String(err)
-        );
+      const paths = await collectObjectPaths(admin, bucket, prefix);
+      for (let index = 0; index < paths.length; index += STORAGE_REMOVE_BATCH_SIZE) {
+        const { error: removeError } = await admin.storage
+          .from(bucket)
+          .remove(paths.slice(index, index + STORAGE_REMOVE_BATCH_SIZE));
+        if (removeError) throw new Error('storage_remove_failed');
       }
     }
   }
@@ -165,6 +158,19 @@ async function hardDeleteAccount(userId: string): Promise<{ id: string; success:
     // Deletion must be able to proceed if a confirmation address cannot be read.
   }
 
+  try {
+    await deleteUserStorageObjects(admin, userId);
+  } catch (error) {
+    const knownCodes = new Set([
+      'storage_list_failed',
+      'storage_remove_failed',
+      'storage_folder_depth_exceeded',
+    ]);
+    const code = error instanceof Error && knownCodes.has(error.message) ? error.message : 'storage_cleanup_failed';
+    console.error('[account-deletion] storage cleanup failed', { stage: code });
+    return { id: userId, success: false, error: 'storage_cleanup_failed' };
+  }
+
   // ── Apple TN3194 revocation (best-effort, never blocks deletion) ─────────
   // Must be called BEFORE auth.admin.deleteUser so the auth.identities record
   // is still present for identity-binding validation. Any non-'revoked' outcome
@@ -174,8 +180,6 @@ async function hardDeleteAccount(userId: string): Promise<{ id: string; success:
   if (revokeResult !== 'revoked' && revokeResult !== 'not_found') {
     console.warn(`account-deletion: Apple revocation outcome for ${userId}: ${revokeResult}`);
   }
-
-  await deleteUserStorageObjects(admin, userId);
 
   // Clean up non-cascading child references before auth delete
   await admin.from("recommendations").delete().eq("user_id", userId);

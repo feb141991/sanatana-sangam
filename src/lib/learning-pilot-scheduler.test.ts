@@ -66,6 +66,7 @@ describe('learning-pilot-scheduler', () => {
         tradition: 'hindu',
         language: 'en',
         timezone: 'Asia/Kolkata',
+        quiz_reminder_enabled: true,
         quiz_reminder_time: '14:00',
       };
 
@@ -73,9 +74,61 @@ describe('learning-pilot-scheduler', () => {
       expect(cand).not.toBeNull();
       expect(cand!.event_type).toBe('quiz');
       expect(cand!.action_url).toBe('/quiz');
-      expect(cand!.title).toBe('Daily Dharma Quiz');
-      expect(cand!.body).toBe('Test your dharmic knowledge with today’s reflection question.');
-      expect(cand!.priority).toBe(60);
+      expect(cand!.event_instance).toBe('available');
+      expect(cand!.title).toBe('Today’s Daily Quiz is ready');
+      expect(cand!.priority).toBe(50);
+    });
+
+    it('does not create a quiz candidate without explicit opt-in', () => {
+      expect(produceQuizCandidate({ id: 'opt-out', timezone: 'Asia/Kolkata' }, '2026-11-08')).toBeNull();
+      expect(produceQuizCandidate({ id: 'opt-out', timezone: 'Asia/Kolkata', quiz_reminder_enabled: false }, '2026-11-08')).toBeNull();
+    });
+
+    it('creates a separately keyed 6 PM reminder candidate', () => {
+      const cand = produceQuizCandidate({
+        id: 'quiz-user',
+        timezone: 'Asia/Kolkata',
+        quiz_reminder_enabled: true,
+      }, '2026-11-08', 'evening_nudge');
+
+      expect(cand?.event_instance).toBe('evening_nudge');
+      expect(cand?.scheduled_for).toBe('2026-11-08T12:30:00.000Z');
+      expect(cand?.expires_at).toBe('2026-11-08T15:15:00.000Z');
+      expect(cand?.title).toBe('A gentle quiz reminder');
+    });
+
+    it('keeps the idempotency key stable if the user changes language that day', () => {
+      const english = produceQuizCandidate({
+        id: 'quiz-user',
+        timezone: 'Asia/Kolkata',
+        quiz_reminder_enabled: true,
+        language: 'en',
+      }, '2026-11-08', 'available');
+      const hindi = produceQuizCandidate({
+        id: 'quiz-user',
+        timezone: 'Asia/Kolkata',
+        quiz_reminder_enabled: true,
+        language: 'hi',
+      }, '2026-11-08', 'available');
+
+      expect(english?.audience_variant).toBe(hindi?.audience_variant);
+      expect(english?.event_id).toBe(hindi?.event_id);
+      expect(english?.event_instance).toBe(hindi?.event_instance);
+      expect(english?.language).toBe('en');
+      expect(hindi?.language).toBe('hi');
+    });
+
+    it('creates a stage only within its per-user local delivery window', async () => {
+      const { getDueQuizReminderStage } = await import('./quiz-candidate-producer');
+      const user = {
+        id: 'quiz-user',
+        timezone: 'Asia/Kolkata',
+        quiz_reminder_enabled: true,
+        quiz_reminder_time: '08:00',
+      };
+      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T02:35:00.000Z'))).toBe('available');
+      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T12:35:00.000Z'))).toBe('evening_nudge');
+      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T16:00:00.000Z'))).toBeNull();
     });
   });
 
@@ -85,6 +138,7 @@ describe('learning-pilot-scheduler', () => {
       tradition: 'hindu',
       language: 'en',
       timezone: 'Asia/Kolkata',
+      quiz_reminder_enabled: true,
       dharmVeerEnabled: true,
       quizEnabled: true,
     };

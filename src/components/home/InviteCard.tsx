@@ -22,10 +22,10 @@ interface InviteCardProps {
 }
 
 const SHARE_COPY: Record<string, string> = {
-  hindu:    "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
-  sikh:     "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
-  buddhist: "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
-  jain:     "Join me on Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+  hindu:    "Join me on Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+  sikh:     "Join me on Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+  buddhist: "Join me on Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+  jain:     "Join me on Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
 };
 
 const BASE_URL = typeof window !== 'undefined'
@@ -53,7 +53,7 @@ export default function InviteCard({ userId, userName, tradition }: InviteCardPr
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Shoonaya — Find your infinite.',
+          title: 'Shoonaya: Find your infinite.',
           text:  shareText,
           url:   refUrl,
         });

@@ -34,6 +34,7 @@ vi.mock('@/lib/observance-notification-source', () => ({
   buildObservanceActionPath: () => '/vrat/nirjala-ekadashi',
   buildObservancePreviewRow: () => ({ name: 'Nirjala Ekadashi' }),
   buildOccurrenceNotificationKey: () => 'vrat:test',
+  deduplicateTithiVrats: <T>(observances: T[]) => observances,
   fetchReviewedObservancesForNotifications: async () => ({ observances: [], error: null }),
   filterGeneralOccurrenceBackedVrats: () => [{
     id: 'occurrence-1',

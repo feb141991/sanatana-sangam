@@ -6,6 +6,8 @@
     "packages/*"
   ],
   "scripts": {
+    "test": "vitest run && npm run test:node-contracts",
+    "test:node-contracts": "npx tsx --test 'src/app/(main)/dharm-veer/[id]/DharmVeerClient.test.ts' src/lib/__tests__/apple-auth-service.test.ts src/lib/client-error-contract.test.ts src/lib/compliance/age-guidance.test.ts src/lib/japa-completion-contract.test.ts src/lib/japa-context-reminder-contract.test.ts src/lib/native-api-diagnostic-contract.test.ts src/lib/native-auth-diagnostic-contract.test.ts src/lib/native-telemetry-contract.test.ts src/lib/public-source-disclosures.test.ts src/lib/three-fiber-scheduler-dedupe.test.ts src/lib/web-consent.test.ts",
     "check:producer-isolation": "npx tsx scripts/ci/check-no-direct-push-in-producers.ts",
     "audit:notifications": "npx tsx scripts/audit-notification-topology.ts",
     "audit:festival-stories": "npx tsx scripts/audit-festival-story-claims.ts",

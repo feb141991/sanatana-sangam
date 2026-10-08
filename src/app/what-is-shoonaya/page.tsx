@@ -21,7 +21,7 @@ export default function WhatIsShoonayaPage() {
     <PublicPageShell
       eyebrow="About the App"
       title="What is Shoonaya?"
-      intro="Shoonaya — Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. It helps people with full lives notice sacred days, understand their local context, and make room for practice."
+      intro="Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. It helps people with full lives notice sacred days, understand their local context, and make room for practice."
       asideTitle="The Name"
       asideBody="Shoonaya draws inspiration from śūnya (शून्य), a Sanskrit word associated with zero and emptiness. ‘Find your infinite’ is an invitation to pause, return inward, and make space for what matters."
     >

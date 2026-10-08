@@ -4,7 +4,7 @@ import ChallengeClient from './ChallengeClient';
 import { resolveObservanceLocation } from '@/lib/panchang';
 
 export const metadata = {
-  title: 'Monthly Dharma Challenge — Shoonaya',
+  title: 'Monthly Dharma Challenge | Shoonaya',
   description: 'Deepen your knowledge of ancient wisdom, unlock Q&A packs, and compete with your spiritual community.',
 };
 

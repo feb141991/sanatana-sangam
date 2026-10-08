@@ -5,7 +5,7 @@ import ProgressClient from './ProgressClient';
 import { malaSessionDate } from '@/lib/mala-sessions';
 
 export const metadata = {
-  title: 'My Progress — Shoonaya',
+  title: 'My Progress | Shoonaya',
   description: 'Track your spiritual journey and karma earned.',
 };
 
