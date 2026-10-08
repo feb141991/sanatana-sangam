@@ -78,7 +78,10 @@ describe('chat-grounding', () => {
       expect(res.isGrounded).toBe(true);
       expect(res.corpus).toBe('pathshala_gita');
       expect(res.documents.length).toBeGreaterThan(0);
-      expect(res.documents[0].id).toContain('6.26');
+      // Within the three the model reads, not necessarily first: embedding the verse text
+      // alone (retrieval.ts / build-dense-embeddings.mts) moved this one query from rank 1 to
+      // a lower place in the top 3, while lifting 16 of the 67 gold queries and slipping 2.
+      expect(res.documents.some((d) => d.id?.includes('6.26'))).toBe(true);
       expect(res.groundingPromptText).toContain('PRAMANA GROUNDING');
       expect(res.groundingPromptText).toContain('6.26');
     });
