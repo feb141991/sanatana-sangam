@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isRealIsoDate } from '@/lib/iso-date';
 import { resolveRequestProfile, PROFILE_RESOLUTION_PAD_DAYS, shiftDate } from '@/lib/calendar/request-profile';
 import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from '@/lib/calendar/occurrence-reader';
@@ -20,8 +21,9 @@ export async function GET(request: NextRequest) {
       const now = new Date();
       dateStr = now.toISOString().split('T')[0];
     } else {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-        return NextResponse.json({ error: 'Invalid date format. Use YYYY-MM-DD' }, { status: 400 });
+      // A real day only: a shape check accepts "2025-02-31", which the calendar engine would roll over.
+      if (!isRealIsoDate(dateStr)) {
+        return NextResponse.json({ error: 'Invalid date. Use a real date in YYYY-MM-DD format', code: 'INVALID_DATE' }, { status: 400 });
       }
     }
 

@@ -487,4 +487,90 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     }));
     expect(res2.status).toBe(400);
   });
+
+  // ── date_of_birth (Android incident 2026-10-09) ─────────────────────────────
+  // `new Date("2025-02-31T00:00:00Z")` is a valid Date (JavaScript rolls it to 3 March), so a shape
+  // check plus a NaN check accepted days that do not exist, and Postgres then rejected them with 22008
+  // and the route answered 500 with the raw database message.
+  const dobRequest = (value: unknown) => new NextRequest("http://localhost:3000/api/native/profile", {
+    method: "PATCH",
+    body: JSON.stringify({ date_of_birth: value }),
+  });
+
+  it("persists a valid date_of_birth and lets null clear it", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-dob" }, error: null, supabase: mockSupabase });
+
+    const ok = await PATCH(dobRequest("1991-08-18"));
+    expect(ok.status).toBe(200);
+    expect(updatedPayload).toEqual({ date_of_birth: "1991-08-18" });
+
+    updatedPayload = null;
+    const cleared = await PATCH(dobRequest(null));
+    expect(cleared.status).toBe(200);
+    expect(updatedPayload).toEqual({ date_of_birth: null });
+  });
+
+  it("trims surrounding whitespace before saving", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-dob" }, error: null, supabase: mockSupabase });
+    expect((await PATCH(dobRequest(" 1991-08-18 "))).status).toBe(200);
+    expect(updatedPayload).toEqual({ date_of_birth: "1991-08-18" });
+  });
+
+  it.each([
+    ["2025-02-31", "calendar"],
+    ["2023-02-29", "calendar"],
+    ["2025-04-31", "calendar"],
+    ["2025-13-45", "calendar"],
+    ["18081991", "format"],
+    ["18/08/1991", "format"],
+    ["", "format"],
+    [19910818, "format"],
+    ["1899-12-31", "too_old"],
+    ["0001-01-01", "too_old"],
+    ["2999-01-01", "future"],
+  ])("rejects date_of_birth %j with a 400 that names the reason (%s) and saves nothing", async (value, reason) => {
+    getApiUser.mockResolvedValue({ user: { id: "user-dob" }, error: null, supabase: mockSupabase });
+    const res = await PATCH(dobRequest(value));
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.code).toBe("INVALID_DATE_OF_BIRTH");
+    expect(json.reason).toBe(reason);
+    expect(updatedPayload).toBeNull();
+  });
+
+  describe("database errors", () => {
+    const failingSupabase = (error: { code?: string; message: string }) => ({
+      from: () => ({
+        update: () => ({ eq: () => ({ select: () => ({ single: async () => ({ data: null, error }) }) }) }),
+      }),
+    });
+
+    it("answers a data-exception from the database (22008) with a 400, not a 500, and never echoes its text", async () => {
+      getApiUser.mockResolvedValue({
+        user: { id: "user-dob" },
+        error: null,
+        supabase: failingSupabase({ code: "22008", message: 'date/time field value out of range: "2025-02-31" on profiles.date_of_birth' }),
+      });
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", { method: "PATCH", body: JSON.stringify({ wants_shloka_reminders: false }) }));
+      expect(res.status).toBe(400);
+      const text = JSON.stringify(await res.json());
+      expect(text).toContain("INVALID_VALUE");
+      expect(text).not.toMatch(/date\/time field|profiles|date_of_birth|2025-02-31/);
+    });
+
+    it("answers any other database failure with a generic 500 and never echoes its text", async () => {
+      const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+      getApiUser.mockResolvedValue({
+        user: { id: "user-dob" },
+        error: null,
+        supabase: failingSupabase({ code: "XX000", message: 'internal detail: relation "profiles" column "secret"' }),
+      });
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", { method: "PATCH", body: JSON.stringify({ wants_shloka_reminders: false }) }));
+      expect(res.status).toBe(500);
+      const text = JSON.stringify(await res.json());
+      expect(text).not.toMatch(/internal detail|profiles|secret/);
+      expect(spy).toHaveBeenCalled();
+      spy.mockRestore();
+    });
+  });
 });

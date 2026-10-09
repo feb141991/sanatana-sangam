@@ -180,6 +180,44 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   transparent cut-outs on 2026-10-08. This applies equally to human and AI-agent
   contributors.
 
+### 13. Client-Supplied Dates, and What an Error May Say
+- A date or time that comes from a client is validated with `src/lib/iso-date.ts`
+  (`parseIsoDate`, `isRealIsoDate`, `parseClockTime`) before it is stored,
+  queried or computed on. Never accept a date on its shape
+  (`/^\d{4}-\d{2}-\d{2}$/`), and never accept one because `new Date(x)` is not
+  `NaN`: JavaScript rolls `2025-02-31` over to 3 March, so both let days that do
+  not exist through. Bounds belong to the field (a date of birth is 1900 or
+  later and not in the future); say so in the response.
+- An engine that takes civil dates must refuse impossible ones itself, not rely
+  on its callers. `birthLocalToUTC` does. Without that, the astrology engine
+  computes a normal-looking chart for the rolled-over date and nothing fails: a
+  wrong Kundali must be an error, never a quiet substitute.
+- Reject with 400 and a machine-readable `code` and `reason`
+  (`INVALID_DATE_OF_BIRTH`, `INVALID_TIME_OF_BIRTH`, `INVALID_DATE`,
+  `INVALID_VALUE`). Postgres data exceptions (SQLSTATE class 22) and check or
+  not-null violations (`23514`, `23502`) mean the client sent a value the column
+  cannot hold: a 400, not a 500.
+- Never return `error.message` from a database, provider or engine failure. It
+  can carry table, column, query and value detail. Log the code and message
+  server-side and return generic text. A `RangeError` that an engine raises on
+  purpose for a bad input is the one safe message to show.
+- Test the impossible days for every date field: 31 February, 29 February in a
+  non-leap year (and in 2100), 31 April, month 13, day 0, a year before the
+  minimum, and a future date. Store the normalised value, not the raw text.
+- Why this rule exists: on 2026-10-09 a new Android build could not finish
+  onboarding. The Native app sent `18081991` to `profiles.date_of_birth` and
+  Postgres rejected it (22008). Auditing the server for the same class showed it
+  was looser than the client: the profile route used `new Date(...)`, so
+  `2025-02-31` passed and failed in Postgres as a 500 carrying the database's
+  text; `calendar/day` and `journal/entry` checked shape only; and the chart
+  route checked only that a date was present, so the engine computed a chart
+  for the rolled-over date (`1991-02-30` became 2 March 1991) and only Postgres
+  rejecting the raw value stopped it being saved; a path that computes without
+  storing, such as the web Kundali page, would show it with no error. The Native
+  app now validates before it sends (shoonaya-mobile AGENTS.md section 12); the server must not depend on
+  that, because old builds, the web client and direct calls exist. This applies
+  equally to human and AI-agent contributors.
+
 ## Required Behavior
 
 - Read the relevant `.claude/agents/*.md` role file before implementing specialized work.

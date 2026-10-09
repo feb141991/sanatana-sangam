@@ -30,8 +30,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateAstroChart, deriveDenormalizedBirthProfileFields, BirthInput } from '@/lib/jyotish/astro-engine';
 import { getApiUser } from '@/lib/api-auth';
+import { parseClockTime, parseIsoDate } from '@/lib/iso-date';
 
 export const runtime = 'nodejs';
+
+// Charts may be cast for family members, so the floor is earlier than a living person's date of birth.
+const BIRTH_MIN_YEAR = 1800;
 
 function getAnonClient() {
   return createClient(
@@ -70,6 +74,28 @@ export async function POST(req: NextRequest) {
       { error: 'Required: date_of_birth, birth_lat, birth_lng, birth_timezone' },
       { status: 400 }
     );
+  }
+
+  // ── Validate the birth date and time ─────────────────────────────────────────
+  // Real calendar values only. The astrology engine would otherwise roll "1991-02-30" over to 2 March
+  // and save a chart for a date nobody entered, with no error.
+  const birthDate = parseIsoDate(date_of_birth, { minYear: BIRTH_MIN_YEAR });
+  if (!birthDate.ok) {
+    return NextResponse.json(
+      { error: `date_of_birth must be a real YYYY-MM-DD date from ${BIRTH_MIN_YEAR} and not in the future`, code: 'INVALID_DATE_OF_BIRTH', reason: birthDate.reason },
+      { status: 400 }
+    );
+  }
+  let birthTime: string | null = null;
+  if (time_of_birth !== undefined && time_of_birth !== null && time_of_birth !== '') {
+    const parsedTime = parseClockTime(time_of_birth);
+    if (!parsedTime.ok) {
+      return NextResponse.json(
+        { error: 'time_of_birth must be a real 24-hour HH:MM time', code: 'INVALID_TIME_OF_BIRTH', reason: parsedTime.reason },
+        { status: 400 }
+      );
+    }
+    birthTime = parsedTime.value;
   }
 
   // ── Resolve authenticated user ────────────────────────────────────────────────
@@ -117,20 +143,22 @@ export async function POST(req: NextRequest) {
   let chart;
   try {
     const input: BirthInput = {
-      date:         String(date_of_birth),
-      time:         time_of_birth ? String(time_of_birth) : '12:00',
+      date:         birthDate.iso,
+      time:         birthTime ?? '12:00',
       lat:          Number(birth_lat),
       lng:          Number(birth_lng),
       timezone:     String(birth_timezone),
-      timeUnknown:  !time_of_birth,
+      timeUnknown:  !birthTime,
     };
     chart = generateAstroChart(input);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : 'Chart calculation failed';
+    // A RangeError is the engine refusing the input (for example a time inside a daylight-saving gap), which is
+    // safe and useful to show. Anything else is an internal failure: logged, not returned.
     if (err instanceof RangeError) {
-      return NextResponse.json({ error: msg }, { status: 400 });
+      return NextResponse.json({ error: err.message }, { status: 400 });
     }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error('[chart/route] chart calculation failed:', err);
+    return NextResponse.json({ error: 'Chart calculation failed' }, { status: 500 });
   }
 
   // ── If primary, unset existing primary for this user ──────────────────────────
@@ -152,8 +180,8 @@ export async function POST(req: NextRequest) {
     label,
     full_name:    full_name ?? null,
     relation,
-    date_of_birth,
-    time_of_birth:  time_of_birth ?? null,
+    date_of_birth:  birthDate.iso,
+    time_of_birth:  birthTime,
     birth_city:     birth_city ?? null,
     birth_country:  birth_country ?? null,
     birth_lat:      Number(birth_lat),
@@ -202,7 +230,13 @@ export async function POST(req: NextRequest) {
 
   if (error || !data) {
     console.error('[chart/route] DB insert error:', error);
-    return NextResponse.json({ error: error?.message ?? 'Chart profile was not persisted' }, { status: 500 });
+    // SQLSTATE class 22 (data exception) and check/not-null violations mean the client sent a value the
+    // column cannot hold; the database's own text can carry table and column detail, so it is never returned.
+    const code = typeof error?.code === 'string' ? error.code : '';
+    if (code.startsWith('22') || code === '23514' || code === '23502') {
+      return NextResponse.json({ error: 'One of the submitted values is not valid', code: 'INVALID_VALUE' }, { status: 400 });
+    }
+    return NextResponse.json({ error: 'Could not save chart' }, { status: 500 });
   }
 
   return NextResponse.json({ profile: data, chart }, { status: 201 });

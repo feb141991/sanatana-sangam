@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { isRealIsoDate } from '@/lib/iso-date';
 
 export async function POST(req: NextRequest) {
   try {
@@ -46,8 +47,9 @@ export async function POST(req: NextRequest) {
       resolvedDate = new Date().toLocaleDateString('en-CA', { timeZone });
     }
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(resolvedDate)) {
-      return NextResponse.json({ error: 'Invalid entry_date format. Must be YYYY-MM-DD' }, { status: 400 });
+    // A real day only: a shape check accepts "2025-02-31", which Postgres rejects after the fact (22008).
+    if (!isRealIsoDate(resolvedDate)) {
+      return NextResponse.json({ error: 'Invalid entry_date. Must be a real date in YYYY-MM-DD format', code: 'INVALID_DATE' }, { status: 400 });
     }
 
     const { data, error } = await supabase
@@ -68,12 +70,13 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error('[POST /api/journal/entry] Database error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // The database's own text can carry table and column detail: logged, never returned.
+      return NextResponse.json({ error: 'Could not save journal entry' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, data });
   } catch (err: any) {
     console.error('[POST /api/journal/entry] Server error:', err);
-    return NextResponse.json({ error: err?.message || 'Server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }

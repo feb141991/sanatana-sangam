@@ -15,6 +15,7 @@ import {
   lahiriAyanamsha,
   PANCHANG_ENGINE_VERSION,
 } from '@sangam/panchang-engine';
+import { isRealCalendarDate } from '../iso-date';
 
 export const ASTRO_CHART_SCHEMA_VERSION = 2;
 
@@ -263,6 +264,13 @@ const COMBUST_ORB: Record<string, number> = {
 export function birthLocalToUTC(dateStr: string, timeStr: string, ianaTimezone: string): Date {
   const [y, mo, d] = dateStr.split('-').map(Number);
   const [h, mi, s = 0] = timeStr.split(':').map(Number);
+  // `Date.UTC` rolls impossible values over ("1991-02-30" becomes 2 March, "25:00" becomes 01:00 the
+  // next day), and the wall-clock round trip below would then agree with the rolled-over value, so a
+  // wrong birth chart would be computed without any error. Reject them here instead (see lib/iso-date.ts).
+  const validTime = [h, mi, s].every(Number.isInteger) && h >= 0 && h <= 23 && mi >= 0 && mi <= 59 && s >= 0 && s <= 59;
+  if (!isRealCalendarDate(y, mo, d) || !validTime || timeStr.split(':').length > 3) {
+    throw new RangeError('birth date or time is not a real calendar date and time');
+  }
   const requestedWallClock = Date.UTC(y, mo - 1, d, h, mi, s);
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: ianaTimezone,

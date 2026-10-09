@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getApiAuthFailureResponse, getApiUser } from "@/lib/api-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { isValidObservanceReminderTime, sanitizeObservanceLeadDays } from "@/lib/observance-preferences";
+import { parseIsoDate } from "@/lib/iso-date";
 
 export const runtime = "nodejs";
 
@@ -82,18 +83,8 @@ function sanitizeUsername(value: unknown) {
   return normalized;
 }
 
-const DATE_OF_BIRTH_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-function sanitizeDateOfBirth(value: unknown) {
-  if (value === null) return null;
-  if (typeof value !== "string") return undefined;
-  const trimmed = value.trim();
-  if (!DATE_OF_BIRTH_RE.test(trimmed)) return undefined;
-  const parsed = new Date(`${trimmed}T00:00:00Z`);
-  if (Number.isNaN(parsed.getTime())) return undefined;
-  if (parsed.getTime() > Date.now()) return undefined;
-  return trimmed;
-}
+// Earliest accepted year for a date of birth; matches the native app's own limit.
+const DATE_OF_BIRTH_MIN_YEAR = 1900;
 
 function sanitizeAvatarUrl(value: unknown) {
   if (value === null) return null;
@@ -230,11 +221,24 @@ export async function PATCH(req: NextRequest) {
     }
 
     if ("date_of_birth" in rawBody) {
-      const value = sanitizeDateOfBirth(rawBody.date_of_birth);
-      if (value === undefined) {
-        return NextResponse.json({ error: "date_of_birth must be a YYYY-MM-DD string in the past, or null" }, { status: 400 });
+      if (rawBody.date_of_birth === null) {
+        updates.date_of_birth = null;
+      } else {
+        // A real calendar date only: `new Date("2025-02-31")` is valid JavaScript (it rolls over), so a
+        // shape check plus a NaN check let impossible days through to Postgres, which failed with a 500.
+        const parsed = parseIsoDate(rawBody.date_of_birth, { minYear: DATE_OF_BIRTH_MIN_YEAR });
+        if (!parsed.ok) {
+          return NextResponse.json(
+            {
+              error: `date_of_birth must be a real YYYY-MM-DD date from ${DATE_OF_BIRTH_MIN_YEAR} and not in the future, or null`,
+              code: "INVALID_DATE_OF_BIRTH",
+              reason: parsed.reason,
+            },
+            { status: 400 },
+          );
+        }
+        updates.date_of_birth = parsed.iso;
       }
-      updates.date_of_birth = value;
     }
 
     if ("gender_context" in rawBody) {
@@ -374,7 +378,16 @@ export async function PATCH(req: NextRequest) {
       if ("username" in updates && (error.code === "23505" || /username/i.test(error.message))) {
         return NextResponse.json({ error: "Username is already taken" }, { status: 409 });
       }
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Postgres data exceptions (SQLSTATE class 22) and check/not-null violations mean the client sent a
+      // value the column cannot hold: that is the client's error, not a server failure. The database's own
+      // text can carry table, column and value detail, so it is logged, never returned.
+      const code = typeof error.code === "string" ? error.code : "";
+      if (code.startsWith("22") || code === "23514" || code === "23502") {
+        console.warn("[PATCH /api/native/profile] rejected value", { code });
+        return NextResponse.json({ error: "One of the submitted values is not valid", code: "INVALID_VALUE" }, { status: 400 });
+      }
+      console.error("[PATCH /api/native/profile] update failed", { code, message: error.message });
+      return NextResponse.json({ error: "Could not save profile" }, { status: 500 });
     }
 
     const { updated_at, ...persisted } = data as unknown as Record<string, unknown> & { updated_at: string };
