@@ -20,6 +20,9 @@
 import { selectFestivalCandidate, selectGeneralThemeCandidate } from "./theme-selector";
 import { zonedTimeToUtcIso } from "./schedule-time";
 import { computeSocialVariantContentHash } from "./content-hash";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.generated";
+import type { Json } from "@/types/database.generated";
 import type {
   SocialContentType,
   SocialPost,
@@ -41,7 +44,9 @@ export interface ReservationOutcome {
   post?: SocialPost;
 }
 
-export async function isGenerationPaused(supabase: any): Promise<boolean> {
+type SocialSupabaseClient = SupabaseClient<Database>;
+
+export async function isGenerationPaused(supabase: SocialSupabaseClient): Promise<boolean> {
   const { data, error } = await supabase
     .from("social_publishing_global_pause")
     .select("generation_paused")
@@ -54,7 +59,7 @@ export async function isGenerationPaused(supabase: any): Promise<boolean> {
   return Boolean(data?.generation_paused);
 }
 
-async function getConfig(supabase: any, contentType: SocialContentType): Promise<SocialPublishingConfig | null> {
+async function getConfig(supabase: SocialSupabaseClient, contentType: SocialContentType): Promise<SocialPublishingConfig | null> {
   const { data, error } = await supabase
     .from("social_publishing_config")
     .select("*")
@@ -68,7 +73,7 @@ async function getConfig(supabase: any, contentType: SocialContentType): Promise
 }
 
 async function resolveDestinationPlatforms(
-  supabase: any,
+  supabase: SocialSupabaseClient,
   destinationAccountIds: string[]
 ): Promise<Array<{ platform: SocialPlatform; accountId: string }>> {
   if (destinationAccountIds.length === 0) return [];
@@ -95,10 +100,16 @@ export interface ReserveSocialPostParams {
   targetTradition?: string | null;
   objective: SocialPost["objective"];
   createdBy: string;
+  themeId?: string | null;
+  customTheme?: {
+    title: string;
+    promptSeed?: string;
+    groundingMaterial: string;
+  } | null;
 }
 
 export async function reserveSocialPost(
-  supabase: any,
+  supabase: SocialSupabaseClient,
   params: ReserveSocialPostParams
 ): Promise<ReservationOutcome> {
   if (await isGenerationPaused(supabase)) {
@@ -129,7 +140,63 @@ export async function reserveSocialPost(
     sourceSnapshot = candidate.snapshot;
     sourceType = "published_observance";
   } else {
-    const candidate = await selectGeneralThemeCandidate(supabase);
+    let candidate: { themeId: string; snapshot: SocialPost["source_snapshot"] } | null = null;
+
+    if (params.customTheme && params.customTheme.title?.trim() && params.customTheme.groundingMaterial?.trim()) {
+      const title = params.customTheme.title.trim();
+      const promptSeed = params.customTheme.promptSeed?.trim() || `Reflect deeply on ${title} and its spiritual and practical resonance.`;
+      const groundingMaterial = params.customTheme.groundingMaterial.trim();
+
+      const { data: createdTheme, error: createError } = await supabase
+        .from("social_general_themes")
+        .insert({
+          title,
+          prompt_seed: promptSeed,
+          grounding_material: groundingMaterial,
+          is_active: true,
+          display_order: 999
+        })
+        .select("*")
+        .single();
+
+      if (createError) {
+        throw new Error(`Failed to create custom theme: ${createError.message}`);
+      }
+      candidate = {
+        themeId: createdTheme.id,
+        snapshot: {
+          theme_id: createdTheme.id,
+          theme_title: createdTheme.title,
+          grounding_material: createdTheme.grounding_material ?? ""
+        }
+      };
+    } else if (params.themeId) {
+      const { data: theme, error: themeError } = await supabase
+        .from("social_general_themes")
+        .select("*")
+        .eq("id", params.themeId)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (themeError) {
+        throw new Error(`Failed to select general theme ${params.themeId}: ${themeError.message}`);
+      }
+      if (theme && theme.grounding_material?.trim()) {
+        candidate = {
+          themeId: theme.id,
+          snapshot: {
+            theme_id: theme.id,
+            theme_title: theme.title,
+            grounding_material: theme.grounding_material
+          }
+        };
+      }
+    }
+
+    if (!candidate) {
+      candidate = await selectGeneralThemeCandidate(supabase);
+    }
+
     if (!candidate) {
       return { reserved: false, reason: "no_eligible_general_theme" };
     }
@@ -165,7 +232,7 @@ export async function reserveSocialPost(
       source_type: sourceType,
       source_occurrence_id: sourceOccurrenceId,
       source_general_theme_id: sourceGeneralThemeId,
-      source_snapshot: sourceSnapshot,
+      source_snapshot: sourceSnapshot as Json,
       source_verified_at: new Date().toISOString(),
       objective: params.objective,
       target_timezone: params.targetTimezone,
