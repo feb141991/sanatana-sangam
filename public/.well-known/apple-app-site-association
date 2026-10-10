@@ -17,7 +17,8 @@
           { "/": "/dharm-veer/*", "comment": "Dharm Veer profiles" },
           { "/": "/live-darshan", "comment": "Live Darshan" },
           { "/": "/seva", "comment": "Seva" },
-          { "/": "/mantras", "comment": "Mantras" }
+          { "/": "/mantras", "comment": "Mantras" },
+          { "/": "/kul/join", "comment": "KUL family invitation" }
         ]
       }
     ]
