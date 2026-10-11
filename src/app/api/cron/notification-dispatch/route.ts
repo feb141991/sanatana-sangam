@@ -4,9 +4,10 @@ import { sendPushNotification } from "@/lib/push-server";
 import { getCompletedJapaUserIds } from "@/lib/japa-candidate-producer";
 import { recordNotificationDispatchBatch, type NotificationDispatchEventPayload } from "@/lib/notification-dispatch-audit";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
-import { getLocalDateIso, getLocalHour, isHourInQuietWindow, localSpiritualDate, resolveTimeZone } from "@/lib/sacred-time";
+import { getLocalDateIso, localSpiritualDate, resolveTimeZone } from "@/lib/sacred-time";
 import {
   getNotificationPreferenceSkipReason,
+  getQuietHoursSkipReason,
   getScheduledNotificationActionPath,
   getScheduledNotificationPushData,
 } from "@/lib/notification-delivery-policy";
@@ -127,10 +128,22 @@ export async function GET(request: Request) {
 
     // ── 3. Re-verify user eligibility at dispatch time ─────────────────────────
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
+    const profileColumns = "id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, quiz_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date";
     let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, quiz_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date")
+      .select(`${profileColumns}, wants_brahma_muhurta_reminders`)
       .in("id", userIds);
+
+    // Before the Brahma Muhurta opt-in migration is applied, read everything
+    // else; the missing flag leaves Brahma Muhurta rows failing closed.
+    if (profileErr && (profileErr as any).code === "42703") {
+      const withoutBrahmaRes = await supabase
+        .from("profiles")
+        .select(profileColumns)
+        .in("id", userIds);
+      profiles = withoutBrahmaRes.data as typeof profiles;
+      profileErr = withoutBrahmaRes.error;
+    }
 
     if (profileErr && (profileErr as any).code === "42703") {
       const fallbackRes = await supabase
@@ -343,19 +356,15 @@ export async function GET(request: Request) {
         continue;
       }
 
-      const tz = resolveTimeZone(profile.timezone);
-      const currentLocalHour = getLocalHour(now, tz);
-      const quietStart = profile.notification_quiet_hours_start !== null ? Number(profile.notification_quiet_hours_start) : null;
-      const quietEnd   = profile.notification_quiet_hours_end !== null ? Number(profile.notification_quiet_hours_end) : null;
-
-      if (isHourInQuietWindow(currentLocalHour, quietStart, quietEnd)) {
-        skippedRows.push({ id: row.id, reason: "quiet_hours_active" });
+      const quietSkipReason = getQuietHoursSkipReason(row, profile, now);
+      if (quietSkipReason) {
+        skippedRows.push({ id: row.id, reason: quietSkipReason });
         dispatchAuditEvents.push({
           userId: row.user_id,
           notificationKey: row.notification_key,
           notificationType: row.notification_type,
           decision: "skipped",
-          reason: "quiet_hours_active",
+          reason: quietSkipReason,
           provider: "expo",
         });
         continue;

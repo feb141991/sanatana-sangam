@@ -1,11 +1,73 @@
+import { getLocalHour, isHourInQuietWindow, resolveTimeZone } from "./sacred-time";
+
 type ScheduledNotificationRow = {
   notification_type?: string | null;
   notification_key?: string | null;
   metadata?: Record<string, unknown> | null;
 };
 
+/**
+ * Night window applied when a user has not set their own quiet hours.
+ * Native mirrors these hours in lib/reminderTime.ts to label night-time picks.
+ */
+export const DEFAULT_QUIET_HOURS = { startHour: 22, endHour: 6 } as const;
+
+/**
+ * Types sent at a time the user chose (Japa, quiz, family remembrance, and
+ * observance reminders at observance_reminder_time) or explicitly opted into
+ * as a night-time push (Brahma Muhurta). The default night window does not
+ * override that choice; a quiet window the user set still does.
+ */
+const USER_TIMED_NOTIFICATION_TYPES: ReadonlySet<string> = new Set([
+  "japa",
+  "quiz",
+  "family_remembrance",
+  "festival",
+  "vrat",
+  "tithi",
+  "brahma_muhurta",
+]);
+
+export type QuietHoursProfile = {
+  timezone?: string | null;
+  notification_quiet_hours_start?: number | string | null;
+  notification_quiet_hours_end?: number | string | null;
+};
+
+function toQuietHour(value: number | string | null | undefined): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const hour = Number(value);
+  return Number.isInteger(hour) && hour >= 0 && hour <= 23 ? hour : null;
+}
+
+/**
+ * Delivery-time quiet-hours gate. A user-set window applies to every type.
+ * Without one, DEFAULT_QUIET_HOURS applies to every type except
+ * USER_TIMED_NOTIFICATION_TYPES.
+ */
+export function getQuietHoursSkipReason(
+  row: ScheduledNotificationRow,
+  profile: QuietHoursProfile,
+  now: Date,
+): "quiet_hours_active" | "default_quiet_hours" | null {
+  const localHour = getLocalHour(now, resolveTimeZone(profile.timezone));
+  const quietStart = toQuietHour(profile.notification_quiet_hours_start);
+  const quietEnd = toQuietHour(profile.notification_quiet_hours_end);
+
+  if (quietStart !== null && quietEnd !== null) {
+    return isHourInQuietWindow(localHour, quietStart, quietEnd) ? "quiet_hours_active" : null;
+  }
+
+  if (USER_TIMED_NOTIFICATION_TYPES.has(row.notification_type ?? "")) return null;
+
+  return isHourInQuietWindow(localHour, DEFAULT_QUIET_HOURS.startHour, DEFAULT_QUIET_HOURS.endHour)
+    ? "default_quiet_hours"
+    : null;
+}
+
 export type NotificationProfile = {
   is_deleting?: boolean | null;
+  wants_brahma_muhurta_reminders?: boolean | null;
   wants_family_notifications?: boolean | null;
   wants_family_remembrance_reminders?: boolean | null;
   wants_festival_reminders?: boolean | null;
@@ -31,6 +93,15 @@ export function getNotificationPreferenceSkipReason(
     profile.japa_reminder_enabled !== true
   ) {
     return "japa_reminders_disabled";
+  }
+
+  // Explicit opt-in, default off. Missing/null (column not yet migrated)
+  // fails closed, so rows queued before opt-out are never delivered.
+  if (
+    row.notification_type === "brahma_muhurta" &&
+    profile.wants_brahma_muhurta_reminders !== true
+  ) {
+    return "brahma_muhurta_reminders_disabled";
   }
 
   // Quiz reminders are explicit opt-in and default-off. Recheck at delivery

@@ -73,11 +73,19 @@ export async function GET(request: Request) {
   const now = new Date();
 
   try {
-    // ── Step 1: Fetch all active users ────────────────────────────────────────
+    // ── Step 1: Fetch active users who opted in ───────────────────────────────
+    // Brahma Muhurta is a pre-dawn push, so it is explicit opt-in
+    // (profiles.wants_brahma_muhurta_reminders, default false).
     const { data: users, error: usersError } = await supabase
       .from('profiles')
       .select('id, tradition, timezone, latitude, longitude, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting')
+      .eq('wants_brahma_muhurta_reminders', true)
       .or('is_deleting.is.null,is_deleting.eq.false');
+
+    // Opt-in column not migrated yet: nobody can have opted in.
+    if (usersError && (usersError as { code?: string }).code === '42703') {
+      return NextResponse.json({ message: 'Brahma Muhurta opt-in not migrated', enqueued: 0 });
+    }
 
     if (usersError) {
       console.error('[brahma-muhurta/enqueuer] Fetch profiles error:', usersError);

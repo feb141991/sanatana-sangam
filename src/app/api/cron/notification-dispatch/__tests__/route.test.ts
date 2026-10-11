@@ -6,6 +6,9 @@ const mocks = vi.hoisted(() => ({
   claimedRows: [] as Array<Record<string, unknown>>,
   profiles: [] as Array<Record<string, unknown>>,
   profileError: null as { message: string; code?: string } | null,
+  // Per-call profile errors, consumed in order before falling back to profileError.
+  profileErrorQueue: [] as Array<{ message: string; code?: string } | null>,
+  profileSelects: [] as string[],
   sadhanaResponse: { data: null, error: null } as { data: unknown[] | null; error: { message: string } | null },
   sadhanaDates: [] as string[],
   quizResponse: { data: null, error: null } as { data: unknown[] | null; error: { message: string } | null },
@@ -22,12 +25,19 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     rpc: vi.fn().mockImplementation(async () => ({ data: mocks.claimedRows, error: null })),
     from: (table: string) => {
-      const response = () => ({
-        data: table === 'profiles' ? mocks.profiles : table === 'quiz_responses' ? mocks.quizResponse.data : mocks.sadhanaResponse.data,
-        error: table === 'profiles' ? mocks.profileError : table === 'daily_sadhana' ? mocks.sadhanaResponse.error : table === 'quiz_responses' ? mocks.quizResponse.error : null,
-      });
+      const response = () => {
+        const profileError = table === 'profiles' && mocks.profileErrorQueue.length > 0
+          ? mocks.profileErrorQueue.shift() ?? null
+          : mocks.profileError;
+        return {
+          data: table === 'profiles' ? (profileError ? null : mocks.profiles) : table === 'quiz_responses' ? mocks.quizResponse.data : mocks.sadhanaResponse.data,
+          error: table === 'profiles' ? profileError : table === 'daily_sadhana' ? mocks.sadhanaResponse.error : table === 'quiz_responses' ? mocks.quizResponse.error : null,
+        };
+      };
       return {
-        select: vi.fn().mockReturnValue({
+        select: vi.fn().mockImplementation((columns: string) => {
+          if (table === 'profiles') mocks.profileSelects.push(columns);
+          return {
           in: vi.fn().mockImplementation(() => table === 'profiles'
             ? Promise.resolve(response())
             : { eq: vi.fn().mockImplementation(async (_column: string, date: string) => {
@@ -35,6 +45,7 @@ vi.mock('@supabase/supabase-js', () => ({
                 else mocks.sadhanaDates.push(date);
                 return response();
               }) }),
+          };
         }),
         update: vi.fn().mockImplementation((update: unknown) => ({
           in: vi.fn().mockImplementation((_column: string, ids: string[]) => {
@@ -93,6 +104,8 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
     mocks.sadhanaResponse = { data: [{ user_id: 'user-1', japa_done: true }], error: null };
     mocks.quizResponse = { data: [], error: null };
     mocks.profileError = null;
+    mocks.profileErrorQueue = [];
+    mocks.profileSelects = [];
     mocks.sadhanaDates = [];
     mocks.quizDates = [];
     mocks.updates = [];
@@ -271,6 +284,128 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       table: 'notification_schedule',
       update: { status: 'pending', claimed_at: null, error: 'quiz_completion_lookup_retry' },
       ids: ['schedule-quiz-2'],
+    });
+  });
+  describe('night delivery', () => {
+    // 23:30 in London (BST) on 2026-09-29.
+    const nightUtc = '2026-09-29T22:30:00.000Z';
+
+    beforeEach(() => {
+      vi.setSystemTime(new Date(nightUtc));
+    });
+
+    it('skips an app-timed reminder at night when the user set no quiet hours', async () => {
+      mocks.claimedRows[0] = {
+        id: 'schedule-mood-night',
+        user_id: 'user-1',
+        notification_type: 'mood',
+        notification_key: 'mood-evening:user-1:2026-09-29',
+        title: 'Evening check-in',
+        body: 'How was today?',
+        send_at: nightUtc,
+        metadata: { local_date: '2026-09-29', timezone: 'Europe/London' },
+        retry_count: 0,
+      };
+
+      const response = await GET(request());
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({ claimed: 1, succeeded: 0, skipped: 1 });
+      expect(sendPushNotification).not.toHaveBeenCalled();
+      expect(mocks.updates).toContainEqual({
+        table: 'notification_schedule',
+        update: { status: 'skipped', error: 'default_quiet_hours' },
+        ids: ['schedule-mood-night'],
+      });
+    });
+
+    it('still sends a Japa reminder at the night-time the user picked', async () => {
+      mocks.claimedRows[0].send_at = nightUtc;
+      mocks.sadhanaResponse = { data: [], error: null };
+
+      const response = await GET(request());
+
+      expect(response.status).toBe(200);
+      expect(sendPushNotification).toHaveBeenCalledTimes(1);
+      expect(mocks.updates.some((entry) => (entry.update as { error?: string }).error === 'default_quiet_hours')).toBe(false);
+    });
+
+    it('applies the quiet window the user set, even to a picked Japa time', async () => {
+      mocks.claimedRows[0].send_at = nightUtc;
+      mocks.sadhanaResponse = { data: [], error: null };
+      mocks.profiles[0].notification_quiet_hours_start = 23;
+      mocks.profiles[0].notification_quiet_hours_end = 7;
+
+      const response = await GET(request());
+
+      expect(response.status).toBe(200);
+      expect(sendPushNotification).not.toHaveBeenCalled();
+      expect(mocks.updates).toContainEqual({
+        table: 'notification_schedule',
+        update: { status: 'skipped', error: 'quiet_hours_active' },
+        ids: ['schedule-1'],
+      });
+    });
+  });
+
+  describe('Brahma Muhurta opt-in', () => {
+    const brahmaRow = () => ({
+      id: 'schedule-brahma-1',
+      user_id: 'user-1',
+      notification_type: 'brahma_muhurta',
+      notification_key: 'brahma_muhurta:user-1:2026-09-30',
+      title: 'Brahma Muhurta',
+      body: 'The sacred hour opens',
+      send_at: '2026-09-30T03:40:00.000Z',
+      metadata: { local_date: '2026-09-30', timezone: 'Europe/London' },
+      retry_count: 0,
+    });
+
+    beforeEach(() => {
+      // 04:40 in London, inside the default night window.
+      vi.setSystemTime(new Date('2026-09-30T03:40:00.000Z'));
+      mocks.claimedRows[0] = brahmaRow();
+    });
+
+    it('skips a queued Brahma Muhurta push for a user who has not opted in', async () => {
+      const response = await GET(request());
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({ claimed: 1, succeeded: 0, skipped: 1 });
+      expect(sendPushNotification).not.toHaveBeenCalled();
+      expect(mocks.updates).toContainEqual({
+        table: 'notification_schedule',
+        update: { status: 'skipped', error: 'brahma_muhurta_reminders_disabled' },
+        ids: ['schedule-brahma-1'],
+      });
+      expect(mocks.profileSelects[0]).toContain('wants_brahma_muhurta_reminders');
+    });
+
+    it('sends pre-dawn to an opted-in user despite the default night window', async () => {
+      mocks.profiles[0].wants_brahma_muhurta_reminders = true;
+
+      const response = await GET(request());
+
+      expect(response.status).toBe(200);
+      expect(sendPushNotification).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-reads without the opt-in column before it is migrated and fails closed', async () => {
+      mocks.profiles[0].wants_brahma_muhurta_reminders = undefined;
+      mocks.profileErrorQueue = [{ message: 'column does not exist', code: '42703' }];
+
+      const response = await GET(request());
+
+      expect(response.status).toBe(200);
+      expect(mocks.profileSelects).toHaveLength(2);
+      expect(mocks.profileSelects[1]).not.toContain('wants_brahma_muhurta_reminders');
+      expect(mocks.profileSelects[1]).toContain('wants_family_remembrance_reminders');
+      expect(sendPushNotification).not.toHaveBeenCalled();
+      expect(mocks.updates).toContainEqual({
+        table: 'notification_schedule',
+        update: { status: 'skipped', error: 'brahma_muhurta_reminders_disabled' },
+        ids: ['schedule-brahma-1'],
+      });
     });
   });
 });

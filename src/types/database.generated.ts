@@ -6466,6 +6466,7 @@ export type Database = {
           unsubscribe_token: string | null
           updated_at: string
           username: string
+          wants_brahma_muhurta_reminders: boolean
           wants_community_notifications: boolean
           wants_evening_reminder: boolean | null
           wants_family_notifications: boolean
@@ -6585,6 +6586,7 @@ export type Database = {
           unsubscribe_token?: string | null
           updated_at?: string
           username: string
+          wants_brahma_muhurta_reminders?: boolean
           wants_community_notifications?: boolean
           wants_evening_reminder?: boolean | null
           wants_family_notifications?: boolean
@@ -6704,6 +6706,7 @@ export type Database = {
           unsubscribe_token?: string | null
           updated_at?: string
           username?: string
+          wants_brahma_muhurta_reminders?: boolean
           wants_community_notifications?: boolean
           wants_evening_reminder?: boolean | null
           wants_family_notifications?: boolean

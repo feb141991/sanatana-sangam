@@ -290,6 +290,9 @@ export interface Database {
           wants_family_remembrance_reminders?: boolean;
           family_remembrance_time?: string;
           family_remembrance_opt_in_generation?: number;
+          // Added by 20261011090000_brahma_muhurta_reminder_opt_in.sql
+          // (default false; optional until the migration is applied).
+          wants_brahma_muhurta_reminders?: boolean;
           notification_quiet_hours_start: number | null;
           notification_quiet_hours_end: number | null;
           is_admin: boolean;

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  DEFAULT_QUIET_HOURS,
   getNotificationPreferenceSkipReason,
+  getQuietHoursSkipReason,
   getScheduledNotificationActionPath,
   getScheduledNotificationPushData,
 } from "../notification-delivery-policy";
@@ -229,5 +231,66 @@ describe("notification delivery policy", () => {
       expect(getNotificationPreferenceSkipReason(row, deletingProfile))
         .toBe("account_deletion_pending");
     }
+  });
+
+  it("fails closed on Brahma Muhurta unless its explicit opt-in is true", () => {
+    const row = { notification_type: "brahma_muhurta", notification_key: "brahma_muhurta:u:2026-10-11" };
+    expect(getNotificationPreferenceSkipReason(row, {})).toBe("brahma_muhurta_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_brahma_muhurta_reminders: null }))
+      .toBe("brahma_muhurta_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_brahma_muhurta_reminders: false }))
+      .toBe("brahma_muhurta_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, { wants_brahma_muhurta_reminders: true })).toBeNull();
+  });
+});
+
+describe("quiet hours at delivery", () => {
+  const london = { timezone: "Europe/London" };
+  // Europe/London is BST (UTC+1) on these dates.
+  const at = (londonClock: string) => new Date(`2026-10-11T${londonClock}:00+01:00`);
+  const row = (notification_type: string) => ({ notification_type, notification_key: `${notification_type}:k` });
+
+  it("uses 22:00-06:00 as the default night window", () => {
+    expect(DEFAULT_QUIET_HOURS).toEqual({ startHour: 22, endHour: 6 });
+  });
+
+  it("blocks app-timed reminders at night when the user set no quiet hours", () => {
+    for (const type of ["mood", "sattvic_reminder", "daily_digest", "dharm_veer", "shloka", "nitya_morning", "weekly_summary", "general"]) {
+      expect(getQuietHoursSkipReason(row(type), london, at("23:30"))).toBe("default_quiet_hours");
+      expect(getQuietHoursSkipReason(row(type), london, at("05:59"))).toBe("default_quiet_hours");
+    }
+  });
+
+  it("leaves daytime alone, including the window edges", () => {
+    expect(getQuietHoursSkipReason(row("mood"), london, at("06:00"))).toBeNull();
+    expect(getQuietHoursSkipReason(row("mood"), london, at("21:59"))).toBeNull();
+    expect(getQuietHoursSkipReason(row("mood"), london, at("22:00"))).toBe("default_quiet_hours");
+  });
+
+  it("honours times the user picked and the Brahma Muhurta opt-in", () => {
+    for (const type of ["japa", "quiz", "family_remembrance", "festival", "vrat", "tithi", "brahma_muhurta"]) {
+      expect(getQuietHoursSkipReason(row(type), london, at("01:00"))).toBeNull();
+    }
+  });
+
+  it("applies a user-set window to every type, picked times included", () => {
+    const profile = { ...london, notification_quiet_hours_start: 23, notification_quiet_hours_end: 7 };
+    expect(getQuietHoursSkipReason(row("japa"), profile, at("01:00"))).toBe("quiet_hours_active");
+    expect(getQuietHoursSkipReason(row("brahma_muhurta"), profile, at("05:00"))).toBe("quiet_hours_active");
+    // The user's own window replaces the default: 22:30 is outside 23-07.
+    expect(getQuietHoursSkipReason(row("mood"), profile, at("22:30"))).toBeNull();
+  });
+
+  it("evaluates the window in the user's own timezone", () => {
+    // 01:00 in London is 05:30 in Kolkata (inside) and 20:00 in New York (outside).
+    expect(getQuietHoursSkipReason(row("mood"), { timezone: "Asia/Kolkata" }, at("01:00"))).toBe("default_quiet_hours");
+    expect(getQuietHoursSkipReason(row("mood"), { timezone: "America/New_York" }, at("01:00"))).toBeNull();
+  });
+
+  it("treats a half-set or invalid user window as unset", () => {
+    expect(getQuietHoursSkipReason(row("mood"), { ...london, notification_quiet_hours_start: 23, notification_quiet_hours_end: null }, at("23:30")))
+      .toBe("default_quiet_hours");
+    expect(getQuietHoursSkipReason(row("mood"), { ...london, notification_quiet_hours_start: 99, notification_quiet_hours_end: 7 }, at("23:30")))
+      .toBe("default_quiet_hours");
   });
 });
