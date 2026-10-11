@@ -48,4 +48,12 @@ describe('GET /api/native/home-summary Contract & Timing Suite', () => {
     expect(source).toMatch(/wantsVratReminders: typeof profile\?\.wants_vrat_reminders === 'boolean'/);
     expect(source).toMatch(/wantsTithiReminders: typeof profile\?\.wants_tithi_reminders === 'boolean'/);
   });
+
+  it('includes reviewed Hindi and Punjabi fields for the Native Dharm Veer Home card', () => {
+    const source = readFileSync(new URL('./route.ts', import.meta.url), 'utf8');
+    expect(source).toMatch(/nameLocal: dharmVeer\.nameLocal \?\? null/);
+    expect(source).toMatch(/namePa: dharmVeer\.namePa \?\? null/);
+    expect(source).toMatch(/taglineLocal: dharmVeer\.taglineLocal \?\? null/);
+    expect(source).toMatch(/taglinePa: dharmVeer\.taglinePa \?\? null/);
+  });
 });

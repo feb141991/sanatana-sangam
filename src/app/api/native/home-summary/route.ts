@@ -216,7 +216,11 @@ type HomeSummaryResponse = {
   dharmVeer: {
     id: string;
     name: string;
+    nameLocal?: string | null;
+    namePa?: string | null;
     tagline: string;
+    taglineLocal?: string | null;
+    taglinePa?: string | null;
     href: string;
   };
   // True when the user has no shloka-reading streak, no last-shloka-read
@@ -1072,7 +1076,11 @@ export async function GET(request: NextRequest) {
     dharmVeer: {
       id: dharmVeer.id,
       name: dharmVeer.name,
+      nameLocal: dharmVeer.nameLocal ?? null,
+      namePa: dharmVeer.namePa ?? null,
       tagline: dharmVeer.tagline,
+      taglineLocal: dharmVeer.taglineLocal ?? null,
+      taglinePa: dharmVeer.taglinePa ?? null,
       href: `/dharm-veer/${dharmVeer.id}`,
     },
     firstWeek,
