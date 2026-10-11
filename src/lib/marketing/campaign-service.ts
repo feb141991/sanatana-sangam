@@ -363,3 +363,156 @@ export async function cancelCampaign(supabase: any, campaignId: string): Promise
 
   return data as MarketingCampaign;
 }
+
+export interface UpdateCampaignMetadataParams {
+  target_tradition?: string | null;
+  target_sampradaya?: string | null;
+  title?: string;
+}
+
+export class MarketingCampaignInputError extends Error {}
+
+interface MetadataQueryResult {
+  data: Record<string, unknown> | null;
+  error: { message?: string } | null;
+}
+
+interface MetadataQueryBuilder {
+  select(columns: string): MetadataQueryBuilder;
+  update(values: Record<string, unknown>): MetadataQueryBuilder;
+  eq(column: string, value: unknown): MetadataQueryBuilder;
+  in(column: string, values: readonly unknown[]): MetadataQueryBuilder;
+  single(): Promise<MetadataQueryResult>;
+  maybeSingle(): Promise<MetadataQueryResult>;
+}
+
+interface MetadataSupabaseClient {
+  from(table: string): MetadataQueryBuilder;
+}
+
+function metadataClient(value: unknown): MetadataSupabaseClient {
+  if (typeof value !== "object" || value === null || !("from" in value) || typeof value.from !== "function") {
+    throw new Error("Invalid marketing database client");
+  }
+  return value as MetadataSupabaseClient;
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return typeof value === "string" || value === null;
+}
+
+function isMarketingCampaign(value: unknown): value is MarketingCampaign {
+  if (typeof value !== "object" || value === null) return false;
+  const row = value as Record<string, unknown>;
+  const status = row.status;
+  const campaignType = row.campaign_type;
+  const sourceType = row.source_type;
+  return typeof row.id === "string"
+    && typeof row.campaign_key === "string"
+    && (campaignType === "newsletter" || campaignType === "festival_reminder" || campaignType === "announcement")
+    && typeof row.title === "string"
+    && (
+      status === "draft" || status === "in_review" || status === "approved"
+      || status === "dispatching" || status === "completed" || status === "cancelled"
+    )
+    && (sourceType === "manual" || sourceType === "published_observance")
+    && isNullableString(row.source_occurrence_id)
+    && isNullableString(row.source_verified_at)
+    && (row.target_tradition === undefined || isNullableString(row.target_tradition))
+    && (row.target_sampradaya === undefined || isNullableString(row.target_sampradaya))
+    && typeof row.created_by === "string"
+    && isNullableString(row.approved_by)
+    && isNullableString(row.approved_at)
+    && isNullableString(row.cancelled_at)
+    && typeof row.created_at === "string"
+    && typeof row.updated_at === "string";
+}
+
+/**
+ * Updates campaign metadata such as target audience tradition/sampradaya or title.
+ * Changing target audience on an in_review or approved campaign invalidates approval
+ * and moves the campaign back to draft so that dispatches are only sent after re-review.
+ */
+export async function updateCampaignMetadata(
+  supabase: unknown,
+  campaignId: string,
+  params: UpdateCampaignMetadataParams
+): Promise<MarketingCampaign> {
+  const client = metadataClient(supabase);
+  const { data: campaign, error: campError } = await client
+    .from("marketing_campaigns")
+    .select("status")
+    .eq("id", campaignId)
+    .single();
+
+  if (campError || !campaign) {
+    throw new Error(`Campaign not found: ${campError?.message ?? campaignId}`);
+  }
+
+  const status = campaign.status;
+  if (typeof status !== "string") {
+    throw new Error("Campaign has an invalid status");
+  }
+  if (TERMINAL_OR_INFLIGHT_STATUSES.some(terminalStatus => terminalStatus === status)) {
+    throw new Error(`Cannot edit audience or metadata on a campaign in "${status}" status`);
+  }
+
+  if (params.title !== undefined && !params.title.trim()) {
+    throw new MarketingCampaignInputError("Campaign title cannot be empty");
+  }
+  if (!params.target_tradition && params.target_sampradaya) {
+    throw new MarketingCampaignInputError("target_sampradaya requires target_tradition");
+  }
+
+  if (params.target_tradition) {
+    const { data: tradition, error: traditionError } = await client
+      .from("traditions_catalog")
+      .select("key")
+      .eq("key", params.target_tradition)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (traditionError || !tradition) {
+      throw new MarketingCampaignInputError("Invalid or inactive target_tradition");
+    }
+
+    if (params.target_sampradaya) {
+      const { data: sampradaya, error: sampradayaError } = await client
+        .from("tradition_subcategories")
+        .select("key")
+        .eq("tradition_key", params.target_tradition)
+        .eq("key", params.target_sampradaya)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (sampradayaError || !sampradaya) {
+        throw new MarketingCampaignInputError("Invalid or inactive target_sampradaya for target_tradition");
+      }
+    }
+  }
+
+  const updates: Record<string, unknown> = {
+    updated_at: new Date().toISOString()
+  };
+  if (params.target_tradition !== undefined) updates.target_tradition = params.target_tradition;
+  if (params.target_sampradaya !== undefined) updates.target_sampradaya = params.target_sampradaya;
+  if (params.title !== undefined) updates.title = params.title.trim();
+
+  if (status === "approved" || status === "in_review") {
+    updates.status = "draft";
+    updates.approved_by = null;
+    updates.approved_at = null;
+  }
+
+  const { data, error } = await client
+    .from("marketing_campaigns")
+    .update(updates)
+    .eq("id", campaignId)
+    .in("status", ["draft", "in_review", "approved"])
+    .select("*")
+    .single();
+
+  if (error || !isMarketingCampaign(data)) {
+    throw new Error(`Failed to update campaign metadata: ${error?.message ?? "unknown error"}`);
+  }
+
+  return data;
+}

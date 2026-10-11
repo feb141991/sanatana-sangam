@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { requireAdminAccess } from "@/lib/admin";
-import { cancelCampaign, saveVariant, submitForReview } from "@/lib/marketing/campaign-service";
+import {
+  cancelCampaign,
+  MarketingCampaignInputError,
+  saveVariant,
+  submitForReview,
+  updateCampaignMetadata,
+} from "@/lib/marketing/campaign-service";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await verifyAdminCookieAuth(request);
@@ -44,31 +54,63 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if ("response" in admin) return admin.response;
 
   const { id } = await params;
-  const body = await request.json().catch(() => ({}));
+  const body: unknown = await request.json().catch(() => null);
+  if (!isRecord(body)) {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
 
   try {
-    if (body.action === "submit_review") {
+    if ("action" in body && body.action === "submit_review") {
       const campaign = await submitForReview(admin.supabase, id);
       return NextResponse.json({ campaign });
     }
 
-    if (body.variant) {
-      const variant = await saveVariant(admin.supabase, {
-        campaign_id: id,
-        channel: body.variant.channel,
-        locale: body.variant.locale ?? "en",
-        subject: body.variant.subject,
-        body: body.variant.body,
-        cta_text: body.variant.cta_text,
-        cta_url: body.variant.cta_url,
-        source_snapshot: body.variant.source_snapshot,
+    if ("action" in body && body.action === "update_metadata") {
+      const hasTitle = "title" in body;
+      const hasTradition = "target_tradition" in body;
+      const hasSampradaya = "target_sampradaya" in body;
+      const validTitle = !hasTitle || typeof body.title === "string";
+      const validTradition = !hasTradition || typeof body.target_tradition === "string" || body.target_tradition === null;
+      const validSampradaya = !hasSampradaya || typeof body.target_sampradaya === "string" || body.target_sampradaya === null;
+      if ((!hasTitle && !hasTradition && !hasSampradaya) || !validTitle || !validTradition || !validSampradaya) {
+        return NextResponse.json({ error: "Invalid campaign metadata" }, { status: 400 });
+      }
+      const campaign = await updateCampaignMetadata(admin.supabase, id, {
+        target_tradition: "target_tradition" in body && (typeof body.target_tradition === "string" || body.target_tradition === null)
+          ? body.target_tradition
+          : undefined,
+        target_sampradaya: "target_sampradaya" in body && (typeof body.target_sampradaya === "string" || body.target_sampradaya === null)
+          ? body.target_sampradaya
+          : undefined,
+        title: "title" in body && typeof body.title === "string" ? body.title : undefined,
       });
-      return NextResponse.json({ variant });
+      return NextResponse.json({ campaign });
+    }
+
+    if ("variant" in body && isRecord(body.variant)) {
+      const variant = body.variant;
+      if ((variant.channel !== "email" && variant.channel !== "whatsapp") || typeof variant.body !== "string") {
+        return NextResponse.json({ error: "Invalid campaign variant" }, { status: 400 });
+      }
+      const savedVariant = await saveVariant(admin.supabase, {
+        campaign_id: id,
+        channel: variant.channel,
+        locale: typeof variant.locale === "string" ? variant.locale : "en",
+        subject: typeof variant.subject === "string" || variant.subject === null ? variant.subject : undefined,
+        body: variant.body,
+        cta_text: typeof variant.cta_text === "string" || variant.cta_text === null ? variant.cta_text : undefined,
+        cta_url: typeof variant.cta_url === "string" || variant.cta_url === null ? variant.cta_url : undefined,
+        source_snapshot: isRecord(variant.source_snapshot)
+          ? variant.source_snapshot
+          : undefined,
+      });
+      return NextResponse.json({ variant: savedVariant });
     }
 
     return NextResponse.json({ error: "No recognized action or variant provided" }, { status: 400 });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (error: unknown) {
+    const status = error instanceof MarketingCampaignInputError ? 400 : 500;
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Campaign update failed" }, { status });
   }
 }
 

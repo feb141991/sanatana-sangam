@@ -5,7 +5,8 @@ import {
   submitForReview,
   approveCampaign,
   cancelCampaign,
-  computeContentHash
+  computeContentHash,
+  updateCampaignMetadata,
 } from "./campaign-service";
 
 const baseManifest = {
@@ -349,5 +350,97 @@ describe("cancelCampaign lifecycle guard", () => {
     };
 
     await expect(cancelCampaign(mockSupabase as any, "c-1")).rejects.toThrow(/completed\/cancelled|not found/);
+  });
+});
+
+describe("updateCampaignMetadata targeting guards", () => {
+  it("rejects a sampradaya without a parent tradition", async () => {
+    const mockSupabase = {
+      from: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({ data: { status: "draft" }, error: null }),
+          }),
+        }),
+      }),
+    };
+
+    await expect(updateCampaignMetadata(mockSupabase, "c-1", {
+      target_tradition: null,
+      target_sampradaya: "shaiva",
+    })).rejects.toThrow(/requires target_tradition/);
+  });
+
+  it("validates catalogue keys and invalidates approval with a compare-and-set update", async () => {
+    const updatePayload = vi.fn();
+    const statusIn = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        single: vi.fn().mockResolvedValue({
+          data: {
+            id: "c-1",
+            campaign_key: "campaign-1",
+            campaign_type: "newsletter",
+            title: "Campaign",
+            status: "draft",
+            source_type: "manual",
+            source_occurrence_id: null,
+            source_verified_at: null,
+            target_tradition: "hindu",
+            target_sampradaya: "shaiva",
+            created_by: "admin",
+            approved_by: null,
+            approved_at: null,
+            cancelled_at: null,
+            created_at: "2026-10-11T00:00:00.000Z",
+            updated_at: "2026-10-11T00:00:00.000Z",
+          },
+          error: null,
+        }),
+      }),
+    });
+    const update = vi.fn((payload: Record<string, unknown>) => {
+      updatePayload(payload);
+      return { eq: vi.fn().mockReturnValue({ in: statusIn }) };
+    });
+    const activeLookup = (result: Record<string, unknown>) => {
+      const builder = {
+        eq: vi.fn(),
+        maybeSingle: vi.fn().mockResolvedValue({ data: result, error: null }),
+      };
+      builder.eq.mockReturnValue(builder);
+      return { select: vi.fn().mockReturnValue(builder) };
+    };
+
+    const mockSupabase = {
+      from: vi.fn((table: string) => {
+        if (table === "marketing_campaigns") {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockResolvedValue({ data: { status: "approved" }, error: null }),
+              }),
+            }),
+            update,
+          };
+        }
+        if (table === "traditions_catalog") return activeLookup({ key: "hindu" });
+        if (table === "tradition_subcategories") return activeLookup({ key: "shaiva" });
+        throw new Error(`Unexpected table: ${table}`);
+      }),
+    };
+
+    await updateCampaignMetadata(mockSupabase, "c-1", {
+      target_tradition: "hindu",
+      target_sampradaya: "shaiva",
+    });
+
+    expect(updatePayload).toHaveBeenCalledWith(expect.objectContaining({
+      target_tradition: "hindu",
+      target_sampradaya: "shaiva",
+      status: "draft",
+      approved_by: null,
+      approved_at: null,
+    }));
+    expect(statusIn).toHaveBeenCalledWith("status", ["draft", "in_review", "approved"]);
   });
 });

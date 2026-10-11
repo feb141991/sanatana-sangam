@@ -1,12 +1,41 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useCallback, useEffect, useState, use } from "react";
 import Link from "next/link";
 import { 
   ArrowLeft, ShieldCheck, Mail, MessageSquare, 
   Send, AlertTriangle, CheckCircle2, XCircle, 
   Edit3, Save, RotateCcw, Sparkles
 } from "lucide-react";
+
+interface TraditionOption {
+  key: string;
+  label_en: string;
+  emoji: string;
+  subcategories: Array<{ key: string; label_en: string }>;
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+function readTraditions(value: unknown): TraditionOption[] {
+  if (typeof value !== "object" || value === null || !("traditions" in value) || !Array.isArray(value.traditions)) {
+    return [];
+  }
+  return value.traditions.filter((tradition): tradition is TraditionOption => (
+    typeof tradition === "object" && tradition !== null
+    && "key" in tradition && typeof tradition.key === "string"
+    && "label_en" in tradition && typeof tradition.label_en === "string"
+    && "emoji" in tradition && typeof tradition.emoji === "string"
+    && "subcategories" in tradition && Array.isArray(tradition.subcategories)
+    && tradition.subcategories.every((subcategory: unknown) => (
+      typeof subcategory === "object" && subcategory !== null
+      && "key" in subcategory && typeof subcategory.key === "string"
+      && "label_en" in subcategory && typeof subcategory.label_en === "string"
+    ))
+  ));
+}
 
 function VariantProvenancePanel({ variant }: { variant: any }) {
   if (!variant) return null;
@@ -47,6 +76,20 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"email" | "whatsapp">("email");
   
+  // Audience Targeting State
+  const [traditionsList, setTraditionsList] = useState<TraditionOption[]>([]);
+  const [targetTradition, setTargetTradition] = useState("");
+  const [targetSampradaya, setTargetSampradaya] = useState("");
+  const [savingAudience, setSavingAudience] = useState(false);
+  const [audienceSavedSuccess, setAudienceSavedSuccess] = useState(false);
+
+  // Test Email State
+  const [testRecipientChoice, setTestRecipientChoice] = useState("info@shoonaya.com");
+  const [customTestEmail, setCustomTestEmail] = useState("");
+  const [sendingTestEmail, setSendingTestEmail] = useState(false);
+  const [testEmailSuccess, setTestEmailSuccess] = useState<string | null>(null);
+  const [testEmailError, setTestEmailError] = useState<string | null>(null);
+
   // Variant Edit State
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
@@ -66,6 +109,9 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   const [dispatchMeta, setDispatchMeta] = useState<{ campaignStatus?: string; remainingPending?: number | null }>({});
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionErrorKind, setActionErrorKind] = useState<"error" | "conflict">("error");
+  const hasUnsavedEmailChanges = !emailVariant
+    || emailSubject !== (emailVariant.subject ?? "")
+    || emailBody !== (emailVariant.body ?? "");
 
   // Live-send typed confirmation -- a checkbox alone is not sufficient for an
   // irreversible external send; the admin must type both the fixed phrase and the
@@ -82,13 +128,15 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   } | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
 
-  const fetchCampaign = async () => {
+  const fetchCampaign = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/admin/marketing/campaigns/${id}`);
       const data = await res.json();
       if (res.ok) {
         setCampaign(data.campaign);
+        setTargetTradition(data.campaign.target_tradition ?? "");
+        setTargetSampradaya(data.campaign.target_sampradaya ?? "");
         setDispatchSummary(data.dispatchSummary ?? {});
 
         const emailVar = (data.campaign.marketing_campaign_variants ?? []).find((v: any) => v.channel === "email");
@@ -107,11 +155,69 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchCampaign();
-  }, [id]);
+  }, [fetchCampaign]);
+
+  useEffect(() => {
+    fetch("/api/traditions")
+      .then(res => res.json())
+      .then((data: unknown) => setTraditionsList(readTraditions(data)))
+      .catch(() => {});
+  }, []);
+
+  const handleSaveAudience = async () => {
+    setSavingAudience(true);
+    setActionError(null);
+    setAudienceSavedSuccess(false);
+    try {
+      const res = await fetch(`/api/admin/marketing/campaigns/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update_metadata",
+          target_tradition: targetTradition || null,
+          target_sampradaya: targetSampradaya || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to save audience");
+      setAudienceSavedSuccess(true);
+      fetchCampaign();
+      setTimeout(() => setAudienceSavedSuccess(false), 3000);
+    } catch (error: unknown) {
+      setActionError(errorMessage(error, "Failed to save audience"));
+    } finally {
+      setSavingAudience(false);
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    const finalEmail = testRecipientChoice === "custom" ? customTestEmail.trim() : testRecipientChoice;
+    if (!finalEmail) {
+      setTestEmailError("Please specify a test recipient email address.");
+      return;
+    }
+    setSendingTestEmail(true);
+    setTestEmailSuccess(null);
+    setTestEmailError(null);
+    try {
+      const res = await fetch(`/api/admin/marketing/campaigns/${id}/test-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipientEmail: finalEmail }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to send test email");
+      setTestEmailSuccess(`Test email sent to ${finalEmail}! (ID: ${data.messageId ?? "sent"})`);
+    } catch (error: unknown) {
+      setTestEmailError(errorMessage(error, "Failed to send test email"));
+    } finally {
+      setSendingTestEmail(false);
+    }
+  };
 
   const handleAiRegenerateVariant = async (channel: "email" | "whatsapp") => {
     setAiRegenerating(true);
@@ -381,6 +487,163 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
               </span>
             </div>
           )}
+        </div>
+
+        {/* Audience Targeting & Test Dispatch Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Audience Targeting Box */}
+          <div className="p-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] flex items-center gap-1.5">
+                  <span>🎯 Audience Targeting</span>
+                </h3>
+                <p className="text-[11px] text-[var(--text-muted)]">
+                  Target all subscribers or scope to a specific spiritual tradition
+                </p>
+              </div>
+              {audienceSavedSuccess && (
+                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                  ✓ Saved
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  Tradition
+                </label>
+                <select
+                  value={targetTradition}
+                  onChange={e => {
+                    setTargetTradition(e.target.value);
+                    setTargetSampradaya("");
+                  }}
+                  disabled={campaign.status === "dispatching" || campaign.status === "completed" || campaign.status === "cancelled"}
+                  className="w-full mt-1 px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-base)] text-xs font-semibold outline-none focus:border-amber-600 disabled:opacity-60"
+                >
+                  <option value="">All Traditions (Universal)</option>
+                  {traditionsList.map(t => (
+                    <option key={t.key} value={t.key}>
+                      {t.emoji} {t.label_en}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  Focus / Subcategory
+                </label>
+                <select
+                  value={targetSampradaya}
+                  onChange={e => setTargetSampradaya(e.target.value)}
+                  disabled={!targetTradition || campaign.status === "dispatching" || campaign.status === "completed" || campaign.status === "cancelled"}
+                  className="w-full mt-1 px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-base)] text-xs font-semibold outline-none focus:border-amber-600 disabled:opacity-60"
+                >
+                  <option value="">
+                    {targetTradition ? "All in this tradition" : "-- Select tradition first --"}
+                  </option>
+                  {targetTradition &&
+                    (traditionsList.find(t => t.key === targetTradition)?.subcategories || []).map(sub => (
+                      <option key={sub.key} value={sub.key}>
+                        {sub.label_en}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            {(campaign.status === "draft" || campaign.status === "in_review") && (
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSaveAudience}
+                  disabled={savingAudience}
+                  className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all disabled:opacity-50"
+                >
+                  {savingAudience ? "Saving..." : "Save Audience"}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Test Email Dispatcher Box */}
+          <div className="p-5 rounded-2xl border border-amber-500/20 bg-amber-500/5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                  <Mail size={14} className="text-amber-600" />
+                  <span>Send Test Email (Inbox Preview)</span>
+                </h3>
+                <p className="text-[11px] text-amber-700/80">
+                  Sends the saved email copy to verify formatting before releasing to subscribers
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-1">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-amber-900">
+                  Test Recipient
+                </label>
+                <select
+                  value={testRecipientChoice}
+                  onChange={e => setTestRecipientChoice(e.target.value)}
+                  className="w-full mt-1 px-3 py-2 rounded-xl border border-amber-500/30 bg-white text-xs font-semibold text-slate-800 outline-none focus:border-amber-600"
+                >
+                  <option value="info@shoonaya.com">info@shoonaya.com</option>
+                  <option value="custom">Enter custom test email...</option>
+                </select>
+              </div>
+
+              {testRecipientChoice === "custom" && (
+                <div>
+                  <input
+                    type="email"
+                    placeholder="e.g. test@example.com"
+                    value={customTestEmail}
+                    onChange={e => setCustomTestEmail(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-amber-500/30 bg-white text-xs outline-none focus:border-amber-600"
+                  />
+                </div>
+              )}
+
+              {testEmailSuccess && (
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
+                  ✓ {testEmailSuccess}
+                </div>
+              )}
+
+              {testEmailError && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
+                  ⚠ {testEmailError}
+                </div>
+              )}
+
+              {hasUnsavedEmailChanges && (
+                <div className="p-2.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-soft)] text-[var(--text-primary)] text-xs font-medium">
+                  Save the email copy before sending a preview so the inbox matches this editor.
+                </div>
+              )}
+
+              <div className="pt-1 flex items-center justify-between">
+                <span className="text-[10px] text-amber-800/70 italic">
+                  Does not affect dispatch counts or subscriber records.
+                </span>
+                <button
+                  type="button"
+                  onClick={handleSendTestEmail}
+                  disabled={sendingTestEmail || hasUnsavedEmailChanges}
+                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  <Send size={13} />
+                  {sendingTestEmail ? "Sending Preview..." : hasUnsavedEmailChanges ? "Save Email First" : "Send Test Email"}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Last Dispatch Result -- previously computed but never rendered. */}

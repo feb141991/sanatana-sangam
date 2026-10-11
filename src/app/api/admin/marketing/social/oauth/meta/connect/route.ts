@@ -15,8 +15,7 @@ const SCOPES = [
   "pages_read_engagement",
   "pages_manage_posts",
   "instagram_basic",
-  "instagram_content_publish",
-  "business_management"
+  "instagram_content_publish"
 ].join(",");
 
 export async function GET(request: NextRequest) {

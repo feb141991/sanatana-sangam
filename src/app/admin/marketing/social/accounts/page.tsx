@@ -7,6 +7,7 @@ import {
   Facebook, Instagram, Linkedin, Plug, Unplug, ShieldAlert, RefreshCw,
   PauseCircle, PlayCircle, AlertTriangle, ArrowLeft
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface Account {
   id: string;
@@ -35,7 +36,27 @@ interface GlobalPause {
   publishing_paused: boolean;
 }
 
-const ACCOUNT_ICON: Record<Account["account_type"], any> = {
+interface ConnectedAccountResult {
+  type: string;
+  id: string;
+  name: string;
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+function readConnectedAccounts(value: unknown): ConnectedAccountResult[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is ConnectedAccountResult => (
+    typeof item === "object" && item !== null
+    && "type" in item && typeof item.type === "string"
+    && "id" in item && typeof item.id === "string"
+    && "name" in item && typeof item.name === "string"
+  ));
+}
+
+const ACCOUNT_ICON: Record<Account["account_type"], LucideIcon> = {
   facebook_page: Facebook,
   instagram_business: Instagram,
   linkedin_organization: Linkedin
@@ -57,6 +78,9 @@ export default function SocialAccountsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(searchParams.get("error"));
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [manualToken, setManualToken] = useState("");
+  const [tokenSuccess, setTokenSuccess] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,8 +96,8 @@ export default function SocialAccountsPage() {
       setAccounts(accountsData.accounts ?? []);
       setConfig(settingsData.config ?? []);
       setGlobalPause(settingsData.globalPause ?? null);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (error: unknown) {
+      setError(errorMessage(error, "Failed to load social account settings"));
     } finally {
       setLoading(false);
     }
@@ -82,6 +106,32 @@ export default function SocialAccountsPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const handleConnectToken = async () => {
+    if (!manualToken.trim()) return;
+    setSavingKey("manual_token");
+    setError(null);
+    setTokenSuccess(null);
+    try {
+      const res = await fetch("/api/admin/marketing/social/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: manualToken.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to connect token");
+      const connected = readConnectedAccounts(data.connected);
+      setTokenSuccess(`Connected ${connected.map(account => account.name).join(", ") || "accounts"} successfully!`);
+      setManualToken("");
+      setShowTokenInput(false);
+      await load();
+      setTimeout(() => setTokenSuccess(null), 4000);
+    } catch (error: unknown) {
+      setError(errorMessage(error, "Failed to connect Meta accounts"));
+    } finally {
+      setSavingKey(null);
+    }
+  };
 
   const disconnectAccount = async (accountId: string) => {
     if (!confirm("Disconnect this account? Its stored token will be cleared; historical posts keep their record of it.")) return;
@@ -193,14 +243,63 @@ export default function SocialAccountsPage() {
         <section className="p-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] space-y-4">
           <h2 className="text-sm font-bold flex items-center gap-2"><Plug size={16} /> Connected Destinations</h2>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <a href="/api/admin/marketing/social/oauth/meta/connect" className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2">
               <Facebook size={14} /> Connect Facebook / Instagram
             </a>
+            <button
+              onClick={() => setShowTokenInput(!showTokenInput)}
+              className="px-4 py-2 rounded-xl border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)] text-xs font-bold flex items-center gap-2"
+            >
+              <Plug size={14} /> Connect via Graph API Explorer
+            </button>
             <a href="/api/admin/marketing/social/oauth/linkedin/connect" className="px-4 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold flex items-center gap-2">
               <Linkedin size={14} /> Connect LinkedIn
             </a>
           </div>
+
+          {tokenSuccess && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800">
+              ✓ {tokenSuccess}
+            </div>
+          )}
+
+          {showTokenInput && (
+            <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/50 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold text-blue-900">Direct Meta Token Connection (Bypasses OAuth Web Lock)</p>
+                <a
+                  href="https://developers.facebook.com/tools/explorer/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[11px] font-bold text-blue-700 hover:underline"
+                >
+                  Open Graph API Explorer ↗
+                </a>
+              </div>
+              <p className="text-[11px] text-blue-800/80">
+                In Graph API Explorer: select the Shoonaya app, add <code>pages_show_list</code>, <code>pages_manage_posts</code>, <code>instagram_basic</code>, and <code>instagram_content_publish</code>, then generate and paste the temporary token below. The token is sent only to Shoonaya&apos;s admin API and stored encrypted.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  autoComplete="off"
+                  spellCheck={false}
+                  placeholder="Paste EAAG... access token here"
+                  value={manualToken}
+                  onChange={e => setManualToken(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-xl border border-blue-200 bg-white text-xs font-mono outline-none focus:border-blue-600"
+                />
+                <button
+                  onClick={handleConnectToken}
+                  disabled={savingKey === "manual_token" || !manualToken.trim()}
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold disabled:opacity-50"
+                >
+                  {savingKey === "manual_token" ? "Connecting..." : "Connect Token"}
+                </button>
+              </div>
+            </div>
+          )}
 
           {loading ? (
             <p className="text-xs text-[var(--text-muted)] py-4">Loading accounts...</p>
