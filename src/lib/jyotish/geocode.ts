@@ -18,6 +18,14 @@ export interface GeoResult {
   timezone:  string;        // IANA timezone string e.g. 'Asia/Kolkata'
 }
 
+/** Resolve an IANA timezone from coordinates without another geocoder request. */
+export function timezoneFromCoordinates(lat: number, lng: number): string | null {
+  if (!Number.isFinite(lat) || lat < -90 || lat > 90 || !Number.isFinite(lng) || lng < -180 || lng > 180) {
+    return null;
+  }
+  return geoTzFind(lat, lng)?.[0] ?? null;
+}
+
 /** Nominatim response shape (partial) */
 interface NominatimResult {
   display_name: string;
@@ -74,8 +82,7 @@ export async function geocodeCity(query: string): Promise<GeoResult> {
 
   // geo-tz returns array of IANA tz strings; take first (most specific).
   // Fall back to 'UTC' rather than throwing — timezone is a recoverable issue.
-  const tzCandidates = geoTzFind(lat, lng);
-  const timezone = tzCandidates?.[0] ?? 'UTC';
+  const timezone = timezoneFromCoordinates(lat, lng) ?? 'UTC';
 
   const addr    = hit.address ?? {};
   const city    = addr.city ?? addr.town ?? addr.village ?? addr.state ?? query;
@@ -109,8 +116,7 @@ export async function reverseGeocode(lat: number, lng: number): Promise<GeoResul
 
   const hit: NominatimResult & { address?: NominatimResult['address'] } = await res.json();
 
-  const tzCandidates = geoTzFind(lat, lng);
-  const timezone = tzCandidates?.[0] ?? 'UTC';
+  const timezone = timezoneFromCoordinates(lat, lng) ?? 'UTC';
 
   const addr    = hit.address ?? {};
   const city    = addr.city ?? addr.town ?? addr.village ?? addr.state ?? `${lat.toFixed(2)},${lng.toFixed(2)}`;
