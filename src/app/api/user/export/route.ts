@@ -35,6 +35,8 @@ export async function GET(request: NextRequest) {
     malaSessionsResult,
     quizResponsesResult,
     karmaLedgerResult,
+    productAnalyticsResult,
+    telemetryResult,
   ] = await Promise.all([
     admin.from('profiles').select('*').eq('id', user.id).single(),
     admin
@@ -69,6 +71,19 @@ export async function GET(request: NextRequest) {
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false }),
+    // Consent-gated product measurement (kept 90 days). Every stored row is
+    // returned; the table holds no other personal fields.
+    admin
+      .from('native_product_analytics_daily')
+      .select('event_name, event_date, app_version, platform')
+      .eq('user_id', user.id)
+      .order('event_date', { ascending: false }),
+    // App performance diagnostics linked to this account (kept 30 days).
+    admin
+      .from('native_startup_telemetry_summaries')
+      .select('schema_version, app_version, platform, total_events, summary, received_at')
+      .eq('user_id', user.id)
+      .order('received_at', { ascending: false }),
   ]);
 
   const exportPayload = {
@@ -81,6 +96,9 @@ export async function GET(request: NextRequest) {
     karma_ledger: karmaLedgerResult.error ? [] : (karmaLedgerResult.data ?? []),
     mala_sessions: malaSessionsResult.data ?? [],
     quiz_results: quizResponsesResult.data ?? [],
+    // Empty when the user never opted in, or before the table's migration exists.
+    product_analytics_events: productAnalyticsResult.error ? [] : (productAnalyticsResult.data ?? []),
+    app_performance_diagnostics: telemetryResult.error ? [] : (telemetryResult.data ?? []),
   };
 
   const fileName = `shoonaya-export-${new Date().toISOString().slice(0, 10)}.json`;

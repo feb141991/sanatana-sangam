@@ -3945,6 +3945,30 @@ export type Database = {
         }
         Relationships: []
       }
+      native_product_analytics_daily: {
+        Row: {
+          app_version: string | null
+          event_date: string
+          event_name: string
+          platform: string | null
+          user_id: string
+        }
+        Insert: {
+          app_version?: string | null
+          event_date: string
+          event_name: string
+          platform?: string | null
+          user_id: string
+        }
+        Update: {
+          app_version?: string | null
+          event_date?: string
+          event_name?: string
+          platform?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       nitya_karma_log: {
         Row: {
           aarti_done: boolean | null
@@ -6375,6 +6399,7 @@ export type Database = {
           city: string | null
           comm_prefs_set: boolean | null
           consent_activity_personalization: boolean
+          consent_product_analytics: boolean
           consent_religious_data: boolean
           consent_updated_at: string | null
           country: string | null
@@ -6495,6 +6520,7 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_activity_personalization?: boolean
+          consent_product_analytics?: boolean
           consent_religious_data?: boolean
           consent_updated_at?: string | null
           country?: string | null
@@ -6615,6 +6641,7 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_activity_personalization?: boolean
+          consent_product_analytics?: boolean
           consent_religious_data?: boolean
           consent_updated_at?: string | null
           country?: string | null
@@ -10076,6 +10103,15 @@ export type Database = {
     }
     Functions: {
       _cleanup: { Args: never; Returns: boolean }
+      record_native_product_analytics: {
+        Args: { p_events: string[]; p_app_version?: string | null; p_platform?: string | null }
+        Returns: Json
+      }
+      get_native_product_analytics_summary: {
+        Args: { p_days?: number }
+        Returns: { event_name: string; event_date: string; opted_in_accounts: number }[]
+      }
+      withdraw_native_product_analytics: { Args: never; Returns: number }
       _contract_on: { Args: { "": string }; Returns: unknown }
       _currtest: { Args: never; Returns: number }
       _db_privs: { Args: never; Returns: unknown[] }

@@ -6,7 +6,7 @@ import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
  * PrivacyClient.tsx) whenever the policy content materially changes -- this
  * is what gets recorded on every acceptance receipt (src/lib/legal-acceptance.ts).
  */
-export const PRIVACY_VERSION = '2026-08-11';
+export const PRIVACY_VERSION = '2026-10-12';
 
 export type PrivacyRegion = 'global' | 'india' | 'uk' | 'usa';
 
@@ -45,7 +45,18 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
         'Location data is used to find nearby temples, local community circles, observance timing, and check-ins, but only if you explicitly grant permission or enter a location yourself.',
         'Mood and reflection data is used to save your check-ins, show personal insights, and recommend relevant practices.',
         'AI-supported features may process the prompts, messages, names, or reflection text you submit so we can generate responses, explanations, recommendations, or name-story content. Please avoid entering information you do not want processed for these features.',
-        'Analytics and diagnostics are used to understand aggregate usage, improve reliability, measure performance, and fix errors. We design analytics events to avoid names, emails, precise locations, and other directly identifying content.',
+        'Diagnostics and optional product measurement help us keep Shoonaya reliable and understand overall use. Both are described in "Diagnostics and Product Measurement" below.',
+      ]
+    },
+    {
+      title: 'Diagnostics and Product Measurement',
+      summary: 'What the app measures, when, and how long it is kept.',
+      content: [
+        'App performance diagnostics: to keep the app fast and working, the Shoonaya app sends a summary roughly once an hour of how long screens take to load, whether saved data was reused, and whether requests failed or were retried. Screens are identified by internal names (for example "home" or "mandali"). The summary includes your app version and platform, and is linked to your account when you are signed in; guest summaries carry no identifier. It contains no content you read or write, no mood, location, or profile details. We use it on the basis of our legitimate interest in running a reliable service, and keep it for 30 days.',
+        'Optional product measurement in the app: off unless you turn on "Share product usage data" in Settings. When on, we record at most one entry per day for each of a small, fixed set of events, such as opening the app or completing a practice, together with your app version and platform, linked to your account. We do not record screen names, spiritual content, mood, location, or profile details. Practice events (for example completing a japa session) are recorded only if you have also turned on "Tradition-aware personalization", because they can reveal religious practice. Entries are kept for 90 days.',
+        'Turning product measurement off stops collection and deletes your stored entries straight away. Turning off "Tradition-aware personalization" deletes stored practice events. Deleting your account deletes both kinds of data.',
+        'Our internal reports on product measurement show only daily totals, and hide any total from fewer than 20 accounts. A small number of authorised staff can access the underlying records to operate and secure the service.',
+        'Website analytics: on shoonaya.com, Google Analytics and Vercel Analytics run only if you accept analytics cookies in the cookie banner. They are not used inside the app.',
       ]
     },
     {
@@ -63,7 +74,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       content: [
         'Shoonaya does not sell your personal data to third-party advertisers.',
         'We may share data with service providers solely to operate the platform, including hosting, database, authentication, storage, analytics, diagnostics, notifications, email delivery, maps or geocoding, media links, and AI processing providers.',
-        'Current service providers may include Supabase, Vercel, Expo, Firebase or Google Analytics, Google or Apple authentication services, YouTube for external live-darshan links, and AI infrastructure used by Shoonaya features.',
+        'Current service providers may include Supabase, Vercel, Expo, Firebase Cloud Messaging (Android push delivery), Google Analytics and Vercel Analytics (website only, with cookie consent), Google or Apple authentication services, YouTube for external live-darshan links, and AI infrastructure used by Shoonaya features.',
         'Community content you choose to post may be visible to other users according to the feature and privacy setting used. Profile photos, names, usernames, Mandali posts, comments, and public share links may be shown to others when you choose those surfaces.',
       ]
     },
@@ -80,7 +91,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       summary: 'You can access, export, update, or delete your data.',
       content: [
         'You can update profile details, notification preferences, language preferences, theme settings, and profile photo choices from within the app.',
-        'You can download an export of your account data from Settings. You can also request deletion of specific data types by contacting support.',
+        'You can download an export of your account data from Settings, including your stored product-measurement entries and app performance diagnostics. You can also request deletion of specific data types by contacting support.',
         'Full account deletion uses a 30-day cancellable cool-off period. During that window, your account is marked for deletion and you may cancel the request. After the period ends, Shoonaya may permanently delete the account and associated data according to the deletion workflow.',
         'Some records may be retained where required for security, legal compliance, fraud prevention, abuse reporting, audit logs, or backup integrity, and then removed or anonymized when no longer needed.',
       ]

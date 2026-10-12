@@ -104,7 +104,7 @@ export default function PrivacyClient() {
         data-privacy-version={PRIVACY_VERSION}
         className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold"
       >
-        Last Updated: August 11, 2026 • Shoonaya Privacy Trust
+        Last Updated: October 12, 2026 • Shoonaya Privacy Trust
       </div>
     </div>
   );

@@ -26,6 +26,7 @@ import EmailMonitoringSection from "./EmailMonitoringSection";
 import { Mail } from "lucide-react";
 import ClientErrorMonitoringSection from "./ClientErrorMonitoringSection";
 import NativeStartupTelemetrySection from "./NativeStartupTelemetrySection";
+import NativeProductAnalyticsSection from "./NativeProductAnalyticsSection";
 import ApiMonitoringSection, { API_CATALOG } from "./ApiMonitoringSection";
 import { resolveContentReport } from "./actions";
 
@@ -734,7 +735,10 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── TAB: NATIVE STARTUP PERFORMANCE ───────────────────────────────── */}
       {activeTab === "native_perf" && (
-        <NativeStartupTelemetrySection />
+        <div className="space-y-4">
+          <NativeStartupTelemetrySection />
+          <NativeProductAnalyticsSection />
+        </div>
       )}
 
       {/* ─── TAB 4: AI CHAT & CONTENT REPORTS (WITH FULL Q&A COMPARISON) ──── */}
