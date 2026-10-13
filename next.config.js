@@ -18,6 +18,21 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/beta/android',
+        destination: '/early-access',
+        permanent: true,
+      },
+      {
+        source: '/blog',
+        destination: '/journal',
+        permanent: true,
+      },
+      {
+        source: '/site-map',
+        destination: '/sitemap',
+        permanent: true,
+      },
+      {
         source: '/landing.html',
         destination: '/',
         permanent: true,
