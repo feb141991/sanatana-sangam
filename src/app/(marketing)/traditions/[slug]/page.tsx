@@ -88,7 +88,7 @@ export default async function TraditionPage({ params }: TraditionPageProps) {
             All traditions
           </Link>
           <Link
-            href="/beta/android"
+            href="/early-access"
             className="inline-flex min-h-11 items-center gap-2 font-semibold text-[var(--brand-primary-strong)]"
           >
             Join the Android beta

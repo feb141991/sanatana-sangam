@@ -4,9 +4,12 @@ import { createClient } from "@supabase/supabase-js";
 import { VRAT_DATABASE } from "@/lib/vrat-data";
 import { STOTRAMS } from "@/lib/stotrams";
 import { ALL_KATHAS, getCanonicalKathaId } from "@/lib/katha-library";
-import { SEED_PATHS } from "@/lib/pathshala-paths";
 import { getPublishableFestivalSlugs } from "@/lib/festival-data";
-import { deduplicateSitemap, readSitemapPages } from "@/lib/seo/sitemap-pages";
+import {
+  deduplicateSitemap,
+  filterSitemapIndexableRoutes,
+  readSitemapPages,
+} from "@/lib/seo/sitemap-pages";
 
 // Search indexing has one canonical production origin. Do not derive sitemap
 // URLs from deployment environment variables, which may point at preview
@@ -35,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/community`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/journal`, changeFrequency: "weekly", priority: 0.9 },
     {
-      url: `${BASE_URL}/beta/android`,
+      url: `${BASE_URL}/early-access`,
       changeFrequency: "weekly",
       priority: 0.8,
     },
@@ -153,33 +156,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   let discoverRoutes: MetadataRoute.Sitemap = [];
-  let nameStoryRoutes: MetadataRoute.Sitemap = [];
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (supabaseUrl && supabaseKey) {
       const client = createClient(supabaseUrl, supabaseKey);
 
-      const [discoverRows, nameStoryRows] = await Promise.all([
-        readSitemapPages((from, to) =>
-          client
-            .from("discover_content")
-            .select("slug, created_at")
-            .eq("published", true)
-            .order("slug")
-            .range(from, to)
-            .abortSignal(AbortSignal.timeout(10_000)),
-        ),
-        readSitemapPages((from, to) =>
-          client
-            .from("name_stories")
-            .select("share_slug, generated_at")
-            .eq("is_public", true)
-            .order("share_slug")
-            .range(from, to)
-            .abortSignal(AbortSignal.timeout(10_000)),
-        ),
-      ]);
+      const discoverRows = await readSitemapPages((from, to) =>
+        client
+          .from("discover_content")
+          .select("slug, created_at")
+          .eq("published", true)
+          .order("slug")
+          .range(from, to)
+          .abortSignal(AbortSignal.timeout(10_000)),
+      );
 
       if (discoverRows) {
         discoverRoutes = discoverRows
@@ -194,18 +185,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           }));
       }
 
-      if (nameStoryRows) {
-        nameStoryRoutes = nameStoryRows
-          .filter((item) => item.share_slug)
-          .map((item) => ({
-            url: `${BASE_URL}/name/${item.share_slug}`,
-            ...(item.generated_at
-              ? { lastModified: new Date(item.generated_at) }
-              : {}),
-            changeFrequency: "monthly",
-            priority: 0.5,
-          }));
-      }
     }
   } catch (err) {
     console.warn(
@@ -214,14 +193,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
-  return deduplicateSitemap([
+  return filterSitemapIndexableRoutes(deduplicateSitemap([
     ...staticRoutes,
     ...vratRoutes,
     ...stotramRoutes,
     ...kathaRoutes,
     ...discoverRoutes,
-    ...nameStoryRoutes,
-    ...SEED_PATHS.map((path) => ({ url: `${BASE_URL}/pathshala/${path.id}` })),
     ...getPublishableFestivalSlugs().map((slug) => ({
       url: `${BASE_URL}/festival/${slug}`,
     })),
@@ -230,5 +207,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
-  ]);
+  ]));
 }

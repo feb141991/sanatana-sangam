@@ -24,3 +24,17 @@ export function deduplicateSitemap(entries: MetadataRoute.Sitemap): MetadataRout
   if (unique.size > 50_000) throw new Error('Sitemap exceeds the single-file URL limit');
   return [...unique.values()];
 }
+
+/** Keep redirected, noindex, and personal share routes out of the XML sitemap. */
+export function filterSitemapIndexableRoutes(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
+  return entries.filter((entry) => {
+    const pathname = new URL(entry.url).pathname.replace(/\/$/, '') || '/';
+    return !(
+      pathname === '/beta/android' ||
+      pathname === '/blog' ||
+      pathname === '/site-map' ||
+      pathname.startsWith('/pathshala/') ||
+      pathname.startsWith('/name/')
+    );
+  });
+}

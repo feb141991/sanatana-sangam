@@ -31,6 +31,9 @@ export async function generateMetadata({
   return {
     title,
     description: desc,
+    // Keep personally generated share pages available by direct link without
+    // exposing names and readings as search-result landing pages.
+    robots: { index: false, follow: true },
     alternates: {
       canonical: canonicalUrl,
     },

@@ -178,6 +178,7 @@ export function OrganizationJsonLd() {
         "@id": "https://www.shoonaya.com/#website",
         "url": "https://www.shoonaya.com",
         "name": "Shoonaya",
+        "description": "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
         "publisher": { "@id": "https://www.shoonaya.com/#organization" },
       },
     ],

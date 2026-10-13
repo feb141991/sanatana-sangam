@@ -227,7 +227,7 @@ const FAQ_ITEMS: FaqItem[] = [
       "See the Android beta page for current enrollment details.",
       "Follow the store links on the site for current app availability.",
     ],
-    links: [{ label: "Android Beta Access", href: "/beta/android" }],
+    links: [{ label: "Android Beta Access", href: "/early-access" }],
   },
   {
     id: "kids-zone",

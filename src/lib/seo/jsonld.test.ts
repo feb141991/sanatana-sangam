@@ -14,6 +14,12 @@ const homepageSchema = JSON.parse(jsonLdMatch[1]) as {
 const softwareApplication = homepageSchema["@graph"]?.find(
   (node) => node["@type"] === "SoftwareApplication",
 );
+const organization = homepageSchema["@graph"]?.find(
+  (node) => node["@type"] === "Organization",
+);
+const website = homepageSchema["@graph"]?.find(
+  (node) => node["@type"] === "WebSite",
+);
 
 describe("AEO & SEO JSON-LD Configuration", () => {
   it("contains the verified live LinkedIn company profile", () => {
@@ -38,5 +44,19 @@ describe("AEO & SEO JSON-LD Configuration", () => {
     expect(softwareApplication?.sameAs).toEqual([
       "https://apps.apple.com/app/shoonaya/id6793055966",
     ]);
+  });
+
+  it("keeps homepage, Organization, and WebSite identity copy aligned", () => {
+    const brandDescription =
+      "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.";
+
+    expect(organization?.name).toBe("Shoonaya");
+    expect(website?.name).toBe("Shoonaya");
+    expect(organization?.description).toBe(brandDescription);
+    expect(website?.description).toBe(brandDescription);
+    expect(softwareApplication?.description).toBe(brandDescription);
+    expect(landingHtml).toContain('<meta name="application-name" content="Shoonaya" />');
+    expect(landingHtml).toContain('<meta property="og:site_name" content="Shoonaya" />');
+    expect(landingHtml).toContain(`content="${brandDescription}"`);
   });
 });

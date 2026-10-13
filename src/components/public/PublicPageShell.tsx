@@ -60,7 +60,7 @@ export default function PublicPageShell({
                 </p>
                 <div className="mt-5 flex flex-col gap-3">
                   <Link
-                    href="/beta/android"
+                    href="/early-access"
                     className="flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand-primary)] px-4 text-sm font-semibold text-[var(--surface-base)]"
                   >
                     Join the Android beta

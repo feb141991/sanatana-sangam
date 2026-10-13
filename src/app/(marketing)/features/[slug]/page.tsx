@@ -63,7 +63,7 @@ export default async function FeaturePage({ params }: FeaturePageProps) {
             </Link>
           )}
           <Link
-            href="/beta/android"
+            href="/early-access"
             className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] px-7 font-semibold text-[var(--text-cream)] hover:border-[var(--brand-primary)]/40 transition"
           >
             Request Early Access

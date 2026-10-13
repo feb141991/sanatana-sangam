@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readSitemapPages, deduplicateSitemap } from './sitemap-pages';
+import { readSitemapPages, deduplicateSitemap, filterSitemapIndexableRoutes } from './sitemap-pages';
 
 describe('sitemap database pages', () => {
   it('reads beyond the default database row limit, including a capped server page', async () => {
@@ -23,5 +23,19 @@ describe('sitemap database pages', () => {
       { url: 'https://www.shoonaya.com/a', lastModified: '2026-09-01' },
       { url: 'https://www.shoonaya.com/a', lastModified: '2026-08-01' }]))
       .toEqual([{ url: 'https://www.shoonaya.com/a', lastModified: '2026-09-01' }]);
+  });
+
+  it('keeps redirects, noindex app routes, and personal share pages out of the sitemap', () => {
+    const entries = [
+      { url: 'https://www.shoonaya.com/early-access' },
+      { url: 'https://www.shoonaya.com/beta/android' },
+      { url: 'https://www.shoonaya.com/blog' },
+      { url: 'https://www.shoonaya.com/site-map' },
+      { url: 'https://www.shoonaya.com/pathshala/bhagavad-gita-intro' },
+      { url: 'https://www.shoonaya.com/name/prince-abc12' },
+      { url: 'https://www.shoonaya.com/bhakti/katha/katha-sujata' },
+    ];
+
+    expect(filterSitemapIndexableRoutes(entries)).toEqual([entries[0], entries[6]]);
   });
 });

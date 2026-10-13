@@ -49,7 +49,7 @@ const fontVars = [
 ].join(" ");
 
 const brandDescription =
-  "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection. Follow your local Panchang, notice observances, and make room for daily practice.";
+  "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.shoonaya.com"),

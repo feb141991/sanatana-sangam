@@ -262,7 +262,7 @@ export default function AboutPage() {
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <Link
-                href="/beta/android"
+                href="/early-access"
                 className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-7 text-xs font-semibold uppercase tracking-wider text-[var(--surface-base)] shadow-sm hover:opacity-90 transition active:scale-95"
               >
                 Request Early Access

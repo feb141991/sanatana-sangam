@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "The Sanctuary Blog & Journal | Shoonaya",
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function BlogRedirectPage() {
-  redirect("/journal");
+  permanentRedirect("/journal");
 }

@@ -109,7 +109,7 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
     icon: Smartphone,
     links: [
       { label: "Shoonaya for iOS", href: "https://apps.apple.com/app/shoonaya/id6793055966", isExternal: true, badge: "App Store", description: "Download on the official Apple App Store for iPhone & iPad." },
-      { label: "Shoonaya for Android Beta", href: "/beta/android", badge: "Beta", description: "Join the verified Google Play / Android early access program." },
+      { label: "Shoonaya for Android Beta", href: "/early-access", badge: "Beta", description: "Join the verified Google Play / Android early access program." },
       { label: "Shoonaya Web Companion", href: "/", description: "Fast, responsive gateway experience accessible in any browser." },
     ],
   },
