@@ -262,28 +262,60 @@ export default function IntegritySection({
         <div className="glass-panel rounded-2xl p-5 border border-amber-500/20 bg-amber-500/5 relative overflow-hidden">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] uppercase font-bold tracking-widest text-amber-600">Engine Mismatches</span>
-            <Activity size={18} className="text-amber-500" />
+            <div className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full shrink-0 ${
+                (stats?.mismatchCount ?? 0) > 0 ? "bg-amber-500 ring-2 ring-amber-200" : "bg-emerald-500"
+              }`} />
+              <Activity size={18} className="text-amber-500" />
+            </div>
           </div>
           <div className="text-3xl font-bold text-amber-700">{stats?.mismatchCount ?? 0}</div>
-          <p className="text-[11px] text-[var(--brand-muted)] mt-1">Stored date != engine date</p>
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-[11px] text-[var(--brand-muted)]">Stored date != engine date</p>
+            <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded font-mono ${
+              (stats?.mismatchCount ?? 0) > 0 ? "bg-amber-200 text-amber-900" : "bg-emerald-200 text-emerald-900"
+            }`}>
+              {(stats?.mismatchCount ?? 0) > 0 ? `⚡ ${stats?.mismatchCount} Discrepancies` : "✓ In Sync"}
+            </span>
+          </div>
         </div>
 
         <div className="glass-panel rounded-2xl p-5 border border-blue-500/20 bg-blue-500/5 relative overflow-hidden">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] uppercase font-bold tracking-widest text-blue-600">Missing Sources</span>
-            <ShieldAlert size={18} className="text-blue-500" />
+            <div className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full shrink-0 ${
+                (stats?.missingSourceCount ?? 0) > 0 ? "bg-rose-500 animate-pulse ring-2 ring-rose-200" : "bg-emerald-500"
+              }`} />
+              <ShieldAlert size={18} className="text-blue-500" />
+            </div>
           </div>
           <div className="text-3xl font-bold text-blue-700">{stats?.missingSourceCount ?? 0}</div>
-          <p className="text-[11px] text-[var(--brand-muted)] mt-1">Launch critical without citation</p>
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-[11px] text-[var(--brand-muted)]">Launch critical without citation</p>
+            <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded font-mono ${
+              (stats?.missingSourceCount ?? 0) > 0 ? "bg-rose-200 text-rose-900 animate-pulse" : "bg-emerald-200 text-emerald-900"
+            }`}>
+              {(stats?.missingSourceCount ?? 0) > 0 ? `⚠️ ${stats?.missingSourceCount} Uncited` : "✓ Cited"}
+            </span>
+          </div>
         </div>
 
         <div className="glass-panel rounded-2xl p-5 border border-emerald-500/20 bg-emerald-500/5 relative overflow-hidden">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-600">Resolved Archive</span>
-            <CheckCircle2 size={18} className="text-emerald-500" />
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <CheckCircle2 size={18} className="text-emerald-500" />
+            </div>
           </div>
           <div className="text-3xl font-bold text-emerald-700">{stats?.resolvedCount ?? 0}</div>
-          <p className="text-[11px] text-[var(--brand-muted)] mt-1">Historical verified findings</p>
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-[11px] text-[var(--brand-muted)]">Historical verified findings</p>
+            <span className="text-[9px] font-bold bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded font-mono">
+              ✓ Archive
+            </span>
+          </div>
         </div>
       </div>
 
@@ -306,21 +338,26 @@ export default function IntegritySection({
           <div className="flex items-center gap-1 bg-black/5 p-1 rounded-xl shrink-0">
             <button
               onClick={() => setStatusFilter('open')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${statusFilter === 'open' ? 'bg-white shadow-sm text-rose-700' : 'text-[var(--brand-muted)] hover:text-black'}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${statusFilter === 'open' ? 'bg-white shadow-sm text-rose-700' : 'text-[var(--brand-muted)] hover:text-black'}`}
             >
-              Open ({stats?.openCount ?? 0})
+              <span className={`w-2 h-2 rounded-full shrink-0 ${
+                (stats?.openCount ?? 0) > 0 ? 'bg-rose-500 animate-pulse ring-2 ring-rose-200' : 'bg-emerald-500'
+              }`} />
+              <span>Open ({stats?.openCount ?? 0})</span>
             </button>
             <button
               onClick={() => setStatusFilter('resolved')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${statusFilter === 'resolved' ? 'bg-white shadow-sm text-emerald-700' : 'text-[var(--brand-muted)] hover:text-black'}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${statusFilter === 'resolved' ? 'bg-white shadow-sm text-emerald-700' : 'text-[var(--brand-muted)] hover:text-black'}`}
             >
-              Resolved ({stats?.resolvedCount ?? 0})
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span>Resolved ({stats?.resolvedCount ?? 0})</span>
             </button>
             <button
               onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${statusFilter === 'all' ? 'bg-white shadow-sm text-black' : 'text-[var(--brand-muted)] hover:text-black'}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${statusFilter === 'all' ? 'bg-white shadow-sm text-black' : 'text-[var(--brand-muted)] hover:text-black'}`}
             >
-              All ({stats?.total ?? 0})
+              <span className="w-2 h-2 rounded-full bg-gray-400 shrink-0" />
+              <span>All ({stats?.total ?? 0})</span>
             </button>
           </div>
 

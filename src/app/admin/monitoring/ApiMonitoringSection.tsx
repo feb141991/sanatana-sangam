@@ -703,12 +703,15 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Healthy (200 OK)</span>
-            <CheckCircle2 size={15} className="text-emerald-600" />
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <CheckCircle2 size={15} className="text-emerald-600" />
+            </div>
           </div>
           <div className="text-xl font-bold text-emerald-700">{fleetSummary.healthy}</div>
           <div className="flex items-center justify-between text-[10px] text-emerald-600 font-medium">
             <span>Fast (&le; 200ms)</span>
-            <span className="text-[9px] font-bold bg-emerald-200/60 px-1 py-0.2 rounded">Click to Filter</span>
+            <span className="text-[9px] font-bold bg-emerald-200/80 px-1.5 py-0.2 rounded font-mono">✓ Normal</span>
           </div>
         </button>
 
@@ -723,12 +726,17 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Degraded / Slow</span>
-            <Clock size={15} className="text-amber-600" />
+            <div className="flex items-center gap-1.5">
+              <span className={"w-2 h-2 rounded-full shrink-0 " + (fleetSummary.degraded > 0 ? "bg-amber-500 ring-2 ring-amber-200" : "bg-emerald-500")} />
+              <Clock size={15} className="text-amber-600" />
+            </div>
           </div>
           <div className="text-xl font-bold text-amber-700">{fleetSummary.degraded}</div>
           <div className="flex items-center justify-between text-[10px] text-amber-600 font-medium">
             <span>&gt; 200ms latency</span>
-            <span className="text-[9px] font-bold bg-amber-200/60 px-1 py-0.2 rounded">Click to Filter</span>
+            <span className={"text-[9px] font-bold px-1.5 py-0.2 rounded font-mono " + (fleetSummary.degraded > 0 ? "bg-amber-200/90 text-amber-900" : "bg-emerald-200/80 text-emerald-900")}>
+              {fleetSummary.degraded > 0 ? `⚡ ${fleetSummary.degraded} Slow` : "✓ Optimal"}
+            </span>
           </div>
         </button>
 
@@ -738,17 +746,24 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
           className={"text-left p-3.5 rounded-2xl border shadow-sm space-y-1 transition-all cursor-pointer " + (
             statusFilter === "error"
               ? "bg-rose-100/80 border-rose-500 ring-2 ring-rose-500/20 shadow-md scale-[1.02]"
-              : "bg-rose-50/50 border-rose-200/60 hover:scale-[1.01] hover:bg-rose-50"
+              : fleetSummary.errors > 0
+              ? "bg-rose-50/60 border-rose-300 hover:scale-[1.01] hover:bg-rose-50"
+              : "bg-rose-50/30 border-rose-200/40 hover:scale-[1.01] hover:bg-rose-50/50"
           )}
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-rose-800 uppercase tracking-wider">Failing (4xx/5xx)</span>
-            <XCircle size={15} className="text-rose-600" />
+            <div className="flex items-center gap-1.5">
+              <span className={"w-2 h-2 rounded-full shrink-0 " + (fleetSummary.errors > 0 ? "bg-rose-500 animate-pulse ring-2 ring-rose-200" : "bg-emerald-500")} />
+              <XCircle size={15} className="text-rose-600" />
+            </div>
           </div>
           <div className="text-xl font-bold text-rose-700">{fleetSummary.errors}</div>
           <div className="flex items-center justify-between text-[10px] text-rose-600 font-medium">
             <span>{fleetSummary.errors === 0 ? "Zero errors" : "Needs triage"}</span>
-            <span className="text-[9px] font-bold bg-rose-200/60 px-1 py-0.2 rounded">Click to Filter</span>
+            <span className={"text-[9px] font-bold px-1.5 py-0.2 rounded font-mono " + (fleetSummary.errors > 0 ? "bg-rose-200 text-rose-900 animate-pulse" : "bg-emerald-200/80 text-emerald-900")}>
+              {fleetSummary.errors > 0 ? `⚠️ ${fleetSummary.errors} Failing` : "✓ 0 Errors"}
+            </span>
           </div>
         </button>
 

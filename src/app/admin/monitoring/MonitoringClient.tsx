@@ -296,6 +296,8 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
   }, [recentEvents, severityFilter, eventSearch]);
 
   const totalFallbacks = report.providers.reduce((acc: number, p: any) => acc + (p.fallbackCount || 0), 0);
+  const p1TelemetryCount = recentEvents.filter((e) => e.severity === "P1" || e.severity === "P0").length;
+  const pendingAiCount = aiReports.filter((r) => r.status === "pending").length;
 
   return (
     <div className="p-6 max-w-7xl mx-auto font-sans space-y-6 pb-24">
@@ -352,7 +354,13 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
               <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">AI Models & Wallet</span>
               <div className="flex items-center gap-2 mt-0.5">
                 <b className="text-lg font-serif text-gray-900">Sarvam & Gemini</b>
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                  totalFallbacks > 5
+                    ? "bg-rose-500 animate-pulse ring-2 ring-rose-200"
+                    : totalFallbacks > 0
+                    ? "bg-amber-500 ring-2 ring-amber-200"
+                    : "bg-emerald-500 shadow-sm shadow-emerald-500/50"
+                }`} />
               </div>
             </div>
             <p className="text-[10px] text-purple-800 font-medium">
@@ -391,7 +399,13 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
               <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">Postgres DB Pool</span>
               <div className="flex items-center gap-2 mt-0.5">
                 <b className="text-lg font-serif text-gray-900">{dbMetrics.latencyMs}ms Latency</b>
-                <span className={"w-2.5 h-2.5 rounded-full " + (dbMetrics.status === "healthy" ? "bg-emerald-500" : "bg-amber-500")} />
+                <span className={"w-2.5 h-2.5 rounded-full shrink-0 " + (
+                  dbMetrics.status === "error" || dbMetrics.latencyMs > 800
+                    ? "bg-rose-500 animate-pulse ring-2 ring-rose-200"
+                    : dbMetrics.status === "degraded" || dbMetrics.latencyMs > 250
+                    ? "bg-amber-500 ring-2 ring-amber-200"
+                    : "bg-emerald-500 shadow-sm shadow-emerald-500/50"
+                )} />
               </div>
             </div>
             <p className="text-[10px] text-blue-800 font-medium">PgBouncer active connection pool</p>
@@ -490,6 +504,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Globe size={14} />
           <span>API Endpoints & Health Probe ({API_CATALOG.length})</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
         </button>
 
         <button
@@ -502,6 +517,14 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Activity size={14} />
           <span>Server Telemetry & Logs ({filteredEvents.length})</span>
+          {p1TelemetryCount > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200 animate-pulse">
+              {p1TelemetryCount} P1
+            </span>
+          )}
+          <span className={`w-2 h-2 rounded-full shrink-0 ${
+            p1TelemetryCount > 0 ? "bg-rose-500 animate-pulse ring-2 ring-rose-200" : "bg-emerald-500"
+          }`} />
         </button>
 
         <button
@@ -514,6 +537,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Mail size={14} />
           <span>Email & Auth Deliverability</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
         </button>
 
         <button
@@ -526,6 +550,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Layers size={14} />
           <span>Candidate Resolver & Gate</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
         </button>
 
         <button
@@ -538,6 +563,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Bell size={14} />
           <span>Push Delivery Gateway</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
         </button>
 
         <button
@@ -550,6 +576,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Smartphone size={14} />
           <span>Client App Crashes & Sentry</span>
+          <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
         </button>
 
         <button
@@ -562,6 +589,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Cpu size={14} />
           <span>Native Startup Performance</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
         </button>
 
         <button
@@ -574,6 +602,14 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         >
           <Sparkles size={14} />
           <span>AI Chat & Content Reports ({aiReports.length})</span>
+          {pendingAiCount > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+              {pendingAiCount} Pending
+            </span>
+          )}
+          <span className={`w-2 h-2 rounded-full shrink-0 ${
+            pendingAiCount > 0 ? "bg-amber-500 ring-2 ring-amber-200" : "bg-emerald-500"
+          }`} />
         </button>
       </div>
 

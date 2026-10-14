@@ -442,10 +442,16 @@ export default function ObservanceContentStudioPage() {
             >
               <div className="flex items-center justify-between text-emerald-600">
                 <b className="text-3xl font-serif">{counts.published}</b>
-                <CheckCircle size={20} />
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <CheckCircle size={20} />
+                </div>
               </div>
               <p className="text-xs font-bold opacity-75 mt-1">Live & Published</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter published stories</p>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-[11px] text-gray-400">Click to filter</span>
+                <span className="text-[9px] font-bold bg-emerald-200/80 text-emerald-900 px-1.5 py-0.2 rounded font-mono">✓ Published</span>
+              </div>
             </button>
 
             <button
@@ -456,10 +462,16 @@ export default function ObservanceContentStudioPage() {
             >
               <div className="flex items-center justify-between text-blue-600">
                 <b className="text-3xl font-serif">{counts.approved}</b>
-                <ShieldCheck size={20} />
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                  <ShieldCheck size={20} />
+                </div>
               </div>
               <p className="text-xs font-bold opacity-75 mt-1">Approved & Ready</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter approved stories</p>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-[11px] text-gray-400">Click to filter</span>
+                <span className="text-[9px] font-bold bg-blue-200/80 text-blue-900 px-1.5 py-0.2 rounded font-mono">✓ Verified</span>
+              </div>
             </button>
 
             <button
@@ -470,10 +482,18 @@ export default function ObservanceContentStudioPage() {
             >
               <div className="flex items-center justify-between text-amber-600">
                 <b className="text-3xl font-serif">{counts.review}</b>
-                <Sparkles size={20} />
+                <div className="flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${counts.review > 0 ? "bg-amber-500 ring-2 ring-amber-200" : "bg-emerald-500"}`} />
+                  <Sparkles size={20} />
+                </div>
               </div>
               <p className="text-xs font-bold opacity-75 mt-1">Draft / In Review</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter drafts in review</p>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-[11px] text-gray-400">Click to filter</span>
+                <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded font-mono ${counts.review > 0 ? "bg-amber-200 text-amber-900" : "bg-emerald-200 text-emerald-900"}`}>
+                  {counts.review > 0 ? `⚡ ${counts.review} Review` : "✓ None"}
+                </span>
+              </div>
             </button>
 
             <button
@@ -484,10 +504,18 @@ export default function ObservanceContentStudioPage() {
             >
               <div className="flex items-center justify-between text-gray-500">
                 <b className="text-3xl font-serif">{counts.missing}</b>
-                <XCircle size={20} />
+                <div className="flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${counts.missing > 0 ? "bg-rose-500 animate-pulse ring-2 ring-rose-200" : "bg-gray-300"}`} />
+                  <XCircle size={20} />
+                </div>
               </div>
               <p className="text-xs font-bold opacity-75 mt-1">Missing Story</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter missing items</p>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-[11px] text-gray-400">Click to filter</span>
+                <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded font-mono ${counts.missing > 0 ? "bg-rose-200 text-rose-900 animate-pulse" : "bg-gray-200 text-gray-700"}`}>
+                  {counts.missing > 0 ? `⚠️ ${counts.missing} Missing` : "✓ 100% Covered"}
+                </span>
+              </div>
             </button>
           </section>
 

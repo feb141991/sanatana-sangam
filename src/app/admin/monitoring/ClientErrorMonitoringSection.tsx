@@ -193,21 +193,57 @@ export default function ClientErrorMonitoringSection({ targetFingerprint }: { ta
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
           {[
-            { key: "all", label: "All Fingerprints" },
-            { key: "recent", label: "Active in 1h" },
-            { key: "home", label: "Route /home" },
-            { key: "stale", label: "Stale Deployments" },
+            {
+              key: "all",
+              label: "All Fingerprints",
+              count: data?.distinct_fingerprints_24h ?? 0,
+              isCritical: (data?.total_24h ?? 0) > 0,
+            },
+            {
+              key: "recent",
+              label: "Active in 1h",
+              count: data?.total_1h ?? 0,
+              isCritical: (data?.total_1h ?? 0) > 0,
+            },
+            {
+              key: "home",
+              label: "Route /home",
+              count: data?.home_errors_1h ?? 0,
+              isCritical: (data?.home_errors_1h ?? 0) > 0,
+            },
+            {
+              key: "stale",
+              label: "Stale Deployments",
+              count: data?.stale_deploy_mismatches_24h ?? 0,
+              isWarning: (data?.stale_deploy_mismatches_24h ?? 0) > 0,
+            },
           ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setFilterType(tab.key)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
                 filterType === tab.key
                   ? "bg-[var(--premium-gold,#C5A059)] text-white shadow-sm"
                   : "bg-black/5 text-[var(--brand-muted)] hover:bg-black/10"
               }`}
             >
-              {tab.label}
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                tab.isCritical
+                  ? "bg-rose-500 animate-pulse ring-1 ring-rose-200"
+                  : tab.isWarning
+                  ? "bg-amber-500"
+                  : "bg-emerald-500"
+              }`} />
+              <span>{tab.label}</span>
+              <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
+                filterType === tab.key
+                  ? "bg-white/20 text-white"
+                  : tab.isCritical
+                  ? "bg-rose-100 text-rose-800"
+                  : "bg-black/5 text-gray-600"
+              }`}>
+                {tab.count}
+              </span>
             </button>
           ))}
         </div>

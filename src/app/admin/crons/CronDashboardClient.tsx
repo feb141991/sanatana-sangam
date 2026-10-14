@@ -521,13 +521,18 @@ export default function CronDashboardClient() {
               )}
             >
               <div className="flex items-center justify-between text-amber-800">
-                <span className="text-[11px] font-bold uppercase tracking-wider">🟡 Pending Queue</span>
-                <Clock size={15} />
+                <span className="text-[11px] font-bold uppercase tracking-wider">Pending Queue</span>
+                <div className="flex items-center gap-1.5">
+                  <span className={"w-2 h-2 rounded-full shrink-0 " + (queue.pending > 0 ? "bg-amber-500 ring-2 ring-amber-200" : "bg-emerald-500")} />
+                  <Clock size={15} />
+                </div>
               </div>
               <div className="text-2xl font-bold font-serif text-amber-900 mt-1">{queue.pending}</div>
               <div className="flex items-center justify-between mt-1">
                 <p className="text-[10px] text-amber-700">Enqueued for send</p>
-                <span className="text-[9px] font-bold text-amber-800 bg-amber-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+                <span className="text-[9px] font-bold text-amber-900 bg-amber-200/80 px-1.5 py-0.2 rounded font-mono">
+                  {queue.pending > 0 ? `⚡ ${queue.pending} Queued` : "✓ Drained"}
+                </span>
               </div>
             </button>
 
@@ -543,13 +548,18 @@ export default function CronDashboardClient() {
               )}
             >
               <div className="flex items-center justify-between text-blue-800">
-                <span className="text-[11px] font-bold uppercase tracking-wider">🔵 Active Claims</span>
-                <Activity size={15} />
+                <span className="text-[11px] font-bold uppercase tracking-wider">Active Claims</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                  <Activity size={15} />
+                </div>
               </div>
               <div className="text-2xl font-bold font-serif text-blue-900 mt-1">{queue.claimed}</div>
               <div className="flex items-center justify-between mt-1">
                 <p className="text-[10px] text-blue-700">Claimed by dispatch</p>
-                <span className="text-[9px] font-bold text-blue-800 bg-blue-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+                <span className="text-[9px] font-bold text-blue-900 bg-blue-200/80 px-1.5 py-0.2 rounded font-mono">
+                  {queue.claimed > 0 ? `⚡ ${queue.claimed} Active` : "Idle"}
+                </span>
               </div>
             </button>
 
@@ -565,13 +575,18 @@ export default function CronDashboardClient() {
               )}
             >
               <div className="flex items-center justify-between text-emerald-800">
-                <span className="text-[11px] font-bold uppercase tracking-wider">🟢 Dispatched (Sent)</span>
-                <CheckCircle size={15} />
+                <span className="text-[11px] font-bold uppercase tracking-wider">Dispatched (Sent)</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <CheckCircle size={15} />
+                </div>
               </div>
               <div className="text-2xl font-bold font-serif text-emerald-900 mt-1">{queue.sent}</div>
               <div className="flex items-center justify-between mt-1">
                 <p className="text-[10px] text-emerald-700">Delivered to APNs/FCM</p>
-                <span className="text-[9px] font-bold text-emerald-800 bg-emerald-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+                <span className="text-[9px] font-bold text-emerald-900 bg-emerald-200/80 px-1.5 py-0.2 rounded font-mono">
+                  ✓ Healthy
+                </span>
               </div>
             </button>
 
@@ -583,17 +598,24 @@ export default function CronDashboardClient() {
               className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
                 queueFilter === "failed"
                   ? "bg-rose-100/80 border-rose-500 ring-2 ring-rose-500/20 shadow-sm "
-                  : "bg-rose-50/60 border-rose-200/80 hover:bg-rose-100/60 "
+                  : queue.failed > 0
+                  ? "bg-rose-50/60 border-rose-300 hover:bg-rose-100/60 "
+                  : "bg-rose-50/30 border-rose-200/60 hover:bg-rose-100/60 "
               )}
             >
               <div className="flex items-center justify-between text-rose-800">
-                <span className="text-[11px] font-bold uppercase tracking-wider">🔴 Dead / Failed</span>
-                <XCircle size={15} />
+                <span className="text-[11px] font-bold uppercase tracking-wider">Dead / Failed</span>
+                <div className="flex items-center gap-1.5">
+                  <span className={"w-2 h-2 rounded-full shrink-0 " + (queue.failed > 0 ? "bg-rose-500 animate-pulse ring-2 ring-rose-200" : "bg-gray-300")} />
+                  <XCircle size={15} />
+                </div>
               </div>
               <div className="text-2xl font-bold font-serif text-rose-900 mt-1">{queue.failed}</div>
               <div className="flex items-center justify-between mt-1">
                 <p className="text-[10px] text-rose-700">Failed / pruned tokens</p>
-                <span className="text-[9px] font-bold text-rose-800 bg-rose-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+                <span className={"text-[9px] font-bold px-1.5 py-0.2 rounded font-mono " + (queue.failed > 0 ? "bg-rose-200 text-rose-900 animate-pulse" : "bg-gray-200/60 text-gray-700")}>
+                  {queue.failed > 0 ? `⚠️ ${queue.failed} Dead` : "0 Failures"}
+                </span>
               </div>
             </button>
           </div>
