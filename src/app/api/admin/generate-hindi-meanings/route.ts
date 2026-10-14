@@ -21,9 +21,12 @@ export async function POST(req: NextRequest) {
     return admin.response;
   }
 
-  const { entries } = await req.json() as { entries: { id: string; meaning: string }[] };
-  if (!entries?.length) {
-    return NextResponse.json({ error: 'No entries provided' }, { status: 400 });
+  const body = await req.json().catch(() => null);
+  const entries: { id: string; meaning: string }[] | null = 
+    Array.isArray(body?.entries) ? body.entries : Array.isArray(body) ? body : null;
+
+  if (!entries || entries.length === 0) {
+    return NextResponse.json({ error: 'No entries provided or entries is not an array' }, { status: 400 });
   }
 
   const startTime = Date.now();
@@ -36,7 +39,7 @@ Respond with ONLY a JSON array — no extra text, no markdown fences:
 Entries:
 ${JSON.stringify(entries.map((entry) => ({ id: entry.id, meaning_en: entry.meaning })), null, 2)}`;
 
-  let results: { id: string; meaning_hi: string }[];
+  let rows: { entry_id: string; meaning_hi: string }[] = [];
   let provider = '';
   let model = '';
 
@@ -55,13 +58,43 @@ ${JSON.stringify(entries.map((entry) => ({ id: entry.id, meaning_en: entry.meani
     provider = result.provider ?? '';
     model = result.modelUsed ?? '';
     const cleaned = result.text.replace(/```json\n?|\n?```/g, '').trim();
-    results = JSON.parse(cleaned);
-  } catch (err) {
-    emitError('ai', err, 'P2', { route: '/api/admin/generate-hindi-meanings', latency_ms: Date.now() - startTime });
-    return NextResponse.json({ error: 'Failed to generate or parse provider response' }, { status: 500 });
-  }
+    const parsed = JSON.parse(cleaned);
 
-  const rows = results.map((entry) => ({ entry_id: entry.id, meaning_hi: entry.meaning_hi }));
+    let rawList: any[] = [];
+    if (Array.isArray(parsed)) {
+      rawList = parsed;
+    } else if (parsed && typeof parsed === 'object') {
+      // Handles LLM returning { results: [...] }, { entries: [...] }, { translations: [...] }, { data: [...] }
+      const arrayKey = Object.keys(parsed).find((k) => Array.isArray(parsed[k]));
+      if (arrayKey) {
+        rawList = parsed[arrayKey];
+      } else if (parsed.id && (parsed.meaning_hi || parsed.hindi || parsed.meaning)) {
+        rawList = [parsed];
+      }
+    }
+
+    if (!Array.isArray(rawList) || rawList.length === 0) {
+      throw new Error(`AI model returned a non-array response: ${cleaned.slice(0, 120)}`);
+    }
+
+    rows = rawList
+      .filter((entry) => entry && typeof entry === 'object' && (entry.id || entry.entry_id))
+      .map((entry) => ({
+        entry_id: String(entry.id || entry.entry_id),
+        meaning_hi: String(entry.meaning_hi || entry.hindi || entry.meaning || entry.text || '').trim(),
+      }))
+      .filter((row) => row.meaning_hi.length > 0);
+
+    if (rows.length === 0) {
+      throw new Error('No valid translated rows could be extracted from provider output');
+    }
+  } catch (err: any) {
+    emitError('ai', err, 'P2', { route: '/api/admin/generate-hindi-meanings', latency_ms: Date.now() - startTime });
+    return NextResponse.json(
+      { error: `Failed to generate or parse provider response: ${err.message || String(err)}` },
+      { status: 500 }
+    );
+  }
 
   const { error: upsertErr } = await admin.supabase
     .from('hindi_meanings')
@@ -86,5 +119,8 @@ ${JSON.stringify(entries.map((entry) => ({ id: entry.id, meaning_en: entry.meani
     },
   });
 
-  return NextResponse.json({ saved: rows.length, results });
+  return NextResponse.json({
+    saved: rows.length,
+    results: rows.map((r) => ({ id: r.entry_id, meaning_hi: r.meaning_hi })),
+  });
 }

@@ -691,6 +691,11 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         <EmailMonitoringSection />
       )}
 
+      {/* ─── TAB: CANDIDATE RESOLVER & GATE ─────────────────────────────────── */}
+      {activeTab === "resolver" && (
+        <NotificationResolverSection />
+      )}
+
       {/* ─── TAB 2: PUSH NOTIFICATIONS GATEWAY ──────────────────────────────── */}
       {activeTab === "push" && (
         <div className="space-y-4">

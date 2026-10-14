@@ -68,6 +68,24 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     group: "work_queues",
     iconName: "ShieldCheck",
   },
+  {
+    id: "calendar-dates",
+    path: "/admin/calendar-dates",
+    title: "Official Calendar Date Register",
+    shortTitle: "Calendar Dates",
+    description: "Canonical observance dates, status register & astronomical review",
+    group: "work_queues",
+    iconName: "Calendar",
+  },
+  {
+    id: "calendar-evidence",
+    path: "/admin/calendar-evidence",
+    title: "Calendar Evidence & Claim Audit",
+    shortTitle: "Calendar Evidence",
+    description: "Official calendar claims, fixture discrepancies & source comparison",
+    group: "work_queues",
+    iconName: "FileCheck",
+  },
   // Operations
   {
     id: "monitoring",
@@ -180,6 +198,33 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     description: "Scriptural verse translation & linguistic curation",
     group: "content_community",
     iconName: "Languages",
+  },
+  {
+    id: "festival-quiz",
+    path: "/admin/festival-quiz",
+    title: "Festival Quiz Studio",
+    shortTitle: "Festival Quiz",
+    description: "Seasonal quiz questions, multilingual options & badges",
+    group: "content_community",
+    iconName: "Trophy",
+  },
+  {
+    id: "mandali-prompts",
+    path: "/admin/mandali-prompts",
+    title: "Mandali Discussion Prompts",
+    shortTitle: "Mandali Prompts",
+    description: "Daily spiritual discussion prompts & observance tags",
+    group: "content_community",
+    iconName: "MessageCircle",
+  },
+  {
+    id: "marketing-social",
+    path: "/admin/marketing/social",
+    title: "Social Media Pipeline",
+    shortTitle: "Social Pipeline",
+    description: "Instagram & social media automation pipeline, review queue & assets",
+    group: "content_community",
+    iconName: "Share2",
   },
   // Reports & Settings
   {

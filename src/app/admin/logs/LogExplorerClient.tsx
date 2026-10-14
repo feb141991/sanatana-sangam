@@ -227,37 +227,61 @@ export function LogExplorerClient() {
               const Icon = meta.icon;
               const isSelected = filters.source === srcKey;
 
+              const isCritical = srcInfo.health === "critical" || (srcInfo.criticalCount != null && srcInfo.criticalCount > 0);
+              const isWarning = !isCritical && (srcInfo.health === "warning" || (srcInfo.warningCount != null && srcInfo.warningCount > 0));
+              const isEmpty = srcInfo.count === 0 || srcInfo.status === "empty";
+              const isDegraded = srcInfo.health === "degraded" || srcInfo.status === "failed";
+
               return (
                 <button
                   key={srcKey}
                   onClick={() => updateFilters({ source: isSelected ? "all" : (srcKey as LogEventSource) })}
-                  title={`Click to filter by ${meta.label}`}
-                  className={`text-left p-3 rounded-xl border transition-all cursor-pointer space-y-1.5 ${
+                  title={`Click to filter live evidence feed by ${meta.label}`}
+                  className={`text-left p-3 rounded-xl border transition-all cursor-pointer space-y-1.5 relative ${
                     isSelected
                       ? "bg-amber-50/80 border-amber-600 ring-2 ring-amber-500/30 shadow-md scale-[1.02]"
-                      : srcInfo.status === "available"
-                      ? "bg-white border-black/5 hover:border-amber-400 hover:bg-amber-50/20 shadow-2xs"
-                      : "bg-gray-50/80 border-gray-200 hover:border-gray-300 text-gray-700"
+                      : isCritical
+                      ? "bg-rose-50/40 border-rose-300 hover:border-rose-400 hover:bg-rose-50/80 shadow-xs"
+                      : isWarning
+                      ? "bg-amber-50/40 border-amber-300 hover:border-amber-400 hover:bg-amber-50 shadow-xs"
+                      : isEmpty
+                      ? "bg-gray-50/60 border-gray-200 hover:border-gray-300 text-gray-500"
+                      : "bg-white border-black/5 hover:border-amber-400 hover:bg-amber-50/20 shadow-2xs"
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-1">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <Icon size={14} className={isSelected ? "text-amber-800" : "text-gray-500"} />
-                      <span className={`font-bold text-[11px] truncate ${isSelected ? "text-amber-950 font-serif" : "text-gray-900"}`}>
+                      <Icon size={14} className={isSelected ? "text-amber-800" : isCritical ? "text-rose-600" : isWarning ? "text-amber-600" : "text-gray-500"} />
+                      <span className={`font-bold text-[11px] truncate ${isSelected ? "text-amber-950 font-serif" : isCritical ? "text-rose-950 font-semibold" : "text-gray-900"}`}>
                         {meta.label}
                       </span>
                     </div>
-                    <span
-                      className={`w-2 h-2 rounded-full shrink-0 ${
-                        srcInfo.status === "available"
-                          ? "bg-emerald-500"
-                          : srcInfo.status === "empty"
-                          ? "bg-gray-300"
-                          : srcInfo.status === "unavailable"
-                          ? "bg-amber-500"
-                          : "bg-rose-500"
-                      }`}
-                    />
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {isCritical && (
+                        <span className="px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200 animate-pulse">
+                          {srcInfo.criticalCount} Crit
+                        </span>
+                      )}
+                      {isWarning && (
+                        <span className="px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+                          {srcInfo.warningCount} Warn
+                        </span>
+                      )}
+                      <span
+                        className={`w-2 h-2 rounded-full shrink-0 ${
+                          isCritical
+                            ? "bg-rose-500 animate-pulse ring-2 ring-rose-200"
+                            : isWarning
+                            ? "bg-amber-500 ring-2 ring-amber-200"
+                            : isDegraded
+                            ? "bg-rose-600"
+                            : isEmpty
+                            ? "bg-gray-300"
+                            : "bg-emerald-500"
+                        }`}
+                      />
+                    </div>
                   </div>
 
                   <p className="text-[10px] text-gray-500 leading-tight line-clamp-2">
@@ -265,14 +289,33 @@ export function LogExplorerClient() {
                   </p>
 
                   <div className="flex items-center justify-between text-[10px] font-mono pt-1 border-t border-black/5">
-                    <span className="capitalize text-gray-400">{srcInfo.status}</span>
-                    <span className={`font-bold ${isSelected ? "text-amber-900" : "text-gray-700"}`}>
+                    <span className={`font-bold ${
+                      isCritical
+                        ? "text-rose-700"
+                        : isWarning
+                        ? "text-amber-700"
+                        : isDegraded
+                        ? "text-rose-600"
+                        : isEmpty
+                        ? "text-gray-400"
+                        : "text-emerald-700"
+                    }`}>
+                      {isCritical
+                        ? `⚠️ ${srcInfo.criticalCount} Critical`
+                        : isWarning
+                        ? `⚡ ${srcInfo.warningCount} Warning`
+                        : isDegraded
+                        ? "Degraded"
+                        : isEmpty
+                        ? "No Events"
+                        : "✓ Normal"}
+                    </span>
+                    <span className={`font-bold ${isSelected ? "text-amber-900" : isCritical ? "text-rose-900" : "text-gray-700"}`}>
                       {srcInfo.count} events
                     </span>
                   </div>
                 </button>
-              );
-            })}
+              );            })}
           </div>
         </div>
       )}

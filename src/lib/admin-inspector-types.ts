@@ -15,7 +15,7 @@ export interface SystemAlertRecord {
   id: string;
   title: string;
   summary: string;
-  severity: "high" | "medium" | "low";
+  severity: "critical" | "high" | "medium" | "low";
   timestamp: string;
   href?: string;
   serviceCategory?: string;

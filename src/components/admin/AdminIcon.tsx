@@ -22,6 +22,10 @@ import {
   X,
   LogOut,
   ChevronRight,
+  Trophy,
+  MessageCircle,
+  FileCheck,
+  Share2,
   type LucideProps,
 } from "lucide-react";
 
@@ -47,6 +51,10 @@ const ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
   X,
   LogOut,
   ChevronRight,
+  Trophy,
+  MessageCircle,
+  FileCheck,
+  Share2,
 };
 
 export function AdminIcon({ name, size = 16, className = "" }: { name: string; size?: number; className?: string }) {

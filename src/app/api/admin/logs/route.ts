@@ -47,43 +47,81 @@ export async function GET(request: NextRequest) {
   let isAnySourceDegraded = false;
 
   const sourcesStatus: Record<LogEventSource, LogSourceStatus> = {
-    monitoring: { status: "available", count: 0 },
-    client_errors: { status: "available", count: 0 },
-    crons: { status: "available", count: 0 },
-    notifications: { status: "available", count: 0 },
-    golden_fixtures: { status: "available", count: 0 },
+    monitoring: { status: "available", health: "healthy", count: 0, criticalCount: 0, warningCount: 0 },
+    client_errors: { status: "available", health: "healthy", count: 0, criticalCount: 0, warningCount: 0 },
+    crons: { status: "available", health: "healthy", count: 0, criticalCount: 0, warningCount: 0 },
+    notifications: { status: "available", health: "healthy", count: 0, criticalCount: 0, warningCount: 0 },
+    golden_fixtures: { status: "available", health: "healthy", count: 0, criticalCount: 0, warningCount: 0 },
   };
 
+  // Run all database queries concurrently so monitoring indicators are always fresh across all 5 streams
+  const [clientErrorsRes, monitoringRes, notificationsRes, goldenFixturesRes] = await Promise.all([
+    supabase
+      .from("client_error_events")
+      .select("*")
+      .gte("created_at", startDate)
+      .lte("created_at", cursorTimestamp || endDate)
+      .order("created_at", { ascending: false })
+      .limit(fetchLimit),
+    supabase
+      .from("monitoring_events")
+      .select("*")
+      .gte("timestamp", startDate)
+      .lte("timestamp", cursorTimestamp || endDate)
+      .order("timestamp", { ascending: false })
+      .limit(fetchLimit),
+    supabase
+      .from("notification_dispatch_events")
+      .select("*")
+      .gte("created_at", startDate)
+      .lte("created_at", cursorTimestamp || endDate)
+      .order("created_at", { ascending: false })
+      .limit(fetchLimit),
+    supabase
+      .from("golden_fixture_audit_logs")
+      .select("*")
+      .gte("created_at", startDate)
+      .lte("created_at", cursorTimestamp || endDate)
+      .order("created_at", { ascending: false })
+      .limit(fetchLimit),
+  ]);
+
   // ── 1. Client Error Events ──
-  if (filters.source === "all" || filters.source === "client_errors") {
-    try {
-      let query = supabase
-        .from("client_error_events")
-        .select("*")
-        .gte("created_at", startDate)
-        .lte("created_at", cursorTimestamp || endDate)
-        .order("created_at", { ascending: false })
-        .limit(fetchLimit);
+  {
+    const { data, error } = clientErrorsRes;
+    if (error) {
+      if (error.code === "42P01") {
+        sourcesStatus.client_errors = { status: "unavailable", health: "degraded", error: "Table client_error_events not present in schema", count: 0, criticalCount: 0, warningCount: 0 };
+      } else {
+        sourcesStatus.client_errors = { status: "failed", health: "degraded", error: error.message, count: 0, criticalCount: 0, warningCount: 0 };
+        isAnySourceDegraded = true;
+      }
+    } else if (data && data.length > 0) {
+      let critCount = 0;
+      let warnCount = 0;
+      const filteredRows: any[] = [];
 
-      if (filters.route) query = query.eq("route", filters.route);
-      if (filters.fingerprint) query = query.eq("fingerprint", filters.fingerprint);
-      if (filters.deploymentSha) query = query.eq("client_release_sha", filters.deploymentSha);
+      for (const row of data as any[]) {
+        const isCrit = row.route === "/home" || /TypeError|SyntaxError|Unhandled/i.test(row.error_name);
+        if (isCrit) critCount++;
+        else warnCount++;
 
-      const { data, error } = await query;
+        if (filters.route && row.route !== filters.route) continue;
+        if (filters.fingerprint && row.fingerprint !== filters.fingerprint) continue;
+        if (filters.deploymentSha && row.client_release_sha !== filters.deploymentSha) continue;
 
-      if (error) {
-        if (error.code === "42P01") {
-          sourcesStatus.client_errors = { status: "unavailable", error: "Table client_error_events not present in schema", count: 0 };
-        } else {
-          sourcesStatus.client_errors = { status: "failed", error: error.message, count: 0 };
-          isAnySourceDegraded = true;
-        }
-      } else if (data && data.length > 0) {
-        sourcesStatus.client_errors.count = data.length;
-        for (const row of data as any[]) {
-          const isCrit = row.route === "/home" || /TypeError|SyntaxError|Unhandled/i.test(row.error_name);
+        filteredRows.push({ row, isCrit });
+      }
+
+      sourcesStatus.client_errors.count = data.length;
+      sourcesStatus.client_errors.criticalCount = critCount;
+      sourcesStatus.client_errors.warningCount = warnCount;
+      sourcesStatus.client_errors.status = "available";
+      sourcesStatus.client_errors.health = critCount > 0 ? "critical" : warnCount > 0 ? "warning" : "healthy";
+
+      if (filters.source === "all" || filters.source === "client_errors") {
+        for (const { row, isCrit } of filteredRows) {
           const severity = isCrit ? "critical" : "warning";
-
           if (filters.severity !== "all" && filters.severity !== severity) continue;
 
           allEvents.push({
@@ -109,55 +147,54 @@ export async function GET(request: NextRequest) {
             }) as Record<string, unknown>,
           });
         }
-      } else {
-        sourcesStatus.client_errors.status = "empty";
       }
-    } catch (err: any) {
-      sourcesStatus.client_errors = { status: "failed", error: err?.message || String(err), count: 0 };
-      isAnySourceDegraded = true;
+    } else {
+      sourcesStatus.client_errors.status = "empty";
+      sourcesStatus.client_errors.health = "empty";
+      sourcesStatus.client_errors.count = 0;
+      sourcesStatus.client_errors.criticalCount = 0;
+      sourcesStatus.client_errors.warningCount = 0;
     }
   }
 
   // ── 2. Monitoring Events (Supabase table + memory sink fallback) ──
-  if (filters.source === "all" || filters.source === "monitoring") {
-    try {
-      let query = supabase
-        .from("monitoring_events")
-        .select("*")
-        .gte("timestamp", startDate)
-        .lte("timestamp", cursorTimestamp || endDate)
-        .order("timestamp", { ascending: false })
-        .limit(fetchLimit);
+  {
+    const { data, error } = monitoringRes;
+    let eventsList = (data as any[]) || [];
 
-      if (filters.route) query = query.eq("route", filters.route);
-      if (filters.requestId) query = query.eq("request_id", filters.requestId);
-
-      const { data, error } = await query;
-
-      let eventsList = (data as any[]) || [];
-
-      if (error) {
-        // Fallback to in-memory _eventSink buffer
-        const memEvents = _eventSink.filter((e) => {
-          if (filters.route && e.route !== filters.route) return false;
-          if (filters.requestId && e.request_id !== filters.requestId) return false;
-          if (cursorTimestamp && e.timestamp > cursorTimestamp) return false;
-          if (e.timestamp < startDate || e.timestamp > endDate) return false;
-          return true;
-        });
-        eventsList = memEvents;
-        sourcesStatus.monitoring = {
-          status: memEvents.length > 0 ? "available" : "empty",
-          count: memEvents.length,
-          error: error.code === "42P01" ? "Durable table not found (serving memory sink)" : error.message,
-        };
-      } else {
-        sourcesStatus.monitoring.count = eventsList.length;
-        if (eventsList.length === 0) sourcesStatus.monitoring.status = "empty";
+    if (error) {
+      const memEvents = _eventSink.filter((e) => {
+        if (cursorTimestamp && e.timestamp > cursorTimestamp) return false;
+        if (e.timestamp < startDate || e.timestamp > endDate) return false;
+        return true;
+      });
+      eventsList = memEvents;
+      sourcesStatus.monitoring = {
+        status: memEvents.length > 0 ? "available" : "empty",
+        health: "healthy",
+        count: memEvents.length,
+        criticalCount: 0,
+        warningCount: 0,
+        error: error.code === "42P01" ? "Durable table not found (serving memory sink)" : error.message,
+      };
+    } else {
+      sourcesStatus.monitoring.count = eventsList.length;
+      if (eventsList.length === 0) {
+        sourcesStatus.monitoring.status = "empty";
+        sourcesStatus.monitoring.health = "empty";
       }
+    }
 
-      for (const ev of eventsList) {
-        const sev = (ev.severity === "P0" || ev.severity === "P1") ? "critical" : ev.severity === "P2" ? "warning" : "info";
+    let monCrit = 0;
+    let monWarn = 0;
+    for (const ev of eventsList) {
+      const sev = (ev.severity === "P0" || ev.severity === "P1") ? "critical" : ev.severity === "P2" ? "warning" : "info";
+      if (sev === "critical") monCrit++;
+      else if (sev === "warning") monWarn++;
+
+      if (filters.source === "all" || filters.source === "monitoring") {
+        if (filters.route && ev.route !== filters.route) continue;
+        if (filters.requestId && ev.request_id !== filters.requestId) continue;
         if (filters.severity !== "all" && filters.severity !== sev) continue;
 
         let displayTitle = "";
@@ -235,27 +272,36 @@ export async function GET(request: NextRequest) {
           }) as Record<string, unknown>,
         });
       }
-    } catch (err: any) {
-      sourcesStatus.monitoring = { status: "failed", error: err?.message || String(err), count: 0 };
-      isAnySourceDegraded = true;
+    }
+
+    sourcesStatus.monitoring.criticalCount = monCrit;
+    sourcesStatus.monitoring.warningCount = monWarn;
+    if (eventsList.length > 0) {
+      sourcesStatus.monitoring.health = monCrit > 0 ? "critical" : monWarn > 0 ? "warning" : "healthy";
+      sourcesStatus.monitoring.status = "available";
     }
   }
 
   // ── 3. Cron Telemetry Events ──
-  if (filters.source === "all" || filters.source === "crons") {
-    try {
-      const cronEvents = _eventSink.filter((e) => e.domain === "cron");
-      sourcesStatus.crons.count = cronEvents.length;
-      if (cronEvents.length === 0) {
-        sourcesStatus.crons.status = "empty";
-      }
+  {
+    const cronEvents = _eventSink.filter((e) => {
+      if (e.domain !== "cron") return false;
+      if (cursorTimestamp && e.timestamp > cursorTimestamp) return false;
+      if (e.timestamp < startDate || e.timestamp > endDate) return false;
+      return true;
+    });
 
-      for (const ce of cronEvents) {
+    sourcesStatus.crons.count = cronEvents.length;
+    let cronCrit = 0;
+    let cronWarn = 0;
+
+    for (const ce of cronEvents) {
+      const sev = (ce.severity === "P0" || ce.severity === "P1") ? "critical" : ce.severity === "P2" ? "warning" : "info";
+      if (sev === "critical") cronCrit++;
+      else if (sev === "warning") cronWarn++;
+
+      if (filters.source === "all" || filters.source === "crons") {
         if (filters.cronJob && !ce.route?.includes(filters.cronJob)) continue;
-        if (cursorTimestamp && ce.timestamp > cursorTimestamp) continue;
-        if (ce.timestamp < startDate || ce.timestamp > endDate) continue;
-
-        const sev = (ce.severity === "P0" || ce.severity === "P1") ? "critical" : ce.severity === "P2" ? "warning" : "info";
         if (filters.severity !== "all" && filters.severity !== sev) continue;
 
         const cronDef = CRON_CATALOGUE.find((c) => c.route === ce.route);
@@ -280,38 +326,42 @@ export async function GET(request: NextRequest) {
           }) as Record<string, unknown>,
         });
       }
-    } catch (err: any) {
-      sourcesStatus.crons = { status: "failed", error: err?.message || String(err), count: 0 };
+    }
+
+    sourcesStatus.crons.criticalCount = cronCrit;
+    sourcesStatus.crons.warningCount = cronWarn;
+    if (cronEvents.length === 0) {
+      sourcesStatus.crons.status = "empty";
+      sourcesStatus.crons.health = "empty";
+    } else {
+      sourcesStatus.crons.status = "available";
+      sourcesStatus.crons.health = cronCrit > 0 ? "critical" : cronWarn > 0 ? "warning" : "healthy";
     }
   }
 
   // ── 4. Notification Dispatch Events ──
-  if (filters.source === "all" || filters.source === "notifications") {
-    try {
-      let query = supabase
-        .from("notification_dispatch_events")
-        .select("*")
-        .gte("created_at", startDate)
-        .lte("created_at", cursorTimestamp || endDate)
-        .order("created_at", { ascending: false })
-        .limit(fetchLimit);
+  {
+    const { data, error } = notificationsRes;
+    if (error) {
+      if (error.code === "42P01") {
+        sourcesStatus.notifications = { status: "unavailable", health: "degraded", error: "Table notification_dispatch_events not present in schema", count: 0, criticalCount: 0, warningCount: 0 };
+      } else {
+        sourcesStatus.notifications = { status: "failed", health: "degraded", error: error.message, count: 0, criticalCount: 0, warningCount: 0 };
+        isAnySourceDegraded = true;
+      }
+    } else if (data && data.length > 0) {
+      sourcesStatus.notifications.count = data.length;
+      let notifCrit = 0;
+      let notifWarn = 0;
 
-      if (filters.userId) query = query.eq("user_id", filters.userId);
+      for (const row of data as any[]) {
+        const sev: "critical" | "warning" | "info" =
+          row.decision === "failed" ? "critical" : row.decision === "skipped" ? "warning" : "info";
+        if (sev === "critical") notifCrit++;
+        else if (sev === "warning") notifWarn++;
 
-      const { data, error } = await query;
-
-      if (error) {
-        if (error.code === "42P01") {
-          sourcesStatus.notifications = { status: "unavailable", error: "Table notification_dispatch_events not present in schema", count: 0 };
-        } else {
-          sourcesStatus.notifications = { status: "failed", error: error.message, count: 0 };
-          isAnySourceDegraded = true;
-        }
-      } else if (data && data.length > 0) {
-        sourcesStatus.notifications.count = data.length;
-        for (const row of data as any[]) {
-          const sev: "critical" | "warning" | "info" =
-            row.decision === "failed" ? "critical" : row.decision === "skipped" ? "warning" : "info";
+        if (filters.source === "all" || filters.source === "notifications") {
+          if (filters.userId && row.user_id !== filters.userId) continue;
           if (filters.severity !== "all" && filters.severity !== sev) continue;
 
           allEvents.push({
@@ -333,38 +383,40 @@ export async function GET(request: NextRequest) {
             }) as Record<string, unknown>,
           });
         }
-      } else {
-        sourcesStatus.notifications.status = "empty";
       }
-    } catch (err: any) {
-      sourcesStatus.notifications = { status: "failed", error: err?.message || String(err), count: 0 };
+
+      sourcesStatus.notifications.criticalCount = notifCrit;
+      sourcesStatus.notifications.warningCount = notifWarn;
+      sourcesStatus.notifications.status = "available";
+      sourcesStatus.notifications.health = notifCrit > 0 ? "critical" : notifWarn > 0 ? "warning" : "healthy";
+    } else {
+      sourcesStatus.notifications.status = "empty";
+      sourcesStatus.notifications.health = "empty";
+      sourcesStatus.notifications.count = 0;
+      sourcesStatus.notifications.criticalCount = 0;
+      sourcesStatus.notifications.warningCount = 0;
     }
   }
 
   // ── 5. Golden Fixture Audit Logs ──
-  if (filters.source === "all" || filters.source === "golden_fixtures") {
-    try {
-      let query = supabase
-        .from("golden_fixture_audit_logs")
-        .select("*")
-        .gte("created_at", startDate)
-        .lte("created_at", cursorTimestamp || endDate)
-        .order("created_at", { ascending: false })
-        .limit(fetchLimit);
+  {
+    const { data, error } = goldenFixturesRes;
+    if (error) {
+      if (error.code === "42P01") {
+        sourcesStatus.golden_fixtures = { status: "unavailable", health: "degraded", error: "Table golden_fixture_audit_logs not present in schema", count: 0, criticalCount: 0, warningCount: 0 };
+      } else {
+        sourcesStatus.golden_fixtures = { status: "failed", health: "degraded", error: error.message, count: 0, criticalCount: 0, warningCount: 0 };
+      }
+    } else if (data && data.length > 0) {
+      sourcesStatus.golden_fixtures.count = data.length;
+      let fixWarn = 0;
 
-      const { data, error } = await query;
+      for (const row of data as any[]) {
+        const sev: "critical" | "warning" | "info" =
+          row.action === "rejected" || row.action === "withheld" ? "warning" : "info";
+        if (sev === "warning") fixWarn++;
 
-      if (error) {
-        if (error.code === "42P01") {
-          sourcesStatus.golden_fixtures = { status: "unavailable", error: "Table golden_fixture_audit_logs not present in schema", count: 0 };
-        } else {
-          sourcesStatus.golden_fixtures = { status: "failed", error: error.message, count: 0 };
-        }
-      } else if (data && data.length > 0) {
-        sourcesStatus.golden_fixtures.count = data.length;
-        for (const row of data as any[]) {
-          const sev: "critical" | "warning" | "info" =
-            row.action === "rejected" || row.action === "withheld" ? "warning" : "info";
+        if (filters.source === "all" || filters.source === "golden_fixtures") {
           if (filters.severity !== "all" && filters.severity !== sev) continue;
 
           allEvents.push({
@@ -386,11 +438,18 @@ export async function GET(request: NextRequest) {
             }) as Record<string, unknown>,
           });
         }
-      } else {
-        sourcesStatus.golden_fixtures.status = "empty";
       }
-    } catch (err: any) {
-      sourcesStatus.golden_fixtures = { status: "failed", error: err?.message || String(err), count: 0 };
+
+      sourcesStatus.golden_fixtures.warningCount = fixWarn;
+      sourcesStatus.golden_fixtures.criticalCount = 0;
+      sourcesStatus.golden_fixtures.status = "available";
+      sourcesStatus.golden_fixtures.health = fixWarn > 0 ? "warning" : "healthy";
+    } else {
+      sourcesStatus.golden_fixtures.status = "empty";
+      sourcesStatus.golden_fixtures.health = "empty";
+      sourcesStatus.golden_fixtures.count = 0;
+      sourcesStatus.golden_fixtures.criticalCount = 0;
+      sourcesStatus.golden_fixtures.warningCount = 0;
     }
   }
 

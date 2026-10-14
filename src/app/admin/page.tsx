@@ -324,7 +324,7 @@ export default function AdminOverviewPage() {
                 {sortedAlerts.length}
               </b>
               <span className="text-xs text-gray-500 font-medium">
-                ({systemStatus.criticalCount} high, {systemStatus.warningCount} medium)
+                ({systemStatus.criticalCount} critical, {systemStatus.warningCount} medium)
               </span>
             </div>
             <p className="text-[11px] text-gray-500 leading-relaxed">
@@ -404,7 +404,9 @@ export default function AdminOverviewPage() {
                 key={item.id}
                 style={getStaggerDelayStyle(idx, 240, prefersReducedMotion)}
                 className={`p-4 rounded-2xl bg-white border transition-all shadow-2xs relative select-text ${
-                  item.severity === "high"
+                  item.severity === "critical" || item.severity === "P0" || item.severity === "P1"
+                    ? "border-rose-400 bg-rose-50/20 hover:border-rose-500 shadow-xs ring-1 ring-rose-200"
+                    : item.severity === "high"
                     ? "border-rose-500/30 hover:border-rose-500/60"
                     : "border-amber-500/20 hover:border-amber-500/50"
                 }`}
@@ -414,9 +416,11 @@ export default function AdminOverviewPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span
                         className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                          item.severity === "high"
-                            ? "bg-rose-100 text-rose-800 border border-rose-200"
-                            : item.severity === "medium"
+                          item.severity === "critical" || item.severity === "P0" || item.severity === "P1"
+                            ? "bg-rose-100 text-rose-800 border border-rose-300 font-extrabold animate-pulse"
+                            : item.severity === "high"
+                            ? "bg-rose-100 text-rose-800 border border-rose-200 font-bold"
+                            : item.severity === "medium" || item.severity === "P2"
                             ? "bg-amber-100 text-amber-800 border border-amber-200"
                             : "bg-gray-100 text-gray-700 border border-gray-200"
                         }`}

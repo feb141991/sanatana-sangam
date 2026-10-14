@@ -60,7 +60,7 @@ function ReportCenterContent() {
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center bg-black/5 p-1 rounded-xl">
-              {["overview", "content", "lifecycle", "export"].map((tab) => (
+              {["overview", "governance", "content", "lifecycle", "export"].map((tab) => (
                 <button 
                   key={tab}
                   onClick={() => setActiveTab(tab)}

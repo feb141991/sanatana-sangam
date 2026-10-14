@@ -37,8 +37,13 @@ export interface NormalizedLogEvent {
   metadata?: Record<string, unknown> | null;
 }
 
+export type LogSourceHealth = "healthy" | "critical" | "warning" | "empty" | "degraded";
+
 export interface LogSourceStatus {
   status: "available" | "unavailable" | "failed" | "empty";
+  health?: LogSourceHealth;
+  criticalCount?: number;
+  warningCount?: number;
   error?: string | null;
   count: number;
 }

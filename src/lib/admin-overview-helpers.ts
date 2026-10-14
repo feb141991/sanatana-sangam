@@ -26,8 +26,12 @@ export function getOverviewSystemStatus(
   degraded: boolean
 ): SystemStatusSummary {
   const actionableAlerts = alerts.filter((a) => a.type !== "system" || a.id !== "system-ok");
-  const criticalCount = actionableAlerts.filter((a) => a.severity === "high").length;
-  const warningCount = actionableAlerts.filter((a) => a.severity === "medium").length;
+  const criticalCount = actionableAlerts.filter(
+    (a) => a.severity === "critical" || a.severity === "high" || a.severity === "P0" || a.severity === "P1"
+  ).length;
+  const warningCount = actionableAlerts.filter(
+    (a) => a.severity === "medium" || a.severity === "P2"
+  ).length;
   const totalAlerts = actionableAlerts.length;
 
   if (degraded) {
@@ -78,7 +82,11 @@ export function getOverviewSystemStatus(
  */
 export function sortAlertsByUrgency(alerts: UrgentAlertItem[]): UrgentAlertItem[] {
   const severityWeight: Record<string, number> = {
+    P0: 5,
+    P1: 4,
+    critical: 4,
     high: 3,
+    P2: 2,
     medium: 2,
     low: 1,
   };
@@ -184,6 +192,23 @@ export function alertToInspectableRecord(alert: UrgentAlertItem): AdminInspectab
       return record;
     }
 
+    case "monitoring": {
+      const meta = alert.metadata || {};
+      const record: SystemAlertRecord = {
+        type: "system_alert",
+        id: alert.id,
+        title: alert.title,
+        summary: alert.desc,
+        severity: (alert.severity === "P0" || alert.severity === "P1" || alert.severity === "critical") ? "critical" : (alert.severity === "high" ? "high" : (alert.severity === "P2" || alert.severity === "medium" ? "medium" : "low")),
+        timestamp: alert.timestamp || new Date().toISOString(),
+        href: alert.href || "/admin/monitoring?tab=telemetry",
+        serviceCategory: `Autonomous Monitoring [${meta.severity || "P0/P1"}]`,
+        remediation: "Inspect autonomous telemetry events and provider API error codes in Monitoring Window.",
+        metadata: meta,
+      };
+      return record;
+    }
+
     case "system": {
       const meta = alert.metadata || {};
       const record: SystemAlertRecord = {
@@ -191,7 +216,7 @@ export function alertToInspectableRecord(alert: UrgentAlertItem): AdminInspectab
         id: alert.id,
         title: alert.title,
         summary: alert.desc,
-        severity: alert.severity || "medium",
+        severity: (alert.severity === "P0" || alert.severity === "P1" || alert.severity === "critical") ? "critical" : (alert.severity === "high" ? "high" : (alert.severity === "P2" || alert.severity === "medium" ? "medium" : "low")),
         timestamp: alert.timestamp || new Date().toISOString(),
         href: alert.href || "/admin/monitoring",
         serviceCategory: "System Infrastructure & Security",
@@ -209,7 +234,7 @@ export function alertToInspectableRecord(alert: UrgentAlertItem): AdminInspectab
         id: alert.id,
         title: alert.title,
         summary: alert.desc,
-        severity: alert.severity || "medium",
+        severity: (alert.severity === "P0" || alert.severity === "P1" || alert.severity === "critical") ? "critical" : (alert.severity === "high" ? "high" : (alert.severity === "P2" || alert.severity === "medium" ? "medium" : "low")),
         timestamp: alert.timestamp || new Date().toISOString(),
         href: alert.href || "/admin/monitoring",
         serviceCategory: "Operational Alert",

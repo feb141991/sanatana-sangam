@@ -24,23 +24,23 @@ import { getStaggerDelayStyle, useReducedMotion } from '@/lib/admin-accessibilit
 
 interface Report {
   id: string;
-  reported_by: string;
-  content_author_id: string;
+  reported_by: string | null;
+  content_author_id: string | null;
   content_type: string;
-  content_id: string;
+  content_id: string | null;
   reason: string;
   status: string;
   created_at: string;
-  reporter: {
+  reporter?: {
     username: string;
     full_name: string | null;
     avatar_url: string | null;
-  };
-  author: {
+  } | null;
+  author?: {
     username: string;
     full_name: string | null;
     avatar_url: string | null;
-  };
+  } | null;
 }
 
 export default function ModerationClient({ initialReports }: { initialReports: Report[] }) {
@@ -66,7 +66,7 @@ export default function ModerationClient({ initialReports }: { initialReports: R
       type: "content_report",
       id: match.id,
       contentType: match.content_type,
-      contentId: match.content_id,
+      contentId: match.content_id ?? "",
       reason: match.reason,
       status: match.status as any,
       reportedBy: match.reported_by,
@@ -92,6 +92,9 @@ export default function ModerationClient({ initialReports }: { initialReports: R
   const handleAction = async (report: Report, action: 'resolve' | 'dismiss' | 'delete' | 'ban') => {
     try {
       if (action === 'ban') {
+        if (!report.content_author_id) {
+          throw new Error('No author associated with this report');
+        }
         const res = await fetch(`/api/admin/users/${report.content_author_id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -210,15 +213,17 @@ export default function ModerationClient({ initialReports }: { initialReports: R
                     <div className="flex flex-col items-center gap-1">
                       <p className="text-[9px] font-bold text-amber-800 uppercase tracking-wider">Reporter</p>
                       <div className="relative w-9 h-9 rounded-full overflow-hidden border border-black/10 bg-black/5">
-                        {report.reporter.avatar_url ? (
+                        {report.reporter?.avatar_url ? (
                           <Image src={report.reporter.avatar_url} alt="Reporter" fill className="object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[10px] font-bold theme-ink">
-                            {getInitials(report.reporter.full_name || report.reporter.username)}
+                            {getInitials(report.reporter?.full_name || report.reporter?.username || "Seeker")}
                           </div>
                         )}
                       </div>
-                      <p className="text-[10px] font-bold theme-ink">@{report.reporter.username}</p>
+                      <p className="text-[10px] font-bold theme-ink">
+                        {report.reporter?.username ? `@${report.reporter.username}` : "Anonymous"}
+                      </p>
                     </div>
 
                     <div className="h-8 w-px bg-black/10" />
@@ -226,15 +231,17 @@ export default function ModerationClient({ initialReports }: { initialReports: R
                     <div className="flex flex-col items-center gap-1">
                       <p className="text-[9px] font-bold text-rose-600 uppercase tracking-wider">Author</p>
                       <div className="relative w-9 h-9 rounded-full overflow-hidden border border-rose-200 bg-rose-50">
-                        {report.author.avatar_url ? (
+                        {report.author?.avatar_url ? (
                           <Image src={report.author.avatar_url} alt="Author" fill className="object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-rose-700">
-                            {getInitials(report.author.full_name || report.author.username)}
+                            {getInitials(report.author?.full_name || report.author?.username || "Unknown")}
                           </div>
                         )}
                       </div>
-                      <p className="text-[10px] font-bold text-rose-700">@{report.author.username}</p>
+                      <p className="text-[10px] font-bold text-rose-700">
+                        {report.author?.username ? `@${report.author.username}` : "System / Deleted"}
+                      </p>
                     </div>
                   </div>
 
@@ -255,7 +262,7 @@ export default function ModerationClient({ initialReports }: { initialReports: R
                       <p className="text-gray-700 italic">
                         {report.content_type === 'account_deletion' 
                           ? 'Seeker has requested account deletion. Cool-off period (30 days) is active.'
-                          : `"${report.reason}" · Content ID: ${report.content_id.slice(0, 8)}...`}
+                          : `"${report.reason}" · Content ID: ${report.content_id ? `${report.content_id.slice(0, 8)}...` : 'N/A'}`}
                       </p>
                     </div>
                   </div>
@@ -278,14 +285,16 @@ export default function ModerationClient({ initialReports }: { initialReports: R
                     >
                       <Trash2 size={18} />
                     </button>
-                    <button 
-                      onClick={() => handleAction(report, 'ban')}
-                      className="p-2.5 rounded-xl bg-black/5 text-gray-600 hover:bg-rose-100 hover:text-rose-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
-                      title="Ban Author"
-                      aria-label="Ban content author"
-                    >
-                      <UserMinus size={18} />
-                    </button>
+                    {report.content_author_id && (
+                      <button 
+                        onClick={() => handleAction(report, 'ban')}
+                        className="p-2.5 rounded-xl bg-black/5 text-gray-600 hover:bg-rose-100 hover:text-rose-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+                        title="Ban Author"
+                        aria-label="Ban content author"
+                      >
+                        <UserMinus size={18} />
+                      </button>
+                    )}
                     <button 
                       onClick={() => handleAction(report, 'resolve')}
                       className="p-2.5 rounded-xl bg-amber-800 text-white shadow-sm hover:bg-amber-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"

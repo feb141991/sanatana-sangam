@@ -10,8 +10,8 @@ export interface UrgentAlertItem {
   id: string;
   title: string;
   desc: string;
-  type: "integrity" | "client_error" | "report" | "dharm_veer" | "system";
-  severity: "high" | "medium" | "low";
+  type: "integrity" | "client_error" | "report" | "dharm_veer" | "system" | "monitoring";
+  severity: "critical" | "high" | "medium" | "low" | "P0" | "P1" | "P2";
   href: string;
   timestamp: string;
   metadata?: Record<string, any>;
@@ -52,18 +52,49 @@ export async function GET(request: NextRequest) {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
       for (const fp of clientMetrics.fingerprints) {
+        const isAdminRoute = fp.route?.startsWith("/admin");
+        const isCriticalType =
+          fp.error_name === "TypeError" ||
+          fp.error_name === "UnhandledRejection" ||
+          fp.error_message?.includes("null is not an object") ||
+          fp.error_message?.includes("undefined is not an object");
         const isBrandNew = fp.first_seen >= oneHourAgo;
         const isSpike = fp.count_1h >= 10;
         const isHomeSpike = fp.route === "/home" && fp.count_1h >= 3;
         const isStaleSpike = fp.stale_client_count >= 5;
 
-        if (isBrandNew) {
+        // Any client crash on admin surfaces or unhandled TypeErrors/crashes in last 24h are Critical
+        if (isAdminRoute || isCriticalType) {
+          alerts.push({
+            id: `client-err-crit-${fp.fingerprint.slice(0, 10)}`,
+            title: `Critical Client Crash: ${fp.error_name} on ${fp.route}`,
+            desc: `Active crash (${fp.count_24h} in 24h, ${fp.count_1h} in last hour). Message: ${fp.error_message.slice(0, 100)}`,
+            type: "client_error",
+            severity: "critical",
+            href: `/admin/monitoring?section=errors&fingerprint=${encodeURIComponent(fp.fingerprint)}`,
+            timestamp: fp.last_seen,
+            metadata: {
+              fingerprint: fp.fingerprint,
+              errorName: fp.error_name,
+              errorMessage: fp.error_message,
+              route: fp.route,
+              source: fp.source,
+              firstSeen: fp.first_seen,
+              lastSeen: fp.last_seen,
+              count1h: fp.count_1h,
+              count24h: fp.count_24h,
+              distinctSessionsCount: fp.distinct_sessions_count,
+              sampleStack: fp.sample_stack,
+              sampleComponentStack: fp.sample_component_stack,
+            },
+          });
+        } else if (isBrandNew) {
           alerts.push({
             id: `client-err-new-${fp.fingerprint.slice(0, 10)}`,
             title: `New Client Crash: ${fp.error_name} on ${fp.route}`,
             desc: `Brand new fingerprint first seen at ${new Date(fp.first_seen).toLocaleTimeString()}. Message: ${fp.error_message.slice(0, 80)}`,
             type: "client_error",
-            severity: fp.route === "/home" ? "high" : "medium",
+            severity: fp.route === "/home" ? "critical" : "high",
             href: `/admin/monitoring?section=errors&fingerprint=${encodeURIComponent(fp.fingerprint)}`,
             timestamp: fp.last_seen,
             metadata: {
@@ -87,7 +118,7 @@ export async function GET(request: NextRequest) {
             title: `Crash Spike (${fp.count_1h}/hr): ${fp.error_name} on ${fp.route}`,
             desc: `Error frequency crossed threshold. ${fp.distinct_sessions_count} unique sessions affected in the last hour.`,
             type: "client_error",
-            severity: "high",
+            severity: "critical",
             href: `/admin/monitoring?section=errors&fingerprint=${encodeURIComponent(fp.fingerprint)}`,
             timestamp: fp.last_seen,
             metadata: {
@@ -141,6 +172,47 @@ export async function GET(request: NextRequest) {
         timestamp: new Date().toISOString(),
         metadata: { error: clientErr?.message },
       });
+    }
+
+    // 1.5 Critical Telemetry & Autonomous Monitoring Events (P0 / P1)
+    try {
+      const monTable = (supabase.from("monitoring_events") as any);
+      if (monTable && typeof monTable.select === "function") {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        let query = monTable.select("id, route, severity, error_message, domain, provider, created_at, context");
+        if (typeof query?.in === "function") query = query.in("severity", ["P0", "P1"]);
+        if (typeof query?.gte === "function") query = query.gte("created_at", twentyFourHoursAgo);
+        if (typeof query?.order === "function") query = query.order("created_at", { ascending: false });
+        if (typeof query?.limit === "function") {
+          const { data: monEvents, error: monError } = await query.limit(10);
+          if (monError) {
+            console.error("[admin/alerts] Failed to query monitoring_events P0/P1:", monError);
+          } else if (monEvents && monEvents.length > 0) {
+            for (const ev of monEvents as any[]) {
+              alerts.push({
+                id: `mon-${ev.id}`,
+                title: `Critical Operational Event [${ev.severity}]: ${ev.domain || "Service"} on ${ev.route || "System"}`,
+                desc: ev.error_message || `Autonomous P0/P1 incident recorded on route ${ev.route || "unknown"}`,
+                type: "monitoring",
+                severity: "critical",
+                href: "/admin/monitoring?tab=telemetry",
+                timestamp: ev.created_at || new Date().toISOString(),
+                metadata: {
+                  eventId: ev.id,
+                  severity: ev.severity,
+                  domain: ev.domain,
+                  route: ev.route,
+                  provider: ev.provider,
+                  errorMessage: ev.error_message,
+                  context: ev.context,
+                },
+              });
+            }
+          }
+        }
+      }
+    } catch (monErr) {
+      console.error("[admin/alerts] Monitoring events query error:", monErr);
     }
 
     // 2. Calendar integrity findings
@@ -219,10 +291,10 @@ export async function GET(request: NextRequest) {
       for (const r of reports as any[]) {
         alerts.push({
           id: `report-${r.id}`,
-          title: "Pending Content Report",
-          desc: `Reason: ${r.reason || "Flagged by user"}`,
+          title: `Pending Moderation Report: ${r.content_type || "User Content"}`,
+          desc: `Reason: ${r.reason || "Flagged by user for moderation review"}. Requires action.`,
           type: "report",
-          severity: "high",
+          severity: "critical",
           href: `/admin/moderation?reportId=${r.id}`,
           timestamp: r.created_at || new Date().toISOString(),
           metadata: {
