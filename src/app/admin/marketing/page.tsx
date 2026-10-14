@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Mail, MessageSquare, Plus, ShieldCheck, 
   Calendar, CheckCircle2, Clock, AlertTriangle, 
-  ChevronRight, Filter, RefreshCw
+  ChevronRight, Filter, RefreshCw, Instagram, Linkedin, Twitter
 } from "lucide-react";
+import type { MarketingCampaignType, MarketingChannel } from "@/lib/marketing/types";
 
 export default function MarketingCampaignsPage() {
+  const router = useRouter();
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -17,14 +20,14 @@ export default function MarketingCampaignsPage() {
   // Create Modal State
   const [title, setTitle] = useState("");
   const [campaignKey, setCampaignKey] = useState("");
-  const [campaignType, setCampaignType] = useState<"newsletter" | "festival_reminder" | "announcement">("newsletter");
+  const [campaignType, setCampaignType] = useState<MarketingCampaignType>("newsletter");
   const [sourceType, setSourceType] = useState<"manual" | "published_observance">("manual");
   const [observances, setObservances] = useState<any[]>([]);
   const [selectedOccurrenceId, setSelectedOccurrenceId] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [useAiDraft, setUseAiDraft] = useState(false);
-  const [aiChannels, setAiChannels] = useState<{ email: boolean; whatsapp: boolean }>({ email: true, whatsapp: false });
+  const [aiChannels, setAiChannels] = useState<Record<MarketingChannel, boolean>>({ email: true, whatsapp: false, instagram: false, twitter: false, linkedin: false });
   const [strategyPrompt, setStrategyPrompt] = useState("");
   const [targetTradition, setTargetTradition] = useState("");
   const [targetSampradaya, setTargetSampradaya] = useState("");
@@ -107,7 +110,11 @@ export default function MarketingCampaignsPage() {
       setStrategyPrompt("");
       setTargetTradition("");
       setTargetSampradaya("");
-      fetchCampaigns();
+      if (data.campaign?.id) {
+        router.push(`/admin/marketing/${data.campaign.id}`);
+      } else {
+        fetchCampaigns();
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -322,10 +329,11 @@ export default function MarketingCampaignsPage() {
                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Type</label>
                   <select
                     value={campaignType}
-                    onChange={e => setCampaignType(e.target.value as any)}
+                    onChange={e => setCampaignType(e.target.value as MarketingCampaignType)}
                     className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none"
                   >
                     <option value="newsletter">Weekly Newsletter</option>
+                    <option value="daily_content">Daily Content & Wisdom</option>
                     <option value="festival_reminder">Festival Reminder</option>
                     <option value="announcement">Announcement</option>
                   </select>
@@ -395,25 +403,60 @@ export default function MarketingCampaignsPage() {
                   nothing if it can&apos;t attach a source citation for a published-observance campaign.
                 </p>
                 {useAiDraft && (
-                  <div className="flex items-center gap-4 pl-6">
-                    <label className="flex items-center gap-1.5 text-[11px] text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={aiChannels.email}
-                        onChange={e => setAiChannels(prev => ({ ...prev, email: e.target.checked }))}
-                        className="rounded text-amber-600"
-                      />
-                      Email
-                    </label>
-                    <label className="flex items-center gap-1.5 text-[11px] text-slate-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={aiChannels.whatsapp}
-                        onChange={e => setAiChannels(prev => ({ ...prev, whatsapp: e.target.checked }))}
-                        className="rounded text-amber-600"
-                      />
-                      WhatsApp
-                    </label>
+                  <div className="space-y-2 pl-6 pt-1">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Select Target Channels / Platforms:</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      <label className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:border-amber-500/50 text-[11px] font-medium text-slate-700 cursor-pointer transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={aiChannels.email}
+                          onChange={e => setAiChannels(prev => ({ ...prev, email: e.target.checked }))}
+                          className="rounded text-amber-600"
+                        />
+                        <Mail size={13} className="text-amber-600" />
+                        <span>Email</span>
+                      </label>
+                      <label className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:border-emerald-500/50 text-[11px] font-medium text-slate-700 cursor-pointer transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={aiChannels.whatsapp}
+                          onChange={e => setAiChannels(prev => ({ ...prev, whatsapp: e.target.checked }))}
+                          className="rounded text-emerald-600"
+                        />
+                        <MessageSquare size={13} className="text-emerald-600" />
+                        <span>WhatsApp</span>
+                      </label>
+                      <label className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:border-pink-500/50 text-[11px] font-medium text-slate-700 cursor-pointer transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={aiChannels.instagram}
+                          onChange={e => setAiChannels(prev => ({ ...prev, instagram: e.target.checked }))}
+                          className="rounded text-pink-600"
+                        />
+                        <Instagram size={13} className="text-pink-600" />
+                        <span>Instagram</span>
+                      </label>
+                      <label className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:border-sky-500/50 text-[11px] font-medium text-slate-700 cursor-pointer transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={aiChannels.twitter}
+                          onChange={e => setAiChannels(prev => ({ ...prev, twitter: e.target.checked }))}
+                          className="rounded text-sky-600"
+                        />
+                        <Twitter size={13} className="text-sky-600" />
+                        <span>Twitter / X</span>
+                      </label>
+                      <label className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:border-blue-600/50 text-[11px] font-medium text-slate-700 cursor-pointer transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={aiChannels.linkedin}
+                          onChange={e => setAiChannels(prev => ({ ...prev, linkedin: e.target.checked }))}
+                          className="rounded text-blue-700"
+                        />
+                        <Linkedin size={13} className="text-blue-700" />
+                        <span>LinkedIn</span>
+                      </label>
+                    </div>
                   </div>
                 )}
               </div>

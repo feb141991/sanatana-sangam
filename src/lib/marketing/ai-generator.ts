@@ -3,6 +3,7 @@ import { createCampaign, saveVariant } from "./campaign-service";
 import { getPublishableOccurrenceById, buildObservanceSourceSnapshot } from "./sources/published-observance";
 import type {
   MarketingCampaign,
+  MarketingCampaignType,
   MarketingCampaignVariant,
   MarketingChannel,
   MarketingSourceSnapshot,
@@ -12,7 +13,7 @@ import type {
 export interface GenerateMarketingDraftInput {
   campaignKey: string;
   title: string;
-  campaignType: "newsletter" | "festival_reminder" | "announcement";
+  campaignType: MarketingCampaignType;
   channels: MarketingChannel[];
   createdBy: string;
   /** When set, the campaign is grounded on this occurrence -- generation fails
@@ -55,7 +56,7 @@ interface ChannelDraft {
  */
 export interface DraftChannelCopyInput {
   channel: MarketingChannel;
-  campaignType?: "newsletter" | "festival_reminder" | "announcement";
+  campaignType?: MarketingCampaignType;
   sourceSnapshot?: MarketingSourceSnapshot | null;
   strategyPrompt?: string | null;
   targetTradition?: string | null;
@@ -91,26 +92,54 @@ Guidelines:
       channelInstructions = `Produce a JSON object with exactly these keys: {
   "subject": "under 65 characters, poetic, spiritually resonant weekly digest title",
   "body": "Formatted email newsletter in markdown with clear, elegant section headings (### and ####), 450-650 words, structured with:
-1. Sacred Reflection • The Week Concluded: A meaningful reflection on how the events of the past week concluded (e.g. Krishna Janmashtami, Aja Ekadashi, Bhadrapada Amavasya, early Paryushana contemplations), what spiritual seeds were planted, and how we carry that energy forward.
-2. Sacred Horizons • The Coming Days Ahead: Detailed preview of upcoming holy observances (e.g. Ganesh Chaturthi / Ganeshotsav, Samvatsari, Parivartini Ekadashi, Anant Chaturdashi), explaining their practical and spiritual significance for the modern seeker.
-3. Four Living Streams of Dharma • Wisdom from All Traditions: Dedicated, substantive paragraphs for EACH of the four traditions exploring what each tradition teaches at this juncture, accompanied by an authentic primary scripture verse/shloka with original script, Roman transliteration, and English translation:
-   - 🕉️ Sanatan Dharma: Bhagavad Gita or Ganesh Atharvashirsha shloka with translation and contemplation.
-   - 🤲 Jain Dharma: Samvatsari Pratikramana Sutra (Khāmemi savva-jīve...) and Michhāmi Dukkaḍaṃ reflection.
-   - ☬ Sikh Tradition (Gurmat): Sri Guru Granth Sahib Ji Gurbani shabad (e.g. Japji Sahib 'Sabhna jīā kā ik dātā...') with translation and contemplation.
-   - ☸️ Buddha Dhamma: Dhammapada verse (e.g. Verse 5 'Averena ca sammanti esa dhammo sanantano...') with translation and contemplation.
+1. Sacred Reflection • The Week Concluded: A meaningful reflection on how the events of the past week concluded, what spiritual seeds were planted, and how we carry that energy forward.
+2. Sacred Horizons • The Coming Days Ahead: Detailed preview of upcoming holy observances, explaining their practical and spiritual significance for the modern seeker.
+3. Four Living Streams of Dharma • Wisdom from All Traditions: Dedicated, substantive paragraphs for EACH of the four traditions (Sanatan, Jain, Sikh, Buddhist) with authentic scripture shlokas/verses, transliteration, and English translation.
 4. Inner Anchor: Practical encouragement for daily japa, meditation, and quiet reflection with Shoonaya.",
   "cta_text": "2-4 words, e.g. Open Shoonaya Sanctuary",
   "cta_url": "https://www.shoonaya.com"
-}. Keep the tone deeply reverent, warm, unifying, and authentic to all 4 traditions.`;
+}. Keep the tone deeply reverent, warm, unifying, and authentic to all traditions.`;
+    } else if (input.campaignType === "daily_content") {
+      channelInstructions = `Produce a JSON object with exactly these keys: {
+  "subject": "under 60 characters, inspiring daily reflection title for today's practice",
+  "body": "Daily spiritual reflection (180-250 words) in clean markdown:
+- Sacred Contemplation of the Day: An uplifting insight connecting morning wakefulness to inner stillness.
+- Timeless Shloka / Wisdom Quote: Authentic verse with translation.
+- Daily Sadhana Practice: A simple 5-minute action (e.g. 108 japa repetitions, mindful breath, evening gratitude).",
+  "cta_text": "Open Today's Sanctuary",
+  "cta_url": "https://www.shoonaya.com"
+}. Warm, grounded, calming Shoonaya brand voice.`;
     } else {
       channelInstructions = `Produce a JSON object with exactly these keys: {"subject": "under 60 characters, compelling", "body": "100-180 words, structured into 2-3 short, emotionally resonant paragraphs", "cta_text": "2-4 words, action-oriented", "cta_url": "a relative or https://www.shoonaya.com path"}. Warm, inviting Shoonaya brand voice.`;
     }
-  } else {
+  } else if (input.channel === "whatsapp") {
     if (input.campaignType === "newsletter") {
-      channelInstructions = `Produce a JSON object with exactly this key: {"body": "under 500 characters, crisp, emotive WhatsApp broadcast with bold headers and emojis covering: (1) Last week's concluded grace, (2) Coming festival alerts (Ganesh Chaturthi & Samvatsari), (3) Core shlokas/wisdom from Hindu, Jain, Sikh, and Buddhist traditions, and (4) Link to open Shoonaya"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
+      channelInstructions = `Produce a JSON object with exactly this key: {"body": "under 500 characters, crisp, emotive WhatsApp broadcast with bold headers and emojis covering: (1) Concluded grace, (2) Coming festival alerts, (3) Wisdom from dharmic streams, and (4) Link to open Shoonaya"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
+    } else if (input.campaignType === "daily_content") {
+      channelInstructions = `Produce a JSON object with exactly this key: {"body": "under 320 characters, morning WhatsApp wisdom message:
+*Daily Dharma • Shoonaya* 🪔
+A crisp 2-sentence morning reflection, a short sacred shloka quote, and a reminder to anchor in stillness today. Open Shoonaya: shoonaya.com"}. Warm, emotive, and WhatsApp-ready. No subject or CTA fields.`;
     } else {
       channelInstructions = `Produce a JSON object with exactly this key: {"body": "under 300 characters, crisp, emotive, and WhatsApp-ready"}. Warm, inviting Shoonaya brand voice. No subject or CTA fields.`;
     }
+  } else if (input.channel === "instagram") {
+    channelInstructions = `Produce a JSON object with exactly this key: {
+  "body": "Instagram caption formatted with clean paragraph breaks:
+1. Hook line: An evocative first sentence that stops the scroll.
+2. Contemplation: 2-3 short, poetic paragraphs (80-140 words total) exploring sacred time, inner peace, and dharmic mindfulness.
+3. Call to Action: Gentle invitation to practice with Shoonaya (link in bio).
+4. Curated Hashtags: 8-12 relevant hashtags on a new line (e.g. #Shoonaya #SanatanDharma #Dharma #DailyWisdom #InnerStillness #Meditation #Japa #SpiritualJourney #Mindfulness)."
+}. Visually evocative, respectful, authentic Shoonaya brand voice. No subject or CTA fields.`;
+  } else if (input.channel === "twitter") {
+    channelInstructions = `Produce a JSON object with exactly this key: {
+  "body": "Twitter/X post strictly under 270 characters total: A punchy, spiritually grounding thought, memorable shloka takeaway, or mindfulness insight with 1-2 tasteful emojis and #Shoonaya #Dharma. Must fit in one tweet (under 280 chars)."
+}. Clean, sharp, profound. No subject or CTA fields.`;
+  } else if (input.channel === "linkedin") {
+    channelInstructions = `Produce a JSON object with exactly this key: {
+  "body": "LinkedIn reflection (120-180 words): Exploring how timeless dharmic principles (such as samatvam/equanimity, nishkama karma, and mindful stillness) apply to modern leadership, professional balance, and mental clarity. Includes a thought-provoking opening, 2 short paragraphs, a reflective question for leaders, and #MindfulLeadership #Shoonaya #Dharma."
+}. Sophisticated, respectful, professional tone. No subject or CTA fields.`;
+  } else {
+    channelInstructions = `Produce a JSON object with exactly this key: {"body": "under 250 words, warm, inspiring spiritual marketing copy"}. No subject or CTA fields.`;
   }
 
   const result = await generateWithProvider(

@@ -11,8 +11,14 @@ export type MarketingCampaignStatus =
   | "completed"
   | "cancelled";
 
-export type MarketingChannel = "email" | "whatsapp";
-export type DeferredMarketingChannel = "linkedin" | "twitter" | "instagram";
+export type MarketingChannel = "email" | "whatsapp" | "instagram" | "twitter" | "linkedin";
+export type DeferredMarketingChannel = "threads" | "youtube";
+
+export type MarketingCampaignType =
+  | "newsletter"
+  | "daily_content"
+  | "festival_reminder"
+  | "announcement";
 
 export type MarketingSourceType = "manual" | "published_observance";
 
@@ -26,7 +32,7 @@ export type MarketingDispatchStatus =
 export interface MarketingCampaign {
   id: string;
   campaign_key: string;
-  campaign_type: "newsletter" | "festival_reminder" | "announcement";
+  campaign_type: MarketingCampaignType;
   title: string;
   status: MarketingCampaignStatus;
   source_type: MarketingSourceType;

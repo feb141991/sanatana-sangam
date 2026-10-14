@@ -78,6 +78,9 @@ function platformInstructions(platform: SocialPlatform, objective: SocialPostObj
   if (platform === "linkedin") {
     return `Produce a JSON object with exactly these keys: {"caption": "120-220 words, professional but warm tone suitable for a company page, no more than 2 short paragraphs", "hashtags": ["3-5 relevant hashtags without the # symbol"], "cta_url": "https://www.shoonaya.com"}. ${objectiveLine} Avoid emoji-heavy or overly casual language.`;
   }
+  if (platform === "twitter") {
+    return `Produce a JSON object with exactly these keys: {"caption": "under 260 characters, punchy, profound spiritual insight or shloka takeaway with 1-2 tasteful emojis", "hashtags": ["Shoonaya", "Dharma"], "cta_url": "https://www.shoonaya.com"}. ${objectiveLine} Strictly under 260 characters.`;
+  }
   if (platform === "instagram") {
     return `Produce a JSON object with exactly these keys: {"caption": "80-150 words, warm, poetic, emotionally resonant, tasteful emoji use", "hashtags": ["8-15 relevant hashtags without the # symbol, mixing broad and specific"], "cta_url": "https://www.shoonaya.com"}. ${objectiveLine}`;
   }

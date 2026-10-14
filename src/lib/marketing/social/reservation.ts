@@ -35,7 +35,8 @@ import type {
 const ACCOUNT_TYPE_TO_PLATFORM: Record<SocialPlatformAccount["account_type"], SocialPlatform> = {
   facebook_page: "facebook",
   instagram_business: "instagram",
-  linkedin_organization: "linkedin"
+  linkedin_organization: "linkedin",
+  twitter_account: "twitter"
 };
 
 export interface ReservationOutcome {

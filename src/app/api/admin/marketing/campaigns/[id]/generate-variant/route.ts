@@ -6,7 +6,7 @@ import { draftChannelCopy } from "@/lib/marketing/ai-generator";
 import { getPublishableOccurrenceById, buildObservanceSourceSnapshot } from "@/lib/marketing/sources/published-observance";
 import type { MarketingChannel, MarketingSourceSnapshot } from "@/lib/marketing/types";
 
-const VALID_CHANNELS: MarketingChannel[] = ["email", "whatsapp"];
+const VALID_CHANNELS: MarketingChannel[] = ["email", "whatsapp", "instagram", "twitter", "linkedin"];
 
 export async function POST(
   request: NextRequest,
@@ -38,7 +38,7 @@ export async function POST(
   const body = await request.json().catch(() => ({}));
   const channel = body.channel as MarketingChannel;
   if (!VALID_CHANNELS.includes(channel)) {
-    return NextResponse.json({ error: "Valid channel (email or whatsapp) is required" }, { status: 400 });
+    return NextResponse.json({ error: "Valid channel (email, whatsapp, instagram, twitter, or linkedin) is required" }, { status: 400 });
   }
 
   const strategyPrompt = typeof body.strategy_prompt === "string" && body.strategy_prompt.trim()

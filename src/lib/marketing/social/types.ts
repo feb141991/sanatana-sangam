@@ -6,9 +6,9 @@
  * schema these mirror.
  */
 
-export type SocialProvider = "meta" | "linkedin";
-export type SocialAccountType = "facebook_page" | "instagram_business" | "linkedin_organization";
-export type SocialPlatform = "instagram" | "facebook" | "linkedin";
+export type SocialProvider = "meta" | "linkedin" | "twitter";
+export type SocialAccountType = "facebook_page" | "instagram_business" | "linkedin_organization" | "twitter_account";
+export type SocialPlatform = "instagram" | "facebook" | "linkedin" | "twitter";
 
 export type SocialContentType = "festival" | "general";
 export type SocialAutomationMode = "manual" | "automatic" | "paused";

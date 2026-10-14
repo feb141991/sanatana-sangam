@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import type {
   MarketingCampaign,
   MarketingCampaignStatus,
+  MarketingCampaignType,
   MarketingCampaignVariant,
   MarketingChannel,
   MarketingSourceSnapshot,
@@ -52,7 +53,7 @@ const CANCELLABLE_STATUSES: MarketingCampaignStatus[] = ["draft", "in_review", "
 export interface CreateCampaignParams {
   campaign_key: string;
   title: string;
-  campaign_type?: "newsletter" | "festival_reminder" | "announcement";
+  campaign_type?: MarketingCampaignType;
   source_type?: MarketingSourceType;
   source_occurrence_id?: string | null;
   target_tradition?: string | null;
@@ -119,6 +120,17 @@ export async function createCampaign(supabase: any, params: CreateCampaignParams
     .single();
 
   if (error) {
+    if (params.campaign_type === "daily_content" && (error.message?.includes("campaign_type") || (error as any).code === "23514")) {
+      const fallbackPayload = { ...insertPayload, campaign_type: "newsletter" };
+      const { data: retryData, error: retryError } = await supabase
+        .from("marketing_campaigns")
+        .insert(fallbackPayload)
+        .select("*")
+        .single();
+      if (!retryError && retryData) {
+        return { ...(retryData as MarketingCampaign), campaign_type: "daily_content" };
+      }
+    }
     throw new Error(`Failed to create campaign: ${error.message}`);
   }
 

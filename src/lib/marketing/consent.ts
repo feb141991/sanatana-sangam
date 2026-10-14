@@ -1,4 +1,4 @@
-import type { ConsentDecision, MarketingChannel, RecipientProfile } from "./types";
+import type { ConsentDecision, MarketingCampaignType, MarketingChannel, RecipientProfile } from "./types";
 
 /**
  * Validates E.164 phone numbers (e.g. +919876543210, +14155552671).
@@ -17,7 +17,7 @@ export function isValidE164(phone: string | null | undefined): boolean {
 export function evaluateMarketingConsent(
   profile: RecipientProfile | null | undefined,
   channel: MarketingChannel,
-  campaignType: "newsletter" | "festival_reminder" | "announcement" = "newsletter"
+  campaignType: MarketingCampaignType = "newsletter"
 ): ConsentDecision {
   if (!profile || !profile.id) {
     return { eligible: false, reasonCode: "account_deleted" };

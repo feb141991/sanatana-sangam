@@ -4,7 +4,7 @@ import { requireAdminAccess } from "@/lib/admin";
 import { generateMarketingDraft } from "@/lib/marketing/ai-generator";
 import type { MarketingChannel } from "@/lib/marketing/types";
 
-const VALID_CHANNELS: MarketingChannel[] = ["email", "whatsapp"];
+const VALID_CHANNELS: MarketingChannel[] = ["email", "whatsapp", "instagram", "twitter", "linkedin"];
 
 export async function POST(request: NextRequest) {
   const authError = await verifyAdminCookieAuth(request);
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "campaign_key and title are required" }, { status: 400 });
   }
   if (channels.length === 0) {
-    return NextResponse.json({ error: "At least one valid channel (email or whatsapp) is required" }, { status: 400 });
+    return NextResponse.json({ error: "At least one valid channel (email, whatsapp, instagram, twitter, or linkedin) is required" }, { status: 400 });
   }
 
   const result = await generateMarketingDraft(admin.supabase, {

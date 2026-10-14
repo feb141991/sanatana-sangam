@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { requireAdminAccess } from "@/lib/admin";
+import type { MarketingChannel } from "@/lib/marketing/types";
 import {
   cancelCampaign,
   MarketingCampaignInputError,
@@ -8,6 +9,8 @@ import {
   submitForReview,
   updateCampaignMetadata,
 } from "@/lib/marketing/campaign-service";
+
+const VALID_CHANNELS: MarketingChannel[] = ["email", "whatsapp", "instagram", "twitter", "linkedin"];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -89,12 +92,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     if ("variant" in body && isRecord(body.variant)) {
       const variant = body.variant;
-      if ((variant.channel !== "email" && variant.channel !== "whatsapp") || typeof variant.body !== "string") {
+      if (!VALID_CHANNELS.includes(variant.channel as MarketingChannel) || typeof variant.body !== "string") {
         return NextResponse.json({ error: "Invalid campaign variant" }, { status: 400 });
       }
       const savedVariant = await saveVariant(admin.supabase, {
         campaign_id: id,
-        channel: variant.channel,
+        channel: variant.channel as MarketingChannel,
         locale: typeof variant.locale === "string" ? variant.locale : "en",
         subject: typeof variant.subject === "string" || variant.subject === null ? variant.subject : undefined,
         body: variant.body,
