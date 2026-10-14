@@ -255,7 +255,8 @@ async function sendVariant(
   supabase: any,
   variant: SocialPostVariant,
   account: SocialPlatformAccount,
-  publicImageUrl: string
+  publicImageUrl: string,
+  trackingCampaign: string
 ): Promise<void> {
   const accessToken = await getDecryptedAccessToken(account);
   const attemptId = crypto.randomUUID();
@@ -279,6 +280,7 @@ async function sendVariant(
     caption: variant.caption,
     hashtags: variant.hashtags,
     ctaUrl: variant.cta_url,
+    trackingCampaign,
     imageUrl: publicImageUrl,
     idempotencyKey
   };
@@ -394,7 +396,7 @@ export async function publishApprovedPost(
     }
 
     try {
-      await sendVariant(supabase, row, row.social_platform_accounts, publicImage.publicUrl);
+      await sendVariant(supabase, row, row.social_platform_accounts, publicImage.publicUrl, post.post_key);
     } catch (err) {
       // start_social_publish_attempt refused (unresolved prior attempt) or
       // an unexpected error before a result could be recorded -- leave the

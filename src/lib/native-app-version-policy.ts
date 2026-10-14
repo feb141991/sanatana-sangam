@@ -27,7 +27,7 @@ function compareVersionParts(left: string[], right: string[]): number {
   return 0;
 }
 
-function parseStoreUrl(value: string | undefined, platform: NativeStorePlatform): string | null {
+export function parseStoreUrl(value: string | undefined, platform: NativeStorePlatform): string | null {
   if (!value || value.length > 500) return null;
   try {
     const url = new URL(value);

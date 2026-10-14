@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { NextRequest } from "next/server";
 import { middleware, shouldVerifyUserInMiddleware } from "./middleware";
 
@@ -84,6 +84,27 @@ describe("middleware authentication scope", () => {
         isPublicPath: true,
       }),
     ).toBe(false);
+  });
+});
+
+describe("middleware: the smart app link stays public", () => {
+  const original = process.env.APP_OPEN;
+  afterEach(() => {
+    if (original === undefined) delete process.env.APP_OPEN;
+    else process.env.APP_OPEN = original;
+  });
+
+  it("lets an anonymous visitor reach /get even while the app is closed to the public", async () => {
+    process.env.APP_OPEN = "false";
+    const response = await middleware(new NextRequest("https://www.shoonaya.com/get?utm_campaign=x"));
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+    expect(response.headers.get("location")).toBeNull();
+  });
+
+  it("while the same closed gate still turns an anonymous visitor away from a private page", async () => {
+    process.env.APP_OPEN = "false";
+    const response = await middleware(new NextRequest("https://www.shoonaya.com/home"));
+    expect(response.headers.get("location")).toBe("https://www.shoonaya.com/");
   });
 });
 

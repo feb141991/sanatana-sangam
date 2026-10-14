@@ -4,6 +4,7 @@ import { sendShoonayaEmail } from "@/lib/email";
 import { APP } from "@/lib/config";
 import { createWhatsAppProvider } from "@/lib/whatsapp/provider";
 import { resolveRecipientEmails } from "@/lib/server/recipient-emails";
+import { resolveCampaignCtaUrl, trackLinksInText, withCampaignTracking, type LinkContext } from "./campaign-links";
 import type {
   MarketingCampaign,
   MarketingCampaignVariant,
@@ -221,6 +222,10 @@ export async function dispatchMarketingBatch(
     return result;
   }
 
+  // Every Shoonaya link in what goes out is tagged with this campaign (UTM), so installs and visits can be
+  // traced back to the message. Applied at send time: the approved copy itself is not changed.
+  const linkContext: LinkContext = { channel: variant.channel, campaign: campaign.campaign_key, content: variant.locale };
+
   const profilesById = await fetchRecipientProfiles(
     supabase,
     rows.map(r => r.recipient_user_id),
@@ -266,9 +271,9 @@ export async function dispatchMarketingBatch(
           shloka: "",
           meaning: "",
           title: variant.subject ?? "Shoonaya Weekly Dharma",
-          body: variant.body,
+          body: trackLinksInText(variant.body, linkContext),
           ctaText: variant.cta_text ?? "Open Shoonaya",
-          ctaUrl: variant.cta_url ?? "https://www.shoonaya.com",
+          ctaUrl: withCampaignTracking(resolveCampaignCtaUrl(variant.cta_url), linkContext),
           unsubUrl: unsubscribeUrl,
           unsubType: campaign.campaign_type === "festival_reminder" ? "festivals" : "newsletter"
         }, { idempotencyKey: `marketing-dispatch:${row.id}` });
@@ -298,7 +303,7 @@ export async function dispatchMarketingBatch(
       } else {
         const sendRes = await whatsappProvider.sendText({
           to: profile!.whatsapp_number!,
-          body: variant.body
+          body: trackLinksInText(variant.body, linkContext, { bareDomain: true })
         });
 
         result.sent++;

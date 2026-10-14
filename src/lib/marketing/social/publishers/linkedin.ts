@@ -8,6 +8,7 @@
  * heuristic).
  */
 import type { PublisherSendInput, PublisherSendResult } from "../types";
+import { composeSocialText } from "../post-text";
 
 const LINKEDIN_API_BASE = "https://api.linkedin.com/rest";
 // Pinned explicitly, per the approved plan's platform-integration corrections --
@@ -84,11 +85,6 @@ async function pollImageReady(imageUrn: string, accessToken: string): Promise<"A
   return "TIMED_OUT";
 }
 
-function combineCaption(caption: string, hashtags: string[]): string {
-  const tagLine = hashtags.length > 0 ? `\n\n${hashtags.map(h => (h.startsWith("#") ? h : `#${h}`)).join(" ")}` : "";
-  return `${caption}${tagLine}`;
-}
-
 export async function publishToLinkedIn(input: PublisherSendInput): Promise<PublisherSendResult> {
   const orgUrn = `urn:li:organization:${input.account.external_account_id}`;
 
@@ -113,7 +109,13 @@ export async function publishToLinkedIn(input: PublisherSendInput): Promise<Publ
     headers: linkedInHeaders(input.accessToken),
     body: JSON.stringify({
       author: orgUrn,
-      commentary: combineCaption(input.caption, input.hashtags),
+      commentary: composeSocialText({
+        platform: "linkedin",
+        caption: input.caption,
+        hashtags: input.hashtags,
+        ctaUrl: input.ctaUrl,
+        trackingCampaign: input.trackingCampaign
+      }),
       visibility: "PUBLIC",
       distribution: {
         feedDistribution: "MAIN_FEED",

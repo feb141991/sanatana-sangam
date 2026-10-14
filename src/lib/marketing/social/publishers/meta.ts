@@ -10,17 +10,22 @@
  * through for our own request tracing (stored as provider_request_id).
  */
 import type { PublisherSendInput, PublisherSendResult } from "../types";
+import { composeSocialText } from "../post-text";
+
+function textParts(input: PublisherSendInput) {
+  return {
+    caption: input.caption,
+    hashtags: input.hashtags,
+    ctaUrl: input.ctaUrl,
+    trackingCampaign: input.trackingCampaign
+  };
+}
 
 const GRAPH_API_VERSION = "v21.0";
 const GRAPH_API_BASE = `https://graph.facebook.com/${GRAPH_API_VERSION}`;
 
 const CONTAINER_POLL_INTERVAL_MS = 2000;
 const CONTAINER_POLL_TIMEOUT_MS = 60000;
-
-function combineCaption(caption: string, hashtags: string[]): string {
-  const tagLine = hashtags.length > 0 ? `\n\n${hashtags.map(h => (h.startsWith("#") ? h : `#${h}`)).join(" ")}` : "";
-  return `${caption}${tagLine}`;
-}
 
 async function graphFetch(path: string, params: Record<string, string>, method: "GET" | "POST" = "POST") {
   const url = new URL(`${GRAPH_API_BASE}${path}`);
@@ -45,7 +50,7 @@ async function graphFetch(path: string, params: Record<string, string>, method: 
 export async function publishToFacebookPage(input: PublisherSendInput): Promise<PublisherSendResult> {
   const { ok, status, payload } = await graphFetch(`/${input.account.external_account_id}/photos`, {
     url: input.imageUrl,
-    caption: combineCaption(input.caption, input.hashtags),
+    caption: composeSocialText({ platform: "facebook", ...textParts(input) }),
     access_token: input.accessToken
   });
 
@@ -91,7 +96,7 @@ export async function publishToInstagram(input: PublisherSendInput): Promise<Pub
 
   const createRes = await graphFetch(`/${igUserId}/media`, {
     image_url: input.imageUrl,
-    caption: combineCaption(input.caption, input.hashtags),
+    caption: composeSocialText({ platform: "instagram", ...textParts(input) }),
     access_token: input.accessToken
   });
 
