@@ -2,32 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { requireAdminAccess } from "@/lib/admin";
 import { dispatchMarketingBatch } from "@/lib/marketing/dispatcher";
-import { seedMarketingDispatches } from "@/lib/marketing/audience";
+import { maybeCompleteCampaign, startCampaignDispatch } from "@/lib/marketing/dispatch-start";
 import type { MarketingCampaign, MarketingCampaignVariant } from "@/lib/marketing/types";
 
 const LIVE_SEND_PHRASE = "LIVE SEND";
-
-async function maybeCompleteCampaign(supabase: any, campaignId: string): Promise<string | null> {
-  const { count, error } = await supabase
-    .from("marketing_dispatches")
-    .select("id", { count: "exact", head: true })
-    .eq("campaign_id", campaignId)
-    .in("status", ["pending", "claimed"]);
-
-  if (error || (count ?? 0) > 0) {
-    return null;
-  }
-
-  const { data } = await supabase
-    .from("marketing_campaigns")
-    .update({ status: "completed", updated_at: new Date().toISOString() })
-    .eq("id", campaignId)
-    .eq("status", "dispatching")
-    .select("status")
-    .single();
-
-  return data?.status ?? null;
-}
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const authError = await verifyAdminCookieAuth(request);
@@ -73,34 +51,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
   }
 
-  // Race-safe transition: only the request that actually flips approved -> dispatching
-  // is responsible for seeding the audience. A concurrent second request either loses
-  // this update (0 rows, falls through to the re-fetch below) or -- if it arrives once
-  // the campaign is already 'dispatching' -- is a legitimate "continue draining"
-  // call, not a duplicate seed.
-  const { data: claimedForStart } = await admin.supabase
-    .from("marketing_campaigns")
-    .update({ status: "dispatching", updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("status", "approved")
-    .select("*")
-    .single();
-
-  let campaign: MarketingCampaign | null = claimedForStart ?? null;
-  const isFirstBatch = Boolean(claimedForStart);
-
-  if (!campaign) {
-    if (campaignSnapshot.status !== "dispatching") {
-      return NextResponse.json(
-        {
-          error: `Cannot dispatch campaign in "${campaignSnapshot.status}" status. Human approval is required first.`
-        },
-        { status: 409 }
-      );
-    }
-    campaign = campaignSnapshot;
-  }
-
   const { data: variant, error: varErr } = await admin.supabase
     .from("marketing_campaign_variants")
     .select("*")
@@ -112,12 +62,32 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ error: `No ${channel} variant found for campaign` }, { status: 404 });
   }
 
-  if (isFirstBatch && !dryRun) {
-    try {
-      await seedMarketingDispatches(admin.supabase, campaign, (variant as MarketingCampaignVariant).id, channel);
-    } catch (err: any) {
-      return NextResponse.json({ error: `Failed to seed dispatch audience: ${err.message}` }, { status: 500 });
-    }
+  // Every check that can fail runs here, before the campaign's status changes; a dry run changes nothing.
+  const started = await startCampaignDispatch(admin.supabase, {
+    campaign: campaignSnapshot,
+    variant: variant as MarketingCampaignVariant,
+    channel,
+    dryRun
+  });
+  if (!started.ok) {
+    return NextResponse.json({ error: started.error, code: started.code }, { status: started.status });
+  }
+  const campaign = started.campaign;
+
+  // A dry run on a campaign nobody has been queued for yet: report who a live send would reach.
+  if (dryRun && started.preview) {
+    return NextResponse.json({
+      result: {
+        total: started.preview.total,
+        sent: started.preview.eligible,
+        suppressed: started.preview.total - started.preview.eligible,
+        failed: 0,
+        dryRun: true,
+        dispatches: []
+      },
+      campaignStatus: campaign.status,
+      remainingPending: null
+    });
   }
 
   let result;
