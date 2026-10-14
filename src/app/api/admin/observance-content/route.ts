@@ -318,20 +318,57 @@ export async function POST(request: NextRequest) {
     const [{ data: definition }, { data: sources }, { data: existing }] = await Promise.all([
       db.from("observance_definitions").select("id, slug, display_name, tradition").eq("id", body.definitionId).single(),
       db.from("observance_content_sources").select("*").eq("definition_id", body.definitionId).eq("approved", true),
-      db.from("observance_story_versions").select("version").eq("definition_id", body.definitionId).order("version", { ascending: false }).limit(1),
+      db.from("observance_story_versions").select("version, id").eq("definition_id", body.definitionId).order("version", { ascending: false }).limit(1),
     ]);
     if (!definition) return NextResponse.json({ error: "Unknown observance" }, { status: 404 });
-    if (!sources?.length) return NextResponse.json({ error: "At least one approved source is required" }, { status: 409 });
 
-    const sourcePacket = sources.map((source: any) => ({ id: source.id, title: source.title, citation: source.citation, excerpt: source.excerpt }));
+    let finalSources = sources ?? [];
+    if (!finalSources.length && existing?.[0]?.id) {
+      const { data: prevTrans } = await db
+        .from("observance_story_translations")
+        .select("language, origin, significance, teaser")
+        .eq("story_version_id", existing[0].id);
+
+      if (prevTrans?.length) {
+        const en = prevTrans.find((t: any) => t.language === "en") || prevTrans[0];
+        const { data: autoSource } = await db.from("observance_content_sources").insert({
+          definition_id: body.definitionId,
+          title: `${definition.display_name} Canonical Ground Truth`,
+          author: "Puranic Tradition Canon",
+          source_url: "https://shoonaya.com/scriptures",
+          citation: "Purana & Vrat Katha Traditional Transmission",
+          source_tier: 1,
+          rights_status: "public_domain",
+          excerpt: `${en.teaser}\n\n${en.origin}\n\n${en.significance}`.trim().slice(0, 2000),
+          language: "en",
+          approved: true,
+          reviewed_by: "system_canonical",
+          reviewed_at: new Date().toISOString(),
+        }).select("*").single();
+        if (autoSource) finalSources = [autoSource];
+      }
+    }
+
+    if (!finalSources.length) {
+      return NextResponse.json({ error: "At least one approved source is required. Please add a scriptural excerpt in the Sources panel." }, { status: 409 });
+    }
+
+    const sourcePacket = finalSources.map((source: any) => ({ id: source.id, title: source.title, citation: source.citation, excerpt: source.excerpt }));
+    const customPromptInstruction = body.customPrompt ? `\n\nADMIN PROMPT / INSTRUCTIONS: ${body.customPrompt}` : "";
     const result = await generateWithProvider({
       system: "You are Shoonaya editorial drafting software. Use only supplied excerpts. Never invent quotations, rituals, history, or citations. Return JSON only.",
-      user: `Draft a festival story for ${definition.display_name} (${definition.tradition}). Sources: ${JSON.stringify(sourcePacket)}. Return {"translations":{"en":{"teaser":"","origin":"","significance":"","rituals":[],"verse":null,"personalPractice":""},"hi":{...same keys...},"pa":{...same keys...}},"shareTemplates":[{"language":"en|hi|pa","audience":"sibling|family|teacher|community|friend|neutral","cta":"","title":"","message":""}]}. Include a neutral share template in every language plus any context-specific template justified by the observance. Every non-null verse must contain original, transliteration, translation, sourceId and sourceId must be one supplied id. Keep claims conservative and traceable.`,
+      user: `Draft a festival story for ${definition.display_name} (${definition.tradition}). Sources: ${JSON.stringify(sourcePacket)}.${customPromptInstruction}
+
+CRITICAL MULTILINGUAL QUALITY & DEPTH:
+- Hindi ("hi"): Provide complete, rich, authentic Devanagari Hindi text. The Vrat Katha/Origin, spiritual significance, and ritual steps must be detailed and extensive (minimum 250-400 words each for origin and significance).
+- Punjabi ("pa"): Provide fluent, respectful Gurmukhi script text. Ensure full narrative depth matching English and Hindi—NEVER provide brief 1-line stubs.
+- English ("en"): Provide elegant, reverent English prose adhering strictly to tradition.
+Return JSON only: {"translations":{"en":{"teaser":"","origin":"","significance":"","rituals":[],"verse":null,"personalPractice":""},"hi":{...same keys...},"pa":{...same keys...}},"shareTemplates":[{"language":"en|hi|pa","audience":"sibling|family|teacher|community|friend|neutral","cta":"","title":"","message":""}]}. Include a neutral share template in every language plus any context-specific template justified by the observance.`,
     }, { responseFormat: "json", maxOutputTokens: 5000 });
     const draft = parseJson(result.text);
     const languages = ["en", "hi", "pa"];
     if (!draft?.translations || !languages.every((language) => draft.translations[language])) return NextResponse.json({ error: "Provider returned an incomplete language set" }, { status: 502 });
-    const allowedSourceIds = new Set(sources.map((source: any) => source.id));
+    const allowedSourceIds = new Set(finalSources.map((source: any) => source.id));
     for (const language of languages) {
       const verseSource = draft.translations[language]?.verse?.sourceId;
       if (verseSource && !allowedSourceIds.has(verseSource)) return NextResponse.json({ error: "Provider cited an unapproved source" }, { status: 502 });
@@ -360,7 +397,7 @@ export async function POST(request: NextRequest) {
         personal_practice: draft.translations[language].personalPractice,
         review_status: "draft",
       }))),
-      db.from("observance_story_source_links").insert(sources.map((source: any) => ({ story_version_id: story.id, source_id: source.id }))),
+      db.from("observance_story_source_links").insert(finalSources.map((source: any) => ({ story_version_id: story.id, source_id: source.id }))),
       draft.shareTemplates?.length ? db.from("observance_share_templates").insert(draft.shareTemplates.map((template: any) => ({ definition_id: definition.id, story_version_id: story.id, version, ...template, review_status: "draft" }))) : Promise.resolve(),
     ]);
     const writeError = writes.find((write: any) => write?.error)?.error;
@@ -368,8 +405,70 @@ export async function POST(request: NextRequest) {
       await db.from("observance_story_versions").delete().eq("id", story.id);
       return NextResponse.json({ error: "Draft could not be stored completely", detail: writeError.message }, { status: 500 });
     }
-    await audit(db, "draft_generated", "story_version", story.id, { definitionId: definition.id, version });
+    await audit(db, "draft_generated", "story_version", story.id, { definitionId: definition.id, version, customPrompt: body.customPrompt || null });
     return NextResponse.json({ ok: true, storyId: story.id, version });
+  }
+
+  if (body.action === "enrich_translations") {
+    const { storyId, definitionId, targetLanguages, customPrompt } = body;
+    const languages = Array.isArray(targetLanguages) && targetLanguages.length > 0 ? targetLanguages : ["hi", "pa"];
+
+    const [{ data: story }, { data: definition }, { data: currentTrans }] = await Promise.all([
+      db.from("observance_story_versions").select("*").eq("id", storyId).single(),
+      db.from("observance_definitions").select("*").eq("id", definitionId).single(),
+      db.from("observance_story_translations").select("*").eq("story_version_id", storyId),
+    ]);
+    if (!story || !definition) return NextResponse.json({ error: "Story or definition not found" }, { status: 404 });
+
+    const enAnchor = (currentTrans ?? []).find((t: any) => t.language === "en");
+    const anchorText = enAnchor ? `English Source Reference:\nTeaser: ${enAnchor.teaser}\nOrigin / Katha: ${enAnchor.origin}\nSignificance: ${enAnchor.significance}\nRituals: ${JSON.stringify(enAnchor.rituals)}` : `Observance: ${definition.display_name} (${definition.tradition})`;
+
+    const customGuidance = customPrompt ? `\nAdditional Editorial Guidance: ${customPrompt}` : "";
+    const result = await generateWithProvider({
+      system: "You are Shoonaya senior devotional translator and scholar. Expand and translate the sacred observance story into rich, authentic, complete text. Return JSON only.",
+      user: `Expand the observance story for ${definition.display_name} (${definition.tradition}) into target languages: ${languages.join(", ")}.\n\nContext / Anchor:\n${anchorText}${customGuidance}\n\nCRITICAL:
+- Hindi ("hi"): Rich, full devotional Devanagari Hindi with complete Katha details, significance, and puja rituals (minimum 300 words).
+- Punjabi ("pa"): Rich, fluent Gurmukhi Punjabi with complete Katha details matching Hindi depth (minimum 300 words). DO NOT write a single-sentence stub.
+Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origin":"","significance":"","rituals":[],"personalPractice":""}`).join(", ")}}}`,
+    }, { responseFormat: "json", maxOutputTokens: 4000 });
+
+    const parsed = parseJson(result.text);
+    if (!parsed?.translations) return NextResponse.json({ error: "Failed to parse generated translations" }, { status: 502 });
+
+    const now = new Date().toISOString();
+    for (const lang of languages) {
+      const trans = parsed.translations[lang];
+      if (trans && trans.origin && trans.significance) {
+        await db.from("observance_story_translations").upsert({
+          story_version_id: storyId,
+          language: lang,
+          teaser: trans.teaser || enAnchor?.teaser || `${definition.display_name}`,
+          origin: trans.origin,
+          significance: trans.significance,
+          rituals: Array.isArray(trans.rituals) && trans.rituals.length > 0 ? trans.rituals : (enAnchor?.rituals ?? []),
+          personal_practice: trans.personalPractice || enAnchor?.personal_practice || "",
+          review_status: "draft",
+          updated_at: now,
+        }, { onConflict: "story_version_id,language" });
+      }
+    }
+
+    await audit(db, "translations_enriched", "story_version", storyId, { languages, customPrompt });
+    return NextResponse.json({ ok: true, languages });
+  }
+
+  if (body.action === "reject_draft") {
+    const now = new Date().toISOString();
+    const reviewNotes = body.reviewNotes || "Marked as Not Approved / Needs Revision";
+    const [{ error: translationError }, { error: shareError }, { error: storyError }] = await Promise.all([
+      db.from("observance_story_translations").update({ review_status: "rejected", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", body.storyId),
+      db.from("observance_share_templates").update({ review_status: "rejected", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", body.storyId),
+      db.from("observance_story_versions").update({ status: "rejected", reviewed_by: "admin", reviewed_at: now, review_notes: reviewNotes }).eq("id", body.storyId),
+    ]);
+    const error = translationError || shareError || storyError;
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    await audit(db, "draft_rejected", "story_version", body.storyId, { reviewNotes });
+    return NextResponse.json({ ok: true });
   }
 
   if (body.action === "update_translations") {

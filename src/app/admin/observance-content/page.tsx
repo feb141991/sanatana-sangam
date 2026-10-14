@@ -7,7 +7,7 @@ import {
   CheckCircle, AlertTriangle, Sparkles, BookOpen, Image as ImageIcon, Square, Loader2,
   Share2, RefreshCw, XCircle, ShieldCheck, Play, Zap, Calendar, Bell, Mail,
   Layers, Eye, History, RotateCcw, CheckSquare, Edit3, Send, Users, Shield,
-  Copy, ExternalLink, ChevronRight
+  Copy, ExternalLink, ChevronRight, ChevronLeft
 } from "lucide-react";
 
 type TabId = "coverage" | "queue" | "review" | "artwork" | "published" | "share";
@@ -184,6 +184,10 @@ export default function ObservanceContentStudioPage() {
   const [editingTranslation, setEditingTranslation] = useState<StoryTranslation | null>(null);
 
   const [reviewNotes, setReviewNotes] = useState("");
+  const [showRegenerateModal, setShowRegenerateModal] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
+  const [regenTarget, setRegenTarget] = useState<"all" | "hi_pa">("hi_pa");
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   const load = () =>
     fetch("/api/admin/observance-content")
@@ -969,27 +973,116 @@ export default function ObservanceContentStudioPage() {
           {/* Header Row */}
           <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-2xs">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Editorial Desk</span>
-              <h2 className="text-2xl font-bold font-serif text-gray-900 mt-0.5">{selectedRow?.display_name ?? "Select an observance"}</h2>
-              <p className="text-xs text-gray-500 font-mono">
-                Slug: {selectedRow?.slug} • Current Version: v{detail?.story?.version ?? 1} • Status: {detail?.story?.status ?? "Missing"}
+              <div className="flex items-center gap-3 mb-1">
+                <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Editorial Desk</span>
+                <span className={"px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase " + (
+                  detail?.story?.status === "published" ? "bg-emerald-100 text-emerald-800 border border-emerald-300" :
+                  detail?.story?.status === "approved" ? "bg-blue-100 text-blue-800 border border-blue-300" :
+                  detail?.story?.status === "rejected" ? "bg-rose-100 text-rose-800 border border-rose-300" :
+                  detail?.story?.status === "draft" ? "bg-amber-100 text-amber-800 border border-amber-300" : "bg-gray-100 text-gray-700"
+                )}>
+                  {detail?.story?.status ?? "No Draft"}
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold font-serif text-gray-900">{selectedRow?.display_name ?? "Select an observance"}</h2>
+              <p className="text-xs text-gray-500 font-mono mt-0.5">
+                Slug: {selectedRow?.slug} • Tradition: {selectedRow?.tradition} • Current Version: v{detail?.story?.version ?? 1}
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Observance Switcher */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-bold text-gray-500 uppercase">Observance:</label>
+              <select
+                value={selectedRow?.id ?? ""}
+                onChange={(e) => {
+                  const match = rows.find((r) => r.id === e.target.value);
+                  if (match) void loadDetail(match);
+                }}
+                className="px-3 py-2 rounded-xl border border-black/15 bg-white text-xs font-bold text-gray-900 shadow-2xs focus:ring-2 focus:ring-amber-500/20 max-w-[240px]"
+              >
+                {rows.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.display_name} ({r.tradition}) {r.current?.status ? `[${r.current.status}]` : "[no draft]"}
+                  </option>
+                ))}
+              </select>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const idx = rows.findIndex((r) => r.id === selectedRow?.id);
+                    if (idx > 0) void loadDetail(rows[idx - 1]);
+                  }}
+                  disabled={!selectedRow || rows.findIndex((r) => r.id === selectedRow?.id) <= 0}
+                  className="p-2 rounded-xl border bg-white hover:bg-gray-50 text-gray-700 disabled:opacity-30 transition-colors"
+                  title="Previous observance"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const idx = rows.findIndex((r) => r.id === selectedRow?.id);
+                    if (idx >= 0 && idx < rows.length - 1) void loadDetail(rows[idx + 1]);
+                  }}
+                  disabled={!selectedRow || rows.findIndex((r) => r.id === selectedRow?.id) >= rows.length - 1}
+                  className="p-2 rounded-xl border bg-white hover:bg-gray-50 text-gray-700 disabled:opacity-30 transition-colors"
+                  title="Next observance"
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setShowRegenerateModal(true)}
+                className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-colors"
+                title="Regenerate or enrich story with AI and custom prompt"
+              >
+                <Sparkles size={14} />
+                <span>Regenerate with AI</span>
+              </button>
+
               {detail?.story && (
                 <>
                   <button
-                    onClick={() => void handleAction({ action: "approve_draft", storyId: detail.story!.id, reviewNotes }, "Story draft and translations approved")}
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-2xs"
+                    type="button"
+                    onClick={async () => {
+                      const notes = window.prompt("Reason for marking Not Approved / Needs Revision:", reviewNotes || "Content incomplete or needs enhancement");
+                      if (notes === null) return;
+                      await handleAction({
+                        action: "reject_draft",
+                        storyId: detail.story!.id,
+                        reviewNotes: notes,
+                      }, "Story marked as Not Approved / Needs Revision");
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-700 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-colors"
+                    title="Reject draft or request revisions"
                   >
-                    Approve Draft
+                    <XCircle size={14} />
+                    <span>Not Approved (Reject)</span>
                   </button>
+
                   <button
-                    onClick={() => void handleAction({ action: "publish", storyId: detail.story!.id, definitionId: selectedRow!.id, manualVerification: true }, "Story published live to PWA and Native!")}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs"
+                    type="button"
+                    onClick={() => void handleAction({ action: "approve_draft", storyId: detail.story!.id, reviewNotes }, "Story draft and translations approved")}
+                    className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-colors"
                   >
-                    Publish Live
+                    <CheckCircle size={14} />
+                    <span>Approve Draft</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void handleAction({ action: "publish", storyId: detail.story!.id, definitionId: selectedRow!.id, manualVerification: true }, "Story published live to PWA and Native!")}
+                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-colors"
+                  >
+                    <Send size={14} />
+                    <span>Publish Live</span>
                   </button>
                 </>
               )}
@@ -1454,6 +1547,141 @@ export default function ObservanceContentStudioPage() {
                 </button>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+      {/* ─── AI Regeneration / Enrichment Modal ────────────────────────────── */}
+      {showRegenerateModal && selectedRow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-black/10">
+            <div className="flex items-center justify-between border-b border-black/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                <h3 className="font-bold text-base text-gray-900 font-serif">
+                  Regenerate with AI: {selectedRow.display_name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRegenerateModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1 text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-bold uppercase text-gray-600 block mb-1.5">
+                  Regeneration Target
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setRegenTarget("hi_pa")}
+                    className={"p-3 rounded-xl border text-left text-xs transition-all " + (
+                      regenTarget === "hi_pa"
+                        ? "border-purple-600 bg-purple-50/60 font-bold text-purple-900 ring-2 ring-purple-600/20"
+                        : "border-black/10 bg-white hover:bg-gray-50 text-gray-700"
+                    )}
+                  >
+                    <div className="font-bold">⚡ Enrich Hindi & Punjabi</div>
+                    <div className="text-[11px] text-gray-500 font-normal mt-0.5">
+                      Expands Katha, significance and rituals in Hi & Pa; keeps current English version intact.
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setRegenTarget("all")}
+                    className={"p-3 rounded-xl border text-left text-xs transition-all " + (
+                      regenTarget === "all"
+                        ? "border-purple-600 bg-purple-50/60 font-bold text-purple-900 ring-2 ring-purple-600/20"
+                        : "border-black/10 bg-white hover:bg-gray-50 text-gray-700"
+                    )}
+                  >
+                    <div className="font-bold">🔄 Full Story Regeneration</div>
+                    <div className="text-[11px] text-gray-500 font-normal mt-0.5">
+                      Creates a new version across all 3 languages (EN + HI + PA) and share templates.
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase text-gray-600 block mb-1">
+                  Custom Prompt / Editorial Guidance (Optional)
+                </label>
+                <textarea
+                  rows={4}
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  placeholder="e.g. Provide full length Harishchandra Vrat Katha in Hindi and Punjabi, including detailed fast timings, evening aarti, and traditional rituals. Ensure Hindi and Punjabi are rich and detailed, not short summaries."
+                  className="w-full rounded-xl border border-black/15 p-3 text-xs leading-relaxed focus:ring-2 focus:ring-purple-500/20 bg-gray-50/50"
+                />
+                <p className="text-[11px] text-gray-500 mt-1">
+                  The AI adheres strictly to authentic canon excerpts while tailoring narrative depth and ritual detail to your prompt.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowRegenerateModal(false)}
+                disabled={isRegenerating}
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50 text-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsRegenerating(true);
+                  setError(null);
+                  setActionSuccess(null);
+                  try {
+                    if (regenTarget === "hi_pa" && detail?.story?.id) {
+                      await handleAction({
+                        action: "enrich_translations",
+                        storyId: detail.story.id,
+                        definitionId: selectedRow.id,
+                        targetLanguages: ["hi", "pa"],
+                        customPrompt: customPrompt || "Provide full, authentic, rich devotional narrative in Hindi and Punjabi. Expand the Vrat Katha, spiritual significance, and detailed step-by-step rituals.",
+                      }, `Enriched Hindi & Punjabi translations for ${selectedRow.display_name}!`);
+                    } else {
+                      await handleAction({
+                        action: "generate_draft",
+                        definitionId: selectedRow.id,
+                        customPrompt: customPrompt || undefined,
+                      }, `Generated new draft version for ${selectedRow.display_name}!`);
+                    }
+                    setShowRegenerateModal(false);
+                    setCustomPrompt("");
+                    await load();
+                    if (selectedRow) await loadDetail(selectedRow);
+                  } catch (err: any) {
+                    setError(err.message || "Regeneration failed");
+                  } finally {
+                    setIsRegenerating(false);
+                  }
+                }}
+                disabled={isRegenerating}
+                className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 disabled:opacity-50"
+              >
+                {isRegenerating ? (
+                  <>
+                    <Loader2 size={13} className="animate-spin" />
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={14} />
+                    <span>Generate with Prompt</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
