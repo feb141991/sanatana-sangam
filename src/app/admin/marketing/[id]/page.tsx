@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState, use } from "react";
+import { useCallback, useEffect, useState, use, useRef } from "react";
 import Link from "next/link";
 import { 
   ArrowLeft, ShieldCheck, Mail, MessageSquare, 
-  Send, AlertTriangle, CheckCircle2, XCircle, 
+  Send, AlertTriangle, CheckCircle2, XCircle, Square, 
   Edit3, Save, RotateCcw, Sparkles, Instagram, Twitter, Linkedin, Copy, ExternalLink, Share2, Hash
 } from "lucide-react";
 import type { MarketingChannel } from "@/lib/marketing/types";
@@ -119,6 +119,33 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   const [showDispatchConfirm, setShowDispatchConfirm] = useState(false);
   const [dryRun, setDryRun] = useState(true);
   const [dispatching, setDispatching] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const dispatchAbortRef = useRef<AbortController | null>(null);
+
+  const handleCancelCampaign = async () => {
+    if (!window.confirm("Are you sure you want to halt this campaign? Any recipients already sent will be kept in the ledger, but all remaining unsent/pending recipients will be aborted and no further batches can be sent.")) {
+      return;
+    }
+    setCancelling(true);
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/admin/marketing/campaigns/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "cancel" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setActionError(data.error ?? "Failed to cancel campaign");
+        return;
+      }
+      fetchCampaign();
+    } catch (err: any) {
+      setActionError(err.message ?? "Failed to cancel campaign");
+    } finally {
+      setCancelling(false);
+    }
+  };
   const [dispatchResult, setDispatchResult] = useState<any>(null);
   const [dispatchMeta, setDispatchMeta] = useState<{ campaignStatus?: string; remainingPending?: number | null }>({});
   const [actionError, setActionError] = useState<string | null>(null);
@@ -388,6 +415,8 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
     setDispatchResult(null);
     setActionError(null);
     setActionErrorKind("error");
+    const controller = new AbortController();
+    dispatchAbortRef.current = controller;
 
     try {
       const payload: Record<string, unknown> = { channel: activeTab, dry_run: dryRun };
@@ -400,6 +429,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
 
       const data = await res.json();
@@ -463,13 +493,26 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             )}
 
             {(campaign.status === "approved" || campaign.status === "dispatching") && (activeTab === "email" || activeTab === "whatsapp") && (
-              <button
-                onClick={openDispatchConfirm}
-                className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-2"
-              >
-                <Send size={16} />
-                {campaign.status === "dispatching" ? `Continue Sending ${activeTab.toUpperCase()}` : `Dispatch ${activeTab.toUpperCase()}`}
-              </button>
+              <div className="flex items-center gap-2">
+                {campaign.status === "dispatching" && (
+                  <button
+                    onClick={handleCancelCampaign}
+                    disabled={cancelling}
+                    className="px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm disabled:opacity-50"
+                    title="Halt campaign and stop remaining batches from dispatching"
+                  >
+                    <Square size={13} className="fill-current" />
+                    <span>{cancelling ? "Halting..." : "Halt / Stop Remaining Batches"}</span>
+                  </button>
+                )}
+                <button
+                  onClick={openDispatchConfirm}
+                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-2"
+                >
+                  <Send size={16} />
+                  {campaign.status === "dispatching" ? `Continue Sending ${activeTab.toUpperCase()}` : `Dispatch ${activeTab.toUpperCase()}`}
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -1403,10 +1446,15 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             <div className="flex items-center gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => setShowDispatchConfirm(false)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold hover:bg-slate-50"
+                onClick={() => {
+                  if (dispatching) {
+                    dispatchAbortRef.current?.abort();
+                  }
+                  setShowDispatchConfirm(false);
+                }}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold hover:bg-slate-50 text-slate-700"
               >
-                Cancel
+                {dispatching ? "Abort Send" : "Cancel"}
               </button>
               <button
                 type="button"

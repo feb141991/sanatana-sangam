@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
-import { ChevronLeft, Play, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { ChevronLeft, Play, CheckCircle2, AlertCircle, Loader2, Square } from "lucide-react";
 
 const BATCH_SIZE = 20;
 
-type Status = "idle" | "running" | "done" | "error";
+type Status = "idle" | "running" | "done" | "error" | "stopped";
 
 interface BatchResult {
   batchIdx: number;
@@ -25,9 +25,20 @@ export function HindiGeneratorClient({ entries }: HindiGeneratorClientProps) {
   const [total, setTotal] = useState(0);
   const [results, setResults] = useState<BatchResult[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isStopping, setIsStopping] = useState(false);
+  const stopRequestedRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleStop = useCallback(() => {
+    stopRequestedRef.current = true;
+    setIsStopping(true);
+    abortControllerRef.current?.abort();
+  }, []);
 
   const run = useCallback(async () => {
     setStatus("running");
+    setIsStopping(false);
+    stopRequestedRef.current = false;
     setProgress(0);
     setResults([]);
     setErrorMsg("");
@@ -39,25 +50,42 @@ export function HindiGeneratorClient({ entries }: HindiGeneratorClientProps) {
     setTotal(batches.length);
 
     for (let i = 0; i < batches.length; i++) {
+      if (stopRequestedRef.current) {
+        setStatus("stopped");
+        setIsStopping(false);
+        break;
+      }
       const batch = batches[i];
       const label = `${batch[0].id} … ${batch[batch.length - 1].id}`;
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       try {
         const res = await fetch("/api/admin/generate-hindi-meanings", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ entries: batch }),
+          signal: controller.signal,
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Unknown error");
         setResults((prev) => [...prev, { batchIdx: i + 1, label, saved: data.saved }]);
       } catch (err: any) {
+        if (err.name === "AbortError" || stopRequestedRef.current) {
+          setStatus("stopped");
+          setIsStopping(false);
+          break;
+        }
         const errResult = { batchIdx: i + 1, label, saved: 0, error: err.message };
         setResults((prev) => [...prev, errResult]);
       }
       setProgress(i + 1);
     }
 
-    setStatus("done");
+    if (!stopRequestedRef.current) {
+      setStatus("done");
+    }
+    setIsStopping(false);
   }, [entries]);
 
   const totalSaved = results.reduce((acc, r) => acc + (r.saved || 0), 0);
@@ -88,24 +116,49 @@ export function HindiGeneratorClient({ entries }: HindiGeneratorClientProps) {
               Processes {entries.length} entries in batches of {BATCH_SIZE}
             </div>
           </div>
-          <button
-            onClick={run}
-            disabled={status === "running"}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C4A972] text-[#0E0C0A] font-semibold text-sm hover:bg-[#D4B982] disabled:opacity-50 transition-colors"
-          >
-            {status === "running" ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Running…
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4 fill-current" />
-                Start Generator
-              </>
+          <div className="flex items-center gap-2">
+            {status === "running" && (
+              <button
+                type="button"
+                onClick={handleStop}
+                disabled={isStopping}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm transition-colors shadow-sm disabled:opacity-50"
+                title="Stop batch generation immediately"
+              >
+                <Square className="w-4 h-4 fill-current" />
+                {isStopping ? "Stopping…" : "Stop Batch"}
+              </button>
             )}
-          </button>
+            <button
+              onClick={run}
+              disabled={status === "running"}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C4A972] text-[#0E0C0A] font-semibold text-sm hover:bg-[#D4B982] disabled:opacity-50 transition-colors"
+            >
+              {status === "running" ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Running…
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 fill-current" />
+                  {status === "stopped" ? "Restart / Resume Generator" : "Start Generator"}
+                </>
+              )}
+            </button>
+          </div>
         </div>
+
+        {status === "stopped" && (
+          <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between text-xs text-amber-300">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>
+                <strong>Batch Interrupted:</strong> Run stopped by user after batch {progress} of {total}. All {totalSaved} processed entries were safely saved.
+              </span>
+            </div>
+          </div>
+        )}
 
         {total > 0 && (
           <div className="space-y-2">

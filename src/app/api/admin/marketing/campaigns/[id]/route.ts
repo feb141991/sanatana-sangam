@@ -63,6 +63,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 
   try {
+    if ("action" in body && body.action === "cancel") {
+      const campaign = await cancelCampaign(admin.supabase, id);
+      return NextResponse.json({ campaign });
+    }
+
     if ("action" in body && body.action === "submit_review") {
       const campaign = await submitForReview(admin.supabase, id);
       return NextResponse.json({ campaign });

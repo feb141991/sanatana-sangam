@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { parseCronTarget } from "@/lib/admin-url-state";
@@ -9,7 +9,7 @@ import {
   Search, ShieldCheck, ArrowLeft, ChevronDown, ChevronUp,
   Activity, Zap, Info, Server, Sparkles, Calendar, Bell, Wrench,
   ArrowUpDown, ArrowUp, ArrowDown, Check, XCircle, Send, Inbox,
-  Layers, Filter, Copy, Code, HelpCircle, ExternalLink
+  Layers, Filter, Copy, Code, HelpCircle, ExternalLink, Square
 } from "lucide-react";
 import { CronStatusSummary, CronCategory } from "@/lib/monitoring/cron-telemetry";
 
@@ -160,6 +160,7 @@ export default function CronDashboardClient() {
   const [queueSearch, setQueueSearch] = useState<string>("");
   const [inspectQueueItem, setInspectQueueItem] = useState<ScheduledNotificationItem | null>(null);
   const [dispatchingQueue, setDispatchingQueue] = useState<boolean>(false);
+  const queueAbortControllerRef = useRef<AbortController | null>(null);
 
   // Global Escape key listener for Cron modals
   useEffect(() => {
@@ -480,11 +481,24 @@ export default function CronDashboardClient() {
             </div>
 
             <div className="flex items-center gap-2">
+              {dispatchingQueue && (
+                <button
+                  type="button"
+                  onClick={() => queueAbortControllerRef.current?.abort()}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-all shadow-sm"
+                  title="Abort in-flight dispatch immediately"
+                >
+                  <Square size={12} className="fill-current" />
+                  <span>Stop</span>
+                </button>
+              )}
               <button
                 onClick={async () => {
                   setDispatchingQueue(true);
+                  const controller = new AbortController();
+                  queueAbortControllerRef.current = controller;
                   try {
-                    await fetch("/api/notifications/dispatch", { method: "POST" });
+                    await fetch("/api/notifications/dispatch", { method: "POST", signal: controller.signal });
                     await fetchCrons();
                   } catch {}
                   setDispatchingQueue(false);

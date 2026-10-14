@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft, ArrowUpDown, ArrowUp, ArrowDown, Search,
-  CheckCircle, AlertTriangle, Sparkles, BookOpen, Image as ImageIcon,
+  CheckCircle, AlertTriangle, Sparkles, BookOpen, Image as ImageIcon, Square, Loader2,
   Share2, RefreshCw, XCircle, ShieldCheck, Play, Zap, Calendar, Bell, Mail,
   Layers, Eye, History, RotateCcw, CheckSquare, Edit3, Send, Users, Shield,
   Copy, ExternalLink, ChevronRight
@@ -142,6 +142,16 @@ export default function ObservanceContentStudioPage() {
   // Queue state
   const [queueSelectedIds, setQueueSelectedIds] = useState<string[]>([]);
   const [isBulkDrafting, setIsBulkDrafting] = useState(false);
+  const [bulkDraftProgress, setBulkDraftProgress] = useState<{ current: number; total: number } | null>(null);
+  const [isStopRequested, setIsStopRequested] = useState(false);
+  const stopBulkRef = useRef(false);
+  const bulkAbortControllerRef = useRef<AbortController | null>(null);
+
+  function handleStopBulkDraft() {
+    stopBulkRef.current = true;
+    setIsStopRequested(true);
+    bulkAbortControllerRef.current?.abort();
+  }
 
   // Artwork Tab Form State
   const [showAddArtwork, setShowAddArtwork] = useState(false);
@@ -338,25 +348,47 @@ export default function ObservanceContentStudioPage() {
   async function handleBulkDraft() {
     if (queueSelectedIds.length === 0) return;
     setIsBulkDrafting(true);
+    setIsStopRequested(false);
+    stopBulkRef.current = false;
     setActionSuccess(null);
     setError(null);
+    setBulkDraftProgress({ current: 0, total: queueSelectedIds.length });
 
     let draftedCount = 0;
-    for (const defId of queueSelectedIds) {
+    for (let idx = 0; idx < queueSelectedIds.length; idx++) {
+      if (stopBulkRef.current) {
+        break;
+      }
+      const defId = queueSelectedIds[idx];
+      const controller = new AbortController();
+      bulkAbortControllerRef.current = controller;
+
       try {
         const response = await fetch("/api/admin/observance-content", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "generate_draft", definitionId: defId }),
+          signal: controller.signal,
         });
         if (response.ok) draftedCount++;
-      } catch {
+      } catch (err: any) {
+        if (err.name === "AbortError" || stopBulkRef.current) {
+          break;
+        }
         // continue batch
       }
+      setBulkDraftProgress({ current: idx + 1, total: queueSelectedIds.length });
     }
 
     setIsBulkDrafting(false);
-    setActionSuccess(`Successfully generated ${draftedCount}/${queueSelectedIds.length} drafts!`);
+    setIsStopRequested(false);
+    setBulkDraftProgress(null);
+
+    if (stopBulkRef.current) {
+      setActionSuccess(`Batch stopped by user: Generated ${draftedCount} of ${queueSelectedIds.length} drafts before interruption.`);
+    } else {
+      setActionSuccess(`Successfully generated ${draftedCount}/${queueSelectedIds.length} drafts!`);
+    }
     setQueueSelectedIds([]);
     await load();
   }
@@ -827,14 +859,45 @@ export default function ObservanceContentStudioPage() {
               >
                 {queueSelectedIds.length === rows.length ? "Deselect All" : `Select All (${rows.length})`}
               </button>
-              <button
-                disabled={queueSelectedIds.length === 0 || isBulkDrafting}
-                onClick={() => void handleBulkManualApprove()}
-                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-600/20 disabled:opacity-40"
-              >
-                <CheckCircle size={14} />
-                <span>{isBulkDrafting ? "Approving..." : `Approve Selected (${queueSelectedIds.length})`}</span>
-              </button>
+{isBulkDrafting ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs font-bold">
+                    <Loader2 size={13} className="animate-spin text-amber-600" />
+                    <span>
+                      {bulkDraftProgress ? `Drafting ${bulkDraftProgress.current}/${bulkDraftProgress.total}` : "Processing..."}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleStopBulkDraft}
+                    disabled={isStopRequested}
+                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+                    title="Stop ongoing batch generation immediately"
+                  >
+                    <Square size={13} className="fill-current" />
+                    <span>{isStopRequested ? "Stopping..." : "Stop Batch"}</span>
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button
+                    disabled={queueSelectedIds.length === 0}
+                    onClick={() => void handleBulkDraft()}
+                    className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-amber-600/20 disabled:opacity-40 transition-colors"
+                  >
+                    <Sparkles size={14} />
+                    <span>Generate Drafts ({queueSelectedIds.length})</span>
+                  </button>
+                  <button
+                    disabled={queueSelectedIds.length === 0}
+                    onClick={() => void handleBulkManualApprove()}
+                    className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 disabled:opacity-40 transition-colors"
+                  >
+                    <CheckCircle size={14} />
+                    <span>Approve Selected ({queueSelectedIds.length})</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
