@@ -66,9 +66,9 @@ export const PRODUCT_CLAIMS: readonly ProductClaim[] = [
   },
   {
     id: "temples_directory",
-    statement: "Tirtha lists temples, gurdwaras, viharas and Jain temples in many cities; coverage is still growing.",
+    statement: "Tirtha lists temples and gurdwaras in many cities; coverage is still growing.",
     status: "confirmed",
-    evidence: "app/(tabs)/tirtha.tsx and the curated diaspora directory (src/lib/diaspora-temples.ts, all four traditions). Always say coverage is still growing; never promise a particular city."
+    evidence: "app/(tabs)/tirtha.tsx and the curated diaspora directory (src/lib/diaspora-temples.ts): 54 places in 12 countries on 2026-10-15, Hindu and Sikh only. Buddhist and Jain places depend on map data and are not curated, so do not promise them. Always say coverage is still growing; never promise a particular city or country."
   },
   {
     id: "optional_data_off_by_default",

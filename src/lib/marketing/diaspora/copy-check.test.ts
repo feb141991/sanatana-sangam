@@ -7,7 +7,7 @@ describe("clean copy passes", () => {
   it.each([
     "Keep a few steady minutes in a full day. Open Shoonaya and begin with a japa mala and the day's shloka.",
     "When your family lives in different places, the day of a festival can feel uncertain. Set your city and check it in one place.",
-    "Tirtha lists temples, gurdwaras, viharas and Jain temples in many cities, and coverage is still growing.",
+    "Tirtha lists temples and gurdwaras in many cities, and coverage is still growing.",
     "Your optional analytics and email stay off until you turn them on.",
     "Pathshala has learning paths and lessons you can open privately."
   ])("%s", (text) => expect(checkDiasporaCopy(text)).toEqual([]));

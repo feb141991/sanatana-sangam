@@ -74,8 +74,8 @@ export const PILLARS: readonly Pillar[] = [
     title: "Finding a place to go when you move",
     audience: "People who have just moved to a new city",
     insight: "Starting again, and wanting to find where your own community gathers.",
-    message: "A directory of temples, gurdwaras, viharas and Jain temples in many cities, with coverage still growing.",
-    claims: ["temples_directory", "four_traditions"],
+    message: "A directory of temples and gurdwaras in many cities, with coverage still growing.",
+    claims: ["temples_directory"],
     needsOccasion: false
   },
   {
