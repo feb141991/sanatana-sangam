@@ -235,7 +235,7 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Platform & Access",
     question: "When will the Kids Zone be available?",
     answer:
-      "Kids Zone is currently undergoing beta testing and curation. It is designed to offer parent-approved, ad-free dharmic learning paths featuring interactive story lessons, shloka chanting with correct pronunciation, and cultural grounding for the next generation.",
+      "Kids Zone is currently undergoing beta testing and curation. It is designed to offer parent-approved dharmic learning paths featuring interactive story lessons, shloka chanting with correct pronunciation, and cultural grounding for the next generation.",
   },
 ];
 
