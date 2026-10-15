@@ -4566,43 +4566,87 @@
         }
       }
 
-      .footer-status-pill {
+      .footer-golden-pill {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 5px 12px;
+        padding: 5px 13px;
         border-radius: 999px;
-        background: rgba(42, 107, 74, 0.08);
-        border: 1px solid rgba(42, 107, 74, 0.2);
-        color: #2A6B4A;
+        background: rgba(159, 99, 20, 0.16);
+        border: 1px solid rgba(216, 138, 28, 0.35);
+        color: #8c530b;
         font-size: 11px;
         font-weight: 600;
+        letter-spacing: 0.02em;
       }
 
-      .footer-status-pill span.dot-pulse {
+      .footer-golden-pill span.dot-gold {
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #2A6B4A;
+        background: var(--saffron);
+        box-shadow: 0 0 6px rgba(216, 138, 28, 0.6);
         animation: pulseDotLive 2s infinite;
+      }
+
+      .footer-brand-socials {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .brand-social-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-soft);
+        color: var(--ink-mid);
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .brand-social-btn:hover {
+        border-color: var(--saffron);
+        color: var(--saffron-dk);
+        transform: translateY(-2px);
+        background: rgba(216, 138, 28, 0.08);
       }
 
       .footer-social-links {
         display: flex;
         align-items: center;
         gap: 16px;
+        flex-wrap: wrap;
       }
 
       .footer-social-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         color: var(--ink-mid);
         text-decoration: none;
         font-size: 12px;
         font-weight: 600;
-        transition: color 0.2s;
+        transition: color 0.2s, transform 0.2s;
+      }
+
+      .footer-social-links a svg {
+        flex-shrink: 0;
+        transition: stroke 0.2s;
       }
 
       .footer-social-links a:hover {
         color: var(--saffron-dk);
+        transform: translateY(-1px);
+      }
+
+      .footer-social-links a:hover svg {
+        stroke: var(--saffron-dk);
       }
     </style>
 
@@ -6931,11 +6975,6 @@
         <div class="festivals-grid" id="festivals-grid">
           <div class="calendar-state">Loading reviewed observances…</div>
         </div>
-        <p class="calendar-source-note">
-          Public preview: legacy Ujjain calendar profile, Asia/Kolkata. Dates in
-          the app are profile- and location-qualified where applicable.
-          <a href="/features/sacred-calendar">How Shoonaya handles sacred time →</a>
-        </p>
       </section>
       <script>
         !(function () {
@@ -8005,19 +8044,32 @@
               <p class="footer-brand-bio">
                 A non-profit research and spiritual foundation honoring timeless wisdom across Sanatan, Sikh, Jain, and Buddhist traditions.
               </p>
-              <div class="footer-brand-badges">
-                <div class="footer-brand-badge">
-                  <span class="dot-green"></span>
-                  100% Ad-Free Devotional Space
-                </div>
-                <div class="footer-brand-badge">
-                  <span class="dot-green"></span>
-                  Zero-Tracking &amp; Complete Privacy
-                </div>
-                <div class="footer-brand-badge">
-                  <span class="dot-green"></span>
-                  Open Ephemeris Research Architecture
-                </div>
+              <div class="footer-brand-socials" aria-label="Official Social Media">
+                <a href="https://www.instagram.com/shoonayaapp" target="_blank" rel="noreferrer" class="brand-social-btn" aria-label="Shoonaya on Instagram" title="Instagram">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                  </svg>
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61590436598797" target="_blank" rel="noreferrer" class="brand-social-btn" aria-label="Shoonaya on Facebook" title="Facebook">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                  </svg>
+                </a>
+                <a href="https://www.linkedin.com/company/shoonaya" target="_blank" rel="noreferrer" class="brand-social-btn" aria-label="Shoonaya on LinkedIn" title="LinkedIn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect width="4" height="12" x="2" y="9"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                </a>
+                <a href="mailto:info@shoonaya.com" class="brand-social-btn" aria-label="Email Support" title="Email Support">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                </a>
               </div>
             </div>
 
@@ -8065,7 +8117,7 @@
               <div class="footer-col-title">Trust &amp; Ethics</div>
               <ul class="footer-links-list">
                 <li><a href="/about">About Our Foundation</a></li>
-                <li><a href="/privacy">Privacy &amp; Zero-Tracking</a></li>
+                <li><a href="/privacy">Privacy</a></li>
                 <li><a href="/terms">Terms of Devotion</a></li>
                 <li><a href="/sources">Scriptural Source Repository</a></li>
                 <li><a href="mailto:info@shoonaya.com">Spiritual Support Contact</a></li>
@@ -8077,18 +8129,43 @@
           <!-- 4. Bottom Trust & Copyright Bar -->
           <div class="footer-bottom-bar">
             <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-              <div class="footer-status-pill">
-                <span class="dot-pulse"></span>
-                Ephemeris Engine 2026: Operational (Ayanamsha Lahiri)
+              <div class="footer-golden-pill">
+                <span class="dot-gold"></span>
+                Ancient foundation, modern doorway
               </div>
               <span>🇮🇳 Proudly Crafted with Devotion in Bharat</span>
             </div>
 
-            <div class="footer-social-links">
-              <a href="https://www.instagram.com/shoonayaapp" target="_blank" rel="noreferrer">Instagram</a>
-              <a href="https://www.facebook.com/profile.php?id=61590436598797" target="_blank" rel="noreferrer">Facebook</a>
-              <a href="https://www.linkedin.com/company/shoonaya" target="_blank" rel="noreferrer">LinkedIn</a>
-              <a href="mailto:info@shoonaya.com">Email Support</a>
+            <div class="footer-social-links" aria-label="Official Social Media">
+              <a href="https://www.instagram.com/shoonayaapp" target="_blank" rel="noreferrer" aria-label="Shoonaya on Instagram" title="Instagram">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                </svg>
+                <span>Instagram</span>
+              </a>
+              <a href="https://www.facebook.com/profile.php?id=61590436598797" target="_blank" rel="noreferrer" aria-label="Shoonaya on Facebook" title="Facebook">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+                <span>Facebook</span>
+              </a>
+              <a href="https://www.linkedin.com/company/shoonaya" target="_blank" rel="noreferrer" aria-label="Shoonaya on LinkedIn" title="LinkedIn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect width="4" height="12" x="2" y="9"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+                <span>LinkedIn</span>
+              </a>
+              <a href="mailto:info@shoonaya.com" aria-label="Email Support" title="Email Support">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+                <span>Email Support</span>
+              </a>
             </div>
 
             <div style="text-align: right;">
