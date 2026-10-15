@@ -20,12 +20,9 @@ const getPanchang = cache(() => {
 
 export async function generateMetadata(): Promise<Metadata> {
   const panchang = getPanchang();
-  const dateStr = new Date().toLocaleDateString('en-IN', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  // Use the same reference-location date as the astronomical calculation.
+  // Vercel runs in UTC, which can still be the previous civil day in Ujjain.
+  const dateStr = panchang.date;
 
   return {
     title: `Panchang and Astrology Hub for ${dateStr} | Shoonaya`,

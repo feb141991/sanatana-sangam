@@ -52,6 +52,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 
 ### Decisions
 
+- [Search Console Evidence and Indexing Triage](decisions/gsc-indexing-evidence.md) — classify URLs by intent and reported state; treat submissions as requests, and evaluate changes only from refreshed GSC evidence
 - [Shoonaya Brand Positioning](decisions/shoonaya-brand-positioning.md) — approved tagline and descriptor, daily sacred-time job, tradition-distinct voice, and claims to avoid
 - [Shoonaya Agent Operating Model](decisions/shoonaya-agent-operating-model.md) — How role agents, graphify, and knowledge curation support the team
 - [Marketing Feature Routing](decisions/feature-card-routing.md) — Feature cards link to public detail pages and convert through the verified Android beta gateway

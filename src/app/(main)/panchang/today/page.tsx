@@ -12,12 +12,8 @@ const getDefaultPanchang = cache(() => {
 
 export async function generateMetadata(): Promise<Metadata> {
   const panchang = getDefaultPanchang();
-  const dateStr = new Date().toLocaleDateString('en-IN', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  // Keep the page title aligned with the Ujjain reference Panchang date.
+  const dateStr = panchang.date;
 
   return {
     title: `Panchang for ${dateStr} — ${panchang.tithi}, ${panchang.nakshatra} | Shoonaya`,

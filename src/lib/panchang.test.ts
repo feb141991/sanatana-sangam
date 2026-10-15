@@ -1,10 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { getNextBrahmaMuhurtaInstant, getPanchangTimes } from './panchang';
+import {
+  calculatePanchang,
+  getNextBrahmaMuhurtaInstant,
+  getPanchangTimes,
+  REFERENCE_LOCATION_UJJAIN,
+} from './panchang';
 
 // Tirana, Albania -- the real-world case this function exists to fix: a user
 // here must never have their notification computed from Ujjain's sunrise.
 const TIRANA_LAT = 41.3275;
 const TIRANA_LON = 19.8189;
+
+describe('calculatePanchang date labels', () => {
+  it('uses the reference location date when UTC is still on the previous day', () => {
+    const justAfterMidnightInUjjain = new Date('2026-10-15T20:00:00.000Z');
+    const result = calculatePanchang(
+      justAfterMidnightInUjjain,
+      REFERENCE_LOCATION_UJJAIN.lat,
+      REFERENCE_LOCATION_UJJAIN.lon,
+      REFERENCE_LOCATION_UJJAIN.tz,
+    );
+
+    expect(result.date).toBe('Friday, 16 October 2026');
+  });
+});
 
 describe('getNextBrahmaMuhurtaInstant', () => {
   it('returns null when coordinates are missing, rather than defaulting to a fixed location', () => {

@@ -163,7 +163,7 @@ export const marketingFeatures: readonly MarketingFeature[] = [
     imageSrc: "/relics/prarthana-pothi.png",
     deepLinks: [
       { label: "Explore Pathshala", href: "/pathshala", isPrimary: true },
-      { label: "Bhagavad Gita Course", href: "/pathshala/bhagavad-gita" },
+      { label: "Bhagavad Gita Course", href: "/pathshala/bhagavad-gita-intro" },
       { label: "Bhakti Library", href: "/bhakti" },
     ],
   },

@@ -90,6 +90,8 @@ export default function PanchangHub({ panchang }: Props) {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
+      // Match the Ujjain reference calendar instead of the server's UTC day.
+      timeZone: 'Asia/Kolkata',
     });
   }, [today]);
 
