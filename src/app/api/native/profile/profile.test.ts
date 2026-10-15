@@ -124,6 +124,24 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(updatedUserFilter).toBe("user-preferences");
   });
 
+  it("accepts product analytics consent as a separate opt-in setting", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-analytics-consent" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ consent_product_analytics: true }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({ consent_product_analytics: true });
+    expect(updatedUserFilter).toBe("user-analytics-consent");
+    expect((await res.json()).persisted).toEqual({ consent_product_analytics: true });
+  });
+
   it("persists Japa reminder opt-in and its validated local time for the authenticated owner", async () => {
     getApiUser.mockResolvedValue({
       user: { id: "user-japa" },

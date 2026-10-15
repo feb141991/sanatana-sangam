@@ -23,6 +23,7 @@ const EDITABLE_BOOLEAN_FIELDS = new Set([
   "wants_family_notifications",
   "consent_religious_data",
   "consent_activity_personalization",
+  "consent_product_analytics",
   "wants_sankalpa_midpoint_reminders",
 ]);
 
