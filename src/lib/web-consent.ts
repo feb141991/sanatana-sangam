@@ -45,10 +45,24 @@ export function hasWebConsent(category: 'analytics' | 'advertising') {
   }
 }
 
+// Google Analytics 4 names its cookies after the measurement id (`_ga_ABC123`, `_gat_gtag_G_ABC123`), so a fixed list
+// cannot cover them: withdrawing consent also clears every cookie that starts with these prefixes.
+const GA_COOKIE_PREFIXES = /^(_ga_|_gat_|_gac_)/;
+
+function presentCookieNames(): string[] {
+  try {
+    return document.cookie.split(';').map((entry) => entry.split('=')[0].trim()).filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 export function clearVendorState(previous: WebConsentPreferences, next: WebConsentPreferences) {
   if (typeof window === 'undefined') return;
-  if (previous.analytics && !next.analytics) clearKeys(['_ga', '_gid', '_gat']);
-  if (previous.advertising && !next.advertising) clearKeys(['__gads', '__gpi', 'google_ama_config']);
+  if (previous.analytics && !next.analytics) {
+    clearKeys(['_ga', '_gid', '_gat', ...presentCookieNames().filter((name) => GA_COOKIE_PREFIXES.test(name))]);
+  }
+  if (previous.advertising && !next.advertising) clearKeys(['__gads', '__gpi', '__eoi', 'google_ama_config']);
 }
 
 function clearKeys(names: string[]) {
