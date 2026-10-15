@@ -10,26 +10,36 @@ import {
 describe("Admin Route Registry", () => {
   describe("Structure & Coverage", () => {
     it("contains all operational routes including log explorer", () => {
-      expect(ADMIN_ROUTES.length).toBe(18);
+      // Every console page that is meant to be reachable from the sidebar and the route search. The list is the
+      // contract: adding a page means adding it here on purpose, instead of a bare count that goes stale.
+      const expected = [
+        "/admin",
+        "/admin/moderation",
+        "/admin/calendar-governance",
+        "/admin/dharm-veer-review",
+        "/admin/calendar-dates",
+        "/admin/calendar-evidence",
+        "/admin/monitoring",
+        "/admin/logs",
+        "/admin/rag-retrieval",
+        "/admin/crons",
+        "/admin/notifications",
+        "/admin/observance-content",
+        "/admin/users",
+        "/admin/early-access",
+        "/admin/tirtha",
+        "/admin/marketing",
+        "/admin/broadcast",
+        "/admin/hindi-generator",
+        "/admin/festival-quiz",
+        "/admin/mandali-prompts",
+        "/admin/marketing/social",
+        "/admin/reports",
+        "/admin/settings",
+      ];
       const paths = ADMIN_ROUTES.map((r) => r.path);
-      expect(paths).toContain("/admin");
-      expect(paths).toContain("/admin/moderation");
-      expect(paths).toContain("/admin/calendar-governance");
-      expect(paths).toContain("/admin/dharm-veer-review");
-      expect(paths).toContain("/admin/monitoring");
-      expect(paths).toContain("/admin/logs");
-      expect(paths).toContain("/admin/rag-retrieval");
-      expect(paths).toContain("/admin/crons");
-      expect(paths).toContain("/admin/notifications");
-      expect(paths).toContain("/admin/observance-content");
-      expect(paths).toContain("/admin/users");
-      expect(paths).toContain("/admin/early-access");
-      expect(paths).toContain("/admin/tirtha");
-      expect(paths).toContain("/admin/broadcast");
-      expect(paths).toContain("/admin/marketing");
-      expect(paths).toContain("/admin/hindi-generator");
-      expect(paths).toContain("/admin/reports");
-      expect(paths).toContain("/admin/settings");
+      expect([...paths].sort()).toEqual([...expected].sort());
+      expect(new Set(paths).size).toBe(paths.length); // no route is listed twice
     });
 
     it("has 5 distinct navigation groups with non-empty items", () => {

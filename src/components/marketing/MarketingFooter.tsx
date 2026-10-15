@@ -203,7 +203,7 @@ export function MarketingFooter() {
             </div>
             <div className="flex items-center gap-2 text-xs text-[var(--text-dim)]">
               <ShieldCheck className="size-3.5" />
-              <span>100% Ad-Free · Private by Design</span>
+              <span>Private by Design</span>
             </div>
           </div>
 

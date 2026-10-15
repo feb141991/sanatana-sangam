@@ -294,3 +294,79 @@ describe("Marketing Campaign Dispatcher", () => {
     expect(whatsappSendText).not.toHaveBeenCalled();
   });
 });
+
+describe("Marketing Campaign Dispatcher: tracked links", () => {
+  beforeEach(() => {
+    sendShoonayaEmail.mockReset();
+    whatsappSendText.mockReset();
+    whatsappIsMock = false;
+    (process.env as any).NODE_ENV = "test";
+    (process.env as any).VERCEL_ENV = "test";
+  });
+
+  const emailClaim = [{ id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "email", status: "claimed" } as any];
+  const emailProfile = { "u-1": { id: "u-1", marketing_consent: true, email_newsletter: true, is_banned: false, unsubscribe_token: "t1" } };
+  const queryOf = (url: string) => Object.fromEntries(new URL(url).searchParams);
+
+  async function sendEmail(variant: MarketingCampaignVariant) {
+    sendShoonayaEmail.mockResolvedValue({ success: true, id: "m1" });
+    const { supabase } = createMockSupabase({ claimedRows: emailClaim, profiles: emailProfile, emails: { "u-1": "a@example.com" } });
+    await dispatchMarketingBatch(supabase, { campaign: baseCampaign({ campaign_key: "diwali-2026" }), variant, dryRun: false });
+    return sendShoonayaEmail.mock.calls[0][0];
+  }
+
+  it("a bare-homepage call to action is sent as the tagged smart app link", async () => {
+    const sent = await sendEmail(approvedVariant({ cta_url: "https://www.shoonaya.com" }));
+    expect(sent.ctaUrl.startsWith("https://www.shoonaya.com/get?")).toBe(true);
+    expect(queryOf(sent.ctaUrl)).toEqual({ utm_source: "shoonaya", utm_medium: "email", utm_campaign: "diwali-2026", utm_content: "en" });
+  });
+
+  it("a specific page is kept and tagged", async () => {
+    const sent = await sendEmail(approvedVariant({ cta_url: "https://www.shoonaya.com/festival/diwali" }));
+    const url = new URL(sent.ctaUrl);
+    expect(url.pathname).toBe("/festival/diwali");
+    expect(url.searchParams.get("utm_campaign")).toBe("diwali-2026");
+  });
+
+  it("a missing call to action also becomes the smart link", async () => {
+    const sent = await sendEmail(approvedVariant({ cta_url: null }));
+    expect(new URL(sent.ctaUrl).pathname).toBe("/get");
+  });
+
+  it("links inside the email body are tagged; the unsubscribe link is not", async () => {
+    const sent = await sendEmail(approvedVariant({ body: "Today: https://www.shoonaya.com/panchang" }));
+    expect(sent.body).toContain("utm_campaign=diwali-2026");
+    expect(sent.unsubUrl).toContain("token=t1");
+    expect(sent.unsubUrl).not.toContain("utm_");
+  });
+
+  it("a third-party call to action is left exactly as approved", async () => {
+    const sent = await sendEmail(approvedVariant({ cta_url: "https://example.com/offer" }));
+    expect(sent.ctaUrl).toBe("https://example.com/offer");
+  });
+
+  it("WhatsApp: a plain 'shoonaya.com' mention is sent as the tagged smart link, with the messaging medium", async () => {
+    whatsappSendText.mockResolvedValue({ messageId: "wa-1" });
+    const { supabase } = createMockSupabase({
+      claimedRows: [{ id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "whatsapp", status: "claimed" } as any],
+      profiles: { "u-1": { id: "u-1", marketing_consent: true, whatsapp_opt_in: true, whatsapp_number: "+14155552671", is_banned: false } }
+    });
+    await dispatchMarketingBatch(supabase, {
+      campaign: baseCampaign({ campaign_key: "diwali-2026" }),
+      variant: approvedVariant({ channel: "whatsapp", body: "*Daily Dharma* Open Shoonaya: shoonaya.com or write to support@shoonaya.com" }),
+      dryRun: false
+    });
+    const body: string = whatsappSendText.mock.calls[0][0].body;
+    expect(body).toMatch(/Open Shoonaya: https:\/\/www\.shoonaya\.com\/get\?/);
+    expect(body).toContain("utm_medium=messaging");
+    expect(body).toContain("support@shoonaya.com");
+  });
+
+  it("tagging does not change the approved copy stored on the variant", async () => {
+    const variant = approvedVariant({ cta_url: "https://www.shoonaya.com", body: "See https://www.shoonaya.com/panchang" });
+    await sendEmail(variant);
+    expect(variant.cta_url).toBe("https://www.shoonaya.com");
+    expect(variant.body).toBe("See https://www.shoonaya.com/panchang");
+    expect(variantMatchesApprovedManifest(variant)).toBe(true);
+  });
+});

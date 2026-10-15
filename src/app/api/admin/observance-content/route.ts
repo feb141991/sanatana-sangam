@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyAdminCookieAuth } from "@/lib/admin-auth";
+import { ADMIN_COOKIE, verifyAdminCookieAuth, verifyAdminToken } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { generateWithProvider } from "@/lib/ai/providers/inference";
 
@@ -7,6 +7,12 @@ export const runtime = "nodejs";
 
 function audit(db: any, action: string, entityType: string, entityId: string | null, detail: Record<string, unknown>) {
   return db.from("observance_content_audit_log").insert({ action, entity_type: entityType, entity_id: entityId, detail });
+}
+
+/** Who is acting, for the review trail. The session was already verified; this only reads the name out of it. */
+async function reviewerName(request: NextRequest): Promise<string> {
+  const session = await verifyAdminToken(request.cookies.get(ADMIN_COOKIE)?.value ?? "");
+  return session?.username ?? "admin";
 }
 
 function parseJson(text: string): any {
@@ -288,6 +294,7 @@ export async function POST(request: NextRequest) {
   if (authError) return authError;
   const body = await request.json();
   const db = createAdminClient() as any;
+  const reviewer = await reviewerName(request);
 
   if (body.action === "add_source") {
     const { data, error } = await db.from("observance_content_sources").insert({
@@ -308,7 +315,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (body.action === "approve_source") {
-    const { error } = await db.from("observance_content_sources").update({ approved: true, reviewed_by: "admin", reviewed_at: new Date().toISOString() }).eq("id", body.sourceId);
+    const { error } = await db.from("observance_content_sources").update({ approved: true, reviewed_by: reviewer, reviewed_at: new Date().toISOString() }).eq("id", body.sourceId);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     await audit(db, "source_approved", "source", body.sourceId, {});
     return NextResponse.json({ ok: true });
@@ -318,36 +325,13 @@ export async function POST(request: NextRequest) {
     const [{ data: definition }, { data: sources }, { data: existing }] = await Promise.all([
       db.from("observance_definitions").select("id, slug, display_name, tradition").eq("id", body.definitionId).single(),
       db.from("observance_content_sources").select("*").eq("definition_id", body.definitionId).eq("approved", true),
-      db.from("observance_story_versions").select("version, id").eq("definition_id", body.definitionId).order("version", { ascending: false }).limit(1),
+      db.from("observance_story_versions").select("version").eq("definition_id", body.definitionId).order("version", { ascending: false }).limit(1),
     ]);
     if (!definition) return NextResponse.json({ error: "Unknown observance" }, { status: 404 });
 
-    let finalSources = sources ?? [];
-    if (!finalSources.length && existing?.[0]?.id) {
-      const { data: prevTrans } = await db
-        .from("observance_story_translations")
-        .select("language, origin, significance, teaser")
-        .eq("story_version_id", existing[0].id);
-
-      if (prevTrans?.length) {
-        const en = prevTrans.find((t: any) => t.language === "en") || prevTrans[0];
-        const { data: autoSource } = await db.from("observance_content_sources").insert({
-          definition_id: body.definitionId,
-          title: `${definition.display_name} Canonical Ground Truth`,
-          author: "Puranic Tradition Canon",
-          source_url: "https://shoonaya.com/scriptures",
-          citation: "Purana & Vrat Katha Traditional Transmission",
-          source_tier: 1,
-          rights_status: "public_domain",
-          excerpt: `${en.teaser}\n\n${en.origin}\n\n${en.significance}`.trim().slice(0, 2000),
-          language: "en",
-          approved: true,
-          reviewed_by: "system_canonical",
-          reviewed_at: new Date().toISOString(),
-        }).select("*").single();
-        if (autoSource) finalSources = [autoSource];
-      }
-    }
+    // Only sources a person has approved may ground a draft. Earlier generated text is never turned into a "source":
+    // that would let the model approve its own output as Tier 1 evidence.
+    const finalSources = sources ?? [];
 
     if (!finalSources.length) {
       return NextResponse.json({ error: "At least one approved source is required. Please add a scriptural excerpt in the Sources panel." }, { status: 409 });
@@ -359,10 +343,9 @@ export async function POST(request: NextRequest) {
       system: "You are Shoonaya editorial drafting software. Use only supplied excerpts. Never invent quotations, rituals, history, or citations. Return JSON only.",
       user: `Draft a festival story for ${definition.display_name} (${definition.tradition}). Sources: ${JSON.stringify(sourcePacket)}.${customPromptInstruction}
 
-CRITICAL MULTILINGUAL QUALITY & DEPTH:
-- Hindi ("hi"): Provide complete, rich, authentic Devanagari Hindi text. The Vrat Katha/Origin, spiritual significance, and ritual steps must be detailed and extensive (minimum 250-400 words each for origin and significance).
-- Punjabi ("pa"): Provide fluent, respectful Gurmukhi script text. Ensure full narrative depth matching English and Hindi—NEVER provide brief 1-line stubs.
-- English ("en"): Provide elegant, reverent English prose adhering strictly to tradition.
+LANGUAGES AND LENGTH:
+- Write English ("en"), Hindi ("hi", Devanagari) and Punjabi ("pa", Gurmukhi), each saying the same things in fluent, respectful prose.
+- Length follows the sources. Say everything they support and nothing more: never add story, ritual, history or detail that is not in the supplied excerpts just to make a section longer. If the sources are thin, the text is short, and an empty "rituals" list or null "verse" is the correct answer.
 Return JSON only: {"translations":{"en":{"teaser":"","origin":"","significance":"","rituals":[],"verse":null,"personalPractice":""},"hi":{...same keys...},"pa":{...same keys...}},"shareTemplates":[{"language":"en|hi|pa","audience":"sibling|family|teacher|community|friend|neutral","cta":"","title":"","message":""}]}. Include a neutral share template in every language plus any context-specific template justified by the observance.`,
     }, { responseFormat: "json", maxOutputTokens: 5000 });
     const draft = parseJson(result.text);
@@ -425,10 +408,10 @@ Return JSON only: {"translations":{"en":{"teaser":"","origin":"","significance":
 
     const customGuidance = customPrompt ? `\nAdditional Editorial Guidance: ${customPrompt}` : "";
     const result = await generateWithProvider({
-      system: "You are Shoonaya senior devotional translator and scholar. Expand and translate the sacred observance story into rich, authentic, complete text. Return JSON only.",
-      user: `Expand the observance story for ${definition.display_name} (${definition.tradition}) into target languages: ${languages.join(", ")}.\n\nContext / Anchor:\n${anchorText}${customGuidance}\n\nCRITICAL:
-- Hindi ("hi"): Rich, full devotional Devanagari Hindi with complete Katha details, significance, and puja rituals (minimum 300 words).
-- Punjabi ("pa"): Rich, fluent Gurmukhi Punjabi with complete Katha details matching Hindi depth (minimum 300 words). DO NOT write a single-sentence stub.
+      system: "You are Shoonaya devotional translator. Translate the supplied English text faithfully. Never add story, ritual, history, quotation or citation that is not in it. Return JSON only.",
+      user: `Translate the observance story for ${definition.display_name} (${definition.tradition}) into: ${languages.join(", ")}.\n\nContext / Anchor:\n${anchorText}${customGuidance}\n\nRULES:
+- Hindi ("hi"): fluent, respectful Devanagari. Punjabi ("pa"): fluent, respectful Gurmukhi.
+- Say what the English says, no more and no less. Do not lengthen it, and do not add anything the English does not contain.
 Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origin":"","significance":"","rituals":[],"personalPractice":""}`).join(", ")}}}`,
     }, { responseFormat: "json", maxOutputTokens: 4000 });
 
@@ -436,10 +419,11 @@ Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origi
     if (!parsed?.translations) return NextResponse.json({ error: "Failed to parse generated translations" }, { status: 502 });
 
     const now = new Date().toISOString();
+    const saved: string[] = [];
     for (const lang of languages) {
       const trans = parsed.translations[lang];
       if (trans && trans.origin && trans.significance) {
-        await db.from("observance_story_translations").upsert({
+        const { error: upsertError } = await db.from("observance_story_translations").upsert({
           story_version_id: storyId,
           language: lang,
           teaser: trans.teaser || enAnchor?.teaser || `${definition.display_name}`,
@@ -450,20 +434,23 @@ Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origi
           review_status: "draft",
           updated_at: now,
         }, { onConflict: "story_version_id,language" });
+        if (upsertError) return NextResponse.json({ error: "Translation could not be stored", detail: upsertError.message, saved }, { status: 500 });
+        saved.push(lang);
       }
     }
+    if (!saved.length) return NextResponse.json({ error: "The provider returned no usable translation" }, { status: 502 });
 
-    await audit(db, "translations_enriched", "story_version", storyId, { languages, customPrompt });
-    return NextResponse.json({ ok: true, languages });
+    await audit(db, "translations_enriched", "story_version", storyId, { languages: saved, customPrompt });
+    return NextResponse.json({ ok: true, languages: saved });
   }
 
   if (body.action === "reject_draft") {
     const now = new Date().toISOString();
     const reviewNotes = body.reviewNotes || "Marked as Not Approved / Needs Revision";
     const [{ error: translationError }, { error: shareError }, { error: storyError }] = await Promise.all([
-      db.from("observance_story_translations").update({ review_status: "rejected", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", body.storyId),
-      db.from("observance_share_templates").update({ review_status: "rejected", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", body.storyId),
-      db.from("observance_story_versions").update({ status: "rejected", reviewed_by: "admin", reviewed_at: now, review_notes: reviewNotes }).eq("id", body.storyId),
+      db.from("observance_story_translations").update({ review_status: "rejected", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", body.storyId),
+      db.from("observance_share_templates").update({ review_status: "rejected", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", body.storyId),
+      db.from("observance_story_versions").update({ status: "rejected", reviewed_by: reviewer, reviewed_at: now, review_notes: reviewNotes }).eq("id", body.storyId),
     ]);
     const error = translationError || shareError || storyError;
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -504,9 +491,9 @@ Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origi
   if (body.action === "approve_draft") {
     const now = new Date().toISOString();
     const [{ error: translationError }, { error: shareError }, { error: storyError }] = await Promise.all([
-      db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", body.storyId),
-      db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", body.storyId),
-      db.from("observance_story_versions").update({ status: "approved", reviewed_by: "admin", reviewed_at: now, review_notes: body.reviewNotes || null }).eq("id", body.storyId),
+      db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", body.storyId),
+      db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", body.storyId),
+      db.from("observance_story_versions").update({ status: "approved", reviewed_by: reviewer, reviewed_at: now, review_notes: body.reviewNotes || null }).eq("id", body.storyId),
     ]);
     const error = translationError || shareError || storyError;
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -537,7 +524,7 @@ Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origi
 
   if (body.action === "approve_artwork") {
     const now = new Date().toISOString();
-    const { error } = await db.from("observance_artwork").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now, cultural_review_notes: body.reviewNotes || null }).eq("id", body.artworkId);
+    const { error } = await db.from("observance_artwork").update({ review_status: "approved", reviewed_by: reviewer, reviewed_at: now, cultural_review_notes: body.reviewNotes || null }).eq("id", body.artworkId);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     await audit(db, "artwork_approved", "artwork", body.artworkId, { reviewNotes: body.reviewNotes || null });
     return NextResponse.json({ ok: true });
@@ -560,7 +547,7 @@ Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origi
     }
     const now = new Date().toISOString();
     await db.from("observance_story_versions").update({ status: "archived" }).neq("id", storyId).eq("definition_id", body.definitionId).eq("status", "published");
-    const { error } = await db.from("observance_story_versions").update({ status: "published", reviewed_by: "admin", reviewed_at: now, published_at: now }).eq("id", storyId);
+    const { error } = await db.from("observance_story_versions").update({ status: "published", reviewed_by: reviewer, reviewed_at: now, published_at: now }).eq("id", storyId);
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     await audit(db, "story_published", "story_version", storyId, { definitionId: body.definitionId });
     return NextResponse.json({ ok: true });
@@ -586,11 +573,11 @@ Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origi
     const nextStatus = publish ? "published" : "approved";
 
     const [{ error: translationError }, { error: shareError }, { error: storyError }] = await Promise.all([
-      db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", storyId),
-      db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", storyId),
+      db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", storyId),
+      db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", storyId),
       db.from("observance_story_versions").update({
         status: nextStatus,
-        reviewed_by: "admin",
+        reviewed_by: reviewer,
         reviewed_at: now,
         published_at: publish ? now : null,
         review_notes: reviewNotes || "Manually verified by admin",
@@ -634,11 +621,11 @@ Return JSON: {"translations":{${languages.map((l) => `"${l}":{"teaser":"","origi
       if (!story) continue;
 
       await Promise.all([
-        db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", story.id),
-        db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: "admin", reviewed_at: now }).eq("story_version_id", story.id),
+        db.from("observance_story_translations").update({ review_status: "approved", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", story.id),
+        db.from("observance_share_templates").update({ review_status: "approved", reviewed_by: reviewer, reviewed_at: now }).eq("story_version_id", story.id),
         db.from("observance_story_versions").update({
           status: nextStatus,
-          reviewed_by: "admin",
+          reviewed_by: reviewer,
           reviewed_at: now,
           published_at: publish ? now : null,
           review_notes: "Manually verified by admin via bulk approval",

@@ -317,7 +317,7 @@ export default function ObservanceContentStudioPage() {
     return list;
   }, [rows, query, traditionFilter, statusFilter, kindFilter, quickFilter, sortField, sortOrder]);
 
-  async function handleAction(body: Record<string, unknown>, successMsg: string) {
+  async function handleAction(body: Record<string, unknown>, successMsg: string): Promise<boolean> {
     setError(null);
     setPublishGateError(null);
     setActionSuccess(null);
@@ -330,14 +330,16 @@ export default function ObservanceContentStudioPage() {
       const payload = await response.json();
       if (response.status === 409 && payload.error === "Publication gate failed") {
         setPublishGateError(payload);
-        return;
+        return false;
       }
       if (!response.ok) throw new Error(payload.error || "Action failed");
       setActionSuccess(successMsg);
       await load();
       if (selectedRow) await loadDetail(selectedRow);
+      return true;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Execution failed");
+      return false;
     }
   }
 
@@ -1041,7 +1043,7 @@ export default function ObservanceContentStudioPage() {
                 type="button"
                 onClick={() => setShowRegenerateModal(true)}
                 className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-colors"
-                title="Regenerate or enrich story with AI and custom prompt"
+                title="Regenerate the story, or translate it into Hindi and Punjabi, with optional guidance"
               >
                 <Sparkles size={14} />
                 <span>Regenerate with AI</span>
@@ -1585,9 +1587,9 @@ export default function ObservanceContentStudioPage() {
                         : "border-black/10 bg-white hover:bg-gray-50 text-gray-700"
                     )}
                   >
-                    <div className="font-bold">⚡ Enrich Hindi & Punjabi</div>
+                    <div className="font-bold">🌐 Translate to Hindi & Punjabi</div>
                     <div className="text-[11px] text-gray-500 font-normal mt-0.5">
-                      Expands Katha, significance and rituals in Hi & Pa; keeps current English version intact.
+                      Translates the current English version faithfully into Hi & Pa, adding nothing; English stays intact.
                     </div>
                   </button>
 
@@ -1616,14 +1618,16 @@ export default function ObservanceContentStudioPage() {
                   rows={4}
                   value={customPrompt}
                   onChange={(e) => setCustomPrompt(e.target.value)}
-                  placeholder="e.g. Provide full length Harishchandra Vrat Katha in Hindi and Punjabi, including detailed fast timings, evening aarti, and traditional rituals. Ensure Hindi and Punjabi are rich and detailed, not short summaries."
+                  placeholder="e.g. Keep the tone gentle and plain. Use the word 'Vrat' rather than 'fast'."
                   className="w-full rounded-xl border border-black/15 p-3 text-xs leading-relaxed focus:ring-2 focus:ring-purple-500/20 bg-gray-50/50"
                 />
                 <p className="text-[11px] text-gray-500 mt-1">
-                  The AI adheres strictly to authentic canon excerpts while tailoring narrative depth and ritual detail to your prompt.
+                  The AI may only use the approved source excerpts. Guidance changes tone and wording, never the facts; to add detail, add and approve a source first.
                 </p>
               </div>
             </div>
+
+            {error && <p role="alert" className="rounded-xl border border-rose-500/30 bg-rose-50 p-3 text-xs font-semibold text-rose-800">{error}</p>}
 
             <div className="flex items-center gap-3 pt-2">
               <button
@@ -1641,25 +1645,24 @@ export default function ObservanceContentStudioPage() {
                   setError(null);
                   setActionSuccess(null);
                   try {
-                    if (regenTarget === "hi_pa" && detail?.story?.id) {
-                      await handleAction({
-                        action: "enrich_translations",
-                        storyId: detail.story.id,
-                        definitionId: selectedRow.id,
-                        targetLanguages: ["hi", "pa"],
-                        customPrompt: customPrompt || "Provide full, authentic, rich devotional narrative in Hindi and Punjabi. Expand the Vrat Katha, spiritual significance, and detailed step-by-step rituals.",
-                      }, `Enriched Hindi & Punjabi translations for ${selectedRow.display_name}!`);
-                    } else {
-                      await handleAction({
-                        action: "generate_draft",
-                        definitionId: selectedRow.id,
-                        customPrompt: customPrompt || undefined,
-                      }, `Generated new draft version for ${selectedRow.display_name}!`);
+                    const worked = regenTarget === "hi_pa" && detail?.story?.id
+                      ? await handleAction({
+                          action: "enrich_translations",
+                          storyId: detail.story.id,
+                          definitionId: selectedRow.id,
+                          targetLanguages: ["hi", "pa"],
+                          customPrompt: customPrompt || undefined,
+                        }, `Translated ${selectedRow.display_name} into Hindi & Punjabi.`)
+                      : await handleAction({
+                          action: "generate_draft",
+                          definitionId: selectedRow.id,
+                          customPrompt: customPrompt || undefined,
+                        }, `Generated new draft version for ${selectedRow.display_name}!`);
+                    // On failure the window stays open with the prompt in it, and the error is shown on the page.
+                    if (worked) {
+                      setShowRegenerateModal(false);
+                      setCustomPrompt("");
                     }
-                    setShowRegenerateModal(false);
-                    setCustomPrompt("");
-                    await load();
-                    if (selectedRow) await loadDetail(selectedRow);
                   } catch (err: any) {
                     setError(err.message || "Regeneration failed");
                   } finally {

@@ -150,13 +150,21 @@ function IssueRow({ post, onResolved }: { post: PostSummary; onResolved: () => v
 export default function IssuesPage() {
   const [posts, setPosts] = useState<PostSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const res = await fetch("/api/admin/marketing/social/posts?stage=needs_investigation&limit=100");
-    const data = await res.json();
-    setPosts(data.posts ?? []);
-    setLoading(false);
+    setLoadError(null);
+    try {
+      const res = await fetch("/api/admin/marketing/social/posts?stage=needs_investigation&limit=100");
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !Array.isArray(data?.posts)) throw new Error(data?.error || `The list could not be loaded (HTTP ${res.status}).`);
+      setPosts(data.posts);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : "The list could not be loaded.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -186,6 +194,12 @@ export default function IssuesPage() {
 
         {loading ? (
           <div className="p-12 text-center text-xs text-[var(--text-muted)]">Loading...</div>
+        ) : loadError ? (
+          <div role="alert" className="p-8 text-center rounded-2xl border border-rose-500/30 bg-rose-50 flex flex-col items-center gap-2">
+            <AlertTriangle size={24} className="text-rose-600" />
+            <p className="text-sm font-semibold text-rose-800">Could not check for posts that need investigation</p>
+            <p className="text-xs text-rose-800">{loadError} This is not an all-clear. Press Refresh to try again.</p>
+          </div>
         ) : posts.length === 0 ? (
           <div className="p-12 text-center rounded-2xl border border-dashed border-[var(--border-subtle)] bg-[var(--surface-card)] flex flex-col items-center gap-2">
             <CheckCircle2 size={24} className="text-emerald-500" />

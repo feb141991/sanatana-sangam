@@ -14,15 +14,17 @@ export default function MandaliRegistry() {
   const [loading, setLoading] = useState(true);
   const [mandalis, setMandalis] = useState<any[]>([]);
   const [search, setSearch] = useState('');
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchMandalis() {
       try {
         const res = await fetch('/api/admin/mandalis');
-        const data = await res.json();
-        setMandalis(data || []);
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !Array.isArray(data)) throw new Error((data && data.error) || `The registry could not be loaded (HTTP ${res.status}).`);
+        setMandalis(data);
       } catch (err) {
-        console.error('Failed to fetch mandalis');
+        setLoadError(err instanceof Error ? err.message : 'The registry could not be loaded.');
       } finally {
         setLoading(false);
       }
@@ -78,6 +80,12 @@ export default function MandaliRegistry() {
             <Filter size={18} /> Filter Traditions
           </button>
         </div>
+
+        {loadError && (
+          <p role="alert" className="mb-6 rounded-xl border border-rose-500/30 bg-rose-50 p-4 text-xs font-semibold text-rose-800">
+            {loadError} Reload the page to try again. An empty list below does not mean there are no mandalis.
+          </p>
+        )}
 
         {/* Mandali Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

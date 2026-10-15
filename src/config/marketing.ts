@@ -132,11 +132,11 @@ export const marketingFeatures: readonly MarketingFeature[] = [
     summary:
       "Illustrated moral wisdom tales, phonetically guided mantras, and cultural grounding built for young minds.",
     description:
-      "A dharmic world built for little seekers to give every child a living, joyful connection to their roots. Features 50+ illustrated Panchatantra fables, Ramayana tales, Sikh saakhis, and Jain stories, plus phonetic mantra breakdowns that help young voices recite with correct swara and pronunciation—in a parent-approved, ad-free environment.",
+      "A dharmic world built for little seekers to give every child a living, joyful connection to their roots. Features 50+ illustrated Panchatantra fables, Ramayana tales, Sikh saakhis, and Jain stories, plus phonetic mantra breakdowns that help young voices recite with correct swara and pronunciation—in a parent-approved environment.",
     highlights: [
       "Illustrated Panchatantra, Jataka, and moral tales with ethics and life lessons",
       "Phonetically guided shloka and mantra learning for young voices",
-      "100% ad-free, algorithm-free sanctuary designed for reverence and cultural pride",
+      "A sanctuary designed for reverence and cultural pride",
     ],
     icon: Smile,
     imageSrc: "/relics/peacock-feather.png",
@@ -237,7 +237,7 @@ export const marketingFeatures: readonly MarketingFeature[] = [
       "Shoonaya connects practice with people through local discovery, considered conversation, and community spaces designed around belonging rather than algorithms. Share reflections, join discussions, and discover nearby gatherings.",
     highlights: [
       "Location-based discovery of nearby satsangs and temple circles",
-      "Calm, ad-free discussion spaces designed for reverence and respect",
+      "Calm discussion spaces designed for reverence and respect",
       "Shared learning circles and community announcements",
     ],
     icon: Users,

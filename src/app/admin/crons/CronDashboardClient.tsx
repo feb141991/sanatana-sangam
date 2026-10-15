@@ -498,9 +498,19 @@ export default function CronDashboardClient() {
                   const controller = new AbortController();
                   queueAbortControllerRef.current = controller;
                   try {
-                    await fetch("/api/notifications/dispatch", { method: "POST", signal: controller.signal });
-                    await fetchCrons();
-                  } catch {}
+                    const res = await fetch("/api/notifications/dispatch", { method: "POST", signal: controller.signal });
+                    if (!res.ok) {
+                      const body = await res.json().catch(() => null);
+                      setError(body?.error || `The notification queue could not be dispatched (HTTP ${res.status}).`);
+                    } else {
+                      await fetchCrons();
+                    }
+                  } catch (err) {
+                    // A deliberate cancel is not a failure.
+                    if (!(err instanceof DOMException && err.name === "AbortError")) {
+                      setError(err instanceof Error ? err.message : "The notification queue could not be dispatched.");
+                    }
+                  }
                   setDispatchingQueue(false);
                 }}
                 disabled={dispatchingQueue}

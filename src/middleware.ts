@@ -39,6 +39,7 @@ const ALWAYS_PUBLIC_EXACT = new Set([
   "/journal",
   "/blog",
   "/sources",
+  "/get", // smart app link used by campaigns: sends phones to the right store (src/app/get/route.ts)
   "/payment",
   "/login",
   "/signup",

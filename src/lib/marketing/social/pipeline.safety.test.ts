@@ -434,3 +434,34 @@ describe("Phase 2 safety matrix -- LinkedIn publisher is never invoked for a Fac
     expect(publishToLinkedIn).not.toHaveBeenCalled();
   });
 });
+
+describe("Phase 2 safety matrix -- platforms without a publisher", () => {
+  it("a twitter variant is skipped with a clear reason and is never sent to LinkedIn or anywhere else", async () => {
+    const db: Db = new Map();
+    const { variant } = seedApprovedPost(db);
+    variant.platform = "twitter";
+    const supabase = makeFakeSupabase(db);
+
+    await publishApprovedPost(supabase, "post-1", { manualPublishNow: false, triggeredBy: "worker-a" });
+
+    expect(publishToLinkedIn).not.toHaveBeenCalled();
+    expect(publishToFacebookPage).not.toHaveBeenCalled();
+    expect(variant.publish_status).toBe("skipped");
+    expect(variant.last_error_code).toBe("unsupported_platform");
+    expect(table(db, "social_publish_attempts")).toHaveLength(0);
+  });
+
+  it("a LinkedIn variant is still sent to LinkedIn", async () => {
+    const db: Db = new Map();
+    const { variant } = seedApprovedPost(db);
+    variant.platform = "linkedin";
+    variant.approved_manifest_hash = computeSocialVariantContentHash({ ...baseCaption(), platform: "linkedin" as never });
+    (publishToLinkedIn as any).mockResolvedValue({ outcome: "succeeded", externalPostId: "li-1" });
+    const supabase = makeFakeSupabase(db);
+
+    await publishApprovedPost(supabase, "post-1", { manualPublishNow: false, triggeredBy: "worker-a" });
+
+    expect(publishToLinkedIn).toHaveBeenCalledTimes(1);
+    expect(variant.publish_status).toBe("published");
+  });
+});

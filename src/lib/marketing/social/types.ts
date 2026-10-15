@@ -204,6 +204,8 @@ export interface PublisherSendInput {
   caption: string;
   hashtags: string[];
   ctaUrl: string | null;
+  /** The post's key; becomes utm_campaign on the app link in the published text. */
+  trackingCampaign?: string;
   imageUrl: string;
   idempotencyKey: string;
 }

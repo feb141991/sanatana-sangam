@@ -1,4 +1,4 @@
-import { postSlackModerationReport } from '@/lib/slack-alerts';
+import { postSlackModerationReport, scheduleSlack } from '@/lib/slack-alerts';
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
@@ -57,15 +57,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to submit report' }, { status: 500 });
   }
 
-  postSlackModerationReport({
+  scheduleSlack(() => postSlackModerationReport({
     reportId: streamId.trim(),
     contentType: 'Live Darshan Stream',
     reason: reportReason,
     reporterId: user.id,
     metadata: { streamId: streamId.trim() },
-  }).catch((err) => {
-    console.warn('[Slack Live Darshan Alert Error]', err);
-  });
+  }));
 
   return NextResponse.json({ success: true });
 }
