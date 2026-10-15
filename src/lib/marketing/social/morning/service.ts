@@ -100,6 +100,16 @@ async function saveWithheld(
   reason: WithheldReason,
   detail: string
 ): Promise<GenerateOutcome> {
+  // A card that already exists as a draft or a rejected card (this is a regenerate that failed) keeps what it has.
+  // Only a missing or already-withheld record is written, so a failed retry can never destroy a working card.
+  if (existing && existing.status !== "withheld") {
+    return {
+      tradition: base.tradition,
+      result: "withheld",
+      reason,
+      detail: `${detail} The existing ${existing.status} card was left as it was.`
+    };
+  }
   const fields = {
     status: "withheld",
     withheld_reason: reason,

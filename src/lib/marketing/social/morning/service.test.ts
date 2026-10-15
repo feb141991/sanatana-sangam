@@ -203,6 +203,42 @@ describe("generateMorningSet", () => {
     expect(row("hindu")).toMatchObject({ status: "approved", image_content_hash: hashBefore });
   });
 
+  it("a failed regenerate never destroys the card that was already there", async () => {
+    await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu"] });
+    const before = { ...row("hindu") };
+    renderOverride = () => Promise.reject(new CardRenderError("font_not_loaded", "Mukta did not load"));
+
+    const [outcome] = await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu"], regenerate: true });
+
+    expect(outcome).toMatchObject({ tradition: "hindu", result: "withheld", reason: "font_missing" });
+    expect(db.rows).toHaveLength(1);
+    expect(row("hindu")).toMatchObject({
+      status: "draft",
+      image_path: before.image_path,
+      image_content_hash: before.image_content_hash,
+      caption: before.caption
+    });
+  });
+
+  it("the same holds for a rejected card: a failed regenerate leaves it rejected, with its image", async () => {
+    await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu"] });
+    await rejectCard(db.client, row("hindu").id, "founder");
+    const imageBefore = row("hindu").image_path;
+    renderOverride = () => Promise.reject(new CardRenderError("content_too_long", "does not fit"));
+    const [outcome] = await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu"], regenerate: true });
+    expect(outcome).toMatchObject({ result: "withheld", reason: "render_failed" });
+    expect(row("hindu")).toMatchObject({ status: "rejected", image_path: imageBefore });
+  });
+
+  it("an upload failure during regenerate also leaves the existing card alone", async () => {
+    await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu"] });
+    const before = { ...row("hindu") };
+    db.uploadFails = true;
+    const [outcome] = await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu"], regenerate: true });
+    expect(outcome.result).toBe("error");
+    expect(row("hindu")).toMatchObject({ status: "draft", image_content_hash: before.image_content_hash });
+  });
+
   it("a withheld card is retried by the next plain click, so fixing the cause needs no extra step", async () => {
     await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["jain"] });
     expect(row("jain").status).toBe("withheld");
