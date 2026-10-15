@@ -83,6 +83,9 @@
     "verify:profiles-containment-shadow": "bash scripts/shadow/verify-profiles-containment-shadow.sh",
     "verify:compliance-engineering": "node scripts/verify-compliance-engineering.mjs",
     "verify:production-release": "node scripts/verify-production-release.mjs",
+    "verify:migrations:linked": "node scripts/check-supabase-migration-drift.mjs",
+    "test:migration-drift": "node --test scripts/check-supabase-migration-drift.test.mjs",
+    "verify:release:preflight": "npm test && npm run verify:migrations:linked",
     "test:client-errors": "npx tsx --test src/lib/client-error-contract.test.ts"
   },
   "dependencies": {
