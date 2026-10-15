@@ -251,6 +251,11 @@ async function getDecryptedAccessToken(account: SocialPlatformAccount): Promise<
   return decryptSocialToken(account.access_token_enc, account.key_version);
 }
 
+// Platforms this pipeline can actually publish to. "twitter" exists as a stored value (captions and reservations
+// know it) but no publisher is built, so a variant for it must never be sent: before this list existed, any value that
+// was not Facebook or Instagram fell through to LinkedIn and posted there.
+const SENDABLE_PLATFORMS: ReadonlySet<string> = new Set(["facebook", "instagram", "linkedin"]);
+
 async function sendVariant(
   supabase: any,
   variant: SocialPostVariant,
@@ -258,6 +263,7 @@ async function sendVariant(
   publicImageUrl: string,
   trackingCampaign: string
 ): Promise<void> {
+  if (!SENDABLE_PLATFORMS.has(variant.platform)) throw new Error(`No publisher for platform "${variant.platform}"`);
   const accessToken = await getDecryptedAccessToken(account);
   const attemptId = crypto.randomUUID();
   const idempotencyKey = `${variant.id}:${attemptId}`;
@@ -289,7 +295,8 @@ async function sendVariant(
   try {
     if (variant.platform === "facebook") result = await publishToFacebookPage(input);
     else if (variant.platform === "instagram") result = await publishToInstagram(input);
-    else result = await publishToLinkedIn(input);
+    else if (variant.platform === "linkedin") result = await publishToLinkedIn(input);
+    else throw new Error(`No publisher for platform "${variant.platform}"`);
   } catch (err) {
     result = { outcome: "unknown", errorSummary: sanitizeErrorSummary(err) };
   }
@@ -350,6 +357,12 @@ export async function publishApprovedPost(
 
   for (const row of (variants ?? []) as Array<SocialPostVariant & { social_platform_accounts: SocialPlatformAccount }>) {
     if (row.publish_status !== "pending") continue; // already published/failed/skipped/outcome_unknown -- leave alone
+
+    // Nothing can publish to this platform. Set it aside with a clear reason instead of sending it somewhere else.
+    if (!SENDABLE_PLATFORMS.has(row.platform)) {
+      await supabase.from("social_post_variants").update({ publish_status: "skipped", last_error_code: "unsupported_platform" }).eq("id", row.id).eq("publish_status", "pending");
+      continue;
+    }
 
     // Stale-approval check (plan section 7): any change to image bytes,
     // caption/hashtags/cta_url, or source content since approval
