@@ -72,6 +72,8 @@ vi.mock('@/lib/observance-notification-source', () => ({
   OCCURRENCE_BACKED_TITHI_SLUGS: new Set<string>(),
   deduplicateTithiVrats: <T extends { date: string; slug?: string | null; name?: string | null; route_slug?: string | null }>(obs: T[]) => obs,
   isWomenFocusedVrat: () => false,
+  // The scheduler builds each notification's tap target with this; the route test only needs a stable path.
+  buildObservanceActionPath: (o: { route_slug?: string | null; slug?: string | null }) => `/festival/${o.route_slug ?? o.slug ?? 'unknown'}`,
   fetchReviewedObservancesForNotifications: async () => ({
     observances: [{
       id: 'occ-preview',
