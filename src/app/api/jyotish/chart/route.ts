@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
     birth_timezone,
     is_primary    = false,
     session_token,
+    idempotency_key,
   } = body as Record<string, string | number | boolean | undefined>;
 
   if (!date_of_birth || birth_lat === undefined || birth_lng === undefined || !birth_timezone) {
@@ -86,6 +87,32 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  if (idempotency_key !== undefined &&
+      (typeof idempotency_key !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotency_key))) {
+    return NextResponse.json({ error: 'idempotency_key must be a UUID v4' }, { status: 400 });
+  }
+
+  const db = getAnonClient();
+  const findExistingRequest = async () => {
+    if (!idempotency_key) return { data: null, error: null };
+    let query = db.from('birth_profiles').select('*').eq('idempotency_key', idempotency_key);
+    query = owner_id
+      ? query.eq('owner_id', owner_id)
+      : query.is('owner_id', null).eq('session_token', session_token);
+    return query.maybeSingle();
+  };
+
+  if (idempotency_key) {
+    const existing = await findExistingRequest();
+    if (existing.error) {
+      console.error('[chart/route] idempotency lookup failed:', existing.error.code);
+      return NextResponse.json({ error: 'Could not verify chart submission status' }, { status: 503 });
+    }
+    if (existing.data) {
+      return NextResponse.json({ profile: existing.data, chart: existing.data.chart_data, replayed: true }, { status: 200 });
+    }
+  }
+
   // ── Compute chart ─────────────────────────────────────────────────────────────
   let chart;
   try {
@@ -107,7 +134,6 @@ export async function POST(req: NextRequest) {
   }
 
   // ── If primary, unset existing primary for this user ──────────────────────────
-  const db = getAnonClient();
   if (is_primary && owner_id) {
     await db
       .from('birth_profiles')
@@ -149,6 +175,9 @@ export async function POST(req: NextRequest) {
     is_primary:             Boolean(is_primary),
     is_public:              false,
   };
+  // Sent only when the caller supplied one. A request without a key must not name the column at all, so charts keep
+  // saving if this code is ever deployed before the idempotency migration has been applied.
+  if (idempotency_key) row.idempotency_key = idempotency_key;
 
   let { data, error } = await db
     .from('birth_profiles')
@@ -164,9 +193,16 @@ export async function POST(req: NextRequest) {
     error = retry.error;
   }
 
-  if (error) {
+  if (error?.code === '23505' && idempotency_key) {
+    const existing = await findExistingRequest();
+    if (existing.data) {
+      return NextResponse.json({ profile: existing.data, chart: existing.data.chart_data, replayed: true }, { status: 200 });
+    }
+  }
+
+  if (error || !data) {
     console.error('[chart/route] DB insert error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error?.message ?? 'Chart profile was not persisted' }, { status: 500 });
   }
 
   return NextResponse.json({ profile: data, chart }, { status: 201 });

@@ -144,6 +144,7 @@ export type Database = {
           date_of_birth: string
           full_name: string | null
           id: string
+          idempotency_key: string | null
           is_primary: boolean | null
           is_public: boolean | null
           label: string
@@ -175,6 +176,7 @@ export type Database = {
           date_of_birth: string
           full_name?: string | null
           id?: string
+          idempotency_key?: string | null
           is_primary?: boolean | null
           is_public?: boolean | null
           label?: string
@@ -206,6 +208,7 @@ export type Database = {
           date_of_birth?: string
           full_name?: string | null
           id?: string
+          idempotency_key?: string | null
           is_primary?: boolean | null
           is_public?: boolean | null
           label?: string
