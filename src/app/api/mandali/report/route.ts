@@ -1,4 +1,4 @@
-import { postSlackModerationReport } from '@/lib/slack-alerts';
+import { postSlackModerationReport, scheduleSlack } from '@/lib/slack-alerts';
 import { NextRequest, NextResponse } from 'next/server';
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
@@ -70,9 +70,10 @@ export async function POST(request: NextRequest) {
   }
   const createdReport = created as unknown as { id?: string } | null;
 
-  if (createdReport?.id) {
-    postSlackModerationReport({
-      reportId: createdReport.id,
+  const createdReportId = createdReport?.id;
+  if (createdReportId) {
+    scheduleSlack(() => postSlackModerationReport({
+      reportId: createdReportId,
       contentType: `Mandali ${targetType}`,
       reason,
       reporterId: user.id,
@@ -81,9 +82,7 @@ export async function POST(request: NextRequest) {
         contentId: targetId,
         authorId: authorId || undefined,
       },
-    }).catch((err) => {
-      console.warn('[Slack Moderation Alert Error]', err);
-    });
+    }));
   }
 
   // Immediately hide reported post or comment for the reporting user so it drops from their view

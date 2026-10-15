@@ -1,4 +1,4 @@
-import { postSlackOperationalAlert } from '@/lib/slack-alerts';
+import { postSlackOperationalAlert, scheduleSlack } from '@/lib/slack-alerts';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export type SeverityLevel = 'P0' | 'P1' | 'P2' | 'P3';
@@ -77,8 +77,9 @@ export function emitEvent(event: Omit<MonitoringEvent, 'timestamp'>): void {
   if (event.severity === 'P0' || event.severity === 'P1') {
     console.error(`[${event.severity}] [${event.domain}] ${event.error_message || 'Critical Event'}`, event);
     // Dispatch instant P0/P1 operational incident card to Slack
-    postSlackOperationalAlert({
-      severity: event.severity,
+    const severity = event.severity;
+    scheduleSlack(() => postSlackOperationalAlert({
+      severity,
       domain: event.domain,
       title: `[${event.severity}] ${event.domain.toUpperCase()}: ${event.error_code || 'Operational Incident'}`,
       desc: event.error_message || 'Critical operational event triggered in production telemetry.',
@@ -92,9 +93,7 @@ export function emitEvent(event: Omit<MonitoringEvent, 'timestamp'>): void {
         trace_id: event.trace_id,
         ...event.context,
       },
-    }).catch((err) => {
-      console.warn('[Slack Alert Error]', err);
-    });
+    }));
   } else if (event.severity === 'P2') {
     console.warn(`[${event.severity}] [${event.domain}] ${event.error_message || 'Warning Event'}`);
   }
