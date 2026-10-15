@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
-  Instagram, Calendar, ClipboardList, AlertTriangle, Settings, RefreshCw, ArrowLeft, Sunrise
+  Instagram, Calendar, ClipboardList, AlertTriangle, Settings, RefreshCw, ArrowLeft, Sunrise, Globe2
 } from "lucide-react";
 
 interface PostSummary {
@@ -83,7 +83,7 @@ export default function SocialOverviewPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             href="/admin/marketing/social/morning"
             className="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] hover:border-amber-500/40 transition-all flex items-center gap-4"
@@ -92,6 +92,16 @@ export default function SocialOverviewPage() {
             <div>
               <h3 className="text-sm font-bold">Morning Cards</h3>
               <p className="text-xs text-[var(--text-muted)]">One click makes today&apos;s verse card for each tradition. You approve them here.</p>
+            </div>
+          </Link>
+          <Link
+            href="/admin/marketing/diaspora"
+            className="p-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] hover:border-sky-400/40 transition-all flex items-center gap-4"
+          >
+            <div className="p-3 rounded-xl bg-sky-500/10 text-sky-600"><Globe2 size={22} /></div>
+            <div>
+              <h3 className="text-sm font-bold">Diaspora Content</h3>
+              <p className="text-xs text-[var(--text-muted)]">Draft email and WhatsApp copy for families keeping a tradition abroad. Checked before it is saved.</p>
             </div>
           </Link>
           <Link
