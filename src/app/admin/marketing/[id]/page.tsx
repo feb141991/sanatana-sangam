@@ -363,14 +363,24 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   };
 
   const handleSubmitReview = async () => {
+    setActionError(null);
+    setActionErrorKind("error");
     try {
       const res = await fetch(`/api/admin/marketing/campaigns/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "submit_review" }),
       });
-      if (res.ok) fetchCampaign();
-    } catch {}
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setActionError(data.error ?? "Failed to submit the campaign for review");
+        setActionErrorKind(res.status === 409 ? "conflict" : "error");
+        return;
+      }
+      fetchCampaign();
+    } catch (err: any) {
+      setActionError(err.message ?? "Failed to submit the campaign for review");
+    }
   };
 
   const handleApprove = async () => {

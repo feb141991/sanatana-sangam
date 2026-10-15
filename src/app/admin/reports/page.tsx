@@ -17,15 +17,19 @@ function ReportCenterContent() {
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") === "finance" ? "overview" : searchParams.get("tab") || "overview");
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const fetchStats = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const res = await fetch("/api/admin/reports");
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `Reports could not be loaded (HTTP ${res.status}).`);
       setStats(data);
     } catch (err) {
-      console.error("Failed to fetch report stats", err);
+      // Keep what was on screen, but say so: zeros here would otherwise read as real numbers.
+      setLoadError(err instanceof Error ? err.message : "Reports could not be loaded.");
     } finally {
       setLoading(false);
     }
@@ -85,7 +89,13 @@ function ReportCenterContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
-        
+        {loadError && (
+          <div role="alert" className="flex items-center justify-between gap-4 rounded-2xl border border-rose-500/30 bg-rose-50 p-4 text-xs font-semibold text-rose-800">
+            <span>{loadError} {stats ? "The figures below are from the last successful load." : "No figures are shown because nothing has loaded yet; zeros below are not real."}</span>
+            <button onClick={fetchStats} className="shrink-0 rounded-lg border border-rose-500/30 px-3 py-1.5 hover:bg-rose-100">Try again</button>
+          </div>
+        )}
+
         {/* OVERVIEW TAB */}
         {activeTab === "overview" && (
           <>
