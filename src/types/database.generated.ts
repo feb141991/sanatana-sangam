@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.4"
   }
   graphql_public: {
     Tables: {
@@ -3912,6 +3912,30 @@ export type Database = {
         }
         Relationships: []
       }
+      native_product_analytics_daily: {
+        Row: {
+          app_version: string | null
+          event_date: string
+          event_name: string
+          platform: string | null
+          user_id: string
+        }
+        Insert: {
+          app_version?: string | null
+          event_date: string
+          event_name: string
+          platform?: string | null
+          user_id: string
+        }
+        Update: {
+          app_version?: string | null
+          event_date?: string
+          event_name?: string
+          platform?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       native_startup_telemetry_summaries: {
         Row: {
           app_version: string | null
@@ -3945,30 +3969,6 @@ export type Database = {
           summary?: Json
           total_events?: number
           user_id?: string | null
-        }
-        Relationships: []
-      }
-      native_product_analytics_daily: {
-        Row: {
-          app_version: string | null
-          event_date: string
-          event_name: string
-          platform: string | null
-          user_id: string
-        }
-        Insert: {
-          app_version?: string | null
-          event_date: string
-          event_name: string
-          platform?: string | null
-          user_id: string
-        }
-        Update: {
-          app_version?: string | null
-          event_date?: string
-          event_name?: string
-          platform?: string | null
-          user_id?: string
         }
         Relationships: []
       }
@@ -10106,15 +10106,6 @@ export type Database = {
     }
     Functions: {
       _cleanup: { Args: never; Returns: boolean }
-      record_native_product_analytics: {
-        Args: { p_events: string[]; p_app_version?: string | null; p_platform?: string | null }
-        Returns: Json
-      }
-      get_native_product_analytics_summary: {
-        Args: { p_days?: number }
-        Returns: { event_name: string; event_date: string; opted_in_accounts: number }[]
-      }
-      withdraw_native_product_analytics: { Args: never; Returns: number }
       _contract_on: { Args: { "": string }; Returns: unknown }
       _currtest: { Args: never; Returns: number }
       _db_privs: { Args: never; Returns: unknown[] }
@@ -10836,6 +10827,14 @@ export type Database = {
         }[]
       }
       get_japa_context: { Args: never; Returns: Json }
+      get_native_product_analytics_summary: {
+        Args: { p_days?: number }
+        Returns: {
+          event_date: string
+          event_name: string
+          opted_in_accounts: number
+        }[]
+      }
       get_post_comment_previews: {
         Args: { p_post_ids: string[]; p_preview_count?: number }
         Returns: {
@@ -11125,6 +11124,14 @@ export type Database = {
       }
       prune_native_push_bindings: { Args: { p_bindings: Json }; Returns: Json }
       prune_old_user_data: { Args: { p_days?: number }; Returns: number }
+      record_native_product_analytics: {
+        Args: {
+          p_app_version?: string
+          p_events: string[]
+          p_platform?: string
+        }
+        Returns: Json
+      }
       record_social_publish_result: {
         Args: {
           p_attempt_id: string
@@ -11873,6 +11880,7 @@ export type Database = {
         Args: { p_platform?: string; p_token: string; p_user_id: string }
         Returns: undefined
       }
+      withdraw_native_product_analytics: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
