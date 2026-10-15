@@ -60,6 +60,7 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
 - Every migration requires RLS review, privilege review, rollback guidance,
   generated type updates and applied/unapplied environment reporting.
 - Never expose service-role credentials or production secrets.
+- Don’t run `supabase db push`. It would push every unapplied migration, and production already has history drift. Apply migrations individually or through reviewed target scripts only when explicitly approved.
 - Private Native API responses must stay `private, no-store`. For backend
   dependency failures, log an allowlisted operation stage, provider error code,
   duration and middleware request ID; never log raw provider messages, tokens,
