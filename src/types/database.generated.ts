@@ -7735,6 +7735,78 @@ export type Database = {
         }
         Relationships: []
       }
+      social_morning_cards: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_image_content_hash: string | null
+          caption: string
+          card_date: string
+          citation: string | null
+          created_at: string
+          generated_by: string
+          hashtags: string[]
+          id: string
+          image_content_hash: string | null
+          image_path: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          source_ref: string | null
+          source_snapshot: Json
+          status: string
+          tradition: string
+          updated_at: string
+          withheld_detail: string | null
+          withheld_reason: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_image_content_hash?: string | null
+          caption?: string
+          card_date: string
+          citation?: string | null
+          created_at?: string
+          generated_by: string
+          hashtags?: string[]
+          id?: string
+          image_content_hash?: string | null
+          image_path?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          source_ref?: string | null
+          source_snapshot?: Json
+          status?: string
+          tradition: string
+          updated_at?: string
+          withheld_detail?: string | null
+          withheld_reason?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_image_content_hash?: string | null
+          caption?: string
+          card_date?: string
+          citation?: string | null
+          created_at?: string
+          generated_by?: string
+          hashtags?: string[]
+          id?: string
+          image_content_hash?: string | null
+          image_path?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          source_ref?: string | null
+          source_snapshot?: Json
+          status?: string
+          tradition?: string
+          updated_at?: string
+          withheld_detail?: string | null
+          withheld_reason?: string | null
+        }
+        Relationships: []
+      }
       social_platform_accounts: {
         Row: {
           access_token_enc: string | null
