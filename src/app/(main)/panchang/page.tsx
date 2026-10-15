@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
-import { JsonLd, BreadcrumbJsonLd, PanchangJsonLd } from '@/components/seo/JsonLd';
+import { BreadcrumbJsonLd, PanchangPageJsonLd } from '@/components/seo/JsonLd';
 import PanchangHub from './PanchangHub';
 
 // Panchang is fully static — no auth, no cookies, pure computation.
@@ -53,8 +53,7 @@ export default function PanchangHubPage() {
           { name: 'Panchang Hub', url: 'https://www.shoonaya.com/panchang' },
         ]}
       />
-      <PanchangJsonLd
-        panchang={panchang}
+      <PanchangPageJsonLd
         url="https://www.shoonaya.com/panchang"
         name={`Hindu Panchang and Astrology Hub for ${panchang.date}`}
         description="Daily Hindu almanac including tithi, nakshatra, daily horoscope, and online Vedic Kundali birth chart generation."

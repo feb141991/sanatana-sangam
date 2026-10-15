@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { cache } from 'react';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN, resolveObservanceLocation } from '@/lib/panchang';
-import { JsonLd, BreadcrumbJsonLd, PanchangJsonLd } from '@/components/seo/JsonLd';
+import { BreadcrumbJsonLd, PanchangPageJsonLd } from '@/components/seo/JsonLd';
 import PanchangDetail from './PanchangDetail';
 
 // Memoised per-request: generateMetadata and the page share one calculation.
@@ -89,8 +89,7 @@ export default async function PanchangDetailPage() {
           { name: 'Today', url: 'https://www.shoonaya.com/panchang/today' },
         ]}
       />
-      <PanchangJsonLd
-        panchang={panchang}
+      <PanchangPageJsonLd
         url="https://www.shoonaya.com/panchang/today"
         name={`Hindu Panchang for ${panchang.date}`}
         description="Daily Hindu almanac including tithi, nakshatra, yoga, karana, vara, muhurta and auspicious timings."
