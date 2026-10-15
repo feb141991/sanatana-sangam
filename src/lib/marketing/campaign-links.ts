@@ -8,7 +8,8 @@
  */
 import { SITE_ORIGIN, sanitizeTrackingValue } from "@/lib/app-store-links";
 
-export type TrackingChannel = "email" | "whatsapp" | "instagram" | "facebook" | "linkedin" | "twitter";
+/** "social" is for copy written before anyone knows which platform it will be posted to (the morning cards). */
+export type TrackingChannel = "email" | "whatsapp" | "instagram" | "facebook" | "linkedin" | "twitter" | "social";
 
 /** The smart link: opens the right store on a phone, the site on a desktop. See src/app/get/route.ts. */
 export const SMART_APP_LINK = `${SITE_ORIGIN}/get`;
@@ -19,7 +20,8 @@ const SOURCE_AND_MEDIUM: Record<TrackingChannel, { source: string; medium: strin
   instagram: { source: "instagram", medium: "social" },
   facebook: { source: "facebook", medium: "social" },
   linkedin: { source: "linkedin", medium: "social" },
-  twitter: { source: "twitter", medium: "social" }
+  twitter: { source: "twitter", medium: "social" },
+  social: { source: "shoonaya", medium: "social" }
 };
 
 export interface LinkContext {

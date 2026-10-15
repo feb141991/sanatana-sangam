@@ -53,7 +53,8 @@ describe("withCampaignTracking", () => {
     ["whatsapp", "whatsapp", "messaging"],
     ["instagram", "instagram", "social"],
     ["facebook", "facebook", "social"],
-    ["linkedin", "linkedin", "social"]
+    ["linkedin", "linkedin", "social"],
+    ["social", "shoonaya", "social"] // copy written before the platform is known, e.g. the morning cards
   ] as const)("%s uses source=%s medium=%s", (channel, source, medium) => {
     expect(params(withCampaignTracking(SMART_APP_LINK, { channel, campaign: "c" }))).toMatchObject({
       utm_source: source,
