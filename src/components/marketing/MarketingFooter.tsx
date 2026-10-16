@@ -63,7 +63,7 @@ const FOOTER_COLUMNS = [
       { href: "/panchang", label: "Local Panchang & Calendar" },
       { href: "/japa", label: "Digital Japa Mala" },
       { href: "/ai-chat", label: "Dharma Mitra AI Companion" },
-      { href: "/library", label: "Pathshala & Scripture Study" },
+      { href: "/features/pathshala", label: "Pathshala & Scripture Study" },
       { href: "/kundali", label: "Kundali & Rashiphal" },
       { href: "/darshan", label: "Live Darshan Streams" },
       { href: "/kul", label: "Kul Private Family Spaces" },

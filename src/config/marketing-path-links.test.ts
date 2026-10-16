@@ -9,6 +9,7 @@ describe("marketing Pathshala links", () => {
     const courseLinks = links.filter((link) => link.href.startsWith("/pathshala/"));
 
     expect(courseLinks.length).toBeGreaterThan(0);
+    expect(links.some((link) => link.href === "/pathshala")).toBe(false);
     for (const link of courseLinks) {
       const pathId = link.href.slice("/pathshala/".length).split("/")[0];
       expect(pathIds.has(pathId), `${link.label} points to unknown Pathshala route ${link.href}`).toBe(true);

@@ -85,6 +85,47 @@ Search. If yes, verify all of the following on the live deployed URL:
 - It has at least one relevant, crawlable internal link, not only a sitemap
   entry or a client-side interaction that Google may not follow.
 
+### Latest audit: redirect, discovered and crawled queues
+
+The Search Console Page indexing report reviewed on 2026-10-16 was last updated
+2026-10-12. It showed 203 pages with redirects, 169 discovered but not indexed,
+and 132 crawled but not indexed. Those counts are a stale GSC snapshot, not a
+live count of current source or production defects.
+
+The live sitemap contained 410 canonical `https://www.shoonaya.com` URLs; a
+direct GET check found no sitemap URL redirecting or failing. The redirect
+queue is therefore not a reason to remove more sitemap entries. Its examples
+are largely the intentional apex-to-`www` host consolidation and retired URL
+aliases. A crawl of the current sitemap pages found two internal-link defects:
+the old `/library` destination returned 404 and appeared in shared marketing
+navigation, and persisted Discover content linked to `/vichaar-sabha`, which
+redirected to `/mandali`. Source links to Pathshala now use the public
+`/features/pathshala` page or the public Bhagavad Gita overview at
+`/pathshala/bhagavad-gita-intro`; Discover rendering normalizes the legacy
+Mandali path to its direct destination. These source fixes require production
+deployment and a later crawl before GSC can confirm their effect.
+
+For the 169 discovered URLs, the examples included public Katha, Stotram, Vrat,
+marketing and Pathshala routes, as well as intentional exclusions such as
+`/beta/android`, `/blog` and personal `/name/` pages. Keep the known redirects
+and personal-share pages out of the sitemap. The 38 public Pathshala course
+overview routes currently remain excluded by the sitemap filter. Inspection
+found separate course IDs reusing identical lesson-entry sets, so do not add
+them or request indexing as a batch until their curriculum mappings and
+distinct public value are corrected and reviewed. The one verified course
+link now points to a valid canonical route.
+
+For the 132 crawled URLs, the sample included high-value pages (`/panchang`,
+`/panchang/today`, `/vrat/ekadashi`, `/about`, `/what-is-shoonaya`), Katha and
+Stotram content, apex-host duplicates, and a query variant of
+`/bhakti/browse` whose live canonical omits the query. The sampled high-value
+pages returned `200` with self-canonicals. Do not treat those as fixed by
+resubmission alone: inspect Google's selected canonical for the five priority
+pages, then review individual content value and search demand before making
+content or canonical changes. The next request-indexing batch, if warranted,
+should be limited to those priority pages after the internal-link fixes are
+deployed and URL Inspection confirms they are eligible.
+
 Use URL Inspection for representative, high-value URLs and after a real fix.
 Request indexing selectively after the live fix is deployed. Reserve manual
 requests for important changed pages; use a sitemap for groups of URLs. Do not
@@ -228,8 +269,10 @@ data to compare.
 
 ## Publication and deployment gates
 
-- Sitemap includes public course overviews and editorially publishable festival
-  narratives only; it does not authorize publication of any calendar date.
+- Sitemap may include public course overviews only after their curriculum
+  mappings and distinct public value pass editorial review; the current
+  Pathshala sitemap filter intentionally excludes them pending that review.
+  The sitemap does not authorize publication of any calendar date.
 - Course lessons, progress and subscription checks remain authenticated.
 - AudioObject markup is limited to the existing approved playable recordings;
   generated TTS is not presented as a permanent public audio file.

@@ -122,7 +122,7 @@ export const marketingFeatures: readonly MarketingFeature[] = [
     imageSrc: "/icons/dharma-mitra-scroll.png",
     deepLinks: [
       { label: "Launch Dharma Mitra", href: "/ai-chat", isPrimary: true },
-      { label: "Scripture Study", href: "/pathshala" },
+      { label: "Scripture Study", href: "/features/pathshala" },
     ],
   },
   {
@@ -162,8 +162,7 @@ export const marketingFeatures: readonly MarketingFeature[] = [
     icon: BookOpen,
     imageSrc: "/relics/prarthana-pothi.png",
     deepLinks: [
-      { label: "Explore Pathshala", href: "/pathshala", isPrimary: true },
-      { label: "Bhagavad Gita Course", href: "/pathshala/bhagavad-gita-intro" },
+      { label: "Explore Pathshala", href: "/pathshala/bhagavad-gita-intro", isPrimary: true },
       { label: "Bhakti Library", href: "/bhakti" },
     ],
   },

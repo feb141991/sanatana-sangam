@@ -51,7 +51,7 @@ const SANCTUARY_TOOLS = [
     name: "Scripture and Pathshala",
     imageSrc: "/relics/prarthana-pothi.png",
     icon: BookOpen,
-    href: "/library",
+    href: "/features/pathshala",
     description:
       "Explore sacred texts and guided learning, with verses and explanations that help you study and reflect. Available collections include the Bhagavad Gita, Upanishads, Gurbani, Dhammapada, and Jain texts.",
   },

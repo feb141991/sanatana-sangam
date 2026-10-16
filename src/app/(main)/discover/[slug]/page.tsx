@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import DiscoverDetailClient from './DiscoverDetailClient';
+import { canonicalInternalPath } from '@/lib/seo/canonical-internal-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,7 +78,7 @@ export default async function DiscoverPiecePage({ params }: Props) {
 
   return (
     <DiscoverDetailClient 
-      piece={piece} 
+      piece={{ ...piece, app_deep_link: canonicalInternalPath(piece.app_deep_link) }}
       relatedPieces={related || []} 
     />
   );
