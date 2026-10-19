@@ -182,6 +182,16 @@
             },
             "citation": {
               "type": "string"
+            },
+            "date_selection": {
+              "type": "object",
+              "required": ["period", "mode"],
+              "properties": {
+                "period": { "type": "string", "enum": ["aparahna", "madhyahna", "pradosha", "nishita", "arunodaya", "sunrise"] },
+                "mode": { "type": "string", "enum": ["at", "prevails", "touches", "majority"] }
+              },
+              "additionalProperties": false,
+              "description": "Optional ritual-window tithi criterion used to select the civil date instead of assigning the tithi-at-sunrise day."
             }
           },
           "additionalProperties": false

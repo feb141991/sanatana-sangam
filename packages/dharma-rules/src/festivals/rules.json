@@ -984,14 +984,18 @@
         ],
         "kind": "major",
         "launch_status": "included",
-        "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Dashami (Index #51, Vijaya Dasami, Bengal & Kerala, 2026-10-21) -- DISPUTED against Index #50's mainstream reading, see ratification_note"
+        "citation": "Rashtriya Panchang Saka 1948, Index #50 (mainstream Vijayadashami, 2026-10-20); Drik Panchang Ujjain lists Vijay Muhurat on Oct 20 and separately lists Bengal Vijayadashami on Oct 21. Mainstream date selection: Dashami prevails throughout local Aparahna; regional calendar variants remain separately qualified.",
+        "date_selection": {
+          "period": "aparahna",
+          "mode": "prevails"
+        }
       }
     ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "sharad-navratri",
     "launch_status": "included",
-    "ratification_note": "RESOLVED 2026-08-18 by Prince Sharma (founder/Council ratification, in chat: 'I, Prince Sharma, as council approve it, go ahead'). The span's tithi-at-sunrise computation for tithi 10 gives 2026-10-21, independently reproduced by a raw elongation-based sunrise scan bypassing all handler code, and matches RP Saka 1948 Index #51 ('Vijaya Dasami, Bengal & Kerala') exactly. RP's own Index #50 bundles 'Mahanavami' with 'Vijaya Dasami (Dussehara or Dasahara) mainstream' on 2026-10-20 -- the same civil day as Navami, not Dashami's own sunrise day -- implying mainstream Vijayadashami follows a different, unmodeled convention (likely a muhurta/dashami-vyapini-style rule, analogous to Diwali's pradosh condition; not built here). The `golden_fixtures` citation for dussehra 2026 (4 approved rows) was updated 2026-08-18 from Index #50 (2026-10-20) to Index #51 (2026-10-21) to match. This was NOT a computation bug -- both the span and a prior duplicate standalone lunar_tithi rule (removed 2026-08-18, was dead-code redundant, computed the identical 2026-10-21 despite its own stale citation text saying 2026-10-20) independently agreed on 10-21 before this ratification. Still open, not part of this ratification: no mainstream-Vijayadashami evaluator/variant exists in this codebase -- if that reading is ever wanted alongside the Bengal/Kerala one, it needs its own sourced rule."
+    "ratification_note": "Founder-approved 2026 mainstream date 2026-10-20 (2026-10-19), based on Drik Panchang Ujjain (Vijayadashami/Vijaya Muhurat Oct 20; Bengal Vijayadashami separately Oct 21) and Rashtriya Panchang Saka 1948 Index #50. The tithi-at-sunrise assignment produced Oct 21 and conflated the regional day with the mainstream observance. The Dussehra sub-observance now uses the date-selection condition Dashami must prevail throughout local Aparahna. This separates the mainstream date from Bengal-specific observance rather than treating differing regional calendars as duplicates."
   },
   {
     "slug": "chintpurni-mata-chaitra-navratri",

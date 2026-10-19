@@ -284,13 +284,13 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
     "slug": "Dussehra",
     "emoji": "🎇",
     "tradition": "hindu",
-    "origin": "Dussehra (Vijayadashami) falls on the tenth day after Navratri, celebrating two simultaneous victories: Rama's defeat of Ravana in Lanka after a 10-day battle, and Durga's slaying of Mahishasura on the same tithi. The name \"Dussehra\" itself may derive from \"Dasha-hara\" — destroyer of ten (Ravana's ten heads, symbolising ten bad qualities). Effigies of Ravana, his brother Kumbhakarna, and son Meghnada are burned across India with great fanfare.",
-    "significance": "Ravana was not merely an outsider villain — he was a scholar, a devotee of Shiva, a great king who made one catastrophic moral error: abducting another's wife. Dussehra asks us to identify our own Ravana within: the ten heads of ego, lust, anger, greed, attachment, pride, jealousy, injustice, cruelty, and delusion. Vijayadashami — Victory Tenth — is the day we symbolically burn those tendencies.",
+    "origin": "Vijayadashami joins vijaya (victory) and dashami (the tenth lunar day). In Ramayana traditions, the day recalls Rama's victory over Ravana. In Shakta traditions, it belongs to the Navaratri cycle honouring Devi's victory over Mahishasura. These related celebrations are observed differently across regions; they should not be read as one identical event taking place in every tradition.",
+    "significance": "The day invites reflection on courage guided by dharma: how strength can be used with restraint, and how a difficult struggle can end without abandoning what is right. The Valmiki Ramayana's Yuddha Kanda narrates Rama and Ravana's final battle; the Devi Mahatmya tells of Devi's victory over Mahishasura. Regional customs differ. Some communities observe Aparajita or Shami Puja; Durga Visarjan, Sindoor Khela, Ramlila and effigy-burning belong to particular regional settings, not to every household.",
     "rituals": [
-      "Watch or participate in Ramlila performances narrating Rama's battle and victory",
-      "Burn effigies of Ravana at community celebrations after sunset",
-      "Shami tree worship (Shamipooja) — the Pandavas retrieved their weapons from a Shami tree; touching it brings blessings",
-      "Exchange Shami or Apta leaves as gold (Sone ki Patti) with friends and family — a tradition of prosperity-sharing"
+      "If it is part of your tradition, attend Ramlila or a local Vijayadashami gathering",
+      "Some traditions observe Aparajita Puja or Shami Puja during Aparahna",
+      "Durga Visarjan and Sindoor Khela are specific to Durga Puja communities",
+      "Choose a simple act of courage, repair or service for the day; ritual customs vary by region and family"
     ],
     "shloka": {
       "text": "श्रीरामचन्द्र कृपालु भजमन हरण भवभय दारुणम्।\nनव कञ्ज लोचन कञ्ज मुखकर कञ्जपद कञ्जारुणम्।।",
@@ -298,7 +298,7 @@ export const FESTIVAL_STORIES: FestivalStory[] = [
       "translation": "Worship Ramachandra the merciful, destroyer of the dreadful fear of existence — whose eyes are like fresh lotuses, whose face and hands are lotuses, and whose lotus feet glow reddish-golden.",
       "source": "Ramchandra Kripalu Bhajaman by Tulsidas"
     },
-    "practice": "Write down one quality in yourself that has caused harm — to you or others — and that you genuinely wish to release. Tonight, burn the paper safely. Mean it."
+    "practice": "Take a quiet moment to name one situation that calls for courage, one response that calls for restraint, and one fair action you can take. Choose a practice that fits your family and tradition; no single ritual is required of everyone."
   },
   {
     "slug": "Diwali",

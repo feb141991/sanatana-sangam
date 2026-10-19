@@ -1198,13 +1198,16 @@
             "sourceRefs": [
               {
                 "sourceName": "Rashtriya Panchang Saka 1948",
-                "pageOrSection": "Index #51 (p.7, English edition) — 'Vijaya Dasami (Bengal & Kerala)' at 2026-10-21",
+                "pageOrSection": "Index #50 (mainstream Vijayadashami, 2026-10-20) and Index #51 (Bengal & Kerala, 2026-10-21)",
                 "tier": 1,
                 "usagePermitted": "academic_citation"
               }
             ],
             "applicability": {
-              "universal": true
+              "universal": false,
+              "regions": [
+                "Mainstream Hindu observance; dates vary by regional calendar"
+              ]
             },
             "translationStatus": {
               "en": "source",
@@ -1214,9 +1217,9 @@
           },
           "deityOrTheme": {
             "value": {
-              "en": "Victory of Dharma",
-              "hi": "धर्म की विजय",
-              "pa": "ਧਰਮ ਦੀ ਜਿੱਤ"
+              "en": "Victory guided by dharma",
+              "hi": "धर्म से निर्देशित विजय",
+              "pa": "ਧਰਮ ਦੇ ਰਾਹੀਂ ਮਿਲੀ ਜਿੱਤ"
             },
             "status": "source_backed",
             "sourceRefs": [
@@ -1243,28 +1246,31 @@
               }
             ],
             "applicability": {
-              "universal": true
+              "universal": false,
+              "regions": [
+                "Ramayana and Shakta traditions"
+              ]
             }
           },
           "rituals": {
             "value": {
               "en": [
-                "Dussehra",
-                "Durga Visarjan",
-                "Sindoor Khela",
-                "Vidyarambham"
+                "Aparajita Puja or Shami Puja, observed in some traditions during Aparahna",
+                "Seema Avalanghana (crossing a boundary), observed in some regional traditions",
+                "Durga Visarjan and Sindoor Khela belong to specific Durga Puja traditions",
+                "Ramlila and Ravana effigy-burning are local community customs"
               ],
               "hi": [
-                "दशहरा",
-                "दुर्गा विसर्जन",
-                "सिंदूर खेला",
-                "विद्यारम्भ"
+                "कुछ परंपराओं में अपराह्ण के समय अपराजिता पूजा या शमी पूजा",
+                "कुछ क्षेत्रीय परंपराओं में सीमोल्लंघन",
+                "दुर्गा विसर्जन और सिंदूर खेला दुर्गा पूजा की विशिष्ट परंपराएँ हैं",
+                "रामलीला और रावण-दहन स्थानीय सामुदायिक रीति-रिवाज हैं"
               ],
               "pa": [
-                "ਦੁਸਹਿਰਾ",
-                "ਦੁਰਗਾ ਵਿਸਰਜਨ",
-                "ਸਿੰਦੂਰ ਖੇਲਾ",
-                "ਵਿਦਿਆਰੰਭ"
+                "ਕੁਝ ਪਰੰਪਰਾਵਾਂ ਵਿੱਚ ਅਪਰਾਹਨ ਵੇਲੇ ਅਪਰਾਜਿਤਾ ਪੂਜਾ ਜਾਂ ਸ਼ਮੀ ਪੂਜਾ",
+                "ਕੁਝ ਖੇਤਰੀ ਰੀਤਾਂ ਵਿੱਚ ਸੀਮੋਲੰਘਨ",
+                "ਦੁਰਗਾ ਵਿਸਰਜਨ ਅਤੇ ਸਿੰਦੂਰ ਖੇਲਾ ਦੁਰਗਾ ਪੂਜਾ ਦੀਆਂ ਖ਼ਾਸ ਪਰੰਪਰਾਵਾਂ ਹਨ",
+                "ਰਾਮਲੀਲਾ ਅਤੇ ਰਾਵਣ ਦਹਿਨ ਸਥਾਨਕ ਭਾਈਚਾਰਕ ਰਸਮਾਂ ਹਨ"
               ]
             },
             "status": "source_backed",
@@ -1302,9 +1308,9 @@
           },
           "significance": {
             "value": {
-              "en": "Ashvina Shukla Dashami is celebrated across Bharat as Vijayadashami and Dussehra, marking the eternal triumph of Dharma over Adharma. On this triumphant tenth day, Goddess Durga vanquished the buffalo demon Mahishasura after the fierce nine-day war, while Lord Rama defeated the demon king Ravana in Lanka with the divine Brahmastra. In Bengal, married women celebrate Sindoor Khela before the immersion (Visarjan) of Durga idols. Across North, West, and Central India, devotees perform Aparajita and Shami Puja, embark on new ventures, and witness the burning of Ravana effigies.",
-              "hi": "अश्विन शुक्ल दशमी को पूरे भारतवर्ष में विजयादशमी और दशहरा का महापर्व उल्लासपूर्वक मनाया जाता है। यह अधर्म पर धर्म, असत्य पर सत्य और अंधकार पर प्रकाश की शाश्वत विजय का प्रतीक है। इसी दिन माँ दुर्गा ने महिषासुर का वध कर देवताओं को उसके भय से मुक्ति दिलाई थी, तथा प्रभु श्री राम ने लंकापति रावण का संहार कर धर्म की पुनः स्थापना की थी। इस दिन बंगाल में सिंदूर खेला और माँ दुर्गा का भावभीना विसर्जन होता है, जबकि देश भर में अपराजिता पूजन, शमी पूजन और रावण दहन के आयोजन होते हैं। यह दिन किसी भी नए कार्य के शुभारंभ के लिए अबूझ मुहूर्त माना जाता है।",
-              "pa": "ਅਸ਼ਵਿਨ ਸ਼ੁਕਲ ਦਸਮੀ ਨੂੰ ਦੇਸ਼ ਭਰ ਵਿੱਚ ਵਿਜਯਾਦਸ਼ਮੀ ਅਤੇ ਦੁਸਹਿਰੇ ਦਾ ਤਿਉਹਾਰ ਧੂਮਧਾਮ ਨਾਲ ਮਨਾਇਆ ਜਾਂਦਾ ਹੈ। ਇਹ ਦਿਨ ਬੁਰਾਈ 'ਤੇ ਨੇਕੀ ਦੀ ਜਿੱਤ ਦਾ ਪ੍ਰਤੀਕ ਹੈ। ਇਸ ਦਿਨ ਮਾਂ ਦੁਰਗਾ ਨੇ ਮਹਿਸ਼ਾਸੁਰ ਦਾ ਸੰਘਾਰ ਕੀਤਾ ਸੀ ਅਤੇ ਸ੍ਰੀ ਰਾਮ ਚੰਦਰ ਜੀ ਨੇ ਰਾਵਣ 'ਤੇ ਵਿਜੈ ਪ੍ਰਾਪਤ ਕੀਤੀ ਸੀ। ਇਸ ਦਿਨ ਰਾਵਣ ਦਹਿਨ, ਸ਼ਮੀ ਪੂਜਾ ਅਤੇ ਮਾਂ ਦੁਰਗਾ ਦੀ ਮੂਰਤੀ ਦਾ ਵਿਸਰਜਨ ਸ਼ਰਧਾ ਨਾਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।"
+              "en": "Vijayadashami takes its name from vijaya (victory) and dashami (the tenth lunar day). In Ramayana traditions, the day recalls Rama’s victory over Ravana; in Shakta traditions, the Navaratri cycle honours Devi’s victory over Mahishasura. These are connected celebrations of courage and the restoration of dharma, while their stories and customs are observed differently across regions. Some communities perform Aparajita or Shami Puja during Aparahna; Durga Visarjan, Sindoor Khela, Ramlila and effigy-burning belong to particular regional settings. The day invites a personal question: what can we bring back into alignment through courage, restraint and a just action?",
+              "hi": "विजयादशमी नाम विजय और दशमी—चंद्र मास के दसवें दिन—से जुड़ा है। रामायण परंपराओं में यह दिन रावण पर श्रीराम की विजय का स्मरण कराता है; शाक्त परंपराओं में नवरात्रि का क्रम महिषासुर पर देवी की विजय का सम्मान करता है। ये धर्म और साहस से जुड़ी परंपराएँ हैं, पर इनके आख्यान और रीति-रिवाज अलग-अलग क्षेत्रों में भिन्न रूप से मनाए जाते हैं। कुछ समुदाय अपराह्ण में अपराजिता या शमी पूजा करते हैं; दुर्गा विसर्जन, सिंदूर खेला, रामलीला और रावण-दहन विशिष्ट क्षेत्रीय संदर्भों में होते हैं। यह दिन आत्मचिंतन का अवसर देता है: साहस, संयम और न्यायपूर्ण कर्म से हम किस बात को फिर से सही दिशा दे सकते हैं?",
+              "pa": "ਵਿਜਯਾਦਸ਼ਮੀ ਦਾ ਨਾਮ ਵਿਜੈ ਅਤੇ ਦਸਮੀ—ਚੰਦਰ ਮਹੀਨੇ ਦੇ ਦਸਵੇਂ ਦਿਨ—ਨਾਲ ਜੁੜਿਆ ਹੈ। ਰਾਮਾਇਣ ਦੀਆਂ ਪਰੰਪਰਾਵਾਂ ਵਿੱਚ ਇਹ ਦਿਨ ਰਾਵਣ ਉੱਤੇ ਸ੍ਰੀ ਰਾਮ ਦੀ ਜਿੱਤ ਨੂੰ ਯਾਦ ਕਰਦਾ ਹੈ; ਸ਼ਾਕਤ ਪਰੰਪਰਾਵਾਂ ਵਿੱਚ ਨਵਰਾਤਰੀ ਦਾ ਕ੍ਰਮ ਮਹਿਸ਼ਾਸੁਰ ਉੱਤੇ ਦੇਵੀ ਦੀ ਜਿੱਤ ਦਾ ਸਤਿਕਾਰ ਕਰਦਾ ਹੈ। ਇਹ ਧਰਮ ਅਤੇ ਹੌਸਲੇ ਨਾਲ ਜੁੜੀਆਂ ਪਰੰਪਰਾਵਾਂ ਹਨ, ਪਰ ਉਨ੍ਹਾਂ ਦੀਆਂ ਕਥਾਵਾਂ ਅਤੇ ਰਸਮਾਂ ਵੱਖ-ਵੱਖ ਖੇਤਰਾਂ ਵਿੱਚ ਵੱਖਰੇ ਢੰਗ ਨਾਲ ਮਨਾਈਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਕੁਝ ਭਾਈਚਾਰੇ ਅਪਰਾਹਨ ਵੇਲੇ ਅਪਰਾਜਿਤਾ ਜਾਂ ਸ਼ਮੀ ਪੂਜਾ ਕਰਦੇ ਹਨ; ਦੁਰਗਾ ਵਿਸਰਜਨ, ਸਿੰਦੂਰ ਖੇਲਾ, ਰਾਮਲੀਲਾ ਅਤੇ ਰਾਵਣ ਦਹਿਨ ਖ਼ਾਸ ਖੇਤਰੀ ਸੰਦਰਭਾਂ ਵਿੱਚ ਹੁੰਦੇ ਹਨ। ਇਹ ਦਿਨ ਸੋਚਣ ਦਾ ਮੌਕਾ ਦਿੰਦਾ ਹੈ: ਹੌਸਲੇ, ਸੰਜਮ ਅਤੇ ਨਿਆਂਪੂਰਨ ਕਰਮ ਨਾਲ ਅਸੀਂ ਕੀ ਸੁਧਾਰ ਸਕਦੇ ਹਾਂ?"
             },
             "status": "source_backed",
             "sourceRefs": [
@@ -1331,7 +1337,10 @@
               }
             ],
             "applicability": {
-              "universal": true
+              "universal": false,
+              "regions": [
+                "Stories and observances vary by region"
+              ]
             },
             "translationStatus": {
               "en": "source",

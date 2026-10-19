@@ -2,6 +2,7 @@ import { CANONICAL_RULES, evaluatorVariantToRuleQualifier, ObservanceRule } from
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
 import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, MONTH_NAMES, nextMonthIndex, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
+import { evaluateCondition } from '@sangam/dharma-rules';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
 export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
@@ -753,7 +754,7 @@ export interface ResolvedSpan {
  * assigning every named sub-observance its true civil date.
  */
 export const LunarTithiSpanHandler = {
-  resolveSpan(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>): ResolvedSpan {
+  resolveSpan(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>, location: LocationInput = DEFAULT_LOCATION): ResolvedSpan {
     const isCorrected = rule.corrected_month_system !== undefined;
     const masa = (isCorrected ? rule.corrected_lunar_masa_name : null) ?? rule.lunar_masa_name;
     const spanTithis = rule.span_tithis ?? (rule.lunar_tithi_index !== undefined ? [rule.lunar_tithi_index] : []);
@@ -830,7 +831,26 @@ export const LunarTithiSpanHandler = {
     // 4. Populate sub-observances
     if (rule.sub_observances) {
       for (const sub of rule.sub_observances) {
-        const d = result.tithiDates.get(sub.tithi);
+        let d = result.tithiDates.get(sub.tithi);
+        if (sub.date_selection) {
+          const sunriseCandidate = d;
+          const nearbyDates = new Set(
+            sunriseCandidate
+              ? [-2, -1, 0, 1, 2].map(offset => offsetCivilDateStr(sunriseCandidate, offset))
+              : [],
+          );
+          const matchingWindowDates = days
+            .filter(day => nearbyDates.has(day.dateStr) && isMasaMatching(day.panchang.masaName, masa, rule.adhika_policy))
+            .filter(day => evaluateCondition({
+              type: 'tithi_presence',
+              tithi: sub.tithi <= 15 ? sub.tithi : sub.tithi - 15,
+              paksha: sub.tithi <= 15 ? 'shukla' : 'krishna',
+              period: sub.date_selection!.period,
+              mode: sub.date_selection!.mode,
+            }, day.dateStr, location).satisfied === true)
+            .map(day => day.dateStr);
+          d = matchingWindowDates[0] ?? null;
+        }
         if (d) {
           result.subObservanceDates.set(sub.slug, d);
         }
@@ -849,7 +869,7 @@ export const LunarTithiSpanHandler = {
   },
 
   evaluate(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>): string[] {
-    const span = LunarTithiSpanHandler.resolveSpan(rule, days);
+    const span = LunarTithiSpanHandler.resolveSpan(rule, days, DEFAULT_LOCATION);
     return span.startDate ? [span.startDate] : [];
   }
 };
@@ -900,7 +920,7 @@ function buildOccurrencesMap(
     } else if (rule.rule_family === 'solar_month_day') {
       occurrencesMap[rk] = SolarMonthDayHandler.evaluate(rule, year, location);
     } else if (rule.rule_family === 'lunar_tithi_span') {
-      const span = LunarTithiSpanHandler.resolveSpan(rule, days);
+      const span = LunarTithiSpanHandler.resolveSpan(rule, days, location);
       occurrencesMap[rk] = span.startDate ? [span.startDate] : [];
       if (rule.sub_observances) {
         for (const sub of rule.sub_observances) {
@@ -1401,7 +1421,7 @@ function buildOccurrencesMapCorrected(
     } else if (r.rule_family === 'solar_month_day') {
       occurrencesMap[rk] = SolarMonthDayHandler.evaluate(r, year, location);
     } else if (r.rule_family === 'lunar_tithi_span') {
-      const span = LunarTithiSpanHandler.resolveSpan(r, d);
+      const span = LunarTithiSpanHandler.resolveSpan(r, d, location);
       occurrencesMap[rk] = span.startDate ? [span.startDate] : [];
       if (r.sub_observances) {
         for (const sub of r.sub_observances) {

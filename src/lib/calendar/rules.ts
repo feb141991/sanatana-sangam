@@ -22,6 +22,11 @@ export interface SubObservance {
   kind?: 'major' | 'vrat' | 'regional';
   launch_status?: 'included' | 'deferred';
   citation?: string;
+  /** Optional tithi-at-ritual-window rule that selects this sub-observance's civil date. */
+  date_selection?: {
+    period: 'aparahna' | 'madhyahna' | 'pradosha' | 'nishita' | 'arunodaya' | 'sunrise';
+    mode: 'at' | 'prevails' | 'touches' | 'majority';
+  };
 }
 
 export interface ObservanceRule {
