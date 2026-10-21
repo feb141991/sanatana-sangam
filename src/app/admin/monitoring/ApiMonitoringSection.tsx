@@ -281,13 +281,25 @@ interface ProbeStatus {
   statusText: string;
   latencyMs: number;
   timestamp: string;
+  statusSource?: "upstream" | "probe";
+  failureKind?: "probe_timeout" | "network_error";
+  probeRequestId?: string;
+  upstreamStatus?: number;
   error?: string;
   responsePreview?: string;
   headers?: {
     region?: string;
     cacheControl?: string;
     contentType?: string;
+    serverTiming?: string;
+    upstreamRequestId?: string;
   };
+}
+
+function hasSafeReadProbe(
+  endpoint: ApiEndpointDef,
+): endpoint is ApiEndpointDef & { safeProbeEndpoint: string; safeProbeMethod: "GET" } {
+  return Boolean(endpoint.safeProbeEndpoint) && endpoint.safeProbeMethod === "GET";
 }
 
 interface Props {
@@ -423,12 +435,19 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
       c429: 0,
       c500: 0,
       c504: 0,
+      probeTimeout: 0,
+      probeFailure: 0,
       c4xx: 0,
       c5xx: 0,
     };
 
     // 1. From live probe results
     Object.values(probeResults).forEach((p) => {
+      if (p.statusSource === "probe") {
+        if (p.failureKind === "probe_timeout") counts.probeTimeout++;
+        else counts.probeFailure++;
+        return;
+      }
       if (p.status === 200) counts.c200++;
       else if (p.status === 201) counts.c201++;
       else if (p.status === 304) counts.c304++;
@@ -459,8 +478,9 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
 
   // Run live probe for single endpoint
   const handleProbeEndpoint = async (endpointDef: ApiEndpointDef) => {
-    const probePath = endpointDef.safeProbeEndpoint || endpointDef.path;
-    const probeMethod = endpointDef.safeProbeMethod || endpointDef.method;
+    if (!hasSafeReadProbe(endpointDef)) return;
+    const probePath = endpointDef.safeProbeEndpoint;
+    const probeMethod = endpointDef.safeProbeMethod;
 
     setProbingSingle(endpointDef.id);
     try {
@@ -515,7 +535,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
       if (data.success && Array.isArray(data.results)) {
         const next: Record<string, ProbeStatus> = {};
         data.results.forEach((r: any) => {
-          const match = API_CATALOG.find((def) => (def.safeProbeEndpoint || def.path).startsWith(r.endpoint.split("?")[0]));
+          const match = API_CATALOG.find((def) => def.safeProbeEndpoint === r.endpoint);
           if (match) {
             next[match.id] = r;
           }
@@ -577,16 +597,20 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
       // Explicit HTTP Status Code filter
       if (httpCodeFilter !== "all") {
         if (httpCodeFilter === "200") {
-          const is200 = probe?.status === 200 || telem?.statusCodes["200"];
+          const is200 = (probe?.statusSource !== "probe" && probe?.status === 200) || telem?.statusCodes["200"];
           if (!is200) return false;
         } else if (httpCodeFilter === "4xx") {
-          const is4xx = (probe && probe.status >= 400 && probe.status < 500) || (telem && (telem.statusCodes["401"] || telem.statusCodes["403"] || telem.statusCodes["400"] || telem.statusCodes["404"] || telem.statusCodes["429"]));
+          const is4xx = (probe?.statusSource !== "probe" && probe && probe.status >= 400 && probe.status < 500) || (telem && (telem.statusCodes["401"] || telem.statusCodes["403"] || telem.statusCodes["400"] || telem.statusCodes["404"] || telem.statusCodes["429"]));
           if (!is4xx) return false;
         } else if (httpCodeFilter === "5xx") {
-          const is5xx = (probe && probe.status >= 500) || (telem && (telem.statusCodes["500"] || telem.statusCodes["504"] || telem.statusCodes["P1"]));
+          const is5xx = (probe?.statusSource !== "probe" && probe && probe.status >= 500) || (telem && (telem.statusCodes["500"] || telem.statusCodes["504"] || telem.statusCodes["P1"]));
           if (!is5xx) return false;
+        } else if (httpCodeFilter === "probe_timeout") {
+          if (probe?.failureKind !== "probe_timeout") return false;
+        } else if (httpCodeFilter === "probe_failure") {
+          if (probe?.statusSource !== "probe" || probe.failureKind === "probe_timeout") return false;
         } else {
-          const exactMatch = String(probe?.status) === httpCodeFilter || telem?.statusCodes[httpCodeFilter];
+          const exactMatch = (probe?.statusSource !== "probe" && String(probe?.status) === httpCodeFilter) || telem?.statusCodes[httpCodeFilter];
           if (!exactMatch) return false;
         }
       }
@@ -909,6 +933,32 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
           >
             <Clock size={12} />
             <span>504 Gateway Timeout: <strong>{httpCodeCounts.c504}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "probe_timeout" ? "all" : "probe_timeout")}
+            title="Click to filter probe-generated timeouts; these are not upstream HTTP 504 responses"
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "probe_timeout"
+                ? "bg-orange-600 text-white border-orange-700 shadow-sm scale-105"
+                : "bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100"
+            )}
+          >
+            <Clock size={12} />
+            <span>Probe timeout: <strong>{httpCodeCounts.probeTimeout}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "probe_failure" ? "all" : "probe_failure")}
+            title="Click to filter probe-generated network failures"
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "probe_failure"
+                ? "bg-orange-600 text-white border-orange-700 shadow-sm scale-105"
+                : "bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100"
+            )}
+          >
+            <AlertTriangle size={12} />
+            <span>Probe network failure: <strong>{httpCodeCounts.probeFailure}</strong></span>
           </button>
         </div>
       </div>
@@ -1291,8 +1341,9 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                             </h4>
                             <button
                               onClick={() => handleProbeEndpoint(api)}
-                              disabled={isProbing}
-                              className="px-3 py-1 rounded-lg bg-amber-800 text-white text-[11px] font-bold hover:bg-amber-900 disabled:opacity-50 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                              disabled={isProbing || !hasSafeReadProbe(api)}
+                              title={!hasSafeReadProbe(api) ? "No read-only probe is configured for this endpoint." : undefined}
+                              className="px-3 py-1 rounded-lg bg-amber-800 text-white text-[11px] font-bold hover:bg-amber-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
                             >
                               <RefreshCw size={11} className={probingSingle === api.id ? "animate-spin" : ""} />
                               <span>Ping Live</span>
@@ -1324,6 +1375,30 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                                   <strong className="text-gray-800 text-xs">{probe.latencyMs} ms</strong>
                                 </div>
                               </div>
+
+                              {probe.statusSource && (
+                                <p className="text-gray-600 font-mono text-[10px]">
+                                  <strong>Status source:</strong>{" "}
+                                  {probe.statusSource === "upstream" ? "upstream HTTP response" : "probe-generated failure"}
+                                  {probe.failureKind === "probe_timeout" && (
+                                    <> · upstream status {probe.upstreamStatus ?? "not received"}</>
+                                  )}
+                                </p>
+                              )}
+
+                              {(probe.probeRequestId || probe.headers?.upstreamRequestId) && (
+                                <p className="text-gray-500 font-mono text-[10px] break-all">
+                                  <strong>Request IDs:</strong>{" "}
+                                  probe {probe.probeRequestId || "unavailable"}
+                                  {probe.headers?.upstreamRequestId && ` · upstream ${probe.headers.upstreamRequestId}`}
+                                </p>
+                              )}
+
+                              {probe.headers?.serverTiming && (
+                                <p className="text-gray-500 font-mono text-[10px] break-all" title={probe.headers.serverTiming}>
+                                  <strong>Server-Timing:</strong> {probe.headers.serverTiming}
+                                </p>
+                              )}
 
                               {probe.headers?.cacheControl && (
                                 <p className="text-gray-500 font-mono text-[10px] truncate">

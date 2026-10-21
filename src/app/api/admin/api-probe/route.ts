@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServiceRoleSupabaseClient } from "@/lib/admin";
+import { ADMIN_COOKIE, verifyAdminCookieAuth } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
+
+const PROBE_TIMEOUT_MS = 15_000;
+
+type ProbeAudience = "public" | "admin";
+
+interface ProbeTarget {
+  endpoint: string;
+  method: "GET";
+  audience: ProbeAudience;
+}
 
 interface ProbeResult {
   endpoint: string;
@@ -12,113 +22,163 @@ interface ProbeResult {
   statusText: string;
   latencyMs: number;
   timestamp: string;
+  statusSource: "upstream" | "probe";
+  failureKind?: "probe_timeout" | "network_error";
+  probeRequestId?: string;
+  upstreamStatus?: number;
   error?: string;
   responsePreview?: string;
   headers?: {
     region?: string;
     cacheControl?: string;
     contentType?: string;
+    serverTiming?: string;
+    upstreamRequestId?: string;
   };
 }
 
-const PROBE_TARGETS = [
-  { endpoint: "/api/calendar/upcoming?days=7", method: "GET" },
-  { endpoint: "/api/calendar/month?month=2026-09", method: "GET" },
-  { endpoint: "/api/calendar/day?date=2026-09-08", method: "GET" },
-  { endpoint: "/api/dharm-veer/roster?tradition=all", method: "GET" },
-  { endpoint: "/api/vrat/stats?vrat_id=ekadashi", method: "GET" },
-  { endpoint: "/api/health", method: "GET" },
-  { endpoint: "/api/admin/stats", method: "GET" },
+// Only explicitly reviewed, read-only GETs can be probed. The admin cookie is
+// forwarded solely to the admin stats target; public probes must measure the
+// same anonymous/cacheable path that a guest receives.
+const PROBE_TARGETS: ProbeTarget[] = [
+  { endpoint: "/api/calendar/upcoming?days=7", method: "GET", audience: "public" },
+  { endpoint: "/api/calendar/month?month=2026-09", method: "GET", audience: "public" },
+  { endpoint: "/api/calendar/day?date=2026-09-08", method: "GET", audience: "public" },
+  {
+    endpoint: "/api/calendar/day?date=2026-09-08&lat=23.1765&lon=75.7885&tz=Asia/Kolkata",
+    method: "GET",
+    audience: "public",
+  },
+  { endpoint: "/api/dharm-veer/roster?tradition=all", method: "GET", audience: "public" },
+  { endpoint: "/api/vrat/stats?vrat_id=ekadashi", method: "GET", audience: "public" },
+  { endpoint: "/api/health", method: "GET", audience: "public" },
+  { endpoint: "/api/admin/stats", method: "GET", audience: "admin" },
 ];
 
-async function probeUrl(baseUrl: string, endpoint: string, method = "GET", authHeaders?: { cookie?: string; auth?: string }): Promise<ProbeResult> {
-  const url = `${baseUrl}${endpoint}`;
-  const t0 = Date.now();
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
+function findProbeTarget(endpoint: unknown, method: unknown): ProbeTarget | null {
+  if (typeof endpoint !== "string" || typeof method !== "string") return null;
+  return PROBE_TARGETS.find((target) => target.endpoint === endpoint && target.method === method) ?? null;
+}
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+async function probeUrl(
+  baseUrl: string,
+  target: ProbeTarget,
+  adminToken: string | undefined,
+  probeRequestId: string | undefined,
+): Promise<ProbeResult> {
+  const url = `${baseUrl}${target.endpoint}`;
+  const startedAt = Date.now();
+  const controller = new AbortController();
+  let timeoutTriggered = false;
+  let upstreamStatus: number | undefined;
+  let upstreamHeaders: ProbeResult["headers"];
+  const timeout = setTimeout(() => {
+    timeoutTriggered = true;
+    controller.abort();
+  }, PROBE_TIMEOUT_MS);
+
+  try {
     const headers: Record<string, string> = {
       "x-shoonaya-probe": "admin-monitoring",
-      "accept": "application/json",
+      accept: "application/json",
     };
-    if (authHeaders?.cookie) {
-      headers["cookie"] = authHeaders.cookie;
-    }
-    if (authHeaders?.auth) {
-      headers["authorization"] = authHeaders.auth;
+    if (target.audience === "admin" && adminToken) {
+      headers.cookie = `${ADMIN_COOKIE}=${adminToken}`;
     }
 
-    const res = await fetch(url, {
-      method,
+    const response = await fetch(url, {
+      method: target.method,
       signal: controller.signal,
       headers,
     });
-    clearTimeout(timeout);
+    upstreamStatus = response.status;
+    upstreamHeaders = {
+      region: response.headers.get("x-vercel-id") || response.headers.get("x-matched-path") || undefined,
+      cacheControl: response.headers.get("cache-control") || undefined,
+      contentType: response.headers.get("content-type") || undefined,
+      serverTiming: response.headers.get("server-timing") || undefined,
+      upstreamRequestId: response.headers.get("x-request-id") || undefined,
+    };
 
-    const latencyMs = Date.now() - t0;
+    // Keep the same deadline active through body consumption. Otherwise the
+    // displayed round-trip duration could outlive the timeout's protection.
     let preview = "";
     try {
-      const text = await res.text();
-      preview = text.length > 200 ? text.slice(0, 200) + "..." : text;
+      const body = await response.text();
+      preview = body.length > 200 ? `${body.slice(0, 200)}...` : body;
     } catch {
-      preview = "[binary or unreadable body]";
+      preview = "[body unavailable]";
+      throw new Error("Probe response body could not be read.");
     }
 
     return {
-      endpoint,
-      method,
-      status: res.status,
-      ok: res.ok,
-      statusText: res.statusText || (res.ok ? "OK" : "Error"),
-      latencyMs,
+      endpoint: target.endpoint,
+      method: target.method,
+      status: response.status,
+      ok: response.ok,
+      statusText: response.statusText || (response.ok ? "OK" : "Upstream HTTP error"),
+      latencyMs: Date.now() - startedAt,
       timestamp: new Date().toISOString(),
+      statusSource: "upstream",
+      probeRequestId,
       responsePreview: preview,
-      headers: {
-        region: res.headers.get("x-vercel-id") || res.headers.get("x-matched-path") || undefined,
-        cacheControl: res.headers.get("cache-control") || undefined,
-        contentType: res.headers.get("content-type") || undefined,
-      },
+      headers: upstreamHeaders,
     };
-  } catch (err: unknown) {
-    const latencyMs = Date.now() - t0;
-    const isTimeout = err instanceof Error && err.name === "AbortError";
+  } catch {
+    const isTimeout = timeoutTriggered || controller.signal.aborted;
     return {
-      endpoint,
-      method,
+      endpoint: target.endpoint,
+      method: target.method,
       status: isTimeout ? 504 : 500,
       ok: false,
-      statusText: isTimeout ? "Gateway Timeout (6000ms)" : "Probe Failed",
-      latencyMs,
+      statusText: isTimeout ? `Probe timeout (${PROBE_TIMEOUT_MS}ms)` : "Probe network failure",
+      latencyMs: Date.now() - startedAt,
       timestamp: new Date().toISOString(),
-      error: err instanceof Error ? err.message : "Network error during probe",
+      statusSource: "probe",
+      failureKind: isTimeout ? "probe_timeout" : "network_error",
+      probeRequestId,
+      upstreamStatus,
+      error: isTimeout
+        ? `The probe did not complete within ${PROBE_TIMEOUT_MS}ms.`
+        : "Network error while the probe called its target.",
+      headers: upstreamHeaders,
     };
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
 export async function POST(req: NextRequest) {
+  const authError = await verifyAdminCookieAuth(req);
+  if (authError) return authError;
+
   try {
-    const supabase = createServiceRoleSupabaseClient();
-    const body = await req.json().catch(() => ({}));
-    const targetEndpoint = body.endpoint as string | undefined;
+    const parsedBody: unknown = await req.json().catch(() => ({}));
+    const body = isRecord(parsedBody) ? parsedBody : {};
+    const targetEndpoint = body.endpoint;
 
-    const protocol = req.nextUrl.protocol || "http:";
-    const host = req.headers.get("host") || "localhost:3000";
-    const baseUrl = `${protocol}//${host}`;
+    const baseUrl = req.nextUrl.origin;
+    const adminToken = req.cookies.get(ADMIN_COOKIE)?.value;
+    const probeRequestId = req.headers.get("x-request-id") || undefined;
 
-    const authHeaders = {
-      cookie: req.headers.get("cookie") || undefined,
-      auth: req.headers.get("authorization") || undefined,
-    };
-
-    if (targetEndpoint) {
-      const result = await probeUrl(baseUrl, targetEndpoint, body.method || "GET", authHeaders);
+    if (targetEndpoint !== undefined) {
+      const target = findProbeTarget(targetEndpoint, body.method);
+      if (!target) {
+        return NextResponse.json(
+          { error: "Probe target is not in the read-only monitoring allowlist." },
+          { status: 400 },
+        );
+      }
+      const result = await probeUrl(baseUrl, target, adminToken, probeRequestId);
       return NextResponse.json({ success: true, result });
     }
 
-    // Probe default fleet
     const results = await Promise.all(
-      PROBE_TARGETS.map((t) => probeUrl(baseUrl, t.endpoint, t.method, authHeaders))
+      PROBE_TARGETS.map((target) => probeUrl(baseUrl, target, adminToken, probeRequestId)),
     );
 
     return NextResponse.json({
@@ -130,7 +190,7 @@ export async function POST(req: NextRequest) {
     console.error("[POST /api/admin/api-probe] Error:", err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
