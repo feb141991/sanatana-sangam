@@ -92,6 +92,11 @@ export type NativeTelemetryPayload = {
   schemaVersion: number;
   appVersion: string | null;
   platform: 'ios' | 'android' | null;
+  // Only ever present on a guest upload -- a random, locally-generated id,
+  // never an account id. Absent (not just null) on an authenticated upload,
+  // which already has userId for this purpose; the route must not persist
+  // this for an authenticated row even if a malformed client sends one.
+  guestInstallId: string | null;
   summary: {
     routes: NativeTelemetryRouteSummary[];
     outbox: NativeTelemetryOutboxSummary[];
@@ -279,6 +284,11 @@ export function parseNativeTelemetryPayload(input: unknown): NativeTelemetryPayl
   const appVersion = boundedString(record.appVersion, 40);
   const platformRaw = record.platform;
   const platform = platformRaw === 'ios' || platformRaw === 'android' ? platformRaw : null;
+  // Format-bounded, not identity-trusted: the route must still decide
+  // server-side whether this upload is a guest row before persisting this
+  // (see telemetry-summary/route.ts) -- an authenticated request sending
+  // one must have it silently dropped, not stored.
+  const guestInstallId = boundedString(record.guestInstallId, 64);
 
   const summaryRaw = record.summary;
   if (!summaryRaw || typeof summaryRaw !== 'object') return null;
@@ -351,6 +361,7 @@ export function parseNativeTelemetryPayload(input: unknown): NativeTelemetryPayl
     schemaVersion,
     appVersion,
     platform,
+    guestInstallId,
     summary: { routes, outbox, serverTimings, duplicateRequests, interactionTimings, loaderExposure, firstUsefulFrame, totalEvents },
   };
 }

@@ -79,6 +79,9 @@ export async function POST(request: NextRequest) {
     schema_version: payload.schemaVersion,
     app_version: payload.appVersion,
     platform: payload.platform,
+    // Server-decided, not client-trusted: dropped even if an authenticated
+    // request's payload carries one -- userId already identifies that row.
+    guest_install_id: userId ? null : payload.guestInstallId,
     total_events: payload.summary.totalEvents,
     summary: payload.summary,
   });

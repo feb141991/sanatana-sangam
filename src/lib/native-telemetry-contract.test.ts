@@ -40,6 +40,37 @@ test('accepts a full schema-v2 payload with every Stage 0 field populated', () =
   assert.equal(parsed.summary.loaderExposure[0].shownWithUsableData, 0);
 });
 
+test('accepts a guest payload with a valid guestInstallId and returns it', () => {
+  const payload = { ...structuredClone(basePayload), guestInstallId: 'a1b2c3d4-e5f6-4789-90ab-cdef01234567' };
+  const parsed = parseNativeTelemetryPayload(payload);
+  assert.ok(parsed);
+  assert.equal(parsed.guestInstallId, 'a1b2c3d4-e5f6-4789-90ab-cdef01234567');
+});
+
+test('defaults guestInstallId to null when absent (an authenticated upload never sends one)', () => {
+  const parsed = parseNativeTelemetryPayload(structuredClone(basePayload));
+  assert.ok(parsed);
+  assert.equal(parsed.guestInstallId, null);
+});
+
+test('silently drops a malformed guestInstallId to null rather than rejecting the whole payload', () => {
+  // boundedString returns null for a non-string value -- a malformed id must
+  // not take down an otherwise-valid upload, since the route re-decides
+  // server-side whether to persist it at all (see telemetry-summary/route.ts).
+  const payload = { ...structuredClone(basePayload), guestInstallId: { nested: 'object' } };
+  const parsed = parseNativeTelemetryPayload(payload);
+  assert.ok(parsed);
+  assert.equal(parsed.guestInstallId, null);
+});
+
+test('truncates an oversized guestInstallId to 64 chars rather than rejecting it', () => {
+  const oversized = 'a'.repeat(200);
+  const payload = { ...structuredClone(basePayload), guestInstallId: oversized };
+  const parsed = parseNativeTelemetryPayload(payload);
+  assert.ok(parsed);
+  assert.equal(parsed.guestInstallId?.length, 64);
+});
+
 test('accepts a pre-Stage-0 (schema v1) payload missing every new field, defaulting to empty/zero', () => {
   const legacyPayload = {
     schemaVersion: 1,
