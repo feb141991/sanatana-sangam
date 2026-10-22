@@ -72,6 +72,7 @@ export interface NativeApiDiagnosticRow {
   final_status: number | null;
   attempt_count: number;
   duration_ms: number;
+  crossed_background: boolean | null;
   app_version: string | null;
   platform: string | null;
   client_occurred_at: string | null;
@@ -142,7 +143,7 @@ export async function fetchNativeTelemetryMonitoringMetrics(): Promise<NativeTel
       .select('client_event_id', { count: 'exact', head: true })
       .gte('received_at', twentyFourHoursAgo),
     supabase.from('native_api_diagnostic_events')
-      .select('client_event_id, server_request_id, retry_server_request_id, endpoint, method, outcome, first_status, final_status, attempt_count, duration_ms, app_version, platform, client_occurred_at, received_at')
+      .select('client_event_id, server_request_id, retry_server_request_id, endpoint, method, outcome, first_status, final_status, attempt_count, duration_ms, crossed_background, app_version, platform, client_occurred_at, received_at')
       .order('received_at', { ascending: false })
       .limit(100),
   ]);

@@ -18,6 +18,7 @@ export type NativeApiDiagnosticEvent = {
   finalStatus: number | null;
   attemptCount: number;
   durationMs: number;
+  crossedBackground: boolean | null;
   timestamp: number;
 };
 
@@ -57,6 +58,7 @@ function parseEvent(value: unknown): NativeApiDiagnosticEvent | null {
   const endpoint = value.endpoint;
   const attemptCount = value.attemptCount;
   const durationMs = value.durationMs;
+  const crossedBackground = value.crossedBackground;
   const timestamp = value.timestamp;
 
   if (typeof value.clientEventId !== 'string' || !UUID.test(value.clientEventId)
@@ -67,6 +69,7 @@ function parseEvent(value: unknown): NativeApiDiagnosticEvent | null {
     || !nullableStatus(value.firstStatus) || !nullableStatus(value.finalStatus)
     || typeof attemptCount !== 'number' || !Number.isInteger(attemptCount) || attemptCount < 0 || attemptCount > 4
     || typeof durationMs !== 'number' || !Number.isFinite(durationMs) || durationMs < 0 || durationMs > 180_000
+    || (crossedBackground !== undefined && crossedBackground !== null && typeof crossedBackground !== 'boolean')
     || typeof timestamp !== 'number' || !Number.isFinite(timestamp)
     || timestamp < Date.now() - MAX_AGE_MS || timestamp > Date.now() + 24 * 60 * 60 * 1000
     || (value.retryServerRequestId !== null && value.retryServerRequestId === value.serverRequestId)
@@ -89,6 +92,7 @@ function parseEvent(value: unknown): NativeApiDiagnosticEvent | null {
     finalStatus: value.finalStatus,
     attemptCount,
     durationMs,
+    crossedBackground: typeof crossedBackground === 'boolean' ? crossedBackground : null,
     timestamp,
   };
 }

@@ -3814,6 +3814,7 @@ export type Database = {
           client_event_id: string
           client_occurred_at: string | null
           duration_ms: number
+          crossed_background: boolean | null
           endpoint: string
           final_status: number | null
           first_status: number | null
@@ -3830,6 +3831,7 @@ export type Database = {
           client_event_id: string
           client_occurred_at?: string | null
           duration_ms: number
+          crossed_background?: boolean | null
           endpoint: string
           final_status?: number | null
           first_status?: number | null
@@ -3846,6 +3848,7 @@ export type Database = {
           client_event_id?: string
           client_occurred_at?: string | null
           duration_ms?: number
+          crossed_background?: boolean | null
           endpoint?: string
           final_status?: number | null
           first_status?: number | null

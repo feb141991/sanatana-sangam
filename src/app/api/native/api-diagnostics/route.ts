@@ -67,6 +67,7 @@ export async function POST(request: Request) {
     final_status: event.finalStatus,
     attempt_count: event.attemptCount,
     duration_ms: event.durationMs,
+    crossed_background: event.crossedBackground,
     app_version: payload.appVersion,
     platform: payload.platform,
     client_occurred_at: new Date(event.timestamp).toISOString(),

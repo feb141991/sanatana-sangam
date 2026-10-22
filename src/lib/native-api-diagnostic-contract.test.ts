@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 import { parseNativeApiDiagnosticPayload } from './native-api-diagnostic-contract';
 
 const event = (overrides: Record<string, unknown> = {}) => ({
@@ -24,7 +25,16 @@ test('accepts bounded safe API failures and keeps only the declared diagnostic f
   assert.ok(parsed);
   assert.equal(parsed.events.length, 1);
   assert.equal(parsed.events[0].endpoint, '/api/calendar/upcoming');
+  assert.equal(parsed.events[0].crossedBackground, null, 'older app payloads normalize to unknown');
   assert.equal('requestBody' in parsed.events[0], false);
+});
+
+test('accepts the lifecycle marker and rejects malformed marker values', () => {
+  const crossed = parseNativeApiDiagnosticPayload(payload([event({ crossedBackground: true })]));
+  const foreground = parseNativeApiDiagnosticPayload(payload([event({ crossedBackground: false })]));
+  assert.equal(crossed?.events[0].crossedBackground, true);
+  assert.equal(foreground?.events[0].crossedBackground, false);
+  assert.equal(parseNativeApiDiagnosticPayload(payload([event({ crossedBackground: 'yes' })])), null);
 });
 
 test('accepts recovered retries and transport failures without a server response', () => {
@@ -53,4 +63,19 @@ test('rejects unsafe paths, invalid outcomes/statuses, repeated event IDs, and o
   assert.equal(parseNativeApiDiagnosticPayload(payload(Array.from({ length: 26 }, (_, index) => event({
     clientEventId: `a1b2c3d4-e5f6-4789-8123-${String(index).padStart(12, '0')}`,
   })))), null);
+});
+
+test('persists and exposes the optional lifecycle marker through the monitoring path', () => {
+  const route = readFileSync(new URL('../app/api/native/api-diagnostics/route.ts', import.meta.url), 'utf8');
+  const aggregator = readFileSync(new URL('./monitoring/native-telemetry-aggregator.ts', import.meta.url), 'utf8');
+  const adminSection = readFileSync(new URL('../app/admin/monitoring/NativeStartupTelemetrySection.tsx', import.meta.url), 'utf8');
+  const migration = readFileSync(new URL('../../supabase/migrations/20261021154326_add_crossed_background_to_native_api_diagnostics.sql', import.meta.url), 'utf8');
+  const rollback = readFileSync(new URL('../../supabase/rollbacks/20261021154326_add_crossed_background_to_native_api_diagnostics_rollback.sql', import.meta.url), 'utf8');
+  assert.match(route, /crossed_background:\s*event\.crossedBackground/);
+  assert.match(aggregator, /duration_ms, crossed_background, app_version/);
+  assert.match(adminSection, /event\.crossed_background === null[\s\S]*?"unknown"/);
+  assert.match(adminSection, /Backgrounded/);
+  assert.match(migration, /add column if not exists crossed_background boolean;/);
+  assert.doesNotMatch(migration, /crossed_background boolean not null/i);
+  assert.match(rollback, /drop column if exists crossed_background/);
 });

@@ -119,6 +119,7 @@ interface ApiDiagnosticRow {
   final_status: number | null;
   attempt_count: number;
   duration_ms: number;
+  crossed_background: boolean | null;
   app_version: string | null;
   platform: string | null;
   client_occurred_at: string | null;
@@ -294,9 +295,9 @@ export default function NativeStartupTelemetrySection() {
           <div className="p-3 rounded-xl bg-black/[0.02] border border-black/5"><p className="text-[10px] uppercase tracking-wider text-gray-500">API events · 24h</p><p className="text-xl font-bold theme-ink">{data ? countDisplay(data.api_diagnostics_24h) : "—"}</p></div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-[11px] min-w-[1050px]">
+          <table className="w-full text-[11px] min-w-[1120px]">
             <thead><tr className="text-left text-[var(--brand-muted)] uppercase tracking-wider text-[10px]">
-              <th className="pb-2 pr-3">Received</th><th className="pb-2 pr-3">Endpoint</th><th className="pb-2 pr-3">Outcome</th><th className="pb-2 pr-3">Status</th><th className="pb-2 pr-3">Attempts</th><th className="pb-2 pr-3">Duration</th><th className="pb-2 pr-3">Request ID(s)</th><th className="pb-2">Build</th>
+              <th className="pb-2 pr-3">Received</th><th className="pb-2 pr-3">Endpoint</th><th className="pb-2 pr-3">Outcome</th><th className="pb-2 pr-3">Status</th><th className="pb-2 pr-3">Attempts</th><th className="pb-2 pr-3">Duration</th><th className="pb-2 pr-3">Backgrounded</th><th className="pb-2 pr-3">Request ID(s)</th><th className="pb-2">Build</th>
             </tr></thead>
             <tbody>{(data?.api_diagnostics ?? []).map((event) => (
               <tr key={event.client_event_id} className="border-t border-black/5">
@@ -306,6 +307,7 @@ export default function NativeStartupTelemetrySection() {
                 <td className="py-2 pr-3">{event.first_status ?? "—"} → {event.final_status ?? "—"}</td>
                 <td className="py-2 pr-3">{event.attempt_count}</td>
                 <td className="py-2 pr-3">{ms(event.duration_ms)}</td>
+                <td className="py-2 pr-3">{event.crossed_background === null ? "unknown" : event.crossed_background ? "yes" : "no"}</td>
                 <td className="py-2 pr-3 font-mono select-all">{event.server_request_id ?? "no server response"}{event.retry_server_request_id && <><br /><span className="text-[var(--brand-muted)]">retry {event.retry_server_request_id}</span></>}</td>
                 <td className="py-2">{event.platform ?? "?"} · {event.app_version ?? "?"}</td>
               </tr>
