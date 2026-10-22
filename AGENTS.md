@@ -102,6 +102,9 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
 - Do not claim pixel parity between PWA and Native; require equivalent
   content, actions, states, accessibility and platform-appropriate quality.
 - Do not add animation dependencies or decorative loops without measured need.
+- In Native flex rows, any text alongside an icon, badge, or sibling element must
+  carry `flex: 1` (or `flexShrink: 1`) and explicit `lineHeight` so it bounds
+  within parent padding without clipping or border bleeding.
 
 ### 9. Performance Evidence
 - Measure before and after: request count, query count, render/mount count,
