@@ -246,12 +246,10 @@ export async function submitForReview(supabase: any, campaignId: string): Promis
  * campaigns sourced from a published observance -- that every variant carries
  * non-empty source_citations and that the occurrence is *still* publishable right now
  * (state can have changed since the campaign was created). The status transition
- * itself is a single compare-and-set update (only "in_review"/"draft" -> "approved"
- * succeeds); if that update loses a race (already approved/cancelled/dispatching by
- * another request), it throws before any variant is touched. Once the transition
- * succeeds, each variant is stamped with the manifest hash/version approval is binding
- * to -- dispatch re-derives the same hash from the variant's *current* row and rejects
- * on mismatch.
+ * itself and every variant approval stamp are committed by one database transaction.
+ * The RPC locks the campaign, compares every variant's current content hash/version,
+ * stamps all variants, and only then changes the campaign to approved. Dispatch still
+ * re-derives the hash from the current row as defence in depth.
  */
 export async function approveCampaign(supabase: any, campaignId: string, approvedBy: string): Promise<MarketingCampaign> {
   const { data: campaign, error: campaignError } = await supabase
@@ -262,6 +260,9 @@ export async function approveCampaign(supabase: any, campaignId: string, approve
 
   if (campaignError || !campaign) {
     throw new Error(`Campaign not found: ${campaignError?.message ?? campaignId}`);
+  }
+  if (campaign.status !== "in_review") {
+    throw new Error("Cannot approve campaign: must be in_review (submit the draft for review first)");
   }
 
   const { data: variants, error: variantsError } = await supabase
@@ -305,26 +306,9 @@ export async function approveCampaign(supabase: any, campaignId: string, approve
     sourceVerifiedAt = new Date().toISOString();
   }
 
-  const { data: approved, error: approveError } = await supabase
-    .from("marketing_campaigns")
-    .update({
-      status: "approved",
-      approved_by: approvedBy,
-      approved_at: new Date().toISOString(),
-      source_verified_at: sourceVerifiedAt,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", campaignId)
-    .eq("status", "in_review")
-    .select("*")
-    .single();
-
-  if (approveError || !approved) {
-    throw new Error(`Cannot approve campaign: ${approveError?.message ?? "must be in_review (a draft cannot be approved directly -- submit it for review first)"}`);
-  }
-
-  for (const variant of variants) {
-    const manifestHash = computeContentHash({
+  const variantApprovals = (variants as MarketingCampaignVariant[]).map(variant => ({
+    id: variant.id,
+    manifest_hash: computeContentHash({
       subject: variant.subject,
       body: variant.body,
       cta_text: variant.cta_text,
@@ -333,19 +317,25 @@ export async function approveCampaign(supabase: any, campaignId: string, approve
       source_citations: variant.source_citations,
       channel: variant.channel,
       locale: variant.locale
-    });
+    }),
+    content_version: variant.content_version,
+  }));
 
-    const { error: stampError } = await supabase
-      .from("marketing_campaign_variants")
-      .update({
-        approved_manifest_hash: manifestHash,
-        approved_content_version: variant.content_version,
-      })
-      .eq("id", variant.id);
-
-    if (stampError) {
-      throw new Error(`Approved campaign but failed to stamp variant ${variant.id}: ${stampError.message}`);
+  const { data: approvedRows, error: approveError } = await supabase.rpc(
+    "approve_marketing_campaign",
+    {
+      p_campaign_id: campaignId,
+      p_approved_by: approvedBy,
+      p_source_verified_at: sourceVerifiedAt,
+      p_variant_approvals: variantApprovals,
     }
+  );
+  const approved = Array.isArray(approvedRows) ? approvedRows[0] : approvedRows;
+
+  if (approveError || !approved) {
+    throw new Error(
+      `Cannot approve campaign: ${approveError?.message ?? "must be in_review and every variant must still match the reviewed content"}`
+    );
   }
 
   return approved as MarketingCampaign;

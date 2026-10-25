@@ -95,6 +95,7 @@ interface MockConfig {
   claimedRows?: MarketingDispatch[];
   profiles?: Record<string, any>;
   emails?: Record<string, string>;
+  resolveError?: { message: string } | null;
 }
 
 function createMockSupabase(config: MockConfig) {
@@ -122,7 +123,26 @@ function createMockSupabase(config: MockConfig) {
     rpc: (fn: string, params: any) => {
       if (fn === "claim_marketing_dispatches") {
         claimCalls.push(params);
-        return Promise.resolve({ data: config.claimedRows ?? [], error: null });
+        return Promise.resolve({
+          data: (config.claimedRows ?? []).map((row, index) => ({
+            ...row,
+            claim_token: row.claim_token ?? `claim-${index + 1}`,
+          })),
+          error: null,
+        });
+      }
+      if (fn === "resolve_marketing_dispatch") {
+        dispatchUpdates.push({
+          status: params.p_status,
+          provider: params.p_provider,
+          provider_message_id: params.p_provider_message_id,
+          last_error_code: params.p_error_code,
+          claim_token: params.p_claim_token,
+        });
+        if (config.resolveError) {
+          return Promise.resolve({ data: null, error: config.resolveError });
+        }
+        return Promise.resolve({ data: [{ id: params.p_dispatch_id, status: params.p_status }], error: null });
       }
       if (fn === "get_recipient_emails") {
         const ids: string[] = params.p_user_ids;
@@ -246,10 +266,10 @@ describe("Marketing Campaign Dispatcher", () => {
     expect(dispatchUpdates.some(u => u.status === "suppressed")).toBe(true);
   });
 
-  it("records a provider failure as 'failed' (retryable), not as a crash of the whole batch", async () => {
+  it("records a retryable email provider failure separately and continues the batch", async () => {
     sendShoonayaEmail
-      .mockResolvedValueOnce({ success: false, error: "Network timeout 504" })
-      .mockResolvedValueOnce({ success: true });
+      .mockResolvedValueOnce({ success: false, error: "Network timeout 504", retryable: true, status: 504 })
+      .mockResolvedValueOnce({ success: true, id: "resend_msg_2" });
 
     const { supabase, dispatchUpdates } = createMockSupabase({
       claimedRows: [
@@ -271,10 +291,83 @@ describe("Marketing Campaign Dispatcher", () => {
 
     expect(result.failed).toBe(1);
     expect(result.sent).toBe(1);
-    expect(result.dispatches[0].status).toBe("failed");
+    expect(result.retryable).toBe(1);
+    expect(result.dispatches[0].status).toBe("retryable");
     expect(result.dispatches[0].error_code).toBe("timeout");
     expect(result.dispatches[1].status).toBe("sent");
-    expect(dispatchUpdates.some(u => u.status === "failed" && u.last_error_code === "timeout")).toBe(true);
+    expect(dispatchUpdates.some(u => u.status === "retryable" && u.last_error_code === "timeout")).toBe(true);
+  });
+
+  it("records a non-retryable email rejection as a definitive failure", async () => {
+    sendShoonayaEmail.mockResolvedValue({
+      success: false,
+      error: "provider_http_400",
+      retryable: false,
+      status: 400,
+    });
+    const { supabase, dispatchUpdates } = createMockSupabase({
+      claimedRows: [
+        { id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "email", status: "claimed" } as any,
+      ],
+      profiles: {
+        "u-1": { id: "u-1", marketing_consent: true, email_newsletter: true, is_banned: false, unsubscribe_token: "t1" },
+      },
+      emails: { "u-1": "user1@shoonaya.com" },
+    });
+
+    const result = await dispatchMarketingBatch(supabase, {
+      campaign: baseCampaign(),
+      variant: approvedVariant(),
+      dryRun: false,
+    });
+
+    expect(result.failed).toBe(1);
+    expect(result.retryable).toBe(0);
+    expect(result.dispatches[0].status).toBe("failed");
+    expect(dispatchUpdates[0].status).toBe("failed");
+  });
+
+  it("quarantines an uncertain WhatsApp outcome instead of making it retryable", async () => {
+    whatsappSendText.mockRejectedValue(new Error("Network timeout 504"));
+    const { supabase, dispatchUpdates } = createMockSupabase({
+      claimedRows: [
+        { id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "whatsapp", status: "claimed" } as any,
+      ],
+      profiles: {
+        "u-1": { id: "u-1", marketing_consent: true, whatsapp_opt_in: true, whatsapp_number: "+14155552671", is_banned: false },
+      },
+    });
+
+    const result = await dispatchMarketingBatch(supabase, {
+      campaign: baseCampaign(),
+      variant: approvedVariant({ channel: "whatsapp" }),
+      dryRun: false,
+    });
+
+    expect(result.outcomeUnknown).toBe(1);
+    expect(result.retryable).toBe(0);
+    expect(result.dispatches[0].status).toBe("outcome_unknown");
+    expect(dispatchUpdates[0]).toMatchObject({ status: "outcome_unknown", last_error_code: "timeout" });
+  });
+
+  it("does not report provider success when the token-bound ledger finalization fails", async () => {
+    sendShoonayaEmail.mockResolvedValue({ success: true, id: "resend_msg_1" });
+    const { supabase } = createMockSupabase({
+      claimedRows: [
+        { id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "email", status: "claimed" } as any,
+      ],
+      profiles: {
+        "u-1": { id: "u-1", marketing_consent: true, email_newsletter: true, is_banned: false, unsubscribe_token: "t1" },
+      },
+      emails: { "u-1": "user1@shoonaya.com" },
+      resolveError: { message: "stale claim" },
+    });
+
+    await expect(dispatchMarketingBatch(supabase, {
+      campaign: baseCampaign(),
+      variant: approvedVariant(),
+      dryRun: false,
+    })).rejects.toThrow(/ledger finalization failed/);
   });
 
   it("fails closed: refuses to dispatch a live WhatsApp campaign in production against a mock provider", async () => {

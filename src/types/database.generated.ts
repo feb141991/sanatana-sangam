@@ -3942,6 +3942,7 @@ export type Database = {
       native_startup_telemetry_summaries: {
         Row: {
           app_version: string | null
+          guest_install_id: string | null
           id: string
           identity_kind: string
           platform: string | null
@@ -3953,6 +3954,7 @@ export type Database = {
         }
         Insert: {
           app_version?: string | null
+          guest_install_id?: string | null
           id?: string
           identity_kind: string
           platform?: string | null
@@ -3964,6 +3966,7 @@ export type Database = {
         }
         Update: {
           app_version?: string | null
+          guest_install_id?: string | null
           id?: string
           identity_kind?: string
           platform?: string | null

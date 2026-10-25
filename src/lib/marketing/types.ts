@@ -26,6 +26,8 @@ export type MarketingDispatchStatus =
   | "pending"
   | "claimed"
   | "sent"
+  | "retryable"
+  | "outcome_unknown"
   | "failed"
   | "suppressed";
 
@@ -98,9 +100,11 @@ export interface MarketingDispatch {
   status: MarketingDispatchStatus;
   provider: string;
   provider_message_id: string | null;
+  provider_idempotency_expires_at: string | null;
   attempt_count: number;
   last_error_code: string | null;
   claimed_at: string | null;
+  claim_token: string | null;
   sent_at: string | null;
   created_at: string;
   updated_at: string;

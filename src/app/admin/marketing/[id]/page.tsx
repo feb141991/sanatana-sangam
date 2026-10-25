@@ -74,6 +74,8 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
   const { id } = use(params);
   const [campaign, setCampaign] = useState<any>(null);
   const [dispatchSummary, setDispatchSummary] = useState<any>({});
+  const [reconciliationRequired, setReconciliationRequired] = useState<any[]>([]);
+  const [deliveryLedgerDegraded, setDeliveryLedgerDegraded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<MarketingChannel>("email");
   
@@ -179,6 +181,8 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
         setTargetTradition(data.campaign.target_tradition ?? "");
         setTargetSampradaya(data.campaign.target_sampradaya ?? "");
         setDispatchSummary(data.dispatchSummary ?? {});
+        setReconciliationRequired(data.reconciliationRequired ?? []);
+        setDeliveryLedgerDegraded(data.deliveryLedgerDegraded === true);
 
         const emailVar = (data.campaign.marketing_campaign_variants ?? []).find((v: any) => v.channel === "email");
         setEmailVariant(emailVar ?? null);
@@ -429,7 +433,16 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
     dispatchAbortRef.current = controller;
 
     try {
-      const payload: Record<string, unknown> = { channel: activeTab, dry_run: dryRun };
+      const selectedVariant = activeTab === "email" ? emailVariant : activeTab === "whatsapp" ? whatsappVariant : null;
+      if (!selectedVariant?.id) {
+        setActionError("No saved variant is selected for this channel");
+        return;
+      }
+      const payload: Record<string, unknown> = {
+        channel: activeTab,
+        variant_id: selectedVariant.id,
+        dry_run: dryRun,
+      };
       if (!dryRun) {
         payload.confirmation_phrase = confirmationPhrase;
         payload.confirmed_title = confirmedTitle;
@@ -458,6 +471,32 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
     } finally {
       setDispatching(false);
     }
+  };
+
+  const reconcileDispatch = async (dispatchId: string, resolution: "confirmed_sent" | "confirmed_not_sent") => {
+    const providerMessageId = resolution === "confirmed_sent"
+      ? window.prompt("Enter the provider message ID shown in the provider dashboard:")?.trim() ?? ""
+      : "";
+    if (resolution === "confirmed_sent" && !providerMessageId) return;
+
+    const confirmationPhrase = resolution === "confirmed_sent" ? "CONFIRM SENT" : "CONFIRM NOT SENT";
+    if (window.prompt(`Type ${confirmationPhrase} after checking the provider dashboard:`) !== confirmationPhrase) return;
+
+    setActionError(null);
+    const res = await fetch(
+      `/api/admin/marketing/campaigns/${id}/dispatches/${dispatchId}/reconcile`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resolution, confirmation_phrase: confirmationPhrase, provider_message_id: providerMessageId || null }),
+      }
+    );
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setActionError(data.error ?? "Dispatch reconciliation failed");
+      return;
+    }
+    fetchCampaign();
   };
 
   if (loading || !campaign) {
@@ -517,7 +556,8 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                 )}
                 <button
                   onClick={openDispatchConfirm}
-                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-2"
+                  disabled={deliveryLedgerDegraded}
+                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send size={16} />
                   {campaign.status === "dispatching" ? `Continue Sending ${activeTab.toUpperCase()}` : `Dispatch ${activeTab.toUpperCase()}`}
@@ -770,40 +810,81 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             <p className="font-bold uppercase tracking-wider text-[10px]">
               {dispatchResult.dryRun ? "DRY RUN — no messages sent, no delivery state changed" : "Live Dispatch Result"}
             </p>
-            <div className="flex gap-6 font-mono">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono">
               <span>total {dispatchResult.total}</span>
               <span className="text-emerald-700">sent {dispatchResult.sent}</span>
               <span className="text-amber-700">suppressed {dispatchResult.suppressed}</span>
               <span className="text-rose-700">failed {dispatchResult.failed}</span>
+              {dispatchResult.retryable > 0 && <span className="text-amber-700">retryable {dispatchResult.retryable}</span>}
+              {dispatchResult.outcomeUnknown > 0 && <span className="text-rose-800">needs review {dispatchResult.outcomeUnknown}</span>}
             </div>
             {typeof dispatchMeta.remainingPending === "number" && (
               <p className="text-[10px] text-slate-600">
                 {dispatchMeta.remainingPending > 0
-                  ? `${dispatchMeta.remainingPending} recipients still pending -- click "Continue Sending" to drain the next batch.`
+                  ? `${dispatchMeta.remainingPending} deliveries remain unresolved -- continue only after reviewing retryable and manual-review counts.`
                   : "No recipients remaining for this channel."}
               </p>
             )}
           </div>
         )}
 
-        {/* Delivery Ledger: pending (not yet claimed), claimed (in flight -- becomes
-            reclaimable/uncertain if a worker dies mid-send without resolving it),
-            sent (terminal, immutable), failed (retryable), suppressed (consent
-            declined, not a delivery failure). */}
+        {deliveryLedgerDegraded && (
+          <div className="rounded-xl border border-rose-300 bg-rose-50 p-3 text-xs font-semibold text-rose-900">
+            Delivery ledger data could not be fully loaded. Do not dispatch or reconcile until the page loads without this warning.
+          </div>
+        )}
+
+        {/* Delivery Ledger distinguishes automatic email retries from uncertain
+            WhatsApp outcomes that require provider-side reconciliation. */}
         {Object.keys(dispatchSummary).length > 0 && (
           <div className="space-y-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Delivery Ledger</h3>
-            <div className="grid grid-cols-5 gap-3 text-center">
-              {(["pending", "claimed", "sent", "failed", "suppressed"] as const).map(status => (
+            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-3 text-center">
+              {(["pending", "claimed", "retryable", "outcome_unknown", "sent", "failed", "suppressed"] as const).map(status => (
                 <div key={status} className="p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-card)]">
                   <p className="text-lg font-bold font-mono">{String(dispatchSummary[status] ?? 0)}</p>
                   <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">
-                    {status === "claimed" ? "claimed (uncertain if stuck)" : status === "failed" ? "failed (retryable)" : status}
+                    {status === "claimed"
+                      ? "in progress"
+                      : status === "retryable"
+                        ? "retryable email"
+                        : status === "outcome_unknown"
+                          ? "manual review"
+                          : status === "failed"
+                            ? "definitive failure"
+                            : status}
                   </p>
                 </div>
               ))}
             </div>
           </div>
+        )}
+
+        {reconciliationRequired.length > 0 && (
+          <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4 space-y-3">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900">Provider reconciliation required</h3>
+              <p className="mt-1 text-xs text-amber-900/80">
+                These WhatsApp attempts may already have been accepted. Check the provider dashboard before choosing an action; they will never retry automatically.
+              </p>
+            </div>
+            {reconciliationRequired.map(item => (
+              <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-white p-3">
+                <div className="text-xs text-slate-700">
+                  <p className="font-mono font-semibold">{item.channel} · {item.provider}</p>
+                  <p>Attempt {item.attempt_count} · {new Date(item.updated_at).toLocaleString()}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button type="button" disabled={deliveryLedgerDegraded} onClick={() => reconcileDispatch(item.id, "confirmed_sent")} className="px-3 py-2 rounded-lg bg-emerald-700 text-white text-xs font-bold disabled:opacity-50">
+                    Confirm sent
+                  </button>
+                  <button type="button" disabled={deliveryLedgerDegraded} onClick={() => reconcileDispatch(item.id, "confirmed_not_sent")} className="px-3 py-2 rounded-lg border border-amber-400 bg-white text-amber-900 text-xs font-bold disabled:opacity-50">
+                    Confirm not sent
+                  </button>
+                </div>
+              </div>
+            ))}
+          </section>
         )}
 
         {/* Channel Variants Deck */}

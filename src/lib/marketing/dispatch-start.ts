@@ -123,8 +123,8 @@ export async function startCampaignDispatch(
   if (queued === 0) {
     try {
       await seedMarketingDispatches(supabase, campaign, variant.id, channel);
-    } catch (err: any) {
-      return fail(500, "audience_seed_failed", `Failed to seed dispatch audience: ${err?.message ?? "unknown error"}`);
+    } catch {
+      return fail(500, "audience_seed_failed", "Could not prepare the campaign audience");
     }
     const seeded = await countDispatchRows(supabase, campaign.id, { variantId: variant.id, channel });
     if (seeded === null) return fail(500, "count_failed", "Could not read the campaign's delivery state");
@@ -176,7 +176,7 @@ export async function maybeCompleteCampaign(supabase: any, campaignId: string): 
     .from("marketing_dispatches")
     .select("id", { count: "exact", head: true })
     .eq("campaign_id", campaignId)
-    .in("status", ["pending", "claimed"]);
+    .in("status", ["pending", "claimed", "retryable", "outcome_unknown"]);
   if (openError || (open ?? 0) > 0) return null;
 
   const total = await countDispatchRows(supabase, campaignId);

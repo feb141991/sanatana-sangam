@@ -288,34 +288,19 @@ describe("approveCampaign lifecycle guards", () => {
   });
 
   it("stamps approved_manifest_hash and approved_content_version on every variant after a successful approval", async () => {
-    const variantUpdateSpy = vi.fn().mockReturnValue({
-      eq: vi.fn().mockResolvedValue({ data: {}, error: null }),
+    const rpcSpy = vi.fn().mockResolvedValue({
+      data: [{ id: "c-1", status: "approved", approved_by: "admin" }],
+      error: null,
     });
 
     const mockSupabase = {
+      rpc: rpcSpy,
       from: vi.fn((table: string) => {
         if (table === "marketing_campaigns") {
-          return {
-            select: mockCampaignFetch({ id: "c-1", status: "in_review", source_type: "manual" }),
-            update: vi.fn().mockReturnValue({
-              eq: vi.fn().mockReturnValue({
-                eq: vi.fn().mockReturnValue({
-                  select: vi.fn().mockReturnValue({
-                    single: vi.fn().mockResolvedValue({
-                      data: { id: "c-1", status: "approved", approved_by: "admin" },
-                      error: null,
-                    }),
-                  }),
-                }),
-              }),
-            }),
-          };
+          return { select: mockCampaignFetch({ id: "c-1", status: "in_review", source_type: "manual" }) };
         }
         if (table === "marketing_campaign_variants") {
-          return {
-            select: mockVariantsFetch([{ ...validVariant, content_version: 3 }]),
-            update: variantUpdateSpy,
-          };
+          return { select: mockVariantsFetch([{ ...validVariant, content_version: 3 }]) };
         }
         throw new Error("unexpected table");
       }),
@@ -324,12 +309,15 @@ describe("approveCampaign lifecycle guards", () => {
     const approved = await approveCampaign(mockSupabase as any, "c-1", "admin");
 
     expect(approved.status).toBe("approved");
-    expect(variantUpdateSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        approved_manifest_hash: expect.any(String),
-        approved_content_version: 3,
-      })
-    );
+    expect(rpcSpy).toHaveBeenCalledWith("approve_marketing_campaign", expect.objectContaining({
+      p_campaign_id: "c-1",
+      p_approved_by: "admin",
+      p_variant_approvals: [expect.objectContaining({
+        id: "var-1",
+        manifest_hash: expect.any(String),
+        content_version: 3,
+      })],
+    }));
   });
 });
 

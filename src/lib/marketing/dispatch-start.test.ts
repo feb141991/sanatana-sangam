@@ -260,6 +260,19 @@ describe("maybeCompleteCampaign", () => {
     expect(state.campaign.status).toBe("dispatching");
   });
 
+  it.each(["retryable", "outcome_unknown"])(
+    "does not complete while a recipient is %s",
+    async (status) => {
+      state.campaign = campaign({ status: "dispatching" });
+      state.dispatches.push(
+        { id: "d1", campaign_id: "c-1", status: "sent" },
+        { id: "d2", campaign_id: "c-1", status }
+      );
+      expect(await maybeCompleteCampaign(fakeSupabase(), "c-1")).toBeNull();
+      expect(state.campaign.status).toBe("dispatching");
+    }
+  );
+
   it("completes once every recipient row has reached a final status", async () => {
     state.campaign = campaign({ status: "dispatching" });
     state.dispatches.push({ id: "d1", campaign_id: "c-1", status: "sent" }, { id: "d2", campaign_id: "c-1", status: "suppressed" });

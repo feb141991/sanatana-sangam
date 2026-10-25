@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 
   // Fetch dispatch count summary
-  const { data: dispatches } = await admin.supabase
+  const { data: dispatches, error: dispatchSummaryError } = await admin.supabase
     .from("marketing_dispatches")
     .select("status, channel")
     .eq("campaign_id", id);
@@ -46,7 +46,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return acc;
   }, {});
 
-  return NextResponse.json({ campaign, dispatchSummary });
+  const { data: reconciliationRequired, error: reconciliationError } = await admin.supabase
+    .from("marketing_dispatches")
+    .select("id, channel, provider, attempt_count, last_error_code, updated_at")
+    .eq("campaign_id", id)
+    .eq("status", "outcome_unknown")
+    .order("updated_at", { ascending: true });
+
+  return NextResponse.json({
+    campaign,
+    dispatchSummary,
+    reconciliationRequired: reconciliationRequired ?? [],
+    deliveryLedgerDegraded: Boolean(dispatchSummaryError || reconciliationError),
+  });
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

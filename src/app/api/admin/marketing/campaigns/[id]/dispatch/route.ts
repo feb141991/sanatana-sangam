@@ -18,9 +18,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const body = await request.json().catch(() => ({}));
   const dryRun = body.dry_run !== false; // Default: true (dry-run safe)
   const channel = body.channel as "email" | "whatsapp";
+  const variantId = typeof body.variant_id === "string" ? body.variant_id.trim() : "";
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
 
   if (!channel || (channel !== "email" && channel !== "whatsapp")) {
     return NextResponse.json({ error: "Valid channel (email or whatsapp) is required" }, { status: 400 });
+  }
+  if (!variantId) {
+    return NextResponse.json({ error: "variant_id is required" }, { status: 400 });
   }
 
   const { data: campaignRow, error: campaignFetchError } = await admin.supabase
@@ -54,6 +59,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { data: variant, error: varErr } = await admin.supabase
     .from("marketing_campaign_variants")
     .select("*")
+    .eq("id", variantId)
     .eq("campaign_id", id)
     .eq("channel", channel)
     .single();
@@ -82,6 +88,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         sent: started.preview.eligible,
         suppressed: started.preview.total - started.preview.eligible,
         failed: 0,
+        retryable: 0,
+        outcomeUnknown: 0,
         dryRun: true,
         dispatches: []
       },
@@ -97,8 +105,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       variant: variant as MarketingCampaignVariant,
       dryRun
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 409 });
+  } catch (error: unknown) {
+    console.error("[marketing.dispatch] batch failed", {
+      requestId,
+      code: "MARKETING_DISPATCH_FAILED",
+      errorName: error instanceof Error ? error.name : "UnknownError",
+    });
+    return NextResponse.json(
+      {
+        error: "Campaign dispatch could not be completed",
+        code: "MARKETING_DISPATCH_FAILED",
+        requestId,
+      },
+      { status: 500, headers: { "X-Request-ID": requestId } }
+    );
   }
 
   let campaignStatus = campaign.status;
@@ -109,7 +129,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .from("marketing_dispatches")
       .select("id", { count: "exact", head: true })
       .eq("campaign_id", id)
-      .in("status", ["pending", "claimed"]);
+      .in("status", ["pending", "claimed", "retryable", "outcome_unknown"]);
     remainingPending = count ?? null;
 
     const completedStatus = await maybeCompleteCampaign(admin.supabase, id);

@@ -19,7 +19,7 @@ export interface DispatchBatchOptions {
   dryRun?: boolean;
   /** Max dispatch rows to claim (live) or preview (dry run) per call. */
   claimLimit?: number;
-  /** Minutes before a claimed-but-unresolved row becomes reclaimable by another call. */
+  /** Email lease timeout; expired WhatsApp claims are quarantined instead of resent. */
   leaseMinutes?: number;
 }
 
@@ -28,14 +28,51 @@ export interface DispatchResult {
   sent: number;
   suppressed: number;
   failed: number;
+  retryable: number;
+  outcomeUnknown: number;
   dryRun: boolean;
   dispatches: Array<{
     recipient_user_id: string;
     channel: MarketingChannel;
-    status: "sent" | "failed" | "suppressed";
+    status: "sent" | "retryable" | "outcome_unknown" | "failed" | "suppressed";
     provider_message_id?: string | null;
     error_code?: string | null;
   }>;
+}
+
+type DispatchResolutionStatus = Extract<
+  MarketingDispatch["status"],
+  "sent" | "retryable" | "outcome_unknown" | "failed" | "suppressed"
+>;
+
+interface DispatchResolution {
+  status: DispatchResolutionStatus;
+  provider?: string | null;
+  providerMessageId?: string | null;
+  errorCode?: string | null;
+}
+
+async function resolveClaim(
+  supabase: any,
+  row: MarketingDispatch,
+  resolution: DispatchResolution
+): Promise<void> {
+  if (!row.claim_token) {
+    throw new Error("Claimed marketing dispatch is missing its claim token");
+  }
+
+  const { data, error } = await supabase.rpc("resolve_marketing_dispatch", {
+    p_dispatch_id: row.id,
+    p_claim_token: row.claim_token,
+    p_status: resolution.status,
+    p_provider: resolution.provider ?? null,
+    p_provider_message_id: resolution.providerMessageId ?? null,
+    p_error_code: resolution.errorCode ?? null,
+  });
+  const resolved = Array.isArray(data) ? data[0] : data;
+  if (error || !resolved) {
+    throw new Error("Marketing dispatch ledger finalization failed");
+  }
 }
 
 /**
@@ -114,12 +151,10 @@ async function fetchRecipientProfiles(
  * dry-run can never itself claim a row out from under a later live call).
  *
  * The live path claims a bounded batch via the atomic claim_marketing_dispatches RPC
- * (FOR UPDATE SKIP LOCKED, lease-based recovery of stuck claims) -- only the caller
- * holding a claimed row may invoke a provider for it. Re-dispatch safety is now
- * structural: a 'sent' row can never be reclaimed (the claim RPC only selects
- * 'pending' or lease-expired 'claimed' rows, and a DB trigger rejects any attempt to
- * move a 'sent' row to any other status), so there is no separate
- * check-then-send-then-upsert race window.
+ * (FOR UPDATE SKIP LOCKED, token-bound resolution) -- only the worker holding the
+ * current claim token may finalize it. Email claims may be retried because Resend
+ * receives a stable idempotency key. Expired WhatsApp claims are quarantined for
+ * reconciliation because this integration has no equivalent provider guarantee.
  */
 export async function dispatchMarketingBatch(
   supabase: any,
@@ -142,6 +177,8 @@ export async function dispatchMarketingBatch(
     sent: 0,
     suppressed: 0,
     failed: 0,
+    retryable: 0,
+    outcomeUnknown: 0,
     dryRun,
     dispatches: []
   };
@@ -247,18 +284,19 @@ export async function dispatchMarketingBatch(
         status: "suppressed",
         error_code: consent.reasonCode
       });
-      await supabase
-        .from("marketing_dispatches")
-        .update({ status: "suppressed", last_error_code: consent.reasonCode, updated_at: new Date().toISOString() })
-        .eq("id", row.id);
+      await resolveClaim(supabase, row, {
+        status: "suppressed",
+        errorCode: consent.reasonCode,
+      });
       continue;
     }
 
     // 2. Real provider dispatch. The claimed row's own id is passed where the
     //    provider supports an idempotency key, so a retried call after an uncertain
     //    response is deduped provider-side too, not just by this row's own status.
-    try {
-      if (variant.channel === "email") {
+    let resolution: DispatchResolution;
+    if (variant.channel === "email") {
+      try {
         let unsubscribeUrl: string | undefined;
         if (profile!.unsubscribe_token) {
           const url = new URL("/api/unsubscribe", APP.BASE_URL);
@@ -278,73 +316,82 @@ export async function dispatchMarketingBatch(
           unsubType: campaign.campaign_type === "festival_reminder" ? "festivals" : "newsletter"
         }, { idempotencyKey: `marketing-dispatch:${row.id}` });
 
-        if (!sendRes || sendRes.success !== true) {
-          throw new Error(sendRes?.error ? String(sendRes.error) : "Resend delivery failed");
-        }
-
-        result.sent++;
-        result.dispatches.push({
-          recipient_user_id: row.recipient_user_id,
-          channel: "email",
-          status: "sent",
-          provider_message_id: sendRes.id ?? null
-        });
-
-        await supabase
-          .from("marketing_dispatches")
-          .update({
+        if (sendRes.success && sendRes.id) {
+          resolution = {
             status: "sent",
             provider: "resend",
-            provider_message_id: sendRes.id ?? null,
-            sent_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", row.id);
-      } else {
+            providerMessageId: sendRes.id,
+          };
+        } else if (sendRes.success) {
+          resolution = {
+            status: "outcome_unknown",
+            provider: "resend",
+            errorCode: "provider_success_missing_message_id",
+          };
+        } else {
+          const errorCode = sanitizeErrorCode(sendRes.error);
+          resolution = {
+            status: sendRes.retryable || errorCode === "auth_failed" ? "retryable" : "failed",
+            provider: "resend",
+            errorCode,
+          };
+        }
+      } catch (sendErr) {
+        // Resend receives a stable idempotency key, so retrying an uncertain request
+        // reuses the same provider operation instead of creating another message.
+        resolution = {
+          status: "retryable",
+          provider: "resend",
+          errorCode: sanitizeErrorCode(sendErr),
+        };
+      }
+    } else {
+      try {
         const sendRes = await whatsappProvider.sendText({
           to: profile!.whatsapp_number!,
           body: trackLinksInText(variant.body, linkContext, { bareDomain: true })
         });
-
-        result.sent++;
-        result.dispatches.push({
-          recipient_user_id: row.recipient_user_id,
-          channel: "whatsapp",
-          status: "sent",
-          provider_message_id: sendRes.messageId ?? null
-        });
-
-        await supabase
-          .from("marketing_dispatches")
-          .update({
-            status: "sent",
-            provider: whatsappProvider.name,
-            provider_message_id: sendRes.messageId ?? null,
-            sent_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", row.id);
+        resolution = sendRes.messageId
+          ? {
+              status: "sent",
+              provider: whatsappProvider.name,
+              providerMessageId: sendRes.messageId,
+            }
+          : {
+              status: "outcome_unknown",
+              provider: whatsappProvider.name,
+              errorCode: "provider_success_missing_message_id",
+            };
+      } catch (sendErr) {
+        // This integration has no provider idempotency key. A timeout or network
+        // failure may happen after acceptance, so automatic retry could duplicate it.
+        resolution = {
+          status: "outcome_unknown",
+          provider: whatsappProvider.name,
+          errorCode: sanitizeErrorCode(sendErr),
+        };
       }
-    } catch (sendErr) {
-      // A thrown/network error here is an UNCERTAIN outcome (the provider may or may
-      // not have actually sent it) -- it is recorded as 'failed', which remains
-      // reclaimable-by-retry (never silently 'sent', never permanently stuck), and the
-      // retried send reuses this exact same row / idempotency key rather than
-      // inserting a new one.
-      const code = sanitizeErrorCode(sendErr);
-      result.failed++;
-      result.dispatches.push({
-        recipient_user_id: row.recipient_user_id,
-        channel: variant.channel,
-        status: "failed",
-        error_code: code
-      });
-
-      await supabase
-        .from("marketing_dispatches")
-        .update({ status: "failed", last_error_code: code, updated_at: new Date().toISOString() })
-        .eq("id", row.id);
     }
+
+    // Record the durable result before reporting it to the caller. If this compare-
+    // and-set fails, the claimed row remains unresolved and no false success is shown.
+    await resolveClaim(supabase, row, resolution);
+
+    if (resolution.status === "sent") {
+      result.sent++;
+    } else {
+      result.failed++;
+      if (resolution.status === "retryable") result.retryable++;
+      if (resolution.status === "outcome_unknown") result.outcomeUnknown++;
+    }
+    result.dispatches.push({
+      recipient_user_id: row.recipient_user_id,
+      channel: variant.channel,
+      status: resolution.status,
+      provider_message_id: resolution.providerMessageId ?? null,
+      error_code: resolution.errorCode ?? null,
+    });
+
   }
 
   return result;
