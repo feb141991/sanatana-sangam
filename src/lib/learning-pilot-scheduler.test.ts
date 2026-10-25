@@ -79,8 +79,8 @@ describe('learning-pilot-scheduler', () => {
       expect(cand!.priority).toBe(50);
     });
 
-    it('does not create a quiz candidate without explicit opt-in', () => {
-      expect(produceQuizCandidate({ id: 'opt-out', timezone: 'Asia/Kolkata' }, '2026-11-08')).toBeNull();
+    it('creates a candidate by default and suppresses when explicitly opted out', () => {
+      expect(produceQuizCandidate({ id: 'active', timezone: 'Asia/Kolkata' }, '2026-11-08')).not.toBeNull();
       expect(produceQuizCandidate({ id: 'opt-out', timezone: 'Asia/Kolkata', quiz_reminder_enabled: false }, '2026-11-08')).toBeNull();
     });
 

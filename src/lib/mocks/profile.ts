@@ -91,8 +91,8 @@ function ensureMockProfile(userId: string): Profile {
       date_of_birth: null,
       japa_reminder_enabled: false,
       japa_reminder_time: '07:00',
-      quiz_reminder_enabled: false,
-      quiz_reminder_time: '08:00',
+      quiz_reminder_enabled: true,
+      quiz_reminder_time: '10:00',
       nitya_reminder_enabled: false,
       nitya_reminder_time: '06:30',
     });

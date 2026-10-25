@@ -61,12 +61,12 @@ describe("notification delivery policy", () => {
     expect(getNotificationPreferenceSkipReason(row, { japa_reminder_enabled: true })).toBeNull();
   });
 
-  it("fails closed for Daily Quiz until the user opts in and routes the reminder to Quiz", () => {
+  it("delivers Daily Quiz by default, suppresses if the user opted out, and routes the reminder to Quiz", () => {
     const row = { notification_type: "quiz", notification_key: "candidate:quiz:2026-10-05" };
-    expect(getNotificationPreferenceSkipReason(row, {})).toBe("quiz_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, {})).toBeNull();
+    expect(getNotificationPreferenceSkipReason(row, { quiz_reminder_enabled: true })).toBeNull();
     expect(getNotificationPreferenceSkipReason(row, { quiz_reminder_enabled: false }))
       .toBe("quiz_reminders_disabled");
-    expect(getNotificationPreferenceSkipReason(row, { quiz_reminder_enabled: true })).toBeNull();
     expect(getScheduledNotificationActionPath(row)).toBe("/quiz");
   });
 

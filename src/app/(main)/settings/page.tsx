@@ -43,8 +43,8 @@ export default async function SettingsPage() {
       initialTransliterationLanguage={profile?.transliteration_language ?? 'en'}
       initialJapaReminderEnabled={profile?.japa_reminder_enabled ?? false}
       initialJapaReminderTime={profile?.japa_reminder_time ?? '07:00'}
-      initialQuizReminderEnabled={profile?.quiz_reminder_enabled ?? false}
-      initialQuizReminderTime={profile?.quiz_reminder_time ?? '08:00'}
+      initialQuizReminderEnabled={profile?.quiz_reminder_enabled ?? true}
+      initialQuizReminderTime={profile?.quiz_reminder_time ?? '10:00'}
       initialNityaReminderEnabled={profile?.nitya_reminder_enabled ?? false}
       initialNityaReminderTime={profile?.nitya_reminder_time ?? '06:30'}
       initialWantsMadhyahnReminder={profile?.wants_madhyahn_reminder ?? false}

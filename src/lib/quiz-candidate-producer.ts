@@ -82,14 +82,14 @@ export function getDueQuizReminderStage(
   localDate: string,
   now: Date,
 ): QuizReminderStage | null {
-  if (devotee.quiz_reminder_enabled !== true) return null;
+  if (devotee.quiz_reminder_enabled === false) return null;
 
   const timezone = resolveTimeZone(devotee.timezone);
   if (getLocalDateIso(now, timezone) !== localDate) return null;
   const currentMinute = localMinuteOfDay(now, timezone);
   if (currentMinute === null) return null;
 
-  const availableTime = effectiveLocalTime(devotee, devotee.quiz_reminder_time ?? '08:00', 'available');
+  const availableTime = effectiveLocalTime(devotee, devotee.quiz_reminder_time ?? '10:00', 'available');
   const availableMinute = availableTime ? parseClock(availableTime) : null;
   if (
     availableMinute !== null &&
@@ -118,12 +118,12 @@ export function produceQuizCandidate(
   localDate: string,
   stage: QuizReminderStage = 'available',
 ): NotificationCandidateInsert | null {
-  if (devotee.quiz_reminder_enabled !== true) return null;
+  if (devotee.quiz_reminder_enabled === false) return null;
 
   const timezone = resolveTimeZone(devotee.timezone);
   const sendTime = effectiveLocalTime(
     devotee,
-    stage === 'available' ? devotee.quiz_reminder_time ?? '08:00' : EVENING_REMINDER_TIME,
+    stage === 'available' ? devotee.quiz_reminder_time ?? '10:00' : EVENING_REMINDER_TIME,
     stage,
   );
   if (!sendTime) return null;

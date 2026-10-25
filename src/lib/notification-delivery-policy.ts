@@ -104,11 +104,11 @@ export function getNotificationPreferenceSkipReason(
     return "brahma_muhurta_reminders_disabled";
   }
 
-  // Quiz reminders are explicit opt-in and default-off. Recheck at delivery
-  // so a row queued before opt-out cannot still be delivered.
+  // Quiz reminders are default-on. Recheck at delivery so a user who turned it off
+  // after a row was queued is not sent the reminder.
   if (
     row.notification_type === "quiz" &&
-    profile.quiz_reminder_enabled !== true
+    profile.quiz_reminder_enabled === false
   ) {
     return "quiz_reminders_disabled";
   }
