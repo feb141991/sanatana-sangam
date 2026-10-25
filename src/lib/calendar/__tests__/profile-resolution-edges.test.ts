@@ -162,6 +162,22 @@ describe('grouping key includes the year', () => {
 });
 
 describe('recurring observances are grouped per year, not per slug alone', () => {
+  it('retains every recurring instance across a two-year window', () => {
+    // Synthetic monthly instances exercise cardinality across a year boundary;
+    // this guards against grouping recurring observances as one annual event.
+    const dates = Array.from({ length: 24 }, (_, index) => {
+      const year = 2026 + Math.floor(index / 12);
+      const month = (index % 12) + 1;
+      return `${year}-${String(month).padStart(2, '0')}-05`;
+    });
+    const rows = dates.map(date => occ('ekadashi', date, 'legacy-ujjain'));
+    const out = format(rows, 'legacy-ujjain', '2026-01-01', '2027-12-31');
+
+    expect(out).toHaveLength(24);
+    expect(new Set(out.map(row => row.civilDate)).size).toBe(24);
+    expect(out.every(row => row.status === 'resolved' && row.isPrimary)).toBe(true);
+  });
+
   it('publishes every instance of a series as resolved and primary', () => {
     // The assertion this file was missing. The previous version checked only the
     // COUNT, so it passed while all three rows came back status 'ambiguous' with

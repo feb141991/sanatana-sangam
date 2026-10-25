@@ -107,6 +107,48 @@ describe('canonical observance-series read contract', () => {
     expect(series.status).toBe('active');
   });
 
+  it('keeps Ashtami and Navami as separate children when their approved rules select the same date', () => {
+    // Some local ritual conventions can place both observances on one civil
+    // date. The series must preserve both identities and links; date overlap
+    // alone is not a duplicate and must not merge either child away.
+    const rows = navratriRows().map(row => {
+      if (row.slug === 'durga-ashtami') return result(row.slug, '2026-10-19');
+      if (row.slug === 'maha-navami') return result(row.slug, '2026-10-19');
+      return row;
+    });
+    const [series] = buildObservanceSeries(rows, { ...OPTIONS, spiritualDate: '2026-10-19' });
+    const sameDate = series.children.filter(child => child.civilDate === '2026-10-19');
+
+    expect(sameDate.map(child => child.slug)).toEqual(['durga-ashtami', 'maha-navami']);
+    expect(new Set(sameDate.map(child => child.occurrenceId)).size).toBe(2);
+    expect(series.activeChildOccurrenceIds).toEqual([
+      'occ-durga-ashtami-2026-10-19',
+      'occ-maha-navami-2026-10-19',
+    ]);
+    expect(series.diagnostics).toContain('multiple_series_children_today');
+    expect(series.diagnostics).not.toContain('duplicate_series_child:durga-ashtami');
+    expect(series.diagnostics).not.toContain('duplicate_series_child:maha-navami');
+  });
+
+  it('selects the matching profile and calculation location when one child has alternate readings', () => {
+    const ashtami = result('durga-ashtami', '2026-10-19', { id: 'ashtami-ujjain' });
+    const gujarati = result('durga-ashtami', '2026-10-20', {
+      id: 'ashtami-gujarati',
+      profile: { calendar: 'gujarati-amanta', tradition: 'standard' },
+    });
+    const london = result('durga-ashtami', '2026-10-18', {
+      id: 'ashtami-london',
+      location: { label: 'London', lat: 51.5072, lon: -0.1276, tz: 'Europe/London' },
+    });
+    const rows = [...navratriRows().filter(row => row.slug !== 'durga-ashtami'), ashtami, gujarati, london];
+    const [series] = buildObservanceSeries(rows, { ...OPTIONS, spiritualDate: '2026-10-19' });
+    const selected = series.children.find(child => child.slug === 'durga-ashtami');
+
+    expect(selected).toMatchObject({ occurrenceId: 'ashtami-ujjain', civilDate: '2026-10-19' });
+    expect(series.diagnostics).not.toContain('duplicate_series_child:durga-ashtami');
+    expect(series.diagnostics).not.toContain('series_context_mismatch:durga-ashtami');
+  });
+
   it('represents a missing deferred Naraka child and fails the Diwali cluster closed', () => {
     const [series] = buildObservanceSeries(diwaliRows(false), { ...OPTIONS, spiritualDate: '2026-11-08' });
     const naraka = series.children.find(child => child.slug === 'naraka-chaturdashi');

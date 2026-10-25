@@ -258,7 +258,10 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
         spiritualTradition: null,
         isPrimary: true,
         conditions: [
-          { type: 'tithi_presence', tithi: 13, period: 'pradosha', mode: 'prevails' },
+          // Pradosh is selected when Trayodashi overlaps the Pradosha window;
+          // requiring it to last through the *end* of the window incorrectly
+          // drops valid days where Trayodashi ends during Pradosha.
+          { type: 'tithi_presence', tithi: 13, period: 'pradosha', mode: 'touches' },
         ],
       },
     ],
@@ -284,11 +287,11 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
     ],
   },
   {
-    // Standard tithi-prevailing-at-sunrise monthly vrat, no dispute/citation
-    // in rules.json to model (unlike e.g. janmashtami) -- the evaluator's
-    // 'sunrise' period already handles vrddhi detection (queues for review)
-    // and kshaya fallback (checks the prior day) generically, which the
-    // legacy path this migrates off of does not do per-occurrence.
+    // Purnima Vrat is selected from the Purnima tithi at Madhyahna, not only
+    // at sunrise. When the tithi spans two Madhyahna windows, retain its first
+    // qualifying civil date below. This matches the Drik convention that
+    // shifts Purnima fasting to the preceding Chaturdashi when the tithi is
+    // present during that day's Madhyahna.
     slug: 'purnima-vrat',
     windowDays: 5,
     isRecurring: true,
@@ -299,7 +302,7 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
         isPrimary: true,
         conditions: [
           { type: 'paksha', value: 'shukla' },
-          { type: 'tithi_presence', tithi: 15, period: 'sunrise', mode: 'at' },
+          { type: 'tithi_presence', tithi: 15, period: 'madhyahna', mode: 'touches' },
         ],
       },
     ],
@@ -405,6 +408,19 @@ function offsetDateStr(dateStr: string, offsetDays: number): string {
   const d = new Date(dateStr + 'T00:00:00Z');
   d.setUTCDate(d.getUTCDate() + offsetDays);
   return d.toISOString().slice(0, 10);
+}
+
+/**
+ * If one recurring observance's tithi overlaps two consecutive ritual windows,
+ * use the first qualifying civil date. For Purnima this is the first Madhyahna
+ * overlap; for Pradosh it is the first evening overlap. Both are location-aware
+ * because qualification uses the local ritual window.
+ */
+function selectFirstOfConsecutiveDates<T extends { date: string }>(items: T[]): T[] {
+  const sorted = [...new Map(items.map(item => [item.date, item])).values()]
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const dates = new Set(sorted.map(item => item.date));
+  return sorted.filter(item => !dates.has(offsetDateStr(item.date, -1)));
 }
 
 export function calculateOccurrencesWithEvaluator(
@@ -521,8 +537,12 @@ export function calculateOccurrencesWithEvaluator(
           }
         }
 
-        if (qualified.length === 1 && vrddhiDates.length === 0) {
-          const match = qualified[0];
+        const selectedQualified = eRule.slug === 'purnima-vrat' || eRule.slug === 'pradosh-vrat'
+          ? selectFirstOfConsecutiveDates(qualified)
+          : qualified;
+
+        if (selectedQualified.length === 1 && vrddhiDates.length === 0) {
+          const match = selectedQualified[0];
           finalOccurrences.push({
             slug: eRule.slug,
             date: match.date,
@@ -545,10 +565,10 @@ export function calculateOccurrencesWithEvaluator(
             ambiguity_type = 'vrddhi_tithi';
             reasoning = `Scholar review pending: Vrddhi tithi spans two sunrises (qualified on ${vrddhiDates.map(v => v.date).join(', ')}).`;
             candidate_dates = vrddhiDates.map(v => v.date);
-          } else if (qualified.length > 1) {
+          } else if (selectedQualified.length > 1) {
             ambiguity_type = 'multiple_qualified_dates';
-            reasoning = `Ambiguous: multiple dates qualified (${qualified.map(q => q.date).join(', ')}).`;
-            candidate_dates = qualified.map(q => q.date);
+            reasoning = `Ambiguous: multiple dates qualified (${selectedQualified.map(q => q.date).join(', ')}).`;
+            candidate_dates = selectedQualified.map(q => q.date);
           } else {
             ambiguity_type = 'no_qualified_date';
             reasoning = 'No qualified date found in window.';
@@ -570,7 +590,7 @@ export function calculateOccurrencesWithEvaluator(
               festivalId: eRule.slug,
               windowSize,
               allEvaluations: allEvaluationResults,
-              diagnostics: vrddhiDates.length > 0 ? ['vrddhi_tithi'] : (qualified.length > 1 ? ['multiple_candidates'] : ['zero_candidates']),
+              diagnostics: vrddhiDates.length > 0 ? ['vrddhi_tithi'] : (selectedQualified.length > 1 ? ['multiple_candidates'] : ['zero_candidates']),
             },
           });
         }

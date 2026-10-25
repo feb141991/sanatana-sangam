@@ -302,6 +302,17 @@ function getAbsoluteTithiIndex(targetTithi: number, targetPaksha?: 'shukla' | 'k
   return [targetTithi, targetTithi + 15];
 }
 
+/** True when a target tithi occurs anywhere in the forward sequence from start through end. */
+function hasTithiInForwardInterval(start: number, end: number, targets: number[]): boolean {
+  let current = start;
+  for (let step = 0; step < 30; step += 1) {
+    if (targets.includes(current)) return true;
+    if (current === end) return false;
+    current = (current % 30) + 1;
+  }
+  return false;
+}
+
 function isAbsoluteTithiSkipped(prev: number, curr: number, target: number): boolean {
   const p0 = prev - 1; // 0..29
   const c0 = curr - 1; // 0..29
@@ -589,7 +600,17 @@ export function evaluateCondition(
       } else if (condition.mode === 'prevails') {
         satisfied = mStart && mEnd;
       } else if (condition.mode === 'touches') {
-        satisfied = mStart || mEnd || mMid;
+        // Presence only at the three sample instants misses a short overlap
+        // between them (e.g. Trayodashi ending midway through Pradosha). Tithi
+        // progresses monotonically through the 30-step cycle within a ritual
+        // window, so the endpoint sequence also detects a target that began
+        // and ended between samples.
+        const targetTithis = getAbsoluteTithiIndex(targetTithi, targetPaksha);
+        satisfied = mStart || mEnd || mMid || hasTithiInForwardInterval(
+          startPanchang.tithiIndex,
+          endPanchang.tithiIndex,
+          targetTithis,
+        );
       } else if (condition.mode === 'majority') {
         satisfied = [mStart, mMid, mEnd].filter(Boolean).length >= 2;
       }
