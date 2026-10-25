@@ -1242,7 +1242,7 @@ export interface Database {
           id: string;
           user_id: string | null;
           token: string;
-          event_type: 'registered' | 'pruned_device_not_registered' | 'pruned_other';
+          event_type: 'registered' | 'pruned_device_not_registered' | 'pruned_other' | 'registration_failed';
           reason: string | null;
           source: string;
           created_at: string;
@@ -1251,7 +1251,7 @@ export interface Database {
           id?: string;
           user_id?: string | null;
           token: string;
-          event_type: 'registered' | 'pruned_device_not_registered' | 'pruned_other';
+          event_type: 'registered' | 'pruned_device_not_registered' | 'pruned_other' | 'registration_failed';
           reason?: string | null;
           source: string;
           created_at?: string;

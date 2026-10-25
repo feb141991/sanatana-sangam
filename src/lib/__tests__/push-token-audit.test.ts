@@ -61,6 +61,25 @@ describe('push-token-audit', () => {
       });
     });
 
+    it('inserts registration_failed event type (requires push_token_events_event_type_check to allow it)', async () => {
+      await recordPushTokenEvent({
+        userId: '11111111-1111-1111-1111-111111111111',
+        token: 'ExponentPushToken[test-123]',
+        eventType: 'registration_failed',
+        reason: 'Expo push ticket error: DeviceNotRegistered',
+        source: '/api/notifications/register-token',
+      });
+
+      expect(mockFrom).toHaveBeenCalledWith('push_token_events');
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: '11111111-1111-1111-1111-111111111111',
+        token: hashPushToken('ExponentPushToken[test-123]'),
+        event_type: 'registration_failed',
+        reason: 'Expo push ticket error: DeviceNotRegistered',
+        source: '/api/notifications/register-token',
+      });
+    });
+
     it('does not throw on database insert error (fail-open)', async () => {
       mockInsert.mockResolvedValueOnce({ error: { message: 'db error' } });
       await expect(
