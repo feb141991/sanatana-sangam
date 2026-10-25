@@ -3510,11 +3510,13 @@ export type Database = {
           attempt_count: number
           campaign_id: string
           channel: string
+          claim_token: string | null
           claimed_at: string | null
           created_at: string
           id: string
           last_error_code: string | null
           provider: string
+          provider_idempotency_expires_at: string | null
           provider_message_id: string | null
           recipient_user_id: string
           sent_at: string | null
@@ -3526,11 +3528,13 @@ export type Database = {
           attempt_count?: number
           campaign_id: string
           channel: string
+          claim_token?: string | null
           claimed_at?: string | null
           created_at?: string
           id?: string
           last_error_code?: string | null
           provider?: string
+          provider_idempotency_expires_at?: string | null
           provider_message_id?: string | null
           recipient_user_id: string
           sent_at?: string | null
@@ -3542,11 +3546,13 @@ export type Database = {
           attempt_count?: number
           campaign_id?: string
           channel?: string
+          claim_token?: string | null
           claimed_at?: string | null
           created_at?: string
           id?: string
           last_error_code?: string | null
           provider?: string
+          provider_idempotency_expires_at?: string | null
           provider_message_id?: string | null
           recipient_user_id?: string
           sent_at?: string | null
@@ -3813,8 +3819,8 @@ export type Database = {
           attempt_count: number
           client_event_id: string
           client_occurred_at: string | null
-          duration_ms: number
           crossed_background: boolean | null
+          duration_ms: number
           endpoint: string
           final_status: number | null
           first_status: number | null
@@ -3830,8 +3836,8 @@ export type Database = {
           attempt_count: number
           client_event_id: string
           client_occurred_at?: string | null
-          duration_ms: number
           crossed_background?: boolean | null
+          duration_ms: number
           endpoint: string
           final_status?: number | null
           first_status?: number | null
@@ -3847,8 +3853,8 @@ export type Database = {
           attempt_count?: number
           client_event_id?: string
           client_occurred_at?: string | null
-          duration_ms?: number
           crossed_background?: boolean | null
+          duration_ms?: number
           endpoint?: string
           final_status?: number | null
           first_status?: number | null
@@ -10347,6 +10353,38 @@ export type Database = {
         Args: { p_path_id: string; p_user_id: string }
         Returns: Json
       }
+      approve_marketing_campaign: {
+        Args: {
+          p_approved_by: string
+          p_campaign_id: string
+          p_source_verified_at: string
+          p_variant_approvals: Json
+        }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          campaign_key: string
+          campaign_type: string
+          cancelled_at: string | null
+          created_at: string
+          created_by: string
+          id: string
+          source_occurrence_id: string | null
+          source_type: string
+          source_verified_at: string | null
+          status: string
+          target_sampradaya: string | null
+          target_tradition: string | null
+          title: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "marketing_campaigns"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       auth_kul_id: { Args: never; Returns: string }
       auth_kul_role: { Args: never; Returns: string }
       award_badge_if_earned: {
@@ -10483,11 +10521,13 @@ export type Database = {
           attempt_count: number
           campaign_id: string
           channel: string
+          claim_token: string | null
           claimed_at: string | null
           created_at: string
           id: string
           last_error_code: string | null
           provider: string
+          provider_idempotency_expires_at: string | null
           provider_message_id: string | null
           recipient_user_id: string
           sent_at: string | null
@@ -11202,6 +11242,37 @@ export type Database = {
       }
       prune_native_push_bindings: { Args: { p_bindings: Json }; Returns: Json }
       prune_old_user_data: { Args: { p_days?: number }; Returns: number }
+      reconcile_marketing_dispatch: {
+        Args: {
+          p_dispatch_id: string
+          p_provider_message_id?: string
+          p_resolution: string
+        }
+        Returns: {
+          attempt_count: number
+          campaign_id: string
+          channel: string
+          claim_token: string | null
+          claimed_at: string | null
+          created_at: string
+          id: string
+          last_error_code: string | null
+          provider: string
+          provider_idempotency_expires_at: string | null
+          provider_message_id: string | null
+          recipient_user_id: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+          variant_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "marketing_dispatches"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       record_native_product_analytics: {
         Args: {
           p_app_version?: string
@@ -11288,6 +11359,40 @@ export type Database = {
           canonical_city: string
           canonical_country: string
         }[]
+      }
+      resolve_marketing_dispatch: {
+        Args: {
+          p_claim_token: string
+          p_dispatch_id: string
+          p_error_code?: string
+          p_provider?: string
+          p_provider_message_id?: string
+          p_status: string
+        }
+        Returns: {
+          attempt_count: number
+          campaign_id: string
+          channel: string
+          claim_token: string | null
+          claimed_at: string | null
+          created_at: string
+          id: string
+          last_error_code: string | null
+          provider: string
+          provider_idempotency_expires_at: string | null
+          provider_message_id: string | null
+          recipient_user_id: string
+          sent_at: string | null
+          status: string
+          updated_at: string
+          variant_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "marketing_dispatches"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       runtests:
         | { Args: never; Returns: string[] }

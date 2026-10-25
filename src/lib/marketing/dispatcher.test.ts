@@ -289,7 +289,7 @@ describe("Marketing Campaign Dispatcher", () => {
       dryRun: false
     });
 
-    expect(result.failed).toBe(1);
+    expect(result.failed).toBe(0);
     expect(result.sent).toBe(1);
     expect(result.retryable).toBe(1);
     expect(result.dispatches[0].status).toBe("retryable");

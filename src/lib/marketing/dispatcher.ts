@@ -380,9 +380,9 @@ export async function dispatchMarketingBatch(
     if (resolution.status === "sent") {
       result.sent++;
     } else {
-      result.failed++;
       if (resolution.status === "retryable") result.retryable++;
       if (resolution.status === "outcome_unknown") result.outcomeUnknown++;
+      if (resolution.status === "failed") result.failed++;
     }
     result.dispatches.push({
       recipient_user_id: row.recipient_user_id,

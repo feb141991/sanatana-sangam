@@ -10,6 +10,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; dispatchId: string }> }
 ) {
+  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
   const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
@@ -37,13 +38,27 @@ export async function POST(
     return NextResponse.json({ error: "Provider message ID is required to confirm delivery" }, { status: 400 });
   }
 
-  const { data: dispatch } = await admin.supabase
+  const { data: dispatch, error: dispatchReadError } = await admin.supabase
     .from("marketing_dispatches")
     .select("id, status")
     .eq("id", dispatchId)
     .eq("campaign_id", id)
     .eq("status", "outcome_unknown")
     .maybeSingle();
+  if (dispatchReadError) {
+    console.error("[marketing.reconcile] dispatch lookup failed", {
+      requestId,
+      code: "MARKETING_RECONCILIATION_LOOKUP_FAILED",
+    });
+    return NextResponse.json(
+      {
+        error: "Delivery status could not be verified. Nothing was changed.",
+        code: "MARKETING_RECONCILIATION_LOOKUP_FAILED",
+        requestId,
+      },
+      { status: 503, headers: { "X-Request-ID": requestId } }
+    );
+  }
   if (!dispatch) {
     return NextResponse.json({ error: "Uncertain dispatch was not found" }, { status: 404 });
   }
@@ -55,9 +70,17 @@ export async function POST(
   });
   const reconciled = Array.isArray(data) ? data[0] : data;
   if (error || !reconciled) {
+    console.error("[marketing.reconcile] reconciliation failed", {
+      requestId,
+      code: "MARKETING_RECONCILIATION_FAILED",
+    });
     return NextResponse.json(
-      { error: "Dispatch reconciliation could not be completed", code: "MARKETING_RECONCILIATION_FAILED" },
-      { status: 409 }
+      {
+        error: "Dispatch reconciliation could not be completed",
+        code: "MARKETING_RECONCILIATION_FAILED",
+        requestId,
+      },
+      { status: 409, headers: { "X-Request-ID": requestId } }
     );
   }
 

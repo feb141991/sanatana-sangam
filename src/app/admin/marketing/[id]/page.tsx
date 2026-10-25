@@ -834,8 +834,8 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
           </div>
         )}
 
-        {/* Delivery Ledger distinguishes automatic email retries from uncertain
-            WhatsApp outcomes that require provider-side reconciliation. */}
+        {/* Delivery Ledger distinguishes automatic retries from uncertain provider
+            outcomes that require provider-side reconciliation. */}
         {Object.keys(dispatchSummary).length > 0 && (
           <div className="space-y-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">Delivery Ledger</h3>
@@ -865,7 +865,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900">Provider reconciliation required</h3>
               <p className="mt-1 text-xs text-amber-900/80">
-                These WhatsApp attempts may already have been accepted. Check the provider dashboard before choosing an action; they will never retry automatically.
+                These delivery attempts may already have been accepted. Check the relevant provider dashboard before choosing an action; they will never retry automatically.
               </p>
             </div>
             {reconciliationRequired.map(item => (

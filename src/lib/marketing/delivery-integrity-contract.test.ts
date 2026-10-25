@@ -15,6 +15,10 @@ const adminPage = readFileSync(
   join(root, "src/app/admin/marketing/[id]/page.tsx"),
   "utf8"
 );
+const reconcileRoute = readFileSync(
+  join(root, "src/app/api/admin/marketing/campaigns/[id]/dispatches/[dispatchId]/reconcile/route.ts"),
+  "utf8"
+);
 
 describe("marketing delivery integrity contract", () => {
   it("binds every finalization to the worker's current claim token", () => {
@@ -37,7 +41,16 @@ describe("marketing delivery integrity contract", () => {
     expect(migration).toContain("CREATE OR REPLACE FUNCTION public.reconcile_marketing_dispatch");
     expect(migration).toContain("p_resolution NOT IN ('confirmed_sent', 'confirmed_not_sent')");
     expect(adminPage).toContain("Provider reconciliation required");
+    expect(adminPage).toContain("These delivery attempts may already have been accepted");
+    expect(adminPage).not.toContain("These WhatsApp attempts may already have been accepted");
     expect(adminPage).toContain("they will never retry automatically");
+  });
+
+  it("fails reconciliation closed when the delivery ledger cannot be read", () => {
+    expect(reconcileRoute).toContain("dispatchReadError");
+    expect(reconcileRoute).toContain("MARKETING_RECONCILIATION_LOOKUP_FAILED");
+    expect(reconcileRoute).toContain("Nothing was changed.");
+    expect(reconcileRoute).toContain('status: 503');
   });
 
   it("approves the campaign and every reviewed variant in one RPC transaction", () => {
