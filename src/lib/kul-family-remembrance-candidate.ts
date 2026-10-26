@@ -188,7 +188,7 @@ export function buildFamilyRemembranceCandidates(input: {
 
   const profileById = new Map(
     input.profiles
-      .filter((profile) => profile.wants_family_remembrance_reminders === true)
+      .filter((profile) => profile.wants_family_remembrance_reminders !== false)
       .map((profile) => [profile.id, profile]),
   );
   const grouped = new Map<string, {

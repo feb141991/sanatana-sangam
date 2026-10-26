@@ -141,7 +141,10 @@ export async function GET(request: Request) {
         .from("profiles")
         .select(profileColumns)
         .in("id", userIds);
-      profiles = withoutBrahmaRes.data as typeof profiles;
+      profiles = (withoutBrahmaRes.data ?? []).map((p: any) => ({
+        ...p,
+        wants_brahma_muhurta_reminders: false,
+      })) as typeof profiles;
       profileErr = withoutBrahmaRes.error;
     }
 

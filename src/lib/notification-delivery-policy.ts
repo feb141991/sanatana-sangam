@@ -90,16 +90,14 @@ export function getNotificationPreferenceSkipReason(
 
   if (
     row.notification_type === "japa" &&
-    profile.japa_reminder_enabled !== true
+    profile.japa_reminder_enabled === false
   ) {
     return "japa_reminders_disabled";
   }
 
-  // Explicit opt-in, default off. Missing/null (column not yet migrated)
-  // fails closed, so rows queued before opt-out are never delivered.
   if (
     row.notification_type === "brahma_muhurta" &&
-    profile.wants_brahma_muhurta_reminders !== true
+    profile.wants_brahma_muhurta_reminders === false
   ) {
     return "brahma_muhurta_reminders_disabled";
   }
@@ -134,22 +132,21 @@ export function getNotificationPreferenceSkipReason(
 
   if (
     row.notification_type === "sankalpa_midpoint" &&
-    profile.wants_sankalpa_midpoint_reminders !== true
+    profile.wants_sankalpa_midpoint_reminders === false
   ) {
     return "sankalpa_midpoint_reminders_disabled";
   }
 
   if (
     row.notification_type === "sanskar_milestone" &&
-    profile.wants_family_notifications !== true
+    profile.wants_family_notifications === false
   ) {
     return "family_notifications_disabled";
   }
 
-  // A separate explicit opt-in. Missing/null fails closed during partial rollout.
   if (
     row.notification_type === "family_remembrance" &&
-    profile.wants_family_remembrance_reminders !== true
+    profile.wants_family_remembrance_reminders === false
   ) {
     return "family_remembrance_reminders_disabled";
   }

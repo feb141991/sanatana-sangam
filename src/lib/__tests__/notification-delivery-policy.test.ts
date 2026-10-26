@@ -14,31 +14,21 @@ describe("notification delivery policy", () => {
     metadata: { sanskara_id: "namakarana", kul_member_id: "member-1" },
   };
 
-  it("fails closed when family notifications are disabled or unavailable", () => {
+  it("delivers family notifications by default, suppresses when disabled", () => {
     expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_family_notifications: false }))
       .toBe("family_notifications_disabled");
-    expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_family_notifications: null }))
-      .toBe("family_notifications_disabled");
-  });
-
-  it("allows Sanskar delivery only after explicit family preference", () => {
     expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_family_notifications: true }))
       .toBeNull();
+    expect(getNotificationPreferenceSkipReason(sanskarRow, {})).toBeNull();
   });
 
-  it("fails closed on family remembrance unless its dedicated opt-in is true", () => {
+  it("delivers family remembrance by default, suppresses when opted out", () => {
     const row = { notification_type: "family_remembrance", notification_key: "family-remembrance:annual" };
-    expect(getNotificationPreferenceSkipReason(row, {})).toBe("family_remembrance_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, {})).toBeNull();
     expect(getNotificationPreferenceSkipReason(row, { wants_family_remembrance_reminders: false }))
       .toBe("family_remembrance_reminders_disabled");
     expect(getNotificationPreferenceSkipReason(row, { wants_family_remembrance_reminders: true }))
       .toBeNull();
-    // The legacy family activity toggle is independent; this feature has its
-    // own explicit, default-off consent gate.
-    expect(getNotificationPreferenceSkipReason(row, {
-      wants_family_notifications: false,
-      wants_family_remembrance_reminders: true,
-    })).toBeNull();
   });
 
   it("routes family remembrance into the KUL family dates and keeps push data generic", () => {
@@ -53,9 +43,9 @@ describe("notification delivery policy", () => {
     });
   });
 
-  it("fails closed for Japa if the reminder was turned off after scheduling", () => {
+  it("delivers Japa reminders by default, suppresses if turned off in Settings", () => {
     const row = { notification_type: "japa", notification_key: "japa:2026-09-29" };
-    expect(getNotificationPreferenceSkipReason(row, {})).toBe("japa_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, {})).toBeNull();
     expect(getNotificationPreferenceSkipReason(row, { japa_reminder_enabled: false }))
       .toBe("japa_reminders_disabled");
     expect(getNotificationPreferenceSkipReason(row, { japa_reminder_enabled: true })).toBeNull();
@@ -104,9 +94,9 @@ describe("notification delivery policy", () => {
       .toBe("/home?focus=shloka");
   });
 
-  it("fails closed for Sankalpa midpoint reminders until the user explicitly opts in", () => {
+  it("delivers Sankalpa midpoint reminders by default, suppresses when opted out", () => {
     const row = { notification_type: "sankalpa_midpoint", notification_key: "candidate:sankalpa-1:midpoint" };
-    expect(getNotificationPreferenceSkipReason(row, {})).toBe("sankalpa_midpoint_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, {})).toBeNull();
     expect(getNotificationPreferenceSkipReason(row, { wants_sankalpa_midpoint_reminders: false }))
       .toBe("sankalpa_midpoint_reminders_disabled");
     expect(getNotificationPreferenceSkipReason(row, { wants_sankalpa_midpoint_reminders: true })).toBeNull();
@@ -233,11 +223,9 @@ describe("notification delivery policy", () => {
     }
   });
 
-  it("fails closed on Brahma Muhurta unless its explicit opt-in is true", () => {
+  it("delivers Brahma Muhurta by default, suppresses when opted out", () => {
     const row = { notification_type: "brahma_muhurta", notification_key: "brahma_muhurta:u:2026-10-11" };
-    expect(getNotificationPreferenceSkipReason(row, {})).toBe("brahma_muhurta_reminders_disabled");
-    expect(getNotificationPreferenceSkipReason(row, { wants_brahma_muhurta_reminders: null }))
-      .toBe("brahma_muhurta_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(row, {})).toBeNull();
     expect(getNotificationPreferenceSkipReason(row, { wants_brahma_muhurta_reminders: false }))
       .toBe("brahma_muhurta_reminders_disabled");
     expect(getNotificationPreferenceSkipReason(row, { wants_brahma_muhurta_reminders: true })).toBeNull();

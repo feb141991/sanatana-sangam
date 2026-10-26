@@ -27,7 +27,7 @@ function ensureMockProfile(userId: string): Profile {
       legacy_family_name: 'Sharma',
       consent_religious_data: true,
       consent_activity_personalization: false,
-      wants_sankalpa_midpoint_reminders: false,
+      wants_sankalpa_midpoint_reminders: true,
       consent_updated_at: new Date('2026-05-15T12:00:00.000Z').toISOString(),
       gotra: 'Bharadwaj',
       kul_devata: 'Radha Krishna',
@@ -89,12 +89,16 @@ function ensureMockProfile(userId: string): Profile {
       life_stage_locked: false,
       gender_context: 'general',
       date_of_birth: null,
-      japa_reminder_enabled: false,
+      japa_reminder_enabled: true,
       japa_reminder_time: '07:00',
       quiz_reminder_enabled: true,
       quiz_reminder_time: '10:00',
-      nitya_reminder_enabled: false,
+      nitya_reminder_enabled: true,
       nitya_reminder_time: '06:30',
+      wants_brahma_muhurta_reminders: true,
+      wants_sankalpa_midpoint_reminders: true,
+      wants_tithi_reminders: true,
+      wants_family_remembrance_reminders: true,
     });
   }
 

@@ -367,7 +367,8 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
       mocks.claimedRows[0] = brahmaRow();
     });
 
-    it('skips a queued Brahma Muhurta push for a user who has not opted in', async () => {
+    it('skips a queued Brahma Muhurta push for a user who opted out', async () => {
+      mocks.profiles[0].wants_brahma_muhurta_reminders = false;
       const response = await GET(request());
 
       expect(response.status).toBe(200);
