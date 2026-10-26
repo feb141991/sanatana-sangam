@@ -62,7 +62,7 @@ export async function PATCH(request: NextRequest) {
     }
     const { data, error } = await supabase.from("kul_family_members").update(update)
       .eq("id", memberId).eq("kul_id", membership.kulId)
-      .select("id, name, role, generation, parent_id, spouse_id, is_alive").maybeSingle();
+      .select("id, name, role, generation, parent_id, spouse_id, is_alive, linked_user_id").maybeSingle();
     if (error) throw new Error("KUL family member update failed");
     if (!data) return NextResponse.json({ error: "Family member not found." }, { status: 404 });
     return NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
         parent_id: parentId,
         is_alive: true,
       })
-      .select("id, name, role, generation, parent_id, spouse_id, is_alive")
+      .select("id, name, role, generation, parent_id, spouse_id, is_alive, linked_user_id")
       .single();
     if (error || !data)
       return NextResponse.json(

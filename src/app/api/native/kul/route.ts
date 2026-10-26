@@ -82,6 +82,7 @@ type FamilyRow = {
   parent_id: string | null;
   spouse_id: string | null;
   is_alive: boolean;
+  linked_user_id: string | null;
 };
 type EventRow = {
   id: string;
@@ -202,7 +203,7 @@ export async function GET(request: NextRequest) {
         .limit(30),
       supabase
         .from("kul_family_members")
-        .select("id, name, role, generation, parent_id, spouse_id, is_alive")
+        .select("id, name, role, generation, parent_id, spouse_id, is_alive, linked_user_id")
         .eq("kul_id", membership.kulId)
         .order("generation", { ascending: true, nullsFirst: false })
         .order("display_order", { ascending: true })
