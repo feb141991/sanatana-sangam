@@ -84,6 +84,42 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
 - D-7, D-1 and D0 keys must not overlap with legacy tithi or OneSignal keys.
 - Real-device evidence is required before calling Android/iOS push
   release-ready.
+- A reminder-preference column must distinguish "never asked" from "asked
+  and declined." A migration that changes a column's default may only
+  backfill rows that are `NULL`. It must never touch a row already holding
+  an explicit `false` — that value is a user's own prior choice, not a
+  legacy artifact, and a blanket `WHERE column = false` backfill destroys
+  the only record that choice ever existed. Before writing any such
+  migration, run a count of `true`/`false`/`NULL` for every row first, so
+  the number of real opt-outs at risk is known before the write runs, not
+  discovered after.
+- OS push permission and an in-app notification category are two separate
+  consents. The system permission prompt answers only "can this app push at
+  all"; it must never be read as an answer for every individual reminder
+  category (quiz, japa, Brahma Muhurta, family remembrance, etc.), each of
+  which needs its own default appropriate to how intrusive it is — a 4 AM
+  wake reminder is not the same decision as a 10 AM quiz nudge, and
+  defaulting both identically ignores that.
+- Rolling a new default out to existing users (as opposed to new signups)
+  must be a visible, dismissible in-app prompt, never a silent write to
+  their row. The prompt preserves real consent; a backfill only overwrites
+  the record of what consent existed.
+- Why this rule exists: on 2026-10-25/26, two migrations
+  (`20261025232000_default_quiz_reminder_enabled`,
+  `20261026113000_default_all_notifications_enabled`) backfilled nine
+  reminder columns with `UPDATE ... SET x = true WHERE x = false OR x IS
+  NULL`, unconditionally overwriting any user's explicit opt-out alongside
+  genuinely unset rows, with no way afterward to tell which rows had been
+  which. One of the reversed columns, `wants_brahma_muhurta_reminders`, had
+  been added as a deliberate opt-in (`20261011133334_brahma_muhurta_reminder_opt_in`)
+  two weeks earlier specifically because waking someone at 4 AM needs real
+  consent -- this silently reversed that decision without noting it was
+  doing so. The project's free tier has no point-in-time recovery, so the
+  prior values are unrecoverable. The matching Native-side defect --
+  `getNotificationPersistencePayload` setting every reminder flag `true`
+  regardless of whether the user tapped "Not now" on the OS prompt -- is
+  recorded in shoonaya-mobile's AGENTS.md. This applies equally to human and
+  AI-agent contributors.
 
 ### 7. Platform and Build Precision
 - Keep these states distinct: committed, pushed, deployed, built, installed,
