@@ -59,19 +59,22 @@ describe('GET /api/cron/mood-reminder', () => {
         if (table === 'profiles') {
           return {
             select: vi.fn().mockReturnValue({
-              or: vi.fn().mockResolvedValue({
-                data: [
-                  {
-                    id: 'user-1',
-                    full_name: 'Test Devotee',
-                    tradition: 'hindu',
-                    timezone: 'Asia/Kolkata',
-                    notification_quiet_hours_start: null,
-                    notification_quiet_hours_end: null,
-                    is_deleting: false,
-                  },
-                ],
-                error: null,
+              eq: vi.fn().mockReturnValue({
+                or: vi.fn().mockResolvedValue({
+                  data: [
+                    {
+                      id: 'user-1',
+                      full_name: 'Test Devotee',
+                      tradition: 'hindu',
+                      timezone: 'Asia/Kolkata',
+                      notification_quiet_hours_start: null,
+                      notification_quiet_hours_end: null,
+                      wants_mood_reminders: true,
+                      is_deleting: false,
+                    },
+                  ],
+                  error: null,
+                }),
               }),
             }),
           };
@@ -112,19 +115,22 @@ describe('GET /api/cron/mood-reminder', () => {
         if (table === 'profiles') {
           return {
             select: vi.fn().mockReturnValue({
-              or: vi.fn().mockResolvedValue({
-                data: [
-                  {
-                    id: 'user-1',
-                    full_name: 'Test Devotee',
-                    tradition: 'hindu',
-                    timezone: 'Asia/Kolkata',
-                    notification_quiet_hours_start: null,
-                    notification_quiet_hours_end: null,
-                    is_deleting: false,
-                  },
-                ],
-                error: null,
+              eq: vi.fn().mockReturnValue({
+                or: vi.fn().mockResolvedValue({
+                  data: [
+                    {
+                      id: 'user-1',
+                      full_name: 'Test Devotee',
+                      tradition: 'hindu',
+                      timezone: 'Asia/Kolkata',
+                      notification_quiet_hours_start: null,
+                      notification_quiet_hours_end: null,
+                      wants_mood_reminders: true,
+                      is_deleting: false,
+                    },
+                  ],
+                  error: null,
+                }),
               }),
             }),
           };

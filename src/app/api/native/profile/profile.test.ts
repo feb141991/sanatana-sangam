@@ -124,6 +124,35 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(updatedUserFilter).toBe("user-preferences");
   });
 
+  it("accepts the reminder columns that already existed in the schema but were never writable through this route", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-reminder-coverage-gap" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({
+        wants_evening_reminder: false,
+        wants_madhyahn_reminder: false,
+        dharm_veer_reminder_enabled: false,
+        wants_mood_reminders: false,
+        wants_sattvic_reminders: false,
+      }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({
+      wants_evening_reminder: false,
+      wants_madhyahn_reminder: false,
+      dharm_veer_reminder_enabled: false,
+      wants_mood_reminders: false,
+      wants_sattvic_reminders: false,
+    });
+    expect(updatedUserFilter).toBe("user-reminder-coverage-gap");
+  });
+
   it("accepts product analytics consent as a separate opt-in setting", async () => {
     getApiUser.mockResolvedValue({
       user: { id: "user-analytics-consent" },
@@ -174,6 +203,61 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(res.status).toBe(200);
     expect(updatedPayload).toEqual({ quiz_reminder_enabled: true, quiz_reminder_time: "08:30" });
     expect(updatedUserFilter).toBe("user-quiz");
+  });
+
+  it("persists family-remembrance and Brahma Muhurta preferences supported by native Settings", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-family-reminders" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({
+        wants_family_remembrance_reminders: true,
+        family_remembrance_time: "09:15",
+        wants_brahma_muhurta_reminders: false,
+      }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({
+      wants_family_remembrance_reminders: true,
+      wants_brahma_muhurta_reminders: false,
+      family_remembrance_time: "09:15",
+    });
+    expect(updatedUserFilter).toBe("user-family-reminders");
+  });
+
+  it.each(["07:59", "22:00", "9:15", "24:00", "12:60", 915])(
+    "rejects invalid family remembrance time %s",
+    async (time) => {
+      getApiUser.mockResolvedValue({ user: { id: "user-family-reminders" }, error: null, supabase: mockSupabase });
+
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ family_remembrance_time: time }),
+      }));
+
+      expect(res.status).toBe(400);
+      expect(updatedPayload).toBeNull();
+    },
+  );
+
+  it.each([
+    ["wants_family_remembrance_reminders", "true"],
+    ["wants_brahma_muhurta_reminders", 1],
+  ])("rejects non-boolean %s", async (field, value) => {
+    getApiUser.mockResolvedValue({ user: { id: "user-family-reminders" }, error: null, supabase: mockSupabase });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ [field]: value }),
+    }));
+
+    expect(res.status).toBe(400);
+    expect(updatedPayload).toBeNull();
   });
 
   it.each(["8:30", "06:59", "15:01", "24:00", "12:60", 830])("rejects invalid Daily Quiz reminder time %s", async (time) => {

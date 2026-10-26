@@ -12,7 +12,7 @@ describe('sattvic-candidate-producer', () => {
     timezone: 'Asia/Kolkata',
     notification_quiet_hours_start: 22,
     notification_quiet_hours_end: 6,
-    wants_nitya_reminders: true,
+    wants_sattvic_reminders: true,
     is_deleting: false,
   };
 
@@ -32,16 +32,16 @@ describe('sattvic-candidate-producer', () => {
     expect(candidate?.scheduled_for).toBe('2026-09-23T11:30:00.000Z');
   });
 
-  it('suppresses candidate if wants_nitya_reminders is not true', () => {
+  it('suppresses candidate if wants_sattvic_reminders is not true', () => {
     const optedOutDevotee: DevoteeProfileForSattvic = {
       ...baseDevotee,
-      wants_nitya_reminders: false,
+      wants_sattvic_reminders: false,
     };
     expect(produceSattvicCandidate(optedOutDevotee, '2026-09-23')).toBeNull();
 
     const unsetDevotee: DevoteeProfileForSattvic = {
       ...baseDevotee,
-      wants_nitya_reminders: null,
+      wants_sattvic_reminders: null,
     };
     expect(produceSattvicCandidate(unsetDevotee, '2026-09-23')).toBeNull();
   });

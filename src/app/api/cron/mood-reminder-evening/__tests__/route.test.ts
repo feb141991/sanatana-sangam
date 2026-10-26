@@ -79,7 +79,8 @@ describe('GET /api/cron/mood-reminder-evening', () => {
         if (table === 'profiles') {
           return {
             select: vi.fn().mockReturnValue({
-              or: vi.fn().mockResolvedValue({
+              eq: vi.fn().mockReturnValue({
+                or: vi.fn().mockResolvedValue({
                 data: [
                   {
                     id: 'user-evening-1',
@@ -88,10 +89,12 @@ describe('GET /api/cron/mood-reminder-evening', () => {
                     timezone: 'Asia/Kolkata',
                     notification_quiet_hours_start: null,
                     notification_quiet_hours_end: null,
+                    wants_mood_reminders: true,
                     is_deleting: false,
                   },
                 ],
                 error: null,
+                }),
               }),
             }),
           };
@@ -130,7 +133,8 @@ describe('GET /api/cron/mood-reminder-evening', () => {
         if (table === 'profiles') {
           return {
             select: vi.fn().mockReturnValue({
-              or: vi.fn().mockResolvedValue({
+              eq: vi.fn().mockReturnValue({
+                or: vi.fn().mockResolvedValue({
                 data: [
                   {
                     id: 'user-evening-1',
@@ -139,10 +143,12 @@ describe('GET /api/cron/mood-reminder-evening', () => {
                     timezone: 'Asia/Kolkata',
                     notification_quiet_hours_start: null,
                     notification_quiet_hours_end: null,
+                    wants_mood_reminders: true,
                     is_deleting: false,
                   },
                 ],
                 error: null,
+                }),
               }),
             }),
           };

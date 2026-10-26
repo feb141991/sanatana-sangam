@@ -10,6 +10,7 @@ export interface DevoteeProfileForMood {
   timezone?: string | null;
   notification_quiet_hours_start?: number | null;
   notification_quiet_hours_end?: number | null;
+  wants_mood_reminders?: boolean | null;
   is_deleting?: boolean | null;
 }
 
@@ -97,7 +98,12 @@ export function produceMoodCandidate(
     customBody?: string;
   }
 ): NotificationCandidateInsert | null {
-  // 1. Account safety: skip accounts marked for deletion
+  // 1. Check opt-in: requires wants_mood_reminders === true
+  if (devotee.wants_mood_reminders !== true) {
+    return null;
+  }
+
+  // 2. Account safety: skip accounts marked for deletion
   if (devotee.is_deleting === true) {
     return null;
   }
@@ -105,7 +111,7 @@ export function produceMoodCandidate(
   const timezone = resolveTimeZone(devotee.timezone);
   const targetHour = slot === 'midday' ? 12 : 18;
 
-  // 2. Quiet hours: suppress if the scheduled hour falls in quiet window
+  // 3. Quiet hours: suppress if the scheduled hour falls in quiet window
   const quietStart = devotee.notification_quiet_hours_start != null ? Number(devotee.notification_quiet_hours_start) : null;
   const quietEnd = devotee.notification_quiet_hours_end != null ? Number(devotee.notification_quiet_hours_end) : null;
 
@@ -121,7 +127,7 @@ export function produceMoodCandidate(
     return null;
   }
 
-  // 3. Tradition-specific reflection prompt
+  // 4. Tradition-specific reflection prompt
   const tradition = devotee.tradition ?? 'other';
   const prompt = getMoodPrompt(slot, tradition, options?.promptIndex);
 

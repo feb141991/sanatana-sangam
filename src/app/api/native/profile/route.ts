@@ -22,10 +22,17 @@ const EDITABLE_BOOLEAN_FIELDS = new Set([
   "wants_nitya_reminders",
   "wants_community_notifications",
   "wants_family_notifications",
+  "wants_family_remembrance_reminders",
+  "wants_brahma_muhurta_reminders",
   "consent_religious_data",
   "consent_activity_personalization",
   "consent_product_analytics",
   "wants_sankalpa_midpoint_reminders",
+  "wants_evening_reminder",
+  "wants_madhyahn_reminder",
+  "dharm_veer_reminder_enabled",
+  "wants_mood_reminders",
+  "wants_sattvic_reminders",
 ]);
 
 const RASHIS = new Set([
@@ -63,6 +70,12 @@ function isValidQuizReminderTime(value: unknown): value is string {
   const [hour, minute] = value.split(':').map(Number);
   const totalMinutes = hour * 60 + minute;
   return totalMinutes >= 7 * 60 && totalMinutes <= 15 * 60;
+}
+
+function isValidFamilyRemembranceTime(value: unknown): value is string {
+  if (!isValidObservanceReminderTime(value)) return false;
+  const [hour] = value.split(':').map(Number);
+  return hour >= 8 && hour <= 21;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -218,6 +231,14 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: "quiz_reminder_time must be between 07:00 and 15:00 in HH:MM 24-hour format" }, { status: 400 });
       }
       updates.quiz_reminder_time = value;
+    }
+
+    if ("family_remembrance_time" in rawBody) {
+      const value = rawBody.family_remembrance_time;
+      if (!isValidFamilyRemembranceTime(value)) {
+        return NextResponse.json({ error: "family_remembrance_time must be between 08:00 and 21:59 in HH:MM 24-hour format" }, { status: 400 });
+      }
+      updates.family_remembrance_time = value;
     }
 
     if ("date_of_birth" in rawBody) {

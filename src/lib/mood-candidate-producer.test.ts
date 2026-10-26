@@ -14,6 +14,7 @@ describe('mood-candidate-producer', () => {
     timezone: 'Asia/Kolkata',
     notification_quiet_hours_start: 22,
     notification_quiet_hours_end: 6,
+    wants_mood_reminders: true,
     is_deleting: false,
   };
 
@@ -44,6 +45,20 @@ describe('mood-candidate-producer', () => {
     expect(candidate?.body).toBe(`${EVENING_PROMPTS_BY_TRADITION.hindu[1]} Let scripture meet your mood.`);
     expect(candidate?.priority).toBe(60);
     expect(candidate?.scheduled_for).toBe('2026-09-23T12:30:00.000Z'); // 18:00 IST = 12:30 UTC
+  });
+
+  it('suppresses candidate if wants_mood_reminders is not true', () => {
+    const optedOutDevotee: DevoteeProfileForMood = {
+      ...baseDevotee,
+      wants_mood_reminders: false,
+    };
+    expect(produceMoodCandidate(optedOutDevotee, 'midday', '2026-09-23')).toBeNull();
+
+    const unsetDevotee: DevoteeProfileForMood = {
+      ...baseDevotee,
+      wants_mood_reminders: undefined,
+    };
+    expect(produceMoodCandidate(unsetDevotee, 'midday', '2026-09-23')).toBeNull();
   });
 
   it('suppresses candidate if devotee account is marked for deletion', () => {

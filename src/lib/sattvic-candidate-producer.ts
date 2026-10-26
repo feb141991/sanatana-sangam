@@ -8,7 +8,7 @@ export interface DevoteeProfileForSattvic {
   timezone?: string | null;
   notification_quiet_hours_start?: number | null;
   notification_quiet_hours_end?: number | null;
-  wants_nitya_reminders?: boolean | null;
+  wants_sattvic_reminders?: boolean | null;
   is_deleting?: boolean | null;
 }
 
@@ -35,7 +35,7 @@ export const SANDHYA_NUDGE_BY_TRADITION: Record<string, { title: string; body: s
  * Produces a validated Sattvic Mode evening candidate for a devotee on a specific local civil date.
  *
  * Enforces:
- * 1. Opted-in reminder preference (wants_nitya_reminders === true).
+ * 1. Opted-in reminder preference (wants_sattvic_reminders === true).
  * 2. Active account (suppresses if is_deleting === true).
  * 3. Quiet-hours protection (suppresses if 17:00 falls in quiet window).
  * 4. Tradition-tailored Sandhyā reflection prompt.
@@ -48,8 +48,8 @@ export function produceSattvicCandidate(
   localDate: string,
   copy?: { title: string; body: string }
 ): NotificationCandidateInsert | null {
-  // 1. Check opt-in: requires wants_nitya_reminders === true
-  if (devotee.wants_nitya_reminders !== true) {
+  // 1. Check opt-in: requires wants_sattvic_reminders === true
+  if (devotee.wants_sattvic_reminders !== true) {
     return null;
   }
 

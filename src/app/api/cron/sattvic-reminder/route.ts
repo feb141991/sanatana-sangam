@@ -75,8 +75,8 @@ export async function GET(request: Request) {
     // 1. Fetch all active users who opted into nitya reminders
     const { data: users, error: usersError } = await supabase
       .from("profiles")
-      .select("id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end, wants_nitya_reminders, is_deleting")
-      .eq("wants_nitya_reminders", true)
+      .select("id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end, wants_sattvic_reminders, is_deleting")
+      .eq("wants_sattvic_reminders", true)
       .or("is_deleting.is.null,is_deleting.eq.false");
 
     if (usersError) {
@@ -103,7 +103,7 @@ export async function GET(request: Request) {
             timezone: tz,
             notification_quiet_hours_start: u.notification_quiet_hours_start,
             notification_quiet_hours_end: u.notification_quiet_hours_end,
-            wants_nitya_reminders: u.wants_nitya_reminders,
+            wants_sattvic_reminders: u.wants_sattvic_reminders,
             is_deleting: u.is_deleting,
           },
           localDateIso

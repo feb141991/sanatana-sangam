@@ -52,7 +52,8 @@ export async function GET(request: Request) {
 
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting')
+      .select('id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end, wants_mood_reminders, is_deleting')
+      .eq('wants_mood_reminders', true)
       .or('is_deleting.is.null,is_deleting.eq.false');
 
     if (usersError) {
@@ -81,6 +82,7 @@ export async function GET(request: Request) {
             timezone: tz,
             notification_quiet_hours_start: (u as any).notification_quiet_hours_start,
             notification_quiet_hours_end: (u as any).notification_quiet_hours_end,
+            wants_mood_reminders: (u as any).wants_mood_reminders,
             is_deleting: (u as any).is_deleting,
           },
           'evening',
