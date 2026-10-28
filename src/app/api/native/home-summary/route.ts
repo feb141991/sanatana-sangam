@@ -36,6 +36,7 @@ import { getPublishedObservanceStoryCards } from '@/lib/observance-content';
 import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
 import { getHomeObservanceWindowEnd } from '@/lib/home-observance-window';
 import { settleOptionalSection } from '@/lib/optional-section';
+import { HOME_PROFILE_COLUMNS, readHomeProfile } from '@/lib/home-profile-read';
 
 export const runtime = 'nodejs';
 
@@ -531,49 +532,39 @@ export async function GET(request: NextRequest) {
 
   const DB_TIMEOUT = 4_000;
 
-  const profileSection = await settleOptionalSection(
-    supabase
+  const profileStartedAt = performance.now();
+  const profileRead = await readHomeProfile<ProfileRow>({
+    read: (signal) => supabase
       .from('profiles')
-      .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date, calendar_scope, calendar_profile, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders')
+      .select(HOME_PROFILE_COLUMNS)
       .eq('id', user.id)
-      .maybeSingle() as unknown as PromiseLike<{
-        data: ProfileRow | null;
-        error: { message?: string } | null;
-      }>,
-    DB_TIMEOUT,
-    { data: null, error: null },
-  );
-  timings.record('profile', profileSection.durationMs, `Profile Fetch (${profileSection.status})`);
+      .abortSignal(signal)
+      .maybeSingle<ProfileRow>(),
+    repair: () => ensureAuthProfile(user, supabase),
+  });
+  timings.record('profile', performance.now() - profileStartedAt, `Profile Fetch (${profileRead.status})`);
 
-  // Repair only a confirmed missing profile. This keeps already-shipped native
-  // clients recoverable after an old OAuth/auth-trigger failure without
-  // treating a database timeout as permission to create state.
-  if (
-    profileSection.status === 'ready'
-    && !profileSection.value.error
-    && !profileSection.value.data
-  ) {
-    await ensureAuthProfile(user);
-  }
-
-  // A profile read enriches Home, but must not turn a valid authenticated
-  // session into a blank screen. Existing defaults below intentionally cover
-  // this temporary state while the client can complete profile setup later.
-  if (profileSection.status !== 'ready' || profileSection.value.error || !profileSection.value.data) {
-    degradedSections.add('profile');
-    const receipt = timings.receipt();
-    console.error('[home-summary][profile-unavailable]', JSON.stringify({
-      ...receipt,
+  if (!profileRead.profile) {
+    const requestId = request.headers.get('x-request-id');
+    console.error('[home-summary][profile-unavailable]', {
+      stage: 'profile',
+      status: profileRead.status,
+      attempts: profileRead.attempts,
+      requestId,
       release: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local',
-      reason: profileSection.status !== 'ready'
-        ? profileSection.status
-        : profileSection.value.error?.message ?? 'profile_not_found',
-    }));
+    });
+    return NextResponse.json(
+      { error: 'Profile temporarily unavailable', code: 'PROFILE_UNAVAILABLE' },
+      { status: 503, headers: {
+        'Cache-Control': 'private, no-store', 'Retry-After': '5',
+        'Server-Timing': timings.toHeaderValue(),
+        'X-Shoonaya-Degraded-Sections': 'profile',
+        ...(requestId ? { 'X-Request-ID': requestId } : {}),
+      } },
+    );
   }
 
-  const profile = profileSection.status === 'ready' && !profileSection.value.error
-    ? profileSection.value.data
-    : null;
+  const profile = profileRead.profile;
   const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
