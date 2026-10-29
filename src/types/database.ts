@@ -293,6 +293,10 @@ export interface Database {
           // Added by 20261011133334_brahma_muhurta_reminder_opt_in.sql
           // (default false; optional until the migration is applied).
           wants_brahma_muhurta_reminders?: boolean;
+          // Added by 20261029160000_sanskara_reminder_preferences.sql (default false / 0; optional until applied).
+          // The generation is server-managed: client writes to it are ignored by a database trigger.
+          wants_sanskara_reminders?: boolean;
+          sanskara_opt_in_generation?: number;
           notification_quiet_hours_start: number | null;
           notification_quiet_hours_end: number | null;
           is_admin: boolean;

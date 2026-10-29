@@ -1,6 +1,6 @@
 # Sanskara tracker authorization contract — design (pre-migration)
 
-Status: **v0.2, design only. No migration, route or screen has been written.** Decisions D1 to D5 in section 12 were
+Status: **v0.3. Design only, except that migrations M1 and M2 now exist (unapplied; see `SANSKARA_TRACKER_BACKEND_DESIGN.md`). v0.3 tightened four rules while writing them: see "Amendments in v0.3" at the end of section 13.** Decisions D1 to D5 in section 12 were
 **approved as recommended by the founder on 2026-10-29** ("go ahead with D1 to D5 recommendations"). One thing is still
 needed from the founder: a named, qualified reviewer for any tradition-scoped timing (D3), without which the tracker ships
 with chosen-date milestones and no suggested timing. Written 2026-10-29. Step 3 is in
@@ -114,7 +114,7 @@ Rules:
 
 | Class | Contents | Rule |
 |---|---|---|
-| **A, sensitive** | Prenatal records (the whole record), the expected due date, all notes, location and performer fields | Owner or manager only. Never in a Kul projection except a prenatal record's rite name and status by an explicit per-record grant. Due date and notes are never shareable in v1. Never in a notification, analytics event or log. |
+| **A, sensitive** | Prenatal records (the whole record), the expected due date, all notes, location and performer fields, and the title of a custom milestone (free text) | Owner or manager only. Never in a Kul projection except a prenatal record's rite name and status by an explicit per-record grant. Due date and notes are never shareable in v1. Never in a notification, analytics event or log. |
 | **B, personal** | Rite, planned date, completed date, status for a non-prenatal record | Shareable by grant (section 7). |
 | **C, catalogue** | Rite definitions and guidance text | Public. Reviewed content only (step 2). |
 
@@ -147,6 +147,7 @@ by a client.
 | Start a majority claim for a dependent | n/a | yes | no | no |
 | Export own data | yes | yes (for the dependent) | no | no |
 | Read the list of who can see a record | yes | yes | no | no |
+| Erase a dependent (the subject and everything about them) | n/a | yes (any current manager; not a former manager) | no | no |
 
 ## 7. Sharing
 
@@ -157,6 +158,8 @@ A **grant** names one grantee account, one subject, a scope and a level.
   grant **never** includes Class A; a prenatal record needs its own `record` grant.
 - **Audience boundary**: the grantee must be a member of the same Kul as the sharer, **at grant time and at every
   read**. A grant while that is false is void, not deleted; it revives only if the membership does.
+- **Granter authority**: a grant is also void while the person who made it no longer holds authority over the subject (a
+  manager who was removed, or a manager of a child who has turned 18). It revives only if that authority does.
 - **No re-share**, no public or token link, no "everyone in my Kul". The limit of a 6-account Kul bounds the audience.
 - **Transparency**: the owner or manager can always list who can see what. A grantee sees who shared it.
 - **Revocation** takes effect at the next read and stops the grantee's reminders in the same transaction (event E1).
@@ -204,7 +207,7 @@ Every row is a requirement on step 3 and a test in step 5.
 | E4 | Record completed | Unchanged | Status complete | All pending reminders for the record cancelled |
 | E5 | Date changed or removed | Viewers see the new value | Updated in place | Recomputed or cancelled in place; no new keys |
 | E6 | Manager added or removed | Immediate | Unchanged | Removed manager's subscriptions cancelled; the last manager cannot be removed |
-| E7 | Dependent reaches 18 | Managers become **former managers**: read-only, for at most 12 months, with an export offered before it ends | Frozen. If never claimed, deleted when the window ends | All reminders stop |
+| E7 | Dependent reaches 18 | Managers become **former managers**: read-only, for at most 12 months, with an export offered before it ends; every share they made ends (the granter no longer holds authority) | Frozen. If never claimed, deleted when the window ends | All reminders stop |
 | E7a | The new adult claims their records | Ownership moves to their account subject; ex-managers lose access unless the new owner shares | Claimed records move; **their own existing record wins any conflict**; nothing is merged automatically | None until they subscribe |
 | E8 | Owner sets `consent_religious_data` to false | Shares suspended; hidden from others | Retained inert, owner can export or delete; purged after 30 days unless consent returns (D5) | All suspended |
 | E9 | Owner deletes their account | All their grants and subscriptions deleted | Owned records deleted; a dependent with another manager stays with them, with none it is deleted | Cancelled |
@@ -277,4 +280,11 @@ to be named before any reviewed timing is added.
 - **Table layout, function bodies, the resolver integration and migrations** are step 3. This contract does not fix them,
   only the rules they must enforce.
 - **Hindi and Punjabi notification wording** needs native-speaker review (backend notification copy precedent).
-- Nothing in this document has been run on a device or against a database.
+- **Amendments in v0.3** (2026-10-29, from writing M1 and M2; each denies more and none grants more): the title of a
+  custom milestone is Class A, because it is free text and an unclassified field is Class A (section 5), so a timeline
+  grant never covers one; a current manager may erase a dependent (section 6), which the first version left impossible
+  without leaving the child's name and birth date behind; a share is void once its granter loses authority (section 7,
+  E7), which also ends a parent's shares when the child turns 18; consent to religious data is required of the acting
+  account as well as of the subject's side, except to export or erase (section 8, rule 2).
+- Nothing in this document has been run on a device or against a Supabase database; M1 and M2 were run on a scratch
+  Postgres only.

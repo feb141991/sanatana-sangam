@@ -6526,6 +6526,7 @@ export type Database = {
           quiz_reminder_time: string | null
           rashi: string | null
           sampradaya: string | null
+          sanskara_opt_in_generation: number
           scripture_script: string
           seeking: string[] | null
           seva_score: number | null
@@ -6551,6 +6552,7 @@ export type Database = {
           wants_madhyahn_reminder: boolean | null
           wants_nitya_reminders: boolean
           wants_sankalpa_midpoint_reminders: boolean
+          wants_sanskara_reminders: boolean
           wants_shloka_reminders: boolean
           wants_tithi_reminders: boolean
           wants_vrat_reminders: boolean
@@ -6647,6 +6649,7 @@ export type Database = {
           quiz_reminder_time?: string | null
           rashi?: string | null
           sampradaya?: string | null
+          sanskara_opt_in_generation?: number
           scripture_script?: string
           seeking?: string[] | null
           seva_score?: number | null
@@ -6672,6 +6675,7 @@ export type Database = {
           wants_madhyahn_reminder?: boolean | null
           wants_nitya_reminders?: boolean
           wants_sankalpa_midpoint_reminders?: boolean
+          wants_sanskara_reminders?: boolean
           wants_shloka_reminders?: boolean
           wants_tithi_reminders?: boolean
           wants_vrat_reminders?: boolean
@@ -6768,6 +6772,7 @@ export type Database = {
           quiz_reminder_time?: string | null
           rashi?: string | null
           sampradaya?: string | null
+          sanskara_opt_in_generation?: number
           scripture_script?: string
           seeking?: string[] | null
           seva_score?: number | null
@@ -6793,6 +6798,7 @@ export type Database = {
           wants_madhyahn_reminder?: boolean | null
           wants_nitya_reminders?: boolean
           wants_sankalpa_midpoint_reminders?: boolean
+          wants_sanskara_reminders?: boolean
           wants_shloka_reminders?: boolean
           wants_tithi_reminders?: boolean
           wants_vrat_reminders?: boolean
@@ -7440,6 +7446,305 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      sanskara_audit: {
+        Row: {
+          action: string
+          actor_id: string | null
+          at: string
+          detail: Json
+          id: number
+          subject_id: string | null
+          target_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          at?: string
+          detail?: Json
+          id?: never
+          subject_id?: string | null
+          target_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          at?: string
+          detail?: Json
+          id?: never
+          subject_id?: string | null
+          target_id?: string | null
+        }
+        Relationships: []
+      }
+      sanskara_grants: {
+        Row: {
+          created_at: string
+          grantee_id: string
+          granted_by: string
+          id: string
+          kul_id: string
+          level: string
+          record_id: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          scope: string
+          subject_id: string
+        }
+        Insert: {
+          created_at?: string
+          grantee_id: string
+          granted_by: string
+          id?: string
+          kul_id: string
+          level?: string
+          record_id?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope: string
+          subject_id: string
+        }
+        Update: {
+          created_at?: string
+          grantee_id?: string
+          granted_by?: string
+          id?: string
+          kul_id?: string
+          level?: string
+          record_id?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope?: string
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_grants_kul_id_fkey"
+            columns: ["kul_id"]
+            isOneToOne: false
+            referencedRelation: "kuls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanskara_grants_record_id_fkey"
+            columns: ["record_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanskara_grants_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_subjects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      sanskara_record_private: {
+        Row: {
+          expected_due_date: string | null
+          location: string | null
+          notes: string | null
+          performed_by: string | null
+          record_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          expected_due_date?: string | null
+          location?: string | null
+          notes?: string | null
+          performed_by?: string | null
+          record_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          expected_due_date?: string | null
+          location?: string | null
+          notes?: string | null
+          performed_by?: string | null
+          record_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_record_private_record_id_fkey"
+            columns: ["record_id"]
+            isOneToOne: true
+            referencedRelation: "sanskara_records"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      sanskara_records: {
+        Row: {
+          completed_date: string | null
+          created_at: string
+          created_by: string | null
+          custom_title: string | null
+          id: string
+          planned_date: string | null
+          rite_key: string
+          subject_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          completed_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          custom_title?: string | null
+          id?: string
+          planned_date?: string | null
+          rite_key: string
+          subject_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          completed_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          custom_title?: string | null
+          id?: string
+          planned_date?: string | null
+          rite_key?: string
+          subject_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_records_rite_key_fkey"
+            columns: ["rite_key"]
+            isOneToOne: false
+            referencedRelation: "sanskara_rites"
+            referencedColumns: ["rite_key"]
+          },
+          {
+            foreignKeyName: "sanskara_records_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_subjects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      sanskara_request_log: {
+        Row: {
+          account_id: string
+          created_at: string
+          operation: string
+          request_id: string
+          result: Json | null
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          operation: string
+          request_id: string
+          result?: Json | null
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          operation?: string
+          request_id?: string
+          result?: Json | null
+        }
+        Relationships: []
+      }
+      sanskara_rites: {
+        Row: {
+          created_at: string
+          prenatal: boolean
+          rite_key: string
+          sensitivity: string
+        }
+        Insert: {
+          created_at?: string
+          prenatal?: boolean
+          rite_key: string
+          sensitivity: string
+        }
+        Update: {
+          created_at?: string
+          prenatal?: boolean
+          rite_key?: string
+          sensitivity?: string
+        }
+        Relationships: []
+      }
+      sanskara_subject_managers: {
+        Row: {
+          account_id: string
+          added_at: string
+          added_by: string | null
+          subject_id: string
+        }
+        Insert: {
+          account_id: string
+          added_at?: string
+          added_by?: string | null
+          subject_id: string
+        }
+        Update: {
+          account_id?: string
+          added_at?: string
+          added_by?: string | null
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_subject_managers_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_subjects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      sanskara_subjects: {
+        Row: {
+          account_id: string | null
+          birth_date: string | null
+          created_at: string
+          display_name: string | null
+          frozen_at: string | null
+          id: string
+          kind: string
+          state: string
+          suspended_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          birth_date?: string | null
+          created_at?: string
+          display_name?: string | null
+          frozen_at?: string | null
+          id?: string
+          kind: string
+          state?: string
+          suspended_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          birth_date?: string | null
+          created_at?: string
+          display_name?: string | null
+          frozen_at?: string | null
+          id?: string
+          kind?: string
+          state?: string
+          suspended_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       sanskars: {
         Row: {
@@ -11436,6 +11741,46 @@ export type Database = {
       safe_timezone: {
         Args: { p_default?: string; p_tz: string }
         Returns: string
+      }
+      sanskara_add_manager: {
+        Args: { p_account: string; p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_create_dependent: {
+        Args: { p_birth_date: string; p_name: string; p_request_id: string }
+        Returns: Json
+      }
+      sanskara_create_record: {
+        Args: { p_custom_title: string; p_planned_date: string; p_request_id: string; p_rite_key: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_delete_dependent: {
+        Args: { p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_delete_mine: { Args: { p_request_id: string }; Returns: Json }
+      sanskara_delete_record: {
+        Args: { p_record: string; p_request_id: string }
+        Returns: Json
+      }
+      sanskara_dependents: { Args: never; Returns: Json }
+      sanskara_export_mine: { Args: never; Returns: Json }
+      sanskara_my_timeline: { Args: never; Returns: Json }
+      sanskara_remove_manager: {
+        Args: { p_account: string; p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_save_private: {
+        Args: { p_expected_due_date: string; p_expected_version: number; p_location: string; p_notes: string; p_performed_by: string; p_record: string; p_request_id: string }
+        Returns: Json
+      }
+      sanskara_set_completion: {
+        Args: { p_completed_date: string; p_expected_version: number; p_record: string; p_request_id: string }
+        Returns: Json
+      }
+      sanskara_update_record: {
+        Args: { p_custom_title: string; p_expected_version: number; p_planned_date: string; p_record: string; p_request_id: string }
+        Returns: Json
       }
       skip:
         | { Args: { "": string }; Returns: string }
