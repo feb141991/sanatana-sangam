@@ -96,7 +96,6 @@ function ensureMockProfile(userId: string): Profile {
       nitya_reminder_enabled: true,
       nitya_reminder_time: '06:30',
       wants_brahma_muhurta_reminders: true,
-      wants_sankalpa_midpoint_reminders: true,
       wants_tithi_reminders: true,
       wants_family_remembrance_reminders: true,
     });
