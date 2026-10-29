@@ -6,6 +6,8 @@
 -- table privileges, forced RLS and function privileges are all in play. sanskara_can is called as the owner (clients
 -- cannot call it).
 begin;
+-- The functions decide on the UTC date; the tests build dates with current_date, so both must mean the same day whatever hour this runs.
+set local timezone to 'UTC';
 
 -- ── Helpers (live only in this transaction) ─────────────────────────────────────────────────────────────────────────
 -- A stable id for a name: public._t('A') is the same uuid everywhere in this file.
@@ -123,6 +125,7 @@ begin
   foreach f in array array[
     'public.sanskara_can(text, uuid, uuid, uuid)', 'public.sanskara_actor(boolean)', 'public.sanskara_claim_request(uuid, uuid, text)',
     'public.sanskara_finish_request(uuid, uuid, jsonb)', 'public.sanskara_records_json_unchecked(uuid, boolean)',
+    'public.sanskara_on_access_lost(uuid, uuid)', 'public.sanskara_on_record_completed(uuid)',
     'public.sanskara_managers_dependents_only()', 'public.sanskara_delete_orphan_dependent()',
     'public.sanskara_enforce_record_rules()', 'public.sanskara_enforce_private_rules()'] loop
     assert not has_function_privilege('authenticated', f, 'execute'), f || ': clients must not call internal functions';

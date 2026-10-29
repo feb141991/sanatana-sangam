@@ -28,6 +28,8 @@ drop function if exists public.sanskara_remove_manager(uuid, uuid, uuid);
 drop function if exists public.sanskara_delete_dependent(uuid, uuid);
 drop function if exists public.sanskara_delete_mine(uuid);
 drop function if exists public.sanskara_records_json_unchecked(uuid, boolean);
+drop function if exists public.sanskara_on_record_completed(uuid);
+drop function if exists public.sanskara_on_access_lost(uuid, uuid);
 drop function if exists public.sanskara_finish_request(uuid, uuid, jsonb);
 drop function if exists public.sanskara_claim_request(uuid, uuid, text);
 drop function if exists public.sanskara_actor(boolean);

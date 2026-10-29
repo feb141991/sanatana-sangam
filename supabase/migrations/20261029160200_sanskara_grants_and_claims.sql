@@ -25,8 +25,8 @@
 --   of band (that is the one place identity cannot be proved by the system): the exposure is limited by the above and every
 --   start and accept is audited.
 --
--- LATER (M4): sanskara_revoke_grant and sanskara_accept_claim also cancel reminders of the people who lose access; there is
--- no subscription table yet, so there is nothing to cancel in this migration.
+-- REMINDERS (M4): sanskara_revoke_grant and sanskara_accept_claim call the access-lost hook (defined in M2, a no-op until M4)
+-- so the reminders of the people who lose access end in the same transaction.
 --
 -- Privilege review: all functions are SECURITY DEFINER with an empty search_path; EXECUTE is revoked from PUBLIC, anon and
 -- service_role and granted to `authenticated` only. The claims table has forced RLS, no policies and no client grants.
@@ -114,7 +114,7 @@ end;
 $$;
 
 -- Ends a share. Allowed to anyone who may manage grants for the subject, and to the grantee (leaving a share).
--- M4 adds: cancel the grantee's reminders for the records in the same transaction.
+-- Calls the access-lost hook for the grantee (M4: deletes their reminder subscriptions that no longer have access).
 create function public.sanskara_revoke_grant(p_request_id uuid, p_grant uuid) returns jsonb
 language plpgsql security definer set search_path = ''
 as $$
@@ -137,6 +137,7 @@ begin
   if v_ended > 0 then
     insert into public.sanskara_audit (actor_id, action, subject_id, target_id, detail)
     values (v_uid, 'grant_revoked', v_grant.subject_id, v_grant.grantee_id, jsonb_build_object('scope', v_grant.scope));
+    perform public.sanskara_on_access_lost(v_grant.subject_id, v_grant.grantee_id);
   end if;
 
   return public.sanskara_finish_request(v_uid, p_request_id, jsonb_build_object('id', p_grant, 'revoked', true, 'already_revoked', v_ended = 0));
@@ -339,6 +340,8 @@ begin
   delete from public.sanskara_grants where subject_id = v_claim.subject_id;
   insert into public.sanskara_audit (actor_id, action, subject_id, target_id)
   values (v_uid, 'claim_accepted', v_claim.subject_id, v_claim.created_by);
+  -- The managers and everyone else who followed these records through the dependent no longer have access to them.
+  perform public.sanskara_on_access_lost(v_mine, null);
   -- The dependent, its managers, its remaining records and the claim row go together.
   delete from public.sanskara_subjects where id = v_claim.subject_id;
 

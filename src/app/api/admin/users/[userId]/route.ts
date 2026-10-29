@@ -505,6 +505,17 @@ export async function DELETE(
     admin.supabase.from("user_warnings").delete().eq("user_id", userId),
     admin.supabase.from("user_activity_log").delete().or(`actor_id.eq.${userId},target_id.eq.${userId}`),
     admin.supabase.from("deleted_accounts").delete().eq("user_id", userId),
+
+    // Sanskara tracker. All of these also cascade from auth.users; they are listed so this path never depends on that alone
+    // (guarded by src/lib/sanskara-account-deletion-contract.test.ts). A dependent whose last manager is deleted is removed by
+    // a database trigger, and every pending reminder of a deleted subscription is cancelled by another.
+    admin.supabase.from("sanskara_subscriptions").delete().eq("account_id", userId),
+    admin.supabase.from("sanskara_grants").delete().or(`grantee_id.eq.${userId},granted_by.eq.${userId}`),
+    admin.supabase.from("sanskara_claims").delete().eq("created_by", userId),
+    admin.supabase.from("sanskara_subject_managers").delete().eq("account_id", userId),
+    admin.supabase.from("sanskara_subjects").delete().eq("account_id", userId),
+    admin.supabase.from("sanskara_request_log").delete().eq("account_id", userId),
+    admin.supabase.from("sanskara_audit").delete().or(`actor_id.eq.${userId},target_id.eq.${userId}`),
   ];
 
   await Promise.allSettled(childCleanupTasks);

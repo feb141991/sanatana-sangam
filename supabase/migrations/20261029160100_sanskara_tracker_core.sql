@@ -4,10 +4,10 @@
 --
 -- WHAT THIS MIGRATION DOES NOT DO (later migrations)
 --   * M3: grant / revoke / list-access functions, the shared-with-me projection, claims (the hand-over at 18).
---   * M4: reminder subscriptions, the pending-candidate index, cancellation, the send-time check, the account-delete
---     additions. Until M4 no subscription exists, so there is no reminder to cancel when a record is edited,
---     completed or deleted; M4 adds the cancellation call to those functions (create or replace) in the same change that
---     creates the thing to cancel.
+--   * M4: reminder subscriptions, the pending-candidate index, cancellation, the send-time check. Until M4 no subscription
+--     exists, so there is no reminder to cancel. The functions below already call two HOOKS at the moments reminders must
+--     react (sanskara_on_access_lost, sanskara_on_record_completed); they are no-ops here and M4 replaces their bodies.
+--     Editing a date, deleting a record or a person, and every cascade are handled by triggers M4 puts on the new table.
 --   * M5: scheduled jobs (majority sweep, consent purge, retention). The authorization function derives the 18th
 --     birthday and the 12-month window from the dates themselves, so correctness never depends on a job having run.
 --   * M6: retirement of the old user_sanskaras / user_sanskars / sanskars tables.
@@ -442,6 +442,26 @@ as $$
   where r.subject_id = p_subject;
 $$;
 
+-- Hooks. No-ops in M2 so the functions below can call them from day one; M4 replaces the bodies.
+--   sanskara_on_access_lost(subject, account): someone (account, or everyone when null) may have lost the right to receive
+--     reminders for records of the subject, because a share was revoked, a manager removed or records were handed over.
+--   sanskara_on_record_completed(record): the record was completed, so its reminders end.
+create function public.sanskara_on_access_lost(p_subject uuid, p_account uuid) returns void
+language plpgsql security definer set search_path = ''
+as $$
+begin
+  null;
+end;
+$$;
+
+create function public.sanskara_on_record_completed(p_record uuid) returns void
+language plpgsql security definer set search_path = ''
+as $$
+begin
+  null;
+end;
+$$;
+
 -- ── Client functions: reads ─────────────────────────────────────────────────────────────────────────────────────────
 
 -- The caller's own timeline. Creates their account subject on first use.
@@ -622,7 +642,7 @@ end;
 $$;
 
 -- Changes a record's title (custom milestones only) and planned date. The client sends the version it last saw.
--- M4 adds: supersede the pending reminders when the date changes.
+-- (M4: a trigger cancels the record's pending reminders when the planned date changes.)
 create function public.sanskara_update_record(p_request_id uuid, p_record uuid, p_custom_title text, p_planned_date date, p_expected_version integer)
 returns jsonb
 language plpgsql security definer set search_path = ''
@@ -741,7 +761,8 @@ begin
 end;
 $$;
 
--- Marks a record complete on a date, or reopens it (null). M4 adds: completion cancels every subscriber's pending reminders.
+-- Marks a record complete on a date, or reopens it (null). Completing calls the completion hook (M4: switches off every
+-- subscriber's reminder for it; reopening does not switch them back on, each person re-enables theirs).
 create function public.sanskara_set_completion(p_request_id uuid, p_record uuid, p_completed_date date, p_expected_version integer)
 returns jsonb
 language plpgsql security definer set search_path = ''
@@ -773,12 +794,16 @@ begin
   set completed_date = p_completed_date, version = version + 1, updated_at = now()
   where id = p_record
   returning version into v_version;
+  if p_completed_date is not null then
+    perform public.sanskara_on_record_completed(p_record);
+  end if;
 
   return public.sanskara_finish_request(v_uid, p_request_id, jsonb_build_object('id', p_record, 'version', v_version));
 end;
 $$;
 
--- Deleting never needs consent (a person who withdrew it can still erase). M4 adds: cancel the record's reminders.
+-- Deleting never needs consent (a person who withdrew it can still erase). (M4: a trigger on subscriptions cancels the
+-- pending reminders of every subscription the delete cascades through.)
 create function public.sanskara_delete_record(p_request_id uuid, p_record uuid) returns jsonb
 language plpgsql security definer set search_path = ''
 as $$
@@ -841,7 +866,8 @@ begin
 end;
 $$;
 
--- Removes a manager (possibly the caller). The last manager cannot be removed. M4 adds: cancel the removed manager's reminders.
+-- Removes a manager (possibly the caller). The last manager cannot be removed. Calls the access-lost hook (M4: deletes the
+-- removed manager's reminder subscriptions for that person).
 create function public.sanskara_remove_manager(p_request_id uuid, p_subject uuid, p_account uuid) returns jsonb
 language plpgsql security definer set search_path = ''
 as $$
@@ -866,6 +892,7 @@ begin
 
   delete from public.sanskara_subject_managers where subject_id = p_subject and account_id = p_account;
   insert into public.sanskara_audit (actor_id, action, subject_id, target_id) values (v_uid, 'manager_removed', p_subject, p_account);
+  perform public.sanskara_on_access_lost(p_subject, p_account);
 
   return public.sanskara_finish_request(v_uid, p_request_id, jsonb_build_object('id', p_subject));
 end;
@@ -950,6 +977,8 @@ begin
     'public.sanskara_claim_request(uuid, uuid, text)',
     'public.sanskara_finish_request(uuid, uuid, jsonb)',
     'public.sanskara_records_json_unchecked(uuid, boolean)',
+    'public.sanskara_on_access_lost(uuid, uuid)',
+    'public.sanskara_on_record_completed(uuid)',
     'public.sanskara_managers_dependents_only()',
     'public.sanskara_delete_orphan_dependent()',
     'public.sanskara_enforce_record_rules()',

@@ -2,6 +2,8 @@
 -- Run against an isolated Supabase branch / scratch database after applying M1, M2 and M3, as the migration owner (the role
 -- that owns the functions; it must be able to SET ROLE authenticated). Everything is rolled back at the end.
 begin;
+-- The functions decide on the UTC date; the tests build dates with current_date, so both must mean the same day whatever hour this runs.
+set local timezone to 'UTC';
 
 -- ── Helpers (live only in this transaction; same as the M2 test) ────────────────────────────────────────────────────
 create function public._t(n text) returns uuid language sql immutable as $$ select md5('sanskara-test:' || n)::uuid $$;

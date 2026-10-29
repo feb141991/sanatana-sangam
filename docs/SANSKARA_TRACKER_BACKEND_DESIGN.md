@@ -1,15 +1,14 @@
 # Sanskara tracker backend design (step 3) — pre-migration
 
-Status: **v0.3. M1, M2 and M3 are written, with rollbacks and tests, and verified on a scratch Postgres; they are NOT
-applied to any database. M4 to M6, the routes, the producer and the screens are not written.** Implements the approved contract
+Status: **v0.4. M1 to M4 are written, with rollbacks and tests, and verified on a scratch Postgres; they are NOT applied to
+any database. M5, M6, the routes, the reminder producer, the dispatcher changes and the screens are not written.** Implements the approved contract
 (`SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md`, v0.2: decisions D1 to D5 approved as recommended on 2026-10-29). Written
 and updated 2026-10-29.
 
 This document turns the contract into tables, one authorization function, a function surface, a reminder lifecycle on
 the existing notification pipeline, scheduled jobs, a migration sequence and a retirement plan for the old
-implementation. For M1 to M3 the migrations are the source of truth for the DDL; section 11 lists every place they
-differ from the first version of this design, and why. Appendix A keeps the remaining sketches (subscriptions, claims and
-the pending-reminder index) for M4.
+implementation. For M1 to M4 the migrations are the source of truth for the DDL; section 11 lists every place they
+differ from the first version of this design, and why.
 
 ## 1. The shape in one paragraph
 
@@ -37,15 +36,16 @@ rollback in `supabase/rollbacks/` and a test in `supabase/tests/`.
 | `sanskara_audit` | Metadata-only trail (contract section 7) | Closed set of actions (including `dependent_deleted` and `subject_deleted`); `detail` is a small object and never record content; rows about an account go with the account. |
 | `sanskara_request_log` | Idempotency for every write function | Primary key `(account_id, request_id)`; stores the first response, which a retry returns; pruned after 7 days (M5). |
 | `sanskara_claims` (M3) | The hand-over at 18 | Only the SHA-256 of the token is stored; one pending claim per dependent; `expires_at` after `created_at`; forced RLS, no client grants. |
-| `sanskara_subscriptions` (M4) | Reminders | Still a sketch: Appendix A. |
+| `sanskara_subscriptions` (M4) | One account's reminder for one record at one lead time (0, 1, 3, 7, 14 or 30 days) | `unique (record_id, account_id, lead_days)`; `generation` moves on every change; forced RLS, no client grants. |
 
 Every M2 table has row-level security **enabled and forced**, no policies, and no grants to `anon`, `authenticated` or
 `PUBLIC` (the pattern of `kul_family_link_invitations`). Forced RLS is safe for the definer functions because Supabase's
 `postgres` role is not a superuser but has `BYPASSRLS`, and 20+ existing tables already force RLS (checked against
 production, read-only, 2026-10-29). Clients reach data only through the functions in section 4.
 
-One change to an existing table, an index in M4: at most one **pending** reminder per (subscription, lead time), on
-`notification_candidates` (section 5).
+Changes to existing tables in M4: one partial unique index on `notification_candidates` (at most one pending or resolving
+reminder per subscription and lead time), and triggers on `notification_candidates`, `profiles` and `kul_members`
+(section 5).
 
 ## 3. Authorization: `sanskara_can(action, subject, account, record)`
 
@@ -125,7 +125,10 @@ conflict (version, duplicate, request reuse), `SK422` a rule refuses it (limit, 
 | `sanskara_start_claim(request, subject)` | M3 | Former manager, inside the 12 months. Returns a one-time 64-hex token **once**; only its hash is stored and the stored (retry) response omits it. Valid 7 days or until the window ends; starting another cancels the first. |
 | `sanskara_cancel_claim(request, subject)` | M3 | Withdraws the pending claim. |
 | `sanskara_accept_claim(request, token)` | M3 | The new adult, signed in, from the 18th birthday: records **move** to their own timeline (created if needed); a record they already have for a rite wins and the other is dropped, never merged; every share on the dependent ends; the dependent, its managers and the claim are deleted. All-or-nothing (a claimant who would exceed 100 records gets nothing). Every token failure is the same `SK404`. The claimant must not be a manager of that dependent. |
-| `sanskara_set_reminder(record, lead_days, enabled)` | M4 | Creates or updates the caller's subscription; bumps `generation`; refuses unless `wants_sanskara_reminders` and consent are true. |
+| `sanskara_set_reminder(request, record, lead_days, enabled)` | M4 | Switches the caller's reminder for one record and lead time on or off. Needs the opt-in to switch on, a dated and incomplete record, and the right to `subscribe` (a viewer for a Class B record only); at most 50 subscriptions per account; every change moves `generation`. |
+| `sanskara_my_reminders()` | M4 | The caller's own reminders, those they still have the right to. |
+| `sanskara_reminders_due(now, horizon, late)` | M4, server | What the producer should create: reminders whose moment (planned date minus lead, 09:00 in the recipient's timezone) lies inside the horizon, not already created, and passing `sanskara_can('receive_reminder')`. Returns the versions to carry, the audience, the local date, timezone, language and quiet hours. |
+| `sanskara_reminder_still_valid(subscription, generation, record_version, profile_generation)` | M4, server | The dispatcher's send-time check. |
 
 Internal helpers (definer functions only): `sanskara_actor`, `sanskara_claim_request`, `sanskara_finish_request`,
 `sanskara_records_json_unchecked` (its name is a warning: the caller must already have called `sanskara_can`).
@@ -133,56 +136,62 @@ Internal helpers (definer functions only): `sanskara_actor`, `sanskara_claim_req
 Route handlers under `/api/native/sanskara/*` are thin: Bearer and cookie auth through `getApiUser`, rate limits, input
 shape, then the function. Errors are mapped to short codes; Native shows its own sentences (no database text).
 
-## 5. Reminders on the existing pipeline
+## 5. Reminders on the existing pipeline (M4)
 
 The pipeline is candidate producer, then `notification_candidates`, then the resolver, then `notification_schedule`,
 then the dispatcher. Sanskara reminders use it as-is, with `event_type = 'sanskar_milestone'`. That type is already in
 the resolver's *explicit user requested* class, which is right for an opt-in subscription, and the class comes from the
-server-owned event type, so producer metadata cannot widen it.
+server-owned event type, so producer metadata cannot widen it. Quiet hours, budgets, dedupe, dispatch and receipts are the
+pipeline's, unchanged.
 
-**Producer** (`sanskara-candidate-producer.ts` plus a cron route, on the cadence of the other producers): for each
-enabled subscription whose reminder moment falls inside a rolling horizon of the next 36 hours, it re-checks
-`sanskara_can('receive_reminder')`, the subscriber's opt-in flag and consent, and writes one candidate:
+**Selecting what to create.** `sanskara_reminders_due()` does the selection in SQL so that access is decided by the one
+`sanskara_can` and not re-implemented in TypeScript. The TypeScript producer (not yet written) calls it, then inserts one
+candidate per row: `event_id` = the subscription id, `event_instance` = `L<lead_days>`, `audience_variant` = `self`,
+`manager` or `viewer`, localised generic text, and `metadata` with exactly `subscription_id`, `subscription_generation`,
+`record_version`, `profile_generation` (and optionally `local_date`, `timezone`).
 
-- `event_id` = the subscription id, `event_instance` = `L<lead_days>`, `audience_variant` = `self` or `manager`.
-- Reminder moment = planned date minus the lead time, at 09:00 in the **recipient's** timezone, outside their quiet hours.
-- `title` and `body` are generic and localised (en, hi, pa; hi and pa need native review): no rite, name, date,
-  relationship or pregnancy wording. `action_url` is the tracker route with no ids; the screen re-authorizes on open.
-- `metadata` carries only `subscription_id`, `subscription_generation` and `record_version`.
+**Insert-time validation.** A `BEFORE INSERT` trigger on `notification_candidates` (the pattern the family-remembrance
+producer already uses) refuses a Sanskara candidate unless, at that instant: the subscription exists, is on and has the
+generation named; the record has the version named; the recipient's opt-in generation matches; `sanskara_can` still
+allows it; the audience is the right one; the user is the subscriber; the lead time matches; the schedule is within 48
+hours; the payload carries nothing but the allowed keys; the link is generic (no query, no id); and the text does not
+repeat the child's name, the milestone's title or the rite. This closes the producer's read-then-insert gap. A violation is
+an error code `23514` with a fixed message.
 
-The rolling horizon means almost nothing is scheduled far ahead, so most edits have nothing to cancel; the cancellation
-below handles the rest.
+**At most one live reminder per (subscription, lead time):** a partial unique index over `pending` and `resolving`
+candidates. An earlier accepted one does not block the next occurrence. A reminder already created for a local date, even
+a cancelled one, is not offered again for that date (a small known loss: switching a reminder off and on within the same
+morning does not re-create that morning's reminder).
 
-**At most one live reminder per (subscription, lead time)** is enforced by a partial unique index on pending
-candidates (Appendix A; tested: a second pending one fails, a new one is allowed once the old is cancelled, and an
-earlier *accepted* one does not block a later occurrence). A changed date therefore runs *cancel old, insert new* in one
-transaction, holding a row lock on the subscription.
+**Cancellation is done by triggers, so no path can forget it.** `sanskara_cancel_reminder_rows` cancels the `pending` and
+`resolving` candidates and the `pending` and `sending` schedule rows of the given subscriptions (the statuses the
+remembrance feature cancels too; a resolver batch holding a cancelled candidate is rolled back by
+`persist_notification_candidate_resolution` and re-claimed after its lease, so nothing is sent). It runs from:
 
-**Cancellation** is one internal function, `sanskara_cancel_reminders(scope)`, that sets matching pending candidates and
-pending schedule rows (found by `subscription_id` in the metadata the pipeline copies onto the schedule row, with a
-`candidate_id` link) to `cancelled`. It is called from the same transaction as each of these events:
-
-| Event (contract) | Called from |
+| Event (contract) | Mechanism |
 |---|---|
-| E1 revoke, E14 grantee deleted | `sanskara_revoke_grant`; the cascade removes subscriptions |
-| E2, E3 Kul leave or removal | The existing leave and remove functions call a hook; the send-time check is the backstop |
-| E4 completion, E5 edit, delete | `sanskara_set_completion`, `sanskara_save_record`, `sanskara_delete_record` |
-| E6 manager removed | `sanskara_remove_manager` |
-| E7 majority | The daily job (section 6) |
-| E8 consent withdrawn | A trigger on `profiles.consent_religious_data` and `wants_sanskara_reminders` |
-| E9, E10 account deletion | `ON DELETE CASCADE`; candidates and schedule rows already cascade from `auth.users` |
+| Subscription deleted, which every cascade does: record deleted (E5), person erased, account deleted (E9, E10, E14) | `BEFORE DELETE` trigger on `sanskara_subscriptions` |
+| Subscription switched off or changed | `AFTER UPDATE OF enabled, generation` trigger |
+| Planned date changed, record completed (E4) or moved to another timeline (E7a) | `AFTER UPDATE` trigger on `sanskara_records` |
+| Share revoked (E1), manager removed (E6), records handed over (E7a) | `sanskara_on_access_lost` hook, called by `sanskara_revoke_grant`, `sanskara_remove_manager` and `sanskara_accept_claim`: **deletes** the affected person's subscriptions that no longer have the right to receive (the delete trigger does the cancelling) |
+| Record completed (E4) | `sanskara_on_record_completed` hook: switches every subscriber's reminder off; reopening does not switch it back on |
+| Consent withdrawn, reminders turned off, deletion cool-off (E8, E9) | `AFTER UPDATE` trigger on `profiles`: cancels the person's own pending reminders; if consent goes or the account is deleting, also everyone's reminders for what they own or manage, and marks their timeline `suspended_at` with an audit row (cleared when consent returns) |
+| Kul membership ends (E2, E3) | `AFTER DELETE` trigger on `kul_members`: cancels the person's own pending reminders and those on what they own or manage; the subscriptions are **kept**, so they resume if the membership returns |
 
-**Send-time check** (the backstop for any path above that is missed): the dispatcher, before sending a
-`sanskar_milestone` row, calls `sanskara_reminder_still_valid(subscription_id, generation, record_version)`, which
-confirms the subscription is enabled with the same generation, the record still exists, is not completed and has the
-same version, `sanskara_can('receive_reminder')` still holds, and the opt-in flag and consent are still true. Any doubt
-skips the row. Skipped rows use the dispatcher's existing skip reasons and audit trail.
+The rule behind the two treatments: an explicit, deliberate ending of access deletes the subscription; an environmental
+lapse (consent, Kul membership) only suspends it. Over-deleting is the safe error: the person re-subscribes.
 
-**Dispatcher and policy changes** (small, in files another session currently has uncommitted edits in; they must wait
-for that work to land and follow its per-feature preference map rather than add a parallel mechanism):
+**Send-time check.** `sanskara_reminder_still_valid(subscription, generation, record_version, profile_generation)` is true
+only if the subscription is on and unchanged, the record is unchanged, dated and incomplete, the recipient is opted in with
+the same generation and not in the cool-off, and `sanskara_can('receive_reminder')` still holds. Any doubt is false.
+
+**Not yet done, and required before the producer is switched on** (files another session has uncommitted edits in; they
+must wait for that work to land and follow its per-feature preference map rather than add a parallel mechanism):
+- the dispatcher calls `sanskara_reminder_still_valid` for a `sanskar_milestone` row before sending (without it, a
+  reminder cancelled in the instant between the resolver claiming it and the dispatcher sending it could still be sent);
 - gate `sanskar_milestone` on `wants_sanskara_reminders` instead of `wants_family_notifications`, with the same
   missing-column fallback the other new flags use;
-- stop sending `sanskara_id` and `kul_member_id` in the push data, and send a neutral `type`, so the payload carries only
+- stop sending `sanskara_id` and `kul_member_id` in the push data and send a neutral `type`, so the payload carries only
   the opaque id and the route;
 - remove the one-by-one send path that existed only for those per-event ids.
 
@@ -216,7 +225,7 @@ without the founder's approval, and `supabase db push` is never used.
 | M1 *(written, tested, not applied)* | The two `profiles` columns and the server-owned counter |
 | M2 *(written, tested, not applied)* | `sanskara_rites`, subjects, managers, records, private fields, grants (table only), request log, audit; `sanskara_can`; the read and write functions for owners and managers |
 | M3 *(written, tested, not applied)* | `sanskara_claims`; grant, revoke, list-access and shared-with-me functions; start, cancel and accept claim |
-| M4 | Subscriptions, the candidate index, `sanskara_cancel_reminders`, `sanskara_reminder_still_valid`, the account-delete additions |
+| M4 *(written, tested, not applied)* | `sanskara_subscriptions`; the live-reminder index; the cancellation triggers and the two hooks; the send-time check; insert-time validation of candidates; the due-reminders selector; `sanskara_set_reminder` and `sanskara_my_reminders`. (The admin account-delete list gained the Sanskara tables in the same commit.) |
 | M5 | The scheduled jobs |
 | M6 | Retirement of the old tables (empty-assertion first) |
 
@@ -229,6 +238,8 @@ audience check, a missing granter check, timeline covering Class A, consent, the
 last-manager rule, retry handling, privileges, forced RLS, and others).
 
 The M3 test has 50 refusal checks, 3 permission matrices and 86 value assertions (validation of every share, what a viewer sees for Class B, Class A and custom records, timeline and record grants overlapping, revocation by an owner, another manager and the grantee, audiences lapsing and returning, the 50-share limit, the claim token lifecycle: hash-only storage, the token absent from the request log and audit, cancellation, expiry capped at the window, every refusal; and the hand-over itself: the conflict rule, the move, atomic failure, the ex-manager and former viewer left with nothing). The full M1 to M3 chain applies, all three suites pass, the three rollbacks in reverse order leave nothing behind, and the migrations then re-apply and pass.
+
+The M4 test has 46 refusal checks, 30 checks that a subscription's reminders were cancelled or left alone, and 98 value assertions: every path in the table in section 5 driven through the real M2 and M3 functions and through raw writes; reminders already in flight (a resolving candidate, a sending row); rows that must not be touched (accepted, sent, other event types); the send-time check against every way a reminder can go stale; 25 refusals of a candidate at insert (plus the live-index refusals); the selector with controlled time, timezones (including an unknown one), the horizon, the lateness limit and each exclusion. The suite runs on the real notification-pipeline migrations (schedule table, candidates table, claim and lease), not stand-ins. M4's mutation sweep catches 61 of 62 (the survivor is the explicit `not is_deleting` clause of the send-time check, redundant with `sanskara_can`), and the four hook call sites in M2 and M3 are each caught. A guard test (`src/lib/sanskara-account-deletion-contract.test.ts`, 3 tests, shown red without an entry) fails if an account-linked Sanskara table is missing from the admin account-delete list. The tests are pinned to UTC: they were found to fail between midnight and 05:30 IST because they built dates with the session's local date while the functions correctly use UTC. The full M1 to M4 chain applies, all four suites pass, the four rollbacks in reverse order leave nothing behind on any table, trigger or index (a first attempt at M4's rollback failed this check and was fixed), and the migrations then re-apply and pass.
 
 The earlier run of this design (47 constraint checks) executed as a superuser, which bypasses RLS and every privilege,
 so it could not have shown a privilege mistake. It is superseded by the run above.
@@ -252,8 +263,9 @@ Postgres does not write bound parameters (a child's name, private notes) to its 
 
 ## 10. Open questions
 
-1. **Coordination.** The dispatcher and delivery-policy files have another session's uncommitted edits; the changes in
-   section 5 wait for them.
+1. **Coordination.** The dispatcher and delivery-policy files have another session's uncommitted edits; the changes listed
+   at the end of section 5 wait for them. **Do not schedule the producer until they are in**: until the dispatcher calls
+   the send-time check, a reminder cancelled while claimed could still be sent.
 2. **Lead-time set** (0, 1, 3, 7, 14, 30 days) and **09:00** default are proposals; the catalogue step may refine them.
 3. **Claim token lifetime** (7 days is proposed, matching family link invitations) and how the token reaches the new
    adult.
@@ -265,17 +277,21 @@ Postgres does not write bound parameters (a child's name, private notes) to its 
    is single-use, 7 days at most, hashed at rest, cancellable, refused to any manager of that dependent, and every start
    and accept is audited. Whether the Native screen shows a share sheet or a QR code is a step 4 decision. A "claim
    pending" indicator is not yet part of `sanskara_dependents`.
-7. **`suspended_at`.** The column is created in M2 but nothing sets it yet. M4 (a trigger on consent withdrawal) sets and
-   clears it; M5 purges 30 days after it. `sanskara_can` ignores it and reads consent live, so a missed trigger fails
-   closed (data stays inert), never open.
-8. **Log hygiene is a setting, not a test.** The no-parameters-in-error-logs result above holds only while those settings
+7. **`suspended_at`.** M4's trigger on consent withdrawal sets and clears it for the person's own timeline (not for a
+   dependent whose managers withdraw; the consent purge job will decide that); M5 purges 30 days after it.
+   `sanskara_can` ignores it and reads consent live, so a missed trigger fails closed (data stays inert), never open.
+8. **The majority boundary and pending reminders.** When a child turns 18 the managers become former managers and
+   `sanskara_can('receive_reminder')` turns false from that date by itself, so insert-time validation and the send-time
+   check stop new and pending reminders. The daily sweep (M5) cancels the pending ones explicitly and tidies the
+   subscriptions.
+9. **Log hygiene is a setting, not a test.** The no-parameters-in-error-logs result above holds only while those settings
    stay as they are, and no migration test can guard a project setting. Add it to the launch checklist and re-check
    before launch; also confirm that API and edge logs do not record request bodies for `/api/native/sanskara/*` routes
    (to be checked when the routes exist).
-9. **Shadow branch.** M1 and M2 should be applied to a Supabase branch and both suites re-run there before production.
+10. **Shadow branch.** M1 to M4 should be applied to a Supabase branch and all four suites re-run there before production.
    That is a paid branch; it needs the founder's approval.
 
-## 11. Decisions taken while writing M1 and M2 (for review)
+## 11. Decisions taken while writing M1 to M4 (for review)
 
 Each is a difference from the first version of this design, or a rule the first version left open. All err towards
 denying; none widens access.
@@ -318,31 +334,18 @@ denying; none widens access.
     pending, rather than receiving some of the records.
 14. **A starting-claim retry cannot recover the token** (the stored response omits it); starting again cancels the first.
 
-## Appendix A. Remaining schema sketches (M4; constraint-tested earlier on a scratch Postgres as a superuser, so not
-privilege-tested; not migrations)
+15. **Cancellation lives in triggers, with two small hooks for what a trigger cannot see (M4).** A forgotten call in a
+    function would leave a person receiving a reminder for something they can no longer see, so the cascades (record,
+    person, account) and the state changes (date, completion, consent, membership) are covered where the data changes. The
+    hooks cover explicit endings of access, which need `sanskara_can` to decide.
+16. **Explicit ending deletes a subscription; a lapse suspends it.** See section 5.
+17. **Insert-time validation is stricter than the first design said**: an allow-list of payload keys, a generic link, text
+    that may not repeat a name, title or rite, a 48-hour horizon, and a check that the audience is the right one.
+18. **The selector is SQL** (`sanskara_reminders_due`), so the producer is thin and cannot disagree with `sanskara_can`.
+19. **A viewer can follow a Class B record; nobody but the owner or a manager can follow a Class A one**, as the contract
+    says. A viewer's reminder is addressed to audience `viewer`.
 
-The M1 to M3 DDL now lives in the migrations. What follows is the part of the first sketch that has no migration yet.
+## Appendix A. Schema
 
-```sql
--- M4: one account's reminder for one record at one lead time.
-create table public.sanskara_subscriptions (
-  id uuid primary key default gen_random_uuid(),
-  record_id uuid not null references public.sanskara_records(id) on delete cascade,
-  account_id uuid not null references auth.users(id) on delete cascade,
-  lead_days integer not null check (lead_days in (0, 1, 3, 7, 14, 30)),
-  enabled boolean not null default true,
-  generation integer not null default 0 check (generation >= 0),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (record_id, account_id, lead_days)
-);
-create index sanskara_subscriptions_account on public.sanskara_subscriptions (account_id) where enabled;
-
--- M4: at most one live reminder per (subscription, lead time): a changed date supersedes the pending one atomically.
-create unique index notification_candidates_one_pending_sanskar
-  on public.notification_candidates (user_id, event_id, event_instance)
-  where event_type = 'sanskar_milestone' and status = 'pending';
-
--- (Each new table gets the same lock-down as the M2 tables: row level security enabled and forced, no policies,
--- no grants to anon, authenticated or PUBLIC.)
-```
+There is no remaining sketch: the DDL for M1 to M4 is in the migrations. M5 (the scheduled jobs) and M6 (retiring the old
+tables) add no new tables.

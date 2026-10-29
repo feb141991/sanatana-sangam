@@ -7751,6 +7751,47 @@ export type Database = {
           }
         ]
       }
+      sanskara_subscriptions: {
+        Row: {
+          account_id: string
+          created_at: string
+          enabled: boolean
+          generation: number
+          id: string
+          lead_days: number
+          record_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          enabled?: boolean
+          generation?: number
+          id?: string
+          lead_days: number
+          record_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          enabled?: boolean
+          generation?: number
+          id?: string
+          lead_days?: number
+          record_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_subscriptions_record_id_fkey"
+            columns: ["record_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sanskara_subjects: {
         Row: {
           account_id: string | null
@@ -11822,6 +11863,7 @@ export type Database = {
         Returns: Json
       }
       sanskara_list_access: { Args: { p_subject: string }; Returns: Json }
+      sanskara_my_reminders: { Args: never; Returns: Json }
       sanskara_my_timeline: { Args: never; Returns: Json }
       sanskara_remove_manager: {
         Args: { p_account: string; p_request_id: string; p_subject: string }
@@ -11837,6 +11879,10 @@ export type Database = {
       }
       sanskara_set_completion: {
         Args: { p_completed_date: string; p_expected_version: number; p_record: string; p_request_id: string }
+        Returns: Json
+      }
+      sanskara_set_reminder: {
+        Args: { p_enabled: boolean; p_lead_days: number; p_record: string; p_request_id: string }
         Returns: Json
       }
       sanskara_shared_with_me: { Args: never; Returns: Json }
