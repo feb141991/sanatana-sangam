@@ -2,8 +2,8 @@
 --
 -- /api/ai/chat remembers, per person, the answer it gave to a question and returns that answer when the same person
 -- asks the same thing again (see src/lib/ai/chat-answer-cache.ts for exactly what "the same thing" means). The
--- question itself is not stored: only a SHA-256 of it and of the context it was asked in, so this table holds the
--- model's answer text and nothing the person typed.
+-- question and context are represented by a SHA-256 cache key, not retained as plaintext. The answer text is
+-- stored and may repeat details the person supplied in the question or conversation.
 --
 --   * One row per (person, question). The first answer stored wins; a second writer cannot replace it, which is what
 --     keeps two simultaneous requests from giving two different answers.
@@ -32,7 +32,7 @@ create table public.ai_chat_answer_cache (
 );
 
 comment on table public.ai_chat_answer_cache is
-  'Per-person remembered Dharma Mitra answers so the same question gets the same answer. Holds the answer text only; the question is stored as a hash inside cache_key. Service role only. Expires after 14 days.';
+  'Per-person remembered Dharma Mitra answers so the same question gets the same answer. Stores answer text (which may echo user-provided details) and a SHA-256 key for the question/context, not the question in plaintext. Service role only. Expires after 14 days.';
 
 create index ai_chat_answer_cache_expires_at_idx on public.ai_chat_answer_cache (expires_at);
 

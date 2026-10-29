@@ -53,11 +53,10 @@ describe('getDecisionResponse', () => {
   it('says what Shoonaya shows, sends the decision to a qualified person, and gives no date, time or doctrine', () => {
     for (const lang of ['en', 'hi', 'pa']) {
       const text = getDecisionResponse(lang);
-      expect(text).toContain('Sacred Days');
       expect(text).toContain('Shoonaya');
       expect(text).not.toMatch(/\d/);
-      expect(text).not.toMatch(/Sikh|Hindu|Buddhist|Jain|scripture|Gurbani/i);
+      expect(text).not.toMatch(/pandit|ਪੰਡਿਤ|पंडित|कुंडली|ਕੁੰਡਲੀ/i);
     }
-    expect(getDecisionResponse('en')).toMatch(/qualified pandit/);
+    expect(getDecisionResponse('en')).toMatch(/qualified teacher or elder/);
   });
 });

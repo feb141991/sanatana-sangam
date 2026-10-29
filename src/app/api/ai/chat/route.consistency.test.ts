@@ -119,6 +119,80 @@ describe('asking the same question twice', () => {
     expect(mocks.generateWithProvider).toHaveBeenCalledTimes(1);
   });
 
+  it('reuses the first-turn answer when the same question is repeated in the same chat', async () => {
+    const question = 'What does Om mean?';
+    const first = await (await ask(question)).text();
+    mocks.retrieveDharmaChatGrounding.mockClear();
+    const repeated = await ask(question, { history: [
+      { role: 'user', text: question },
+      { role: 'model', text: first },
+    ] });
+
+    expect(await repeated.text()).toBe(first);
+    expect(repeated.headers.get('X-Dharma-Answer')).toBe('cached');
+    expect(rpcCalls()).toBe(0);
+    expect(mocks.retrieveDharmaChatGrounding).not.toHaveBeenCalled();
+    expect(mocks.generateWithProvider).toHaveBeenCalledTimes(1);
+  });
+
+  it('reuses a first-turn answer after unrelated turns while that first turn remains in submitted history', async () => {
+    const question = 'What does Om mean?';
+    const first = await (await ask(question)).text();
+    const otherQuestion = 'Why is daily reflection useful?';
+    const otherAnswer = await (await ask(otherQuestion, { history: [
+      { role: 'user', text: question },
+      { role: 'model', text: first },
+    ] })).text();
+    const repeated = await ask(question, { history: [
+      { role: 'user', text: question },
+      { role: 'model', text: first },
+      { role: 'user', text: otherQuestion },
+      { role: 'model', text: otherAnswer },
+    ] });
+
+    expect(await repeated.text()).toBe(first);
+    expect(repeated.headers.get('X-Dharma-Answer')).toBe('cached');
+    expect(mocks.generateWithProvider).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not infer the first turn after it falls outside the server history window', async () => {
+    const question = 'What does Om mean?';
+    const first = await (await ask(question)).text();
+    const history = Array.from({ length: 13 }, (_, index) => ({
+      role: index % 2 === 0 ? 'user' as const : 'model' as const,
+      text: `Earlier unrelated turn ${index}`,
+    }));
+    const repeated = await ask(question, { history: [
+      { role: 'user', text: question },
+      { role: 'model', text: first },
+      ...history,
+    ] });
+
+    expect(await repeated.text()).toBe('Answer number 2');
+    expect(repeated.headers.get('X-Dharma-Answer')).toBe('generated');
+    expect(mocks.generateWithProvider).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not reuse a contextual follow-up answer when the same follow-up is asked again later', async () => {
+    const firstQuestion = 'What does Om mean?';
+    const firstAnswer = await (await ask(firstQuestion)).text();
+    const followUp = 'Can you explain that further?';
+    const followUpAnswer = await (await ask(followUp, { history: [
+      { role: 'user', text: firstQuestion },
+      { role: 'model', text: firstAnswer },
+    ] })).text();
+    const repeatedFollowUp = await ask(followUp, { history: [
+      { role: 'user', text: firstQuestion },
+      { role: 'model', text: firstAnswer },
+      { role: 'user', text: followUp },
+      { role: 'model', text: followUpAnswer },
+    ] });
+
+    expect(await repeatedFollowUp.text()).toBe('Answer number 3');
+    expect(repeatedFollowUp.headers.get('X-Dharma-Answer')).toBe('generated');
+    expect(mocks.generateWithProvider).toHaveBeenCalledTimes(3);
+  });
+
   it('says where the answer came from, and the repeat costs no allowance and no retrieval', async () => {
     const generated = await ask('What does Om mean?');
     expect(generated.headers.get('X-Dharma-Answer')).toBe('generated');
@@ -182,7 +256,7 @@ describe('decision questions (a wedding date, a purchase, a launch)', () => {
     const textB = await (await ask(question)).text();
     expect(a.headers.get('X-Dharma-Answer')).toBe('policy');
     expect(textB).toBe(textA);
-    expect(textA).toMatch(/qualified pandit/);
+    expect(textA).toMatch(/qualified teacher or elder/);
     expect(textA).not.toMatch(/\d/);
     expect(mocks.generateWithProvider).not.toHaveBeenCalled();
     expect(rpcCalls()).toBe(0);
@@ -190,7 +264,7 @@ describe('decision questions (a wedding date, a purchase, a launch)', () => {
 
   it('answers in the language the person wrote in', async () => {
     const text = await (await ask('विवाह के लिए कौन सा दिन शुभ है?')).text();
-    expect(text).toContain('मुहूर्त');
+    expect(text).toContain('शुभ दिन');
     expect(mocks.generateWithProvider).not.toHaveBeenCalled();
   });
 

@@ -8,8 +8,8 @@
  * (a breach of the "never fabricate a ritual rule or present a final date" rules).
  *
  * So these are recognised before the model is called and answered with the same text every time, in the person's
- * language. The text names what Shoonaya does show (the city-aware Panchang and Sacred Days) and sends the date
- * decision to a qualified person. It states no doctrine about any tradition, no date and no time.
+ * language. The text points to the local calendar information available in Shoonaya and sends the decision to a
+ * trusted, qualified person from the user's own tradition. It states no doctrine about any tradition, no date and no time.
  *
  * Detection is deliberately narrow: it needs a life event or the word muhurta AND words asking to choose or fix a date.
  * "What is a muhurta?" and "what is the meaning of the wedding ritual?" are ordinary questions and go to the model.
@@ -45,20 +45,20 @@ type Lang = 'en' | 'hi' | 'pa';
 
 const TEXT: Record<Lang, string> = {
   en:
-    "I can't choose a muhurta or tell you the right date for a wedding, a home, a business or any decision like it. " +
-    "That depends on the charts of the people involved, your family's tradition and your place, and a wrong answer here can cost a great deal.\n\n" +
-    "What I can do: Shoonaya's Panchang shows the tithi, nakshatra and sunrise-based timings for the city you set, and Sacred Days lists upcoming festivals and vrats.\n\n" +
-    "For the date itself, please ask a qualified pandit, or the elders and teachers who follow your family's tradition, and check it against your local panchang.",
+    "I can't choose an auspicious date or time for a wedding, a home, a business or a similar decision. " +
+    "The right guidance depends on your own tradition, the people involved and your location.\n\n" +
+    "Shoonaya can show the local calendar information and upcoming observances available in the app.\n\n" +
+    "For a decision, please consult a trusted, qualified teacher or elder who understands your tradition, and check the date against the calendar followed by your family or community.",
   hi:
-    "मैं विवाह, घर, व्यापार या ऐसे किसी निर्णय के लिए मुहूर्त या सही तिथि नहीं बता सकता। " +
-    "यह संबंधित लोगों की कुंडली, आपके परिवार की परंपरा और आपके स्थान पर निर्भर करता है, और यहाँ गलत उत्तर बहुत भारी पड़ सकता है।\n\n" +
-    "मैं यह कर सकता हूँ: Shoonaya का पंचांग आपके चुने हुए शहर के लिए तिथि, नक्षत्र और सूर्योदय-आधारित समय दिखाता है, और Sacred Days में आने वाले पर्व और व्रत सूचीबद्ध हैं।\n\n" +
-    "तिथि तय करने के लिए कृपया किसी योग्य पंडित से, या अपने परिवार की परंपरा के जानकार बड़ों और गुरुजनों से पूछें, और अपने स्थानीय पंचांग से मिलान करें।",
+    "मैं विवाह, घर, व्यापार या ऐसे किसी निर्णय के लिए शुभ दिन या समय तय नहीं कर सकता। " +
+    "उचित मार्गदर्शन आपकी परंपरा, संबंधित लोगों और स्थान पर निर्भर करता है।\n\n" +
+    "Shoonaya में उपलब्ध स्थानीय पंचांग की जानकारी और आने वाले पर्व देख सकते हैं।\n\n" +
+    "ऐसे निर्णय के लिए कृपया अपनी परंपरा को समझने वाले किसी विश्वसनीय, योग्य मार्गदर्शक या बड़े से सलाह लें, और तिथि का मिलान अपने परिवार या समुदाय द्वारा माने जाने वाले पंचांग से करें।",
   pa:
-    "ਮੈਂ ਵਿਆਹ, ਘਰ, ਕਾਰੋਬਾਰ ਜਾਂ ਅਜਿਹੇ ਕਿਸੇ ਫ਼ੈਸਲੇ ਲਈ ਮੁਹੂਰਤ ਜਾਂ ਸਹੀ ਤਾਰੀਖ਼ ਨਹੀਂ ਦੱਸ ਸਕਦਾ। " +
-    "ਇਹ ਸਬੰਧਿਤ ਲੋਕਾਂ ਦੀ ਕੁੰਡਲੀ, ਤੁਹਾਡੇ ਪਰਿਵਾਰ ਦੀ ਪਰੰਪਰਾ ਅਤੇ ਤੁਹਾਡੇ ਸਥਾਨ 'ਤੇ ਨਿਰਭਰ ਕਰਦਾ ਹੈ, ਅਤੇ ਇੱਥੇ ਗਲਤ ਜਵਾਬ ਬਹੁਤ ਭਾਰੀ ਪੈ ਸਕਦਾ ਹੈ।\n\n" +
-    "ਮੈਂ ਇਹ ਕਰ ਸਕਦਾ ਹਾਂ: Shoonaya ਦਾ ਪੰਚਾਂਗ ਤੁਹਾਡੇ ਚੁਣੇ ਸ਼ਹਿਰ ਲਈ ਤਿਥੀ, ਨਛੱਤਰ ਅਤੇ ਸੂਰਜ ਚੜ੍ਹਨ ਅਨੁਸਾਰ ਸਮੇਂ ਦਿਖਾਉਂਦਾ ਹੈ, ਅਤੇ Sacred Days ਵਿੱਚ ਆਉਣ ਵਾਲੇ ਤਿਉਹਾਰ ਅਤੇ ਵਰਤ ਦਰਜ ਹਨ।\n\n" +
-    "ਤਾਰੀਖ਼ ਤੈਅ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਯੋਗ ਪੰਡਿਤ ਤੋਂ, ਜਾਂ ਆਪਣੇ ਪਰਿਵਾਰ ਦੀ ਪਰੰਪਰਾ ਦੇ ਜਾਣਕਾਰ ਬਜ਼ੁਰਗਾਂ ਅਤੇ ਗੁਰੂਆਂ ਤੋਂ ਪੁੱਛੋ, ਅਤੇ ਆਪਣੇ ਸਥਾਨਕ ਪੰਚਾਂਗ ਨਾਲ ਮਿਲਾਓ।",
+    "ਮੈਂ ਵਿਆਹ, ਘਰ, ਕਾਰੋਬਾਰ ਜਾਂ ਅਜਿਹੇ ਕਿਸੇ ਫ਼ੈਸਲੇ ਲਈ ਸ਼ੁਭ ਦਿਨ ਜਾਂ ਸਮਾਂ ਤੈਅ ਨਹੀਂ ਕਰ ਸਕਦਾ। " +
+    "ਉਚਿਤ ਸਲਾਹ ਤੁਹਾਡੀ ਪਰੰਪਰਾ, ਸਬੰਧਿਤ ਲੋਕਾਂ ਅਤੇ ਤੁਹਾਡੇ ਸਥਾਨ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ।\n\n" +
+    "Shoonaya ਵਿੱਚ ਉਪਲਬਧ ਸਥਾਨਕ ਕੈਲੰਡਰ ਜਾਣਕਾਰੀ ਅਤੇ ਆਉਣ ਵਾਲੇ ਤਿਉਹਾਰ ਵੇਖੇ ਜਾ ਸਕਦੇ ਹਨ।\n\n" +
+    "ਅਜਿਹੇ ਫ਼ੈਸਲੇ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਪਰੰਪਰਾ ਨੂੰ ਸਮਝਣ ਵਾਲੇ ਕਿਸੇ ਭਰੋਸੇਯੋਗ, ਯੋਗ ਮਾਰਗਦਰਸ਼ਕ ਜਾਂ ਵੱਡੇ ਨਾਲ ਸਲਾਹ ਕਰੋ, ਅਤੇ ਤਾਰੀਖ਼ ਦਾ ਮਿਲਾਨ ਆਪਣੇ ਪਰਿਵਾਰ ਜਾਂ ਭਾਈਚਾਰੇ ਵੱਲੋਂ ਮੰਨੇ ਜਾਂਦੇ ਕੈਲੰਡਰ ਨਾਲ ਕਰੋ।",
 };
 
 /**

@@ -10,8 +10,9 @@
  *   3. Even at temperature 0 a hosted model is not guaranteed to repeat itself word for word, so the first answer to a
  *      question is remembered and given again for the same person, the same question and the same context.
  *
- * Privacy: the question text is never stored, only a hash of it; the answer is stored per person (it can echo what
- * they told the chat) and is deleted with the account (ON DELETE CASCADE) and after CHAT_ANSWER_TTL_MS.
+ * Privacy: the question and context are represented in storage by a SHA-256 cache key, not retained as plaintext.
+ * The answer text is stored per person and may repeat details they supplied. Rows are deleted with the account
+ * (ON DELETE CASCADE) and after CHAT_ANSWER_TTL_MS.
  */
 import { createHash } from 'node:crypto';
 

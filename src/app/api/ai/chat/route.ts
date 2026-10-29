@@ -18,6 +18,7 @@ import {
   GROUNDING_CORPUS_VERSION,
   buildAnswerCacheKey,
   fingerprintText,
+  normalizeQuestionText,
   readCachedAnswer,
   rememberAnswer,
   type AnswerCacheDb,
@@ -438,6 +439,7 @@ export async function POST(req: NextRequest) {
   if (!message) {
     return NextResponse.json({ error: 'Message is required or too long' }, { status: 400 });
   }
+  const historyIsComplete = !Array.isArray(body.history) || body.history.length <= MAX_CHAT_HISTORY_ITEMS;
   const history = sanitiseHistory(body.history);
 
   const tradition             = body.tradition ?? (religiousDataConsented ? profile?.tradition : null) ?? null;
@@ -489,8 +491,21 @@ export async function POST(req: NextRequest) {
         promptFingerprint: systemPromptFingerprint(), corpusVersion: GROUNDING_CORPUS_VERSION, model: getActiveChatModelId(),
       })
     : null;
+  // A first-turn question may be repeated later in the same chat. Its original answer was keyed without history;
+  // only reuse that answer when the submitted history still starts with that exact first user turn. Contextual
+  // repetitions (for example, "tell me more") keep using the full conversation key.
+  const repeatedFirstTurnKey = cacheDb && historyIsComplete && history[0]?.role === 'user' &&
+    normalizeQuestionText(history[0].text) === normalizeQuestionText(message)
+    ? buildAnswerCacheKey({
+        userId: user.id, conversation: history[0].text, language: responseLanguage, meaningLanguage, transliterationLanguage,
+        tradition, rank, sampradaya, city, country, seeking, spiritualDate,
+        promptFingerprint: systemPromptFingerprint(), corpusVersion: GROUNDING_CORPUS_VERSION, model: getActiveChatModelId(),
+      })
+    : null;
   if (cacheDb && answerKey) {
-    const remembered = await readCachedAnswer(cacheDb, user.id, answerKey);
+    const remembered = repeatedFirstTurnKey
+      ? await readCachedAnswer(cacheDb, user.id, repeatedFirstTurnKey) ?? await readCachedAnswer(cacheDb, user.id, answerKey)
+      : await readCachedAnswer(cacheDb, user.id, answerKey);
     if (remembered) {
       emitEvent({
         severity: 'P3', domain: 'ai', route: '/api/ai/chat', latency_ms: 0,

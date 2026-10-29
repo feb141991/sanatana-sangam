@@ -263,16 +263,21 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
 - `/api/ai/chat` therefore (a) generates with `CHAT_TEMPERATURE` (0), never the provider default; (b) remembers, per
   person, the answer it gave (`ai_chat_answer_cache`, 14 days, first writer wins) and returns it for the same question
   without generating, charging the daily allowance or running retrieval; and (c) answers a request to *choose a date*
-  for a wedding, home entry, business start or journey with one fixed reply (`src/lib/ai/decision-intent.ts`) that
-  sends the person to a qualified pandit and the Shoonaya Panchang. The model never picks a date for a decision.
+  for a wedding, home entry, business start or journey with one fixed, tradition-neutral reply
+  (`src/lib/ai/decision-intent.ts`) directing the person to a trusted, qualified teacher or elder. The model never picks
+  a date for a decision.
 - The remembered-answer key (`buildAnswerCacheKey`) must contain everything that can change the answer: the
   normalised conversation, language settings, the profile fields the prompt uses, the system-prompt fingerprint, the
   grounding corpus version and the model. When you add an input to the prompt or the retrieval, add it to the key.
   When the grounding corpora are re-indexed or replaced, bump `GROUNDING_CORPUS_VERSION`, otherwise people keep being
   served answers written from the old text. The calendar date is in the key only for date-relative questions.
 - Remembered answers are never shared between people. The `mode` requests (Dharam Veer, festival rules) and the
-  deterministic upcoming-vrat list are not remembered. The question text is not stored, only its hash. A failing or
-  missing cache table must never fail a question: the route falls back to generating.
+  deterministic upcoming-vrat list are not remembered. The question/context are represented by a hash rather than
+  stored in plaintext; answer text is stored and may echo user-provided details. A failing or missing cache table must
+  never fail a question: the route falls back to generating.
+- A repeated first-turn question in the same chat may reuse its original context-free answer only while that first turn
+  remains at the start of the submitted history. Do not reuse that answer for a contextual follow-up or infer that a
+  truncated history starts at the beginning of a conversation.
 - Do not "fix" a wrong remembered answer by shortening the expiry. Correct the cause (prompt, corpus, model) and let
   the fingerprint or corpus version change the key.
 - Why this rule exists: on 2026-10-29 the founder raised that the same question could get two different answers. The
@@ -280,7 +285,8 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   decision questions went to free generation. Temperature 0 alone does not make a hosted model repeat itself word for
   word, which is why the memory exists. Not covered: a person who rephrases the question, or asks it in another
   language, may still get a differently worded answer. The Hindi and Punjabi decision replies need review by a
-  native speaker. This applies equally to human and AI-agent contributors.
+  native speaker. Rephrased questions, contextual repeats, or a first turn no longer present in submitted history may
+  still receive a newly generated answer. This applies equally to human and AI-agent contributors.
 
 ## Required Behavior
 
