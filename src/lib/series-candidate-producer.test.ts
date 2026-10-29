@@ -62,6 +62,19 @@ describe('series-candidate-producer', () => {
     expect(candidate.metadata).toMatchObject({ sourceCount: 9, timezone: 'Asia/Kolkata' });
   });
 
+  it('links Pitru Paksha to the verified occurrence date, while other series retain their guide', () => {
+    process.env.NOTIFICATION_CANDIDATE_MODE_OBSERVANCE_SERIES = 'candidate';
+    const pitru = produceSeriesCandidates({ targetDate: '2026-09-27', userId: 'usr-1',
+      userTimezone: 'Asia/Kolkata', wantsFestivalReminders: true,
+      childOccurrences: [{ ...mockChild, slug: 'pitru-paksha-day-1', civilDate: '2026-09-27' }],
+    });
+    expect(pitru.candidates).toHaveLength(1);
+    expect(pitru.candidates[0].action_url).toBe('/panchang?date=2026-09-27');
+    const navratri = produceSeriesCandidates({ targetDate: '2026-10-11', userId: 'usr-1',
+      userTimezone: 'Asia/Kolkata', wantsFestivalReminders: true, childOccurrences: [mockChild] });
+    expect(navratri.candidates[0].action_url).toBe('/festivals/navratri-day-1-shailaputri');
+  });
+
   it('suppresses candidate if user opted out of festival reminders', () => {
     process.env.NOTIFICATION_CANDIDATE_MODE_OBSERVANCE_SERIES = 'candidate';
 

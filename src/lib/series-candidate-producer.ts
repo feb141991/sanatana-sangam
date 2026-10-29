@@ -229,7 +229,9 @@ export function produceSeriesCandidates(
       priority: 20,
       title: `${content.seriesName}: ${content.canonicalTitle}`,
       body,
-      action_url: `/festivals/${child.slug}`,
+      action_url: content.seriesKey === 'pitru-paksha'
+        ? `/panchang?date=${date}`
+        : `/festivals/${child.slug}`,
       scheduled_for: scheduledIso,
       expires_at: expiresAt,
       timezone: userTimezone,

@@ -718,3 +718,68 @@ export async function loadMandaliFeedPage(
     nextCursor,
   };
 }
+
+export type MandaliNotificationTarget =
+  | { kind: 'post'; post: MandaliFeedPost; comment: PostCommentWithAuthor | null }
+  | { kind: 'request'; request: {
+    id: string; requester_id: string; recipient_id: string; status: string; created_at: string;
+    /** The other person in the request, whichever side the viewer is on (public username only). */
+    counterparty: { full_name: string; username: string; avatar_url: string | null } | null;
+  } };
+
+/** A notification is a locator, never an authorization grant. Re-check current access on every open. */
+export async function loadMandaliNotificationTarget(
+  userId: string,
+  target: { postId: string; commentId?: string } | { requestId: string },
+): Promise<MandaliNotificationTarget | null> {
+  const admin = createAdminClient();
+  const [profileResult, safety] = await Promise.all([
+    admin.from('profiles').select('mandali_id, app_language, is_banned, is_deleting').eq('id', userId).maybeSingle(),
+    getUserSafetyState(admin, userId),
+  ]);
+  if (profileResult.error) throw profileResult.error;
+  const profile = profileResult.data as unknown as {
+    mandali_id: string | null; app_language: string | null; is_banned: boolean; is_deleting: boolean;
+  } | null;
+  if (!profile || profile.is_banned || profile.is_deleting) return null;
+
+  if ('requestId' in target) {
+    const { data, error } = await admin.from('mandali_connections')
+      .select('id, requester_id, recipient_id, status, created_at')
+      .eq('id', target.requestId)
+      .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`).maybeSingle();
+    if (error) throw error;
+    const request = data as unknown as {
+      id: string; requester_id: string; recipient_id: string; status: string; created_at: string;
+    } | null;
+    if (!request) return null;
+    const otherId = request.requester_id === userId ? request.recipient_id : request.requester_id;
+    if (safety.excludedAuthorIds.has(otherId)) return null;
+    const identities = await loadSafeAuthors([otherId]);
+    const identity = identities.get(otherId);
+    return { kind: 'request', request: { ...request, counterparty: identity ? {
+      full_name: identity.username, username: identity.username, avatar_url: identity.avatar_url,
+    } : null } };
+  }
+
+  if (!profile.mandali_id) return null;
+  const { data, error } = await admin.from('posts').select('*')
+    .eq('id', target.postId).eq('mandali_id', profile.mandali_id).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const [visible] = filterAuthoredItems([data as Post], 'mandali_post', safety);
+  if (!visible) return null;
+  let comment: PostCommentWithAuthor | null = null;
+  if (target.commentId) {
+    const result = await admin.from('post_comments').select('*')
+      .eq('id', target.commentId).eq('post_id', target.postId).is('deleted_at', null).maybeSingle();
+    if (result.error) throw result.error;
+    if (!result.data) return null;
+    const [visibleComment] = filterAuthoredItems([result.data as PostComment], 'mandali_comment', safety);
+    if (!visibleComment) return null;
+    [comment] = await hydrateComments([visibleComment]);
+  }
+  const [post] = await hydrateFeedPosts(admin, userId, [visible], profile.app_language,
+    safety.excludedAuthorIds, safety.hiddenContentKeys);
+  return { kind: 'post', post, comment };
+}

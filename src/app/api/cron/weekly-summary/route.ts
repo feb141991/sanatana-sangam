@@ -189,7 +189,7 @@ export async function GET(request: Request) {
             metadata: {
               type: 'general',
               emoji: '🪔',
-              action_url: '/home?focus=weekly-summary',
+              action_url: '/my-progress',
               timezone,
               local_date: localDateIso,
               active_days: totalDays,

@@ -80,15 +80,16 @@ export async function GET(request: Request) {
       )) return [];
 
       const localDate = getLocalDateIso(now, tz);
-      const pitruInfo = getPitruPakshaDay(getLocalDateIso(now, location.tz), location);
-      return pitruInfo ? [{ user, localDate, pitruInfo }] : [];
+      const eventDate = getLocalDateIso(now, location.tz);
+      const pitruInfo = getPitruPakshaDay(eventDate, location);
+      return pitruInfo ? [{ user, localDate, eventDate, pitruInfo }] : [];
     });
 
     if (eligibleUsers.length === 0) {
       return NextResponse.json({ message: 'No users in 8 AM window', sent: 0 });
     }
 
-    const notifications = eligibleUsers.map(({ user: u, localDate, pitruInfo }) => {
+    const notifications = eligibleUsers.map(({ user: u, localDate, eventDate, pitruInfo }) => {
       const tz = resolveTimeZone(u.timezone);
       const copy = getPitruPakshaBannerCopy(pitruInfo);
 
@@ -98,7 +99,7 @@ export async function GET(request: Request) {
         body:             copy.subtitle,
         emoji:            pitruInfo.isMahalaya ? '🪔' : '☽',
         type:             'festival' as const,
-        action_url:       '/home',
+        action_url:       `/panchang?date=${eventDate}`,
         notification_key: `pitru-paksha:${localDate}`,
         local_date:       localDate,
         sent_timezone:    tz,
@@ -136,12 +137,11 @@ export async function GET(request: Request) {
     }
 
     const baseUrl   = new URL(request.url).origin;
-    const actionUrl = new URL('/home', baseUrl).toString();
     const insertedIdSet = new Set(insertedIds);
     const pushGroups = new Map<string, typeof eligibleUsers>();
     for (const eligible of eligibleUsers) {
       if (!insertedIdSet.has(eligible.user.id)) continue;
-      const key = `${eligible.pitruInfo.day}:${eligible.pitruInfo.isMahalaya}`;
+      const key = `${eligible.eventDate}:${eligible.pitruInfo.day}:${eligible.pitruInfo.isMahalaya}`;
       pushGroups.set(key, [...(pushGroups.get(key) ?? []), eligible]);
     }
 
@@ -154,7 +154,7 @@ export async function GET(request: Request) {
         userIds,
         title: info.isMahalaya ? '🪔 Mahalaya Amavasya — today' : `☽ ${groupCopy.title}`,
         body: groupCopy.subtitle,
-        url: actionUrl,
+        url: new URL(`/panchang?date=${group[0].eventDate}`, baseUrl).toString(),
         data: { type: 'festival' },
       }, {
         type: 'pitru_paksha',

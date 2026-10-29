@@ -199,6 +199,23 @@ describe('Pitru delivery ownership and consent', () => {
     expect(mocks.mockNotificationsUpsert).not.toHaveBeenCalled();
   });
 
+  it('carries the event calculation date into the inbox and push, not the delivery day', async () => {
+    const { getLocalDateIso } = await import('@/lib/sacred-time');
+    const { sendPushNotification } = await import('@/lib/push-server');
+    vi.mocked(getLocalDateIso).mockImplementation((_now, tz) => tz === 'Asia/Kolkata' ? '2026-09-27' : '2026-09-26');
+    mocks.mockNotificationsSelectResult = Promise.resolve({ data: [
+      { id: 'event-notification', user_id: 'no-gps', notification_key: 'pitru-paksha:2026-09-26' },
+    ], error: null });
+    vi.mocked(sendPushNotification).mockClear();
+    await GET(request());
+    expect(mocks.mockNotificationsUpsert.mock.calls[0][0]).toEqual([
+      expect.objectContaining({ action_url: '/panchang?date=2026-09-27', local_date: '2026-09-26' }),
+    ]);
+    expect(sendPushNotification).toHaveBeenCalledWith(expect.objectContaining({
+      url: 'https://example.com/panchang?date=2026-09-27', userIds: ['no-gps'],
+    }), expect.anything());
+  });
+
   it('keeps the full Ujjain calculation context for a London user without GPS', async () => {
     const { getLocalDateIso } = await import('@/lib/sacred-time');
     vi.mocked(getLocalDateIso).mockReturnValue('2026-09-27');
