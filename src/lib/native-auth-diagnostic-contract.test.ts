@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseNativeAuthDiagnosticPayload } from './native-auth-diagnostic-contract';
+import { isEmptyNativeAuthDiagnosticBatch, parseNativeAuthDiagnosticPayload } from './native-auth-diagnostic-contract';
 
 const event = (overrides: Record<string, unknown> = {}) => ({
   requestId: 'a1b2c3d4-e5f6-4789-8123-456789abcdef',
@@ -53,4 +53,13 @@ test('rejects unknown routes, inconsistent refresh state, stale events, and over
   assert.equal(parseNativeAuthDiagnosticPayload(payload(Array.from({ length: 51 }, (_, i) => event({
     requestId: `a1b2c3d4-e5f6-4789-8123-${String(i).padStart(12, '0')}`,
   })))), null);
+});
+
+test('an empty batch is the only thing acknowledged as a no-op, and the parser still refuses it', () => {
+  assert.equal(isEmptyNativeAuthDiagnosticBatch(payload([])), true);
+  assert.equal(isEmptyNativeAuthDiagnosticBatch({ events: [] }), true);
+  assert.equal(parseNativeAuthDiagnosticPayload(payload([])), null);
+  for (const input of [payload([event()]), { events: {} }, { events: null }, { events: 'x' }, {}, [], null, undefined, 'events', 0]) {
+    assert.equal(isEmptyNativeAuthDiagnosticBatch(input), false, JSON.stringify(input));
+  }
 });

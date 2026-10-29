@@ -74,6 +74,18 @@ function parseEvent(input: unknown): NativeAuthDiagnosticEvent | null {
   };
 }
 
+/**
+ * A batch with no events carries nothing to record, so it is acknowledged as a no-op rather than rejected as invalid.
+ * The Native app never sends one (it returns before uploading when its queue is empty); this only keeps a stale or
+ * experimental client from filling the logs with 400s. parseNativeAuthDiagnosticPayload still refuses an empty batch,
+ * so this predicate is the only way one is accepted, and it accepts nothing else.
+ */
+export function isEmptyNativeAuthDiagnosticBatch(input: unknown): boolean {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return false;
+  const events = (input as { events?: unknown }).events;
+  return Array.isArray(events) && events.length === 0;
+}
+
 export function parseNativeAuthDiagnosticPayload(input: unknown): NativeAuthDiagnosticPayload | null {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return null;
   const payload = input as Record<string, unknown>;

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { checkDurableRateLimit, clientIp, rejectLargeRequest } from '@/lib/api-security';
-import { parseNativeAuthDiagnosticPayload } from '@/lib/native-auth-diagnostic-contract';
+import { isEmptyNativeAuthDiagnosticBatch, parseNativeAuthDiagnosticPayload } from '@/lib/native-auth-diagnostic-contract';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -36,8 +36,18 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
+
+  // An empty batch has nothing to record: acknowledge it without touching the database or the rate limit.
+  if (isEmptyNativeAuthDiagnosticBatch(rawPayload)) {
+    return NextResponse.json(
+      { accepted: 0 },
+      { status: 202, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+
   const payload = parseNativeAuthDiagnosticPayload(rawPayload);
   if (!payload) {
+    console.warn('[native-auth-diagnostics] payload validation failed');
     return NextResponse.json({ error: 'Invalid auth diagnostics payload' }, { status: 400 });
   }
 
