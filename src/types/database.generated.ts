@@ -7477,6 +7477,50 @@ export type Database = {
         }
         Relationships: []
       }
+      sanskara_claims: {
+        Row: {
+          claimed_by: string | null
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          responded_at: string | null
+          status: string
+          subject_id: string
+          token_hash: string
+        }
+        Insert: {
+          claimed_by?: string | null
+          created_at?: string
+          created_by: string
+          expires_at: string
+          id?: string
+          responded_at?: string | null
+          status?: string
+          subject_id: string
+          token_hash: string
+        }
+        Update: {
+          claimed_by?: string | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          responded_at?: string | null
+          status?: string
+          subject_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_claims_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sanskara_grants: {
         Row: {
           created_at: string
@@ -11742,8 +11786,16 @@ export type Database = {
         Args: { p_default?: string; p_tz: string }
         Returns: string
       }
+      sanskara_accept_claim: {
+        Args: { p_request_id: string; p_token: string }
+        Returns: Json
+      }
       sanskara_add_manager: {
         Args: { p_account: string; p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_cancel_claim: {
+        Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
       sanskara_create_dependent: {
@@ -11765,9 +11817,18 @@ export type Database = {
       }
       sanskara_dependents: { Args: never; Returns: Json }
       sanskara_export_mine: { Args: never; Returns: Json }
+      sanskara_grant_view: {
+        Args: { p_grantee: string; p_record: string; p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_list_access: { Args: { p_subject: string }; Returns: Json }
       sanskara_my_timeline: { Args: never; Returns: Json }
       sanskara_remove_manager: {
         Args: { p_account: string; p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_revoke_grant: {
+        Args: { p_grant: string; p_request_id: string }
         Returns: Json
       }
       sanskara_save_private: {
@@ -11776,6 +11837,11 @@ export type Database = {
       }
       sanskara_set_completion: {
         Args: { p_completed_date: string; p_expected_version: number; p_record: string; p_request_id: string }
+        Returns: Json
+      }
+      sanskara_shared_with_me: { Args: never; Returns: Json }
+      sanskara_start_claim: {
+        Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
       sanskara_update_record: {

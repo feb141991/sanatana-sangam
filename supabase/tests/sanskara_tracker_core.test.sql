@@ -224,8 +224,8 @@ do $t$
 declare
   owner_set text[] := array['read_meta', 'read_record', 'read_private', 'write_record', 'delete_record', 'set_completion', 'manage_grants',
                             'subscribe', 'receive_reminder', 'export', 'delete_subject'];
-  manager_set text[] := owner_set || array['manage_managers', 'start_claim'];
-  former_set text[] := array['read_meta', 'read_record', 'read_private', 'export'];
+  manager_set text[] := owner_set || array['manage_managers'];
+  former_set text[] := array['read_meta', 'read_record', 'read_private', 'start_claim', 'export'];
   leave_set text[] := array['export', 'delete_record', 'delete_subject'];
   r text;
 begin

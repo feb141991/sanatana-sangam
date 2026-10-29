@@ -1,15 +1,15 @@
 # Sanskara tracker backend design (step 3) — pre-migration
 
-Status: **v0.2. M1 and M2 are written, with rollbacks and tests, and verified on a scratch Postgres; they are NOT applied
-to any database. M3 to M6, the routes, the producer and the screens are not written.** Implements the approved contract
+Status: **v0.3. M1, M2 and M3 are written, with rollbacks and tests, and verified on a scratch Postgres; they are NOT
+applied to any database. M4 to M6, the routes, the producer and the screens are not written.** Implements the approved contract
 (`SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md`, v0.2: decisions D1 to D5 approved as recommended on 2026-10-29). Written
 and updated 2026-10-29.
 
 This document turns the contract into tables, one authorization function, a function surface, a reminder lifecycle on
 the existing notification pipeline, scheduled jobs, a migration sequence and a retirement plan for the old
-implementation. For M1 and M2 the migrations are the source of truth for the DDL; section 11 lists every place they
+implementation. For M1 to M3 the migrations are the source of truth for the DDL; section 11 lists every place they
 differ from the first version of this design, and why. Appendix A keeps the remaining sketches (subscriptions, claims and
-the pending-reminder index) for M3 and M4.
+the pending-reminder index) for M4.
 
 ## 1. The shape in one paragraph
 
@@ -36,7 +36,8 @@ rollback in `supabase/rollbacks/` and a test in `supabase/tests/`.
 | `sanskara_grants` (table in M2, functions in M3) | View access between Kul members | `view` only; `record` or `timeline` scope; `kul_id` stored so the audience boundary is re-checked at every read; one live grant per grantee per record or timeline; cannot grant to yourself. Created in M2 so `sanskara_can` is written once, in full, and tested in full. |
 | `sanskara_audit` | Metadata-only trail (contract section 7) | Closed set of actions (including `dependent_deleted` and `subject_deleted`); `detail` is a small object and never record content; rows about an account go with the account. |
 | `sanskara_request_log` | Idempotency for every write function | Primary key `(account_id, request_id)`; stores the first response, which a retry returns; pruned after 7 days (M5). |
-| `sanskara_subscriptions` (M4), `sanskara_claims` (M3) | Reminders; the hand-over at 18 | Still sketches: Appendix A. |
+| `sanskara_claims` (M3) | The hand-over at 18 | Only the SHA-256 of the token is stored; one pending claim per dependent; `expires_at` after `created_at`; forced RLS, no client grants. |
+| `sanskara_subscriptions` (M4) | Reminders | Still a sketch: Appendix A. |
 
 Every M2 table has row-level security **enabled and forced**, no policies, and no grants to `anon`, `authenticated` or
 `PUBLIC` (the pattern of `kul_family_link_invitations`). Forced RLS is safe for the definer functions because Supabase's
@@ -81,8 +82,8 @@ Evaluation, in this order:
 | Role | Allowed actions |
 |---|---|
 | owner | `read_meta`, `read_record`, `read_private`, `write_record`, `delete_record`, `set_completion`, `manage_grants`, `subscribe`, `receive_reminder`, `export`, `delete_subject` |
-| manager | the owner's, plus `manage_managers` and `start_claim` |
-| former manager | `read_meta`, `read_record`, `read_private`, `export` |
+| manager | the owner's, plus `manage_managers` |
+| former manager | `read_meta`, `read_record`, `read_private`, `export`, `start_claim` |
 | viewer, Class B record | `read_meta`, `read_record`, `subscribe`, `receive_reminder` |
 | viewer, Class A record (record grant) | `read_meta` only |
 | everyone else | nothing |
@@ -117,9 +118,13 @@ conflict (version, duplicate, request reuse), `SK422` a rule refuses it (limit, 
 | `sanskara_add_manager` / `sanskara_remove_manager(request, subject, account)` | M2 | The target must share the caller's Kul (both in `kul_members` and `profiles.kul_id`) and not be in the cool-off; at most 4 managers; the last manager cannot be removed; the subject row is locked so two managers cannot remove each other. |
 | `sanskara_delete_dependent(request, subject)` | M2 | Any current manager may erase a dependent and everything about them; a former manager may not. (Not in the first design; section 11.) |
 | `sanskara_delete_mine(request)` | M2 | Erases the caller's own timeline; dependents are untouched; works without consent. |
-| `sanskara_shared_with_me()` | M3 | Projection for a viewer: Class B fields, or name and status for a Class A record, with who shared it. |
-| `sanskara_grant_view(subject, record or null, grantee)` / `sanskara_revoke_grant(grant)` / `sanskara_list_access(subject)` | M3 | Records `kul_id`; revoke cancels the grantee's reminders in the same transaction (M4). |
-| `sanskara_start_claim(subject)` / `sanskara_accept_claim(token)` | M3 | Hand-over at 18. Accepting moves records to the claimant's account subject; **a record the claimant already has wins every conflict**; nothing merges silently. |
+| `sanskara_grant_view(request, subject, record or null, grantee)` | M3 | View-only share of one record, or of the whole timeline (null record). The grantee must be in the caller's Kul (both tables), not in the cool-off, and must not already have full access; at most 50 live shares per subject; `kul_id` is recorded. Audit detail is the scope only. |
+| `sanskara_revoke_grant(request, grant)` | M3 | Anyone who may manage grants for the subject (a revoke by any manager stands), or the grantee leaving a share. Idempotent. M4 adds cancelling the grantee's reminders in the same transaction. |
+| `sanskara_list_access(subject)` | M3 | Owner or manager: live shares with the person's username and name, the scope and whether the caller made it. A share whose audience has lapsed is still listed until revoked; it grants nothing meanwhile. |
+| `sanskara_shared_with_me()` | M3 | What others share with the caller, each row re-checked by `sanskara_can`: a Class B record gives name, dates and status; a Class A record shared by an explicit grant gives name or title and whether it is complete, never dates; private fields never; who shared it; the child's label for a dependent. |
+| `sanskara_start_claim(request, subject)` | M3 | Former manager, inside the 12 months. Returns a one-time 64-hex token **once**; only its hash is stored and the stored (retry) response omits it. Valid 7 days or until the window ends; starting another cancels the first. |
+| `sanskara_cancel_claim(request, subject)` | M3 | Withdraws the pending claim. |
+| `sanskara_accept_claim(request, token)` | M3 | The new adult, signed in, from the 18th birthday: records **move** to their own timeline (created if needed); a record they already have for a rite wins and the other is dropped, never merged; every share on the dependent ends; the dependent, its managers and the claim are deleted. All-or-nothing (a claimant who would exceed 100 records gets nothing). Every token failure is the same `SK404`. The claimant must not be a manager of that dependent. |
 | `sanskara_set_reminder(record, lead_days, enabled)` | M4 | Creates or updates the caller's subscription; bumps `generation`; refuses unless `wants_sanskara_reminders` and consent are true. |
 
 Internal helpers (definer functions only): `sanskara_actor`, `sanskara_claim_request`, `sanskara_finish_request`,
@@ -210,7 +215,7 @@ without the founder's approval, and `supabase db push` is never used.
 |---|---|
 | M1 *(written, tested, not applied)* | The two `profiles` columns and the server-owned counter |
 | M2 *(written, tested, not applied)* | `sanskara_rites`, subjects, managers, records, private fields, grants (table only), request log, audit; `sanskara_can`; the read and write functions for owners and managers |
-| M3 | Grant, revoke and list-access functions, the shared-with-me projection, claims and their functions |
+| M3 *(written, tested, not applied)* | `sanskara_claims`; grant, revoke, list-access and shared-with-me functions; start, cancel and accept claim |
 | M4 | Subscriptions, the candidate index, `sanskara_cancel_reminders`, `sanskara_reminder_still_valid`, the account-delete additions |
 | M5 | The scheduled jobs |
 | M6 | Retirement of the old tables (empty-assertion first) |
@@ -219,9 +224,11 @@ without the founder's approval, and `supabase db push` is never used.
 
 **Verified (scratch Postgres 18, 2026-10-29, running as a non-superuser `BYPASSRLS` owner and exercising clients with
 `SET ROLE authenticated` plus the JWT subject claim, so privileges, forced RLS and the SK error codes are all in play):**
-M1 and M2 apply cleanly; their rollbacks leave nothing behind and the migrations then re-apply and pass. The M1 test has 20 assertions. The M2 test has 117 checks that a statement is refused with an exact error code, 64 permission matrices that each assert all 13 actions for one person on one subject or record (832 allow-or-deny decisions: every role, the 12-month window, the audience boundary, the granter rule, consent, the deletion cool-off), and 107 value assertions (structure and privileges of 8 tables and 22 functions, idempotency, versions, limits, validation, erasure, and account-deletion cascades). **43 of 43 mutations of the migration are caught** by the M2 suite, and 3 of 3 of M1's (each breaks one rule: a missing
+M1 and M2 apply cleanly; their rollbacks leave nothing behind and the migrations then re-apply and pass. The M1 test has 20 assertions. The M2 test has 117 checks that a statement is refused with an exact error code, 64 permission matrices that each assert all 13 actions for one person on one subject or record (832 allow-or-deny decisions: every role, the 12-month window, the audience boundary, the granter rule, consent, the deletion cool-off), and 107 value assertions (structure and privileges of 8 tables and 22 functions, idempotency, versions, limits, validation, erasure, and account-deletion cascades). **43 of 43 mutations of the migration are caught** by the M2 suite (re-run after the M3 amendment below), 3 of 3 of M1's, and 32 of 36 of M3's, the other four surviving as redundant defences (`sanskara_can` is the final arbiter, so removing an earlier filter changes no output: the self-share check, the `revoked_at` filter and the Class A filter in the shared-records query, and the explicit grant delete at hand-over, which the subject's cascade repeats) (each breaks one rule: a missing
 audience check, a missing granter check, timeline covering Class A, consent, the 12-month window, the version checks, the
 last-manager rule, retry handling, privileges, forced RLS, and others).
+
+The M3 test has 50 refusal checks, 3 permission matrices and 86 value assertions (validation of every share, what a viewer sees for Class B, Class A and custom records, timeline and record grants overlapping, revocation by an owner, another manager and the grantee, audiences lapsing and returning, the 50-share limit, the claim token lifecycle: hash-only storage, the token absent from the request log and audit, cancellation, expiry capped at the window, every refusal; and the hand-over itself: the conflict rule, the move, atomic failure, the ex-manager and former viewer left with nothing). The full M1 to M3 chain applies, all three suites pass, the three rollbacks in reverse order leave nothing behind, and the migrations then re-apply and pass.
 
 The earlier run of this design (47 constraint checks) executed as a superuser, which bypasses RLS and every privilege,
 so it could not have shown a privilege mistake. It is superseded by the run above.
@@ -253,10 +260,11 @@ Postgres does not write bound parameters (a child's name, private notes) to its 
 4. **Hooks into Kul leave and removal.** Confirm whether to call `sanskara_cancel_reminders` from those functions or rely
    on the send-time check alone (the check is sufficient for correctness; the hook is for tidiness).
 5. **Legal review** before launch (contract section 13).
-6. **Who starts the hand-over at 18?** The contract makes a former manager read-only "and nothing else", but the claim
-   exists for the moment the child turns 18. As written, `start_claim` is allowed only for a manager of a minor, so a
-   claim must be started before the birthday. Proposal for M3: also allow a former manager to start a claim inside the
-   12 months. Needs a decision before M3.
+6. **The hand-over token reaches the new adult out of band.** The manager copies or shares a link containing the token;
+   the system cannot prove the person who redeems it is the child (the one place identity is taken on trust). The token
+   is single-use, 7 days at most, hashed at rest, cancellable, refused to any manager of that dependent, and every start
+   and accept is audited. Whether the Native screen shows a share sheet or a QR code is a step 4 decision. A "claim
+   pending" indicator is not yet part of `sanskara_dependents`.
 7. **`suspended_at`.** The column is created in M2 but nothing sets it yet. M4 (a trigger on consent withdrawal) sets and
    clears it; M5 purges 30 days after it. `sanskara_can` ignores it and reads consent live, so a missed trigger fails
    closed (data stays inert), never open.
@@ -300,10 +308,20 @@ denying; none widens access.
 10. **Definer functions use an empty `search_path`** and qualified names, so a temporary table created by a caller can
     never shadow a Sanskara table.
 
-## Appendix A. Remaining schema sketches (M3 and M4; applied and constraint-tested earlier on a scratch Postgres as a
-superuser, so not privilege-tested; not migrations)
+11. **Only a former manager starts the hand-over (M3; the founder asked for recommendations on 2026-10-29).** A claim can be
+    accepted only from the 18th birthday, so a token issued earlier would only be a long-lived bearer secret. The manager
+    of a minor therefore waits for the birthday; `start_claim` moved from the manager list to the former-manager list in
+    `sanskara_can` (M2 was amended before it was applied anywhere).
+12. **A grantee may end a share made to them** (`sanskara_revoke_grant`). It removes access and widens nothing.
+13. **On accept, the claimant's own record wins and the other is dropped**, and the response says how many were dropped,
+    so nothing merges silently. A claimant who would exceed the 100-record limit gets nothing and the claim stays
+    pending, rather than receiving some of the records.
+14. **A starting-claim retry cannot recover the token** (the stored response omits it); starting again cancels the first.
 
-The M1 and M2 DDL now lives in the migrations. What follows is the part of the first sketch that has no migration yet.
+## Appendix A. Remaining schema sketches (M4; constraint-tested earlier on a scratch Postgres as a superuser, so not
+privilege-tested; not migrations)
+
+The M1 to M3 DDL now lives in the migrations. What follows is the part of the first sketch that has no migration yet.
 
 ```sql
 -- M4: one account's reminder for one record at one lead time.
@@ -319,21 +337,6 @@ create table public.sanskara_subscriptions (
   unique (record_id, account_id, lead_days)
 );
 create index sanskara_subscriptions_account on public.sanskara_subscriptions (account_id) where enabled;
-
--- M3: the hand-over at 18. A manager starts a claim; the new adult accepts with the token. Only the token's hash is stored.
-create table public.sanskara_claims (
-  id uuid primary key default gen_random_uuid(),
-  subject_id uuid not null references public.sanskara_subjects(id) on delete cascade,
-  created_by uuid not null references auth.users(id) on delete cascade,
-  token_hash text not null unique check (token_hash ~ '^[0-9a-f]{64}$'),
-  status text not null default 'pending' check (status in ('pending', 'accepted', 'cancelled', 'expired')),
-  expires_at timestamptz not null,
-  claimed_by uuid references auth.users(id) on delete set null,
-  created_at timestamptz not null default now(),
-  responded_at timestamptz,
-  constraint sanskara_claims_window check (expires_at > created_at)
-);
-create unique index sanskara_claims_one_pending on public.sanskara_claims (subject_id) where status = 'pending';
 
 -- M4: at most one live reminder per (subscription, lead time): a changed date supersedes the pending one atomically.
 create unique index notification_candidates_one_pending_sanskar

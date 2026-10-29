@@ -129,7 +129,8 @@ by a client.
 - **Manager**: an account in a dependent's manager list, while the subject is a minor.
 - **Viewer**: an account holding a current, valid grant (section 7).
 - **Former manager**: a manager of a dependent who has since turned 18, for the limited window in E7 only. Read-only
-  access to the Class B and Class A records they managed, and nothing else; they cannot grant, edit or subscribe.
+  access to the Class B and Class A records they managed, plus starting the hand-over claim, and nothing else; they cannot
+  grant, edit or subscribe.
 - **Nobody**: everyone else, including every other Kul member, every Kul guardian, and the service role acting without
   the authorization function.
 
@@ -144,7 +145,7 @@ by a client.
 | Create, change or stop their own reminder | yes | yes | yes (own reminder only; section 8) | no |
 | Grant or revoke view access | yes | yes (any manager; a revoke by any manager stands) | no (no re-share) | no |
 | Add or remove a manager | n/a | yes | no | no |
-| Start a majority claim for a dependent | n/a | yes | no | no |
+| Start a majority claim for a dependent | n/a | only as a former manager, once the dependent has turned 18 (a claim can be accepted only from the birthday) | no | no |
 | Export own data | yes | yes (for the dependent) | no | no |
 | Read the list of who can see a record | yes | yes | no | no |
 | Erase a dependent (the subject and everything about them) | n/a | yes (any current manager; not a former manager) | no | no |
@@ -286,5 +287,7 @@ to be named before any reviewed timing is added.
   without leaving the child's name and birth date behind; a share is void once its granter loses authority (section 7,
   E7), which also ends a parent's shares when the child turns 18; consent to religious data is required of the acting
   account as well as of the subject's side, except to export or erase (section 8, rule 2).
-- Nothing in this document has been run on a device or against a Supabase database; M1 and M2 were run on a scratch
+- A former manager (not the manager of a minor) starts the hand-over claim, and a grantee may end a share made to them
+  (v0.3, from writing M3; the first narrows who may start a claim, the second only removes access).
+- Nothing in this document has been run on a device or against a Supabase database; M1 to M3 were run on a scratch
   Postgres only.

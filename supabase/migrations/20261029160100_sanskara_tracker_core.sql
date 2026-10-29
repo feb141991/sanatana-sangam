@@ -251,6 +251,8 @@ comment on table public.sanskara_request_log is 'Idempotency log for Sanskara wr
 -- start_claim, subscribe, receive_reminder, export, delete_subject.
 -- export, delete_record and delete_subject ignore consent, so a person who withdrew consent can still take their data or
 -- erase it.
+-- start_claim (handing a dependent's records to the person who has turned 18) belongs to a FORMER manager only: a claim can
+-- be accepted only from the 18th birthday, so issuing a bearer token earlier would only make a long-lived secret.
 create function public.sanskara_can(p_action text, p_subject uuid, p_account uuid, p_record uuid default null)
 returns boolean
 language plpgsql stable security definer set search_path = ''
@@ -353,9 +355,9 @@ begin
     when 'owner' then p_action = any (array['read_meta', 'read_record', 'read_private', 'write_record', 'delete_record',
                                             'set_completion', 'manage_grants', 'subscribe', 'receive_reminder', 'export', 'delete_subject'])
     when 'manager' then p_action = any (array['read_meta', 'read_record', 'read_private', 'write_record', 'delete_record',
-                                              'set_completion', 'manage_grants', 'manage_managers', 'start_claim', 'subscribe',
+                                              'set_completion', 'manage_grants', 'manage_managers', 'subscribe',
                                               'receive_reminder', 'export', 'delete_subject'])
-    when 'former_manager' then p_action = any (array['read_meta', 'read_record', 'read_private', 'export'])
+    when 'former_manager' then p_action = any (array['read_meta', 'read_record', 'read_private', 'start_claim', 'export'])
     when 'viewer' then p_action = any (array['read_meta', 'read_record', 'subscribe', 'receive_reminder'])
     when 'viewer_minimal' then p_action = 'read_meta'
     else false
