@@ -129,10 +129,28 @@ export async function GET(request: Request) {
     // ── 3. Re-verify user eligibility at dispatch time ─────────────────────────
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
     const profileColumns = "id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, quiz_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date";
+    const coverageColumns = "wants_sattvic_reminders, wants_mood_reminders, wants_evening_reminder, wants_madhyahn_reminder, dharm_veer_reminder_enabled";
     let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select(`${profileColumns}, wants_brahma_muhurta_reminders`)
+      .select(`${profileColumns}, wants_brahma_muhurta_reminders, ${coverageColumns}`)
       .in("id", userIds);
+
+    // Before the coverage migration exists, preserve all older delivery
+    // paths but suppress categories whose current consent cannot be read.
+    if (profileErr && profileErr.code === "42703") {
+      const legacyCoverage = await supabase.from("profiles")
+        .select(`${profileColumns}, wants_brahma_muhurta_reminders`)
+        .in("id", userIds);
+      profileErr = legacyCoverage.error;
+      profiles = (legacyCoverage.data ?? []).map((profile) => ({
+        ...profile,
+        wants_sattvic_reminders: false,
+        wants_mood_reminders: false,
+        wants_evening_reminder: false,
+        wants_madhyahn_reminder: false,
+        dharm_veer_reminder_enabled: false,
+      }));
+    }
 
     // Before the Brahma Muhurta opt-in migration is applied, read everything
     // else; the missing flag leaves Brahma Muhurta rows failing closed.
@@ -144,6 +162,11 @@ export async function GET(request: Request) {
       profiles = (withoutBrahmaRes.data ?? []).map((p: any) => ({
         ...p,
         wants_brahma_muhurta_reminders: false,
+        wants_sattvic_reminders: false,
+        wants_mood_reminders: false,
+        wants_evening_reminder: false,
+        wants_madhyahn_reminder: false,
+        dharm_veer_reminder_enabled: false,
       })) as typeof profiles;
       profileErr = withoutBrahmaRes.error;
     }
@@ -157,6 +180,11 @@ export async function GET(request: Request) {
         ...p,
         wants_vrat_reminders: p.wants_festival_reminders,
         wants_tithi_reminders: p.wants_festival_reminders,
+        wants_sattvic_reminders: false,
+        wants_mood_reminders: false,
+        wants_evening_reminder: false,
+        wants_madhyahn_reminder: false,
+        dharm_veer_reminder_enabled: false,
       }));
       profileErr = fallbackRes.error;
     }

@@ -121,6 +121,48 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
     headers: { authorization: 'Bearer dispatch-secret' },
   });
 
+  it.each([
+    ['sattvic', 'wants_sattvic_reminders'],
+    ['mood', 'wants_mood_reminders'],
+    ['nitya_sandhya', 'wants_evening_reminder'],
+    ['nitya_madhyahn', 'wants_madhyahn_reminder'],
+    ['dharm_veer', 'dharm_veer_reminder_enabled'],
+  ])('suppresses queued %s after an opt-out, before bell or push delivery', async (type, field) => {
+    mocks.claimedRows[0].notification_type = type;
+    mocks.profiles[0].wants_nitya_reminders = true;
+    mocks.profiles[0][field] = false;
+    const response = await GET(request());
+    expect(response.status).toBe(200);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.profileSelects[0]).toContain(field);
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: `${type}_reminders_disabled` }, ids: ['schedule-1'],
+    });
+  });
+
+  it('fails closed for coverage-gap reminders before migration', async () => {
+    mocks.claimedRows[0].notification_type = 'sattvic';
+    mocks.profiles[0].wants_sattvic_reminders = true;
+    mocks.profileErrorQueue = [{ message: 'column does not exist', code: '42703' }];
+    const response = await GET(request());
+    expect(response.status).toBe(200);
+    expect(mocks.profileSelects).toHaveLength(2);
+    expect(mocks.profileSelects[1]).not.toContain('wants_sattvic_reminders');
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sattvic_reminders_disabled' }, ids: ['schedule-1'],
+    });
+  });
+
+  it('preserves Japa delivery when the newer coverage columns are absent', async () => {
+    mocks.sadhanaResponse = { data: [], error: null };
+    mocks.profileErrorQueue = [{ message: 'column does not exist', code: '42703' }];
+    const response = await GET(request());
+    expect(response.status).toBe(200);
+    expect(sendPushNotification).toHaveBeenCalledTimes(1);
+    expect(mocks.profileSelects).toHaveLength(2);
+  });
+
   it('skips a Japa reminder completed before delivery', async () => {
     // London 03:00 is still part of the previous spiritual date (04:00 boundary).
     mocks.claimedRows[0].send_at = '2026-09-29T02:30:00.000Z';
@@ -393,14 +435,17 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
 
     it('re-reads without the opt-in column before it is migrated and fails closed', async () => {
       mocks.profiles[0].wants_brahma_muhurta_reminders = undefined;
-      mocks.profileErrorQueue = [{ message: 'column does not exist', code: '42703' }];
+      mocks.profileErrorQueue = [
+        { message: 'column does not exist', code: '42703' },
+        { message: 'column does not exist', code: '42703' },
+      ];
 
       const response = await GET(request());
 
       expect(response.status).toBe(200);
-      expect(mocks.profileSelects).toHaveLength(2);
-      expect(mocks.profileSelects[1]).not.toContain('wants_brahma_muhurta_reminders');
-      expect(mocks.profileSelects[1]).toContain('wants_family_remembrance_reminders');
+      expect(mocks.profileSelects).toHaveLength(3);
+      expect(mocks.profileSelects[2]).not.toContain('wants_brahma_muhurta_reminders');
+      expect(mocks.profileSelects[2]).toContain('wants_family_remembrance_reminders');
       expect(sendPushNotification).not.toHaveBeenCalled();
       expect(mocks.updates).toContainEqual({
         table: 'notification_schedule',

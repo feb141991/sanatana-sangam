@@ -18,29 +18,29 @@ async function run() {
       name: 'Kolkata Opted-In Devotee',
       tradition: 'hindu',
       timezone: 'Asia/Kolkata',
-      wants_nitya_reminders: true,
+      wants_sattvic_reminders: true,
       notification_quiet_hours_start: 22,
       notification_quiet_hours_end: 6,
       is_deleting: false,
-      scenario: 'Standard daytime schedule, opted into Nitya reminders',
+      scenario: 'Standard daytime schedule, opted into Sattvic reminders',
     },
     {
       id: 'devotee-london-optedout',
       name: 'London Opted-Out Devotee',
       tradition: 'sikh',
       timezone: 'Europe/London',
-      wants_nitya_reminders: false,
+      wants_sattvic_reminders: false,
       notification_quiet_hours_start: 22,
       notification_quiet_hours_end: 7,
       is_deleting: false,
-      scenario: 'Nitya reminders disabled (wants_nitya_reminders === false)',
+      scenario: 'Sattvic reminders disabled (wants_sattvic_reminders === false)',
     },
     {
       id: 'devotee-newyork-quiethours',
       name: 'New York Early-Rest Devotee',
       tradition: 'jain',
       timezone: 'America/New_York',
-      wants_nitya_reminders: true,
+      wants_sattvic_reminders: true,
       notification_quiet_hours_start: 16,
       notification_quiet_hours_end: 20,
       is_deleting: false,
@@ -51,7 +51,7 @@ async function run() {
       name: 'Los Angeles Deletion Pending Devotee',
       tradition: 'buddhist',
       timezone: 'America/Los_Angeles',
-      wants_nitya_reminders: true,
+      wants_sattvic_reminders: true,
       notification_quiet_hours_start: 22,
       notification_quiet_hours_end: 6,
       is_deleting: true,
@@ -62,11 +62,11 @@ async function run() {
       name: 'Auckland Opted-In Devotee',
       tradition: 'hindu',
       timezone: 'Pacific/Auckland',
-      wants_nitya_reminders: true,
+      wants_sattvic_reminders: true,
       notification_quiet_hours_start: 23,
       notification_quiet_hours_end: 6,
       is_deleting: false,
-      scenario: 'NZ standard daytime schedule, opted into Nitya reminders',
+      scenario: 'NZ standard daytime schedule, opted into Sattvic reminders',
     },
   ];
 
@@ -90,7 +90,7 @@ async function run() {
   const records: EvaluationRecord[] = [];
 
   function checkLegacyEligibility(devotee: SimulatedDevotee): boolean {
-    if (devotee.wants_nitya_reminders !== true) return false;
+    if (devotee.wants_sattvic_reminders !== true) return false;
     if (devotee.is_deleting === true) return false;
 
     const targetHour = 17;
@@ -115,7 +115,7 @@ async function run() {
       const parityMatch = legacyEligible === candidateProduced;
 
       let reason = 'eligible';
-      if (devotee.wants_nitya_reminders !== true) {
+      if (devotee.wants_sattvic_reminders !== true) {
         reason = 'preference_disabled';
       } else if (devotee.is_deleting === true) {
         reason = 'account_deleting';
@@ -181,11 +181,11 @@ All 28 generated candidates successfully route to canonical \`/bhakti/zen\`, enf
 - **Target Send Window**: Local 17:00 (5:00 PM evening Sandhyā).
 - **Canonical Action Route**: \`/bhakti/zen\`.
 - **Devotee Cohort**:
-  1. **Kolkata Opted-In** (\`Asia/Kolkata\`, Hindu, \`wants_nitya_reminders: true\`, quiet hours 22:00 - 06:00).
-  2. **London Opted-Out** (\`Europe/London\`, Sikh, \`wants_nitya_reminders: false\`, quiet hours 22:00 - 07:00).
-  3. **New York Early-Rest** (\`America/New_York\`, Jain, \`wants_nitya_reminders: true\`, quiet hours 16:00 - 20:00).
-  4. **Los Angeles Deleting** (\`America/Los_Angeles\`, Buddhist, \`wants_nitya_reminders: true\`, \`is_deleting: true\`).
-  5. **Auckland Opted-In** (\`Pacific/Auckland\`, Hindu, \`wants_nitya_reminders: true\`, quiet hours 23:00 - 06:00).
+  1. **Kolkata Opted-In** (\`Asia/Kolkata\`, Hindu, \`wants_sattvic_reminders: true\`, quiet hours 22:00 - 06:00).
+  2. **London Opted-Out** (\`Europe/London\`, Sikh, \`wants_sattvic_reminders: false\`, quiet hours 22:00 - 07:00).
+  3. **New York Early-Rest** (\`America/New_York\`, Jain, \`wants_sattvic_reminders: true\`, quiet hours 16:00 - 20:00).
+  4. **Los Angeles Deleting** (\`America/Los_Angeles\`, Buddhist, \`wants_sattvic_reminders: true\`, \`is_deleting: true\`).
+  5. **Auckland Opted-In** (\`Pacific/Auckland\`, Hindu, \`wants_sattvic_reminders: true\`, quiet hours 23:00 - 06:00).
 
 ---
 
@@ -201,7 +201,7 @@ All 28 generated candidates successfully route to canonical \`/bhakti/zen\`, enf
 | **Total** | **70** | **28** | **28** | **100% (70/70)** |
 
 ### Suppression Analysis:
-1. **Preference Opt-In**: 14/14 days suppressed for London devotee (\`wants_nitya_reminders === false\`).
+1. **Preference Opt-In**: 14/14 days suppressed for London devotee (\`wants_sattvic_reminders === false\`).
 2. **Quiet Hours Protection**: 14/14 days suppressed for New York devotee (17:00 in 16:00-20:00 quiet window).
 3. **Account Deletion Safety**: 14/14 days suppressed for Los Angeles devotee (\`is_deleting: true\`).
 4. **Canonical Route Precision**: 100% (28/28) route precisely to \`/bhakti/zen\`.

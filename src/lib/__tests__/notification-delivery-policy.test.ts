@@ -61,7 +61,7 @@ describe("notification delivery policy", () => {
   });
 
   it("suppresses queued Sattvic and Nitya reminders if the opt-in was turned off after scheduling", () => {
-    for (const notification_type of ["sattvic", "sattvic_reminder", "nitya", "nitya_madhyahn", "nitya_sandhya"]) {
+    for (const notification_type of ["nitya"]) {
       const row = { notification_type, notification_key: `${notification_type}:2026-10-02` };
       expect(getNotificationPreferenceSkipReason(row, { wants_nitya_reminders: false }), notification_type)
         .toBe("nitya_reminders_disabled");
@@ -77,6 +77,21 @@ describe("notification delivery policy", () => {
       expect(getNotificationPreferenceSkipReason(row, { wants_nitya_reminders: false }), notification_type)
         .not.toBe("nitya_reminders_disabled");
     }
+  });
+
+  it.each([
+    ['sattvic', 'wants_sattvic_reminders'],
+    ['sattvic_reminder', 'wants_sattvic_reminders'],
+    ['mood', 'wants_mood_reminders'],
+    ['mood_checkin', 'wants_mood_reminders'],
+    ['nitya_sandhya', 'wants_evening_reminder'],
+    ['nitya_madhyahn', 'wants_madhyahn_reminder'],
+    ['dharm_veer', 'dharm_veer_reminder_enabled'],
+  ])('rechecks %s independently of the morning Nitya preference', (notification_type, field) => {
+    expect(getNotificationPreferenceSkipReason({ notification_type }, { wants_nitya_reminders: true, [field]: false }))
+      .toBe(`${notification_type}_reminders_disabled`);
+    expect(getNotificationPreferenceSkipReason({ notification_type }, { wants_nitya_reminders: false, [field]: true }))
+      .toBeNull();
   });
 
   it("suppresses a queued Shloka reminder if the user turned it off after scheduling", () => {

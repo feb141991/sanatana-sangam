@@ -75,6 +75,11 @@ export type NotificationProfile = {
   wants_tithi_reminders?: boolean | null;
   wants_shloka_reminders?: boolean | null;
   wants_nitya_reminders?: boolean | null;
+  wants_sattvic_reminders?: boolean | null;
+  wants_mood_reminders?: boolean | null;
+  wants_evening_reminder?: boolean | null;
+  wants_madhyahn_reminder?: boolean | null;
+  dharm_veer_reminder_enabled?: boolean | null;
   wants_sankalpa_midpoint_reminders?: boolean | null;
   japa_reminder_enabled?: boolean | null;
   quiz_reminder_enabled?: boolean | null;
@@ -118,13 +123,24 @@ export function getNotificationPreferenceSkipReason(
     return "shloka_reminders_disabled";
   }
 
-  // Sattvic Mode and every Nitya slot are gated on the same opt-in at
-  // scheduling time; recheck it at delivery so a user who turns it off after a
-  // row was queued is not still sent that day's reminder. Only an explicit
-  // `false` suppresses, matching how the producers read the flag.
+  // Recheck the feature's own preference, including rows queued before an
+  // opt-out. These categories must not inherit the morning Nitya toggle.
   const type = row.notification_type ?? "";
+  const independentPreferences: Record<string, keyof NotificationProfile> = {
+    sattvic: 'wants_sattvic_reminders',
+    sattvic_reminder: 'wants_sattvic_reminders',
+    mood: 'wants_mood_reminders',
+    mood_checkin: 'wants_mood_reminders',
+    nitya_sandhya: 'wants_evening_reminder',
+    nitya_madhyahn: 'wants_madhyahn_reminder',
+    dharm_veer: 'dharm_veer_reminder_enabled',
+  };
+  const independentPreference = independentPreferences[type];
+  if (independentPreference) {
+    return profile[independentPreference] === false ? `${type}_reminders_disabled` : null;
+  }
   if (
-    (type === "sattvic" || type === "sattvic_reminder" || type.startsWith("nitya")) &&
+    type.startsWith("nitya") &&
     profile.wants_nitya_reminders === false
   ) {
     return "nitya_reminders_disabled";
