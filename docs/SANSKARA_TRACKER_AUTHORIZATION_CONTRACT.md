@@ -1,7 +1,10 @@
 # Sanskara tracker authorization contract — design (pre-migration)
 
-Status: **draft v0.1, design only. No migration, route or screen has been written.** Not approved: decisions D1 to D5
-in section 12 are the founder's. Written 2026-10-29.
+Status: **v0.2, design only. No migration, route or screen has been written.** Decisions D1 to D5 in section 12 were
+**approved as recommended by the founder on 2026-10-29** ("go ahead with D1 to D5 recommendations"). One thing is still
+needed from the founder: a named, qualified reviewer for any tradition-scoped timing (D3), without which the tracker ships
+with chosen-date milestones and no suggested timing. Written 2026-10-29. Step 3 is in
+`SANSKARA_TRACKER_BACKEND_DESIGN.md`.
 
 This is step 1 of five: (1) this contract, (2) a reviewed, tradition-scoped catalogue with optional reminder timing,
 (3) the backend record and notification lifecycle, (4) the Native personal and shared views, (5) end-to-end tests. It
@@ -178,9 +181,12 @@ that exists because a date was entered (this is the decision to drop the automat
    Timing is always described as guidance, never as a religious rule (step 2 owns the wording).
 5. **Completing a record cancels every subscriber's pending reminders for it.** Reopening does not revive them; each
    subscriber re-enables theirs.
-6. **Changing or removing a date updates or cancels reminders in place.** The delivery key is stable per
-   (subscription, lead time) and does not contain the date, so a retry or an edit can never create a second
-   notification. The key namespace must not overlap the legacy `sanskar:` keys (backend AGENTS.md section 6).
+6. **Changing or removing a date updates or cancels reminders in place.** The notification pipeline keys every
+   notification by its send date, so the guarantee is stated on the reminder, not on the key: **at most one live
+   reminder per (subscription, lead time)**, enforced by a partial unique index and an atomic supersede (cancel the
+   pending one, create the new one, in one transaction). A retry or an edit therefore cannot produce a second
+   notification. The key namespace (`sanskar_milestone:...`) does not overlap the legacy `sanskar:` keys (backend
+   AGENTS.md section 6).
 7. **Only reviewed timing may generate a lead time.** A rite without reviewed, tradition-scoped timing can still be
    tracked and can carry a reminder at a date the person chose; the app never proposes a date for it (step 2).
 8. In-app notification creation and OS push delivery stay distinct, and nothing here claims delivery from a token or a
@@ -210,8 +216,9 @@ Every row is a requirement on step 3 and a test in step 5.
 
 ## 10. Enforcement requirements
 
-- **R1 One authorization function**, `sanskara_role(subject, account)`, used by row-level policies, by every write
-  function, by the notification resolver at send time and by API routes. A second implementation anywhere is a defect.
+- **R1 One authorization function**, `sanskara_can(action, subject, account, record)`, used by every read and write
+  function, by the notification producer and the send-time check, and by API routes. A second implementation anywhere
+  is a defect.
 - **R2 Row-level security enabled and forced on every table; no direct table writes for `authenticated`.** Writes go
   through functions that are atomic and idempotent (the client supplies an idempotency key), with database constraints
   carrying the rules (one record per subject per rite; one manager list entry per account; grant uniqueness), not only
@@ -239,14 +246,17 @@ Each is written first, and shown red against the old behaviour where there is on
   act.
 - Membership change (E2, E3) and sign-out or account switch (E13).
 - Majority (E7, E7a), including the claimant's own record winning a conflict.
-- Completion, edit and delete each cancel or move reminders in place (E4, E5); a retried request and a duplicate
-  delivery produce one notification.
+- Completion, edit and delete each cancel or move reminders in place (E4, E5); a retried request, a changed date and a
+  duplicate delivery each leave at most one live reminder per (subscription, lead time).
 - A privacy test over every notification payload and analytics event: no name, rite, date or pregnancy wording.
 - Consent withdrawal (E8) and account deletion for owner, manager, last manager and grantee (E9, E10, E14), end to end
   including the admin delete path.
 - SQL tests under `supabase/tests` for the function and the policies; mutation checks that break each rule and go red.
 
-## 12. Decisions required
+## 12. Decisions (approved as recommended, 2026-10-29)
+
+All five were approved as recommended. D3 is approved in the form "ship without suggested timing"; the reviewer is still
+to be named before any reviewed timing is added.
 
 | # | Question | Recommendation | If you choose otherwise |
 |---|---|---|---|
