@@ -25,6 +25,11 @@ function readEnvConfig() {
   };
 }
 
+/** The hosted model the chat uses; part of a remembered answer's key so a model change never repeats an old model's answer. */
+export function getActiveChatModelId(): string {
+  return readEnvConfig().sarvamModel;
+}
+
 type InferenceProviderOverride =
   | 'sarvam-hosted'
   | 'self-hosted';

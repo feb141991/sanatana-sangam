@@ -9,9 +9,21 @@ import { DAILY_AI_MESSAGE_LIMIT } from '@/lib/ai/chat-limits';
 import { getFallbackFestivalCalendar } from '@/lib/festivals';
 import { dharamVeerRetriever, festivalRulesRetriever } from '@/lib/ai/retrieval';
 import { retrieveDharmaChatGrounding } from '@/lib/ai/chat-grounding';
-import { toRetrievalQuery } from '@/lib/ai/query-language';
 import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 import { classifyChatIntent, getConversationalResponse } from '@/lib/ai/chat-intent';
+import { classifyDecisionIntent, getDecisionResponse } from '@/lib/ai/decision-intent';
+import { detectQueryLanguage, toRetrievalQuery } from '@/lib/ai/query-language';
+import {
+  CHAT_TEMPERATURE,
+  GROUNDING_CORPUS_VERSION,
+  buildAnswerCacheKey,
+  fingerprintText,
+  readCachedAnswer,
+  rememberAnswer,
+  type AnswerCacheDb,
+} from '@/lib/ai/chat-answer-cache';
+import { getActiveChatModelId } from '@/lib/ai/providers/inference';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 // ─── Config ────────────────────────────────────────────────────────────────
 const MAX_CHAT_BODY_BYTES = 32 * 1024;
@@ -153,6 +165,34 @@ function buildSystemPrompt(input: {
     'Do not pad a short answer with extra caveats, alternative framings, or "on the other hand" sections the user did not ask for.',
     'Official Shoonaya channels & identity: Website: https://www.shoonaya.com, LinkedIn: https://www.linkedin.com/company/shoonaya, Instagram: https://www.instagram.com/shoonayaapp, Facebook: https://www.facebook.com/profile.php?id=61590436598797, Email: info@shoonaya.com. If the user asks for links, social accounts, or contact details, provide ONLY these exact URLs. Never fabricate or confuse Shoonaya with third-party entities named Shoonya (e.g., stock trading or other meditation apps).',
   ].join('\n');
+}
+
+/**
+ * A hash of the system prompt's wording (built with fixed, neutral inputs). It is part of the remembered-answer key, so
+ * editing the prompt text means earlier answers are not repeated; no one has to remember to bump a version.
+ */
+let promptFingerprintCache: string | null = null;
+function systemPromptFingerprint(): string {
+  promptFingerprintCache ??= fingerprintText(buildSystemPrompt({
+    tradition: null, rank: null, sampradaya: null, city: null, country: null, seeking: [],
+    language: 'en', meaningLanguage: 'en', transliterationLanguage: 'en', spiritualDate: 'FIXED',
+  }));
+  return promptFingerprintCache;
+}
+
+/** The remembered-answer store uses the service role (the table has no user policies). Unavailable means no memory, not an outage. */
+function answerCacheDb(): AnswerCacheDb | null {
+  try {
+    return createAdminClient() as unknown as AnswerCacheDb;
+  } catch {
+    return null;
+  }
+}
+
+function plainTextResponse(text: string, source: 'generated' | 'cached' | 'policy'): Response {
+  return new Response(textAsStream(text), {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Dharma-Answer': source },
+  });
 }
 
 // ─── Build conversation text for Pramana format ─────────────────────────────
@@ -418,19 +458,51 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, DAILY_AI_MESSAGE_LIMIT);
-  if (!allowed) return NextResponse.json({ error: 'daily_limit_reached', used, limit }, { status: 429 });
+  const mode = body.mode;
+  const figureId = body.figure_id;
 
+  // A question people act on with money and family behind it (a wedding date, a purchase, a launch) is answered with
+  // one fixed text, never a generated one: a model would give a confident date, a different one each time. It costs
+  // nothing, so it does not use the person's daily allowance.
+  if (!mode && classifyDecisionIntent(message)) {
+    const written = detectQueryLanguage(message);
+    return plainTextResponse(getDecisionResponse(written === 'hi' || written === 'pa' ? written : responseLanguage), 'policy');
+  }
+
+  const rank = religiousDataConsented ? (profile?.spiritual_level ?? null) : null;
   const systemPrompt          = buildSystemPrompt({
-    tradition, rank: religiousDataConsented ? (profile?.spiritual_level ?? null) : null,
+    tradition, rank,
     sampradaya, city, country, seeking,
     language: responseLanguage, meaningLanguage, transliterationLanguage,
     spiritualDate,
   });
 
+  // Ordinary chat answers are remembered per person, so asking the same question twice gives the same answer (and
+  // costs nothing the second time). Modes and the deterministic vrat list have their own paths and are not remembered.
+  const rememberable = !mode && !isUpcomingVratQuery(message);
+  const conversation = buildPramanaUserMessage(history, message);
+  const cacheDb = rememberable ? answerCacheDb() : null;
+  const answerKey = cacheDb
+    ? buildAnswerCacheKey({
+        userId: user.id, conversation, language: responseLanguage, meaningLanguage, transliterationLanguage,
+        tradition, rank, sampradaya, city, country, seeking, spiritualDate,
+        promptFingerprint: systemPromptFingerprint(), corpusVersion: GROUNDING_CORPUS_VERSION, model: getActiveChatModelId(),
+      })
+    : null;
+  if (cacheDb && answerKey) {
+    const remembered = await readCachedAnswer(cacheDb, user.id, answerKey);
+    if (remembered) {
+      emitEvent({
+        severity: 'P3', domain: 'ai', route: '/api/ai/chat', latency_ms: 0,
+        provider: 'answer-cache', model: remembered.model ?? 'cached',
+        context: { status: 'cached', output_length: remembered.answer.length },
+      });
+      return plainTextResponse(remembered.answer, 'cached');
+    }
+  }
 
-  const mode = body.mode;
-  const figureId = body.figure_id;
+  const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, DAILY_AI_MESSAGE_LIMIT);
+  if (!allowed) return NextResponse.json({ error: 'daily_limit_reached', used, limit }, { status: 429 });
 
   if (mode === 'dharam_veer_reflection') {
     if (!figureId) {
@@ -480,7 +552,7 @@ User Question: ${message}
 
     try {
         const genResult = await generateWithProvider(
-          { system: sysPrompt, user: userMessage, maxOutputTokens: 900 }
+          { system: sysPrompt, user: userMessage, maxOutputTokens: 900, temperature: CHAT_TEMPERATURE }
         );
         return new Response(textAsStream(genResult.text), {
           headers: {
@@ -533,7 +605,7 @@ User Question: ${message}
 
     try {
       const genResult = await generateWithProvider(
-        { system: sysPrompt, user: rulesPrompt, maxOutputTokens: 900 }
+        { system: sysPrompt, user: rulesPrompt, maxOutputTokens: 900, temperature: CHAT_TEMPERATURE }
       );
       return new Response(textAsStream(genResult.text), {
         headers: {
@@ -584,7 +656,7 @@ User Question: ${message}
 
   // ── Path: Sarvam / Pramana (primary & sole provider) ──────────────────────
   try {
-    const userMessage = buildPramanaUserMessage(history, message);
+    const userMessage = conversation;
 
     // Dynamic tradition-aware Pramana scripture, hero, & festival RAG grounding
     const ragStart = Date.now();
@@ -614,6 +686,8 @@ User Question: ${message}
         system: effectiveSystemPrompt,
         user: userMessage,
         maxOutputTokens: 500,
+        // The same question should give the same answer: no sampling randomness.
+        temperature: CHAT_TEMPERATURE,
         // Ordinary chat needs a direct answer, not hidden reasoning. Sarvam's
         // default reasoning repeatedly exhausted this budget before emitting
         // a final response, which tripped the shared circuit breaker.
@@ -621,6 +695,14 @@ User Question: ${message}
       },
       { providerOverride: 'sarvam-hosted' }
     );
+
+    // Remember the answer and give back the remembered one: if two identical requests race, both get the same text.
+    const finalAnswer = cacheDb && answerKey
+      ? await rememberAnswer(cacheDb, {
+          userId: user.id, key: answerKey, answer: result.text, provider: result.provider ?? 'sarvam-hosted',
+          model: result.modelUsed ?? null, promptFingerprint: systemPromptFingerprint(), corpusVersion: GROUNDING_CORPUS_VERSION,
+        })
+      : { answer: result.text };
 
     await recordAiChatEvent(supabase, user.id);
     emitEvent({
@@ -643,12 +725,7 @@ User Question: ${message}
       },
     });
 
-    return new Response(textAsStream(result.text), {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-store',
-      },
-    });
+    return plainTextResponse(finalAnswer.answer, 'generated');
   } catch (err: any) {
     emitError('ai', err, 'P2', {
       route: '/api/ai/chat',

@@ -483,6 +483,7 @@ export async function DELETE(
     admin.supabase.from("guided_path_progress").delete().eq("user_id", userId),
     admin.supabase.from("quiz_attempts").delete().eq("user_id", userId),
     admin.supabase.from("ai_chat_usage").delete().eq("user_id", userId),
+    admin.supabase.from("ai_chat_answer_cache").delete().eq("user_id", userId),
     admin.supabase.from("karma_ledger").delete().eq("user_id", userId),
     admin.supabase.from("tirtha_saves").delete().eq("user_id", userId),
     admin.supabase.from("mood_logs").delete().eq("user_id", userId),

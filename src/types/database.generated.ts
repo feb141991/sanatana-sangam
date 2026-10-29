@@ -60,6 +60,42 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_chat_answer_cache: {
+        Row: {
+          answer: string
+          cache_key: string
+          corpus_version: string
+          created_at: string
+          expires_at: string
+          model: string | null
+          prompt_fingerprint: string
+          provider: string | null
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          cache_key: string
+          corpus_version: string
+          created_at?: string
+          expires_at: string
+          model?: string | null
+          prompt_fingerprint: string
+          provider?: string | null
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          cache_key?: string
+          corpus_version?: string
+          created_at?: string
+          expires_at?: string
+          model?: string | null
+          prompt_fingerprint?: string
+          provider?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_chat_usage: {
         Row: {
           message_count: number

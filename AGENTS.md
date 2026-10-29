@@ -257,6 +257,31 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   that, because old builds, the web client and direct calls exist. This applies
   equally to human and AI-agent contributors.
 
+### 14. Dharma Mitra Must Give the Same Answer Twice
+- A person who asks Dharma Mitra the same question twice must get the same answer. People act on these answers, so
+  two different answers to one question is a credibility defect, not a style variation.
+- `/api/ai/chat` therefore (a) generates with `CHAT_TEMPERATURE` (0), never the provider default; (b) remembers, per
+  person, the answer it gave (`ai_chat_answer_cache`, 14 days, first writer wins) and returns it for the same question
+  without generating, charging the daily allowance or running retrieval; and (c) answers a request to *choose a date*
+  for a wedding, home entry, business start or journey with one fixed reply (`src/lib/ai/decision-intent.ts`) that
+  sends the person to a qualified pandit and the Shoonaya Panchang. The model never picks a date for a decision.
+- The remembered-answer key (`buildAnswerCacheKey`) must contain everything that can change the answer: the
+  normalised conversation, language settings, the profile fields the prompt uses, the system-prompt fingerprint, the
+  grounding corpus version and the model. When you add an input to the prompt or the retrieval, add it to the key.
+  When the grounding corpora are re-indexed or replaced, bump `GROUNDING_CORPUS_VERSION`, otherwise people keep being
+  served answers written from the old text. The calendar date is in the key only for date-relative questions.
+- Remembered answers are never shared between people. The `mode` requests (Dharam Veer, festival rules) and the
+  deterministic upcoming-vrat list are not remembered. The question text is not stored, only its hash. A failing or
+  missing cache table must never fail a question: the route falls back to generating.
+- Do not "fix" a wrong remembered answer by shortening the expiry. Correct the cause (prompt, corpus, model) and let
+  the fingerprint or corpus version change the key.
+- Why this rule exists: on 2026-10-29 the founder raised that the same question could get two different answers. The
+  cause was in the code: the Sarvam provider samples at 0.3 by default, nothing remembered an earlier answer, and
+  decision questions went to free generation. Temperature 0 alone does not make a hosted model repeat itself word for
+  word, which is why the memory exists. Not covered: a person who rephrases the question, or asks it in another
+  language, may still get a differently worded answer. The Hindi and Punjabi decision replies need review by a
+  native speaker. This applies equally to human and AI-agent contributors.
+
 ## Required Behavior
 
 - Read the relevant `.claude/agents/*.md` role file before implementing specialized work.
