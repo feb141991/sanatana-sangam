@@ -2295,6 +2295,7 @@ export type Database = {
       }
       kul_events: {
         Row: {
+          calculation_provenance: string | null
           created_at: string
           created_by: string | null
           date_system: string
@@ -2315,6 +2316,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          calculation_provenance?: string | null
           created_at?: string
           created_by?: string | null
           date_system?: string
@@ -2335,6 +2337,7 @@ export type Database = {
           title: string
         }
         Update: {
+          calculation_provenance?: string | null
           created_at?: string
           created_by?: string | null
           date_system?: string
@@ -2381,6 +2384,60 @@ export type Database = {
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "kul_family_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kul_family_link_invitations: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          family_member_id: string
+          id: string
+          invited_user_id: string
+          kul_id: string
+          responded_at: string | null
+          status: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string
+          family_member_id: string
+          id?: string
+          invited_user_id: string
+          kul_id: string
+          responded_at?: string | null
+          status?: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          family_member_id?: string
+          id?: string
+          invited_user_id?: string
+          kul_id?: string
+          responded_at?: string | null
+          status?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kul_family_link_invitations_family_member_id_fkey"
+            columns: ["family_member_id"]
+            isOneToOne: false
+            referencedRelation: "kul_family_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kul_family_link_invitations_kul_id_fkey"
+            columns: ["kul_id"]
+            isOneToOne: false
+            referencedRelation: "kuls"
             referencedColumns: ["id"]
           },
         ]
@@ -6550,9 +6607,11 @@ export type Database = {
           wants_family_remembrance_reminders: boolean
           wants_festival_reminders: boolean
           wants_madhyahn_reminder: boolean | null
+          wants_mood_reminders: boolean
           wants_nitya_reminders: boolean
           wants_sankalpa_midpoint_reminders: boolean
           wants_sanskara_reminders: boolean
+          wants_sattvic_reminders: boolean
           wants_shloka_reminders: boolean
           wants_tithi_reminders: boolean
           wants_vrat_reminders: boolean
@@ -6673,9 +6732,11 @@ export type Database = {
           wants_family_remembrance_reminders?: boolean
           wants_festival_reminders?: boolean
           wants_madhyahn_reminder?: boolean | null
+          wants_mood_reminders?: boolean
           wants_nitya_reminders?: boolean
           wants_sankalpa_midpoint_reminders?: boolean
           wants_sanskara_reminders?: boolean
+          wants_sattvic_reminders?: boolean
           wants_shloka_reminders?: boolean
           wants_tithi_reminders?: boolean
           wants_vrat_reminders?: boolean
@@ -6796,9 +6857,11 @@ export type Database = {
           wants_family_remembrance_reminders?: boolean
           wants_festival_reminders?: boolean
           wants_madhyahn_reminder?: boolean | null
+          wants_mood_reminders?: boolean
           wants_nitya_reminders?: boolean
           wants_sankalpa_midpoint_reminders?: boolean
           wants_sanskara_reminders?: boolean
+          wants_sattvic_reminders?: boolean
           wants_shloka_reminders?: boolean
           wants_tithi_reminders?: boolean
           wants_vrat_reminders?: boolean
@@ -7524,8 +7587,8 @@ export type Database = {
       sanskara_grants: {
         Row: {
           created_at: string
-          grantee_id: string
           granted_by: string
+          grantee_id: string
           id: string
           kul_id: string
           level: string
@@ -7537,8 +7600,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          grantee_id: string
           granted_by: string
+          grantee_id: string
           id?: string
           kul_id: string
           level?: string
@@ -7550,8 +7613,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          grantee_id?: string
           granted_by?: string
+          grantee_id?: string
           id?: string
           kul_id?: string
           level?: string
@@ -7582,7 +7645,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sanskara_subjects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       sanskara_record_private: {
@@ -7620,7 +7683,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "sanskara_records"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       sanskara_records: {
@@ -7674,7 +7737,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sanskara_subjects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       sanskara_request_log: {
@@ -7748,8 +7811,47 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sanskara_subjects"
             referencedColumns: ["id"]
-          }
+          },
         ]
+      }
+      sanskara_subjects: {
+        Row: {
+          account_id: string | null
+          birth_date: string | null
+          created_at: string
+          display_name: string | null
+          frozen_at: string | null
+          id: string
+          kind: string
+          state: string
+          suspended_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          birth_date?: string | null
+          created_at?: string
+          display_name?: string | null
+          frozen_at?: string | null
+          id?: string
+          kind: string
+          state?: string
+          suspended_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          birth_date?: string | null
+          created_at?: string
+          display_name?: string | null
+          frozen_at?: string | null
+          id?: string
+          kind?: string
+          state?: string
+          suspended_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       sanskara_subscriptions: {
         Row: {
@@ -7791,48 +7893,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      sanskara_subjects: {
-        Row: {
-          account_id: string | null
-          birth_date: string | null
-          created_at: string
-          display_name: string | null
-          frozen_at: string | null
-          id: string
-          kul_family_member_id: string | null
-          kind: string
-          state: string
-          suspended_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          account_id?: string | null
-          birth_date?: string | null
-          created_at?: string
-          display_name?: string | null
-          frozen_at?: string | null
-          id?: string
-          kind: string
-          kul_family_member_id?: string | null
-          state?: string
-          suspended_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          account_id?: string | null
-          birth_date?: string | null
-          created_at?: string
-          display_name?: string | null
-          frozen_at?: string | null
-          id?: string
-          kind?: string
-          kul_family_member_id?: string | null
-          state?: string
-          suspended_at?: string | null
-          updated_at?: string
-        }
-        Relationships: []
       }
       sanskars: {
         Row: {
@@ -10836,6 +10896,10 @@ export type Database = {
         Args: { p_amount: number; p_reason: string; p_user_id: string }
         Returns: undefined
       }
+      cancel_family_link_invitation: {
+        Args: { p_invitation_id: string }
+        Returns: undefined
+      }
       cancel_family_remembrance_for_event: {
         Args: { p_event_id: string }
         Returns: undefined
@@ -11161,6 +11225,10 @@ export type Database = {
         Args: { p_since: string }
         Returns: number
       }
+      create_family_link_invitation: {
+        Args: { p_family_member_id: string; p_username: string }
+        Returns: Json
+      }
       create_kul: {
         Args: { p_emoji: string; p_invite_code: string; p_name: string }
         Returns: Json
@@ -11441,6 +11509,30 @@ export type Database = {
       }
       kul_member_limit: { Args: { p_kul_id: string }; Returns: number }
       leave_kul: { Args: never; Returns: undefined }
+      list_family_link_invitations_for_guardian: {
+        Args: never
+        Returns: {
+          created_at: string
+          family_member_id: string
+          invitation_id: string
+          status: string
+        }[]
+      }
+      list_my_family_link_invitations: {
+        Args: never
+        Returns: {
+          created_at: string
+          expires_at: string
+          family_member_id: string
+          family_member_name: string
+          family_member_role: string
+          invitation_id: string
+          kul_emoji: string
+          kul_id: string
+          kul_name: string
+          token: string
+        }[]
+      }
       lives_ok: { Args: { "": string }; Returns: string }
       log_user_activity: {
         Args: {
@@ -11823,6 +11915,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      respond_to_family_link_invitation: {
+        Args: { p_accept: boolean; p_token: string }
+        Returns: Json
+      }
       runtests:
         | { Args: never; Returns: string[] }
         | { Args: { "": string }; Returns: string[] }
@@ -11834,20 +11930,53 @@ export type Database = {
         Args: { p_request_id: string; p_token: string }
         Returns: Json
       }
+      sanskara_actor: { Args: { p_need_consent?: boolean }; Returns: string }
       sanskara_add_manager: {
         Args: { p_account: string; p_request_id: string; p_subject: string }
         Returns: Json
+      }
+      sanskara_can: {
+        Args: {
+          p_account: string
+          p_action: string
+          p_record?: string
+          p_subject: string
+        }
+        Returns: boolean
       }
       sanskara_cancel_claim: {
         Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
+      sanskara_cancel_reminder_rows: {
+        Args: { p_ids: string[]; p_reason: string }
+        Returns: number
+      }
+      sanskara_cancel_reminders: {
+        Args: {
+          p_account: string
+          p_reason: string
+          p_record: string
+          p_subject: string
+        }
+        Returns: number
+      }
+      sanskara_claim_request: {
+        Args: { p_account: string; p_operation: string; p_request: string }
+        Returns: Json
+      }
       sanskara_create_dependent: {
-        Args: { p_birth_date: string; p_kul_family_member?: string; p_name: string; p_request_id: string }
+        Args: { p_birth_date: string; p_name: string; p_request_id: string }
         Returns: Json
       }
       sanskara_create_record: {
-        Args: { p_custom_title: string; p_planned_date: string; p_request_id: string; p_rite_key: string; p_subject: string }
+        Args: {
+          p_custom_title: string
+          p_planned_date: string
+          p_request_id: string
+          p_rite_key: string
+          p_subject: string
+        }
         Returns: Json
       }
       sanskara_delete_dependent: {
@@ -11861,13 +11990,61 @@ export type Database = {
       }
       sanskara_dependents: { Args: never; Returns: Json }
       sanskara_export_mine: { Args: never; Returns: Json }
+      sanskara_finish_request: {
+        Args: { p_account: string; p_request: string; p_result: Json }
+        Returns: Json
+      }
       sanskara_grant_view: {
-        Args: { p_grantee: string; p_record: string; p_request_id: string; p_subject: string }
+        Args: {
+          p_grantee: string
+          p_record: string
+          p_request_id: string
+          p_subject: string
+        }
         Returns: Json
       }
       sanskara_list_access: { Args: { p_subject: string }; Returns: Json }
       sanskara_my_reminders: { Args: never; Returns: Json }
       sanskara_my_timeline: { Args: never; Returns: Json }
+      sanskara_on_access_lost: {
+        Args: { p_account: string; p_subject: string }
+        Returns: undefined
+      }
+      sanskara_on_record_completed: {
+        Args: { p_record: string }
+        Returns: undefined
+      }
+      sanskara_records_json_unchecked: {
+        Args: { p_include_private: boolean; p_subject: string }
+        Returns: Json
+      }
+      sanskara_reminder_still_valid: {
+        Args: {
+          p_generation: number
+          p_profile_generation: number
+          p_record_version: number
+          p_subscription: string
+        }
+        Returns: boolean
+      }
+      sanskara_reminders_due: {
+        Args: { p_horizon?: string; p_late?: string; p_now?: string }
+        Returns: {
+          account_id: string
+          audience_variant: string
+          language: string
+          lead_days: number
+          local_date: string
+          profile_generation: number
+          quiet_hours_end: number
+          quiet_hours_start: number
+          record_version: number
+          scheduled_for: string
+          subscription_generation: number
+          subscription_id: string
+          timezone: string
+        }[]
+      }
       sanskara_remove_manager: {
         Args: { p_account: string; p_request_id: string; p_subject: string }
         Returns: Json
@@ -11877,19 +12054,33 @@ export type Database = {
         Returns: Json
       }
       sanskara_save_private: {
-        Args: { p_expected_due_date: string; p_expected_version: number; p_location: string; p_notes: string; p_performed_by: string; p_record: string; p_request_id: string }
+        Args: {
+          p_expected_due_date: string
+          p_expected_version: number
+          p_location: string
+          p_notes: string
+          p_performed_by: string
+          p_record: string
+          p_request_id: string
+        }
         Returns: Json
       }
       sanskara_set_completion: {
-        Args: { p_completed_date: string; p_expected_version: number; p_record: string; p_request_id: string }
-        Returns: Json
-      }
-      sanskara_set_kul_link: {
-        Args: { p_kul_family_member: string; p_request_id: string; p_subject: string }
+        Args: {
+          p_completed_date: string
+          p_expected_version: number
+          p_record: string
+          p_request_id: string
+        }
         Returns: Json
       }
       sanskara_set_reminder: {
-        Args: { p_enabled: boolean; p_lead_days: number; p_record: string; p_request_id: string }
+        Args: {
+          p_enabled: boolean
+          p_lead_days: number
+          p_record: string
+          p_request_id: string
+        }
         Returns: Json
       }
       sanskara_shared_with_me: { Args: never; Returns: Json }
@@ -11898,7 +12089,13 @@ export type Database = {
         Returns: Json
       }
       sanskara_update_record: {
-        Args: { p_custom_title: string; p_expected_version: number; p_planned_date: string; p_record: string; p_request_id: string }
+        Args: {
+          p_custom_title: string
+          p_expected_version: number
+          p_planned_date: string
+          p_record: string
+          p_request_id: string
+        }
         Returns: Json
       }
       skip:
@@ -12526,6 +12723,10 @@ export type Database = {
       try_parse_notification_date: {
         Args: { p_value: string }
         Returns: string
+      }
+      unlink_family_member: {
+        Args: { p_family_member_id: string }
+        Returns: undefined
       }
       unlockrows: { Args: { "": string }; Returns: number }
       update_seva_tier_and_queue_notification: {
