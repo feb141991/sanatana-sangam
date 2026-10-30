@@ -81,6 +81,21 @@ export function getApiAuthFailureResponse(error: unknown, headers?: HeadersInit)
   });
 }
 
+/**
+ * The bearer token verified (JWKS is checked locally, so a deleted account's
+ * token stays valid until it expires) but the account behind it no longer
+ * exists. Answer 401 so the client refreshes, is refused, and signs out,
+ * instead of looping on a 503 that says "try again" forever. Callers must have
+ * a database-stated reason (`resolveAuthProfile` -> `user_deleted`); a stall or
+ * timeout is never grounds for this response.
+ */
+export function getDeletedAccountResponse(headers?: HeadersInit) {
+  return getApiAuthFailureResponse(
+    Object.assign(new Error('Account no longer exists'), { status: 401, code: 'AUTH_REQUIRED' }),
+    headers,
+  );
+}
+
 function authFailure(req: NextRequest, error: unknown, durationMs: number): ApiUserResult {
   const failure = classifyApiAuthFailure(error);
   const requestId = requestIdFor(req);

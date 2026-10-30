@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getApiAuthFailureResponse, getApiUser } from "@/lib/api-auth";
-import { ensureAuthProfile } from "@/lib/auth-profile";
+import { getApiAuthFailureResponse, getApiUser, getDeletedAccountResponse } from "@/lib/api-auth";
+import { resolveAuthProfile } from "@/lib/auth-profile";
 import { countCompletedNativeNityaSteps } from "@/lib/native-nitya-karma";
 import { localSpiritualDate } from "@/lib/sacred-time";
 import { SACRED_RELICS } from "@/lib/relics";
@@ -156,8 +156,11 @@ export async function GET(request: NextRequest) {
   // same repair. Defaults below keep this response renderable while the repair
   // creates the row for subsequent requests.
   if (!profile) {
-    const repaired = await ensureAuthProfile(user, supabase);
-    if (!repaired) {
+    const repaired = await resolveAuthProfile(user, supabase);
+    // The database said the auth.users row is gone: the account was deleted.
+    // Only that outcome is a 401; every other failure stays a retryable 503.
+    if (repaired.kind === 'user_deleted') return getDeletedAccountResponse();
+    if (repaired.kind !== 'ready') {
       return NextResponse.json(
         { error: 'Profile temporarily unavailable', code: 'PROFILE_UNAVAILABLE' },
         { status: 503, headers: { 'Cache-Control': 'private, no-store', 'Retry-After': '5' } },

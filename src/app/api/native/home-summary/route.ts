@@ -3,9 +3,9 @@ import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
 import { ServerTimingCollector } from '@/lib/server-timing';
 
 import { mapHeroAssetToTheme, resolveHomeHeroTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
-import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser, getDeletedAccountResponse } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { ensureAuthProfile } from '@/lib/auth-profile';
+import { resolveAuthProfile, type AuthProfileOutcome } from '@/lib/auth-profile';
 import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
 import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
 import { localSpiritualDate } from '@/lib/sacred-time';
@@ -533,6 +533,7 @@ export async function GET(request: NextRequest) {
   const DB_TIMEOUT = 4_000;
 
   const profileStartedAt = performance.now();
+  const repairOutcome: { value: AuthProfileOutcome | null } = { value: null };
   const profileRead = await readHomeProfile<ProfileRow>({
     read: (signal) => supabase
       .from('profiles')
@@ -540,12 +541,25 @@ export async function GET(request: NextRequest) {
       .eq('id', user.id)
       .abortSignal(signal)
       .maybeSingle<ProfileRow>(),
-    repair: () => ensureAuthProfile(user, supabase),
+    repair: async () => {
+      repairOutcome.value = await resolveAuthProfile(user, supabase);
+      return repairOutcome.value.kind === 'ready' ? repairOutcome.value.profile : null;
+    },
   });
   timings.record('profile', performance.now() - profileStartedAt, `Profile Fetch (${profileRead.status})`);
 
   if (!profileRead.profile) {
     const requestId = request.headers.get('x-request-id');
+    // Only the database saying the auth.users row is gone (FK violation on
+    // profiles_id_fkey while repairing a missing profile) means the account was
+    // deleted. A stalled or failed read/repair never reaches this branch, so a
+    // database outage still answers 503 and nobody is signed out by it.
+    if (repairOutcome.value?.kind === 'user_deleted') {
+      return getDeletedAccountResponse({
+        'Server-Timing': timings.toHeaderValue(),
+        ...(requestId ? { 'X-Request-ID': requestId } : {}),
+      });
+    }
     console.error('[home-summary][profile-unavailable]', {
       stage: 'profile',
       status: profileRead.status,

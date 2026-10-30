@@ -7,7 +7,7 @@ vi.mock('@/lib/api-auth', async (importOriginal) => ({
 }));
 vi.mock('@/lib/admin', () => ({ createServiceRoleSupabaseClient: mocks.admin }));
 vi.mock('@/lib/supabase-admin', () => ({ createAdminClient: mocks.admin }));
-vi.mock('@/lib/auth-profile', () => ({ ensureAuthProfile: mocks.repair }));
+vi.mock('@/lib/auth-profile', () => ({ resolveAuthProfile: mocks.repair }));
 vi.mock('@/lib/api-security', () => ({ rejectLargeRequest: () => null, rateLimitByIp: () => null }));
 vi.mock('@/lib/mandali-data-server', () => ({ loadPostComments: mocks.loadComments, loadSingleComment: vi.fn() }));
 
@@ -78,7 +78,7 @@ describe('success paths remain authenticated and scoped', () => {
   it('repairs the authenticated profile and preserves a genuine repair-unavailable response', async () => {
     const user = { id: 'user-1' };
     mocks.auth.mockResolvedValue({ user, error: null });
-    mocks.repair.mockResolvedValueOnce({ onboarding_completed: true }).mockResolvedValueOnce(null);
+    mocks.repair.mockResolvedValueOnce({ kind: 'ready', profile: { onboarding_completed: true } }).mockResolvedValueOnce({ kind: 'unavailable' });
     const req = () => new NextRequest('http://localhost/api/native/profile/bootstrap', { method: 'POST' });
     const response = await bootstrapProfile(req());
     expect(response.status).toBe(200);
@@ -87,5 +87,15 @@ describe('success paths remain authenticated and scoped', () => {
     const failed = await bootstrapProfile(req());
     expect(failed.status).toBe(503);
     expect(await failed.json()).toEqual({ error: 'Could not initialise account profile' });
+  });
+
+  it('answers 401 AUTH_REQUIRED, never 503, when the repair finds the account was deleted', async () => {
+    mocks.auth.mockResolvedValue({ user: { id: 'ghost-user' }, error: null });
+    mocks.repair.mockResolvedValueOnce({ kind: 'user_deleted' });
+    const response = await bootstrapProfile(new NextRequest('http://localhost/api/native/profile/bootstrap', { method: 'POST' }));
+    expect(response.status).toBe(401);
+    expect(response.headers.get('retry-after')).toBeNull();
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    expect(await response.json()).toEqual({ code: 'AUTH_REQUIRED', error: 'Unauthorized' });
   });
 });

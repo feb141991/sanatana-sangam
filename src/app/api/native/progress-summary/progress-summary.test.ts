@@ -8,8 +8,8 @@ vi.mock("@/lib/api-auth", async (importOriginal) => ({
   getApiUser: (...a: unknown[]) => getApiUser(...a),
 }));
 
-const ensureAuthProfile = vi.fn();
-vi.mock("@/lib/auth-profile", () => ({ ensureAuthProfile: (...a: unknown[]) => ensureAuthProfile(...a) }));
+const resolveAuthProfile = vi.fn();
+vi.mock("@/lib/auth-profile", () => ({ resolveAuthProfile: (...a: unknown[]) => resolveAuthProfile(...a) }));
 
 describe("GET /api/native/progress-summary - Truthful Profile Completion Model", () => {
   let profileRow: Record<string, unknown> | null = null;
@@ -59,8 +59,8 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
 
   beforeEach(() => {
     getApiUser.mockReset();
-    ensureAuthProfile.mockReset();
-    ensureAuthProfile.mockResolvedValue({ onboarding_completed: false });
+    resolveAuthProfile.mockReset();
+    resolveAuthProfile.mockResolvedValue({ kind: "ready", profile: { onboarding_completed: false } });
     profileRow = null;
     profileReadError = null;
     profileRefetchError = null;
@@ -109,7 +109,7 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
     expect(res.status).toBe(200);
     const body = await res.json();
 
-    expect(ensureAuthProfile).toHaveBeenCalledWith(
+    expect(resolveAuthProfile).toHaveBeenCalledWith(
       { id: "user-missing-profile" },
       mockSupabase,
     );
@@ -126,12 +126,12 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
 
     const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
     expect(res.status).toBe(503);
-    expect(ensureAuthProfile).not.toHaveBeenCalled();
+    expect(resolveAuthProfile).not.toHaveBeenCalled();
     expect(await res.json()).toMatchObject({ code: "PROFILE_UNAVAILABLE" });
   });
 
   it("returns 503 when a confirmed missing profile cannot be repaired", async () => {
-    ensureAuthProfile.mockResolvedValue(null);
+    resolveAuthProfile.mockResolvedValue({ kind: "unavailable" });
     getApiUser.mockResolvedValue({
       user: { id: "user-repair-failed" },
       error: null,
@@ -141,6 +141,20 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
     const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
     expect(res.status).toBe(503);
     expect(await res.json()).toMatchObject({ code: "PROFILE_UNAVAILABLE" });
+  });
+
+  it("returns 401 AUTH_REQUIRED, not 503, when the missing profile belongs to a deleted account", async () => {
+    resolveAuthProfile.mockResolvedValue({ kind: "user_deleted" });
+    getApiUser.mockResolvedValue({
+      user: { id: "user-deleted" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
+    expect(res.status).toBe(401);
+    expect(res.headers.get("Retry-After")).toBeNull();
+    expect(await res.json()).toMatchObject({ code: "AUTH_REQUIRED" });
   });
 
   it("returns 503 when the repaired profile cannot be re-read", async () => {

@@ -40,10 +40,35 @@ function profileUsername(user: AuthProfileUser) {
   return `${base || 'seeker'}_${user.id.slice(0, 8)}`;
 }
 
-export async function ensureAuthProfile(
+/**
+ * Why a profile could not be made available. `user_deleted` is a fact the
+ * database stated (the auth.users row this profile must reference is gone), so
+ * a caller may answer 401. `unavailable` is everything else -- a stall, a
+ * timeout, a missing client, an unrelated constraint -- and stays a retryable
+ * 503: a slow database must never sign anybody out.
+ */
+export type AuthProfileOutcome =
+  | { kind: 'ready'; profile: NonNullable<AuthProfileState> }
+  | { kind: 'user_deleted' }
+  | { kind: 'unavailable' };
+
+/**
+ * True only for the foreign-key violation raised when `profiles.id` has no
+ * matching `auth.users` row: SQLSTATE 23503 naming `profiles_id_fkey`. Any
+ * other 23503 (a different table's constraint) or any other code is not
+ * evidence that the account is gone.
+ */
+export function isDeletedUserProfileError(
+  error: { code?: string | null; message?: string | null; details?: string | null } | null | undefined,
+): boolean {
+  if (!error || error.code !== '23503') return false;
+  return `${error.message ?? ''} ${error.details ?? ''}`.includes('profiles_id_fkey');
+}
+
+export async function resolveAuthProfile(
   user: AuthProfileUser,
   sessionSupabase?: Awaited<ReturnType<typeof createServerSupabaseClient>>,
-): Promise<AuthProfileState> {
+): Promise<AuthProfileOutcome> {
   const profile = {
     id: user.id,
     full_name: profileName(user),
@@ -58,7 +83,7 @@ export async function ensureAuthProfile(
 
   if (!supabase) {
     console.error('[auth-profile] profile repair is unavailable: no database client');
-    return null;
+    return { kind: 'unavailable' };
   }
 
   const { data: existing, error: readError } = await supabase
@@ -72,7 +97,7 @@ export async function ensureAuthProfile(
     if (!existing.avatar_url && avatarUrl) {
       await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
     }
-    return { onboarding_completed: existing.onboarding_completed };
+    return { kind: 'ready', profile: { onboarding_completed: existing.onboarding_completed } };
   }
 
   if (readError) {
@@ -81,7 +106,7 @@ export async function ensureAuthProfile(
       code: readError.code,
       message: readError.message,
     });
-    return null;
+    return { kind: 'unavailable' };
   }
 
   const { error: insertError } = await supabase
@@ -89,13 +114,38 @@ export async function ensureAuthProfile(
     .insert(profile);
 
   if (insertError) {
+    if (isDeletedUserProfileError(insertError)) {
+      // The token is still valid (JWKS verification is local) but the account
+      // was deleted. Not an outage: log it apart from [profile repair failed]
+      // so a deleted-account burst is not mistaken for database trouble.
+      console.warn('[auth-profile] session belongs to a deleted account:', {
+        userId: user.id.slice(0, 8),
+        code: insertError.code,
+      });
+      return { kind: 'user_deleted' };
+    }
     console.error('[auth-profile] profile repair failed:', {
       userId: user.id.slice(0, 8),
       code: insertError.code,
       message: insertError.message,
     });
-    return null;
+    return { kind: 'unavailable' };
   }
 
-  return { onboarding_completed: profile.onboarding_completed };
+  return { kind: 'ready', profile: { onboarding_completed: profile.onboarding_completed } };
+}
+
+/**
+ * Compatibility wrapper: null for every non-ready outcome. Callers serving a
+ * native session (home-summary, progress-summary, profile/bootstrap) use
+ * `resolveAuthProfile` to tell a deleted account from an outage; the web
+ * sign-in callbacks (auth/callback, auth/destination) handle freshly
+ * authenticated users, who cannot be deleted accounts, and keep this form.
+ */
+export async function ensureAuthProfile(
+  user: AuthProfileUser,
+  sessionSupabase?: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+): Promise<AuthProfileState> {
+  const outcome = await resolveAuthProfile(user, sessionSupabase);
+  return outcome.kind === 'ready' ? outcome.profile : null;
 }

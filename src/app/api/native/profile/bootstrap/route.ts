@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
-import { ensureAuthProfile } from '@/lib/auth-profile';
+import { getApiAuthFailureResponse, getApiUser, getDeletedAccountResponse } from '@/lib/api-auth';
+import { resolveAuthProfile } from '@/lib/auth-profile';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -17,8 +17,11 @@ export async function POST(request: NextRequest) {
     return getApiAuthFailureResponse(authError);
   }
 
-  const profile = await ensureAuthProfile(user);
-  if (!profile) {
+  const outcome = await resolveAuthProfile(user);
+  // A deleted account's token still verifies locally; the database says so via
+  // the profiles_id_fkey violation. Anything else stays a retryable 503.
+  if (outcome.kind === 'user_deleted') return getDeletedAccountResponse();
+  if (outcome.kind !== 'ready') {
     return NextResponse.json(
       { error: 'Could not initialise account profile' },
       { status: 503, headers: { 'Cache-Control': 'no-store' } },
@@ -26,7 +29,7 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(
-    { onboarding_completed: profile.onboarding_completed },
+    { onboarding_completed: outcome.profile.onboarding_completed },
     { headers: { 'Cache-Control': 'private, no-store' } },
   );
 }
