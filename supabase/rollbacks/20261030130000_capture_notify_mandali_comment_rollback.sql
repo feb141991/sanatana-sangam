@@ -1,7 +1,11 @@
 -- Rollback for 20261030130000_capture_notify_mandali_comment.sql
 -- Status: PREPARED, NOT APPLIED.
 --
--- Drops the trigger and trigger function idempotently.
-
-DROP TRIGGER IF EXISTS trg_notify_mandali_comment ON public.post_comments;
-DROP FUNCTION IF EXISTS public.notify_mandali_comment();
+-- INTENTIONALLY A NO-OP. That migration only records the production definition of notify_mandali_comment()
+-- and trg_notify_mandali_comment; both existed in production before it, so applying it changed nothing and
+-- there is nothing to undo. Dropping them here would silently remove every Mandali comment and reply
+-- notification, which is far worse than leaving the capture in place.
+--
+-- To retire the feature deliberately, write a new reviewed migration (and its own rollback) that drops the
+-- trigger, and tell the founder that comment notifications will stop.
+DO $$ BEGIN NULL; END $$;
