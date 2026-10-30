@@ -197,3 +197,11 @@ export async function getDharmVeerBySlug(
 
   return DHARM_VEERS.find(h => h.id === slug) ?? null;
 }
+
+/** Single approved canonical story for a direct link. No roster or daily rotation work. */
+export async function getDharmVeerDetail(supabase: SupabaseClient, slug: string): Promise<DharmVeer | null> {
+  const { data, error } = await supabase.from('dharm_veers').select(DHARM_VEER_COLS)
+    .eq('slug', slug).eq('review_status', 'approved').maybeSingle();
+  if (error) throw error;
+  return data ? rowToDharmVeer(data as DailyRow) : DHARM_VEERS.find((hero) => hero.id === slug) ?? null;
+}
