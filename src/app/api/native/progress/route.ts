@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
+import { nativeProgressWindow } from '@/lib/native-progress-window';
 
 // GET /api/native/progress
 //
@@ -48,9 +49,8 @@ export async function GET(req: NextRequest) {
       return getApiAuthFailureResponse(authError);
     }
 
-    const today = new Date().toISOString().slice(0, 10);
+    const { today, start182d: sixMonthsAgo } = nativeProgressWindow();
     const thirtyAgo = daysAgoISO(29);
-    const sixMonthsAgo = daysAgoISO(181);
 
     const [
       { data: profile },
