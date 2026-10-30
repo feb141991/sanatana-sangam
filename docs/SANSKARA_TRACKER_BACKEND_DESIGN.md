@@ -229,6 +229,7 @@ without the founder's approval, and `supabase db push` is never used.
 | M2 *(written, tested; APPLIED live)* | `sanskara_rites`, subjects, managers, records, private fields, grants (table only), request log, audit; `sanskara_can`; the read and write functions for owners and managers |
 | M3 *(written, tested; APPLIED live)* | `sanskara_claims`; grant, revoke, list-access and shared-with-me functions; start, cancel and accept claim |
 | M4 *(written, tested; APPLIED live)* | `sanskara_subscriptions`; the live-reminder index; the cancellation triggers and the two hooks; the send-time check; insert-time validation of candidates; the due-reminders selector; `sanskara_set_reminder` and `sanskara_my_reminders`. (The admin account-delete list gained the Sanskara tables in the same commit.) |
+| M4a *(written, tested on scratch Postgres; NOT applied)* | The optional display-only Kul pointer: `sanskara_subjects.kul_family_member_id`; `sanskara_create_dependent` gains an optional fourth argument; `sanskara_set_kul_link`; `sanskara_dependents` returns the pointer re-validated for the viewer; two internal helpers; two new audit actions. See "The Kul pointer" below. |
 | M5 | The scheduled jobs |
 | M6 | Retirement of the old tables (empty-assertion first) |
 
@@ -397,3 +398,36 @@ deletion, export and leave/remove hooks (M4 already has the cancellation hooks o
 disable the old PWA Sanskara APIs; archive the 16-row catalogue and run M6; the Native API and screen; any new migration
 only after shadow verification. Reminder production stays off until the old producer is disabled and the dispatcher
 integration is finished.
+
+## The Kul pointer (M4a, 2026-10-30)
+
+Implements contract section 4 rule 2: a dependent may point at a Kul tree person **for display only**. Migration
+`20261030100000_sanskara_kul_pointer.sql`, rollback `supabase/rollbacks/20261030100000_sanskara_kul_pointer_rollback.sql`, test
+`supabase/tests/sanskara_kul_pointer.test.sql`. **Not applied to any database.**
+
+M2 left the column out; this adds it as a nullable column on dependents only, `ON DELETE SET NULL`, set only by
+`sanskara_create_dependent(..., p_kul_family_member)` and `sanskara_set_kul_link`, and returned only by `sanskara_dependents()`
+(a manager's view).
+
+**Non-disclosure rules, each proved by the test:**
+1. *No authority.* Only `create_dependent`, `dependents`, `set_kul_link` and the helper `resolve_tree_person` mention the pointer
+   (asserted by scanning every function body); `sanskara_can` and the grant, claim and list functions are independent of it.
+2. *No tree-to-subject lookup.* No client function takes a tree person and returns subject data, and clients hold no table
+   grant on `sanskara_subjects`, so a Kul member viewing the tree cannot tell whether anyone has linked a person.
+3. *No uniqueness.* A unique index would tell a second manager "someone already tracks this person". Two dependents may point
+   at one tree person; each stays private to its own managers.
+4. *Identical refusals.* A missing, foreign-Kul, deceased or already-accounted tree person, a stranger's subject, a former
+   manager and an account subject all return the same `SK404 sanskara_not_found`. A bad name is reported before a bad pointer.
+5. *Valid for this viewer, now.* The pointer shows only while the tree person is in the Kul the viewer is in at that moment
+   (`kul_members` and `profiles.kul_id` agreeing), alive, and without an account. A manager who leaves the Kul stops seeing it; a
+   co-manager who stays keeps it; rejoining restores it (it was hidden, never lost); a tree person who changes underneath it is
+   hidden, and deleting them clears the stored pointer without touching anyone's access.
+
+**Checked:** the full chain M1 to M4a applies cleanly to a scratch Postgres 18 and the rollback restores the M2 behaviour (the M2
+to M4 tests pass after it); all five Sanskara test files pass on the new head; seven deliberate breakages (dropping the Kul
+check, returning the raw pointer, a different error code, a unique index, `sanskara_can` reading the pointer, a client-callable
+helper, ignoring deceased and accounted people) are each caught by the test. The scratch database uses stand-ins for the Supabase
+tables, built from production's column list on 2026-10-30; it is not a Supabase branch.
+**Changed in passing:** the three-argument `sanskara_create_dependent` is dropped and replaced by a four-argument form with a
+default (nothing calls it yet); one signature in the M2 test was updated to match. `sanskara_export_mine` does not export the pointer.
+**Not checked:** a Supabase branch, concurrency, and any route or screen.

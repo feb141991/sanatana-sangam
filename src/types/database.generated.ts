@@ -7800,6 +7800,7 @@ export type Database = {
           display_name: string | null
           frozen_at: string | null
           id: string
+          kul_family_member_id: string | null
           kind: string
           state: string
           suspended_at: string | null
@@ -7813,6 +7814,7 @@ export type Database = {
           frozen_at?: string | null
           id?: string
           kind: string
+          kul_family_member_id?: string | null
           state?: string
           suspended_at?: string | null
           updated_at?: string
@@ -7825,6 +7827,7 @@ export type Database = {
           frozen_at?: string | null
           id?: string
           kind?: string
+          kul_family_member_id?: string | null
           state?: string
           suspended_at?: string | null
           updated_at?: string
@@ -11840,7 +11843,7 @@ export type Database = {
         Returns: Json
       }
       sanskara_create_dependent: {
-        Args: { p_birth_date: string; p_name: string; p_request_id: string }
+        Args: { p_birth_date: string; p_kul_family_member?: string; p_name: string; p_request_id: string }
         Returns: Json
       }
       sanskara_create_record: {
@@ -11879,6 +11882,10 @@ export type Database = {
       }
       sanskara_set_completion: {
         Args: { p_completed_date: string; p_expected_version: number; p_record: string; p_request_id: string }
+        Returns: Json
+      }
+      sanskara_set_kul_link: {
+        Args: { p_kul_family_member: string; p_request_id: string; p_subject: string }
         Returns: Json
       }
       sanskara_set_reminder: {

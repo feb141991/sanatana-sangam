@@ -114,7 +114,7 @@ begin
 
   foreach f in array array[
     'public.sanskara_my_timeline()', 'public.sanskara_dependents()', 'public.sanskara_export_mine()',
-    'public.sanskara_create_dependent(uuid, text, date)', 'public.sanskara_create_record(uuid, uuid, text, text, date)',
+    'public.sanskara_create_dependent(uuid, text, date, uuid)', 'public.sanskara_create_record(uuid, uuid, text, text, date)',
     'public.sanskara_update_record(uuid, uuid, text, date, integer)', 'public.sanskara_save_private(uuid, uuid, text, text, text, date, integer)',
     'public.sanskara_set_completion(uuid, uuid, date, integer)', 'public.sanskara_delete_record(uuid, uuid)',
     'public.sanskara_add_manager(uuid, uuid, uuid)', 'public.sanskara_remove_manager(uuid, uuid, uuid)',
