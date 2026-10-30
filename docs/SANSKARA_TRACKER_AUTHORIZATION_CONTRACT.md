@@ -1,6 +1,6 @@
 # Sanskara tracker authorization contract — design (pre-migration)
 
-Status: **v0.3. Design only, except that migrations M1 and M2 now exist (unapplied; see `SANSKARA_TRACKER_BACKEND_DESIGN.md`). v0.3 tightened four rules while writing them: see "Amendments in v0.3" at the end of section 13.** Decisions D1 to D5 in section 12 were
+Status: **v0.3. Design only, except that migrations M1 to M4 now exist and, as observed on 2026-10-30, are applied in the live project (see the addendum in `SANSKARA_TRACKER_BACKEND_DESIGN.md`). v0.3 tightened four rules while writing them: see "Amendments in v0.3" at the end of section 13.** Decisions D1 to D5 in section 12 were
 **approved as recommended by the founder on 2026-10-29** ("go ahead with D1 to D5 recommendations"). One thing is still
 needed from the founder: a named, qualified reviewer for any tradition-scoped timing (D3), without which the tracker ships
 with chosen-date milestones and no suggested timing. Written 2026-10-29. Step 3 is in

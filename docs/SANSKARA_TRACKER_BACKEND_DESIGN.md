@@ -1,9 +1,12 @@
 # Sanskara tracker backend design (step 3) — pre-migration
 
-Status: **v0.4. M1 to M4 are written, with rollbacks and tests, and verified on a scratch Postgres; they are NOT applied to
-any database. M5, M6, the routes, the reminder producer, the dispatcher changes and the screens are not written.** Implements the approved contract
-(`SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md`, v0.2: decisions D1 to D5 approved as recommended on 2026-10-29). Written
-and updated 2026-10-29.
+Status: **v0.5. M1 to M4 are written, with rollbacks and tests, and verified on a scratch Postgres. CORRECTION, observed
+2026-10-30: all four ARE applied in the live Supabase project (`supabase_migrations.schema_migrations` lists
+`20261029160000` to `20261029160300`), although the commit messages say "unapplied". Who applied them, and when, is not
+recorded; they were not applied by the session that wrote this section. See the addendum at the end for what was checked
+on the live objects. M5, M6, the routes, the reminder producer, the dispatcher changes and the screens are not written.**
+Implements the approved contract (`SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md`, v0.2: decisions D1 to D5 approved as
+recommended on 2026-10-29). Written 2026-10-29; live state recorded 2026-10-30.
 
 This document turns the contract into tables, one authorization function, a function surface, a reminder lifecycle on
 the existing notification pipeline, scheduled jobs, a migration sequence and a retirement plan for the old
@@ -222,10 +225,10 @@ without the founder's approval, and `supabase db push` is never used.
 
 | # | Contents |
 |---|---|
-| M1 *(written, tested, not applied)* | The two `profiles` columns and the server-owned counter |
-| M2 *(written, tested, not applied)* | `sanskara_rites`, subjects, managers, records, private fields, grants (table only), request log, audit; `sanskara_can`; the read and write functions for owners and managers |
-| M3 *(written, tested, not applied)* | `sanskara_claims`; grant, revoke, list-access and shared-with-me functions; start, cancel and accept claim |
-| M4 *(written, tested, not applied)* | `sanskara_subscriptions`; the live-reminder index; the cancellation triggers and the two hooks; the send-time check; insert-time validation of candidates; the due-reminders selector; `sanskara_set_reminder` and `sanskara_my_reminders`. (The admin account-delete list gained the Sanskara tables in the same commit.) |
+| M1 *(written, tested; APPLIED live, observed 2026-10-30)* | The two `profiles` columns and the server-owned counter |
+| M2 *(written, tested; APPLIED live)* | `sanskara_rites`, subjects, managers, records, private fields, grants (table only), request log, audit; `sanskara_can`; the read and write functions for owners and managers |
+| M3 *(written, tested; APPLIED live)* | `sanskara_claims`; grant, revoke, list-access and shared-with-me functions; start, cancel and accept claim |
+| M4 *(written, tested; APPLIED live)* | `sanskara_subscriptions`; the live-reminder index; the cancellation triggers and the two hooks; the send-time check; insert-time validation of candidates; the due-reminders selector; `sanskara_set_reminder` and `sanskara_my_reminders`. (The admin account-delete list gained the Sanskara tables in the same commit.) |
 | M5 | The scheduled jobs |
 | M6 | Retirement of the old tables (empty-assertion first) |
 
@@ -251,8 +254,9 @@ Postgres does not write bound parameters (a child's name, private notes) to its 
 `log_parameter_max_length_on_error` is 0, `log_statement` is `ddl`, duration logging is off.
 
 **Not verified:**
-- Anything on a real Supabase database. The migrations have not been applied to a Supabase branch (a branch is paid
-  infrastructure and needs the founder's approval) or to production.
+- (Superseded 2026-10-30: the migrations are applied in the live project, never to a shadow branch first. The objects
+  were then checked read-only; see the addendum. The functional tests have still only been run on a scratch Postgres,
+  not against the live database.)
 - Behaviour under truly concurrent requests (the design relies on a row lock and the request-log primary key; both are
   exercised sequentially only).
 - M3 to M6, the reminder pipeline integration, the dispatcher and producer changes, the leave and remove hooks.
@@ -349,3 +353,47 @@ denying; none widens access.
 
 There is no remaining sketch: the DDL for M1 to M4 is in the migrations. M5 (the scheduled jobs) and M6 (retiring the old
 tables) add no new tables.
+
+## Addendum: live state and security review (2026-10-30)
+
+Read-only checks against the live Supabase project (`mnbwodcswxoojndytngu`, 18 profiles). Nothing was changed.
+
+**State.** `supabase_migrations.schema_migrations` lists M1 to M4 (`20261029160000` to `20261029160300`), applied outside
+the process this design describes (no shadow branch, applier not recorded). All ten `sanskara_*` tables exist and are
+empty (0 subjects, 0 records, 0 subscriptions); `sanskara_rites` holds only `custom`; no profile has opted in to
+`wants_sanskara_reminders`. The legacy tables `user_sanskaras` and `user_sanskars` are empty; the old `sanskars`
+catalogue still holds its 16 rows (archive before M6). No `notifications` row and no `notification_schedule` row has type
+`sanskar_milestone`: reminders are inert. The old PWA producer, `POST /api/sanskar/schedule`, still exists and writes
+`notification_schedule` rows of that type, so it must be disabled before any new producer is scheduled.
+
+**Checked and acceptable.**
+- Row-level security is enabled and forced on all ten tables; `anon` and `authenticated` hold no table grants.
+- All 43 `sanskara_*` functions are `SECURITY DEFINER` and every one pins `search_path`. None is executable by `anon` or
+  `PUBLIC`; 22 are executable by `authenticated` (the intended client surface: create, update, delete, grant, revoke,
+  claim, timeline, export, reminders).
+- All eleven Sanskara triggers are enabled, on the intended tables (`kul_members` membership end, `notification_candidates`
+  validation, `profiles` opt-in guard and reminder guard, record and private-field rules, manager rules and orphan
+  deletion, subscription change and removal). `guard_sanskara_opt_in_generation` is `SECURITY INVOKER`; the rest are definers.
+- Supabase's security advisor reports no Sanskara-specific warning beyond (a) `rls_enabled_no_policy` (INFO) on the ten
+  tables, which is the deliberate deny-all-then-functions design, and (b) the 22 client-executable definer functions in the
+  next point.
+
+**Open: the RPC boundary.** Any signed-in user can call the 22 client functions directly through PostgREST
+(`/rest/v1/rpc/sanskara_*`) today, with no route, rate limit or telemetry in front of them. Plan agreed to start on
+2026-10-30: build `/api/native/sanskara/*` first, then revoke `EXECUTE` from `authenticated` on the functions the routes
+wrap, before any launch. Until then the surface is live but unused.
+
+**Not Sanskara, noticed on the same scan (report only, not changed).** Six functions with a mutable `search_path`
+(`bump_social_variant_content_version`, `rollup_social_post_status`, `count_distinct_native_telemetry_users`,
+`handle_social_updated_at`, `protect_published_social_variant`, `safe_timezone`); `spatial_ref_sys` without RLS and
+`st_estimatedextent` executable by `anon` (both PostGIS); four extensions in `public`; leaked-password protection off. Also
+worth checking separately: `mark_panchang_viewed(p_user_id uuid, p_date date)` is client-executable and takes a user id as
+a parameter; whether it verifies the id against `auth.uid()` was not examined.
+
+**Plan order (agreed to start 2026-10-30).** Record state (this addendum); advisor and trigger checks (done above);
+routes first, then revoke direct RPC; display-only Kul pointer set and returned only through the subject functions, with
+the viewer's Kul membership re-checked on every read and a regression test for a manager who leaves the Kul;
+deletion, export and leave/remove hooks (M4 already has the cancellation hooks on `kul_members` and subscriptions);
+disable the old PWA Sanskara APIs; archive the 16-row catalogue and run M6; the Native API and screen; any new migration
+only after shadow verification. Reminder production stays off until the old producer is disabled and the dispatcher
+integration is finished.
