@@ -21,7 +21,7 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
     }
   });
 
-  it('2. retains bilingual drafts while withholding every field pending durable provenance', () => {
+  it('2. retains bilingual drafts while gating pending festivals and unwithholding council-reviewed Ekadashis', () => {
     for (const f of data.festivals) {
       expect(f.name?.value?.en, `Missing EN name for ${f.definitionKey}`).toBeDefined();
       expect(f.name?.value?.hi, `Missing HI name for ${f.definitionKey}`).toBeDefined();
@@ -39,6 +39,8 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
 
       expect(f.pujaItems?.value?.en?.length, `Expected >= 3 pujaItems for ${f.definitionKey}`).toBeGreaterThanOrEqual(3);
 
+      const isEkadashi = f.definitionKey.includes('ekadashi');
+
       for (const [fieldName, field] of Object.entries({
         name: f.name,
         tagline: f.tagline,
@@ -48,23 +50,37 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
         donts: f.donts,
         pujaItems: f.pujaItems,
       })) {
-        expect(field.status, `${f.definitionKey}.${fieldName} must remain withheld`).toBe('pending_source');
-        expect(field.sourceRefs, `${f.definitionKey}.${fieldName} carries unverified source metadata`).toEqual([]);
-        expect('reviewRef' in field, `${f.definitionKey}.${fieldName} carries an unsupported review claim`).toBe(false);
+        if (isEkadashi) {
+          expect(field.status, `${f.definitionKey}.${fieldName} should be council reviewed`).toBe('council_reviewed_editorial');
+          expect(field.sourceRefs.length, `${f.definitionKey}.${fieldName} missing source refs`).toBeGreaterThan(0);
+          expect(field.reviewRef, `${f.definitionKey}.${fieldName} missing reviewRef`).toBe('docs/content-reviews/ekadashi-series-2026-v1.md');
+        } else {
+          expect(field.status, `${f.definitionKey}.${fieldName} must remain withheld`).toBe('pending_source');
+          expect(field.sourceRefs, `${f.definitionKey}.${fieldName} carries unverified source metadata`).toEqual([]);
+          expect('reviewRef' in field, `${f.definitionKey}.${fieldName} carries an unsupported review claim`).toBe(false);
+        }
       }
     }
   });
 
-  it('3. retains structurally complete mantra drafts without claiming authenticity', () => {
+  it('3. retains structurally complete mantra drafts, verified for Ekadashis and gated for others', () => {
     for (const f of data.festivals) {
       expect(f.mantra, `Expected mantra for ${f.definitionKey}`).toBeDefined();
       expect(f.mantra.sanskrit.length, `Mantra text too short for ${f.definitionKey}`).toBeGreaterThan(5);
       expect(f.mantra.transliteration.length, `Transliteration too short for ${f.definitionKey}`).toBeGreaterThan(5);
       expect(f.mantra.translation?.value?.en?.length, `Mantra EN translation too short for ${f.definitionKey}`).toBeGreaterThan(10);
       expect(f.mantra.translation?.value?.hi?.length, `Mantra HI translation too short for ${f.definitionKey}`).toBeGreaterThan(10);
-      expect(f.mantra.translation.status, `${f.definitionKey} mantra must remain withheld`).toBe('pending_source');
-      expect(f.mantra.translation.sourceRefs, `${f.definitionKey} mantra carries unverified source metadata`).toEqual([]);
-      expect('reviewRef' in f.mantra.translation, `${f.definitionKey} mantra carries an unsupported review claim`).toBe(false);
+
+      const isEkadashi = f.definitionKey.includes('ekadashi');
+      if (isEkadashi) {
+        expect(f.mantra.translation.status, `${f.definitionKey} mantra should be council reviewed`).toBe('council_reviewed_editorial');
+        expect(f.mantra.translation.sourceRefs.length, `${f.definitionKey} mantra missing source refs`).toBeGreaterThan(0);
+        expect(f.mantra.translation.reviewRef, `${f.definitionKey} mantra missing reviewRef`).toBe('docs/content-reviews/ekadashi-series-2026-v1.md');
+      } else {
+        expect(f.mantra.translation.status, `${f.definitionKey} mantra must remain withheld`).toBe('pending_source');
+        expect(f.mantra.translation.sourceRefs, `${f.definitionKey} mantra carries unverified source metadata`).toEqual([]);
+        expect('reviewRef' in f.mantra.translation, `${f.definitionKey} mantra carries an unsupported review claim`).toBe(false);
+      }
     }
   });
 

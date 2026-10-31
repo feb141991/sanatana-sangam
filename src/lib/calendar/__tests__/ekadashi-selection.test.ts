@@ -143,20 +143,20 @@ describe('Prompt 4 End-to-End: Yogini Ekadashi Variant Selection & Governance', 
     expect(results[0].alternatives.length + results[1].alternatives.length).toBeGreaterThan(0);
   });
 
-  it('10. Deferred Yogini variants do not leak into materialized output', () => {
+  it('10. Disputed 2026 Yogini variants do not leak into 2026 materialized output', () => {
     const engineOutput = calculateOccurrencesWithEvaluator(2026);
     expect(engineOutput.resolved.filter(r => r.slug === 'yogini-ekadashi')).toEqual([]);
   }, 300_000);
 
-  it('11. Pending council status prevents both variants from materializing', () => {
+  it('11. Yogini variants are included for launch with 2026 guarded by disputed_years', () => {
     const yoginiRules = CANONICAL_RULES.filter(r => r.slug === 'yogini-ekadashi');
     expect(yoginiRules).toHaveLength(2);
 
     for (const rule of yoginiRules) {
-      expect(rule.launch_status).toBe('deferred');
+      expect(rule.launch_status).toBe('included');
       expect(rule.disputed_years).toContain(2026);
       expect(isPublishableForYear(rule, 2026)).toBe(false);
-      expect(isPublishableForYear(rule, 2027)).toBe(false);
+      expect(isPublishableForYear(rule, 2027)).toBe(true);
     }
   });
 

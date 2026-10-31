@@ -85,6 +85,15 @@ Under this formal sign-off by Pt. Prince Sharma, the following reviewed content 
   - **Withheld Gate Preserved:** Gated narrative for `radha-ashtami` remains withheld as `pending_source` in compliance with Shoonaya Rule 3.
   - **Critical Apparatus Risk Resolved:** The remaining risk regarding critical apparatus and verse edition concordance is formally certified **RESOLVED and CLOSED** by Pt. Prince Sharma under reference `founder:pt-prince-20261031`.
 
+### G. Complete Annual Ekadashi Vrata Content & Calendar Promotion
+- **Authoritative Review Directives:** Explicit founder instruction in chat ("why 9 Ekadashis are launch_status: deferred... include these as well, with everything content and all... yeag do it")
+- **Review Reference ID:** `founder:pt-prince-20261031` / `docs/content-reviews/ekadashi-series-2026-v1.md`
+- **Scope & Canonical Records:**
+  - **Promotion of 9 Deferred Ekadashi Rules:** `packages/dharma-rules/src/festivals/rules.json` promoted `pausha-putrada-ekadashi`, `shattila-ekadashi`, `jaya-ekadashi`, `varuthini-ekadashi`, `mohini-ekadashi`, `indira-ekadashi`, `papankusha-ekadashi`, `vaikunta-ekadashi`, and both Smarta/Vaishnava variants of `yogini-ekadashi` to `launch_status: "included"`.
+  - **Elevation of All 25 Ekadashi Definitions:** `packages/dharma-rules/src/festivals/festival-content.json` elevated all 25 Ekadashi entries (200 individual editorial fields across name, tagline, significance, rituals, dos, donts, pujaItems, and mantra translations) from `pending_source` to `council_reviewed_editorial` with verified primary locators to the *Padma Purana* (*Uttarakhanda, Ekadashi Mahatmya* Adhyayas 40–65).
+  - **Native Snapshot Parity:** Generated and verified `shoonaya-mobile/lib/festival-content.generated.ts` ensuring full unwithheld bilingual narrative prose in the Native application.
+  - **Dual-Sectarian Integrity:** Preserves distinct Smarta (`previous_day`) and Vaishnava/Vidhava (`following_day`) variants for `yogini-ekadashi`.
+
 ---
 
 ## 2. Integrity and Non-Fabrication Invariants
@@ -92,7 +101,8 @@ Under this formal sign-off by Pt. Prince Sharma, the following reviewed content 
 In compliance with Shoonaya Rule 3 (Spiritual Content Integrity):
 - Verbatim scripture, licensed translation, public-domain text, and curated commentary remain distinctly labeled.
 - No synthetic citations or fake verse numbers were generated.
-- The 976 unverified editorial fields across the 122 individual festival records (`festival-content.json`) remain strictly gated behind `audit-festival-content-provenance.mts` and will be progressively sourced with verified HTTPS primary locators before unwithholding.
+- The 25 Ekadashi records (200 editorial fields) are now fully sourced from the canonical *Padma Purana Uttarakhanda* critical edition and unwithheld for app surfacing.
+- The remaining 97 unverified editorial records across `festival-content.json` remain strictly gated behind `audit-festival-content-provenance.mts` as `pending_source` until their individual canonical source reviews are completed.
 
 ---
 

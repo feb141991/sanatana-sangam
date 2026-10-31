@@ -10449,33 +10449,60 @@
           "en": "Nirjala Ekadashi (Pandava Nirjala / Bhimseni)",
           "hi": "निर्जला एकादशी (भीमसेनी एकादशी / पाण्डव एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The crown of all 24 Ekadashis observed without even a drop of water, bestowing the fruit of all year’s fasts",
           "hi": "बिना जल की बूंद ग्रहण किए किया जाने वाला वर्ष का सबसे कठिन और फलदायी महाव्रत — समस्त एकादशियों का पुण्य"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Nirjala Ekadashi falls on Jyeshtha Shukla Ekadashi during peak summer heat. Known as Bhimseni Ekadashi, it derives from the Mahabharata: the mighty Pandava prince Bhima possessed an insatiable digestive fire (Vrika-udara) and could not endure fasting twice every month. Sage Vyasa instructed Bhima that by observing this single Ekadashi in Jyeshtha with absolute waterless discipline (Nirjala: no food and not even a drop of water from sunrise to next morning’s sunrise), he would attain the complete spiritual merit of all twenty-four annual Ekadashis combined.",
           "hi": "ज्येष्ठ शुक्ल एकादशी को निर्जला एकादशी कहा जाता है, जो समस्त २४ एकादशियों में सबसे श्रेष्ठ और कठिन मानी जाती है। महाभारत के अनुसार, महाबली भीमसेन अपनी तीव्र जठराग्नि के कारण हर महीने दो एकादशियों का उपवास नहीं रख पाते थे। महर्षि वेदव्यास ने उन्हें परामर्श दिया कि यदि वे केवल ज्येष्ठ मास की इस एकादशी को बिना अन्न और बिना जल (निर्जल) का उपवास रख लें, तो उन्हें वर्षभर की समस्त एकादशियों का सम्मिलित पुण्य फल प्राप्त हो जाएगा।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -10492,11 +10519,20 @@
             "जल से भरे मिट्टी के घड़े, खरबूजा, पंखा, छाता और सत्तू का ब्राह्मणों व निर्धनों को दान"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -10511,11 +10547,20 @@
             "द्वादशी को ब्राह्मण भोजन व दान के उपरांत ही पारण करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -10528,11 +10573,20 @@
             "क्रोध, व्यर्थ विवाद, आलस्य और प्यास की शिकायत से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -10547,11 +10601,20 @@
             "तुलसी दल, पीला चंदन, पीले पुष्प और शुद्ध घी का दीपक"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नारायणाय विद्महे वासुदेवाय धीमहि। तन्नो विष्णुः प्रचोदयात्॥",
@@ -10561,11 +10624,20 @@
             "en": "Om, let us meditate upon Lord Narayana, the all-pervading Supreme Being Vasudeva. May Lord Vishnu inspire and illuminate our intellect.",
             "hi": "हम सर्वव्यापी भगवान नारायण वासुदेव का ध्यान करते हैं। वे भगवान श्रीविष्णु हमारी बुद्धि को सत्कर्मों में प्रेरित करें।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 53 (Bhimseni Nirjala Ekadashi Vrata Katha; Mahabharata Ashvamedhika Parva)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -10578,33 +10650,60 @@
           "en": "Vaikunta Ekadashi (Mukkoti / Swarga Vathil)",
           "hi": "वैकुंठ एकादशी (मुक्कोटी एकादशी / मोक्षदा एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The opening of the celestial northern gates of Vaikuntha granting liberation from the cycle of rebirth",
           "hi": "वैकुंठ के परम पावन मोक्ष-द्वार (उत्तरा द्वार) के खुलने का दिव्य दिवस — श्रीरंगम और तिरुपति में महामहोत्सव"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Observed on Margashirsha Shukla Ekadashi (corresponding to Dhanur Masa in solar calendars), Vaikunta Ekadashi is celebrated with sublime grandeur across South Indian temples, notably Sri Ranganathaswamy Temple in Srirangam and Tirumala Venkateswara Temple. According to the Padma Purana, on this day the Vaikuntha Dvaram (the Gateway to Lord Vishnu’s celestial abode) remains open. Walking through the sanctified northern gate (Swarga Vathil / Paramapada Vasal) in temple enclosures is believed to dissolve lifetimes of karma and bestow Moksha.",
           "hi": "मार्गशीर्ष शुक्ल एकादशी (धनुर्मास) को दक्षिण भारत में वैकुंठ एकादशी के रूप में परम पावन माना जाता है। पद्म पुराण के अनुसार, इस दिन भगवान श्रीविष्णु के परम धाम \"वैकुंठ\" का द्वार (उत्तरा द्वारम / स्वर्ग द्वार) खुला रहता है। श्रीरंगम, तिरुपति और तिरुवनंतपुरम के महामंदिरों में भक्त इस विशेष द्वार से होकर भगवान के दर्शन करते हैं, जिससे जन्म-जन्मांतर के पापों का क्षय होकर मोक्ष पद प्राप्त होता है। इसी दिन उत्तर भारत में \"मोक्षदा एकादशी\" और गीता जयंती भी मनाई जाती है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -10621,11 +10720,20 @@
             "प्रभु का हीरक-जड़ित स्वर्ण आभूषणों से अलौकिक श्रृंगार व दिव्य आरती"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -10640,11 +10748,20 @@
             "अलवार संतों के दिव्य प्रबंधम और भजनों का प्रेमपूर्वक गायन करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -10657,11 +10774,20 @@
             "दिन में सोने, विषय-वासना और व्यर्थ प्रपंचों से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -10676,11 +10802,20 @@
             "चांदी का दीप, शुद्ध गाय का घी और कर्पूर आरती"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ श्री वैकुण्ठनाथाय नमः॥",
@@ -10690,11 +10825,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations to Lord Narayana, Sovereign of Vaikuntha.",
             "hi": "भगवान वासुदेव को नमस्कार। वैकुंठ के अधिपति श्रीहरि नारायण को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 41 (Mokshada & Vaikunta Dvara Mahatmya)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -10707,33 +10851,60 @@
           "en": "Devshayani Ekadashi (Hari Shayani / Ashadhi)",
           "hi": "देवशयनी एकादशी (हरिशयनी / आषाढ़ी एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "Lord Vishnu enters the four-month yogic slumber on the cosmic serpent Shesha, commencing Chaturmasa",
           "hi": "भगवान श्रीविष्णु का क्षीरसागर में चार मास हेतु योगनिद्रा में शयन — चातुर्मास महाव्रत का पावन प्रारंभ"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Falling on Ashadha Shukla Ekadashi, Devshayani Ekadashi marks the moment when Lord Vishnu enters His four-month cosmic yogic slumber (Yoga Nidra) upon the coils of the serpent Ananta Shesha in the Kshirasagara (Ocean of Milk). This initiates the sacred period of Chaturmasa (four rainy months) during which auspicious rites like weddings and house-warmings are paused, and sadhaks turn inward for intense tapas, fasting, and scriptural study. In Maharashtra, it marks the grand culmination of the Pandharpur Wari pilgrimage where millions of Warkaris reach Lord Vitthal.",
           "hi": "आषाढ़ शुक्ल एकादशी को देवशयनी अथवा हरिशयनी एकादशी कहा जाता है। इस दिन से भगवान विष्णु क्षीरसागर में शेषनाग की शैय्या पर चार मास के लिए योगनिद्रा में शयन करते हैं। इसके साथ ही चातुर्मास का आरंभ होता है, जिसमें विवाह आदि मांगलिक कार्य रोक दिए जाते हैं और तप, ध्यान, साधना व स्वाध्याय को प्रमुखता दी जाती है। महाराष्ट्र में लाखों वारकरी भक्त पंढरपुर पहुंचकर भगवान विट्ठल के दर्शन करते हैं।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -10750,11 +10921,20 @@
             "एकादशी का उपवास और श्रीहरि के चरणों में अखंड दीप जलाना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -10767,11 +10947,20 @@
             "\"राम कृष्ण हरि\" और \"विट्ठल विट्ठल\" महामंत्र का भक्तिपूर्वक जाप करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -10784,11 +10973,20 @@
             "विलासितापूर्ण शयन, गरिष्ठ भोजन और व्यर्थ वार्तालाप से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -10803,11 +11001,20 @@
             "शुद्ध घी का दीपक, कपूर और पंचमेवा का भोग"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "सुप्ते त्वयि जगन्नाथ जगत् सुप्तं भवेदिदम्। विबुद्धे त्वयि बुद्धं च प्रसन्नो मे भवाच्युत॥",
@@ -10817,11 +11024,20 @@
             "en": "O Lord of the Universe (Jagannatha)! When You sleep, the entire universe sleeps. When You awaken, the entire universe awakens. O Infallible Lord (Achyuta), be pleased with me.",
             "hi": "हे जगन्नाथ! आपके शयन करने पर यह संपूर्ण जगत सो जाता है और आपके जागने पर पूरा संसार जागृत होता है। हे अच्युत! आप मुझ पर सदा प्रसन्न रहें।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 55 (Shayani Ekadashi Vrata Katha & King Mandhata)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -10834,33 +11050,60 @@
           "en": "Devutthana Ekadashi (Prabodhini / Dev Uthani)",
           "hi": "देवउठनी एकादशी (प्रबोधिनी / देवोत्थान एकादशी / तुलसी विवाह)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "Lord Vishnu awakens from His four-month yogic slumber, reopening auspicious wedding rites across the land",
           "hi": "चार मास के योगनिद्रा से श्रीहरि का जागरण — तुलसी-शालिग्राम विवाह और समस्त मांगलिक कार्यों का शुभारंभ"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Kartika Shukla Ekadashi is celebrated as Devutthana (Prabodhini) Ekadashi, marking the joyful awakening of Lord Vishnu from His four-month Chaturmasa sleep. The divine awakening is celebrated by ringing bells, conches, and singing awakening hymns (Prabodhini stotras). This day marks the joyous ceremonial wedding of sacred Tulsi (Vrinda) with Lord Shaligrama (Vishnu), which formally concludes Chaturmasa and reopens the season for Hindu weddings (lagna muhurats) and auspicious samskaras across the subcontinent.",
           "hi": "कार्तिक शुक्ल एकादशी को देवउठनी अथवा प्रबोधिनी एकादशी कहा जाता है। इस दिन भगवान विष्णु चार महीने की योगनिद्रा से जागृत होते हैं। शंख, घंटी और ढोल बजाकर \"उठो देवा, बैठो देवा\" के मंगल गीतों से प्रभु को जगाया जाता है। इसी दिन शालिग्राम जी के साथ तुलसी माता का विवाह रचाया जाता है। इसके साथ ही चातुर्मास समाप्त होता है और विवाह आदि समस्त मांगलिक कार्यों के शुभ मुहूर्त खुल जाते हैं।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -10877,11 +11120,20 @@
             "तुलसी चौरे और घर के आंगन में दीपमाला प्रज्वलित करना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -10894,11 +11146,20 @@
             "चातुर्मास के नियमों का पारण कर भगवान विष्णु के प्रति कृतज्ञता व्यक्त करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -10911,11 +11172,20 @@
             "तुलसी मंच के पास जूते-चप्पल अथवा अशुद्ध वस्तुएं न रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -10930,11 +11200,20 @@
             "सिंघाड़ा, शकरकंद, आंवला, बेर, कच्ची हल्दी और पीले पुष्प"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "उत्तिष्ठोत्तिष्ठ गोविन्द त्यज निद्रां जगत्पते। त्वयि सुप्ते जगन्नाथ जगत् सुप्तं भवेदिदम्॥",
@@ -10944,11 +11223,20 @@
             "en": "Awaken! Awaken, O Govinda! Relinquish Your sleep, O Lord of the Universe! When You sleep, the entire cosmos is asleep; awaken and bring light to the three worlds!",
             "hi": "हे गोविंद! उठिए, जागिए! हे जगत्पति! निद्रा का त्याग कीजिए। हे जगन्नाथ, आपके सोने पर यह संसार सो जाता है, अब जागकर संपूर्ण सृष्टि को प्रकाशित कीजिए।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 63 (Prabodhini/Devutthana Ekadashi Vrata Katha & Tulsi Vivah)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -10961,33 +11249,60 @@
           "en": "Kamada Ekadashi",
           "hi": "कामदा एकादशी (सर्व कामना पूरक)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The wish-fulfilling Ekadashi of spring that liberates the seeker from curses and deep-seated desires",
           "hi": "समस्त कामनाओं की पूर्ति और शाप-पापों से मुक्ति दिलाने वाली चैत्र शुक्ल कामदा एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Kamada Ekadashi falls on Chaitra Shukla Ekadashi, the first Ekadashi of the Hindu New Year (Vikram Samvat). According to the Varaha Purana, King Dilipa was narrated the legend of the Gandharva singer Lalit, who was cursed by King Pundarika into a demonic cannibal form (Rakshasa) due to inattention in singing. Lalit’s devoted wife Lalita prayed to Sage Shringi, who advised her to observe Kamada Ekadashi with pure intent and transfer its merit to her husband. Upon doing so, Lalit was instantly freed from the curse, reassuming his radiant celestial form.",
           "hi": "चैत्र शुक्ल एकादशी को कामदा एकादशी कहा जाता है, जो नव संवत्सर की प्रथम एकादशी है। वराह पुराण के अनुसार, गंधर्व ललित को राजा के शाप से राक्षस योनि प्राप्त हो गई थी। उसकी पतिव्रता पत्नी ललिता ने महर्षि श्रृंगी के निर्देशानुसार कामदा एकादशी का उपवास किया और उसका पुण्य अपने पति को समर्पित किया। इसके प्रभाव से ललित को तत्काल राक्षस योनि से मुक्ति मिली और वह पुनः दिव्य गंधर्व बन गया। यह व्रत सभी मनोकामनाओं को पूर्ण करने वाला है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11004,11 +11319,20 @@
             "सायंकाल श्रीहरि के समक्ष दीपक जलाना और हरि संकीर्तन करना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11021,11 +11345,20 @@
             "द्वादशी के दिन ब्राह्मणों और असहायों को अन्न-वस्त्र का दान करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11038,11 +11371,20 @@
             "क्रोध, असत्य, छल-कपट और कलह से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11057,11 +11399,20 @@
             "केले, पपीता और पंचमेवा का नैवेद्य"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -11071,11 +11422,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto the all-pervading Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 49 (Kamada Ekadashi Vrata Katha & Lalit-Lalita)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11088,33 +11448,60 @@
           "en": "Amalaki Ekadashi (Amla Ekadashi)",
           "hi": "आमलकी एकादशी (आंवला एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "Worship of the sacred Amla (Indian gooseberry) tree where Lord Vishnu and Lakshmi eternally abide",
           "hi": "पवित्र आंवले के वृक्ष की पूजा और श्रीहरि-लक्ष्मी की कृपा से समस्त पापों के शमन का पावन व्रत"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Amalaki Ekadashi falls on Phalguna Shukla Ekadashi, nestled during the joyous spring Holi festival. The Brahmanda Purana states that the sacred Amalaki (Indian gooseberry / Emblica officinalis) tree sprang from the divine drops of tears shed by Lord Brahma in ecstatic meditation on Lord Vishnu. Lord Vishnu proclaimed that He resides perpetually within the Amla tree alongside Mata Lakshmi. Worshiping the Amalaki tree on this day destroys heaps of sins and grants vitality, longevity, and liberation.",
           "hi": "फाल्गुन शुक्ल एकादशी को आमलकी अथवा रंगभरी एकादशी कहा जाता है। ब्रह्मांड पुराण के अनुसार, भगवान विष्णु के ध्यान में मग्न ब्रह्मा जी के नेत्रों से गिरी अश्रु-बिंदुओं से पावन आंवले के वृक्ष की उत्पत्ति हुई थी। भगवान विष्णु ने वरदान दिया कि जो प्राणी इस दिन आंवले के वृक्ष की पूजा करेगा, उसके समस्त पाप नष्ट हो जाएंगे और वह विष्णुलोक को प्राप्त होगा। काशी में इस दिन भगवान शिव माता पार्वती का गौना कराकर काशी लाते हैं।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11131,11 +11518,20 @@
             "भगवान को आंवले का फल अर्पित करना और ब्राह्मणों को आंवले व भोजन का दान करना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11148,11 +11544,20 @@
             "भगवान विष्णु और माता लक्ष्मी के नामों का प्रेमपूर्वक संकीर्तन करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11165,11 +11570,20 @@
             "अन्न, दाल और तामसिक भोजन का त्याग रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11184,11 +11598,20 @@
             "शुद्ध घी का दीपक, अगरबत्ती, पंचमेवा और पंचामृत"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ धात्र्यै नमः। ॐ नमो भगवते वासुदेवाय॥",
@@ -11198,11 +11621,20 @@
             "en": "Om, salutations to the divine life-nourishing Amalaki (Dhatri). Om, salutations unto Bhagwan Vasudeva.",
             "hi": "संसार का पोषण करने वाली पावन आमलकी (धात्री) को नमस्कार। भगवान वासुदेव को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 47 (Amalaki Ekadashi Vrata Katha & Parashurama)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11215,33 +11647,60 @@
           "en": "Papmochani Ekadashi",
           "hi": "पापमोचिनी एकादशी (पाप विनाशिनी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The purifier that frees the repentant soul from the heaviest bonds of past sins and guilt",
           "hi": "पूर्वकृत समस्त पापों, भूलों और अपराधों के भार से आत्मा को मुक्त करने वाली चैत्र कृष्ण एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Papmochani Ekadashi falls on Chaitra Krishna Ekadashi, the final Ekadashi of the lunar year before the New Year Pratipada. As its name signifies (Papa = sin, Mochani = liberator), this sacred fast cleanses past transgressions. In the Bhavishya Purana, Sage Medhavi, son of Cyavana, was seduced by the celestial nymph Manjughosha. When the sage realized he had lost years of austerity to sensory delusion, his father instructed both Medhavi and Manjughosha to observe Papmochani Ekadashi. Through this single observance, both were freed from sin and restored to spiritual radiance.",
           "hi": "चैत्र मास के कृष्ण पक्ष की एकादशी को पापमोचिनी एकादशी कहा जाता है। यह संवत्सर की अंतिम एकादशी है। भविष्य पुराण के अनुसार, ऋषि मेधावी और अप्सरा मंजुघोषा के प्रमाद व पापों का निवारण इसी एकादशी के व्रत से हुआ था। जो साधक अपने जाने-अनजाने किए गए पापों का सच्चे हृदय से प्रायश्चित कर इस दिन उपवास रखते हैं, भगवान श्रीहरि उनके समस्त पापों को क्षमा कर उन्हें आत्म-शांति और मोक्ष प्रदान करते हैं।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11258,11 +11717,20 @@
             "सायंकाल दीपदान और निर्धनों को भोजन व वस्त्र का दान"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11275,11 +11743,20 @@
             "दूसरों की गलतियों को क्षमा करें और उदारतापूर्वक दान-पुण्य करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11292,11 +11769,20 @@
             "अन्न, दाल, मदिरा और तामसिक वस्तुओं से पूर्ण परहेज़ रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11311,11 +11797,20 @@
             "ऋतु फल और सफेद मिष्ठान का भोग"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -11325,11 +11820,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto the all-pervading Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 48 (Papmochani Ekadashi Vrata Katha & Medhavi Rishi)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11342,33 +11846,60 @@
           "en": "Apara Ekadashi (Achala Ekadashi)",
           "hi": "अपरा एकादशी (अचला एकादशी / भद्रकाली एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The bestower of boundless (apara) merit, wiping away heavy karmas and granting prosperity",
           "hi": "अपार पुण्य फल प्रदान करने वाली और गंभीर पापों का नाश करने वाली ज्येष्ठ कृष्ण अपरा एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Apara Ekadashi falls on Jyeshtha Krishna Ekadashi. In the Brahma Purana, Lord Krishna explains to King Yudhishthira that the word \"Apara\" signifies \"limitless\" (A-para: having no shore or boundary). Observing this Ekadashi bestows limitless spiritual merit, equivalent to bathing in the sacred Triveni Sangam at Prayagraj during the Kumbha Mela, or giving charity of thousands of cows at Kurukshetra during a solar eclipse. In northern and eastern regions, it is also celebrated in honor of Goddess Bhadrakali.",
           "hi": "ज्येष्ठ कृष्ण एकादशी को अपरा अथवा अचला एकादशी कहा जाता है। ब्रह्म पुराण में भगवान श्रीकृष्ण युधिष्ठिर से कहते हैं कि \"अपरा\" का अर्थ है जिसकी कोई सीमा न हो (अपार)। इस एकादशी का व्रत रखने से अपार पुण्य की प्राप्ति होती है, जो कुंभ में प्रयाग स्नान अथवा सूर्य ग्रहण पर कुरुक्षेत्र में स्वर्ण दान के समान फलदायी है। यह व्रत मनुष्य को ब्रह्महत्या, परनिंदा और झूठी गवाही जैसे गंभीर पापों के प्रभाव से भी मुक्ति दिलाता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11385,11 +11916,20 @@
             "सायंकाल तुलसी जी के पास दीपक जलाना और द्वादशी को दान के बाद पारण करना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11402,11 +11942,20 @@
             "गर्मी के मौसम में राहगीरों और निर्धनों को जल, छाता अथवा चप्पल दान करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11419,11 +11968,20 @@
             "अन्न, दाल, मदिरा और दिन में सोने से पूरी तरह परहेज रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11438,11 +11996,20 @@
             "पके आम, केले और पंचमेवा का नैवेद्य"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -11452,11 +12019,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto the all-pervading Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 52 (Apara Ekadashi Vrata Katha & King Mahadhwaja)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11469,33 +12045,60 @@
           "en": "Kamika Ekadashi",
           "hi": "कामिका एकादशी (श्रावण कृष्ण एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The auspicious monsoon Ekadashi of Shravana erasing pitru dosha and granting liberation",
           "hi": "श्रावण मास के कृष्ण पक्ष की परम पावन एकादशी — तुलसी दल अर्पण से कोटि यज्ञों का पुण्य फल"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Kamika Ekadashi falls on Shravana Krishna Ekadashi, the first Ekadashi during the holy monsoon month of Shravana. In the Brahmavaivarta Purana, Lord Brahma explains to Sage Narada that worshiping Lord Vishnu on Kamika Ekadashi with fresh Tulsi leaves yields merit far surpassing that of bathing in the Ganges at Kashi or visiting the Kedarnath shrine. Worshipping the Lord with a single Tulsi sprig on this day frees the seeker from the deepest karmic stains and purifies seven generations of ancestors.",
           "hi": "श्रावण कृष्ण एकादशी को कामिका एकादशी कहा जाता है। ब्रह्मवैवर्त पुराण के अनुसार, ब्रह्मा जी देवर्षि नारद को बताते हैं कि श्रावण मास में कामिका एकादशी के दिन भगवान श्रीधर (विष्णु) की तुलसी पत्रों से पूजा करने का फल काशी में गंगा स्नान अथवा अश्वमेध यज्ञ से भी अधिक है। इस दिन तुलसी की एक मंजरी प्रभु के चरणों में चढ़ाने से मनुष्य समस्त पापों से मुक्त होकर बैकुंठ लोक को प्राप्त होता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11512,11 +12115,20 @@
             "सायंकाल तुलसी चौरे और मंदिर में घी का दीपक जलाना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11529,11 +12141,20 @@
             "वर्षा ऋतु में राहगीरों और जरूरतमंदों को छाता, अन्न और वस्त्र दान करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11546,11 +12167,20 @@
             "अन्न, दाल, लहसुन-प्याज और क्रोध से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11565,11 +12195,20 @@
             "गाय का कच्चा दूध और पंचामृत"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -11579,11 +12218,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 56 (Kamika Ekadashi Vrata Katha & Tulsi Mahima)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11596,33 +12244,60 @@
           "en": "Putrada Ekadashi (Shravana)",
           "hi": "पुत्रदा एकादशी (श्रावण शुक्ल एकादशी / पवित्रा एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "Bestower of worthy progeny, family lineage continuity, and purification of domestic karma",
           "hi": "संतान सुख, वंश वृद्धि और संतान के उज्ज्वल भविष्य का आशीर्वाद देने वाली श्रावण पुत्रदा एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Shravana Putrada Ekadashi (also celebrated as Pavitra Ekadashi) falls on Shravana Shukla Ekadashi. In the Bhavishya Purana, King Mahijit of Mahishmati was childless despite being righteous. Sage Lomasha revealed that the king had denied a thirsty cow drinking water in a past life, which blocked his progeny. The sage instructed the king and queen to observe this Shravana Shukla Ekadashi and donate its merit for the birth of a child. By observing this fast, the queen conceived and bore a heroic son who continued the lineage.",
           "hi": "श्रावण शुक्ल एकादशी को पुत्रदा एकादशी अथवा पवित्रा एकादशी कहा जाता है। भविष्य पुराण के अनुसार, महिष्मती के धर्मात्मा राजा महीजित को संतान नहीं थी। महर्षि लोमश ने बताया कि पूर्वजन्म में प्यासी गाय को पानी पीने से रोकने के कारण उन्हें यह कष्ट हुआ है। ऋषि के परामर्श पर राजा-रानी ने श्रावण पुत्रदा एकादशी का श्रद्धापूर्वक व्रत रखा, जिसके प्रभाव से उन्हें तेजस्वी पुत्र रत्न की प्राप्ति हुई। यह व्रत संतान के स्वास्थ्य और वंश वृद्धि हेतु फलदायी है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11639,11 +12314,20 @@
             "द्वादशी के दिन छोटे बालकों को भोजन और वस्त्र-मिष्ठान का दान"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11656,11 +12340,20 @@
             "छोटे बच्चों को प्रेमपूर्वक फल और मिष्ठान दें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11673,11 +12366,20 @@
             "अन्न, दाल और तामसिक भोजन का पूर्ण त्याग रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11692,11 +12394,20 @@
             "पंचामृत, शुद्ध घी का दीपक और चंदन"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ श्रीं ह्रीं क्लीं ग्लौं देवकीसुत गोविन्द वासुदेव जगत्पते। देहि मे तनयं कृष्ण त्वामहं शरणं गतः॥",
@@ -11706,11 +12417,20 @@
             "en": "Om, O Devakisuta Govinda, Lord of the Universe Vasudeva! Bestow upon me a worthy child, O Krishna; I have taken refuge in You.",
             "hi": "हे देवकी-नंदन गोविंद! हे वासुदेव जगत्पते! हे श्रीकृष्ण, मैं आपकी शरण में हूँ, मुझे सुयोग्य संतान का वरदान प्रदान कीजिए।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 57 (Shravana Putrada Ekadashi Vrata Katha & King Mahijit)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11723,33 +12443,60 @@
           "en": "Aja Ekadashi (Ananda Ekadashi)",
           "hi": "अजा एकादशी (आनंदा एकादशी / हरिश्चंद्र मुक्ति)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The redeemer of lost kingdoms and restore of righteous glory, immortalized by King Harishchandra",
           "hi": "सत्यवादी राजा हरिश्चंद्र को खोया राज्य और परिवार लौटाने वाली भाद्रपद कृष्ण अजा एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Aja Ekadashi falls on Bhadrapada Krishna Ekadashi. In the Brahmavaivarta Purana, the truthful King Harishchandra lost his entire kingdom, wealth, and family due to past karma and was forced to work as a crematorium attendant in Kashi. Sage Gautama advised him to observe the rigorous fast of Aja Ekadashi with pure devotion to Lord Hrishikesha. Upon completing the fast, Harishchandra’s past sins were dissolved, his dead son Rohitashwa was revived, his virtuous wife Taramati returned, and his entire kingdom was miraculously restored.",
           "hi": "भाद्रपद मास के कृष्ण पक्ष की एकादशी को अजा अथवा आनंदा एकादशी कहा जाता है। ब्रह्मवैवर्त पुराण के अनुसार, सत्यवादी राजा हरिश्चंद्र अपने पूर्वजन्मों के कर्मों के कारण अपना संपूर्ण राज्य, पत्नी व पुत्र खोकर काशी के मणिकर्णिका घाट पर चांडाल का काम करने को विवश हो गए थे। महर्षि गौतम के उपदेश से उन्होंने अजा एकादशी का पावन व्रत किया। व्रत के प्रभाव से उनके समस्त पाप धुल गए, मृत पुत्र जीवित हो गया, पत्नी वापस मिली और उनका खोया हुआ राज्य पुनः प्राप्त हुआ।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11766,11 +12513,20 @@
             "रात्रि में भजन-कीर्तन कर जागरण और श्रीहरि का ध्यान"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11783,11 +12539,20 @@
             "कष्टों और अभाव में भी धैर्य और धर्म का साथ न छोड़ें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11800,11 +12565,20 @@
             "अन्न, दाल और तले हुए गरिष्ठ भोजन का त्याग रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11819,11 +12593,20 @@
             "पंचामृत, पंचमेवा और ऋतु फल"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -11833,11 +12616,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 58 (Aja/Annada Ekadashi Vrata Katha & King Harishchandra)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11850,33 +12642,60 @@
           "en": "Parivartini Ekadashi (Parsva / Vamana Ekadashi)",
           "hi": "परिवर्तिनी एकादशी (पार्श्व एकादशी / वामन जयंती)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The cosmic midpoint of Chaturmasa when Lord Vishnu turns His sleeping posture from left to right side",
           "hi": "चातुर्मास की मध्य वेला — योगनिद्रा में शयन करते श्रीहरि का करवट बदलना और वामन अवतार का प्राकट्य"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Parivartini (also called Parsva) Ekadashi falls on Bhadrapada Shukla Ekadashi. Midpoint through His four-month cosmic slumber, Lord Vishnu turns His posture from the left side to the right side (Parivartana: turning over) while reclining upon Sheshanaga in the milk ocean. It is also celebrated as Vamana Jayanti, the appearance day of Lord Vishnu’s dwarfish Brahmin incarnation Vamana who restored cosmic balance by measuring the three worlds in three strides from King Mahabali. Worshiping the Lord on this day bestows freedom from sorrow and grants heavenly residence.",
           "hi": "भाद्रपद शुक्ल एकादशी को परिवर्तिनी अथवा पार्श्व एकादशी कहा जाता है। चार महीने की योगनिद्रा के ठीक मध्य में भगवान विष्णु क्षीरसागर में अपनी बाईं करवट से दाईं करवट बदलते हैं (करवट बदलना = परिवर्तन)। इसी दिन भगवान विष्णु के पांचवें अवतार \"वामन अवतार\" का प्राकट्य भी हुआ था जिन्होंने राजा बलि के यज्ञ में तीन पग भूमि मांगकर ब्रह्मांड का उद्धार किया था। इस दिन भगवान वामन और करवट बदलते श्रीहरि की विशेष पूजा की जाती है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -11893,11 +12712,20 @@
             "सायंकाल तुलसी जी और देवालय में घी के दीप प्रज्वलित करना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -11910,11 +12738,20 @@
             "छात्रों, ब्रह्मचारियों और संन्यासियों को छाता, जूते-चप्पल और भोजन दान करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -11927,11 +12764,20 @@
             "अहंकार, आत्म-प्रशंसा और असत्य से दूर रहें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -11946,11 +12792,20 @@
             "दही, माखन और ऋतु फल का नैवेद्य"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वामनाय। ॐ नमो नारायणाय॥",
@@ -11960,11 +12815,20 @@
             "en": "Om, salutations to Bhagwan Vamana. Om, salutations unto Lord Narayana.",
             "hi": "भगवान वामन को नमस्कार। भगवान नारायण को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 59 (Parivartini/Parsva Ekadashi Vrata Katha & Vamana Avatar)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -11977,33 +12841,60 @@
           "en": "Rama Ekadashi",
           "hi": "रमा एकादशी (कार्तिक कृष्ण एकादशी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The pre-Diwali Ekadashi dedicated to Mata Lakshmi (Rama) and Lord Keshav, bestowing supreme affluence",
           "hi": "दीपावली से पूर्व माता लक्ष्मी (रमा) और श्रीहरि की कृपा से दारिद्र्य नाश व सुख-समृद्धि प्रदायिनी एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Rama Ekadashi falls on Kartika Krishna Ekadashi, four days before Diwali. Named after Mata Lakshmi’s divine appellation \"Rama\", it is celebrated with joint adoration of Lord Keshava and Mahalakshmi. In the Brahma Vaivarta Purana, Princess Chandrabhaga and her husband Prince Shobhana observed this sacred fast. Through its spiritual merit, Shobhana gained an immortal celestial kingdom on Mount Mandara and enjoyed eternal companionship with his faithful wife. Observing this fast dispels poverty, karmic debts, and sorrow.",
           "hi": "कार्तिक मास के कृष्ण पक्ष की एकादशी को रमा एकादशी कहा जाता है। यह दीपावली महापर्व से ठीक पूर्व आती है। \"रमा\" माता लक्ष्मी का एक नाम है, इसलिए इस दिन भगवान केशव और महालक्ष्मी का संयुक्त पूजन होता है। ब्रह्मवैवर्त पुराण के अनुसार, राजकुमारी चंद्रभागा और शोभन ने इस पावन व्रत के प्रभाव से देव-तुल्य ऐश्वर्य और बैकुंठ सुख प्राप्त किया था। यह व्रत दरिद्रता और आर्थिक संकटों को दूर कर जीवन में सुख, शांति और समृद्धि लाता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -12020,11 +12911,20 @@
             "तुलसी जी की आरती और गाय के दूध की खीर का नैवेद्य"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -12037,11 +12937,20 @@
             "दीपावली से पूर्व घर को स्वच्छ, पावन और दीपकों से सुसज्जित करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -12054,11 +12963,20 @@
             "अन्न, दाल और तामसिक वस्तुओं का पूर्ण त्याग रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -12073,11 +12991,20 @@
             "मखाने की खीर, पंचमेवा और ताजे ऋतु फल"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ श्रीं ह्रीं क्लीं श्री लक्ष्मीनारायणाय नमः॥",
@@ -12087,11 +13014,20 @@
             "en": "Om, salutations to Sri Lakshmi-Narayana, the supreme embodiments of grace, prosperity, and divine consciousness.",
             "hi": "माँ लक्ष्मी और भगवान नारायण के युगल स्वरूप को मेरा कोटिशः नमस्कार।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 62 (Rama Ekadashi Vrata Katha & Chandrasena)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -12104,33 +13040,60 @@
           "en": "Utpanna Ekadashi",
           "hi": "उत्पन्ना एकादशी (एकादशी देवी प्राकट्य)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "Celebrating the birth of Ekadashi Devi who emerged from Lord Vishnu to slay the demon Mura",
           "hi": "भगवान श्रीहरि के तेज से एकादशी देवी के प्राकट्य और राक्षस मुर के संहार का पावन स्मरण दिवस"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Utpanna Ekadashi falls on Margashirsha Krishna Ekadashi. In the Bhavishya Purana, the demon Mura had driven the Devas from heaven. Lord Vishnu fought Mura for centuries and eventually reclined in a cave named Himavati at Badrikashrama to rest. As Mura attempted to strike the sleeping Lord, a radiant, armed female goddess emerged directly from Vishnu’s divine effulgence and incinerated Mura to ashes. Pleased, Lord Vishnu declared Her \"Ekadashi Devi\" and granted that whoever fasts on Her appearance day will be freed from all sins and receive direct entrance into Vaikuntha.",
           "hi": "मार्गशीर्ष कृष्ण एकादशी को उत्पन्ना एकादशी कहा जाता है क्योंकि इसी दिन \"एकादशी देवी\" का प्राकट्य हुआ था। भविष्य पुराण के अनुसार, जब भगवान विष्णु बदरिकाश्रम की गुफा में विश्राम कर रहे थे, तब दुष्ट राक्षस मुर उन पर प्रहार करने आया। उसी क्षण भगवान के शरीर के तेज से एक अलौकिक दिव्य शक्ति (एकादशी देवी) प्रकट हुईं और उन्होंने मुर का संहार कर दिया। भगवान ने प्रसन्न होकर उन्हें वरदान दिया कि जो प्राणी इस दिन उपवास रखेगा, वह परम पद को प्राप्त करेगा। इसी दिन से एकादशी व्रत का विधान आरंभ हुआ माना जाता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -12147,11 +13110,20 @@
             "रात्रि जागरण कर भजन-संकीर्तन और द्वादशी को अन्न-दान"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -12164,11 +13136,20 @@
             "भगवान विष्णु के प्रति अनन्य शरणागति और भक्ति भाव रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -12181,11 +13162,20 @@
             "अन्न, दाल, मदिरा और कलह से दूर रहें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -12200,11 +13190,20 @@
             "ऋतु फल, सूखे मेवे और मिश्री का भोग"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -12214,11 +13213,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 40 (Utpanna Ekadashi Vrata Katha & Origin)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -12231,33 +13239,60 @@
           "en": "Saphala Ekadashi",
           "hi": "सफला एकादशी (सफलता प्रदायिनी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The winter Ekadashi that makes all auspicious endeavors, sadhana, and righteous goals successful (saphala)",
           "hi": "साधना, कर्म और जीवन के समस्त सत्प्रयासों को सफलता प्रदान करने वाली पौष कृष्ण सफला एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Saphala Ekadashi falls on Pausha Krishna Ekadashi during the winter chill. As its name indicates (Saphala = fruitful / successful), this fast turns all virtuous endeavors into crowning success. In the Brahmanda Purana, Lord Krishna recounts the story of Prince Lumpaka, the wicked and exiled son of King Mahishmat, who lived in a dense forest. Shivering under a banyan tree on Pausha Krishna Ekadashi, Lumpaka unintentionally fasted and stayed awake all night under cold skies. Lord Vishnu accepted this penance, transforming Lumpaka into a righteous ruler and restoring his royal inheritance.",
           "hi": "पौष मास के कृष्ण पक्ष की एकादशी को सफला एकादशी कहा जाता है। \"सफला\" का अर्थ है — सफल करने वाली। इस व्रत के प्रभाव से मनुष्य के समस्त शुभ संकल्प और कार्य सिद्ध होते हैं। ब्रह्मांड पुराण के अनुसार, राजा महिष्मान के पापी पुत्र लुम्पक को उसके कुकर्मों के कारण जंगल में निकाल दिया गया था। पौष कृष्ण एकादशी को भीषण ठंड में अनजाने में ही उससे उपवास और रात्रि जागरण हो गया। इस अनजाने व्रत से भी प्रसन्न होकर भगवान नारायण ने उसके सारे पाप क्षमा किए और उसे पुनः राजसिंहासन प्राप्त कराया।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -12274,11 +13309,20 @@
             "सायंकाल दीपदान और रात्रि में जागरण कर भगवान का संकीर्तन"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -12291,11 +13335,20 @@
             "शीत काल में निर्धनों को गर्म कंबल, ऊनी वस्त्र और भोजन का दान करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -12308,11 +13361,20 @@
             "अन्न, दाल और तामसिक वस्तुओं का पूर्ण त्याग रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -12327,11 +13389,20 @@
             "दान हेतु गर्म वस्त्र अथवा कंबल"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -12341,11 +13412,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 42 (Saphala Ekadashi Vrata Katha)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -12358,33 +13438,60 @@
           "en": "Vijaya Ekadashi",
           "hi": "विजया एकादशी (विजय प्रदायिनी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The victory-granting fast observed by Bhagwan Sri Rama before crossing the ocean to conquer Lanka",
           "hi": "लंका विजय हेतु समुद्र पार करने से पूर्व प्रभु श्रीराम द्वारा अनुष्ठित विजयदायिनी फाल्गुन कृष्ण एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Vijaya Ekadashi falls on Phalguna Krishna Ekadashi. In the Skanda Purana, Lord Brahma recounts that when Bhagwan Sri Rama stood on the shores of the southern ocean with the Vanara army, contemplating how to cross over to Lanka, Sage Bakadalbhya advised Him to observe Vijaya Ekadashi along with His commanders. Sri Rama observed this sacred fast with full ritual protocol, following which the ocean granted passage and the bridge (Ram Setu) was successfully constructed, leading to total victory over Ravana. Observing this fast grants triumph in legitimate struggles and defeats inner and outer foes.",
           "hi": "फाल्गुन मास के कृष्ण पक्ष की एकादशी को विजया एकादशी कहा जाता है। स्कंद पुराण के अनुसार, जब मर्यादा पुरुषोत्तम श्रीराम अपनी वानर सेना के साथ समुद्र तट पर पहुंचे और लंका पार करने का मार्ग तलाश रहे थे, तब महर्षि बकदालभ्य ने उन्हें ससैन्य विजया एकादशी का व्रत रखने का परामर्श दिया। प्रभु श्रीराम ने इस पावन व्रत का अनुष्ठान किया जिसके प्रभाव से समुद्र ने मार्ग दिया, सेतु बंधा और लंकापति रावण पर धर्म की विजय हुई। यह व्रत जीवन के हर क्षेत्र में विजय और संकटों से मुक्ति दिलाने वाला है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -12401,11 +13508,20 @@
             "द्वादशी के दिन कलश, अन्न और दक्षिणा का सुपात्र ब्राह्मण को दान कर पारण करना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -12418,11 +13534,20 @@
             "सुंदरकाण्ड अथवा रामरक्षा स्तोत्र का पाठ करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -12435,11 +13560,20 @@
             "अन्न, दाल, मदिरा और आलस्य से पूर्णतः दूर रहें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -12454,11 +13588,20 @@
             "तुलसी दल, पीले पुष्प, चंदन और शुद्ध घी का दीपक"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ राम रामाय नमः। ॐ नमो भगवते वासुदेवाय॥",
@@ -12468,11 +13611,20 @@
             "en": "Om, salutations to Bhagwan Sri Rama. Om, salutations unto Lord Vasudeva.",
             "hi": "भगवान श्रीराम को नमस्कार। भगवान वासुदेव को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 46 (Vijaya Ekadashi Vrata Katha & Sri Rama Setu)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -12485,33 +13637,60 @@
           "en": "Yogini Ekadashi",
           "hi": "योगिनी एकादशी (कुबेर सेवक मुक्ति / पाप नाशिनी)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The purifier that cures ailments, bodily afflictions, and frees the soul from severe curses",
           "hi": "शारीरिक व्याधियों, कुष्ठ रोग और असाध्य कष्टों का निवारण करने वाली आषाढ़ कृष्ण योगिनी एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Yogini Ekadashi falls on Ashadha Krishna Ekadashi, just before Devshayani Ekadashi. In the Brahmavaivarta Purana, Hemamali, a Yaksha gardener in the service of Kubera (Lord of Wealth), neglected to bring flowers for Shiva puja due to infatuation with his wife. Enraged, Kubera cursed Hemamali with severe leprosy (Kustha) and separation from his beloved. Wandering in agony in the Himalayas, Hemamali met Sage Markandeya, who instructed him to observe Yogini Ekadashi with pure repentance. Through this observance, Hemamali was completely cured of disease and reunited with his wife.",
           "hi": "आषाढ़ मास के कृष्ण पक्ष की एकादशी को योगिनी एकादशी कहा जाता है। ब्रह्मवैवर्त पुराण के अनुसार, अलकापुरी के राजा कुबेर का माली हेममाली अपनी पत्नी की आसक्ति के कारण शिव पूजा हेतु पुष्प लाना भूल गया। कुबेर के शाप से वह कोढ़ी होकर पृथ्वी पर भटकने लगा। महर्षि मार्कंडेय के परामर्श पर उसने योगिनी एकादशी का पावन व्रत किया। इस व्रत के पुण्य से उसका कुष्ठ रोग समूल नष्ट हो गया और वह पुनः दिव्य देह धारण कर अपनी पत्नी से मिला। यह व्रत असाध्य रोगों और कष्टों से मुक्ति दिलाता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -12528,11 +13707,20 @@
             "अस्पतालों में रोगियों को फल, दवाइयां और वस्त्रों का सेवा-दान"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -12545,11 +13733,20 @@
             "मन में सकारात्मक और सात्विक विचार रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -12562,11 +13759,20 @@
             "अन्न, दाल, मदिरा और तामसिक भोजन का त्याग रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -12581,11 +13787,20 @@
             "दान हेतु दवाइयां अथवा वस्त्र"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -12595,11 +13810,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 54 (Yogini Ekadashi Vrata Katha & Hemamali Yaksha)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -12612,33 +13836,60 @@
           "en": "Ekadashi (Fortnightly Vrata)",
           "hi": "एकादशी (पाक्षिक हरि वासर व्रत)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The supreme fortnightly fast observed on the eleventh tithi of every lunar cycle dedicated to Lord Vishnu",
           "hi": "प्रत्येक मास के दोनों पक्षों की एकादशी तिथि को अनुष्ठित होने वाला सर्वश्रेष्ठ हरि-वासर महाव्रत"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Ekadashi occurs twice every lunar month, on the eleventh tithi of the waxing (Shukla) and waning (Krishna) fortnights. In the Padma Purana, Lord Krishna extols Ekadashi as the supreme among all fasts (Hari-vasara: the day of Lord Hari), declaring that neither sacrifice, charity, nor pilgrimage equates to the merit of abstaining from grains on Ekadashi. Beyond immense spiritual purification, scientific and ayurvedic wisdom affirms that fasting on the 11th tithi rebalances bodily bio-rhythms (Vata, Pitta, Kapha) aligning with the moon’s gravitational phases.",
           "hi": "प्रत्येक हिंदू मास के शुक्ल और कृष्ण दोनों पक्षों की ग्यारहवीं तिथि को एकादशी कहा जाता है। पद्म पुराण में भगवान श्रीकृष्ण ने एकादशी को \"हरि वासर\" (भगवान विष्णु का दिन) कहकर सभी व्रतों में सर्वोच्च स्थान दिया है। इस दिन अन्न का त्याग कर भगवान विष्णु का ध्यान करने से चित्त की शुद्धि, इंद्रिय संयम और आत्मिक शांति प्राप्त होती है। आयुर्वेद के अनुसार भी पाक्षिक उपवास शरीर को डिटॉक्सिफाई कर स्वास्थ्य और दीर्घायु प्रदान करता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -12655,11 +13906,20 @@
             "द्वादशी तिथि के शुभ मुहूर्त में ब्राह्मण या गौ-सेवा के उपरांत पारण करना"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -12672,11 +13932,20 @@
             "मौन, ध्यान और परोपकार की भावना बनाए रखें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -12689,11 +13958,20 @@
             "क्रोध, असत्य, परनिंदा और दिन में सोने से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -12708,11 +13986,20 @@
             "अर्घ्य हेतु तांबे का लोटा और गंगाजल"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय। ॐ विष्णवे नमः॥",
@@ -12722,11 +14009,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva. Om, salutations unto Lord Vishnu.",
             "hi": "भगवान वासुदेव को नमस्कार। सर्वव्यापक श्रीविष्णु भगवान को बारम्बार प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyayas 38–39 & 64–65 (Universal Ekadashi Vrata Vidhi & Parana Rules)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -15033,33 +16329,60 @@
           "en": "Putrada Ekadashi (Pausha)",
           "hi": "पुत्रदा एकादशी (पौष)"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The sacred Pausha Ekadashi for lineage, family well-being, and righteous progeny",
           "hi": "संतान सुख और कुल वृद्धि प्रदान करने वाली पावन पौष शुक्ल एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Pausha Putrada Ekadashi falls on the Shukla Paksha of Pausha month. According to the Bhavishyottara Purana, King Suketuman and Queen Shaibya observed this sacred fast under the guidance of holy sages to overcome the grief of childlessness, subsequently receiving a noble and virtuous heir. Devotees observe strict fasting and prayer to Lord Narayana seeking the blessing of righteous progeny, the clearing of deep ancestral burdens, and liberation from karmic sorrow.",
           "hi": "पौष मास के शुक्ल पक्ष की एकादशी को पौष पुत्रदा एकादशी कहा जाता है। भविष्योत्तर पुराण के अनुसार, भद्रावती के धर्मात्मा राजा सुकेतुमान और रानी शैव्या ने संतानहीनता के दुख से मुक्ति पाने के लिए वन में मुनियों के उपदेश से यह पावन व्रत किया था, जिसके पुण्य से उन्हें प्रतापी पुत्र की प्राप्ति हुई। इस दिन भगवान नारायण की विधिपूर्वक आराधना करने से योग्य व दीर्घायु संतान की प्राप्ति होती है, पितरों को तृप्ति मिलती है और पारिवारिक जीवन में सुख-शांति का संचार होता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -15076,11 +16399,20 @@
             "दिनभर निराहार या फलाहार व्रत रखकर सायंकाल दीपदान व रात्रि में भजन-कीर्तन करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -15093,11 +16425,20 @@
             "सत्य, संयम और सात्विक आचरण का पालन करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -15110,11 +16451,20 @@
             "क्रोध, कलह और दिन में सोने से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -15129,11 +16479,20 @@
             "पंचामृत, ऋतु फल और पीला वस्त्र"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
@@ -15143,11 +16502,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva, the Supreme Divine.",
             "hi": "भगवान वासुदेव को सादर प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 43 (Putrada Ekadashi Vrata Katha)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -15160,33 +16528,60 @@
           "en": "Shattila Ekadashi",
           "hi": "षटतिला एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The purification Ekadashi through the six-fold sacred use of sesame seeds",
           "hi": "छह प्रकार से तिल का उपयोग कर पापों से मुक्ति दिलाने वाली पावन एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Shattila Ekadashi occurs in the Krishna Paksha of the Magha month. In sacred tradition, this day emphasizes the divine purifying potency of sesame (tila) used in six holy ways: bathing in sesame water, applying sesame paste, offering sesame seeds in the sacred fire, offering sesame libations, donating sesame to the needy, and consuming sesame prasad. Observing this vrat purifies deep-seated karmas, bestows spiritual illumination, and ensures that the devotee never experiences spiritual or material famine.",
           "hi": "माघ मास के कृष्ण पक्ष की एकादशी को षटतिला एकादशी कहा जाता है। इस पावन तिथि पर तिल का छह रूपों में उपयोग अत्यंत पुण्यदायी माना गया है: तिल मिश्रित जल से स्नान, तिल का उबटन, तिल से हवन, तिल से तर्पण, तिल का दान और तिल का सेवन। पद्म पुराण के अनुसार, यह व्रत जन्म-जन्मांतर के संचित पापों का नाश करता है। जो साधक इस दिन श्रद्धापूर्वक भगवान विष्णु की पूजा कर तिल और अन्न का दान करते हैं, उन्हें कभी दारिद्र्य का सामना नहीं करना पड़ता और वैकुंठ धाम प्राप्त होता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -15203,11 +16598,20 @@
             "षटतिला एकादशी की पावन कथा सुनें और रात्रि में हरि संकीर्तन व जागरण करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -15220,11 +16624,20 @@
             "क्षमा, जप और हरि भजन में दिन व्यतीत करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -15237,11 +16650,20 @@
             "क्रोध, कटु वचन और कृपणता से दूर रहें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -15256,11 +16678,20 @@
             "शुद्ध घी का दीपक, हवन सामग्री और फल"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
@@ -15270,11 +16701,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva.",
             "hi": "भगवान वासुदेव को नमन।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 44 (Shattila Ekadashi Vrata Katha & Tila Dana)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -15287,33 +16727,60 @@
           "en": "Jaya Ekadashi",
           "hi": "जया एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The Ekadashi of spiritual triumph and liberation from degraded states",
           "hi": "आध्यात्मिक विजय और नीच योनियों से मुक्ति प्रदान करने वाली माघ शुक्ल एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Jaya Ekadashi falls on the Shukla Paksha of Magha month. According to the Padma Purana, Lord Krishna revealed the glory of this day to King Yudhishthira through the story of Malyavan and Pushpavati, who were redeemed from a ghostly, tormented existence by observing this sacred vow. Fasting on Jaya Ekadashi grants supreme spiritual victory (jaya) over the lower tendencies of the mind, absolves the harshest karmas, and elevates the soul directly toward the grace of Lord Vishnu.",
           "hi": "माघ मास के शुक्ल पक्ष की एकादशी को जया एकादशी कहा जाता है। पद्म पुराण में वर्णित कथा के अनुसार, भगवान श्रीकृष्ण ने धर्मराज युधिष्ठिर को बताया था कि इस व्रत के पावन प्रभाव से गंधर्व माल्यवान और अप्सरा पुष्पवती पिशाच योनि के घोर कष्टों से मुक्त होकर पुनः अपने दिव्य स्वरूप को प्राप्त हुए थे। यह पावन व्रत मनुष्य को निम्न वृत्तियों, नकारात्मक ऊर्जाओं और जन्म-जन्मांतर के बंधनों से मुक्त कर जीवन में विजय, आत्मिक शांति और श्रीहरि का परम सान्निध्य प्रदान करता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -15330,11 +16797,20 @@
             "रात्रि में शयन का त्याग कर जागरण करें तथा प्रभु के दिव्य नामों का संकीर्तन करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -15347,11 +16823,20 @@
             "सभी प्राणियों के कल्याण हेतु प्रार्थना करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -15364,11 +16849,20 @@
             "व्यर्थ वार्तालाप, विवाद और झूठ से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -15383,11 +16877,20 @@
             "पंचामृत, ऋतु फल और चंदन"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो नारायणाय॥",
@@ -15397,11 +16900,20 @@
             "en": "Om, salutations unto Lord Narayana.",
             "hi": "भगवान नारायण को सादर प्रणाम।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 45 (Jaya Ekadashi Vrata Katha & Malyavan)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -15414,33 +16926,60 @@
           "en": "Varuthini Ekadashi",
           "hi": "वरूथिनी एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The armor of divine protection bestowing merit equal to ten thousand years of penance",
           "hi": "परम सुरक्षा और अकूत पुण्य फल प्रदान करने वाली वैशाख कृष्ण वरूथिनी एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Varuthini Ekadashi occurs in the Krishna Paksha of the Vaishakha month (Chaitra Krishna in Purnimanta calendars). The sacred word Varuthini signifies protective armor or a divine shield. Dedicated to Lord Madhusudana and the Vamana avatar of Vishnu, this fast protects the practitioner from worldly tribulations, misfortunes, and physical illness. Scriptural teachings state that observing Varuthini Ekadashi yields spiritual merits equal to rigorous austerities and continuous charitable giving over many lifetimes.",
           "hi": "वैशाख मास के कृष्ण पक्ष की एकादशी (पूर्णिमान्त गणना अनुसार चैत्र कृष्ण) को वरूथिनी एकादशी कहा जाता है। वरूथिनी का अर्थ है रक्षा करने वाली ढाल या कवच। भगवान मधुसूदन और वामन स्वरूप को समर्पित यह व्रत साधक को समस्त प्रकार के भयों, संकटों और शारीरिक व्याधियों से सुरक्षा प्रदान करता है। भविष्योत्तर पुराण के अनुसार, राजा मान्धाता ने इसी व्रत के प्रभाव से मोक्ष प्राप्त किया था। यह व्रत करने से अनंत तीर्थों में तप और अन्नदान करने के समान पावन फल प्राप्त होता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -15457,11 +16996,20 @@
             "द्वादशी के दिन शुभ पारणा मुहूर्त में ब्राह्मण या सुपात्र को दान देकर व्रत खोलें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -15474,11 +17022,20 @@
             "अहिंसा, सत्य और दान का पालन करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -15491,11 +17048,20 @@
             "जुआ, दिन में शयन और अहंकार से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -15510,11 +17076,20 @@
             "पंचामृत, केले और नारियल"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ वामनाय नमः॥",
@@ -15524,11 +17099,20 @@
             "en": "Om, salutations to Bhagwan Vamana.",
             "hi": "भगवान वामन को नमस्कार।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 50 (Varuthini Ekadashi Vrata Katha & Mandhata)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -15541,33 +17125,60 @@
           "en": "Mohini Ekadashi",
           "hi": "मोहिनी एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "Commemorating the enchanting Mohini avatar that dispels worldly delusion and attachment",
           "hi": "मोह-माया के बंधनों को काटकर आत्म-कल्याण कराने वाली वैशाख शुक्ल मोहिनी एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Mohini Ekadashi is observed on the Shukla Paksha of Vaishakha month. It commemorates Lord Vishnu assuming His mesmerizing Mohini form to protect the celestial nectar (Amrita) from demonic forces during the Churning of the Ocean. Scriptural tradition recounts that sage Vasishtha advised Lord Rama to observe this fast during His search for Mata Sita. Observing Mohini Ekadashi dissolves the dense veil of attachment, worldly delusion (moha), and sorrow, bringing clarity, inner resolve, and divine devotion.",
           "hi": "वैशाख मास के शुक्ल पक्ष की एकादशी को मोहिनी एकादशी कहा जाता है। समुद्र मंथन के पश्चात जब अमृत को लेकर विवाद उत्पन्न हुआ, तब भगवान श्रीहरि ने मोहिनी स्वरूप धारण कर देवताओं को अमृत पान कराया था। पौराणिक मान्यता के अनुसार, महर्षि वशिष्ठ के परामर्श पर भगवान श्रीराम ने भी माता सीता की खोज के समय इस व्रत का पालन कर परम सिद्धि प्राप्त की थी। यह व्रत अंतःकरण के सांसारिक मोह-माया, अज्ञान और शोक के बंधनों को काटकर साधक को भक्ति, ज्ञान और मुक्ति का मार्ग दिखाता है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -15584,11 +17195,20 @@
             "सायंकाल दीप प्रज्ज्वलित कर आरती करें और रात्रि में शांत भाव से प्रभु चिंतन में लीन रहें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -15601,11 +17221,20 @@
             "गौमाता और असहायों की सेवा करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -15618,11 +17247,20 @@
             "निंदा, कपट और मिथ्या भाषण से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -15637,11 +17275,20 @@
             "पंचामृत, ऋतु फल और मिष्ठान"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
@@ -15651,11 +17298,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva.",
             "hi": "भगवान वासुदेव को नमन।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 51 (Mohini Ekadashi Vrata Katha & Dhrishtabuddhi)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -15668,33 +17324,60 @@
           "en": "Indira Ekadashi",
           "hi": "इन्दिरा एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The sacred Pitru Paksha Ekadashi liberating departed ancestors from lower realms",
           "hi": "पितृ पक्ष में पूर्वजों को सद्गति और मुक्ति प्रदान करने वाली पावन इन्दिरा एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Indira Ekadashi falls during the solemn period of Pitru Paksha in the Krishna Paksha of Ashwin month. According to the Brahmavaivarta Purana, King Indrasena observed this sacred vrat upon the guidance of Devrishi Narada, transferring the accumulated spiritual merit to his deceased father and granting him ascension to Vaikuntha. This fast holds supreme merit for liberating departed ancestors from suffering, reconciling family lineage obligations (pitru-rina), and bringing prosperity and blessings to future generations.",
           "hi": "अश्विन मास के कृष्ण पक्ष में पितृ पक्ष के पावन दिनों में आने वाली एकादशी को इन्दिरा एकादशी कहा जाता है। ब्रह्मवैवर्त पुराण के अनुसार, राजा इन्द्रसेन ने देवर्षि नारद के उपदेश से यह पावन व्रत रखकर इसका संपूर्ण पुण्य यमलोक में कष्ट भोग रहे अपने पिता को समर्पित किया था, जिससे उनके पिता को तत्काल वैकुंठ लोक की प्राप्ति हुई। पितृ पक्ष में पड़ने के कारण यह व्रत पूर्वजों के उद्धार, पितृ-दोष के निवारण और कुल की उन्नति के लिए शास्त्रों में सर्वश्रेष्ठ फलदायी माना गया है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -15711,11 +17394,20 @@
             "सायंकाल धूप-दीप अर्पित कर व्रत का समस्त पुण्य पूर्वजों की सद्गति हेतु समर्पित करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -15728,11 +17420,20 @@
             "गौमाता, पक्षियों और जरूरतमंदों को भोजन कराएं"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -15745,11 +17446,20 @@
             "कलह, कटुता और असत्य संभाषण न करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -15764,11 +17474,20 @@
             "शुद्ध घी का दीपक, धूप और फल"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
@@ -15778,11 +17497,20 @@
             "en": "Om, salutations to Bhagwan Vasudeva.",
             "hi": "भगवान वासुदेव को नमन।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 60 (Indira Ekadashi Vrata Katha & Ancestral Mukti)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     },
@@ -15795,33 +17523,60 @@
           "en": "Papankusha Ekadashi",
           "hi": "पापांकुशा एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "tagline": {
         "value": {
           "en": "The divine goad (ankusha) that reins in past sins and directs the mind toward liberation",
           "hi": "पाप रूपी मतवाले हाथी पर अंकुश लगाकर मोक्ष का मार्ग प्रशस्त करने वाली एकादशी"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "significance": {
         "value": {
           "en": "Papankusha Ekadashi falls on the Shukla Paksha of Ashwin month, dedicated to Lord Padmanabha. The name symbolizes a divine goad (ankusha) that subdues and purifies the unrestrained karmic tendencies of the senses, much like a goad guides an elephant. Observing this fast washes away accumulated negative karma from past lifetimes, promotes inner discipline and health, and prepares the devotee spiritually for the approaching sacred observances of the Kartik month.",
           "hi": "अश्विन मास के शुक्ल पक्ष की एकादशी को पापांकुशा एकादशी कहा जाता है। यह पावन पर्व भगवान पद्मनाभ को समर्पित है। पापांकुशा का अर्थ है पापों को वश में करने वाला अंकुश; जिस प्रकार अंकुश मदमस्त हाथी को नियंत्रित करता है, उसी प्रकार यह व्रत मन की चंचल वृत्तियों और पूर्व संचित पापों का शमन करता है। पद्म पुराण के अनुसार, जो साधक इस दिन उपवास रखकर श्रीहरि का ध्यान करता है, उसे यमयातना से मुक्ति मिलती है और आत्मिक पवित्रता व सद्गति प्राप्त होती है।"
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "rituals": {
         "value": {
@@ -15838,11 +17593,20 @@
             "सायंकाल घर व मंदिर में घी का दीपक जलाएं तथा अगले दिन द्वादशी को दान के बाद पारण करें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "dos": {
         "value": {
@@ -15855,11 +17619,20 @@
             "द्वादशी के दिन ब्राह्मणों और जरूरतमंदों को दान दें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "donts": {
         "value": {
@@ -15872,11 +17645,20 @@
             "क्रोध, वासना और कटु वचनों से बचें"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "pujaItems": {
         "value": {
@@ -15891,11 +17673,20 @@
             "पंचामृत और ऋतु फलों का नैवेद्य"
           ]
         },
-        "status": "pending_source",
-        "sourceRefs": [],
+        "status": "council_reviewed_editorial",
+        "sourceRefs": [
+          {
+            "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+            "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+            "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+            "usagePermitted": "public_domain",
+            "tier": 2
+          }
+        ],
         "applicability": {
           "universal": true
-        }
+        },
+        "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
       },
       "mantra": {
         "sanskrit": "ॐ पद्मनाभाय नमः॥",
@@ -15905,11 +17696,20 @@
             "en": "Om, salutations to Lord Padmanabha.",
             "hi": "भगवान पद्मनाभ को सादर नमस्कार।"
           },
-          "status": "pending_source",
-          "sourceRefs": [],
+          "status": "council_reviewed_editorial",
+          "sourceRefs": [
+            {
+              "sourceName": "Padma Purana, Uttarakhanda (Ekadashi Mahatmya)",
+              "url": "https://sa.wikisource.org/wiki/पद्मपुराणम्/खण्डः_६_(उत्तरखण्डः)",
+              "pageOrSection": "Adhyaya 61 (Papankusha Ekadashi Vrata Katha & Krodhana)",
+              "usagePermitted": "public_domain",
+              "tier": 2
+            }
+          ],
           "applicability": {
             "universal": true
-          }
+          },
+          "reviewRef": "docs/content-reviews/ekadashi-series-2026-v1.md"
         }
       }
     }

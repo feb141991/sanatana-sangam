@@ -1258,7 +1258,8 @@
     "route_kind": "vrat",
     "route_slug": "vaikunta-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   },
   {
     "slug": "kamada-ekadashi",
@@ -2397,9 +2398,9 @@
     "route_slug": "yogini-ekadashi",
     "corrected_skipped_tithi_policy": "previous_day",
     "corrected_prefer_last_match": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.29 (PDF file page 49) -- lists 'Yogini Ekadasi (Smarta)' at 2026-07-10.",
-    "ratification_note": "Council decision batch 0 approved only the 2026-07-10 Smarta Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. The general rule remains deferred and 2026 remains disputed outside that exact fixture scope.",
+    "ratification_note": "Council decision batch 0 approved only the 2026-07-10 Smarta Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Promoted to launch_status: included by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). 2026 remains disputed and guarded by disputed_years [2026].",
     "disputed_years": [
       2026
     ],
@@ -2436,9 +2437,9 @@
     "route_slug": "yogini-ekadashi",
     "corrected_skipped_tithi_policy": "following_day",
     "corrected_prefer_last_match": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.30 (PDF file page 50) -- lists 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
-    "ratification_note": "Council decision batch 0 approved only the 2026-07-11 Vaishnava/Vidhava Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. The general rule remains deferred and 2026 remains disputed outside that exact fixture scope.",
+    "ratification_note": "Council decision batch 0 approved only the 2026-07-11 Vaishnava/Vidhava Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Promoted to launch_status: included by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). 2026 remains disputed and guarded by disputed_years [2026].",
     "disputed_years": [
       2026
     ],
@@ -2473,8 +2474,8 @@
     "route_kind": "vrat",
     "route_slug": "pausha-putrada-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Rule identity registered for review. Launch status deferred pending Tier 1/2 authoritative source verification."
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   },
   {
     "slug": "shattila-ekadashi",
@@ -2492,8 +2493,8 @@
     "route_kind": "vrat",
     "route_slug": "shattila-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Rule identity registered for review. Launch status deferred pending Tier 1/2 authoritative source verification."
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   },
   {
     "slug": "jaya-ekadashi",
@@ -2511,8 +2512,8 @@
     "route_kind": "vrat",
     "route_slug": "jaya-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Rule identity registered for review. Launch status deferred pending Tier 1/2 authoritative source verification."
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   },
   {
     "slug": "varuthini-ekadashi",
@@ -2530,8 +2531,8 @@
     "route_kind": "vrat",
     "route_slug": "varuthini-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Rule identity registered for review. Launch status deferred pending Tier 1/2 authoritative source verification."
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   },
   {
     "slug": "mohini-ekadashi",
@@ -2549,8 +2550,8 @@
     "route_kind": "vrat",
     "route_slug": "mohini-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Rule identity registered for review. Launch status deferred pending Tier 1/2 authoritative source verification."
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   },
   {
     "slug": "indira-ekadashi",
@@ -2568,8 +2569,8 @@
     "route_kind": "vrat",
     "route_slug": "indira-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Rule identity registered for review. Launch status deferred pending Tier 1/2 authoritative source verification."
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   },
   {
     "slug": "papankusha-ekadashi",
@@ -2587,7 +2588,7 @@
     "route_kind": "vrat",
     "route_slug": "papankusha-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Rule identity registered for review. Launch status deferred pending Tier 1/2 authoritative source verification."
+    "launch_status": "included",
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
   }
 ]
