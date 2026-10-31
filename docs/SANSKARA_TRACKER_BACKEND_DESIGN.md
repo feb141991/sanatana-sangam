@@ -410,8 +410,12 @@ M2 left the column out; this adds it as a nullable column on dependents only, `O
 (a manager's view).
 
 **Non-disclosure rules, each proved by the test:**
-1. *No authority.* Only `create_dependent`, `dependents`, `set_kul_link` and the helper `resolve_tree_person` mention the pointer
-   (asserted by scanning every function body); `sanskara_can` and the grant, claim and list functions are independent of it.
+1. *No authority.* Only `create_dependent`, `dependents` and `set_kul_link` read or write the stored column (the helper
+   `resolve_tree_person` reads only the tree table); asserted by scanning every function body for both the table and the column
+   name. Corrected 2026-10-31: the first version of this test scanned for the bare text `kul_family_member`, which also matches
+   unrelated Kul functions on the real schema (`leave_kul` and others) and so passed only on the stand-in database; checked
+   on the live schema that the corrected scan returns exactly those three. `sanskara_can` and the grant, claim and list
+   functions are independent of it.
 2. *No tree-to-subject lookup.* No client function takes a tree person and returns subject data, and clients hold no table
    grant on `sanskara_subjects`, so a Kul member viewing the tree cannot tell whether anyone has linked a person.
 3. *No uniqueness.* A unique index would tell a second manager "someone already tracks this person". Two dependents may point

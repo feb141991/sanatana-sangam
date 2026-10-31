@@ -125,13 +125,16 @@ begin
     assert not has_function_privilege('service_role', f, 'execute'), f || ': service_role must not call a helper';
   end loop;
 
-  -- Rule 1 (no authority): the pointer is read by exactly these four functions and no other, so sanskara_can, the grant
-  -- functions, the claim functions and every list function are provably independent of it.
+  -- Rule 1 (no authority): the stored column is read or written by exactly these three functions and no other, so
+  -- sanskara_can, the grant functions, the claim functions and every list function are provably independent of it.
+  -- The scan needs BOTH the table and the column name: the bare text 'kul_family_member' also appears in unrelated Kul
+  -- functions (leave_kul and others) that legitimately use the family-tree table, which a real Supabase schema has and a
+  -- bare Postgres does not. (sanskara_resolve_tree_person reads the tree table, never this column, so it is not listed.)
   select array_agg(p.proname order by p.proname) into names
   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-  where n.nspname = 'public' and p.prosrc ilike '%kul_family_member%';
-  assert names = array['sanskara_create_dependent', 'sanskara_dependents', 'sanskara_resolve_tree_person', 'sanskara_set_kul_link'],
-    'only create_dependent, dependents, resolve_tree_person and set_kul_link may mention the pointer; found ' || coalesce(names::text, 'none');
+  where n.nspname = 'public' and p.prosrc ilike '%sanskara_subjects%' and p.prosrc ilike '%kul_family_member_id%';
+  assert names = array['sanskara_create_dependent', 'sanskara_dependents', 'sanskara_set_kul_link'],
+    'only create_dependent, dependents and set_kul_link may touch the stored pointer; found ' || coalesce(names::text, 'none');
   assert position('kul_family_member' in pg_get_functiondef('public.sanskara_can(text, uuid, uuid, uuid)'::regprocedure)) = 0,
     'sanskara_can must not read the pointer';
 
