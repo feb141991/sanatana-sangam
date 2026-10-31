@@ -379,10 +379,22 @@ catalogue still holds its 16 rows (archive before M6). No `notifications` row an
   tables, which is the deliberate deny-all-then-functions design, and (b) the 22 client-executable definer functions in the
   next point.
 
-**Open: the RPC boundary.** Any signed-in user can call the 22 client functions directly through PostgREST
-(`/rest/v1/rpc/sanskara_*`) today, with no route, rate limit or telemetry in front of them. Plan agreed to start on
-2026-10-30: build `/api/native/sanskara/*` first, then revoke `EXECUTE` from `authenticated` on the functions the routes
-wrap, before any launch. Until then the surface is live but unused.
+**The RPC boundary (CORRECTED 2026-10-31).** Any signed-in user can call the client functions directly through PostgREST
+(`/rest/v1/rpc/sanskara_*`), with no route, rate limit or telemetry in front of them. The plan agreed on 2026-10-30 was to build
+`/api/native/sanskara/*` and then revoke `EXECUTE` from `authenticated`. **That plan does not work and is withdrawn.** The
+functions identify the caller by `auth.uid()`, which comes from the caller's own JWT. A route can only reach them with a client
+carrying that JWT (`getApiUser` returns exactly that), which is the `authenticated` role; revoking its EXECUTE would break the
+routes too. The only alternatives are a second, service-role copy of every function taking an explicit actor id (23 functions
+duplicated, and a wrong actor id becomes a privilege-escalation bug), or the server impersonating the user in a transaction
+(unsafe). Neither is worth it, because the functions are safe on their own: each calls `sanskara_actor` and `sanskara_can`.
+
+**Decision recorded:** keep `authenticated` EXECUTE. The routes (`src/app/api/native/sanskara/[action]/route.ts`, contract in
+`src/lib/native-sanskara.ts`) are the supported client contract, not a lock. They add what a function cannot: a durable per-user
+rate limit (120 reads and 30 writes a minute), a body size cap, strict input shapes (unknown keys refused, real calendar dates
+only), one error contract that carries only our own `SKxxx` reasons and never database text, and an idempotency requirement
+(`requestId`) on every write. A client that skips the routes keeps every authorisation check and loses only the rate limit.
+If a database-level limit is wanted, the place for it is inside the functions (the request log already records every write per
+account), not a revoke. Tests: `src/lib/native-sanskara.test.ts`, `src/app/api/native/sanskara/route.test.ts`.
 
 **Not Sanskara, noticed on the same scan (report only, not changed).** Six functions with a mutable `search_path`
 (`bump_social_variant_content_version`, `rollup_social_post_status`, `count_distinct_native_telemetry_users`,
