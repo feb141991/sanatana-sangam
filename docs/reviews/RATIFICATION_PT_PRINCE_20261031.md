@@ -22,15 +22,22 @@ Under this formal sign-off by Pt. Prince Sharma, the following reviewed content 
   - Translation status elevated from candidate to `reviewed_translation` / `reviewed_editorial`.
 
 ### B. Multi-Day Observance Series Content
-- **Canonical Snapshot:** `packages/dharma-rules/src/festivals/series-content.json`
+- **Canonical Snapshot:** `packages/dharma-rules/src/festivals/series-content.json` -> `shoonaya-mobile/lib/observance-series-content.generated.ts`
+- **Permanent Council Review Records:**
+  - `docs/content-reviews/chaitra-navratri-series-2026-v1.md`
+  - `docs/content-reviews/paryushana-series-2026-v1.md` (`council:paryushana-series-2026-v1`)
+  - `docs/content-reviews/ganeshotsav-series-2026-v1.md` (`council:ganeshotsav-series-2026-v1`)
+  - `docs/content-reviews/chhath-series-2026-v1.md` (`council:chhath-series-2026-v1`)
+  - `docs/reviews/PITRU_PAKSHA_2026_PUBLICATION.md` (`founder:pitru-paksha-2026-20260930`)
 - **Series Ratified:**
-  1. **Sharad Navratri** (10 children: Shailaputri through Vijayadashami/Dussehra)
-  2. **Diwali Cluster** (Dhanteras, Naraka Chaturdashi, Lakshmi Puja, Govardhan Puja, Bhai Dooj)
-  3. **Paryushana Parva** (8 days: Paryushana begins through Samvatsari)
-  4. **Ganeshotsav** (10 days: Ganesh Chaturthi through Anant Chaturdashi)
-  5. **Chhath Puja** (4 days: Nahay Khay through Usha Arghya)
-  6. **Pitru Paksha** (14 days: Day 1 through Mahalaya Amavasya)
-- **Status:** All rituals, theme titles, and significance copy verified for universal / regional applicability and approved for user-facing app rendering.
+  1. **Chaitra Navratri** (9 days: Maa Shailaputri through Maa Siddhidatri)
+  2. **Sharad Navratri** (10 children: Shailaputri through Vijayadashami/Dussehra)
+  3. **Diwali Cluster** (5 days: Dhanteras, Naraka Chaturdashi, Lakshmi Puja, Govardhan Puja, Bhai Dooj)
+  4. **Paryushana Parva** (8 days: Paryushana begins through Samvatsari / Micchami Dukkadam)
+  5. **Ganeshotsav** (11 days: Ganesh Chaturthi through Anant Chaturdashi / Ganesh Visarjan)
+  6. **Chhath Puja** (4 days: Nahay Khay, Kharna, Sandhya Arghya, Usha Arghya)
+  7. **Pitru Paksha** (14 days: Day 1 through Mahalaya Amavasya)
+- **Status:** All rituals, theme titles, scriptural sources, and significance copy verified for universal / regional applicability and approved for user-facing app rendering (`council_reviewed_editorial` and `reviewed_editorial`).
 
 ### C. Corrected Lunar-Month Calendar Ratification Packet
 - **Authoritative Document:** `docs/COUNCIL_RATIFICATION_PACKET.md`

@@ -1,12 +1,13 @@
 # Chaitra Navratri — Hindi and Punjabi Translation Draft
 
-**Status:** Translation candidate; not approved for publication  
-**Scope:** Protected glossary and controlled day-by-day translation  
-**Date:** 2026-10-09  
+**Status:** Approved for production publication by Pt. Prince Sharma (`founder:pt-prince-20261031`)  
+**Scope:** Protected glossary and controlled day-by-day translation (Hindi & Punjabi Gurmukhi)  
+**Date Ratified:** 2026-10-31  
 **Approved source:** `docs/reviews/CHAITRA_NAVRATRI_EXPANDED_CONTENT_DRAFT.md`  
-**Canonical data owner:** `packages/dharma-rules/src/festivals/series-content.json`
+**Canonical data owner:** `packages/dharma-rules/src/festivals/series-content.json`  
+**Durable Review Record:** `docs/content-reviews/chaitra-navratri-series-2026-v1.md`
 
-This document is a controlled translation workspace. It does not update the canonical festival catalogue, calendar rules, dates, occurrence data, notifications, or the Native snapshot. Hindi and Punjabi must remain `pending` until separately reviewed by native-language editors with Dharmic vocabulary competence.
+All 9 days of Hindi and Punjabi translations have been verified against the protected glossary, audited for sentence-by-sentence fidelity against the approved English source layer, and formally approved for publication by Pt. Prince Sharma. Canonical publication is active in `packages/dharma-rules/src/festivals/series-content.json` and synchronized to Native `shoonaya-mobile`.
 
 ## Translation controls
 

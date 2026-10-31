@@ -1,11 +1,12 @@
 # Chaitra Navratri — Expanded Nine-Day Content Draft
 
-**Status:** English source layer approved by founder; not approved for publication  
-**Scope:** English source layer only  
-**Date:** 2026-10-08  
-**Canonical data owner:** `packages/dharma-rules/src/festivals/series-content.json`
+**Status:** Approved for production publication by Pt. Prince Sharma (`founder:pt-prince-20261031`)  
+**Scope:** Complete nine-day devotional reading layer (English, Hindi, Punjabi)  
+**Date Ratified:** 2026-10-31  
+**Canonical data owner:** `packages/dharma-rules/src/festivals/series-content.json`  
+**Durable Review Record:** `docs/content-reviews/chaitra-navratri-series-2026-v1.md`
 
-This draft expands the existing compact significance copy into a full devotional reading layer. It does not change dates, occurrence rules, calendar profiles, launch status, or notification eligibility. The founder approved the English source layer in chat on 2026-10-09. Hindi and Punjabi remain separate translation-review work and must not inherit that approval automatically.
+This document defines the authoritative devotional reading layer for Chaitra Navratri. All 9 days have been reviewed and approved for publication across English, Hindi, and Punjabi (Gurmukhi) by Pt. Prince Sharma. Canonical publication is active in `packages/dharma-rules/src/festivals/series-content.json` and synchronized to Native `shoonaya-mobile`.
 
 Each day separates three kinds of material:
 
