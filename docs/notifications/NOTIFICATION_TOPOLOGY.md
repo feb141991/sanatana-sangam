@@ -4,19 +4,19 @@
 
 ## Summary
 
-- Route-level producers/workers discovered: **27**
-- Direct push callers: **19**
-- Queue writers: **8**
+- Route-level producers/workers discovered: **16**
+- Direct push callers: **12**
+- Queue writers: **4**
 - Live database queried: **yes**
 - Live table reachability verified: **yes**
 
 | Classification | Count |
 | --- | ---: |
 | `admin_or_test` | 2 |
-| `direct_send_legacy` | 13 |
-| `scheduled_queue_producer` | 7 |
+| `direct_send_legacy` | 8 |
+| `scheduled_queue_producer` | 4 |
 | `delivery_worker` | 1 |
-| `transactional_event` | 4 |
+| `transactional_event` | 1 |
 
 ## Route inventory
 
@@ -25,30 +25,19 @@
 | `/api/admin/broadcast` | `admin_or_test` | not in vercel.json | yes | no | none detected |
 | `/api/admin/notification-templates/test` | `admin_or_test` | not in vercel.json | yes | no | none detected |
 | `/api/cron/aarti-notify` | `direct_send_legacy` | `30 12 * * *` | yes | no | none detected |
-| `/api/cron/brahma-muhurta` | `scheduled_queue_producer` | `0 3 * * *` | no | yes | none detected |
+| `/api/cron/brahma-muhurta` | `scheduled_queue_producer` | `45 3 * * *` | no | yes | `wants_brahma_muhurta_reminders` |
 | `/api/cron/calendar-health` | `direct_send_legacy` | `0 9 1 * *` | yes | no | none detected |
 | `/api/cron/festival-reminder` | `direct_send_legacy` | `30 5 * * *` | yes | no | `wants_festival_reminders` |
-| `/api/cron/guided-plan-reminder` | `direct_send_legacy` | `0 7 * * *` | yes | no | none detected |
 | `/api/cron/japa-reminder` | `direct_send_legacy` | `0 16 * * *` | yes | no | `japa_reminder_enabled` |
-| `/api/cron/journal-anniversary` | `direct_send_legacy` | `0 8 * * *` | yes | no | none detected |
-| `/api/cron/mood-reminder` | `scheduled_queue_producer` | `30 3 * * *` | no | yes | none detected |
-| `/api/cron/mood-reminder-evening` | `direct_send_legacy` | `30 14 * * *` | yes | no | none detected |
 | `/api/cron/nitya-reminder` | `direct_send_legacy` | `0 4 * * *` | yes | no | `wants_nitya_reminders` |
 | `/api/cron/nitya-reminder-madhyahn` | `scheduled_queue_producer` | `30 6 * * *` | no | yes | `wants_madhyahn_reminder` |
 | `/api/cron/nitya-reminder-sandhya` | `scheduled_queue_producer` | `0 13 * * *` | no | yes | `wants_evening_reminder` |
-| `/api/cron/notification-dispatch` | `delivery_worker` | not in vercel.json | yes | no | `japa_reminder_enabled`, `wants_family_notifications`, `wants_festival_reminders`, `wants_sankalpa_midpoint_reminders`, `wants_shloka_reminders`, `wants_tithi_reminders`, `wants_vrat_reminders` |
+| `/api/cron/notification-dispatch` | `delivery_worker` | not in vercel.json | yes | no | `dharm_veer_reminder_enabled`, `japa_reminder_enabled`, `quiz_reminder_enabled`, `wants_brahma_muhurta_reminders`, `wants_evening_reminder`, `wants_family_notifications`, `wants_family_remembrance_reminders`, `wants_festival_reminders`, `wants_madhyahn_reminder`, `wants_mood_reminders`, `wants_nitya_reminders`, `wants_sankalpa_midpoint_reminders`, `wants_sattvic_reminders`, `wants_shloka_reminders`, `wants_tithi_reminders`, `wants_vrat_reminders` |
 | `/api/cron/observance-schedule` | `scheduled_queue_producer` | `0 6 * * *` | no | yes | `wants_festival_reminders`, `wants_tithi_reminders`, `wants_vrat_reminders` |
-| `/api/cron/pitru-paksha-reminder` | `direct_send_legacy` | `0 3 * * *` | yes | no | `wants_festival_reminders` |
-| `/api/cron/sattvic-reminder` | `scheduled_queue_producer` | `0 11 * * *` | no | yes | `wants_nitya_reminders` |
-| `/api/cron/shloka-reminder` | `direct_send_legacy` | `0 6 * * *` | yes | no | `wants_shloka_reminders` |
+| `/api/cron/pitru-paksha-reminder` | `direct_send_legacy` | `10 3 * * *` | yes | no | `wants_festival_reminders` |
 | `/api/cron/tithi-reminder` | `direct_send_legacy` | `0 5 * * *` | yes | no | `wants_festival_reminders`, `wants_tithi_reminders` |
-| `/api/cron/vrat-reminder` | `direct_send_legacy` | `30 4 * * *` | yes | no | `wants_vrat_reminders` |
-| `/api/cron/weekly-summary` | `direct_send_legacy` | `0 1 * * 0` | yes | no | none detected |
-| `/api/digest/generate` | `scheduled_queue_producer` | `0 23 * * *` | no | yes | none detected |
+| `/api/cron/vrat-reminder` | `direct_send_legacy` | `20 4 * * *` | yes | no | `wants_vrat_reminders` |
 | `/api/native/mandali/notify-push` | `transactional_event` | not in vercel.json | yes | no | `wants_community_notifications` |
-| `/api/notifications/milestone` | `transactional_event` | not in vercel.json | yes | no | none detected |
-| `/api/sanskar/schedule` | `transactional_event` | not in vercel.json | no | yes | none detected |
-| `/api/seva-tier/check` | `transactional_event` | not in vercel.json | yes | no | none detected |
 
 ## Semantic overlap hypotheses
 
@@ -59,20 +48,26 @@ These are review targets, not machine-proven duplicate deliveries. Prompt 2 must
 | `competing_schedule_delivery_workers` | route missing | `requires_runtime_candidate_probe` | Two push-sending workers read the shared notification_schedule queue; the Sanskar worker query is not restricted to Sanskar rows. |
 | `occurrence_vrat_vs_tithi` | routes present | `requires_runtime_candidate_probe` | Occurrence-backed Ekadashi/Purnima/Amavasya vrats and generic tithi alerts use independent key namespaces. |
 | `morning_routine_budget` | routes present | `requires_runtime_candidate_probe` | Independent early-day routines have no shared per-user cadence arbitration. |
-| `evening_routine_budget` | routes present | `requires_runtime_candidate_probe` | Independent evening routines have no shared per-user cadence arbitration. |
+| `evening_routine_budget` | route missing | `requires_runtime_candidate_probe` | Independent evening routines have no shared per-user cadence arbitration. |
 
 ## Settings references
 
 Reference detection is intentionally weaker than UI exposure. Prompt 4 must trace the actual controls.
 
+- `dharm_veer_reminder_enabled`: Native reference found; Web reference found.
 - `japa_reminder_enabled`: Native reference found; Web reference found.
+- `quiz_reminder_enabled`: Native reference found; Web reference found.
+- `wants_brahma_muhurta_reminders`: Native reference found; Web reference found.
 - `wants_community_notifications`: Native reference found; Web reference found.
-- `wants_evening_reminder`: Native reference not found; Web reference found.
+- `wants_evening_reminder`: Native reference found; Web reference found.
 - `wants_family_notifications`: Native reference found; Web reference found.
+- `wants_family_remembrance_reminders`: Native reference found; Web reference found.
 - `wants_festival_reminders`: Native reference found; Web reference found.
-- `wants_madhyahn_reminder`: Native reference not found; Web reference found.
+- `wants_madhyahn_reminder`: Native reference found; Web reference found.
+- `wants_mood_reminders`: Native reference found; Web reference found.
 - `wants_nitya_reminders`: Native reference found; Web reference found.
 - `wants_sankalpa_midpoint_reminders`: Native reference found; Web reference found.
+- `wants_sattvic_reminders`: Native reference found; Web reference found.
 - `wants_shloka_reminders`: Native reference found; Web reference found.
 - `wants_tithi_reminders`: Native reference found; Web reference found.
 - `wants_vrat_reminders`: Native reference found; Web reference found.
@@ -101,6 +96,13 @@ Migration files are repository evidence only. They are not labelled applied to p
 - `20260923140000_notification_candidates_and_resolver.sql`: repository present; production not verified by source scan.
 - `20260923150000_notification_candidates_claim_and_persistence.sql`: repository present; production not verified by source scan.
 - `20260923170000_atomic_notification_candidate_resolution.sql`: repository present; production not verified by source scan.
+- `20261002181447_notification_cadence_atomicity.sql`: repository present; production not verified by source scan.
+- `20261003150100_skip_notifications_for_deleting_accounts.sql`: repository present; production not verified by source scan.
+- `20261003174633_native_kul_deceased_remembrance_notifications.sql`: repository present; production not verified by source scan.
+- `20261025120000_allow_registration_failed_push_token_event.sql`: repository present; production not verified by source scan.
+- `20261026113000_default_all_notifications_enabled.sql`: repository present; production not verified by source scan.
+- `20261027010000_notification_reminder_coverage_gap.sql`: repository present; production not verified by source scan.
+- `20261029151743_notification_item_destinations.sql`: repository present; production not verified by source scan.
 
 ## Live database evidence
 
@@ -112,27 +114,27 @@ Migration files are repository evidence only. They are not labelled applied to p
   "tables": {
     "notification_schedule": {
       "reachable": true,
-      "count": 699,
+      "count": 1602,
       "error": null
     },
     "notifications": {
       "reachable": true,
-      "count": 929,
+      "count": 2098,
       "error": null
     },
     "push_tokens": {
       "reachable": true,
-      "count": 8,
+      "count": 11,
       "error": null
     },
     "notification_dispatch_events": {
       "reachable": true,
-      "count": 777,
+      "count": 2309,
       "error": null
     },
     "push_token_events": {
       "reachable": true,
-      "count": 127,
+      "count": 439,
       "error": null
     }
   }

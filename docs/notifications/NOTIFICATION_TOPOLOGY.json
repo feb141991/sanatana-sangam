@@ -1,22 +1,22 @@
 {
-  "sourceFingerprint": "d2f077988e4c98ee305fe04e36f628c8bb6363cbc1ccfd5b07f81ae4371a4e59",
+  "sourceFingerprint": "b95223e6b27f91e50f05b736002253315454b5e4bcf0fbcc6a8f511ffdc1303a",
   "schemaVersion": "2.0.0",
   "ownership": {
     "canonicalRepository": "Sanatan Sangam/Shoonaya",
     "nativeRepositoryAudited": true
   },
   "summary": {
-    "totalRoutes": 27,
-    "directPushCallers": 19,
-    "queueWriters": 8,
+    "totalRoutes": 16,
+    "directPushCallers": 12,
+    "queueWriters": 4,
     "byClassification": {
       "admin_or_test": 2,
-      "direct_send_legacy": 13,
-      "scheduled_queue_producer": 7,
+      "direct_send_legacy": 8,
+      "scheduled_queue_producer": 4,
       "delivery_worker": 1,
-      "transactional_event": 4
+      "transactional_event": 1
     },
-    "preferenceReferences": 11
+    "preferenceReferences": 17
   },
   "producers": [
     {
@@ -63,12 +63,14 @@
       "route": "/api/cron/brahma-muhurta",
       "sourceFile": "src/app/api/cron/brahma-muhurta/route.ts",
       "classification": "scheduled_queue_producer",
-      "schedule": "0 3 * * *",
+      "schedule": "45 3 * * *",
       "callsPushDirectly": false,
       "readsSchedule": true,
       "writesSchedule": true,
       "writesBell": false,
-      "preferenceColumns": [],
+      "preferenceColumns": [
+        "wants_brahma_muhurta_reminders"
+      ],
       "notificationKeyLiterals": [
         "Notification schedule upsert failed: ${upsertError.message}"
       ]
@@ -101,27 +103,13 @@
         "${source.title}::${source.body}::${source.festival_id}::${source._action_url}",
         ")\n        .upsert(batch.map(({ festival_id: _festivalId, _action_url: _actionUrl, ...notification }) => notification), {\n          onConflict: ",
         ",\n            festival_id: pushBatch.festivalId,\n          },\n        }, { \n          type: ",
-        ", daysAway, localDate, notificationKey));\n\n        notifications.push({\n          user_id: user.id,\n          title: daysAway === 1\n            ? ",
+        ", daysAway, localDate, notificationKey));\n\n        notifications.push({\n          user_id: user.id,\n          title: daysAway === 0\n            ? ",
         ", sent: 0 });\n    }\n\n    const notifications: Array<{\n      user_id: string;\n      title: string;\n      body: string;\n      emoji: string;\n      type: ",
         "Festival cron notification insert failed:",
         "Festival cron reviewed observances query failed:",
         "Festival cron users query failed:",
         "Notification insert failed: ${insertError.message}",
         "festival:${festival.id}:${daysAway}:${localDate}"
-      ]
-    },
-    {
-      "route": "/api/cron/guided-plan-reminder",
-      "sourceFile": "src/app/api/cron/guided-plan-reminder/route.ts",
-      "classification": "direct_send_legacy",
-      "schedule": "0 7 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": true,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ",\n        notification_key: "
       ]
     },
     {
@@ -144,63 +132,6 @@
         "Japa reminder cron error:",
         "[japa-reminder] candidate upsert error:",
         "[japa-reminder] insert error:"
-      ]
-    },
-    {
-      "route": "/api/cron/journal-anniversary",
-      "sourceFile": "src/app/api/cron/journal-anniversary/route.ts",
-      "classification": "direct_send_legacy",
-      "schedule": "0 8 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": true,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ",\n          notification_key: ",
-        ",\n      anniversaries_today: anniversaryUsers.length,\n      notifications_sent: pushCount\n    });\n  } catch (error: any) {\n    console.error(",
-        ";\n\n      const pushResult = await sendPushNotification({\n        userIds: [target.id],\n        title: ",
-        "[cron/journal-anniversary] Error checking journal entries:",
-        "[cron/journal-anniversary] Error fetching profiles:",
-        "[cron/journal-anniversary] failed to insert notification row:"
-      ]
-    },
-    {
-      "route": "/api/cron/mood-reminder",
-      "sourceFile": "src/app/api/cron/mood-reminder/route.ts",
-      "classification": "scheduled_queue_producer",
-      "schedule": "30 3 * * *",
-      "callsPushDirectly": false,
-      "readsSchedule": true,
-      "writesSchedule": true,
-      "writesBell": false,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        " mode: halts immediately.\n\nconst TARGET_LOCAL_HOUR = 12; // noon local time\n\nconst MOOD_PROMPTS_BY_TRADITION: Record<string, string[]> = {\n  hindu: [\n    ",
-        ",\n        send_at: sendAt.toISOString(),\n        notification_type: ",
-        "[mood-reminder/candidate] Candidate upsert error:",
-        "[mood-reminder/enqueuer] Cron crashed:",
-        "[mood-reminder/enqueuer] Fetch profiles error:",
-        "[mood-reminder/enqueuer] Upsert error:",
-        "mood_checkin:${u.id}:${localDateIso}"
-      ]
-    },
-    {
-      "route": "/api/cron/mood-reminder-evening",
-      "sourceFile": "src/app/api/cron/mood-reminder-evening/route.ts",
-      "classification": "direct_send_legacy",
-      "schedule": "30 14 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": true,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ",\n        notification_key: ",
-        ", baseUrl).toString();\n    const pushResult = await sendPushNotification({\n      userIds: insertedIds,\n      title: ",
-        "[mood-reminder-evening/candidate] Candidate insert error:",
-        "mood-reminder-evening cron crashed:",
-        "mood-reminder-evening insert error:"
       ]
     },
     {
@@ -276,10 +207,19 @@
       "writesSchedule": false,
       "writesBell": true,
       "preferenceColumns": [
+        "dharm_veer_reminder_enabled",
         "japa_reminder_enabled",
+        "quiz_reminder_enabled",
+        "wants_brahma_muhurta_reminders",
+        "wants_evening_reminder",
         "wants_family_notifications",
+        "wants_family_remembrance_reminders",
         "wants_festival_reminders",
+        "wants_madhyahn_reminder",
+        "wants_mood_reminders",
+        "wants_nitya_reminders",
         "wants_sankalpa_midpoint_reminders",
+        "wants_sattvic_reminders",
         "wants_shloka_reminders",
         "wants_tithi_reminders",
         "wants_vrat_reminders"
@@ -289,8 +229,10 @@
         ",\n        });\n        continue;\n      }\n\n      if (japaMissingDateIds.has(row.id)) {\n        skippedRows.push({ id: row.id, reason: ",
         "[notification-dispatch] Could not requeue after Japa completion lookup failure:",
         "[notification-dispatch] Could not requeue after profile lookup failure:",
+        "[notification-dispatch] Could not requeue after quiz completion lookup failure:",
         "[notification-dispatch] Cron crashed:",
-        "[notification-dispatch] Japa completion lookup failed; requeuing claimed batch:"
+        "[notification-dispatch] Japa completion lookup failed; requeuing claimed batch:",
+        "[notification-dispatch] Quiz completion lookup failed; requeuing claimed batch:"
       ]
     },
     {
@@ -315,7 +257,7 @@
       "route": "/api/cron/pitru-paksha-reminder",
       "sourceFile": "src/app/api/cron/pitru-paksha-reminder/route.ts",
       "classification": "direct_send_legacy",
-      "schedule": "0 3 * * *",
+      "schedule": "10 3 * * *",
       "callsPushDirectly": true,
       "readsSchedule": false,
       "writesSchedule": false,
@@ -325,44 +267,6 @@
       ],
       "notificationKeyLiterals": [
         ",\n        notification_key: "
-      ]
-    },
-    {
-      "route": "/api/cron/sattvic-reminder",
-      "sourceFile": "src/app/api/cron/sattvic-reminder/route.ts",
-      "classification": "scheduled_queue_producer",
-      "schedule": "0 11 * * *",
-      "callsPushDirectly": false,
-      "readsSchedule": true,
-      "writesSchedule": true,
-      "writesBell": false,
-      "preferenceColumns": [
-        "wants_nitya_reminders"
-      ],
-      "notificationKeyLiterals": [
-        "[sattvic-reminder/candidate] Candidate upsert error:",
-        "[sattvic-reminder/enqueuer] Cron crashed:",
-        "[sattvic-reminder/enqueuer] Fetch profiles error:",
-        "[sattvic-reminder/enqueuer] Upsert error:",
-        "sattvic_reminder:${u.id}:${localDateIso}"
-      ]
-    },
-    {
-      "route": "/api/cron/shloka-reminder",
-      "sourceFile": "src/app/api/cron/shloka-reminder/route.ts",
-      "classification": "direct_send_legacy",
-      "schedule": "0 6 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": true,
-      "preferenceColumns": [
-        "wants_shloka_reminders"
-      ],
-      "notificationKeyLiterals": [
-        " as const,\n        action_url: actionPath,\n        notification_key: ",
-        "Notification insert failed: ${insertError.message}",
-        "Shloka cron notification insert failed:"
       ]
     },
     {
@@ -389,7 +293,7 @@
       "route": "/api/cron/vrat-reminder",
       "sourceFile": "src/app/api/cron/vrat-reminder/route.ts",
       "classification": "direct_send_legacy",
-      "schedule": "30 4 * * *",
+      "schedule": "20 4 * * *",
       "callsPushDirectly": true,
       "readsSchedule": false,
       "writesSchedule": false,
@@ -401,42 +305,11 @@
         " || /\\bvrat\\b/i.test(vrat.name) ? vrat.name : ",
         ", sent: 0 });\n    }\n\n    const notifications: Array<{\n      user_id: string;\n      title: string;\n      body: string;\n      emoji: string;\n      type: ",
         ", vrats: generalVrats },\n      ];\n\n      if (user.gender_context === ",
-        ";\n}\n\nfunction buildVratTitle(\n  vrat: ReviewedObservance,\n  daysAway: number,\n  audience: ObservanceNotificationAudience,\n) {\n  const suffix = daysAway === 1 ? ",
+        ";\n}\n\nfunction buildVratTitle(\n  vrat: ReviewedObservance,\n  daysAway: number,\n  audience: ObservanceNotificationAudience,\n) {\n  const suffix = daysAway === 0 ? ",
         "Reviewed vrat source unavailable: ${observanceError.message}",
         "[vrat-reminder] cron crashed:",
         "[vrat-reminder] insert error:",
         "[vrat-reminder] reviewed observances query failed:"
-      ]
-    },
-    {
-      "route": "/api/cron/weekly-summary",
-      "sourceFile": "src/app/api/cron/weekly-summary/route.ts",
-      "classification": "direct_send_legacy",
-      "schedule": "0 1 * * 0",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": false,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": []
-    },
-    {
-      "route": "/api/digest/generate",
-      "sourceFile": "src/app/api/digest/generate/route.ts",
-      "classification": "scheduled_queue_producer",
-      "schedule": "0 23 * * *",
-      "callsPushDirectly": false,
-      "readsSchedule": true,
-      "writesSchedule": true,
-      "writesBell": false,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ")\n        .upsert(notificationRows, { onConflict: ",
-        ",\n          body: digest.body.slice(0, 80),\n          send_at: new Date().toISOString(),\n          notification_type: ",
-        ",\n          notification_key: ",
-        ": Name the specific tithi + ONE concrete significance. Max 8 words. Example: ",
-        ": Route to a relevant section (/pathshala, /bhakti/mala, /japa, /bhakti/stotram, /panchang, /vrat).\n\nFORBIDDEN phrases: ",
-        "[digest/generate] notification queue insert failed:"
       ]
     },
     {
@@ -454,61 +327,6 @@
       "notificationKeyLiterals": [
         " ? body.notificationKey.trim() : ",
         ";\n  if (!notificationKey) {\n    return NextResponse.json({ error: "
-      ]
-    },
-    {
-      "route": "/api/notifications/milestone",
-      "sourceFile": "src/app/api/notifications/milestone/route.ts",
-      "classification": "transactional_event",
-      "schedule": null,
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": true,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ",\n      action_url:       actionUrl,\n      notification_key: notificationKey,\n    }, { onConflict: ",
-        ";\n  }\n\n  if (upsertError) {\n    return NextResponse.json(\n      {\n        ok: false,\n        key: notificationKey,\n        error: ",
-        "[milestone] DB upsert error:",
-        "[milestone] Push error:",
-        "milestone:${type}:${threshold}",
-        "milestone:<type>:<threshold>"
-      ]
-    },
-    {
-      "route": "/api/sanskar/schedule",
-      "sourceFile": "src/app/api/sanskar/schedule/route.ts",
-      "classification": "transactional_event",
-      "schedule": null,
-      "callsPushDirectly": false,
-      "readsSchedule": true,
-      "writesSchedule": true,
-      "writesBell": false,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ",\n      send_at: reminderAt.toISOString(),\n      notification_type: ",
-        ",      remind_days_before: 3,  months_after_conception: 9   },\n  { sanskara_id: ",
-        ",      remind_days_before: 7,  months_after_conception: 2   },\n  { sanskara_id: ",
-        ",     remind_days_before: 3,  months_after_conception: 9.4 },\n  { sanskara_id: ",
-        ",    remind_days_before: 7,  months_after_conception: 13  },\n  { sanskara_id: ",
-        ",   remind_days_before: 7,  months_after_conception: 15  },\n  { sanskara_id: ",
-        ", remind_days_before: 7,  months_after_conception: 5   },\n  { sanskara_id: ",
-        "[sanskar/schedule] Insert error:",
-        "[sanskar/schedule] Unexpected error:"
-      ]
-    },
-    {
-      "route": "/api/seva-tier/check",
-      "sourceFile": "src/app/api/seva-tier/check/route.ts",
-      "classification": "transactional_event",
-      "schedule": null,
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": false,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ";\n      \n      await sendPushNotification({\n        userIds: [user.id],\n        title,\n        body\n      }).catch(e => {\n        console.error("
       ]
     }
   ],
@@ -553,13 +371,31 @@
         "/api/cron/nitya-reminder-sandhya"
       ],
       "rationale": "Independent evening routines have no shared per-user cadence arbitration.",
-      "allRoutesDiscovered": true,
+      "allRoutesDiscovered": false,
       "status": "requires_runtime_candidate_probe"
     }
   ],
   "settingsExposure": [
     {
+      "column": "dharm_veer_reminder_enabled",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
       "column": "japa_reminder_enabled",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "quiz_reminder_enabled",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "wants_brahma_muhurta_reminders",
       "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
@@ -572,12 +408,18 @@
     },
     {
       "column": "wants_evening_reminder",
-      "nativeReferenced": false,
+      "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
     },
     {
       "column": "wants_family_notifications",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "wants_family_remembrance_reminders",
       "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
@@ -590,7 +432,13 @@
     },
     {
       "column": "wants_madhyahn_reminder",
-      "nativeReferenced": false,
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "wants_mood_reminders",
+      "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
     },
@@ -602,6 +450,12 @@
     },
     {
       "column": "wants_sankalpa_midpoint_reminders",
+      "nativeReferenced": true,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "wants_sattvic_reminders",
       "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
@@ -725,6 +579,41 @@
       "migrationFile": "20260923170000_atomic_notification_candidate_resolution.sql",
       "repositoryStatus": "present",
       "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20261002181447_notification_cadence_atomicity.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20261003150100_skip_notifications_for_deleting_accounts.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20261003174633_native_kul_deceased_remembrance_notifications.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20261025120000_allow_registration_failed_push_token_event.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20261026113000_default_all_notifications_enabled.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20261027010000_notification_reminder_coverage_gap.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20261029151743_notification_item_destinations.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
     }
   ],
   "liveDatabase": {
@@ -734,27 +623,27 @@
     "tables": {
       "notification_schedule": {
         "reachable": true,
-        "count": 699,
+        "count": 1602,
         "error": null
       },
       "notifications": {
         "reachable": true,
-        "count": 929,
+        "count": 2098,
         "error": null
       },
       "push_tokens": {
         "reachable": true,
-        "count": 8,
+        "count": 11,
         "error": null
       },
       "notification_dispatch_events": {
         "reachable": true,
-        "count": 777,
+        "count": 2309,
         "error": null
       },
       "push_token_events": {
         "reachable": true,
-        "count": 127,
+        "count": 439,
         "error": null
       }
     }
