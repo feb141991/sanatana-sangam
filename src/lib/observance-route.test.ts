@@ -23,4 +23,13 @@ describe('observance route helpers', () => {
     expect(getPulseRouteSlug('Uposatha')).toBe('uposatha');
     expect(getPulseRouteSlug('Ashtami/Chaturdashi')).toBeNull();
   });
+
+  it('maps recognized named Ekadashis explicitly without swallowing them into generic ekadashi', () => {
+    expect(getPulseRouteSlug('Rama Ekadashi')).toBe('rama-ekadashi');
+    expect(getPulseRouteSlug('Nirjala Ekadashi')).toBe('nirjala-ekadashi');
+    expect(getPulseRouteSlug('Devshayani Ekadashi')).toBe('devshayani-ekadashi');
+    expect(getPulseRouteSlug('Ekadashi')).toBe('ekadashi');
+    expect(getPulseRouteSlug('ekadashi vrat')).toBe('ekadashi');
+    expect(getPulseRouteSlug('Unknown Ekadashi Special')).toBeNull();
+  });
 });

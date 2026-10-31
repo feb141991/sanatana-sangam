@@ -72,6 +72,8 @@
     "verify:vrat-observation-shadow": "bash scripts/shadow/verify-vrat-observation-shadow.sh",
     "audit:naraka": "npx tsx scripts/naraka-baseline-audit.mts",
     "verify:naraka-shadow": "bash scripts/shadow/verify-naraka-approval-shadow.sh",
+    "generate:native-festival-content": "npx tsx scripts/generate-native-festival-content.mts",
+    "verify:native-festival-content": "node scripts/verify-native-festival-content.mjs",
     "verify:native-observance-series-contract": "node scripts/verify-native-observance-series-contract.mjs",
     "verify:native-observance-story-contract": "node scripts/verify-native-observance-story-contract.mjs",
     "baseline:privacy": "npx tsx scripts/generate-privacy-security-baseline.ts",

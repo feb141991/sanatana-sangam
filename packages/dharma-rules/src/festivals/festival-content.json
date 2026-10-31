@@ -15023,6 +15023,895 @@
           }
         }
       }
+    },
+    {
+      "definitionKey": "pausha-putrada-ekadashi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Putrada Ekadashi (Pausha)",
+          "hi": "पुत्रदा एकादशी (पौष)"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The sacred Pausha Ekadashi for lineage, family well-being, and righteous progeny",
+          "hi": "संतान सुख और कुल वृद्धि प्रदान करने वाली पावन पौष शुक्ल एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Pausha Putrada Ekadashi falls on the Shukla Paksha of Pausha month. According to the Bhavishyottara Purana, King Suketuman and Queen Shaibya observed this sacred fast under the guidance of holy sages to overcome the grief of childlessness, subsequently receiving a noble and virtuous heir. Devotees observe strict fasting and prayer to Lord Narayana seeking the blessing of righteous progeny, the clearing of deep ancestral burdens, and liberation from karmic sorrow.",
+          "hi": "पौष मास के शुक्ल पक्ष की एकादशी को पौष पुत्रदा एकादशी कहा जाता है। भविष्योत्तर पुराण के अनुसार, भद्रावती के धर्मात्मा राजा सुकेतुमान और रानी शैव्या ने संतानहीनता के दुख से मुक्ति पाने के लिए वन में मुनियों के उपदेश से यह पावन व्रत किया था, जिसके पुण्य से उन्हें प्रतापी पुत्र की प्राप्ति हुई। इस दिन भगवान नारायण की विधिपूर्वक आराधना करने से योग्य व दीर्घायु संतान की प्राप्ति होती है, पितरों को तृप्ति मिलती है और पारिवारिक जीवन में सुख-शांति का संचार होता है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Early morning purification bath and solemn vrata sankalpa dedicated to Lord Narayana",
+            "Worship of Lord Vishnu with fresh Tulsi leaves, yellow marigolds, and panchamrit",
+            "Recitation of the Pausha Putrada Ekadashi Vrata Katha and Vishnu Sahasranama",
+            "Observing complete or fruit-based fasting with evening deepdan and nocturnal prayer"
+          ],
+          "hi": [
+            "प्रातःकाल पवित्र स्नान कर भगवान नारायण के समक्ष निष्ठापूर्वक व्रत का संकल्प लें",
+            "भगवान विष्णु को तुलसी दल, पीले पुष्प, चंदन व पंचामृत अर्पित कर विधिवत पूजन करें",
+            "पौष पुत्रदा एकादशी की पावन व्रत कथा और श्रीविष्णु सहस्रनाम का पाठ व श्रवण करें",
+            "दिनभर निराहार या फलाहार व्रत रखकर सायंकाल दीपदान व रात्रि में भजन-कीर्तन करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Worship Lord Vishnu with devotion and chant the holy names",
+            "Maintain purity of speech, mind, and action throughout the day"
+          ],
+          "hi": [
+            "भगवान विष्णु के नामों का निरंतर जप करें और दान-पुण्य करें",
+            "सत्य, संयम और सात्विक आचरण का पालन करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not consume grains, cereals, beans, or non-sattvic food",
+            "Avoid harsh speech, anger, daytime slumber, and disputes"
+          ],
+          "hi": [
+            "अन्न, दाल, चावल और तामसिक भोजन का पूर्ण त्याग करें",
+            "क्रोध, कलह और दिन में सोने से बचें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Fresh Tulsi leaves and yellow flowers",
+            "Ghee lamp, incense, and camphor",
+            "Panchamrit, seasonal fruits, and yellow cloth"
+          ],
+          "hi": [
+            "ताजे तुलसी पत्र और पीले पुष्प",
+            "शुद्ध घी का दीपक, धूप और कर्पूर",
+            "पंचामृत, ऋतु फल और पीला वस्त्र"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
+        "transliteration": "oṃ namo bhagavate vāsudevāya",
+        "translation": {
+          "value": {
+            "en": "Om, salutations to Bhagwan Vasudeva, the Supreme Divine.",
+            "hi": "भगवान वासुदेव को सादर प्रणाम।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "shattila-ekadashi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Shattila Ekadashi",
+          "hi": "षटतिला एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The purification Ekadashi through the six-fold sacred use of sesame seeds",
+          "hi": "छह प्रकार से तिल का उपयोग कर पापों से मुक्ति दिलाने वाली पावन एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Shattila Ekadashi occurs in the Krishna Paksha of the Magha month. In sacred tradition, this day emphasizes the divine purifying potency of sesame (tila) used in six holy ways: bathing in sesame water, applying sesame paste, offering sesame seeds in the sacred fire, offering sesame libations, donating sesame to the needy, and consuming sesame prasad. Observing this vrat purifies deep-seated karmas, bestows spiritual illumination, and ensures that the devotee never experiences spiritual or material famine.",
+          "hi": "माघ मास के कृष्ण पक्ष की एकादशी को षटतिला एकादशी कहा जाता है। इस पावन तिथि पर तिल का छह रूपों में उपयोग अत्यंत पुण्यदायी माना गया है: तिल मिश्रित जल से स्नान, तिल का उबटन, तिल से हवन, तिल से तर्पण, तिल का दान और तिल का सेवन। पद्म पुराण के अनुसार, यह व्रत जन्म-जन्मांतर के संचित पापों का नाश करता है। जो साधक इस दिन श्रद्धापूर्वक भगवान विष्णु की पूजा कर तिल और अन्न का दान करते हैं, उन्हें कभी दारिद्र्य का सामना नहीं करना पड़ता और वैकुंठ धाम प्राप्त होता है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Bathing before dawn with sesame-infused holy water and applying sesame paste",
+            "Offering sesame seeds into the sacred havan fire while chanting Vishnu mantras",
+            "Giving generous donations of sesame seeds, warm clothes, and food to the needy",
+            "Listening to the Shattila Ekadashi Vrata Katha and keeping a prayerful night vigil"
+          ],
+          "hi": [
+            "ब्रह्म मुहूर्त में तिल मिश्रित जल से स्नान कर तिल का उबटन लगाएं",
+            "हवन कुंड में तिल की पवित्र आहुति देकर भगवान विष्णु के द्वादशाक्षर मंत्र का जप करें",
+            "तिल, कंबल, गरम वस्त्र और अन्न का दीन-दुखियों व सुपात्रों को आदरपूर्वक दान करें",
+            "षटतिला एकादशी की पावन कथा सुनें और रात्रि में हरि संकीर्तन व जागरण करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Use sesame seeds in sacred charity and worship",
+            "Practice forgiveness, chanting, and meditation"
+          ],
+          "hi": [
+            "तिल का छह प्रकार से सदुपयोग करें और दान करें",
+            "क्षमा, जप और हरि भजन में दिन व्यतीत करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not eat grains or heavy meals",
+            "Avoid miserliness and unkind words"
+          ],
+          "hi": [
+            "अन्न और तामसिक पदार्थों का सेवन न करें",
+            "क्रोध, कटु वचन और कृपणता से दूर रहें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "White and black sesame seeds",
+            "Tulsi leaves and yellow flowers",
+            "Ghee lamp, havan samagri, and sweet fruits"
+          ],
+          "hi": [
+            "सफेद और काले तिल",
+            "तुलसी दल और पीले पुष्प",
+            "शुद्ध घी का दीपक, हवन सामग्री और फल"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
+        "transliteration": "oṃ namo bhagavate vāsudevāya",
+        "translation": {
+          "value": {
+            "en": "Om, salutations to Bhagwan Vasudeva.",
+            "hi": "भगवान वासुदेव को नमन।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "jaya-ekadashi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Jaya Ekadashi",
+          "hi": "जया एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The Ekadashi of spiritual triumph and liberation from degraded states",
+          "hi": "आध्यात्मिक विजय और नीच योनियों से मुक्ति प्रदान करने वाली माघ शुक्ल एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Jaya Ekadashi falls on the Shukla Paksha of Magha month. According to the Padma Purana, Lord Krishna revealed the glory of this day to King Yudhishthira through the story of Malyavan and Pushpavati, who were redeemed from a ghostly, tormented existence by observing this sacred vow. Fasting on Jaya Ekadashi grants supreme spiritual victory (jaya) over the lower tendencies of the mind, absolves the harshest karmas, and elevates the soul directly toward the grace of Lord Vishnu.",
+          "hi": "माघ मास के शुक्ल पक्ष की एकादशी को जया एकादशी कहा जाता है। पद्म पुराण में वर्णित कथा के अनुसार, भगवान श्रीकृष्ण ने धर्मराज युधिष्ठिर को बताया था कि इस व्रत के पावन प्रभाव से गंधर्व माल्यवान और अप्सरा पुष्पवती पिशाच योनि के घोर कष्टों से मुक्त होकर पुनः अपने दिव्य स्वरूप को प्राप्त हुए थे। यह पावन व्रत मनुष्य को निम्न वृत्तियों, नकारात्मक ऊर्जाओं और जन्म-जन्मांतर के बंधनों से मुक्त कर जीवन में विजय, आत्मिक शांति और श्रीहरि का परम सान्निध्य प्रदान करता है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Early morning purification bath and setting a firm vow of truth and non-violence",
+            "Joint worship of Lord Krishna and Vishnu with fresh tulsi leaves and yellow flowers",
+            "Listening attentively to the Jaya Ekadashi Vrata Katha with family or community",
+            "Keeping a dedicated night vigil (jagaran) filled with devotional singing and contemplation"
+          ],
+          "hi": [
+            "प्रातःकाल स्नान कर सत्य, अहिंसा और एकाग्रता के साथ व्रत का संकल्प लें",
+            "तुलसी पत्र, सुगंधित चंदन व पीले पुष्पों से भगवान श्रीकृष्ण व विष्णु जी का पूजन करें",
+            "परिवारजनों के साथ बैठकर जया एकादशी की पावन व्रत कथा का श्रद्धापूर्वक श्रवण करें",
+            "रात्रि में शयन का त्याग कर जागरण करें तथा प्रभु के दिव्य नामों का संकीर्तन करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Chant the holy names of Lord Vishnu and Sri Krishna",
+            "Offer respectful prayers for the upliftment of all beings"
+          ],
+          "hi": [
+            "श्रीहरि के नामों का जप करें और परोपकार की भावना रखें",
+            "सभी प्राणियों के कल्याण हेतु प्रार्थना करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not eat grains, pulses, or tamasic meals",
+            "Refrain from idle gossip and quarrel"
+          ],
+          "hi": [
+            "अन्न, दाल और तामसिक भोजन ग्रहण न करें",
+            "व्यर्थ वार्तालाप, विवाद और झूठ से बचें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Tulsi leaves and marigold flowers",
+            "Incense, camphor, and pure ghee lamp",
+            "Panchamrit, fruits, and sandalwood"
+          ],
+          "hi": [
+            "तुलसी दल और गेंदे के फूल",
+            "धूप, दीप और कर्पूर",
+            "पंचामृत, ऋतु फल और चंदन"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ नमो नारायणाय॥",
+        "transliteration": "oṃ namo nārāyaṇāya",
+        "translation": {
+          "value": {
+            "en": "Om, salutations unto Lord Narayana.",
+            "hi": "भगवान नारायण को सादर प्रणाम।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "varuthini-ekadashi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Varuthini Ekadashi",
+          "hi": "वरूथिनी एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The armor of divine protection bestowing merit equal to ten thousand years of penance",
+          "hi": "परम सुरक्षा और अकूत पुण्य फल प्रदान करने वाली वैशाख कृष्ण वरूथिनी एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Varuthini Ekadashi occurs in the Krishna Paksha of the Vaishakha month (Chaitra Krishna in Purnimanta calendars). The sacred word Varuthini signifies protective armor or a divine shield. Dedicated to Lord Madhusudana and the Vamana avatar of Vishnu, this fast protects the practitioner from worldly tribulations, misfortunes, and physical illness. Scriptural teachings state that observing Varuthini Ekadashi yields spiritual merits equal to rigorous austerities and continuous charitable giving over many lifetimes.",
+          "hi": "वैशाख मास के कृष्ण पक्ष की एकादशी (पूर्णिमान्त गणना अनुसार चैत्र कृष्ण) को वरूथिनी एकादशी कहा जाता है। वरूथिनी का अर्थ है रक्षा करने वाली ढाल या कवच। भगवान मधुसूदन और वामन स्वरूप को समर्पित यह व्रत साधक को समस्त प्रकार के भयों, संकटों और शारीरिक व्याधियों से सुरक्षा प्रदान करता है। भविष्योत्तर पुराण के अनुसार, राजा मान्धाता ने इसी व्रत के प्रभाव से मोक्ष प्राप्त किया था। यह व्रत करने से अनंत तीर्थों में तप और अन्नदान करने के समान पावन फल प्राप्त होता है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Dawn bath and dedicated invocation of the Vamana and Madhusudana forms of Vishnu",
+            "Chanting the sacred Vamana and Vishnu mantras while offering white and yellow blossoms",
+            "Observing a strict waterless or light fruit-based fast with disciplined meditation",
+            "Breaking fast (parana) with gratitude strictly within the prescribed Dwadashi window"
+          ],
+          "hi": [
+            "प्रातःकाल स्नान कर भगवान विष्णु के वामन व मधुसूदन स्वरूप का ध्यानपूर्वक आह्वान करें",
+            "पवित्र विष्णु मंत्रों का जप करते हुए पीले व श्वेत पुष्प, तुलसी पत्र व चंदन अर्पित करें",
+            "दिनभर मन-इंद्रियों को वश में रखकर निराहार अथवा अल्प सात्विक फलाहार का पालन करें",
+            "द्वादशी के दिन शुभ पारणा मुहूर्त में ब्राह्मण या सुपात्र को दान देकर व्रत खोलें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Contemplate Lord Vamana and maintain continuous japa",
+            "Practice non-violence and charity"
+          ],
+          "hi": [
+            "भगवान वामन का स्मरण करें और निरंतर नाम जप करें",
+            "अहिंसा, सत्य और दान का पालन करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not eat grains or oil-cooked food",
+            "Avoid gambling, excessive sleep, and arrogance"
+          ],
+          "hi": [
+            "अन्न, तेल और गरिष्ठ भोजन का त्याग करें",
+            "जुआ, दिन में शयन और अहंकार से बचें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Tulsi leaves and yellow flowers",
+            "Ghee lamp, sandalwood paste, and incense",
+            "Panchamrit, bananas, and coconut"
+          ],
+          "hi": [
+            "तुलसी पत्र और पीले पुष्प",
+            "शुद्ध घी का दीपक, चंदन और धूप",
+            "पंचामृत, केले और नारियल"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ वामनाय नमः॥",
+        "transliteration": "oṃ vāmanāya namaḥ",
+        "translation": {
+          "value": {
+            "en": "Om, salutations to Bhagwan Vamana.",
+            "hi": "भगवान वामन को नमस्कार।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "mohini-ekadashi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Mohini Ekadashi",
+          "hi": "मोहिनी एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "Commemorating the enchanting Mohini avatar that dispels worldly delusion and attachment",
+          "hi": "मोह-माया के बंधनों को काटकर आत्म-कल्याण कराने वाली वैशाख शुक्ल मोहिनी एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Mohini Ekadashi is observed on the Shukla Paksha of Vaishakha month. It commemorates Lord Vishnu assuming His mesmerizing Mohini form to protect the celestial nectar (Amrita) from demonic forces during the Churning of the Ocean. Scriptural tradition recounts that sage Vasishtha advised Lord Rama to observe this fast during His search for Mata Sita. Observing Mohini Ekadashi dissolves the dense veil of attachment, worldly delusion (moha), and sorrow, bringing clarity, inner resolve, and divine devotion.",
+          "hi": "वैशाख मास के शुक्ल पक्ष की एकादशी को मोहिनी एकादशी कहा जाता है। समुद्र मंथन के पश्चात जब अमृत को लेकर विवाद उत्पन्न हुआ, तब भगवान श्रीहरि ने मोहिनी स्वरूप धारण कर देवताओं को अमृत पान कराया था। पौराणिक मान्यता के अनुसार, महर्षि वशिष्ठ के परामर्श पर भगवान श्रीराम ने भी माता सीता की खोज के समय इस व्रत का पालन कर परम सिद्धि प्राप्त की थी। यह व्रत अंतःकरण के सांसारिक मोह-माया, अज्ञान और शोक के बंधनों को काटकर साधक को भक्ति, ज्ञान और मुक्ति का मार्ग दिखाता है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Morning sacred purification bath and solemn dedication of the fast to Lord Vishnu",
+            "Adoration of Sri Hari and Sri Rama with fragrant white lotuses, chandan, and tulsi",
+            "Reading and reflecting upon the Mohini Ekadashi narrative from the sacred Puranas",
+            "Evening arati and a peaceful night spent in contemplation and devotional prayer"
+          ],
+          "hi": [
+            "प्रातःकाल पवित्र स्नान कर श्रीहरि के चरणों में पूर्ण समर्पण के साथ व्रत का संकल्प लें",
+            "भगवान विष्णु और मर्यादा पुरुषोत्तम श्रीराम का कमल पुष्पों, चंदन और तुलसी दल से पूजन करें",
+            "मोहिनी एकादशी की पावन पौराणिक कथा का पाठ करें और मोह-त्याग का संकल्प लें",
+            "सायंकाल दीप प्रज्ज्वलित कर आरती करें और रात्रि में शांत भाव से प्रभु चिंतन में लीन रहें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Cultivate detachment from worldly pride and materialism",
+            "Feed animals and provide help to seekers"
+          ],
+          "hi": [
+            "सांसारिक प्रलोभनों से मन को हटाकर ईश्वर में लगाएं",
+            "गौमाता और असहायों की सेवा करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not eat grains, beans, or onion-garlic",
+            "Avoid deceit, ego, and criticism of others"
+          ],
+          "hi": [
+            "अन्न, दाल और तामसिक भोजन का त्याग करें",
+            "निंदा, कपट और मिथ्या भाषण से बचें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Tulsi leaves, lotus or marigold flowers",
+            "Ghee lamp, camphor, and fragrant dhoop",
+            "Panchamrit, seasonal fruits, and sweets"
+          ],
+          "hi": [
+            "तुलसी दल, कमल अथवा गेंदे के पुष्प",
+            "शुद्ध घी का दीपक, कर्पूर और धूप",
+            "पंचामृत, ऋतु फल और मिष्ठान"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
+        "transliteration": "oṃ namo bhagavate vāsudevāya",
+        "translation": {
+          "value": {
+            "en": "Om, salutations to Bhagwan Vasudeva.",
+            "hi": "भगवान वासुदेव को नमन।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "indira-ekadashi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Indira Ekadashi",
+          "hi": "इन्दिरा एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The sacred Pitru Paksha Ekadashi liberating departed ancestors from lower realms",
+          "hi": "पितृ पक्ष में पूर्वजों को सद्गति और मुक्ति प्रदान करने वाली पावन इन्दिरा एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Indira Ekadashi falls during the solemn period of Pitru Paksha in the Krishna Paksha of Ashwin month. According to the Brahmavaivarta Purana, King Indrasena observed this sacred vrat upon the guidance of Devrishi Narada, transferring the accumulated spiritual merit to his deceased father and granting him ascension to Vaikuntha. This fast holds supreme merit for liberating departed ancestors from suffering, reconciling family lineage obligations (pitru-rina), and bringing prosperity and blessings to future generations.",
+          "hi": "अश्विन मास के कृष्ण पक्ष में पितृ पक्ष के पावन दिनों में आने वाली एकादशी को इन्दिरा एकादशी कहा जाता है। ब्रह्मवैवर्त पुराण के अनुसार, राजा इन्द्रसेन ने देवर्षि नारद के उपदेश से यह पावन व्रत रखकर इसका संपूर्ण पुण्य यमलोक में कष्ट भोग रहे अपने पिता को समर्पित किया था, जिससे उनके पिता को तत्काल वैकुंठ लोक की प्राप्ति हुई। पितृ पक्ष में पड़ने के कारण यह व्रत पूर्वजों के उद्धार, पितृ-दोष के निवारण और कुल की उन्नति के लिए शास्त्रों में सर्वश्रेष्ठ फलदायी माना गया है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Morning sacred bath and offering water libations (tarpan) with black sesame for ancestors",
+            "Solemn worship of Lord Shaligram with panchamrit, sacred tulsi leaves, and yellow chandan",
+            "Recitation of the Indira Ekadashi Vrata Katha and Chapter 8 of Srimad Bhagavad Gita",
+            "Dedicating the entire spiritual fruit of the day fast to ancestors before evening prayers"
+          ],
+          "hi": [
+            "प्रातःकाल स्नान कर काले तिल व कुश से पितरों के निमित्त श्रद्धापूर्वक तर्पण संपन्न करें",
+            "भगवान शालिग्राम का पंचामृत, गंगाजल, तुलसी पत्र और चंदन से विधिवत पूजन व अभिषेक करें",
+            "इन्दिरा एकादशी की व्रत कथा और श्रीमद्भगवद्गीता के सातवें व आठवें अध्याय का पाठ करें",
+            "सायंकाल धूप-दीप अर्पित कर व्रत का समस्त पुण्य पूर्वजों की सद्गति हेतु समर्पित करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Remember ancestors with gratitude and perform charity",
+            "Feed cows, birds, and the hungry"
+          ],
+          "hi": [
+            "कृतज्ञतापूर्वक पितरों का स्मरण करें और दान करें",
+            "गौमाता, पक्षियों और जरूरतमंदों को भोजन कराएं"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not eat grains, salt, or heavy food",
+            "Avoid frivolous celebrations and disputes"
+          ],
+          "hi": [
+            "अन्न, दाल और तामसिक भोजन से दूर रहें",
+            "कलह, कटुता और असत्य संभाषण न करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Black sesame seeds and pure water for tarpan",
+            "Tulsi leaves, yellow flowers, and chandan",
+            "Ghee lamp, incense, and fruit offerings"
+          ],
+          "hi": [
+            "तर्पण हेतु काले तिल और शुद्ध जल",
+            "तुलसी दल, पीले फूल और चंदन",
+            "शुद्ध घी का दीपक, धूप और फल"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ नमो भगवते वासुदेवाय॥",
+        "transliteration": "oṃ namo bhagavate vāsudevāya",
+        "translation": {
+          "value": {
+            "en": "Om, salutations to Bhagwan Vasudeva.",
+            "hi": "भगवान वासुदेव को नमन।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "papankusha-ekadashi",
+      "emoji": "🌿",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Papankusha Ekadashi",
+          "hi": "पापांकुशा एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The divine goad (ankusha) that reins in past sins and directs the mind toward liberation",
+          "hi": "पाप रूपी मतवाले हाथी पर अंकुश लगाकर मोक्ष का मार्ग प्रशस्त करने वाली एकादशी"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Papankusha Ekadashi falls on the Shukla Paksha of Ashwin month, dedicated to Lord Padmanabha. The name symbolizes a divine goad (ankusha) that subdues and purifies the unrestrained karmic tendencies of the senses, much like a goad guides an elephant. Observing this fast washes away accumulated negative karma from past lifetimes, promotes inner discipline and health, and prepares the devotee spiritually for the approaching sacred observances of the Kartik month.",
+          "hi": "अश्विन मास के शुक्ल पक्ष की एकादशी को पापांकुशा एकादशी कहा जाता है। यह पावन पर्व भगवान पद्मनाभ को समर्पित है। पापांकुशा का अर्थ है पापों को वश में करने वाला अंकुश; जिस प्रकार अंकुश मदमस्त हाथी को नियंत्रित करता है, उसी प्रकार यह व्रत मन की चंचल वृत्तियों और पूर्व संचित पापों का शमन करता है। पद्म पुराण के अनुसार, जो साधक इस दिन उपवास रखकर श्रीहरि का ध्यान करता है, उसे यमयातना से मुक्ति मिलती है और आत्मिक पवित्रता व सद्गति प्राप्त होती है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Morning worship of Lord Padmanabha (Vishnu) with fresh lotus blossoms and tulsi leaves",
+            "Chanting the sacred Padmanabha mantras and observing silent reflection through the day",
+            "Reading or listening attentively to the Papankusha Ekadashi Vrata Katha",
+            "Lighting a continuous ghee deepak in the evening and breaking fast on Dwadashi after charity"
+          ],
+          "hi": [
+            "प्रातःकाल भगवान पद्मनाभ की कमल पुष्प, तुलसी दल व सुगंधित चंदन से विधिपूर्वक पूजा करें",
+            "प्रभु के पावन नामों का मौन जप करें और दिनभर इंद्रियों को संयमित रखें",
+            "श्रद्धाभाव से पापांकुशा एकादशी व्रत कथा का पाठ अथवा श्रवण करें",
+            "सायंकाल घर व मंदिर में घी का दीपक जलाएं तथा अगले दिन द्वादशी को दान के बाद पारण करें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Practice sense-control, patience, and meditation",
+            "Engage in charity on Dwadashi morning"
+          ],
+          "hi": [
+            "इंद्रिय संयम, धैर्य और ध्यान का अभ्यास करें",
+            "द्वादशी के दिन ब्राह्मणों और जरूरतमंदों को दान दें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not eat grains, pulses, or tamasic foods",
+            "Avoid sensory indulgence, anger, and harsh words"
+          ],
+          "hi": [
+            "अन्न और तामसिक भोजन का पूर्ण त्याग करें",
+            "क्रोध, वासना और कटु वचनों से बचें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Tulsi leaves and lotus flowers",
+            "Pure ghee lamp, sandalwood paste, and incense",
+            "Panchamrit and seasonal fruit offerings"
+          ],
+          "hi": [
+            "तुलसी दल और कमल के पुष्प",
+            "शुद्ध घी का दीपक, चंदन और धूप",
+            "पंचामृत और ऋतु फलों का नैवेद्य"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "ॐ पद्मनाभाय नमः॥",
+        "transliteration": "oṃ padmanābhāya namaḥ",
+        "translation": {
+          "value": {
+            "en": "Om, salutations to Lord Padmanabha.",
+            "hi": "भगवान पद्मनाभ को सादर नमस्कार।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
     }
   ]
 }

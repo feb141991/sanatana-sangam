@@ -1,3 +1,5 @@
+import { resolveVratSlug } from './vrat-data';
+
 export function buildObservanceHref(
   routeKind: string | null | undefined,
   routeSlug: string | null | undefined,
@@ -16,9 +18,19 @@ export function buildObservanceHref(
 }
 
 export function getPulseRouteSlug(label: string): string | null {
-  const normalized = label.toLowerCase();
+  const normalized = label.toLowerCase().trim();
+
+  // Explicit canonical named mapping first to prevent substring swallowing
+  const namedSlug = resolveVratSlug(normalized);
+  if (namedSlug && namedSlug !== 'ekadashi') {
+    return namedSlug;
+  }
+
   if (normalized.includes('shivaratri')) return 'shivaratri';
-  if (normalized.includes('ekadashi')) return 'ekadashi';
+  // Generic Ekadashi tithi fallback: only for generic ekadashi labels
+  if (normalized === 'ekadashi' || normalized === 'ekadasi' || normalized === 'ekadashi vrat') {
+    return 'ekadashi';
+  }
   if (normalized.includes('pradosh')) return 'pradosh';
   if (normalized.includes('chaturthi')) return 'chaturthi';
   if (normalized.includes('purnima')) return 'purnima';

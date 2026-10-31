@@ -1480,19 +1480,49 @@ const RECURRING_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = 
   { canonical: 'uposatha', aliases: ['uposatha'] },
 ];
 
-function includesAlias(value: string, aliases: string[]): boolean {
-  return aliases.some((alias) => value.includes(alias));
+function matchesExactAlias(value: string, aliases: string[]): boolean {
+  const normVal = value.toLowerCase().trim();
+  const spaceVal = normVal.replace(/[-_]/g, ' ');
+  return aliases.some((alias) => {
+    const a = alias.toLowerCase().trim();
+    return normVal === a || spaceVal === a.replace(/[-_]/g, ' ');
+  });
+}
+
+function matchesBoundaryAlias(value: string, alias: string): boolean {
+  const t = ' ' + value.toLowerCase().trim().replace(/[-_]/g, ' ') + ' ';
+  const a = ' ' + alias.toLowerCase().trim().replace(/[-_]/g, ' ') + ' ';
+  return t.includes(a);
 }
 
 function resolveCanonicalVratKey(slug: string): string | null {
   const n = slug.toLowerCase().trim();
 
+  // 1. Exact match against named vrat aliases
   for (const entry of NAMED_VRAT_ALIASES) {
-    if (includesAlias(n, entry.aliases)) return entry.canonical;
+    if (matchesExactAlias(n, entry.aliases)) return entry.canonical;
   }
 
+  // 2. Exact match against recurring vrat aliases
   for (const entry of RECURRING_VRAT_ALIASES) {
-    if (includesAlias(n, entry.aliases)) return entry.canonical;
+    if (matchesExactAlias(n, entry.aliases)) return entry.canonical;
+  }
+
+  // 3. Boundary match against named vrat aliases (longer/more specific aliases evaluated first)
+  const flattenedNamed = NAMED_VRAT_ALIASES.flatMap((entry) =>
+    entry.aliases.map((alias) => ({ canonical: entry.canonical, alias }))
+  ).sort((a, b) => b.alias.length - a.alias.length);
+
+  for (const item of flattenedNamed) {
+    if (matchesBoundaryAlias(n, item.alias)) return item.canonical;
+  }
+
+  // 4. Boundary match against non-ekadashi recurring vrat aliases
+  for (const entry of RECURRING_VRAT_ALIASES) {
+    if (entry.canonical === 'ekadashi') continue;
+    for (const alias of entry.aliases) {
+      if (matchesBoundaryAlias(n, alias)) return entry.canonical;
+    }
   }
 
   return null;
