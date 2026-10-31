@@ -60,6 +60,8 @@ export async function GET(req: NextRequest) {
       { count: totalJapaSessions },
       { data: karmaLedger30d },
       { data: quizResponses30d },
+      { data: vratObservations },
+      { count: totalVratsObserved },
     ] = await Promise.all([
       supabase.from('profiles').select('full_name, username, karma_points').eq('id', user.id).single(),
       supabase.from('mala_sessions')
@@ -73,6 +75,12 @@ export async function GET(req: NextRequest) {
       supabase.from('mala_sessions').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
       supabase.from('karma_ledger').select('reason, amount').eq('user_id', user.id).gte('created_at', thirtyAgo).lte('created_at', today + 'T23:59:59'),
       supabase.from('quiz_responses').select('date, is_correct').eq('user_id', user.id).gte('date', thirtyAgo).lte('date', today),
+      supabase.from('vrat_observations')
+        .select('id, occurrence_date, vrat_id, vrat_name, observed_at')
+        .eq('user_id', user.id)
+        .order('occurrence_date', { ascending: false })
+        .limit(20),
+      supabase.from('vrat_observations').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
     ]);
 
     return NextResponse.json(
@@ -84,6 +92,8 @@ export async function GET(req: NextRequest) {
         totalJapaSessions: totalJapaSessions ?? 0,
         karmaLedger30d: karmaLedger30d ?? [],
         quizResponses30d: quizResponses30d ?? [],
+        vratObservations: vratObservations ?? [],
+        totalVratsObserved: totalVratsObserved ?? 0,
       },
       { headers: { 'Cache-Control': 'private, no-store' } },
     );

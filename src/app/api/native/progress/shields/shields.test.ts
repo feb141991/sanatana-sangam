@@ -44,15 +44,20 @@ function mockDb(options: {
         };
         return query;
       }
-      if (table === 'mala_sessions') {
+      if (table === 'mala_sessions' || table === 'vrat_observations') {
         const query: any = {
           select: (_cols: string, opts?: { count?: string; head?: boolean }) => {
             return query;
           },
+          order: () => query,
+          limit: () => query,
           eq: () => query,
           then: (resolve: (val: any) => any) => {
-            if (options.sessionsError) {
+            if (table === 'mala_sessions' && options.sessionsError) {
               return Promise.resolve(resolve({ data: null, error: options.sessionsError, count: null }));
+            }
+            if (table === 'vrat_observations') {
+              return Promise.resolve(resolve({ data: [], error: null, count: 5 }));
             }
             return Promise.resolve(resolve({ data: null, error: null, count: options.sessionsCount !== undefined ? options.sessionsCount : 0 }));
           },
@@ -95,6 +100,7 @@ describe('GET /api/native/progress/shields', () => {
     expect(body).toEqual({
       latestStreakCount: 14,
       totalJapaSessions: 42,
+      totalVratsObserved: 5,
     });
     expect(res.headers.get('Cache-Control')).toBe('private, no-store');
     expect(res.headers.get('Server-Timing')).toContain('total');
@@ -114,7 +120,7 @@ describe('GET /api/native/progress/shields', () => {
     const res = await getShields(new NextRequest('http://localhost:3000/api/native/progress/shields'));
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toEqual({ latestStreakCount: 0, totalJapaSessions: 0 });
+    expect(body).toEqual({ latestStreakCount: 0, totalJapaSessions: 0, totalVratsObserved: 5 });
   });
 
   it('fails with 503 when daily_sadhana read fails (never returns 0 shields on failure)', async () => {

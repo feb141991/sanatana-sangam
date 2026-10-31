@@ -20,18 +20,23 @@ export async function GET(request: NextRequest) {
     if (error || !user || !supabase) return getApiAuthFailureResponse(error, headers());
     const { today, start182d } = nativeProgressWindow();
     const queryStarted = performance.now();
-    const [streak, sessions] = await Promise.all([
+    const [streak, sessions, vrats] = await Promise.all([
       supabase.from('daily_sadhana').select('streak_count').eq('user_id', user.id)
         .gte('date', start182d).lte('date', today).order('date', { ascending: false }).limit(1)
         .maybeSingle<{ streak_count: number | null }>(),
       supabase.from('mala_sessions').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+      supabase.from('vrat_observations').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
     ]);
     queryMs = performance.now() - queryStarted;
-    if (streak.error || sessions.error || sessions.count === null) {
+    if (streak.error || sessions.error || sessions.count === null || vrats.error) {
       return NextResponse.json({ error: 'Progress temporarily unavailable', code: 'PROGRESS_UNAVAILABLE' },
         { status: 503, headers: { ...headers(), 'Retry-After': '5' } });
     }
-    return NextResponse.json({ latestStreakCount: streak.data?.streak_count ?? 0, totalJapaSessions: sessions.count }, { headers: headers() });
+    return NextResponse.json({
+      latestStreakCount: streak.data?.streak_count ?? 0,
+      totalJapaSessions: sessions.count,
+      totalVratsObserved: vrats.count ?? 0,
+    }, { headers: headers() });
   } catch {
     return NextResponse.json({ error: 'Progress temporarily unavailable', code: 'PROGRESS_UNAVAILABLE' },
       { status: 503, headers: { ...headers(), 'Retry-After': '5' } });
