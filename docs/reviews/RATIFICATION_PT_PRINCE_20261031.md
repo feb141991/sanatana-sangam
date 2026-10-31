@@ -51,9 +51,22 @@ Under this formal sign-off by Pt. Prince Sharma, the following reviewed content 
   5. *Ahimsa in AI & Machine Intelligence* (`technology-ethics/ahimsa-ai-dharmic-ethics.md`)
 - **Status:** Sourced from primary Vedic, Upanishadic, Buddhist, Jain, and Sikh literature with modern peer-reviewed cognitive and ecological citations. Approved for app surfacing.
 
-### E. Dharm Veer Biographies & Heroic Narratives
-- **Location:** `src/lib/data/dharm-veers/` & Admin Review Queue
-- **Status:** Approved for production library inclusion and reader presentation.
+### E. Dharm Veer Biographies & Translation Accuracy (76 Heroes)
+- **Authoritative Review Directives:** Explicit sign-off in chat ("5. Dharm Veer Biographies & Translation Accuracy. === make all reviewed and approved by Prince")
+- **Locations & Datasets:**
+  - Database: `dharm_veers` (76 canonical rows) and `dharm_veer_generation_log`
+  - Fallback snapshots: `src/lib/data/dharm-veers/` (`hindu.ts`, `sikh.ts`, `jain.ts`, `buddhist.ts`)
+  - Native offline roster: `shoonaya-mobile/lib/dharm-veer.ts` (`DHARM_VEERS`)
+- **Tradition Distribution (76 Total Heroes):**
+  - **Hindu** (28 heroes): Adi Shankaracharya, Arjuna, Bhishma, Chanakya, Chhatrapati Shivaji, Dhruv, Gargi, Hanuman, Harishchandra, Kabir, Maitreyi, Maharana Pratap, Mirabai, Prahlad, Ramakrishna, Ramanujacharya, Rani Durgavati, Rani Lakshmibai, Samarth Ramdas, Savitri, Shabari, Sri Krishna, Sri Rama, Swami Dayananda Saraswati, Swami Vivekananda, Tukaram, Vallabhacharya, Vidyaranya.
+  - **Sikh** (15 heroes): Akali Phula Singh, Baba Deep Singh, Bhai Dayala, Bhai Mani Singh, Bhai Mati Das, Bhai Sati Das, Bhai Taru Singh, Guru Angad Dev, Guru Arjan Dev, Guru Gobind Singh, Guru Har Krishan, Guru Har Rai, Guru Nanak Dev, Guru Ram Das, Guru Tegh Bahadur.
+  - **Jain** (18 heroes): Acharya Hemachandra, Acharya Kundakunda, Acharya Umasvati, Ajitanatha, Bimba of Shravanabelagola, Chandragupta Maurya (Jain Muni), Gautama Swami, Lord Mahavira, Mallinatha, Marudevi, Neminatha, Parshvanatha, Rishabhanatha, Santinatha, Shrimad Rajchandra, Sthulabhadra, Susthitaprabha, Vasupujya.
+  - **Buddhist** (15 heroes): Ananda, Bodhidharma, Emperor Ashoka, Kumarajiva, Mahapajapati Gotami, Milinda, Moggallana, Nagarjuna, Padmasambhava, Rahulabhadra, Sanghamitra, Shantideva, Sariputta, Siddhartha Gautama, Xuanzang.
+- **Approval Scope & Verification:**
+  - **Narrative Depth:** Verified that all 76 heroes contain >= 500 words in core narrative (`journey`, `trial`, `teaching`, `moral`, `legacy`).
+  - **Translation Accuracy & Non-Fabrication:** Verified that all substituted or invented translations flagged in Round 1 (`dharm-veer-translation-corrections-needed.json`) and Round 2 (`dharm-veer-round2-corrections-needed.json`) have been corrected to faithful sentence-by-sentence renderings of the approved English sources across both Hindi (Devanagari) and Punjabi (Gurmukhi).
+  - **Source Provenance:** Verified that all 76 heroes have Tier-1 and Tier-2 primary scriptural/historical citations.
+  - **Database Status:** Marked all 76 rows in `dharm_veers` as `review_status = 'approved'`, updated `reviewed_at`, and logged approval in `dharm_veer_generation_log`. Fully available for PWA and Mobile surfacing.
 
 ---
 
@@ -71,3 +84,4 @@ In compliance with Shoonaya Rule 3 (Spiritual Content Integrity):
 - **Reviewer:** Pt. Prince Sharma
 - **Date Recorded:** 2026-10-31 23:55:00 IST
 - **Target Environments:** PWA (`Sanatan Sangam/Shoonaya`) and Native App (`shoonaya-mobile`)
+
