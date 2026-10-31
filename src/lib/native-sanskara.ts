@@ -267,13 +267,44 @@ export type SanskaraFailure = { status: number; error: string; code: string };
 /** Our own error reasons are `sanskara_` plus lower-case words. Anything else (including provider text) is never forwarded. */
 const OWN_REASON = /^sanskara_[a-z0-9_]{1,60}$/;
 
+/** Exact, reviewed database reason pairs. Unknown reasons use the generic SQLSTATE message. */
+export const SANSKARA_REASON_ERRORS: Record<string, string> = {
+  "SK409:sanskara_already_exists": "This milestone already exists.",
+  "SK422:sanskara_already_has_access": "That person already has access.",
+  "SK409:sanskara_already_manager": "That person is already a manager.",
+  "SK409:sanskara_already_shared": "This has already been shared with that person.",
+  "SK422:sanskara_cannot_share_with_self": "Choose another person to share with.",
+  "SK409:sanskara_conflict": "This hand-over conflicts with existing records. Refresh before trying again.",
+  "SK403:sanskara_consent_required": "Religious-data consent is needed before this can be used.",
+  "SK422:sanskara_due_date_not_allowed": "An expected due date is only available for a prenatal milestone on your own timeline.",
+  "SK400:sanskara_invalid_birth_date": "Enter a valid birth date for an eligible child.",
+  "SK400:sanskara_invalid_date": "Enter a valid calendar date.",
+  "SK400:sanskara_invalid_name": "Enter a valid name.",
+  "SK400:sanskara_invalid_reminder": "Check the reminder settings.",
+  "SK400:sanskara_invalid_request": "Use a valid request identifier.",
+  "SK400:sanskara_invalid_text": "Check the length and format of the private details.",
+  "SK400:sanskara_invalid_title": "Enter a valid milestone title.",
+  "SK422:sanskara_last_manager": "Add another manager before removing the last manager.",
+  "SK422:sanskara_limit_reached": "A limit was reached.",
+  "SK422:sanskara_no_date": "Add a planned date before enabling a reminder.",
+  "SK401:sanskara_not_authenticated": "Please sign in again.",
+  "SK404:sanskara_not_found": "That was not found.",
+  "SK422:sanskara_not_in_your_kul": "Choose an eligible member of your Kul.",
+  "SK422:sanskara_prenatal_own_timeline_only": "Prenatal milestones belong on your own timeline.",
+  "SK422:sanskara_record_completed": "Reminders cannot be enabled for a completed milestone.",
+  "SK422:sanskara_reminders_off": "Enable Sanskara reminders in your preferences first.",
+  "SK409:sanskara_request_conflict": "That request id was already used for something else.",
+  "SK400:sanskara_unknown_rite": "That milestone type is unavailable.",
+  "SK409:sanskara_version_conflict": "This was changed elsewhere. Refresh before trying again.",
+};
+
 const SK: Record<string, { status: number; error: string }> = {
   SK400: { status: 400, error: 'That request could not be accepted. Please check it and try again.' },
   SK401: { status: 401, error: 'Please sign in again.' },
   SK403: { status: 403, error: 'Religious-data consent is needed before this can be used.' },
   SK404: { status: 404, error: 'That was not found.' },
-  SK409: { status: 409, error: 'That request id was already used for something else.' },
-  SK422: { status: 422, error: 'A limit was reached.' },
+  SK409: { status: 409, error: 'This conflicts with the current state. Refresh before trying again.' },
+  SK422: { status: 422, error: 'This action is not available in the current state.' },
 };
 
 /**
@@ -285,5 +316,5 @@ export function mapSanskaraError(error: { code?: unknown; message?: unknown } | 
   const known = SK[code];
   if (!known) return { status: 503, error: 'This could not be done right now. Please try again.', code: 'sanskara_unavailable' };
   const message = typeof error?.message === 'string' ? error.message : '';
-  return { status: known.status, error: known.error, code: OWN_REASON.test(message) ? message : `sanskara_${code.toLowerCase()}` };
+  return { status: known.status, error: SANSKARA_REASON_ERRORS[`${code}:${message}`] ?? known.error, code: OWN_REASON.test(message) ? message : `sanskara_${code.toLowerCase()}` };
 }

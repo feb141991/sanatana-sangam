@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-import { SANSKARA_ACTIONS, findSanskaraAction, mapSanskaraError, queryToInput } from './native-sanskara';
+import { SANSKARA_REASON_ERRORS, SANSKARA_ACTIONS, findSanskaraAction, mapSanskaraError, queryToInput } from './native-sanskara';
 
 const R = '11111111-1111-4111-8111-111111111111'; // a request id
 const S = '22222222-2222-4222-8222-222222222222'; // a subject
@@ -220,5 +220,28 @@ describe('reporting a refusal', () => {
     }
     expect(mapSanskaraError(null).status).toBe(503);
     expect(mapSanskaraError(undefined).status).toBe(503);
+  });
+});
+
+describe('database reason coverage', () => {
+  it('maps every reason raised by the Sanskara migrations to reviewed text', () => {
+    const folder = new URL('../../supabase/migrations/', import.meta.url);
+    let pairs = 0;
+    for (const file of readdirSync(folder).filter(name => name.includes('sanskara') && name.endsWith('.sql'))) {
+      const sql = readFileSync(new URL(file, folder), 'utf8');
+      for (const match of sql.matchAll(/raise\s+exception\s+'(sanskara_\w+)'\s+using\s+errcode\s*=\s*'(SK\d+)'/gi)) {
+        const [, reason, state] = match;
+        expect(SANSKARA_REASON_ERRORS[`${state}:${reason}`], `${file}: ${state}:${reason}`).toBeTruthy();
+        expect(mapSanskaraError({ code: state, message: reason }).error).toBe(SANSKARA_REASON_ERRORS[`${state}:${reason}`]);
+        pairs++;
+      }
+    }
+    expect(pairs).toBeGreaterThan(20);
+  });
+  it('distinguishes version conflicts from request reuse and rule refusals from limits', () => {
+    expect(mapSanskaraError({ code: 'SK409', message: 'sanskara_version_conflict' }).error).toContain('changed elsewhere');
+    expect(mapSanskaraError({ code: 'SK409', message: 'sanskara_request_conflict' }).error).toContain('request id');
+    expect(mapSanskaraError({ code: 'SK422', message: 'sanskara_last_manager' }).error).toContain('last manager');
+    expect(mapSanskaraError({ code: 'SK422', message: 'sanskara_no_date' }).error).toContain('planned date');
   });
 });
