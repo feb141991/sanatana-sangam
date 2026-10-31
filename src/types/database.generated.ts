@@ -7823,6 +7823,7 @@ export type Database = {
           frozen_at: string | null
           id: string
           kind: string
+          kul_family_member_id: string | null
           state: string
           suspended_at: string | null
           updated_at: string
@@ -7835,6 +7836,7 @@ export type Database = {
           frozen_at?: string | null
           id?: string
           kind: string
+          kul_family_member_id?: string | null
           state?: string
           suspended_at?: string | null
           updated_at?: string
@@ -7847,11 +7849,20 @@ export type Database = {
           frozen_at?: string | null
           id?: string
           kind?: string
+          kul_family_member_id?: string | null
           state?: string
           suspended_at?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_subjects_kul_family_member_id_fkey"
+            columns: ["kul_family_member_id"]
+            isOneToOne: false
+            referencedRelation: "kul_family_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sanskara_subscriptions: {
         Row: {
@@ -11966,7 +11977,12 @@ export type Database = {
         Returns: Json
       }
       sanskara_create_dependent: {
-        Args: { p_birth_date: string; p_name: string; p_request_id: string }
+        Args: {
+          p_birth_date: string
+          p_kul_family_member?: string
+          p_name: string
+          p_request_id: string
+        }
         Returns: Json
       }
       sanskara_create_record: {
@@ -12049,6 +12065,10 @@ export type Database = {
         Args: { p_account: string; p_request_id: string; p_subject: string }
         Returns: Json
       }
+      sanskara_resolve_tree_person: {
+        Args: { p_account: string; p_tree: string }
+        Returns: string
+      }
       sanskara_revoke_grant: {
         Args: { p_grant: string; p_request_id: string }
         Returns: Json
@@ -12071,6 +12091,14 @@ export type Database = {
           p_expected_version: number
           p_record: string
           p_request_id: string
+        }
+        Returns: Json
+      }
+      sanskara_set_kul_link: {
+        Args: {
+          p_kul_family_member: string
+          p_request_id: string
+          p_subject: string
         }
         Returns: Json
       }
@@ -12098,6 +12126,7 @@ export type Database = {
         }
         Returns: Json
       }
+      sanskara_viewer_kul: { Args: { p_account: string }; Returns: string }
       skip:
         | { Args: { "": string }; Returns: string }
         | { Args: { how_many: number; why: string }; Returns: string }

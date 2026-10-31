@@ -229,7 +229,7 @@ without the founder's approval, and `supabase db push` is never used.
 | M2 *(written, tested; APPLIED live)* | `sanskara_rites`, subjects, managers, records, private fields, grants (table only), request log, audit; `sanskara_can`; the read and write functions for owners and managers |
 | M3 *(written, tested; APPLIED live)* | `sanskara_claims`; grant, revoke, list-access and shared-with-me functions; start, cancel and accept claim |
 | M4 *(written, tested; APPLIED live)* | `sanskara_subscriptions`; the live-reminder index; the cancellation triggers and the two hooks; the send-time check; insert-time validation of candidates; the due-reminders selector; `sanskara_set_reminder` and `sanskara_my_reminders`. (The admin account-delete list gained the Sanskara tables in the same commit.) |
-| M4a *(written, tested on scratch Postgres; NOT applied)* | The optional display-only Kul pointer: `sanskara_subjects.kul_family_member_id`; `sanskara_create_dependent` gains an optional fourth argument; `sanskara_set_kul_link`; `sanskara_dependents` returns the pointer re-validated for the viewer; two internal helpers; two new audit actions. See "The Kul pointer" below. |
+| M4a *(tested on scratch Postgres; APPLIED to production 2026-10-31)* | The optional display-only Kul pointer: `sanskara_subjects.kul_family_member_id`; `sanskara_create_dependent` gains an optional fourth argument; `sanskara_set_kul_link`; `sanskara_dependents` returns the pointer re-validated for the viewer; two internal helpers; two new audit actions. See "The Kul pointer" below. |
 | M5 | The scheduled jobs |
 | M6 | Retirement of the old tables (empty-assertion first) |
 
@@ -403,7 +403,7 @@ integration is finished.
 
 Implements contract section 4 rule 2: a dependent may point at a Kul tree person **for display only**. Migration
 `20261030100000_sanskara_kul_pointer.sql`, rollback `supabase/rollbacks/20261030100000_sanskara_kul_pointer_rollback.sql`, test
-`supabase/tests/sanskara_kul_pointer.test.sql`. **Not applied to any database.**
+`supabase/tests/sanskara_kul_pointer.test.sql`. **Applied to production on 2026-10-31** (version `20261030100000` recorded with its name, by `supabase db push --linked` at the founder's instruction). Read-only check afterwards: the column, the dependent-only check and `ON DELETE SET NULL` foreign key exist; `sanskara_create_dependent`, `sanskara_dependents` and `sanskara_set_kul_link` are executable by `authenticated` only; `sanskara_resolve_tree_person` and `sanskara_viewer_kul` by `postgres` only; `anon` has nothing; RLS is on and no table grant reaches `anon` or `authenticated`; `sanskara_subjects` held 0 rows. The full chain M1 to M4a and all five SQL tests pass on a scratch Postgres 18 (re-run 2026-10-31). Generated types were patched to match; confirm with `supabase gen types`.
 
 M2 left the column out; this adds it as a nullable column on dependents only, `ON DELETE SET NULL`, set only by
 `sanskara_create_dependent(..., p_kul_family_member)` and `sanskara_set_kul_link`, and returned only by `sanskara_dependents()`
