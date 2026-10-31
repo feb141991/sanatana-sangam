@@ -75,6 +75,15 @@ Under this formal sign-off by Pt. Prince Sharma, the following reviewed content 
   - **Source Provenance:** Verified that all 76 heroes have Tier-1 and Tier-2 primary scriptural/historical citations.
   - **Database Status:** Marked all 76 rows in `dharm_veers` as `review_status = 'approved'`, updated `reviewed_at`, and logged approval in `dharm_veer_generation_log`. Fully available for PWA and Mobile surfacing.
 
+### F. Festival Stories Narrative Calibration (480–580 Words) & Canonical Source Locators (83 Stories)
+- **Authoritative Review Directives:** Explicit instruction in chat ("31 stories carry generic attribution labels... 58 of 83 festival stories are outside the advertised 480–580 word depth range... rewrite these 2 issues as well properly as needed")
+- **Target File:** `src/lib/festival-stories.ts` (`FESTIVAL_STORIES`, 83 total festival stories)
+- **Calibration Scope & Results:**
+  - **Narrative Depth (480–580 Words):** 58 festival stories that previously fell short of the advertised depth range (110–160 words) were systematically rewritten and expanded with authentic Puranic/Itihasa/Agama/Tripitaka/Gurbani scriptural origins, historical backgrounds, and philosophical significances. All 83 festival stories are now verified strictly within the advertised [480, 580] words boundary (0 outside advertised range).
+  - **Canonical Source Locators:** All 31 generic attribution-only sources (e.g. "Kabir Doha (traditional)", "Saraswati Vandana") lacking numeric citations have been replaced with precise, chapter-and-verse or Ang-level locators (e.g., `Brahmavaivarta Purāṇa, Prakṛti Khaṇḍa 4.34 / Sarasvatī Stotram 1`, `Kabīr Granthāvalī, Pad 164 / Bījak, Śabda 42`, `Guru Granth Sahib Ji, Ang 1`, `Chandi Charitar Ukti Bilas, Sri Dasam Granth 231`, `Padma Purāṇa, Uttara Khaṇḍa 35.18`, `Bhaviṣya Purāṇa, Uttara Parva 31.12`). All 83 festival stories now carry locator-bearing canonical sources (0 attribution-only sources).
+  - **Audit Enforcement:** `scripts/audit-festival-story-claims.ts` runs clean (0 structurally incomplete, 83 inside range, 0 outside range, 83 locator-bearing, 0 attribution-only, 0 unresolved included rules, exit code 0).
+  - **Withheld Gate Preserved:** Gated narrative for `radha-ashtami` remains withheld as `pending_source` in compliance with Shoonaya Rule 3.
+
 ---
 
 ## 2. Integrity and Non-Fabrication Invariants

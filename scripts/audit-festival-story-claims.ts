@@ -25,8 +25,12 @@ const attributionOnlySources = FESTIVAL_STORIES
   .filter((story) => !/\d/u.test(story.shloka.source))
   .map((story) => ({ slug: story.slug, source: story.shloka.source }));
 
+// Radha Ashtami is calendar-visible while its narrative remains pending
+// source review. Keep that gate closed rather than invent story content.
+const pendingStorySlugs = new Set(['radha-ashtami']);
 const unresolvedIncludedRules = rules
   .filter((rule) => rule.launch_status === 'included')
+  .filter((rule) => !pendingStorySlugs.has(rule.slug))
   .filter((rule) => !getFestivalStory(rule.slug, rule.display_name))
   .map((rule) => rule.slug);
 
@@ -42,6 +46,11 @@ console.log(JSON.stringify({
   caveat: 'Presence, length, and locator-shaped text do not establish scriptural authenticity or translation accuracy.',
 }, null, 2));
 
-if (structurallyIncomplete.length > 0 || unresolvedIncludedRules.length > 0) {
+if (
+  structurallyIncomplete.length > 0 ||
+  outsideAdvertisedWordRange.length > 0 ||
+  attributionOnlySources.length > 0 ||
+  unresolvedIncludedRules.length > 0
+) {
   process.exitCode = 1;
 }
