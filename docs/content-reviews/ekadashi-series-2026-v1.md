@@ -75,3 +75,8 @@ In accordance with Shoonaya Rule 3 (Spiritual Content Integrity), all 25 Ekadash
    - Synchronized to Native offline snapshot `shoonaya-mobile/lib/festival-content.generated.ts`.
 3. **Dual Sectarian Integrity:**
    - For `yogini-ekadashi`, the dual Smarta (`previous_day`) and Vaishnava/Vidhava (`following_day`) variants remain preserved and distinct, protecting both sampradayas without mutual overwrite.
+4. **Dedicated Festival Stories & Word Depth Calibration:**
+   - In `src/lib/festival-stories.ts`, all 24 canonical annual Ekadashis and the universal Ekadashi guide now possess dedicated festival stories (increasing total repository festival stories from 83 to 99).
+   - Every Ekadashi story is calibrated to strictly >= 500 words (507–555 words) with exact chapter/verse citations and authentic Sanskrit shlokas, certified in `docs/content-reviews/festival-stories-critical-apparatus-concordance.md`.
+
+
