@@ -130,6 +130,10 @@
       "schedule": "0 16 * * *"
     },
     {
+      "path": "/api/cron/personalise",
+      "schedule": "30 21 * * *"
+    },
+    {
       "path": "/api/digest/generate",
       "schedule": "0 23 * * *"
     },
