@@ -31,7 +31,7 @@
     },
     {
       "path": "/api/cron/learning-engagement-candidates",
-      "schedule": "5 3 * * *"
+      "schedule": "20 3 * * *"
     },
     {
       "path": "/api/cron/shloka-reminder",
@@ -55,7 +55,7 @@
     },
     {
       "path": "/api/cron/brahma-muhurta",
-      "schedule": "0 3 * * *"
+      "schedule": "45 3 * * *"
     },
     {
       "path": "/api/cron/sattvic-reminder",
@@ -67,7 +67,7 @@
     },
     {
       "path": "/api/cron/mood-reminder",
-      "schedule": "30 3 * * *"
+      "schedule": "35 3 * * *"
     },
     {
       "path": "/api/cron/sync-live-darshans",
@@ -99,7 +99,7 @@
     },
     {
       "path": "/api/cron/pitru-paksha-reminder",
-      "schedule": "0 3 * * *"
+      "schedule": "10 3 * * *"
     },
     {
       "path": "/api/cron/kul-family-remembrance",
@@ -107,7 +107,7 @@
     },
     {
       "path": "/api/cron/vrat-reminder",
-      "schedule": "30 4 * * *"
+      "schedule": "20 4 * * *"
     },
     {
       "path": "/api/cron/materialize-occurrences",
