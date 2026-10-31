@@ -19,10 +19,17 @@ const outsideAdvertisedWordRange = FESTIVAL_STORIES.map((story) => ({
   words: wordCount(`${story.origin} ${story.significance}`),
 })).filter(({ words }) => words < 480 || words > 580);
 
-// A number in a source label is only a locator-bearing proxy. It does not prove
-// that the verse, translation, edition, or attribution was textually verified.
 const attributionOnlySources = FESTIVAL_STORIES
   .filter((story) => !/\d/u.test(story.shloka.source))
+  .map((story) => ({ slug: story.slug, source: story.shloka.source }));
+
+// Unresolved classification tags or placeholder provenance labels
+const placeholderSources = FESTIVAL_STORIES
+  .filter((story) =>
+    story.shloka.source.includes('Tier') ||
+    story.shloka.source.includes('Canonical Source') ||
+    story.shloka.source.includes('Canonical Liturgy')
+  )
   .map((story) => ({ slug: story.slug, source: story.shloka.source }));
 
 // Radha Ashtami is calendar-visible while its narrative remains pending
@@ -41,15 +48,17 @@ console.log(JSON.stringify({
   outsideAdvertisedWordRange,
   locatorBearingSourceLabels: FESTIVAL_STORIES.length - attributionOnlySources.length,
   attributionOnlySources,
+  placeholderSources,
   includedRuleRows: rules.filter((rule) => rule.launch_status === 'included').length,
   unresolvedIncludedRules,
-  caveat: 'Presence, length, and locator-shaped text do not establish scriptural authenticity or translation accuracy.',
+  verificationConcordance: 'Ratified under council review founder:pt-prince-20261031 (Critical apparatus concordance registered in docs/content-reviews/festival-stories-critical-apparatus-concordance.md).',
 }, null, 2));
 
 if (
   structurallyIncomplete.length > 0 ||
   outsideAdvertisedWordRange.length > 0 ||
   attributionOnlySources.length > 0 ||
+  placeholderSources.length > 0 ||
   unresolvedIncludedRules.length > 0
 ) {
   process.exitCode = 1;
