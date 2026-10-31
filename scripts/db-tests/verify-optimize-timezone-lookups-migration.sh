@@ -127,3 +127,4 @@ echo "✓ Rollback executed."
 echo "✓ Phase 4 Passed: Re-apply after rollback succeeded."
 
 echo "ALL TESTS PASSED for 20261101020000_optimize_timezone_lookups.sql!"
+

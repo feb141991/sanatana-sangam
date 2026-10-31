@@ -19,19 +19,19 @@
 --
 -- ROLLBACK: supabase/rollbacks/20261101020000_optimize_timezone_lookups_rollback.sql
 
--- 1. Create high-performance public.safe_timezone function
-CREATE OR REPLACE FUNCTION public.safe_timezone(p_timezone text, p_default text DEFAULT 'UTC')
+-- 1. Create/update high-performance public.safe_timezone function
+CREATE OR REPLACE FUNCTION public.safe_timezone(p_tz text, p_default text DEFAULT 'UTC')
 RETURNS text
 LANGUAGE plpgsql
 IMMUTABLE
 SET search_path = ''
 AS $$
 BEGIN
-  IF p_timezone IS NULL OR p_timezone = '' THEN
+  IF p_tz IS NULL OR trim(p_tz) = '' THEN
     RETURN coalesce(p_default, 'UTC');
   END IF;
-  PERFORM ('2000-01-01 00:00:00Z'::timestamptz AT TIME ZONE p_timezone);
-  RETURN p_timezone;
+  PERFORM ('2000-01-01 00:00:00Z'::timestamptz AT TIME ZONE p_tz);
+  RETURN p_tz;
 EXCEPTION WHEN OTHERS THEN
   RETURN coalesce(p_default, 'UTC');
 END;
@@ -281,3 +281,4 @@ BEGIN
   );
 END;
 $$;
+

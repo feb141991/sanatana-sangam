@@ -130,3 +130,4 @@ fi
 echo "✓ Phase 4 Passed: Re-apply after rollback succeeded."
 
 echo "ALL TESTS PASSED for 20261101010000_stagger_daily_purge_crons.sql!"
+
