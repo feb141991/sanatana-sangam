@@ -155,4 +155,12 @@ describe('GET /api/native/home-summary Contract & Timing Suite', () => {
     expect(source).toMatch(/taglineLocal: dharmVeer\.taglineLocal \?\? null/);
     expect(source).toMatch(/taglinePa: dharmVeer\.taglinePa \?\? null/);
   });
+
+  it('queries recommendations table in personalized batch and provides daily guidance to nextPractice', () => {
+    const source = readFileSync(new URL('./route.ts', import.meta.url), 'utf8');
+    expect(source).toMatch(/\.from\('recommendations'\)/);
+    expect(source).toMatch(/\.eq\('type',\s*'daily_content'\)/);
+    expect(source).toMatch(/nextPractice:\s*buildNextPractice\(practices,\s*dailyRecommendation\)/);
+    expect(source).toMatch(/dailyGuidance:\s*dailyRecommendation\?\.suggestion/);
+  });
 });

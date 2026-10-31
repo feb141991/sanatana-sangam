@@ -230,6 +230,11 @@ type HomeSummaryResponse = {
   // and web agree on who counts as "new" without inventing a second
   // definition.
   firstWeek: boolean;
+  dailyGuidance?: {
+    suggestion: string;
+    nudge: string | null;
+    contextLabel: string;
+  } | null;
 };
 
 async function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
@@ -439,7 +444,15 @@ function buildPractices({
   ];
 }
 
-function buildNextPractice(practices: PracticeRow[]) {
+function buildNextPractice(
+  practices: PracticeRow[],
+  dailyRecommendation?: {
+    suggestion?: string;
+    nudge?: string | null;
+    context_label?: string;
+    action?: { label?: string; href?: string };
+  } | null,
+) {
   const next = practices.find((practice) => !practice.done) ?? practices[0];
   const actionLabels: Record<PracticeRow['id'], string> = {
     japa: 'Start Japa',
@@ -449,14 +462,21 @@ function buildNextPractice(practices: PracticeRow[]) {
     dharmveer: 'Open Dharm Veer',
   };
 
+  const suggestion = dailyRecommendation?.suggestion
+    ?? (next.done ? 'All core practices are complete. Review Panchang or rest in gratitude.' : next.detail);
+  const nudge = dailyRecommendation?.nudge
+    ?? (next.done ? 'Progress is quiet when the day is complete.' : 'One steady action is enough to keep the rhythm alive.');
+  const contextLabel = dailyRecommendation?.context_label
+    ?? (next.done ? 'Today complete' : 'Next Practice');
+
   return {
     id: next.id,
-    contextLabel: 'Next Practice',
+    contextLabel,
     title: next.done ? 'Daily practice complete' : next.label,
-    suggestion: next.done ? 'All core practices are complete. Review Panchang or rest in gratitude.' : next.detail,
-    nudge: next.done ? 'Progress is quiet when the day is complete.' : 'One steady action is enough to keep the rhythm alive.',
-    actionLabel: next.done ? 'View all practices' : actionLabels[next.id],
-    actionHref: next.href,
+    suggestion,
+    nudge,
+    actionLabel: next.done ? 'View all practices' : (dailyRecommendation?.action?.label ?? actionLabels[next.id]),
+    actionHref: next.done ? '/my-progress' : (dailyRecommendation?.action?.href ?? next.href),
     progress: next.done ? 1 : next.progress,
   };
 }
@@ -733,6 +753,16 @@ export async function GET(request: NextRequest) {
             .maybeSingle(),
           DB_TIMEOUT,
         ),
+        withTimeout<{ content: Record<string, unknown> | null }>(
+          supabase
+            .from('recommendations')
+            .select('content')
+            .eq('user_id', user.id)
+            .eq('date', today)
+            .eq('type', 'daily_content')
+            .maybeSingle(),
+          DB_TIMEOUT,
+        ),
       ])
     ),
     timings.measure('global_lookup', 'Global Roster & Assets Lookup', async () =>
@@ -777,6 +807,7 @@ export async function GET(request: NextRequest) {
     nityaStreakResult,
     malaResult,
     sankalpaResult,
+    recommendationResult,
   ] = personalizedBatchResult;
 
   const [
@@ -1013,6 +1044,13 @@ export async function GET(request: NextRequest) {
   });
   const dharmVeer = selectDharmVeerOfTheDayFromRoster(dharmVeerRoster, tradition, today);
 
+  const dailyRecommendation = (recommendationResult?.data?.content as {
+    suggestion?: string;
+    nudge?: string | null;
+    context_label?: string;
+    action?: { label?: string; href?: string };
+  } | null) ?? null;
+
   const response: HomeSummaryResponse = {
     profile: {
       name,
@@ -1063,7 +1101,14 @@ export async function GET(request: NextRequest) {
             sampradaya: profile?.sampradaya ?? null,
           },
         }),
-    nextPractice: buildNextPractice(practices),
+    nextPractice: buildNextPractice(practices, dailyRecommendation),
+    dailyGuidance: dailyRecommendation?.suggestion
+      ? {
+          suggestion: dailyRecommendation.suggestion,
+          nudge: dailyRecommendation.nudge ?? null,
+          contextLabel: dailyRecommendation.context_label ?? 'Daily Guidance',
+        }
+      : null,
     practices,
     sankalpa: sankalpaRow
       ? {
