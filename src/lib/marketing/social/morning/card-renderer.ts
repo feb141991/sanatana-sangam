@@ -13,8 +13,8 @@
  *
  * No AI image model is involved, so every character on a card is exactly the corpus text.
  *
- * Layout: a ceremonial frame in the app's own paper colours, the tradition's name, the verse in its own script,
- * an ornament, the translation when the corpus has a sourced one, the citation, and the Shoonaya wordmark. Type
+ * Layout: a ceremonial frame in the app's signature dark aesthetic, the tradition's name, the verse in its own script,
+ * an ornament, the translation when the corpus has a sourced one, and the citation. Type
  * sizes step down until the content fits; if even the smallest does not, rendering fails rather than overflow.
  */
 import fs from "node:fs";
@@ -298,9 +298,8 @@ async function fitLatin(
 const { width: W, height: H } = CARD_SIZE;
 const MARGIN_X = 130;
 const CONTENT_W = W - MARGIN_X * 2;
-const TOP = 170;
-const BOTTOM = 1112;
-const FOOTER_Y = 1166;
+const TOP = 130;
+const BOTTOM = 1220;
 
 const VERSE_SIZES = [64, 58, 53, 49, 45, 41, 38] as const;
 const TRANSLATION_SIZES = [42, 38, 35, 32, 29] as const;
@@ -308,20 +307,26 @@ const TRANSLATION_SIZES = [42, 38, 35, 32, 29] as const;
 function baseSvg(accent: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
-    <radialGradient id="glow" cx="50%" cy="40%" r="78%">
+    <radialGradient id="glow" cx="50%" cy="45%" r="75%">
       <stop offset="0%" stop-color="${PAPER.card}"/>
-      <stop offset="100%" stop-color="${PAPER.cardSoft}"/>
+      <stop offset="60%" stop-color="${PAPER.cardSoft}"/>
+      <stop offset="100%" stop-color="${PAPER.page}"/>
+    </radialGradient>
+    <radialGradient id="centerGlow" cx="50%" cy="42%" r="40%">
+      <stop offset="0%" stop-color="${accent}" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="${accent}" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="${PAPER.page}"/>
   <rect width="${W}" height="${H}" fill="url(#glow)"/>
-  <g fill="none" stroke="${accent}" stroke-opacity="0.07" stroke-width="2">
-    <circle cx="${W / 2}" cy="560" r="210"/>
-    <circle cx="${W / 2}" cy="560" r="310" stroke-dasharray="2 14" stroke-linecap="round"/>
-    <circle cx="${W / 2}" cy="560" r="420"/>
+  <rect width="${W}" height="${H}" fill="url(#centerGlow)"/>
+  <g fill="none" stroke="${accent}" stroke-opacity="0.12" stroke-width="1.5">
+    <circle cx="${W / 2}" cy="580" r="210"/>
+    <circle cx="${W / 2}" cy="580" r="310" stroke-dasharray="2 14" stroke-linecap="round"/>
+    <circle cx="${W / 2}" cy="580" r="420"/>
   </g>
-  <rect x="44" y="44" width="${W - 88}" height="${H - 88}" rx="30" fill="none" stroke="${PAPER.borderColor}" stroke-opacity="${PAPER.borderOpacity}" stroke-width="2"/>
-  <rect x="64" y="64" width="${W - 128}" height="${H - 128}" rx="20" fill="none" stroke="${accent}" stroke-opacity="0.5" stroke-width="1.5"/>
+  <rect x="44" y="44" width="${W - 88}" height="${H - 88}" rx="28" fill="none" stroke="${PAPER.borderColor}" stroke-opacity="${PAPER.borderOpacity}" stroke-width="1.5"/>
+  <rect x="64" y="64" width="${W - 128}" height="${H - 128}" rx="20" fill="none" stroke="${accent}" stroke-opacity="0.35" stroke-width="1.5"/>
   ${[
     [64, 64],
     [W - 64, 64],
@@ -450,11 +455,6 @@ export async function renderMorningCard(verse: MorningVerse, overrides?: FontOve
     y += GAP_CREDIT;
     place(credit);
   }
-
-  const wordmark = await latin("Shoonaya", { font: "serif", size: 56, color: PAPER.text, maxHeight: 120 });
-  const tagline = await latin("Find your infinite.", { font: "sans", size: 21, color: PAPER.dim, letterSpacing: 1.5, maxHeight: 60 });
-  layers.push({ input: wordmark.input, left: Math.round((W - wordmark.width) / 2), top: FOOTER_Y });
-  layers.push({ input: tagline.input, left: Math.round((W - tagline.width) / 2), top: FOOTER_Y + wordmark.height + 6 });
 
   const png = await sharp(Buffer.from(baseSvg(accent)))
     .composite(layers)

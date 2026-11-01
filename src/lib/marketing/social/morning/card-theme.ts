@@ -1,31 +1,26 @@
 /**
- * Design tokens for the morning cards. Nothing here is invented: every value is copied from the native app so a
- * card looks like it came from the app, and each one names where it came from. Re-copy them when the app's
- * tokens change (shoonaya-mobile, commit 98eace7, 2026-10-15).
- *
- * The cards use the app's light reading paper ("Bhojpatra", the warm ivory the readers open on) because a morning
- * post should feel like a page from the app, not a generic gradient.
+ * Design tokens for the morning cards. Sourced directly from the native app's dark & gold design system
+ * (shoonaya-mobile lib/constants.ts COLORS) so cards embody the signature Shoonaya sacred aesthetic:
+ * deep obsidian background, sacred brand gold accents, luminous ivory typography, and tradition-specific tints.
  */
 import type { MorningTradition } from "./types";
 
 export const CARD_SIZE = { width: 1080, height: 1350 } as const; // 4:5, the Instagram portrait size
 
-/** shoonaya-mobile lib/constants.ts READER_PAPER.bhojpatra (the app enforces text >= 7:1, dim >= 4.5:1, accent >= 4.5:1 on page). */
+/** shoonaya-mobile lib/constants.ts COLORS (darkBg, cardBgDark, surfaceSoftDark, creamBg, textDimDark, brandGold) */
 export const PAPER = {
-  page: "#F7F3E8",
-  card: "#FDFBF5",
-  cardSoft: "#F1EBDD",
-  /** rgba(95,58,22,0.14) as a colour plus opacity, which is how SVG strokes take it. */
-  borderColor: "#5F3A16",
-  borderOpacity: 0.14,
-  text: "#2A2118",
-  dim: "#6B5A44",
-  /** The accent the app uses for text on this paper. */
-  accent: "#A8581A"
+  page: "#0C0A07",        // COLORS.darkBg (deep obsidian sacred void)
+  card: "#141210",        // COLORS.cardBgDark (dark card surface)
+  cardSoft: "#1C1A16",    // COLORS.surfaceSoftDark (warm charcoal/sandalwood layer)
+  borderColor: "#C5A059", // COLORS.brandGold
+  borderOpacity: 0.22,
+  text: "#FAF6EF",        // COLORS.creamBg (luminous warm ivory text >= 18:1 contrast)
+  dim: "#B0AA9E",         // COLORS.textDimDark (muted warm sand >= 8.5:1 contrast)
+  accent: "#C5A059"       // COLORS.brandGold (theme-aware brand gold)
 } as const;
 
-/** shoonaya-mobile lib/constants.ts COLORS.brandGoldLight, the theme-aware brand gold for light surfaces. */
-export const BRAND_GOLD = "#D88A1C";
+/** shoonaya-mobile lib/constants.ts COLORS.brandGold */
+export const BRAND_GOLD = "#C5A059";
 
 /**
  * shoonaya-mobile lib/traditions.ts TRADITION_ACCENT. Used for ornaments only, never for small text: on this

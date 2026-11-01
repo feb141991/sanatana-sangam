@@ -16,11 +16,11 @@ const verse = (tradition: "hindu" | "sikh", date = "2026-10-16"): MorningVerse =
 };
 const NO_GURMUKHI: FontOverrides = { gurmukhi: { path: path.join(FONT_DIR, "does-not-exist.ttf"), family: "Nope" } };
 
-/** Counts pixels clearly darker than the paper in a region: the ink. */
+/** Counts luminous pixels (ink) clearly brighter than the dark background in a region. */
 async function inkIn(png: Buffer, region: { left: number; top: number; width: number; height: number }): Promise<number> {
   const { data, info } = await sharp(png).extract(region).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   let ink = 0;
-  for (let i = 0; i < data.length; i += info.channels) if (data[i] < 110 && data[i + 1] < 110 && data[i + 2] < 110) ink++;
+  for (let i = 0; i < data.length; i += info.channels) if (data[i] > 140 || data[i + 1] > 140 || data[i + 2] > 140) ink++;
   return ink;
 }
 
@@ -66,10 +66,9 @@ describe("renderMorningCard (Hindu)", () => {
     expect(hash(a.png)).not.toBe(hash(b.png));
   });
 
-  it("has real ink where the verse and the wordmark are, and none in the empty corners", async () => {
+  it("has real ink where the verse is, and none in the empty corners", async () => {
     const { png } = await renderMorningCard(verse("hindu"));
     expect(await inkIn(png, { left: 130, top: 330, width: 820, height: 260 })).toBeGreaterThan(2000); // the verse
-    expect(await inkIn(png, { left: 380, top: 1160, width: 320, height: 90 })).toBeGreaterThan(300); // the wordmark
     expect(await inkIn(png, { left: 100, top: 100, width: 200, height: 120 })).toBe(0); // an empty corner
   });
 
