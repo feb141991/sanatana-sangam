@@ -27,9 +27,14 @@ export function profileAvatarUrl(user: AuthProfileUser): string | null {
   return null;
 }
 
-function profileUsername(user: AuthProfileUser) {
+export function profileUsername(user: AuthProfileUser) {
   const meta = user.user_metadata ?? {};
-  const raw = typeof meta.username === 'string' ? meta.username
+  const raw = typeof meta.username === 'string' && meta.username.trim()
+    ? meta.username
+    : typeof meta.full_name === 'string' && meta.full_name.trim()
+    ? meta.full_name
+    : typeof meta.name === 'string' && meta.name.trim()
+    ? meta.name
     : user.email?.split('@')[0];
   const base = raw
     ?.toLowerCase()

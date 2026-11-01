@@ -6,6 +6,7 @@ vi.mock('@/lib/supabase-server', () => ({ createServerSupabaseClient: vi.fn() })
 import {
   ensureAuthProfile,
   isDeletedUserProfileError,
+  profileUsername,
   resolveAuthProfile,
 } from './auth-profile';
 
@@ -119,5 +120,25 @@ describe('ensureAuthProfile (compatibility wrapper)', () => {
     expect(await ensureAuthProfile(USER, client({ data: null, error: null }).supabase)).toEqual({ onboarding_completed: false });
     expect(await ensureAuthProfile(USER, client({ data: null, error: null }, { error: FK_PROFILES }).supabase)).toBeNull();
     expect(await ensureAuthProfile(USER, client({ data: null, error: { code: '57014' } }).supabase)).toBeNull();
+  });
+});
+
+describe('profileUsername', () => {
+  it('correctly preserves leading capital letters without truncation', () => {
+    const id = '12345678-aaaa-bbbb-cccc-dddddddddddd';
+    expect(profileUsername({ id, email: 'alex@example.com', user_metadata: { full_name: 'Alex' } }))
+      .toBe('alex_12345678');
+    expect(profileUsername({ id, email: 'emily@example.com', user_metadata: { full_name: 'Emily Rose' } }))
+      .toBe('emily_rose_12345678');
+    expect(profileUsername({ id, email: 'ashutosh@example.com', user_metadata: { full_name: 'ASHUTOSH JOSHI' } }))
+      .toBe('ashutosh_joshi_12345678');
+    expect(profileUsername({ id, email: 'mason@example.com', user_metadata: { full_name: 'mason reed' } }))
+      .toBe('mason_reed_12345678');
+  });
+
+  it('respects explicit username metadata if provided', () => {
+    const id = '12345678-aaaa-bbbb-cccc-dddddddddddd';
+    expect(profileUsername({ id, email: 'test@example.com', user_metadata: { username: 'custom_user' } }))
+      .toBe('custom_user_12345678');
   });
 });
