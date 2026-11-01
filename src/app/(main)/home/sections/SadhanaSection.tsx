@@ -163,25 +163,25 @@ export function SadhanaSection({
             className="quiz-spark-card quiz-spark-card-immersive compact cursor-pointer group mb-3"
             onClick={onOpenQuiz}
           >
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[rgba(197,160,89,0.12)] flex items-center justify-center">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="w-8 h-8 rounded-lg bg-[rgba(197,160,89,0.12)] flex items-center justify-center shrink-0">
                   <SacredIcon name="brain" size={16} />
                 </div>
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] opacity-80">
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] opacity-80 block truncate">
                     {tradition ? `${tradition} ${effectiveAppLanguage === 'hi' ? 'क्विज़' : effectiveAppLanguage === 'pa' ? 'ਕੁਇਜ਼' : 'Quiz'}` : effectiveAppLanguage === 'hi' ? 'क्या आप जानते हैं?' : effectiveAppLanguage === 'pa' ? 'ਕੀ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ?' : 'Do You Know?'}
                   </span>
-                  <h3 className="text-sm font-bold theme-ink line-clamp-1 mt-0.5">{quiz.question}</h3>
+                  <h3 className="text-sm font-bold theme-ink line-clamp-1 mt-0.5 leading-snug">{quiz.question}</h3>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 {quizStreak > 1 && (
                   <span className="flex items-center gap-0.5 text-[11px] font-bold" style={{ color: 'var(--brand-primary)' }}>
                     <SacredIcon name="flame" size={11} />{quizStreak}
                   </span>
                 )}
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
                   Play →
                 </span>
               </div>
