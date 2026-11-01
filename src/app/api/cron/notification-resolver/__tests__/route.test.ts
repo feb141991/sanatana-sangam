@@ -78,4 +78,26 @@ describe('cron/notification-resolver route', () => {
     expect(body.ok).toBe(true);
     expect(body.dryRun).toBe(true);
   });
+
+  it('passes runRetentionCleanup=true only when retention=true param is supplied', async () => {
+    const { executeCandidateResolverPipeline } = await import('@/lib/notification-resolver-pipeline');
+
+    // Default call without ?retention=true should have runRetentionCleanup=false
+    const reqDefault = new Request('https://shoonaya.com/api/cron/notification-resolver', {
+      headers: { authorization: 'Bearer dispatch-secret-456' },
+    });
+    await GET(reqDefault);
+    expect(executeCandidateResolverPipeline).toHaveBeenLastCalledWith(
+      expect.objectContaining({ runRetentionCleanup: false })
+    );
+
+    // Call with ?retention=true should have runRetentionCleanup=true
+    const reqRetention = new Request('https://shoonaya.com/api/cron/notification-resolver?retention=true', {
+      headers: { authorization: 'Bearer dispatch-secret-456' },
+    });
+    await GET(reqRetention);
+    expect(executeCandidateResolverPipeline).toHaveBeenLastCalledWith(
+      expect.objectContaining({ runRetentionCleanup: true })
+    );
+  });
 });

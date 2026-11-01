@@ -30,7 +30,8 @@ export async function GET(request: Request) {
   const dryRun = url.searchParams.get('dryRun') === 'true' || url.searchParams.get('preview') === 'true';
   const batchLimit = Math.max(1, Math.min(1000, Number(url.searchParams.get('batchLimit') ?? 200) || 200));
   const eventType = url.searchParams.get('eventType') || undefined;
-  const runRetentionCleanup = url.searchParams.get('retention') !== 'false';
+  // Retention cleanup runs in scheduled pg_cron daily maintenance; only run here if explicitly requested
+  const runRetentionCleanup = url.searchParams.get('retention') === 'true';
 
   try {
     const result = await executeCandidateResolverPipeline({
