@@ -35,6 +35,9 @@ import { formatVerseLines } from "./verse-format";
 import type { MorningVerse } from "./types";
 
 export const FONT_DIR = path.join(process.cwd(), "src", "assets", "social-fonts");
+if (!process.env.FONTCONFIG_PATH && fs.existsSync(FONT_DIR)) {
+  process.env.FONTCONFIG_PATH = FONT_DIR;
+}
 
 export interface FontSource {
   path: string;

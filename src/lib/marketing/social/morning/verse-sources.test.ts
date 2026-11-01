@@ -197,21 +197,26 @@ describe("what the real corpora allow today", () => {
     }
   });
 
-  // These corpora are known to be unfit (placeholder meanings, repeated entries, mixed-script text). When one is
+  // These corpora remain unfit (placeholder meanings, repeated entries, mixed-script text). When one is
   // repaired and reviewed, update this test on purpose; until then they must never reach a card.
   it.each([
-    ["Dhammapada", DHAMMAPADA_ENTRIES, ["devanagari"]],
     ["Metta Sutta", METTA_SUTTA_ENTRIES, ["devanagari"]],
-    ["Namokar Mantra", NAMOKAR_ENTRIES, ["devanagari"]],
     ["Tattvartha Sutra", TATTVARTHA_ENTRIES, ["devanagari"]],
     ["Bhaktamar Stotra", BHAKTAMAR_ENTRIES, ["devanagari"]]
   ] as const)("%s is rejected: nothing in it may reach a card", (_name, entries, scripts) => {
     expect(assessCorpus(entries as unknown as CorpusEntry[], scripts).usable).toHaveLength(0);
   });
 
-  it("the Gita and Japji Sahib have plenty to rotate through", () => {
+  it("repaired corpora have authentic usable entries for morning cards", () => {
+    expect(assessCorpus(NAMOKAR_ENTRIES as unknown as CorpusEntry[], ["devanagari"]).usable).toHaveLength(7);
+    expect(assessCorpus(DHAMMAPADA_ENTRIES as unknown as CorpusEntry[], ["devanagari"]).usable).toHaveLength(4);
+  });
+
+  it("all four traditions have plenty to rotate through", () => {
     expect(poolSize("hindu")).toBeGreaterThanOrEqual(20);
     expect(poolSize("sikh")).toBeGreaterThanOrEqual(20);
+    expect(poolSize("buddhist")).toBe(4);
+    expect(poolSize("jain")).toBe(7);
   });
 
   it("buildPool follows the curated order for the Gita, whatever order the corpus is in", () => {

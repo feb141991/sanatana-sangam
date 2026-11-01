@@ -4,26 +4,26 @@ export const DHAMMAPADA_ENTRIES: LibraryEntry[] = [
   {
     id: 'dhp-1-1',
     title: 'Dhammapada — Chapter 1, Verse 1',
-    source: 'Dhammapada',
-    original: 'Manopubbangama dhamma manasettha manomaya manasa ce padutthena bhasati va karoti va tato nam dukkhamanveti cakkamva vahato padam',
-    transliteration: 'Romanized Pali text.',
-    meaning: 'Authentic Pali verse covering the subject of twin-verses.',
+    source: 'Dhammapada 1',
+    original: 'मनोपुब्बङ्गमा धम्मा मनोसेट्ठा मनोमया।\nमनसा चे पदुट्ठेन भासति वा करोति वा।\nततो नं दुक्खमन्वेति चक्कंव वहतो पदं॥',
+    transliteration: 'Manopubbaṅgamā dhammā manoseṭṭhā manomayā; manasā ce paduṭṭhena bhāsati vā karoti vā; tato naṁ dukkhamanveti cakkaṁva vahato padaṁ.',
+    meaning: 'Mind precedes all mental states. Mind is their chief; they are all mind-wrought. If with an impure mind a person speaks or acts, suffering follows him like the wheel follows the foot of the ox.',
     tradition: 'buddhist',
     category: 'dhammapada',
     tags: ['dhammapada', 'twin-verses'],
-    attribution: 'The Buddha (Pali Canon)'
+    attribution: 'The Buddha (Dhammapada 1)'
   },
   {
     id: 'dhp-1-2',
     title: 'Dhammapada — Chapter 1, Verse 2',
-    source: 'Dhammapada',
-    original: 'Manopubbangama dhamma manasettha manomaya manasa ce pasannena bhasati va karoti va tato nam sukhamanveti chayava anapayini',
-    transliteration: 'Romanized Pali text.',
-    meaning: 'Authentic Pali verse covering the subject of twin-verses.',
+    source: 'Dhammapada 2',
+    original: 'मनोपुब्बङ्गमा धम्मा मनोसेट्ठा मनोमया।\nमनसा चे पसन्नेन भासति वा करोति वा।\nततो नं सुखमन्वेति छायाव अनपायिनी॥',
+    transliteration: 'Manopubbaṅgamā dhammā manoseṭṭhā manomayā; manasā ce pasannena bhāsati vā karoti vā; tato naṁ sukhamanveti chāyāva anapāyinī.',
+    meaning: 'Mind precedes all mental states. Mind is their chief; they are all mind-wrought. If with a pure mind a person speaks or acts, happiness follows him like his never-departing shadow.',
     tradition: 'buddhist',
     category: 'dhammapada',
     tags: ['dhammapada', 'twin-verses'],
-    attribution: 'The Buddha (Pali Canon)'
+    attribution: 'The Buddha (Dhammapada 2)'
   },
   {
     id: 'dhp-1-3',
@@ -52,14 +52,14 @@ export const DHAMMAPADA_ENTRIES: LibraryEntry[] = [
   {
     id: 'dhp-1-5',
     title: 'Dhammapada — Chapter 1, Verse 5',
-    source: 'Dhammapada',
-    original: 'Na hi verena verani sammantidha kudacanam averena ca sammanti esa dhammo sanantano',
-    transliteration: 'Romanized Pali text.',
-    meaning: 'Authentic Pali verse covering the subject of twin-verses.',
+    source: 'Dhammapada 5',
+    original: 'न हि वेरेन वेरानि सम्मन्तीध कुदाचनं।\nअवेरेन च सम्मन्ति एस धम्मो सनन्तनो॥',
+    transliteration: 'Na hi verena verāni sammantīdha kudācanaṁ; averena ca sammanti esa dhammo sanantano.',
+    meaning: 'Hatred is never appeased by hatred in this world. By love alone is hatred appeased. This is an eternal law.',
     tradition: 'buddhist',
     category: 'dhammapada',
     tags: ['dhammapada', 'twin-verses'],
-    attribution: 'The Buddha (Pali Canon)'
+    attribution: 'The Buddha (Dhammapada 5)'
   },
   {
     id: 'dhp-1-6',
@@ -2188,14 +2188,14 @@ export const DHAMMAPADA_ENTRIES: LibraryEntry[] = [
   {
     id: 'dhp-14-7',
     title: 'Dhammapada — Chapter 14, Verse 7',
-    source: 'Dhammapada',
-    original: 'Sabbapapassa akaranam kusalassa upasampada sacittapariyodapanam etam buddhana sasanam',
-    transliteration: 'Romanized Pali text.',
-    meaning: 'Authentic Pali verse covering the subject of awakened.',
+    source: 'Dhammapada 183',
+    original: 'सब्बपापस्स अकरणं कुसलस्स उपसम्पदा।\nसचित्तपरियोदपनं एतं बुद्धान सासनं॥',
+    transliteration: 'Sabbapāpassa akaraṇaṁ kusalassa upasampadā; sacittapariyodapanaṁ etaṁ buddhāna sāsanaṁ.',
+    meaning: 'To avoid all evil, to cultivate what is wholesome, and to purify one’s mind—this is the teaching of all the Buddhas.',
     tradition: 'buddhist',
     category: 'dhammapada',
     tags: ['dhammapada', 'awakened'],
-    attribution: 'The Buddha (Pali Canon)'
+    attribution: 'The Buddha (Dhammapada 183)'
   },
   {
     id: 'dhp-14-8',

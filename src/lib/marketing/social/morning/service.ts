@@ -86,9 +86,10 @@ function snapshotOf(verse: MorningVerse) {
 }
 
 function withheldReasonFor(error: unknown): { reason: WithheldReason; detail: string } {
-  if (error instanceof CardRenderError) {
-    const reason: WithheldReason = error.code === "font_missing" || error.code === "font_not_loaded" ? "font_missing" : "render_failed";
-    return { reason, detail: error.message.slice(0, 1000) };
+  if (error instanceof CardRenderError || (error && typeof error === "object" && "code" in error)) {
+    const code = (error as any).code;
+    const reason: WithheldReason = code === "font_missing" || code === "font_not_loaded" ? "font_missing" : "render_failed";
+    return { reason, detail: ((error as any).message ?? "").slice(0, 1000) };
   }
   return { reason: "render_failed", detail: (error instanceof Error ? error.message : "unknown error").slice(0, 1000) };
 }

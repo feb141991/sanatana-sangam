@@ -58,8 +58,8 @@ export const FONT_FILES = {
   sansStrong: { file: "Inter_600SemiBold.ttf", family: "Inter SemiBold" },
   devanagari: { file: "Mukta_500Medium.ttf", family: "Mukta Medium" },
   devanagariBold: { file: "Mukta_700Bold.ttf", family: "Mukta" },
-  /** Not shipped yet: see the README beside the fonts. Sikh cards are withheld until it is present. */
-  gurmukhi: { file: "NotoSansGurmukhi-Medium.ttf", family: "Noto Sans Gurmukhi Medium" }
+  /** Noto Sans Gurmukhi Medium (SIL OFL 1.1) for Sikh / Gurbani verses */
+  gurmukhi: { file: "NotoSansGurmukhi-Medium.ttf", family: "Noto Sans Gurmukhi SemiBold" }
 } as const;
 
 export type FontKey = keyof typeof FONT_FILES;

@@ -2,13 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import crypto from "node:crypto";
 
 // The renderer is real unless a test says otherwise, so Hindu cards are genuinely drawn.
-let renderOverride: null | (() => Promise<never>) = null;
+let renderOverride: null | ((...args: any[]) => Promise<never>) = null;
 vi.mock("./card-renderer", async (importOriginal) => {
   const actual = await importOriginal<typeof import("./card-renderer")>();
   return {
     ...actual,
     renderMorningCard: (...args: Parameters<typeof actual.renderMorningCard>) =>
-      renderOverride ? renderOverride() : actual.renderMorningCard(...args)
+      renderOverride ? renderOverride(...args) : actual.renderMorningCard(...args)
   };
 });
 
@@ -135,7 +135,7 @@ beforeEach(() => {
 const row = (tradition: string) => db.rows.find((r) => r.tradition === tradition)!;
 
 describe("generateMorningSet", () => {
-  it("one click: Hindu is made, and each other tradition is withheld with its own reason", async () => {
+  it("one click generates cards across all four traditions", async () => {
     const outcomes = await generateMorningSet(db.client, { date: DATE, createdBy: "founder" });
     const by = Object.fromEntries(outcomes.map((o) => [o.tradition, o]));
 
@@ -147,15 +147,18 @@ describe("generateMorningSet", () => {
     expect(row("hindu").hashtags).toContain("SanatanDharma");
     expect(row("hindu").source_snapshot).toMatchObject({ script: "devanagari", translation_credit: "Translation: Annie Besant (public domain)" });
 
-    // Buddhist and Jain: the corpora are unfit, and the row says exactly why.
-    for (const t of ["buddhist", "jain"]) {
-      expect(by[t]).toMatchObject({ result: "withheld", reason: "corpus_not_usable" });
-      expect(row(t)).toMatchObject({ status: "withheld", withheld_reason: "corpus_not_usable", image_path: null, caption: "" });
-      expect(row(t).withheld_detail).toMatch(/have /);
-    }
-    // Sikh: the text is usable but the Gurmukhi font is not installed.
-    expect(by.sikh).toMatchObject({ result: "withheld", reason: "font_missing" });
-    expect(row("sikh").withheld_detail).toMatch(/gurmukhi/i);
+    expect(by.sikh.result).toBe("created");
+    expect(row("sikh")).toMatchObject({ status: "draft", card_date: DATE, generated_by: "founder" });
+    expect(row("sikh").source_snapshot).toMatchObject({ script: "gurmukhi" });
+
+    expect(by.buddhist.result).toBe("created");
+    expect(row("buddhist")).toMatchObject({ status: "draft", card_date: DATE, generated_by: "founder", source_ref: expect.stringMatching(/^dhp-/) });
+    expect(row("buddhist").source_snapshot).toMatchObject({ script: "devanagari" });
+
+    expect(by.jain.result).toBe("created");
+    expect(row("jain")).toMatchObject({ status: "draft", card_date: DATE, generated_by: "founder", source_ref: expect.stringMatching(/^namokar-/) });
+    expect(row("jain").source_snapshot).toMatchObject({ script: "devanagari" });
+
     expect(db.rows).toHaveLength(4);
   }, 60_000);
 
@@ -240,6 +243,7 @@ describe("generateMorningSet", () => {
   });
 
   it("a withheld card is retried by the next plain click, so fixing the cause needs no extra step", async () => {
+    renderOverride = () => Promise.reject(new CardRenderError("font_not_loaded", "Font did not load"));
     await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["jain"] });
     expect(row("jain").status).toBe("withheld");
     const [outcome] = await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["jain"] });
@@ -248,10 +252,15 @@ describe("generateMorningSet", () => {
   });
 
   it("a render failure withholds that card with the reason and does not stop the others", async () => {
-    renderOverride = () => Promise.reject(new CardRenderError("content_too_long", "does not fit"));
+    renderOverride = (verse) => {
+      if (verse.tradition === "hindu") {
+        return Promise.reject(new CardRenderError("content_too_long", "does not fit"));
+      }
+      return Promise.reject(new CardRenderError("font_not_loaded", "Font did not load"));
+    };
     const outcomes = await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu", "jain"] });
     expect(outcomes[0]).toMatchObject({ tradition: "hindu", result: "withheld", reason: "render_failed" });
-    expect(outcomes[1]).toMatchObject({ tradition: "jain", result: "withheld", reason: "corpus_not_usable" });
+    expect(outcomes[1]).toMatchObject({ tradition: "jain", result: "withheld", reason: "font_missing" });
     expect(row("hindu")).toMatchObject({ status: "withheld", image_path: null });
   });
 
@@ -280,17 +289,17 @@ describe("generateMorningSet", () => {
     };
     const outcomes = await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu", "jain"] });
     expect(outcomes[0]).toMatchObject({ tradition: "hindu", result: "error", detail: "database exploded" });
-    expect(outcomes[1].result).toBe("withheld");
+    expect(outcomes[1].result).toBe("created");
   });
 });
 
 describe("listMorningCards", () => {
-  it("returns the day's cards in tradition order, with a signed link only for those that have an image", async () => {
+  it("returns the day's cards in tradition order, with a signed link for those that have an image", async () => {
     await generateMorningSet(db.client, { date: DATE, createdBy: "founder" });
     const cards = await listMorningCards(db.client, DATE);
     expect(cards.map((c) => c.tradition)).toEqual(["hindu", "sikh", "buddhist", "jain"]);
     expect(cards[0].image_url).toMatch(/^https:\/\/signed\.example\/morning\//);
-    expect(cards.slice(1).every((c) => c.image_url === null)).toBe(true);
+    expect(cards.every((c) => typeof c.image_url === "string")).toBe(true);
   }, 60_000);
 });
 
@@ -327,6 +336,7 @@ describe("updateCaption", () => {
 
   it("a withheld or rejected card cannot be edited", async () => {
     await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["jain"] });
+    await rejectCard(db.client, row("jain").id, "founder");
     await expect(updateCaption(db.client, row("jain").id, { caption: "x", hashtags: [] })).rejects.toMatchObject({ status: 409 });
   });
 
@@ -369,6 +379,7 @@ describe("approveCard", () => {
   });
 
   it("refuses a card that was withheld: there is nothing to approve", async () => {
+    renderOverride = () => Promise.reject(new CardRenderError("font_not_loaded", "Font did not load"));
     await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["buddhist"] });
     await expect(approveCard(db.client, row("buddhist").id, "founder")).rejects.toMatchObject({ status: 409 });
     expect(row("buddhist").status).toBe("withheld");
@@ -391,6 +402,7 @@ describe("rejectCard", () => {
   });
 
   it("cannot reject a withheld card", async () => {
+    renderOverride = () => Promise.reject(new CardRenderError("font_not_loaded", "Font did not load"));
     await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["jain"] });
     await expect(rejectCard(db.client, row("jain").id, "founder")).rejects.toBeInstanceOf(MorningCardError);
   });

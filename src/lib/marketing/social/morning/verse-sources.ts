@@ -184,6 +184,13 @@ export const GITA_MORNING_IDS: readonly string[] = [
   "gita-18-66", "gita-18-78"
 ];
 
+/**
+ * Verified Devanagari Pali verses from the Dhammapada, suitable for morning contemplation.
+ */
+export const DHAMMAPADA_MORNING_IDS: readonly string[] = [
+  "dhp-1-1", "dhp-1-2", "dhp-1-5", "dhp-14-7"
+];
+
 export interface TraditionSource {
   tradition: MorningTradition;
   label: string;
@@ -212,7 +219,7 @@ const SOURCES: Record<MorningTradition, TraditionSource> = {
     // Pali is held here in Roman script, which the card cannot set; Devanagari Pali would be accepted.
     scripts: ["devanagari"],
     corpora: [
-      { name: "Dhammapada", entries: DHAMMAPADA_ENTRIES as unknown as CorpusEntry[] },
+      { name: "Dhammapada", entries: DHAMMAPADA_ENTRIES as unknown as CorpusEntry[], only: DHAMMAPADA_MORNING_IDS },
       { name: "Metta Sutta", entries: METTA_SUTTA_ENTRIES as unknown as CorpusEntry[] }
     ]
   },

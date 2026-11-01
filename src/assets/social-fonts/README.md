@@ -10,19 +10,17 @@ Read from disk at run time by `src/lib/marketing/social/morning/card-renderer.ts
 | `CormorantGaramond_600SemiBold.ttf`, `..._Italic.ttf` | Cormorant Garamond | translation, wordmark | Copied unmodified from the native app's `@expo-google-fonts/cormorant-garamond` 0.4.1, 2026-10-15 |
 | `Inter_500Medium.ttf`, `Inter_600SemiBold.ttf` | Inter | labels, citation | Copied unmodified from `@expo-google-fonts/inter` 0.4.2, 2026-10-15 |
 | `Mukta_500Medium.ttf`, `Mukta_700Bold.ttf` | Mukta | Devanagari verses | Copied unmodified from `@expo-google-fonts/mukta` 0.4.1, 2026-10-15 |
+| `NotoSansGurmukhi-Medium.ttf` | Noto Sans Gurmukhi Medium | Gurmukhi verses | Official Google Fonts Noto repository, SIL OFL 1.1 |
 | `OFL-*.txt` | | licences | SIL Open Font License 1.1, from each package |
 
-These are the same families the app uses (`FONTS` in the native `lib/constants.ts`), so a card matches the app.
-All three are under the SIL Open Font License 1.1, which allows use and embedding in products.
+These are the same families the app uses (`FONTS` in the native `lib/constants.ts`), plus Noto Sans Gurmukhi for server-rendered Gurbani cards.
+All are under the SIL Open Font License 1.1, which allows use and embedding in products.
 
-## What is NOT here, and what that does to the product
+## Installed Fonts
 
-**A Gurmukhi font.** The app does not ship one (it uses the device's), so there is nothing to copy. Until
-`NotoSansGurmukhi-Medium.ttf` (family "Noto Sans Gurmukhi Medium", SIL OFL 1.1, from
-https://github.com/notofonts/gurmukhi or Google Fonts) is added to this folder, **Sikh cards are withheld**
-with `font_missing`; the admin screen says so. Nothing falls back to a system font silently: the renderer
-measures every Indic font at run time and refuses to draw if the file did not actually load.
-When adding it, also add its `OFL-*.txt` and a row to the table above.
+- **Devanagari**: `Mukta_500Medium.ttf` (Mukta Medium) & `Mukta_700Bold.ttf` (Mukta Bold)
+- **Gurmukhi**: `NotoSansGurmukhi-Medium.ttf` (Noto Sans Gurmukhi Medium)
+- **Latin**: `CormorantGaramond` (SemiBold, Italic) & `Inter` (Medium, SemiBold)
 
 ## Why two text engines
 
