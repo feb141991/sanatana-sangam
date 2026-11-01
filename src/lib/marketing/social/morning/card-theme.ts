@@ -59,7 +59,7 @@ export const FONT_FILES = {
   devanagari: { file: "Mukta_500Medium.ttf", family: "Mukta Medium" },
   devanagariBold: { file: "Mukta_700Bold.ttf", family: "Mukta" },
   /** Noto Sans Gurmukhi Medium (SIL OFL 1.1) for Sikh / Gurbani verses */
-  gurmukhi: { file: "NotoSansGurmukhi-Medium.ttf", family: "Noto Sans Gurmukhi SemiBold" }
+  gurmukhi: { file: "NotoSansGurmukhi-Medium.ttf", family: "Noto Sans Gurmukhi Medium" }
 } as const;
 
 export type FontKey = keyof typeof FONT_FILES;

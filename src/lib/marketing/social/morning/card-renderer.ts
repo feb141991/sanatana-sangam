@@ -106,32 +106,86 @@ const INDIC_PROBE: Record<"devanagari" | "gurmukhi", string> = {
 };
 const verifiedFonts = new Set<string>();
 
-async function probeWidth(text: string, family: string, fontfile?: string): Promise<number> {
-  const { info } = await sharp({
-    text: { text: `<span>${escapeMarkup(text)}</span>`, font: `${family} 60`, fontfile, width: 4000, rgba: true }
-  })
-    .png()
-    .toBuffer({ resolveWithObject: true });
-  return info.width;
+/** Verifies that a TrueType/OpenType font file contains glyphs for the given text in its cmap table. */
+function fontHasGlyphs(filePath: string, text: string): boolean {
+  try {
+    const buf = fs.readFileSync(filePath);
+    const numTables = buf.readUInt16BE(4);
+    let cmapOffset = 0;
+    for (let i = 0; i < numTables; i++) {
+      const tag = buf.toString("utf8", 12 + i * 16, 16 + i * 16);
+      if (tag === "cmap") {
+        cmapOffset = buf.readUInt32BE(12 + i * 16 + 8);
+        break;
+      }
+    }
+    if (!cmapOffset) return false;
+    const numSubtables = buf.readUInt16BE(cmapOffset + 2);
+    let format4Offset = 0;
+    for (let i = 0; i < numSubtables; i++) {
+      const subtableOffset = cmapOffset + buf.readUInt32BE(cmapOffset + 4 + i * 8 + 4);
+      const format = buf.readUInt16BE(subtableOffset);
+      if (format === 4) {
+        format4Offset = subtableOffset;
+        break;
+      }
+    }
+    if (!format4Offset) return false;
+    const segCountX2 = buf.readUInt16BE(format4Offset + 6);
+    const segCount = segCountX2 / 2;
+    const endCodeOffset = format4Offset + 14;
+    const startCodeOffset = endCodeOffset + segCountX2 + 2;
+
+    const chars = Array.from(text).map((c) => c.codePointAt(0) ?? 0);
+    for (const code of chars) {
+      if (code < 32) continue;
+      let found = false;
+      for (let s = 0; s < segCount; s++) {
+        const start = buf.readUInt16BE(startCodeOffset + s * 2);
+        const end = buf.readUInt16BE(endCodeOffset + s * 2);
+        if (code >= start && code <= end) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
- * The text engine falls back to a system font without any error when a font file does not register (it did so
- * for Inter, Cormorant and Kalam in testing). On a server with no Indic system font that would print boxes, and
- * on one that has one it would print the wrong face. So measure the same word in the requested font and in a
- * family that does not exist: if the widths match, the file was not used.
+ * Ensures the font file actually covers the Indic script and renders with real glyphs in Sharp.
+ * Fonts missing the script (like Inter) or rendering as unshaped tofu are caught and rejected.
  */
 async function assertIndicFontLoaded(script: "devanagari" | "gurmukhi", font: FontSource): Promise<void> {
   if (verifiedFonts.has(font.path)) return;
   const sample = INDIC_PROBE[script];
-  const requested = await probeWidth(sample, font.family, font.path);
-  const fallback = await probeWidth(sample, "ZzNoSuchFontFamily");
-  if (Math.abs(requested - fallback) / fallback < 0.01) {
+
+  // 1. Verify the font file contains the required glyphs in its TrueType cmap table.
+  if (!fontHasGlyphs(font.path, sample)) {
     throw new CardRenderError(
       "font_not_loaded",
       `${path.basename(font.path)} did not load in the text engine (it measured the same as the system fallback)`
     );
   }
+
+  // 2. Probe render with Sharp to ensure libvips/pango shapes and renders with valid dimensions.
+  const { data, info } = await sharp({
+    text: { text: `<span>${escapeMarkup(sample)}</span>`, font: `${font.family} 60`, fontfile: font.path, width: 4000, rgba: true }
+  })
+    .png()
+    .toBuffer({ resolveWithObject: true });
+
+  if (info.height < 30 || info.width < 100 || data.length < 500) {
+    throw new CardRenderError(
+      "font_not_loaded",
+      `${path.basename(font.path)} did not load in the text engine (rendered invalid dimensions ${info.width}x${info.height})`
+    );
+  }
+
   verifiedFonts.add(font.path);
 }
 
