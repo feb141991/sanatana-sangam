@@ -39,7 +39,7 @@ export function buildMorningCaption(verse: MorningVerse, date: string): MorningC
   const parts: string[] = ["Good morning from Shoonaya.", formatVerseLines(verse.original)];
 
   if (verse.translation && verse.translationCredit) {
-    parts.push(`“${verse.translation}”\n— ${verse.citation} (${verse.translationCredit})`);
+    parts.push(`“${verse.translation}”\n— ${source} (${verse.translationCredit})`);
   } else {
     parts.push(`— ${source}`);
   }

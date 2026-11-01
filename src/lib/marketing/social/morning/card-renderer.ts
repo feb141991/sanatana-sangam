@@ -305,6 +305,50 @@ const VERSE_SIZES = [64, 58, 53, 49, 45, 41, 38] as const;
 const TRANSLATION_SIZES = [42, 38, 35, 32, 29] as const;
 
 function baseSvg(accent: string): string {
+  const midX = W / 2;
+  const midY = 600;
+  const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+  const r2 = 240;
+
+  const dots = angles
+    .map((deg) => {
+      const rad = (deg * Math.PI) / 180;
+      const x = midX + r2 * Math.cos(rad);
+      const y = midY + r2 * Math.sin(rad);
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="${accent}" fill-opacity="0.35"/>`;
+    })
+    .join("\n  ");
+
+  const rays = angles
+    .map((deg) => {
+      const rad = (deg * Math.PI) / 180;
+      const x1 = midX + 310 * Math.cos(rad);
+      const y1 = midY + 310 * Math.sin(rad);
+      const x2 = midX + 345 * Math.cos(rad);
+      const y2 = midY + 345 * Math.sin(rad);
+      return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${accent}" stroke-width="1" stroke-opacity="0.18"/>`;
+    })
+    .join("\n  ");
+
+  const corners = [
+    { x: 58, y: 58, dx: 1, dy: 1 },
+    { x: W - 58, y: 58, dx: -1, dy: 1 },
+    { x: 58, y: H - 58, dx: 1, dy: -1 },
+    { x: W - 58, y: H - 58, dx: -1, dy: -1 }
+  ]
+    .map(
+      (c) => `
+    <g>
+      <rect x="${c.x - 7}" y="${c.y - 7}" width="14" height="14" transform="rotate(45 ${c.x} ${c.y})" fill="${BRAND_GOLD}"/>
+      <rect x="${c.x - 3}" y="${c.y - 3}" width="6" height="6" transform="rotate(45 ${c.x} ${c.y})" fill="${PAPER.page}"/>
+      <line x1="${c.x + c.dx * 12}" y1="${c.y}" x2="${c.x + c.dx * 32}" y2="${c.y}" stroke="${BRAND_GOLD}" stroke-width="1.5" stroke-opacity="0.6"/>
+      <line x1="${c.x}" y1="${c.y + c.dy * 12}" x2="${c.x}" y2="${c.y + c.dy * 32}" stroke="${BRAND_GOLD}" stroke-width="1.5" stroke-opacity="0.6"/>
+      <circle cx="${c.x + c.dx * 32}" cy="${c.y}" r="2" fill="${BRAND_GOLD}" fill-opacity="0.7"/>
+      <circle cx="${c.x}" cy="${c.y + c.dy * 32}" r="2" fill="${BRAND_GOLD}" fill-opacity="0.7"/>
+    </g>`
+    )
+    .join("\n");
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
     <radialGradient id="glow" cx="50%" cy="45%" r="75%">
@@ -312,47 +356,60 @@ function baseSvg(accent: string): string {
       <stop offset="60%" stop-color="${PAPER.cardSoft}"/>
       <stop offset="100%" stop-color="${PAPER.page}"/>
     </radialGradient>
-    <radialGradient id="centerGlow" cx="50%" cy="42%" r="40%">
-      <stop offset="0%" stop-color="${accent}" stop-opacity="0.10"/>
+    <radialGradient id="centerGlow" cx="50%" cy="46%" r="42%">
+      <stop offset="0%" stop-color="${accent}" stop-opacity="0.14"/>
       <stop offset="100%" stop-color="${accent}" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="${W}" height="${H}" fill="${PAPER.page}"/>
   <rect width="${W}" height="${H}" fill="url(#glow)"/>
   <rect width="${W}" height="${H}" fill="url(#centerGlow)"/>
-  <g fill="none" stroke="${accent}" stroke-opacity="0.12" stroke-width="1.5">
-    <circle cx="${W / 2}" cy="580" r="210"/>
-    <circle cx="${W / 2}" cy="580" r="310" stroke-dasharray="2 14" stroke-linecap="round"/>
-    <circle cx="${W / 2}" cy="580" r="420"/>
+
+  <!-- Sacred Geometry Mandala Watermark -->
+  <g fill="none">
+    <circle cx="${midX}" cy="${midY}" r="150" stroke="${accent}" stroke-opacity="0.08" stroke-width="1" stroke-dasharray="2 8"/>
+    <circle cx="${midX}" cy="${midY}" r="240" stroke="${accent}" stroke-opacity="0.10" stroke-width="1"/>
+    <circle cx="${midX}" cy="${midY}" r="310" stroke="${accent}" stroke-opacity="0.14" stroke-width="1.5" stroke-dasharray="4 14" stroke-linecap="round"/>
+    <circle cx="${midX}" cy="${midY}" r="390" stroke="${accent}" stroke-opacity="0.07" stroke-width="1" stroke-dasharray="1 10"/>
+    <rect x="${midX - 110}" y="${midY - 110}" width="220" height="220" stroke="${accent}" stroke-opacity="0.06" stroke-width="1"/>
+    <rect x="${midX - 110}" y="${midY - 110}" width="220" height="220" transform="rotate(45 ${midX} ${midY})" stroke="${accent}" stroke-opacity="0.06" stroke-width="1"/>
+    ${rays}
+    ${dots}
   </g>
-  <rect x="44" y="44" width="${W - 88}" height="${H - 88}" rx="28" fill="none" stroke="${PAPER.borderColor}" stroke-opacity="${PAPER.borderOpacity}" stroke-width="1.5"/>
-  <rect x="64" y="64" width="${W - 128}" height="${H - 128}" rx="20" fill="none" stroke="${accent}" stroke-opacity="0.35" stroke-width="1.5"/>
-  ${[
-    [64, 64],
-    [W - 64, 64],
-    [64, H - 64],
-    [W - 64, H - 64]
-  ]
-    .map(([x, y]) => `<rect x="${x - 7}" y="${y - 7}" width="14" height="14" transform="rotate(45 ${x} ${y})" fill="${BRAND_GOLD}"/>`)
-    .join("\n  ")}
+
+  <!-- Traditional Manuscript Frames -->
+  <rect x="40" y="40" width="${W - 80}" height="${H - 80}" rx="24" fill="none" stroke="${PAPER.borderColor}" stroke-opacity="${PAPER.borderOpacity}" stroke-width="1.5"/>
+  <rect x="58" y="58" width="${W - 116}" height="${H - 116}" rx="16" fill="none" stroke="${accent}" stroke-opacity="0.30" stroke-width="1"/>
+
+  <!-- Manuscript Corner Florets -->
+  ${corners}
 </svg>`;
 }
 
 function ornamentSvg(accent: string): { svg: string; width: number; height: number } {
-  const width = 360;
-  const height = 24;
+  const width = 420;
+  const height = 30;
   const mid = width / 2;
   return {
     width,
     height,
     svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <g stroke="${accent}" stroke-width="2" stroke-linecap="round" stroke-opacity="0.85">
-    <line x1="10" y1="12" x2="${mid - 26}" y2="12"/>
-    <line x1="${mid + 26}" y1="12" x2="${width - 10}" y2="12"/>
+  <!-- Tapered Hairline Rules -->
+  <g stroke="${accent}" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.80">
+    <line x1="16" y1="15" x2="${mid - 68}" y2="15"/>
+    <line x1="${mid + 68}" y1="15" x2="${width - 16}" y2="15"/>
   </g>
-  <rect x="${mid - 8}" y="4" width="16" height="16" transform="rotate(45 ${mid} 12)" fill="${BRAND_GOLD}"/>
-  <circle cx="${mid - 36}" cy="12" r="3.5" fill="${accent}"/>
-  <circle cx="${mid + 36}" cy="12" r="3.5" fill="${accent}"/>
+  <!-- Flanking Sacred Bindu Dots (graduated outward) -->
+  <circle cx="${mid - 54}" cy="15" r="2" fill="${accent}" fill-opacity="0.7"/>
+  <circle cx="${mid - 40}" cy="15" r="3" fill="${BRAND_GOLD}" fill-opacity="0.85"/>
+  <circle cx="${mid - 24}" cy="15" r="4" fill="${accent}"/>
+  <circle cx="${mid + 24}" cy="15" r="4" fill="${accent}"/>
+  <circle cx="${mid + 40}" cy="15" r="3" fill="${BRAND_GOLD}" fill-opacity="0.85"/>
+  <circle cx="${mid + 54}" cy="15" r="2" fill="${accent}" fill-opacity="0.7"/>
+  <!-- Central Sacred Motif: Gold Diamond with Bindu Eye -->
+  <rect x="${mid - 9}" y="6" width="18" height="18" transform="rotate(45 ${mid} 15)" fill="${BRAND_GOLD}"/>
+  <rect x="${mid - 4}" y="11" width="8" height="8" transform="rotate(45 ${mid} 15)" fill="${PAPER.page}"/>
+  <circle cx="${mid}" cy="15" r="2" fill="${BRAND_GOLD}"/>
 </svg>`
   };
 }

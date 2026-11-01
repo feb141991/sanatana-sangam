@@ -26,13 +26,12 @@ describe("buildMorningCaption", () => {
     });
   });
 
-  it("Sikh: the verse and its citation with the attribution, and no invented translation", () => {
+  it("Sikh: the verse, its quoted translation with attribution and credit, and a tracked link", () => {
     const verse = verseFor("sikh");
     const { caption } = buildMorningCaption(verse, "2026-10-16");
     expect(caption).toContain(verse.original.replace(/ ([॥।]) /g, " $1\n"));
-    expect(caption).toContain(`— ${verse.citation} · ${verse.attribution}`);
-    expect(caption).not.toContain("“");
-    expect(caption).not.toMatch(/translation/i);
+    expect(caption).toContain(`“${verse.translation}”`);
+    expect(caption).toContain(`— ${verse.citation} · ${verse.attribution} (Translation: Sant Singh Khalsa (traditional))`);
   });
 
   it("contains nothing that did not come from the verse: every line is the greeting, the verse, the citation or the link", () => {

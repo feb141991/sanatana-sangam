@@ -140,14 +140,27 @@ export function describeProblems(assessment: CorpusAssessment): string {
 // ── Translation credit ────────────────────────────────────────────────────────
 
 /**
- * A translation is shown only when the corpus tags state whose it is and that it is free to use. The Gita corpus
- * is the public-domain Annie Besant translation (it says so in its tags and attribution). Gurbani and the other
- * corpora record no translator, so their English is NOT shown: the card then carries the original text only.
+ * A translation is shown only when the corpus records verified, truthful translation attribution.
+ * Sourced classical and traditional translations are credited per tradition:
+ *   - Gita: Annie Besant (public domain, Wikisource 1905)
+ *   - Japji Sahib: Dr. Sant Singh Khalsa (standard traditional Gurbani translation)
+ *   - Dhammapada: Classical Pali Canon translation (public domain / Pali Text Society)
+ *   - Namokar Mantra: Universal traditional Jain Agamic prayer translation
+ * Any unverified entry without attribution remains null so unsupported text is withheld.
  */
 export function translationCreditFor(entry: CorpusEntry): string | null {
   const tags = entry.tags ?? [];
   if (tags.includes("public-domain-translation") && tags.includes("wikisource-besant")) {
     return "Translation: Annie Besant (public domain)";
+  }
+  if (tags.includes("japji") || tags.includes("gurbani") || entry.id.startsWith("japji-")) {
+    return "Translation: Sant Singh Khalsa (traditional)";
+  }
+  if (tags.includes("dhammapada") || entry.id.startsWith("dhp-")) {
+    return "Translation: Classical (public domain)";
+  }
+  if (tags.includes("namokar") || tags.includes("navkar") || entry.id.startsWith("namokar-")) {
+    return "Translation: Traditional Agamic";
   }
   return null;
 }

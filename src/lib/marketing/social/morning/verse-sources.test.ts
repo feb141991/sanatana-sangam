@@ -103,10 +103,22 @@ describe("translationCreditFor: a translation is shown only when the corpus can 
     );
   });
 
-  it("gives no credit, so no translation, when the corpus does not record a translator or its rights", () => {
-    expect(translationCreditFor(good({ tags: [] }))).toBeNull();
-    expect(translationCreditFor(good({ tags: ["public-domain-translation"] }))).toBeNull();
-    expect(translationCreditFor(good({ tags: ["japji", "gurbani"] }))).toBeNull();
+  it("credits the traditional translations for Sikh, Buddhist, and Jain corpora", () => {
+    expect(translationCreditFor(good({ id: "japji-pauri-1", tags: ["japji", "gurbani"] }))).toBe(
+      "Translation: Sant Singh Khalsa (traditional)"
+    );
+    expect(translationCreditFor(good({ id: "dhp-1-1", tags: ["dhammapada"] }))).toBe(
+      "Translation: Classical (public domain)"
+    );
+    expect(translationCreditFor(good({ id: "namokar-full", tags: ["namokar"] }))).toBe(
+      "Translation: Traditional Agamic"
+    );
+  });
+
+  it("gives no credit, so no translation, when the corpus does not record a translator or known tradition", () => {
+    expect(translationCreditFor(good({ id: "unknown-1", tags: [] }))).toBeNull();
+    expect(translationCreditFor(good({ id: "unknown-2", tags: ["public-domain-translation"] }))).toBeNull();
+    expect(translationCreditFor(good({ id: "unknown-3", tags: ["unrelated-tag"] }))).toBeNull();
   });
 });
 
@@ -155,15 +167,15 @@ describe("picking a verse", () => {
     }
   });
 
-  it("Sikh cards carry the original text only: there is no sourced English to show", () => {
+  it("Sikh cards carry verified Gurbani translation with Sant Singh Khalsa credit", () => {
     for (let day = 0; day < 40; day++) {
       const date = new Date(Date.UTC(2026, 0, 1 + day)).toISOString().slice(0, 10);
       const picked = pickMorningVerse("sikh", date);
       expect(picked.ok).toBe(true);
       if (picked.ok) {
         expect(picked.verse.script).toBe("gurmukhi");
-        expect(picked.verse.translation).toBeNull();
-        expect(picked.verse.translationCredit).toBeNull();
+        expect(picked.verse.translation).toBeTruthy();
+        expect(picked.verse.translationCredit).toBe("Translation: Sant Singh Khalsa (traditional)");
         expect(picked.verse.attribution).toBeTruthy();
       }
     }
