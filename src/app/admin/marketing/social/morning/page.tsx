@@ -3,11 +3,28 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft, Check, Copy, Download, Image as ImageIcon, RefreshCw, RotateCcw, Sunrise, X
+  ArrowLeft, Check, Copy, Download, ExternalLink, Image as ImageIcon, RefreshCw, RotateCcw, Send, Sunrise, X
 } from "lucide-react";
 
 type Tradition = "hindu" | "sikh" | "buddhist" | "jain";
 type Status = "draft" | "approved" | "rejected" | "withheld";
+
+interface PublishRecord {
+  publishedAt: string;
+  platform: string;
+  accountId: string;
+  accountName: string;
+  externalPostId: string | null;
+  permalinkUrl: string | null;
+  publishedBy: string;
+}
+
+interface PlatformAccount {
+  id: string;
+  platform: "facebook" | "instagram" | "linkedin";
+  name: string;
+  type: string;
+}
 
 interface Card {
   id: string;
@@ -21,6 +38,7 @@ interface Card {
   hashtags: string[];
   image_url: string | null;
   approved_by: string | null;
+  publish_record?: PublishRecord | null;
 }
 
 interface ArtPrompt {
@@ -86,6 +104,8 @@ export default function MorningCardsPage() {
   const [date, setDate] = useState(todayInIndia());
   const [cards, setCards] = useState<Card[]>([]);
   const [prompts, setPrompts] = useState<ArtPrompt[]>([]);
+  const [accounts, setAccounts] = useState<PlatformAccount[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [edits, setEdits] = useState<Record<string, { caption: string; tags: string }>>({});
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -106,6 +126,10 @@ export default function MorningCardsPage() {
       if (!res.ok) throw new Error(data.error ?? "Could not load the cards");
       adopt(data.cards ?? []);
       setPrompts(data.artPrompts ?? []);
+      if (Array.isArray(data.accounts)) {
+        setAccounts(data.accounts);
+        setSelectedAccountId((cur) => cur || (data.accounts.length > 0 ? data.accounts[0].id : ""));
+      }
       // A successful load means an earlier failed one is no longer true.
       setMessage((current) => (current?.kind === "error" ? null : current));
     } catch (err) {
@@ -167,6 +191,37 @@ export default function MorningCardsPage() {
     }
   }
 
+  async function publish(card: Card) {
+    setBusy((b) => ({ ...b, [card.id]: "publish" }));
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/marketing/social/morning-cards/${card.id}/publish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accountId: selectedAccountId || undefined })
+      });
+      const data = await readAnswer(res);
+      if (!res.ok) throw new Error(data.error ?? "Publishing failed");
+      await load();
+      const accountName = data.publishRecord?.accountName || "Facebook";
+      const link = data.publishRecord?.permalinkUrl;
+      setMessage({
+        kind: "ok",
+        lines: [
+          `Published ${NAMES[card.tradition]} card to ${accountName}!`,
+          link ? `Live post: ${link}` : ""
+        ].filter(Boolean)
+      });
+    } catch (err) {
+      setMessage({ kind: "error", lines: [err instanceof Error ? err.message : "Publishing failed"] });
+    } finally {
+      setBusy((b) => {
+        const { [card.id]: _done, ...rest } = b;
+        return rest;
+      });
+    }
+  }
+
   async function copy(key: string, text: string) {
     try {
       await navigator.clipboard.writeText(text);
@@ -191,10 +246,26 @@ export default function MorningCardsPage() {
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20"><Sunrise size={22} /></div>
             <div>
               <h1 className="text-xl font-bold font-serif tracking-tight">Morning Cards</h1>
-              <p className="text-xs text-[var(--text-muted)]">One verse card per tradition. You approve; nothing is posted from here.</p>
+              <p className="text-xs text-[var(--text-muted)]">One verse card per tradition. Review, approve, and publish directly to Facebook & Instagram.</p>
             </div>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
+            {accounts.length > 0 && (
+              <label className="text-xs font-semibold flex items-center gap-2">
+                Account
+                <select
+                  value={selectedAccountId}
+                  onChange={(e) => setSelectedAccountId(e.target.value)}
+                  className="min-h-11 px-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-card)] text-xs font-medium"
+                >
+                  {accounts.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name} ({a.platform})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label className="text-xs font-semibold flex items-center gap-2">
               Day
               <input
@@ -288,8 +359,31 @@ export default function MorningCardsPage() {
                       />
                     </label>
 
-                    {card.status === "approved" && <p className="text-[11px] text-emerald-700">Approved by {card.approved_by}. Editing the caption sends it back to draft.</p>}
+                    {card.status === "approved" && (
+                      <p className="text-[11px] text-emerald-700">
+                        Approved by {card.approved_by}. Ready to publish.
+                      </p>
+                    )}
                     {dirty && <p className="text-[11px] text-amber-700">You have unsaved changes. Save the caption before approving.</p>}
+
+                    {card.publish_record && (
+                      <div className="flex items-center justify-between p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-900">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                          <span className="font-semibold">Live on {card.publish_record.accountName || "Facebook"}</span>
+                        </div>
+                        {card.publish_record.permalinkUrl && (
+                          <a
+                            href={card.publish_record.permalinkUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold underline hover:text-blue-700 flex items-center gap-1"
+                          >
+                            View Post <ExternalLink size={12} />
+                          </a>
+                        )}
+                      </div>
+                    )}
 
                     <div className="flex flex-wrap gap-2">
                       <button onClick={() => void act(card, "save")} disabled={!dirty || !!working} className={`${button} border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)]`}>
@@ -298,6 +392,16 @@ export default function MorningCardsPage() {
                       <button onClick={() => void act(card, "approve")} disabled={card.status !== "draft" || dirty || !!working} className={`${button} bg-emerald-600 hover:bg-emerald-700 text-white`}>
                         <Check size={14} /> {working === "approve" ? "Approving…" : "Approve"}
                       </button>
+                      {card.status === "approved" && (
+                        <button
+                          onClick={() => void publish(card)}
+                          disabled={dirty || !!working}
+                          className={`${button} bg-blue-600 hover:bg-blue-700 text-white`}
+                        >
+                          <Send size={14} className={working === "publish" ? "animate-spin" : ""} />
+                          {working === "publish" ? "Publishing…" : card.publish_record ? "Publish again" : "Publish to Facebook"}
+                        </button>
+                      )}
                       <button onClick={() => void act(card, "reject")} disabled={(card.status !== "draft" && card.status !== "approved") || !!working} className={`${button} border border-rose-500/40 text-rose-700 hover:bg-rose-500/10`}>
                         <X size={14} /> Reject
                       </button>

@@ -37,7 +37,26 @@ export async function GET(request: NextRequest) {
 
   try {
     const cards = await listMorningCards(admin.supabase, resolved.date);
-    return noStoreJson({ date: resolved.date, cards, artPrompts: allBackgroundPrompts() });
+    let accounts: any[] = [];
+    if (admin.supabase && typeof admin.supabase.from === "function") {
+      const { data } = await admin.supabase
+        .from("social_platform_accounts")
+        .select("id, provider, account_type, display_name, status")
+        .eq("status", "active");
+      accounts = data ?? [];
+    }
+
+    return noStoreJson({
+      date: resolved.date,
+      cards,
+      artPrompts: allBackgroundPrompts(),
+      accounts: accounts.map((a: any) => ({
+        id: a.id,
+        platform: a.account_type.includes("facebook") ? "facebook" : a.account_type.includes("instagram") ? "instagram" : "linkedin",
+        name: a.display_name,
+        type: a.account_type
+      }))
+    });
   } catch {
     return noStoreJson({ error: "morning_cards_read_failed" }, 500);
   }

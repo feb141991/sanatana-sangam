@@ -1,6 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import crypto from "node:crypto";
 
+vi.mock("../publishers/meta", () => ({
+  publishToFacebookPage: vi.fn(async () => ({
+    outcome: "succeeded",
+    externalPostId: "fb-123456",
+    permalinkUrl: "https://www.facebook.com/1151787908012906"
+  })),
+  publishToInstagram: vi.fn(async () => ({
+    outcome: "succeeded",
+    externalPostId: "ig-123456",
+    permalinkUrl: "https://www.instagram.com/p/abc123"
+  }))
+}));
+
+vi.mock("../token-crypto", () => ({
+  decryptSocialToken: vi.fn(() => "decrypted-token")
+}));
+
 // The renderer is real unless a test says otherwise, so Hindu cards are genuinely drawn.
 let renderOverride: null | ((...args: any[]) => Promise<never>) = null;
 vi.mock("./card-renderer", async (importOriginal) => {
@@ -21,6 +38,7 @@ import {
   listMorningCards,
   MorningCardError,
   normalizeHashtags,
+  publishMorningCard,
   rejectCard,
   todayIn,
   updateCaption,
@@ -31,6 +49,7 @@ import {
 
 interface Fake {
   rows: MorningCardRow[];
+  accounts: any[];
   files: Map<string, Buffer>;
   uploadFails: boolean;
   /** Insert a competing row just before the next insert, as a second click would. */
@@ -39,8 +58,38 @@ interface Fake {
 }
 
 function makeFake(): Fake {
-  const state: Fake = { rows: [], files: new Map(), uploadFails: false, raceOnNextInsert: false, client: null };
+  const state: Fake = {
+    rows: [],
+    accounts: [
+      {
+        id: "acc-fb-1",
+        provider: "meta",
+        account_type: "facebook_page",
+        display_name: "Shoonaya",
+        access_token_enc: "v1:dummy",
+        key_version: 1,
+        status: "active"
+      }
+    ],
+    files: new Map(),
+    uploadFails: false,
+    raceOnNextInsert: false,
+    client: null
+  };
   let counter = 0;
+
+  function accountsTable() {
+    const filters: Array<[string, any]> = [];
+    const builder: any = {
+      select() { return builder; },
+      eq(k: string, v: any) { filters.push([k, v]); return builder; },
+      then(resolve: any, reject: any) {
+        const matching = state.accounts.filter((a) => filters.every(([k, v]) => a[k] === v));
+        return Promise.resolve({ data: matching, error: null }).then(resolve, reject);
+      }
+    };
+    return builder;
+  }
 
   /** Mirrors social_morning_cards_guard (the SQL test proves the real one). */
   function applyGuard(before: MorningCardRow | null, after: MorningCardRow): MorningCardRow {
@@ -104,8 +153,9 @@ function makeFake(): Fake {
 
   state.client = {
     from: (name: string) => {
-      if (name !== "social_morning_cards") throw new Error(`unexpected table ${name}`);
-      return table();
+      if (name === "social_morning_cards") return table();
+      if (name === "social_platform_accounts") return accountsTable();
+      throw new Error(`unexpected table ${name}`);
     },
     storage: {
       createBucket: () => Promise.resolve({ error: null }),
@@ -117,9 +167,10 @@ function makeFake(): Fake {
         },
         download: async (path: string) => {
           const file = state.files.get(path);
-          return file ? { data: { arrayBuffer: async () => file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength) }, error: null } : { data: null, error: { message: "not found" } };
+          return file ? { data: { arrayBuffer: async () => file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength), type: "image/png" }, error: null } : { data: null, error: { message: "not found" } };
         },
-        createSignedUrl: async (path: string) => ({ data: { signedUrl: `https://signed.example/${path}?token=t` }, error: null })
+        createSignedUrl: async (path: string) => ({ data: { signedUrl: `https://signed.example/${path}?token=t` }, error: null }),
+        getPublicUrl: (path: string) => ({ data: { publicUrl: `https://public.example/${path}` } })
       })
     }
   };
@@ -440,5 +491,40 @@ describe("normalizeHashtags", () => {
     expect(normalizeHashtags([""])).toBeNull();
     expect(normalizeHashtags("x")).toBeNull();
     expect(normalizeHashtags([])).toEqual([]);
+  });
+});
+
+describe("publishMorningCard", () => {
+  const draft = async () => {
+    await generateMorningSet(db.client, { date: DATE, createdBy: "founder", traditions: ["hindu"] });
+    return row("hindu");
+  };
+
+  it("refuses to publish a draft card", async () => {
+    const card = await draft();
+    await expect(publishMorningCard(db.client, card.id, { publishedBy: "founder" })).rejects.toMatchObject({
+      status: 409,
+      message: expect.stringContaining("Only an approved card can be published")
+    });
+  });
+
+  it("publishes an approved card and records the permalink in source_snapshot", async () => {
+    const card = await draft();
+    await approveCard(db.client, card.id, "founder");
+    const { card: published, publishRecord } = await publishMorningCard(db.client, card.id, { publishedBy: "founder" });
+    expect(publishRecord.platform).toBe("facebook");
+    expect(publishRecord.permalinkUrl).toBe("https://www.facebook.com/1151787908012906");
+    expect(publishRecord.accountName).toBe("Shoonaya");
+    expect((published.source_snapshot as any).publish_record).toEqual(publishRecord);
+  });
+
+  it("refuses when no active account is available", async () => {
+    const card = await draft();
+    await approveCard(db.client, card.id, "founder");
+    db.accounts = [];
+    await expect(publishMorningCard(db.client, card.id, { publishedBy: "founder" })).rejects.toMatchObject({
+      status: 400,
+      message: expect.stringContaining("No active social platform account found")
+    });
   });
 });

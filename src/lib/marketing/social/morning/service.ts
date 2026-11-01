@@ -7,8 +7,12 @@
  * that cannot be made today (no usable verse, a missing font, a render failure) is saved as WITHHELD with the
  * reason, so the admin screen shows why instead of a silent gap, and the other traditions are not held up.
  */
-import { getDraftImageContentHash, getSignedDraftImageUrl, uploadDraftSocialImage } from "../image-storage";
-import { buildMorningCaption } from "./caption";
+import { getDraftImageContentHash, getSignedDraftImageUrl, releaseApprovedSocialImage, uploadDraftSocialImage } from "../image-storage";
+import { decryptSocialToken } from "../token-crypto";
+import { publishToFacebookPage, publishToInstagram } from "../publishers/meta";
+import { publishToLinkedIn } from "../publishers/linkedin";
+import type { SocialPlatformAccount, PublisherSendInput, PublisherSendResult } from "../types";
+import { buildMorningCaption, morningCampaignKey } from "./caption";
 import { CardRenderError, missingFontsFor, renderMorningCard } from "./card-renderer";
 import { pickMorningVerse } from "./verse-sources";
 import { MORNING_TRADITIONS, type MorningTradition, type MorningVerse, type WithheldReason } from "./types";
@@ -250,9 +254,20 @@ export async function generateMorningSet(
 
 // ── Reading ───────────────────────────────────────────────────────────────────
 
+export interface PublishMorningCardResult {
+  publishedAt: string;
+  platform: string;
+  accountId: string;
+  accountName: string;
+  externalPostId: string | null;
+  permalinkUrl: string | null;
+  publishedBy: string;
+}
+
 export interface MorningCardView extends MorningCardRow {
   /** A signed link valid for an hour; the image is in a private bucket and never has a public address. */
   image_url: string | null;
+  publish_record?: PublishMorningCardResult | null;
 }
 
 export async function listMorningCards(supabase: any, date: string): Promise<MorningCardView[]> {
@@ -271,7 +286,8 @@ export async function listMorningCards(supabase: any, date: string): Promise<Mor
           image_url = null;
         }
       }
-      return { ...row, image_url };
+      const publishRecord = (row.source_snapshot as any)?.publish_record ?? null;
+      return { ...row, image_url, publish_record: publishRecord };
     })
   );
 }
@@ -381,4 +397,134 @@ export async function rejectCard(supabase: any, id: string, rejectedBy: string):
     .single();
   if (error || !data) throw new MorningCardError(409, "The card changed while you were rejecting it. Reload and try again.");
   return data as MorningCardRow;
+}
+
+/**
+ * Publishes an approved morning card to an active social platform account (Facebook Page or Instagram).
+ * Releases the exact approved image bytes to the public bucket, decrypts the account credentials,
+ * and calls the Meta Graph API. On success, records the external post ID and live permalink.
+ */
+export async function publishMorningCard(
+  supabase: any,
+  id: string,
+  options: { accountId?: string; publishedBy: string }
+): Promise<{ card: MorningCardRow; publishRecord: PublishMorningCardResult }> {
+  const card = await getCard(supabase, id);
+  if (card.status !== "approved") {
+    throw new MorningCardError(409, `Only an approved card can be published (this card is ${card.status})`);
+  }
+  if (!card.image_path || !card.approved_image_content_hash) {
+    throw new MorningCardError(409, "This card has no approved image to publish");
+  }
+
+  // 1. Resolve destination account
+  let accountQuery = supabase.from("social_platform_accounts").select("*").eq("status", "active");
+  if (options.accountId) {
+    accountQuery = accountQuery.eq("id", options.accountId);
+  }
+  const { data: accounts, error: accError } = await accountQuery;
+  if (accError || !accounts || accounts.length === 0) {
+    throw new MorningCardError(400, "No active social platform account found. Connect an account in Social Accounts & Automation.");
+  }
+
+  // Select target account: explicit ID or prefer Shoonaya Facebook / Instagram
+  const account = (options.accountId
+    ? accounts[0]
+    : accounts.find((a: any) => a.account_type === "facebook_page" && a.display_name.toLowerCase().includes("shoonaya")) ||
+      accounts.find((a: any) => a.account_type === "facebook_page") ||
+      accounts.find((a: any) => a.account_type === "instagram_business") ||
+      accounts[0]) as SocialPlatformAccount;
+
+  // 2. Release approved image bytes to public bucket
+  let publicImageUrl: string;
+  try {
+    const released = await releaseApprovedSocialImage(supabase, card.image_path);
+    publicImageUrl = released.publicUrl;
+  } catch (error) {
+    throw new MorningCardError(500, `Failed to prepare public image for publishing: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
+
+  // 3. Decrypt access credentials
+  let accessToken: string;
+  try {
+    if (!account.access_token_enc) throw new Error("Account has no stored access token");
+    accessToken = decryptSocialToken(account.access_token_enc, account.key_version);
+  } catch (error) {
+    throw new MorningCardError(500, `Failed to decrypt access token for ${account.display_name}: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
+
+  // 4. Send to publisher
+  const platform = account.account_type === "facebook_page" ? "facebook" : account.account_type === "instagram_business" ? "instagram" : "linkedin";
+  const trackingCampaign = morningCampaignKey(card.card_date, card.tradition);
+  const idempotencyKey = `morning:${card.id}:${Date.now()}`;
+
+  const sendInput: PublisherSendInput = {
+    account,
+    accessToken,
+    caption: card.caption,
+    hashtags: card.hashtags,
+    ctaUrl: null,
+    trackingCampaign,
+    imageUrl: publicImageUrl,
+    idempotencyKey
+  };
+
+  let sendResult: PublisherSendResult;
+  try {
+    if (platform === "facebook") {
+      sendResult = await publishToFacebookPage(sendInput);
+    } else if (platform === "instagram") {
+      sendResult = await publishToInstagram(sendInput);
+    } else if (platform === "linkedin") {
+      sendResult = await publishToLinkedIn(sendInput);
+    } else {
+      throw new Error(`Unsupported platform: ${platform}`);
+    }
+  } catch (error) {
+    sendResult = { outcome: "unknown", errorSummary: error instanceof Error ? error.message : String(error) };
+  }
+
+  if (sendResult.outcome !== "succeeded") {
+    const errDetail = sendResult.errorSummary || "Platform rejected post without details";
+    const updatedSnapshot = {
+      ...(card.source_snapshot ?? {}),
+      last_publish_attempt: {
+        attempted_at: new Date().toISOString(),
+        platform,
+        account_name: account.display_name,
+        error: errDetail
+      }
+    };
+    await supabase.from("social_morning_cards").update({ source_snapshot: updatedSnapshot }).eq("id", card.id);
+    throw new MorningCardError(400, `Publishing failed: ${errDetail}`);
+  }
+
+  // 5. Record successful publication in source_snapshot
+  const publishRecord: PublishMorningCardResult = {
+    publishedAt: new Date().toISOString(),
+    platform,
+    accountId: account.id,
+    accountName: account.display_name,
+    externalPostId: sendResult.externalPostId ?? null,
+    permalinkUrl: sendResult.permalinkUrl ?? null,
+    publishedBy: options.publishedBy
+  };
+
+  const updatedSnapshot = {
+    ...(card.source_snapshot ?? {}),
+    publish_record: publishRecord
+  };
+
+  const { data: updatedCard, error: updateError } = await supabase
+    .from("social_morning_cards")
+    .update({ source_snapshot: updatedSnapshot })
+    .eq("id", card.id)
+    .select("*")
+    .single();
+
+  if (updateError || !updatedCard) {
+    throw new MorningCardError(500, `Post was published (${sendResult.permalinkUrl}) but failed to update status: ${updateError?.message}`);
+  }
+
+  return { card: updatedCard as MorningCardRow, publishRecord };
 }
