@@ -174,7 +174,7 @@ export default function ChapterManagement({ params }: { params: Promise<{ id: st
           <div className="lg:col-span-4 space-y-8">
             
             {/* Quick Actions */}
-            <section className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-black/5 space-y-6">
+            <section className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-white/80 space-y-6">
               <h3 className="text-[10px] font-black text-[var(--brand-muted)] uppercase tracking-widest">Chapter Control</h3>
               <div className="space-y-3">
                 <button className="w-full p-4 rounded-2xl bg-white border border-black/5 hover:border-[var(--premium-gold)] transition-all flex items-center justify-between group text-left">

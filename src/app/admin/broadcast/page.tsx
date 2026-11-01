@@ -136,7 +136,7 @@ export default function OperationalBroadcast() {
 
           {/* Preview & Info Area */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-black/5 space-y-6">
+            <div className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-white/80 space-y-6">
               <h3 className="text-sm font-bold theme-ink flex items-center gap-2">
                 <Smartphone size={18} /> Notification Preview
               </h3>

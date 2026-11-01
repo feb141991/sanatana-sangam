@@ -154,7 +154,7 @@ function ReportCenterContent() {
               </div>
 
               <div className="lg:col-span-4 space-y-6">
-                <div className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-black/5">
+                <div className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-white/80">
                   <h3 className="text-sm font-bold uppercase tracking-widest theme-ink mb-6 flex items-center gap-2">
                     <FileText size={16} /> Fast Access
                   </h3>
@@ -321,7 +321,7 @@ function ReportCenterContent() {
                   <Link 
                     key={i} 
                     href="/admin/users"
-                    className="flex items-center justify-between p-5 rounded-2xl bg-black/5 hover:bg-amber-500/10 hover:border-[var(--premium-gold)]/40 border border-transparent transition-all cursor-pointer group"
+                    className="flex items-center justify-between p-5 rounded-2xl bg-white border border-black/5 hover:bg-amber-500/10 hover:border-[var(--premium-gold)]/40 transition-all cursor-pointer group shadow-2xs"
                   >
                     <div>
                       <span className="font-bold theme-ink capitalize block text-sm group-hover:text-[var(--premium-gold)] transition-colors">
@@ -388,7 +388,7 @@ export default function ReportCenter() {
 
 function ExportCard({ title, desc, onExport }: any) {
   return (
-    <div className="p-6 rounded-[2rem] bg-black/5 border border-black/5 hover:border-[var(--premium-gold)]/30 transition-all flex items-center justify-between gap-4 group">
+    <div className="p-6 rounded-[2rem] bg-white border border-black/5 hover:border-[var(--premium-gold)]/30 transition-all flex items-center justify-between gap-4 group shadow-2xs">
       <div>
         <h4 className="text-sm font-bold theme-ink">{title}</h4>
         <p className="text-[10px] text-[var(--brand-muted)] mt-1">{desc}</p>
@@ -441,7 +441,7 @@ function ReportList({ title, items }: { title: string; items: { label: string; v
       <div className="space-y-2">
         {items.map((item, idx) => {
           const Content = (
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-black/5 hover:bg-black/10 transition-colors">
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-black/5 hover:bg-black/5 transition-colors shadow-2xs">
               <span className="text-xs font-semibold theme-ink">{item.label}</span>
               <span className="text-xs font-bold text-[var(--premium-gold)]">{item.val}</span>
             </div>
@@ -482,7 +482,7 @@ function CronLogList({ logs }: { logs: any[] }) {
   return (
     <div className="space-y-2">
       {logs.map((log: any, i: number) => (
-        <div key={log.id || i} className="p-3 rounded-xl bg-black/5 flex items-center justify-between text-xs">
+        <div key={log.id || i} className="p-3 rounded-xl bg-white border border-black/5 flex items-center justify-between text-xs shadow-2xs">
           <div>
             <span className="font-bold theme-ink">{log.job_name || log.task || "System Cron"}</span>
             <span className="text-[10px] text-[var(--brand-muted)] ml-2">{new Date(log.created_at).toLocaleTimeString()}</span>
