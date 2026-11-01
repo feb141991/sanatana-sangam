@@ -197,8 +197,8 @@ export default function EarlyAccessAdminPage() {
         <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4">
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Total Requests</span>
-              <Users className="w-4 h-4 text-amber-700" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">Total Requests</span>
+              <Users className="w-4 h-4 text-amber-800" />
             </div>
             <div className="text-2xl font-bold font-serif text-gray-900">{stats.total.toLocaleString()}</div>
             <div className="text-[10px] text-gray-500 mt-1 flex items-center gap-1">
@@ -209,7 +209,7 @@ export default function EarlyAccessAdminPage() {
 
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">This Week</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">This Week</span>
               <TrendingUp className="w-4 h-4 text-emerald-700" />
             </div>
             <div className="text-2xl font-bold font-serif text-gray-900">+{stats.thisWeek.toLocaleString()}</div>
@@ -220,7 +220,7 @@ export default function EarlyAccessAdminPage() {
 
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Android Interest</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">Android Interest</span>
               <Smartphone className="w-4 h-4 text-emerald-600" />
             </div>
             <div className="text-2xl font-bold font-serif text-gray-900">{stats.androidInterestCount.toLocaleString()}</div>
@@ -231,7 +231,7 @@ export default function EarlyAccessAdminPage() {
 
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">iOS Interest</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">iOS Interest</span>
               <Smartphone className="w-4 h-4 text-stone-600" />
             </div>
             <div className="text-2xl font-bold font-serif text-gray-900">{stats.iosInterestCount.toLocaleString()}</div>
@@ -242,7 +242,7 @@ export default function EarlyAccessAdminPage() {
 
           <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/70">Web Interest</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">Web Interest</span>
               <Smartphone className="w-4 h-4 text-indigo-600" />
             </div>
             <div className="text-2xl font-bold font-serif text-gray-900">{stats.webInterestCount.toLocaleString()}</div>
@@ -326,7 +326,7 @@ export default function EarlyAccessAdminPage() {
       <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-[rgba(197,160,89,0.2)] shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-amber-50/50 border-b border-[rgba(197,160,89,0.2)] text-amber-950/70 uppercase text-[10px] font-bold tracking-wider">
+            <thead className="bg-amber-50/50 border-b border-[rgba(197,160,89,0.2)] text-stone-800 uppercase text-[10px] font-extrabold tracking-wider">
               <tr>
                 <th className="py-3.5 px-4">Request #</th>
                 <th className="py-3.5 px-4">Seeker</th>

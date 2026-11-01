@@ -156,7 +156,7 @@ export default function DharmVeerReviewPage() {
               </p>
             </div>
           </div>
-          <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-xs font-bold">
+          <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 text-xs font-bold">
             {rows.length} pending
           </span>
         </div>
@@ -171,7 +171,7 @@ export default function DharmVeerReviewPage() {
 
         {targetSlug && !loading && !rows.some((r) => r.slug === targetSlug) && (
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs flex items-center gap-2">
-            <AlertCircle size={16} className="text-amber-600 shrink-0" />
+            <AlertCircle size={16} className="text-amber-800 shrink-0" />
             <span>Target hero biography <code className="font-mono font-bold bg-amber-100 px-1.5 py-0.5 rounded">{targetSlug}</code> is not in the pending review queue.</span>
           </div>
         )}

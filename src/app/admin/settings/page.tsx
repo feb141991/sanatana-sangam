@@ -108,7 +108,7 @@ export default function GlobalSettings() {
         <section className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <h2 className="flex items-center gap-2 text-sm font-bold theme-ink uppercase tracking-widest">
-              <Database size={16} className="text-amber-500" /> Edge Caches & Revalidation
+              <Database size={16} className="text-amber-800" /> Edge Caches & Revalidation
             </h2>
             <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">
               Active API Connected
@@ -118,10 +118,10 @@ export default function GlobalSettings() {
           <div className="glass-panel rounded-3xl border border-black/5 p-6 bg-white/60 shadow-xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-amber-500/5 rounded-2xl border border-amber-500/10">
               <div className="flex items-start sm:items-center gap-3">
-                <RefreshCw size={22} className={"text-amber-600 shrink-0 mt-0.5 sm:mt-0 " + (flushing ? "animate-spin" : "")} />
+                <RefreshCw size={22} className={"text-amber-800 shrink-0 mt-0.5 sm:mt-0 " + (flushing ? "animate-spin" : "")} />
                 <div>
                   <p className="text-sm font-bold text-amber-950">Flush Global Edge Cache</p>
-                  <p className="text-xs text-amber-800/80 leading-relaxed">
+                  <p className="text-xs text-amber-950 leading-relaxed">
                     Purges and revalidates all Next.js ISR, Edge caches, Panchang routes, and layout trees immediately across production.
                   </p>
                 </div>
@@ -227,7 +227,7 @@ export default function GlobalSettings() {
               <div className="p-3.5 rounded-2xl bg-black/[0.02] border border-black/5 space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">User Moderation Reports</span>
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Instant</span>
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-900 border border-amber-300">Instant</span>
                 </div>
                 <p className="text-gray-700 leading-snug">Dispatches report reason and direct action button to <code className="text-gray-900 bg-gray-100 px-1 py-0.5 rounded">/admin/moderation</code>.</p>
               </div>
@@ -241,8 +241,8 @@ export default function GlobalSettings() {
             )}
 
             {slackConfigured === false && (
-              <div className="p-4 rounded-2xl text-xs bg-amber-50 text-amber-900 border border-amber-200 flex items-start gap-2.5">
-                <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+              <div className="p-4 rounded-2xl text-xs bg-amber-50 text-amber-950 border border-amber-200 flex items-start gap-2.5">
+                <AlertTriangle size={16} className="text-amber-800 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-bold">Webhook Not Yet Set in Environment</p>
                   <p className="leading-relaxed">

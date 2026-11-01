@@ -728,10 +728,10 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                  <Mail size={14} className="text-amber-600" />
+                  <Mail size={14} className="text-amber-800" />
                   <span>Send Test Email (Inbox Preview)</span>
                 </h3>
-                <p className="text-[11px] text-amber-700/80">
+                <p className="text-[11px] text-amber-950 font-medium">
                   Sends the saved email copy to verify formatting before releasing to subscribers
                 </p>
               </div>
@@ -783,7 +783,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
               )}
 
               <div className="pt-1 flex items-center justify-between">
-                <span className="text-[10px] text-amber-800/70 italic">
+                <span className="text-[10px] text-amber-950 font-medium italic">
                   Does not affect dispatch counts or subscriber records.
                 </span>
                 <button
@@ -864,7 +864,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
           <section className="rounded-2xl border border-amber-300 bg-amber-50 p-4 space-y-3">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900">Provider reconciliation required</h3>
-              <p className="mt-1 text-xs text-amber-900/80">
+              <p className="mt-1 text-xs text-amber-950 font-medium">
                 These delivery attempts may already have been accepted. Check the relevant provider dashboard before choosing an action; they will never retry automatically.
               </p>
             </div>
@@ -1237,7 +1237,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                   <div className="aspect-square w-full rounded-xl bg-gradient-to-br from-amber-50 to-orange-100 flex flex-col items-center justify-center p-6 text-center border border-amber-200/50">
                     <p className="text-2xl font-serif text-amber-900 mb-2">ॐ</p>
                     <p className="text-sm font-serif font-bold text-slate-800 leading-snug">{campaign.title}</p>
-                    <p className="text-[9px] uppercase tracking-widest text-amber-800/80 mt-2">Shoonaya Sanctuary</p>
+                    <p className="text-[9px] uppercase tracking-widest text-amber-950 font-bold mt-2">Shoonaya Sanctuary</p>
                   </div>
                   <div className="text-xs text-slate-800 leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
                     {instagramBody || "Instagram caption preview will render here..."}

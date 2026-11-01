@@ -518,7 +518,7 @@ export default function ObservanceContentStudioPage() {
                 statusFilter === "review" ? "bg-amber-50 border-amber-500 ring-2 ring-amber-500/20" : "bg-white border-black/10 hover:border-amber-500/40"
               )}
             >
-              <div className="flex items-center justify-between text-amber-600">
+              <div className="flex items-center justify-between text-amber-900">
                 <b className="text-3xl font-serif">{counts.review}</b>
                 <div className="flex items-center gap-1.5">
                   <span className={`w-2 h-2 rounded-full shrink-0 ${counts.review > 0 ? "bg-amber-500 ring-2 ring-amber-200" : "bg-emerald-500"}`} />
@@ -847,7 +847,7 @@ export default function ObservanceContentStudioPage() {
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-2xs">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-600">AI Drafting Pipeline</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-amber-900">AI Drafting Pipeline</span>
               <h2 className="text-xl font-bold font-serif text-gray-900 mt-1">Generation Queue & Sourced Candidate Pipeline</h2>
               <p className="text-xs text-gray-500 mt-1">Select candidate observances with approved sources to generate grounded multilingual drafts.</p>
             </div>
@@ -976,7 +976,7 @@ export default function ObservanceContentStudioPage() {
           <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-2xs">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Editorial Desk</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-amber-900">Editorial Desk</span>
                 <span className={"px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase " + (
                   detail?.story?.status === "published" ? "bg-emerald-100 text-emerald-800 border border-emerald-300" :
                   detail?.story?.status === "approved" ? "bg-blue-100 text-blue-800 border border-blue-300" :
@@ -1306,7 +1306,7 @@ export default function ObservanceContentStudioPage() {
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-2xs">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Visual Asset Governance</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-amber-900">Visual Asset Governance</span>
               <h2 className="text-2xl font-bold font-serif text-gray-900 mt-0.5">Artwork Multi-Ratio Canvas & Cultural Review</h2>
               <p className="text-xs text-gray-500">Preview artwork across Card (1.91:1), Reader Hero (16:9), and Share (1:1) aspect ratios with focal point coordinators.</p>
             </div>
@@ -1418,7 +1418,7 @@ export default function ObservanceContentStudioPage() {
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-2xs">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Audit & Rollback Desk</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-amber-900">Audit & Rollback Desk</span>
               <h2 className="text-2xl font-bold font-serif text-gray-900 mt-0.5">{selectedRow?.display_name ?? "Select an observance"}</h2>
               <p className="text-xs text-gray-500 font-mono">Live Published Version: v{selectedRow?.publishedVersion?.version ?? "None"}</p>
             </div>
@@ -1482,7 +1482,7 @@ export default function ObservanceContentStudioPage() {
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-2xs">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-amber-600">Social Share Copy Studio</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-amber-900">Social Share Copy Studio</span>
               <h2 className="text-2xl font-bold font-serif text-gray-900 mt-0.5">Audience & Contextual Share Copy Studio</h2>
               <p className="text-xs text-gray-500">Curate privacy-safe share copies by audience (Neutral, Family, Sibling, Teacher, Community) and language.</p>
             </div>

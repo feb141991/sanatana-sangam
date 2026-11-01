@@ -525,12 +525,12 @@ export default function NotificationTemplatesAdminPage() {
                   {/* Available Placeholders / Clickable Chips */}
                   <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/60 space-y-2.5">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-                      <Sparkles size={14} className="text-amber-700" />
+                      <Sparkles size={14} className="text-amber-800" />
                       <span>Clickable Dynamic Placeholders (Click to insert):</span>
                     </div>
 
                     {activeTemplate.placeholders.length === 0 ? (
-                      <p className="text-xs text-amber-800/80">
+                      <p className="text-xs text-amber-950 font-medium">
                         No dynamic placeholders required for this routine.
                       </p>
                     ) : (
@@ -543,7 +543,7 @@ export default function NotificationTemplatesAdminPage() {
                             <button
                               type="button"
                               onClick={() => handleInsertPlaceholder(p.key, 'body')}
-                              className="font-mono font-bold text-amber-900 hover:text-amber-700 flex items-center gap-1"
+                              className="font-mono font-bold text-amber-900 hover:text-amber-950 flex items-center gap-1"
                               title={'Click to insert {{' + p.key + '}} into body'}
                             >
                               <code>{'{{' + p.key + '}}'}</code>

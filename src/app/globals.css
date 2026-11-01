@@ -226,6 +226,100 @@ html[data-practice-immersive='true'] body {
   --premium-glass: rgba(255, 255, 255, 0.75);
 }
 
+/* ─── Admin Portal High-Contrast Theme Layer ───────────────────────────── */
+/* Resolves illegibility of golden/amber text across all administrative surfaces.
+ * Overrides washed-out palette tokens with deep, high-contrast, WCAG AAA compliant tones
+ * against light cream (#FAF6EF) and pure white card backgrounds.
+ */
+.admin-portal,
+[data-admin-portal="true"],
+[data-admin-shell="true"] {
+  --divine-bg:            #FAF6EF;
+  /* Deep warm umber stone - 8.2:1 contrast against #FAF6EF (passes WCAG AAA) */
+  --brand-muted:          #574A3D;
+  /* Deep rich sienna amber - 7.4:1 contrast against #FAF6EF (passes WCAG AAA) */
+  --brand-primary:        #78350F;
+  --brand-primary-strong: #5B2406;
+  --brand-primary-soft:   rgba(120, 53, 15, 0.10);
+  --brand-secondary:      #574C3E;
+  --brand-accent:         #1C1917;
+  --brand-accent-soft:    rgba(87, 74, 61, 0.10);
+  --brand-earth:          #52361B;
+  --brand-ink:            #1C1917;
+  /* Premium gold remapped to deep golden bronze - 7.4:1 contrast */
+  --premium-gold:         #78350F;
+  --premium-gold-soft:    rgba(120, 53, 15, 0.10);
+  --premium-border:       rgba(120, 53, 15, 0.22);
+  --saffron:              #78350F;
+  --sacred-gold:          #78350F;
+  --text-cream:           #1C1917;
+  --text-dim:             #574A3D;
+  --text-muted-warm:      #574A3D;
+  --text-saffron-soft:    #574A3D;
+  --text-saffron-strong:  #78350F;
+}
+
+/* Ensure any amber/orange text utilities inside the admin portal meet WCAG AA contrast (>= 4.5:1) */
+.admin-portal .text-amber-600,
+[data-admin-portal="true"] .text-amber-600,
+[data-admin-shell="true"] .text-amber-600 {
+  color: #78350F; /* amber-900: contrast 7.4:1 */
+}
+
+.admin-portal .text-amber-700,
+[data-admin-portal="true"] .text-amber-700,
+[data-admin-shell="true"] .text-amber-700 {
+  color: #78350F; /* amber-900: contrast 7.4:1 */
+}
+
+.admin-portal .text-amber-500:not(pre *, code *),
+[data-admin-portal="true"] .text-amber-500:not(pre *, code *),
+[data-admin-shell="true"] .text-amber-500:not(pre *, code *) {
+  color: #92400E; /* amber-800: contrast 5.4:1 */
+}
+
+.admin-portal .text-amber-400:not(pre *, code *),
+[data-admin-portal="true"] .text-amber-400:not(pre *, code *),
+[data-admin-shell="true"] .text-amber-400:not(pre *, code *) {
+  color: #92400E; /* amber-800: contrast 5.4:1 */
+}
+
+.admin-portal .text-orange-500:not(pre *, code *),
+[data-admin-portal="true"] .text-orange-500:not(pre *, code *),
+[data-admin-shell="true"] .text-orange-500:not(pre *, code *) {
+  color: #9A3412; /* orange-800: contrast 5.5:1 */
+}
+
+.admin-portal .text-orange-600:not(pre *, code *),
+[data-admin-portal="true"] .text-orange-600:not(pre *, code *),
+[data-admin-shell="true"] .text-orange-600:not(pre *, code *) {
+  color: #7C2D12; /* orange-900: contrast 7.6:1 */
+}
+
+.admin-portal [class*="text-amber-800/"],
+[data-admin-portal="true"] [class*="text-amber-800/"],
+[data-admin-shell="true"] [class*="text-amber-800/"] {
+  color: #92400E;
+}
+
+.admin-portal [class*="text-amber-900/"],
+[data-admin-portal="true"] [class*="text-amber-900/"],
+[data-admin-shell="true"] [class*="text-amber-900/"] {
+  color: #78350F;
+}
+
+.admin-portal [class*="text-amber-950/"],
+[data-admin-portal="true"] [class*="text-amber-950/"],
+[data-admin-shell="true"] [class*="text-amber-950/"] {
+  color: #451A03;
+}
+
+.admin-portal [class*="text-amber-700/"],
+[data-admin-portal="true"] [class*="text-amber-700/"],
+[data-admin-shell="true"] [class*="text-amber-700/"] {
+  color: #78350F;
+}
+
 
 /* ── Premium Spiritual Animations & Motion Layer ───────────────────────── */
 @keyframes float-gentle {

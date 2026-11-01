@@ -97,7 +97,7 @@ export default function MandaliReview() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <Users size={14} className="text-[var(--brand-muted)]" />
-                          <span className={m.member_count <= 1 ? 'text-amber-600 font-bold' : ''}>
+                          <span className={m.member_count <= 1 ? 'text-amber-900 font-bold' : ''}>
                             {m.member_count} 
                             {m.member_count !== m.true_profile_count && (
                               <span className="text-rose-500 ml-1" title={`Profiles table has ${m.true_profile_count}`}>

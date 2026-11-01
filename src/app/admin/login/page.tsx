@@ -38,7 +38,8 @@ export default function AdminLoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4"
+      className="admin-portal min-h-screen flex items-center justify-center px-4"
+      data-admin-portal="true"
       style={{ background: 'linear-gradient(135deg, #fdf8f0 0%, #fef3e2 100%)' }}
     >
       <div className="w-full max-w-sm">
@@ -50,8 +51,8 @@ export default function AdminLoginPage() {
           >
             🕉️
           </div>
-          <h1 className="text-2xl font-bold text-[color:var(--text-cream)]">Admin Portal</h1>
-          <p className="text-sm text-[color:var(--text-dim)] mt-1">Shoonaya · Restricted access</p>
+          <h1 className="text-2xl font-bold text-stone-900">Admin Portal</h1>
+          <p className="text-sm text-stone-600 font-medium mt-1">Shoonaya · Restricted access</p>
         </div>
 
         {/* Card */}
@@ -61,7 +62,7 @@ export default function AdminLoginPage() {
         >
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
                 Username
               </label>
               <input
@@ -82,7 +83,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[color:var(--brand-muted)] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
                 Password
               </label>
               <input

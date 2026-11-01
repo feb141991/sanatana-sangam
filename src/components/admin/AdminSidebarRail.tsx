@@ -40,7 +40,7 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
             <span className="text-xs font-serif font-bold text-gray-900 tracking-wide block leading-none">
               Shoonaya Admin
             </span>
-            <span className="text-[9px] uppercase tracking-widest text-amber-800/70 font-bold block mt-0.5">
+            <span className="text-[9px] uppercase tracking-widest text-stone-700 font-extrabold block mt-0.5">
               Operations Console
             </span>
           </div>
@@ -52,7 +52,7 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
         {ADMIN_NAV_GROUPS.map((group) => (
           <div key={group.id} className="space-y-1">
             {group.id !== "overview" && (
-              <div className="px-3 pb-1 text-[10px] uppercase font-bold text-amber-950/60 tracking-wider">
+              <div className="px-3 pb-1 text-[10px] uppercase font-bold text-stone-700 tracking-wider">
                 {group.label}
               </div>
             )}

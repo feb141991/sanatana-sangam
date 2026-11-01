@@ -151,7 +151,7 @@ export default function ClientErrorMonitoringSection({ targetFingerprint }: { ta
         <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/5">
           <div className="flex items-center justify-between text-gray-500 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider">Last 1 Hour</span>
-            <Clock size={14} className="text-amber-500" />
+            <Clock size={14} className="text-amber-800" />
           </div>
           <div className="text-2xl font-bold font-serif theme-ink">{data?.total_1h ?? 0}</div>
           <p className="text-[10px] text-[var(--brand-muted)] mt-0.5">
@@ -292,14 +292,14 @@ export default function ClientErrorMonitoringSection({ targetFingerprint }: { ta
                       <span className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-700 text-[11px] font-bold font-mono">
                         {fp.error_name}
                       </span>
-                      <code className="text-[11px] font-mono text-amber-700 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/15">
+                      <code className="text-[11px] font-mono text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                         {fp.route}
                       </code>
                       <span className="px-2 py-0.5 rounded-full bg-black/5 text-gray-600 text-[10px] font-bold">
                         {fp.browser_family} / {fp.os_family}
                       </span>
                       {isStale && (
-                        <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
+                        <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold">
                           ⚠️ Stale Client (SHA Mismatch)
                         </span>
                       )}

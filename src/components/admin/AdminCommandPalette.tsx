@@ -173,7 +173,7 @@ export function AdminCommandPalette({ isOpen, onClose }: Props) {
 
                   <div className="flex items-center gap-1.5 text-gray-400 shrink-0 pl-2">
                     {isSelected && (
-                      <span className="flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/60 px-2 py-0.5 rounded">
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-amber-950 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
                         <span>Select</span>
                         <CornerDownLeft size={10} />
                       </span>

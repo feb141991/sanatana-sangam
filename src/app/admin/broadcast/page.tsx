@@ -66,7 +66,7 @@ export default function OperationalBroadcast() {
               <ArrowLeft size={20} />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-orange-500/10 text-orange-500">
+              <div className="p-2 rounded-xl bg-orange-500/10 text-orange-800">
                 <Megaphone size={24} />
               </div>
               <div>
@@ -75,7 +75,7 @@ export default function OperationalBroadcast() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-600 text-[10px] font-bold uppercase tracking-widest">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-900 text-[10px] font-bold uppercase tracking-widest">
             <Shield size={14} /> Authority Mode
           </div>
         </div>
@@ -142,11 +142,11 @@ export default function OperationalBroadcast() {
               </h3>
               <div className="bg-white rounded-3xl p-6 shadow-xl border border-black/5">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white">
+                  <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white">
                     <Megaphone size={20} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Shoonaya</p>
+                    <p className="text-[10px] font-bold text-orange-800 uppercase tracking-widest">Shoonaya</p>
                     <p className="text-xs font-bold theme-ink">{title || "Notification Title"}</p>
                   </div>
                 </div>
@@ -157,10 +157,10 @@ export default function OperationalBroadcast() {
             </div>
 
             <div className="glass-panel rounded-[2.5rem] border border-orange-500/10 p-6 bg-orange-500/5 space-y-3">
-              <h3 className="text-[10px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-2">
+              <h3 className="text-[10px] font-black text-orange-900 uppercase tracking-widest flex items-center gap-2">
                 <AlertTriangle size={14} /> Operational Guardrail
               </h3>
-              <p className="text-[10px] text-orange-800 leading-relaxed font-medium">
+              <p className="text-[10px] text-orange-950 leading-relaxed font-medium">
                 This is an operational broadcast system. It bypasses marketing campaign queues to deliver essential service announcements directly. For newsletters and festival outreach, use the Marketing Campaign Hub.
               </p>
             </div>
@@ -202,7 +202,7 @@ export default function OperationalBroadcast() {
               exit={{ scale: 0.95, opacity: 0 }}
               className="bg-white rounded-[2rem] p-8 max-w-md w-full space-y-6 shadow-2xl border border-black/10"
             >
-              <div className="flex items-center gap-3 text-orange-600">
+              <div className="flex items-center gap-3 text-orange-800">
                 <AlertTriangle size={24} />
                 <h3 className="text-lg font-bold">Confirm Operational Broadcast</h3>
               </div>

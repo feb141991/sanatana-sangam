@@ -170,7 +170,7 @@ export default function MandaliPromptsPage() {
               </p>
             </div>
           </div>
-          <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-xs font-bold">
+          <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-900 text-xs font-bold">
             {rows.filter((r) => r.active).length} active
           </span>
         </div>

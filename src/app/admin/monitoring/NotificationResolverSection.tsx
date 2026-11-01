@@ -171,8 +171,8 @@ export default function NotificationResolverSection() {
     }
     if (mode === "legacy") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-          <Clock size={10} className="text-amber-600" /> Legacy Pipeline
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+          <Clock size={10} className="text-amber-800" /> Legacy Pipeline
         </span>
       );
     }
@@ -205,7 +205,7 @@ export default function NotificationResolverSection() {
       <div className="bg-white p-5 rounded-2xl border border-black/5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-700">
+            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-800">
               <Layers size={18} />
             </div>
             <div>
@@ -222,8 +222,8 @@ export default function NotificationResolverSection() {
               Kill Switch: ACTIVE (Promotions Enabled)
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300">
-              <AlertTriangle size={13} className="text-amber-600" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-900 border border-amber-300">
+              <AlertTriangle size={13} className="text-amber-800" />
               Kill Switch: PAUSED (Default Safe Standby)
             </span>
           )}
@@ -288,9 +288,9 @@ export default function NotificationResolverSection() {
         <div className="bg-white p-4 rounded-2xl border border-black/5 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs text-gray-500">
             <span>24h Suppressions</span>
-            <AlertTriangle size={14} className="text-amber-500" />
+            <AlertTriangle size={14} className="text-amber-700" />
           </div>
-          <div className="text-2xl font-black text-amber-600">
+          <div className="text-2xl font-black text-amber-900">
             {stats?.last24h.suppressed ?? 0}
           </div>
           <div className="text-[11px] text-gray-400">
@@ -301,7 +301,7 @@ export default function NotificationResolverSection() {
         <div className="bg-white p-4 rounded-2xl border border-black/5 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs text-gray-500">
             <span>Retained Accepted</span>
-            <Sparkles size={14} className="text-amber-500" />
+            <Sparkles size={14} className="text-amber-700" />
           </div>
           <div className="text-2xl font-black text-gray-900">
             {stats?.queue.retainedAccepted ?? 0}

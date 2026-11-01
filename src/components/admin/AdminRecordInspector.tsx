@@ -276,7 +276,7 @@ export function AdminRecordInspector({
                   <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
                     <div className="p-3 bg-black/[0.02] border rounded-xl space-y-0.5">
                       <span className="text-[9px] uppercase font-bold text-gray-400 font-sans block">Severity</span>
-                      <span className={`font-bold uppercase ${record.severity === "critical" ? "text-rose-700" : "text-amber-700"}`}>
+                      <span className={`font-bold uppercase ${record.severity === "critical" ? "text-rose-700" : "text-amber-900"}`}>
                         {record.severity}
                       </span>
                     </div>
@@ -566,7 +566,7 @@ export function AdminRecordInspector({
                   {record.remediation && (
                     <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-xl space-y-1">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1">
-                        <Shield size={12} className="text-amber-700" />
+                        <Shield size={12} className="text-amber-900" />
                         Recommended Operator Action
                       </span>
                       <p className="text-xs text-amber-950 leading-relaxed">{record.remediation}</p>

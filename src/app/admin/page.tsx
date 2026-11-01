@@ -224,7 +224,7 @@ export default function AdminOverviewPage() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-black/10 bg-white hover:bg-black/5 text-xs font-bold text-gray-700 transition-colors shadow-2xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer"
               aria-label="Refresh operational telemetry"
             >
-              <RefreshCw size={13} className={isLoading ? "animate-spin text-amber-600" : ""} />
+              <RefreshCw size={13} className={isLoading ? "animate-spin text-amber-800" : ""} />
               <span>Refresh</span>
             </button>
 
@@ -234,7 +234,7 @@ export default function AdminOverviewPage() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-900/20 bg-amber-500/10 hover:bg-amber-500/15 text-xs font-bold text-amber-950 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50 cursor-pointer"
               aria-label="Flush Edge and CDN Cache"
             >
-              <Layers size={13} className="text-amber-800" />
+              <Layers size={13} className="text-amber-900" />
               <span>{isFlushing ? "Flushing..." : "Flush Cache"}</span>
             </button>
           </div>
@@ -283,7 +283,7 @@ export default function AdminOverviewPage() {
               <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
                 System Health
               </span>
-              <span className="text-[10px] font-bold text-amber-800 group-hover:underline flex items-center gap-0.5">
+              <span className="text-[10px] font-bold text-amber-900 group-hover:underline flex items-center gap-0.5">
                 Inspect Fleet <ArrowRight size={10} />
               </span>
             </div>
@@ -315,7 +315,7 @@ export default function AdminOverviewPage() {
               <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
                 Actionable Alerts
               </span>
-              <span className="text-[10px] font-bold text-amber-800 group-hover:underline flex items-center gap-0.5">
+              <span className="text-[10px] font-bold text-amber-900 group-hover:underline flex items-center gap-0.5">
                 Review Queue <ArrowRight size={10} />
               </span>
             </div>
@@ -341,12 +341,12 @@ export default function AdminOverviewPage() {
               <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
                 Deployment
               </span>
-              <span className="text-[10px] font-bold text-amber-800 group-hover:underline flex items-center gap-0.5">
+              <span className="text-[10px] font-bold text-amber-900 group-hover:underline flex items-center gap-0.5">
                 Live Ingest Stream <ArrowRight size={10} />
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <code className="text-xs font-mono font-bold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/50">
+              <code className="text-xs font-mono font-bold text-amber-950 bg-amber-100/70 px-1.5 py-0.5 rounded border border-amber-300/60">
                 Next.js 15.5 Standalone
               </code>
               <span className="text-xs text-emerald-700 font-bold">· Edge Active</span>
@@ -363,7 +363,7 @@ export default function AdminOverviewPage() {
             <h2 className="text-sm font-bold uppercase tracking-widest text-amber-950 font-serif">
               Needs Attention
             </h2>
-            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-900 text-[10px] font-bold">
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-950 text-[10px] font-bold">
               {sortedAlerts.length} Actionable
             </span>
           </div>
@@ -421,7 +421,7 @@ export default function AdminOverviewPage() {
                             : item.severity === "high"
                             ? "bg-rose-100 text-rose-800 border border-rose-200 font-bold"
                             : item.severity === "medium" || item.severity === "P2"
-                            ? "bg-amber-100 text-amber-800 border border-amber-200"
+                            ? "bg-amber-100 text-amber-900 border border-amber-300 font-bold"
                             : "bg-gray-100 text-gray-700 border border-gray-200"
                         }`}
                       >
@@ -465,7 +465,7 @@ export default function AdminOverviewPage() {
                     {/* Working Inspect Button */}
                     <button
                       onClick={() => handleInspectAlert(item)}
-                      className="px-3.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer shadow-2xs"
+                      className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-950 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer shadow-2xs"
                     >
                       Inspect
                     </button>
@@ -586,7 +586,7 @@ export default function AdminOverviewPage() {
             </h2>
             <Link
               href="/admin/calendar-governance?tab=activity"
-              className="text-xs text-amber-800 font-bold hover:underline flex items-center gap-1"
+              className="text-xs text-amber-900 font-bold hover:underline flex items-center gap-1"
             >
               <span>Audit Log</span>
               <ChevronRight size={13} />
@@ -680,7 +680,7 @@ function MetricCard({
         <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
           {label}
         </span>
-        <Icon size={16} className={highlight ? "text-amber-700" : "text-gray-400 group-hover:text-amber-800 transition-colors"} />
+        <Icon size={16} className={highlight ? "text-amber-800" : "text-gray-400 group-hover:text-amber-900 transition-colors"} />
       </div>
       <div className="text-lg font-serif font-bold text-gray-900 group-hover:text-amber-900 transition-colors mt-1">
         {value}
