@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="admin-portal min-h-screen" data-admin-portal="true">
+    <div className="admin-portal min-h-screen" data-admin-portal="true" data-theme="light">
       <AdminShell>{children}</AdminShell>
     </div>
   );

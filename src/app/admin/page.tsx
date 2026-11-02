@@ -280,7 +280,7 @@ export default function AdminOverviewPage() {
             className="p-4 rounded-2xl bg-white border border-black/5 hover:border-amber-500/40 hover:shadow-md transition-all space-y-1.5 group block cursor-pointer"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">
                 System Health
               </span>
               <span className="text-[10px] font-bold text-amber-900 group-hover:underline flex items-center gap-0.5">
@@ -303,7 +303,7 @@ export default function AdminOverviewPage() {
                 {systemStatus.label}
               </b>
             </div>
-            <p className="text-[11px] text-gray-500 leading-relaxed">{systemStatus.description}</p>
+            <p className="text-[11px] text-slate-600 font-medium leading-relaxed">{systemStatus.description}</p>
           </Link>
 
           {/* Tile 2: Actionable Alerts */}
@@ -312,7 +312,7 @@ export default function AdminOverviewPage() {
             className="p-4 rounded-2xl bg-white border border-black/5 hover:border-amber-500/40 hover:shadow-md transition-all space-y-1.5 group block cursor-pointer"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">
                 Actionable Alerts
               </span>
               <span className="text-[10px] font-bold text-amber-900 group-hover:underline flex items-center gap-0.5">
@@ -323,11 +323,11 @@ export default function AdminOverviewPage() {
               <b className="text-base font-serif font-bold text-gray-900 group-hover:text-amber-900 transition-colors">
                 {sortedAlerts.length}
               </b>
-              <span className="text-xs text-gray-500 font-medium">
+              <span className="text-xs text-slate-600 font-medium">
                 ({systemStatus.criticalCount} critical, {systemStatus.warningCount} medium)
               </span>
             </div>
-            <p className="text-[11px] text-gray-500 leading-relaxed">
+            <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
               {sortedAlerts.length === 0 ? "No open operational issues in queue" : "Platform issues requiring operator triage"}
             </p>
           </Link>
@@ -338,7 +338,7 @@ export default function AdminOverviewPage() {
             className="p-4 rounded-2xl bg-white border border-black/5 hover:border-amber-500/40 hover:shadow-md transition-all space-y-1.5 group block cursor-pointer"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">
                 Deployment
               </span>
               <span className="text-[10px] font-bold text-amber-900 group-hover:underline flex items-center gap-0.5">
@@ -351,7 +351,7 @@ export default function AdminOverviewPage() {
               </code>
               <span className="text-xs text-emerald-700 font-bold">· Edge Active</span>
             </div>
-            <p className="text-[11px] text-gray-500 leading-relaxed">Multi-region telemetry, RLS & DB pool verified</p>
+            <p className="text-[11px] text-slate-600 font-medium leading-relaxed">Multi-region telemetry, RLS & DB pool verified</p>
           </Link>
         </div>
       </section>
@@ -367,7 +367,7 @@ export default function AdminOverviewPage() {
               {sortedAlerts.length} Actionable
             </span>
           </div>
-          <span className="text-[10px] text-gray-400 font-mono">
+          <span className="text-[10px] text-slate-600 font-mono">
             Sorted by Urgency & Freshness (System & Infrastructure Only)
           </span>
         </div>
@@ -393,7 +393,7 @@ export default function AdminOverviewPage() {
           <div className="p-8 rounded-2xl bg-white border border-black/5 text-center space-y-1.5 shadow-2xs">
             <CheckCircle2 size={24} className="mx-auto text-emerald-600" />
             <b className="text-sm font-bold text-gray-800 block">Operational Queue Clear</b>
-            <p className="text-xs text-gray-500 max-w-md mx-auto">
+            <p className="text-xs text-slate-600 max-w-md mx-auto font-medium leading-relaxed">
               No active client crash spikes, authentication custody warnings, unreviewed biographies, or content reports currently require operator intervention.
             </p>
           </div>
@@ -430,7 +430,7 @@ export default function AdminOverviewPage() {
                       <span className="px-2 py-0.5 rounded bg-black/5 text-gray-700 text-[9px] font-mono uppercase">
                         {item.type.replace(/_/g, " ")}
                       </span>
-                      <span className="text-[10px] text-gray-400 font-mono">
+                      <span className="text-[10px] text-slate-500 font-mono">
                         {new Date(item.timestamp).toLocaleString()}
                       </span>
                     </div>
@@ -438,7 +438,7 @@ export default function AdminOverviewPage() {
                     <h3 className="text-xs sm:text-sm font-bold theme-ink select-text">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-gray-600 leading-relaxed select-text">
+                    <p className="text-xs text-slate-700 leading-relaxed select-text">
                       {item.desc}
                     </p>
                   </div>
@@ -473,7 +473,7 @@ export default function AdminOverviewPage() {
                     {/* External Link */}
                     <Link
                       href={item.href}
-                      className="p-1.5 rounded-xl text-gray-400 hover:text-gray-900 hover:bg-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                      className="p-1.5 rounded-xl text-slate-500 hover:text-gray-900 hover:bg-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                       title="Open dedicated workspace"
                       aria-label={`Open dedicated workspace for ${item.title}`}
                     >
@@ -496,7 +496,7 @@ export default function AdminOverviewPage() {
             <h2 className="text-sm font-bold uppercase tracking-widest text-amber-950 font-serif">
               Operational Snapshot
             </h2>
-            <span className="text-[10px] text-gray-400 font-medium">Interactive Workspaces</span>
+            <span className="text-[10px] text-slate-600 font-medium">Interactive Workspaces</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -607,7 +607,7 @@ export default function AdminOverviewPage() {
                 ))}
               </div>
             ) : activityLogs.length === 0 ? (
-              <div className="py-6 text-center text-xs text-gray-400">
+              <div className="py-6 text-center text-xs text-slate-500 font-medium">
                 No recent operator mutations logged.
               </div>
             ) : (
@@ -619,10 +619,10 @@ export default function AdminOverviewPage() {
                       <div className="font-bold text-gray-800 truncate">
                         {log.display_name} ({log.year})
                       </div>
-                      <div className="text-[11px] text-gray-500 font-mono">
+                      <div className="text-[11px] text-slate-600 font-mono font-medium">
                         {log.action.replace(/_/g, " ")}
                       </div>
-                      <div className="text-[10px] text-gray-400">
+                      <div className="text-[10px] text-slate-500">
                         {new Date(log.created_at).toLocaleString()}
                       </div>
                     </div>
@@ -677,15 +677,15 @@ function MetricCard({
       }`}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+        <span className="text-[10px] uppercase font-bold text-slate-600 tracking-wider">
           {label}
         </span>
-        <Icon size={16} className={highlight ? "text-amber-800" : "text-gray-400 group-hover:text-amber-900 transition-colors"} />
+        <Icon size={16} className={highlight ? "text-amber-800" : "text-slate-500 group-hover:text-amber-900 transition-colors"} />
       </div>
       <div className="text-lg font-serif font-bold text-gray-900 group-hover:text-amber-900 transition-colors mt-1">
         {value}
       </div>
-      <p className="text-[11px] text-gray-500 leading-relaxed mt-0.5">{sublabel}</p>
+      <p className="text-[11px] text-slate-600 font-medium leading-relaxed mt-0.5">{sublabel}</p>
     </Link>
   );
 }

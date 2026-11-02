@@ -43,6 +43,7 @@ export default function AdminShell({ children }: Props) {
       className="admin-portal min-h-screen bg-[var(--divine-bg,#FAF6EF)] font-outfit text-gray-900 flex"
       data-admin-portal="true"
       data-admin-shell="true"
+      data-theme="light"
     >
       {/* 1. Persistent Desktop Left Sidebar Rail */}
       <div className="hidden lg:block fixed inset-y-0 left-0 w-64 z-30">

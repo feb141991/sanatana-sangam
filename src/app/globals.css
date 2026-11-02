@@ -342,6 +342,31 @@ html[data-practice-immersive='true'] body {
   color: #78350F;
 }
 
+/* Ensure any gray/slate text utilities inside the admin portal meet WCAG AAA contrast (>= 7:1) */
+.admin-portal .text-gray-400:not(pre *, code *),
+[data-admin-portal="true"] .text-gray-400:not(pre *, code *),
+[data-admin-shell="true"] .text-gray-400:not(pre *, code *) {
+  color: #475569; /* slate-600: contrast 7.0:1 on white */
+}
+
+.admin-portal .text-gray-500:not(pre *, code *),
+[data-admin-portal="true"] .text-gray-500:not(pre *, code *),
+[data-admin-shell="true"] .text-gray-500:not(pre *, code *) {
+  color: #334155; /* slate-700: contrast 9.6:1 on white */
+}
+
+.admin-portal .text-gray-600:not(pre *, code *),
+[data-admin-portal="true"] .text-gray-600:not(pre *, code *),
+[data-admin-shell="true"] .text-gray-600:not(pre *, code *) {
+  color: #1E293B; /* slate-800: contrast 13.5:1 on white */
+}
+
+.admin-portal .text-muted:not(pre *, code *),
+[data-admin-portal="true"] .text-muted:not(pre *, code *),
+[data-admin-shell="true"] .text-muted:not(pre *, code *) {
+  color: #475569;
+}
+
 /* ─── Admin Card and Panel Surface Resets ────────────────────────────────────
  * Eliminates dark linear gradients, radial pseudo-elements, and black surfaces
  * across all administrative cards, ensuring pure white cards (#FFFFFF) on #FAF6EF cream.
@@ -3409,9 +3434,88 @@ body::after {
   color: inherit;
 }
 
-/* Force readable muted text on dark surfaces */
-[data-theme='dark'] .text-muted,
-[data-theme='dark'] .text-gray-500,
-[data-theme='dark'] .text-gray-600 {
+/* Force readable muted text on dark surfaces (strictly excluding light-themed admin surfaces) */
+[data-theme='dark'] .text-muted:not(.admin-portal, .admin-portal *, [data-admin-portal="true"], [data-admin-portal="true"] *, [data-admin-shell="true"], [data-admin-shell="true"] *),
+[data-theme='dark'] .text-gray-500:not(.admin-portal, .admin-portal *, [data-admin-portal="true"], [data-admin-portal="true"] *, [data-admin-shell="true"], [data-admin-shell="true"] *),
+[data-theme='dark'] .text-gray-600:not(.admin-portal, .admin-portal *, [data-admin-portal="true"], [data-admin-portal="true"] *, [data-admin-shell="true"], [data-admin-shell="true"] *) {
   color: rgba(240, 220, 180, 0.6) !important;
+}
+
+/* ─── Admin Portal High-Contrast Text Overrides ──────────────────────────────
+ * Guarantees crisp, high-contrast, WCAG AAA compliant text across all admin surfaces,
+ * preventing dark-theme bleeding and washed-out text on white/cream backgrounds.
+ */
+.admin-portal .text-gray-400:not(pre *, code *),
+[data-admin-portal="true"] .text-gray-400:not(pre *, code *),
+[data-admin-shell="true"] .text-gray-400:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-gray-400:not(pre *, code *),
+[data-theme='dark'] [data-admin-portal="true"] .text-gray-400:not(pre *, code *),
+[data-theme='dark'] [data-admin-shell="true"] .text-gray-400:not(pre *, code *) {
+  color: #475569 !important; /* slate-600: contrast 7.0:1 on white (WCAG AAA) */
+}
+
+.admin-portal .text-gray-500:not(pre *, code *),
+[data-admin-portal="true"] .text-gray-500:not(pre *, code *),
+[data-admin-shell="true"] .text-gray-500:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-gray-500:not(pre *, code *),
+[data-theme='dark'] [data-admin-portal="true"] .text-gray-500:not(pre *, code *),
+[data-theme='dark'] [data-admin-shell="true"] .text-gray-500:not(pre *, code *) {
+  color: #334155 !important; /* slate-700: contrast 9.6:1 on white (WCAG AAA) */
+}
+
+.admin-portal .text-gray-600:not(pre *, code *),
+[data-admin-portal="true"] .text-gray-600:not(pre *, code *),
+[data-admin-shell="true"] .text-gray-600:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-gray-600:not(pre *, code *),
+[data-theme='dark'] [data-admin-portal="true"] .text-gray-600:not(pre *, code *),
+[data-theme='dark'] [data-admin-shell="true"] .text-gray-600:not(pre *, code *) {
+  color: #1E293B !important; /* slate-800: contrast 13.5:1 on white (WCAG AAA) */
+}
+
+.admin-portal .text-gray-700:not(pre *, code *),
+[data-admin-portal="true"] .text-gray-700:not(pre *, code *),
+[data-admin-shell="true"] .text-gray-700:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-gray-700:not(pre *, code *),
+[data-theme='dark'] [data-admin-portal="true"] .text-gray-700:not(pre *, code *),
+[data-theme='dark'] [data-admin-shell="true"] .text-gray-700:not(pre *, code *) {
+  color: #0F172A !important; /* slate-900: contrast 16.0:1 on white (WCAG AAA) */
+}
+
+.admin-portal .text-slate-400:not(pre *, code *),
+.admin-portal .text-zinc-400:not(pre *, code *),
+.admin-portal .text-neutral-400:not(pre *, code *),
+[data-admin-portal="true"] .text-slate-400:not(pre *, code *),
+[data-admin-portal="true"] .text-zinc-400:not(pre *, code *),
+[data-admin-portal="true"] .text-neutral-400:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-slate-400:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-zinc-400:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-neutral-400:not(pre *, code *) {
+  color: #475569 !important; /* slate-600 */
+}
+
+.admin-portal .text-slate-500:not(pre *, code *),
+.admin-portal .text-zinc-500:not(pre *, code *),
+.admin-portal .text-neutral-500:not(pre *, code *),
+[data-admin-portal="true"] .text-slate-500:not(pre *, code *),
+[data-admin-portal="true"] .text-zinc-500:not(pre *, code *),
+[data-admin-portal="true"] .text-neutral-500:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-slate-500:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-zinc-500:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-neutral-500:not(pre *, code *) {
+  color: #334155 !important; /* slate-700 */
+}
+
+.admin-portal .text-muted:not(pre *, code *),
+[data-admin-portal="true"] .text-muted:not(pre *, code *),
+[data-admin-shell="true"] .text-muted:not(pre *, code *),
+.admin-portal .text-muted-foreground:not(pre *, code *),
+[data-admin-portal="true"] .text-muted-foreground:not(pre *, code *),
+[data-admin-shell="true"] .text-muted-foreground:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-muted:not(pre *, code *),
+[data-theme='dark'] [data-admin-portal="true"] .text-muted:not(pre *, code *),
+[data-theme='dark'] [data-admin-shell="true"] .text-muted:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-muted-foreground:not(pre *, code *),
+[data-theme='dark'] [data-admin-portal="true"] .text-muted-foreground:not(pre *, code *),
+[data-theme='dark'] [data-admin-shell="true"] .text-muted-foreground:not(pre *, code *) {
+  color: #475569 !important; /* contrast 7.0:1 on white (WCAG AAA) */
 }
