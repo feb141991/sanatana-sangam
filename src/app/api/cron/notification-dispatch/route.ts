@@ -483,6 +483,7 @@ export async function GET(request: Request) {
     }
 
     // ── 4. Idempotent In-App Bell Record Insertion BEFORE Push Delivery ─────────
+    const notifIdsByUserAndKey = new Map<string, string>();
     if (eligibleRows.length > 0) {
       const bellNotifications = eligibleRows.map((row) => {
         const meta = (row.metadata ?? {}) as Record<string, any>;
@@ -516,6 +517,28 @@ export async function GET(request: Request) {
         await supabase
           .from("notifications")
           .upsert(batch, { onConflict: "user_id,notification_key", ignoreDuplicates: true });
+      }
+
+      // Resolve the actual notifications.id values for delivery auditing (avoids foreign key mismatch with notification_schedule.id)
+      const allKeys = eligibleRows.map((r) => r.notification_key).filter(Boolean);
+      const allUserIds = [...new Set(eligibleRows.map((r) => r.user_id))];
+      if (allKeys.length > 0 && allUserIds.length > 0) {
+        for (let i = 0; i < allKeys.length; i += 100) {
+          const keyChunk = allKeys.slice(i, i + 100);
+          const { data: notifRows } = await supabase
+            .from("notifications")
+            .select("id, user_id, notification_key")
+            .in("user_id", allUserIds)
+            .in("notification_key", keyChunk);
+
+          if (notifRows) {
+            for (const n of notifRows) {
+              if (n.notification_key) {
+                notifIdsByUserAndKey.set(`${n.user_id}:${n.notification_key}`, n.id);
+              }
+            }
+          }
+        }
       }
     }
 
@@ -561,7 +584,10 @@ export async function GET(request: Request) {
       const notificationIdsByUserId: Record<string, string> = {};
       for (const row of rows) {
         notificationKeysByUserId[row.user_id] = row.notification_key;
-        notificationIdsByUserId[row.user_id] = row.id;
+        const bellNotifId = notifIdsByUserAndKey.get(`${row.user_id}:${row.notification_key}`);
+        if (bellNotifId) {
+          notificationIdsByUserId[row.user_id] = bellNotifId;
+        }
       }
 
       try {
