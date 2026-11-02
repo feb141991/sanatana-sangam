@@ -149,6 +149,13 @@ export default function RootLayout({
 }catch(e){}`,
           }}
         />
+
+        {/* Machine-readable discovery & Agent-Readiness links */}
+        <link rel="describedby" href="/llms.txt" />
+        <link rel="alternate" type="text/markdown" href="/llms.txt" />
+        <link rel="service-desc" type="application/json" href="/.well-known/mcp/server-card.json" />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="/assets/js/webmcp.js" defer />
       </head>
       <body className="zenith-120fps">
         <AppProviders>

@@ -32,10 +32,13 @@ The festival dates are calculated using an astronomy-backed rule engine. Dates a
 - [Facebook](https://www.facebook.com/profile.php?id=61590436598797)
 - [Contact Email](mailto:info@shoonaya.com)
 
-## Key URLs
+## Key URLs & Agent Endpoints
 
 - [Home](https://www.shoonaya.com/)
 - [Full public AI corpus](https://www.shoonaya.com/llms-full.txt)
+- [MCP Server Card](https://www.shoonaya.com/.well-known/mcp/server-card.json): SEP-1649 / SEP-2127 machine-readable server card and tool schema
+- [MCP HTTP Endpoint](https://www.shoonaya.com/api/mcp): Live JSON-RPC tool-calling endpoint for external AI agents
+- [WebMCP In-Browser Module](https://www.shoonaya.com/assets/js/webmcp.js): W3C Web Machine Learning CG in-browser agent tools registered via navigator.modelContext
 - [Daily Panchang](https://www.shoonaya.com/panchang)
 - [Vrat Pages](https://www.shoonaya.com/vrat/ekadashi)
 - [Stotram Library](https://www.shoonaya.com/bhakti/stotram/vishnu-sahasranama)

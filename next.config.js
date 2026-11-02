@@ -71,6 +71,45 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=3600' },
         ],
       },
+      // ── Agent-Readiness & Machine Context Directives ────────────────────
+      {
+        source: '/.well-known/mcp/server-card.json',
+        headers: [
+          { key: 'Content-Type', value: 'application/json; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ],
+      },
+      {
+        source: '/.well-known/mcp.json',
+        headers: [
+          { key: 'Content-Type', value: 'application/json; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+        ],
+      },
+      {
+        source: '/llms.txt',
+        headers: [
+          { key: 'Content-Type', value: 'text/markdown; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' },
+          { key: 'Vary', value: 'Accept' },
+        ],
+      },
+      {
+        source: '/llms-full.txt',
+        headers: [
+          { key: 'Content-Type', value: 'text/markdown; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' },
+          { key: 'Vary', value: 'Accept' },
+        ],
+      },
+      {
+        source: '/robots.txt',
+        headers: [
+          { key: 'Content-Signal', value: 'search=yes, ai-train=no' },
+        ],
+      },
       // ── PWA static assets — long cache ───────────────────────────────────
       {
         source: '/icons/(.*)',
@@ -89,10 +128,22 @@ const nextConfig = {
         source: '/sw.js',
         headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }],
       },
-      // ── All pages — security headers ──────────────────────────────────────
+      // ── All pages — security & discovery headers ─────────────────────────
       {
         source: '/(.*)',
         headers: [
+          {
+            key: 'Link',
+            value: '</llms.txt>; rel="describedby", </llms.txt>; rel="alternate"; type="text/markdown", </.well-known/mcp/server-card.json>; rel="service-desc"',
+          },
+          {
+            key: 'Vary',
+            value: 'Accept',
+          },
+          {
+            key: 'Content-Signal',
+            value: 'search=yes, ai-train=no',
+          },
           {
             key: 'Content-Security-Policy',
             value: [

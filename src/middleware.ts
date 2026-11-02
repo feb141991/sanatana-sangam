@@ -51,6 +51,8 @@ const ALWAYS_PUBLIC_EXACT = new Set([
 ]);
 
 const ALWAYS_PUBLIC_PREFIX = [
+  "/.well-known/",
+  "/llms",
   "/api/",
   "/admin",
   "/_next/",
@@ -235,6 +237,22 @@ async function middlewareHandler(req: NextRequest, requestId: string) {
 
   if (isOAuthExchangeRequest) {
     return res;
+  }
+
+  // ── Step 0: Content negotiation for AI agents (Accept: text/markdown) ────
+  const acceptHeader = req.headers.get("accept") || "";
+  if (
+    (pathname === "/" || pathname === "/index.html") &&
+    (acceptHeader.includes("text/markdown") || acceptHeader.includes("text/x-markdown"))
+  ) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/llms.txt";
+    const markdownRes = NextResponse.rewrite(url, {
+      request: { headers: forwardedHeaders },
+    });
+    markdownRes.headers.set("Content-Type", "text/markdown; charset=utf-8");
+    markdownRes.headers.set("Vary", "Accept");
+    return markdownRes;
   }
 
   // ── Step 1: ?preview=KEY → set cookie + redirect to clean URL ─────────────

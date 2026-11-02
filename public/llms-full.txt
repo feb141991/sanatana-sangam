@@ -32,10 +32,13 @@ The festival dates are calculated using an astronomy-backed rule engine. Dates a
 - [Facebook](https://www.facebook.com/profile.php?id=61590436598797)
 - [Contact Email](mailto:info@shoonaya.com)
 
-## Key URLs
+## Key URLs & Agent Endpoints
 
 - [Home](https://www.shoonaya.com/)
 - [Full public AI corpus](https://www.shoonaya.com/llms-full.txt)
+- [MCP Server Card](https://www.shoonaya.com/.well-known/mcp/server-card.json): SEP-1649 / SEP-2127 machine-readable server card and tool schema
+- [MCP HTTP Endpoint](https://www.shoonaya.com/api/mcp): Live JSON-RPC tool-calling endpoint for external AI agents
+- [WebMCP In-Browser Module](https://www.shoonaya.com/assets/js/webmcp.js): W3C Web Machine Learning CG in-browser agent tools registered via navigator.modelContext
 - [Daily Panchang](https://www.shoonaya.com/panchang)
 - [Vrat Pages](https://www.shoonaya.com/vrat/ekadashi)
 - [Stotram Library](https://www.shoonaya.com/bhakti/stotram/vishnu-sahasranama)
@@ -1730,3 +1733,707 @@ Fast, pray to Lord Narayana, and seek forgiveness for transgressions. Break the 
 - Tulsi leaves
 - Yellow flowers
 - Incense
+
+# Published festival guides
+
+## Nirjala Ekadashi (Pandava Nirjala / Bhimseni)
+
+Canonical URL: https://www.shoonaya.com/festival/nirjala-ekadashi
+
+The crown of all 24 Ekadashis observed without even a drop of water, bestowing the fruit of all year’s fasts
+
+### Significance
+Nirjala Ekadashi falls on Jyeshtha Shukla Ekadashi during peak summer heat. Known as Bhimseni Ekadashi, it derives from the Mahabharata: the mighty Pandava prince Bhima possessed an insatiable digestive fire (Vrika-udara) and could not endure fasting twice every month. Sage Vyasa instructed Bhima that by observing this single Ekadashi in Jyeshtha with absolute waterless discipline (Nirjala: no food and not even a drop of water from sunrise to next morning’s sunrise), he would attain the complete spiritual merit of all twenty-four annual Ekadashis combined.
+
+### Rituals
+- Complete abstinence from food and water for 24 hours (from sunrise on Ekadashi to sunrise on Dwadashi)
+- Early dawn bath followed by ceremonial worship of Lord Vishnu with Tulsi leaves and Panchamrita
+- Recitation of Vishnu Sahasranama and listening to the Nirjala Ekadashi Vrata Katha
+- Generous Dana of water pitchers (Kumbha / Matka), melons, fans, and umbrella to relieve summer heat for others
+
+### Recommended observances
+- Endure the summer heat with mental serenity, absorbed in contemplation of Hari
+- Donate cool drinking water pots, fans, and food to laborers, animals, and the thirsty
+- Break the fast on Dwadashi after giving charity and offering water to Lord Vishnu
+
+### Things to avoid
+- Do not drink water or consume any grain, fruit, or liquid until Dwadashi sunrise
+- Avoid anger, physical exertion, vanity, and complaining of thirst
+
+### Puja items
+- Clay water pitchers (Kalash / Matka) filled with sweet fragrant water for Dana
+- Hand-held bamboo fans, umbrellas, yellow cloths, and seasonal musk-melons (Kharbuja)
+- Tulsi leaves, yellow chandan, unbroken yellow rice, and ghee lamp
+
+## Vaikunta Ekadashi (Mukkoti / Swarga Vathil)
+
+Canonical URL: https://www.shoonaya.com/festival/vaikunta-ekadashi
+
+The opening of the celestial northern gates of Vaikuntha granting liberation from the cycle of rebirth
+
+### Significance
+Observed on Margashirsha Shukla Ekadashi (corresponding to Dhanur Masa in solar calendars), Vaikunta Ekadashi is celebrated with sublime grandeur across South Indian temples, notably Sri Ranganathaswamy Temple in Srirangam and Tirumala Venkateswara Temple. According to the Padma Purana, on this day the Vaikuntha Dvaram (the Gateway to Lord Vishnu’s celestial abode) remains open. Walking through the sanctified northern gate (Swarga Vathil / Paramapada Vasal) in temple enclosures is believed to dissolve lifetimes of karma and bestow Moksha.
+
+### Rituals
+- Passing through the Vaikuntha Dvaram (Paramapada Vasal) at pre-dawn in temple processions
+- Strict fasting with complete abstinence from grains and rice (Akshata / Anna)
+- All-night vigil (Jagaranam) reciting Sri Vishnu Sahasranama and Thiruppavai verses
+- Special Alankaram (ceremonial adornment) of the deity with diamonds and pearls
+
+### Recommended observances
+- Meditate upon the timeless lotus feet of Lord Narayana in Vaikuntha
+- Read Chapter 12 (Bhakti Yoga) of the Srimad Bhagavad Gita
+- Sing Alvar hymns (Divya Prabandham) with devotional fervor
+
+### Things to avoid
+- Never consume rice on this day; in Vaishnava tradition, rice harbors papal sins on Ekadashi
+- Avoid sleep during daylight hours on Ekadashi day
+
+### Puja items
+- Fresh green Tulsi garlands, fragrant yellow lotus and jasmine flowers
+- Panchamrita, tender coconut water, and pure butter for Naivedya
+- Silver lamps with pure cow ghee and camphor for Harathi
+
+## Devshayani Ekadashi (Hari Shayani / Ashadhi)
+
+Canonical URL: https://www.shoonaya.com/festival/devshayani-ekadashi
+
+Lord Vishnu enters the four-month yogic slumber on the cosmic serpent Shesha, commencing Chaturmasa
+
+### Significance
+Falling on Ashadha Shukla Ekadashi, Devshayani Ekadashi marks the moment when Lord Vishnu enters His four-month cosmic yogic slumber (Yoga Nidra) upon the coils of the serpent Ananta Shesha in the Kshirasagara (Ocean of Milk). This initiates the sacred period of Chaturmasa (four rainy months) during which auspicious rites like weddings and house-warmings are paused, and sadhaks turn inward for intense tapas, fasting, and scriptural study. In Maharashtra, it marks the grand culmination of the Pandharpur Wari pilgrimage where millions of Warkaris reach Lord Vitthal.
+
+### Rituals
+- Devshayan ceremony: Formally laying Lord Vishnu’s golden/brass icon to rest on a cushioned bed (Shayya) with white silk sheets
+- Sankalpa of Chaturmasa vows: Renouncing certain food groups (leafy vegetables, curd, milk, or lentils) for four months
+- Vitthal darshan and singing abhangas by Sant Tukaram and Sant Dnyaneshwar
+- Observing full-day fast and lighting ghee deepaks
+
+### Recommended observances
+- Formulate personal spiritual discipline vows for the four months of Chaturmasa
+- Sing Lord Vitthal’s name: "Ram Krishna Hari" to cultivate inner peace
+
+### Things to avoid
+- Do not initiate new marriages, grihapravesha, or worldly secular celebrations during Chaturmasa
+- Avoid heavy dining, gossip, and sleeping on opulent bedding during the fast
+
+### Puja items
+- Miniature bed with white silk mattress and pillow for Lord Vishnu
+- Yellow Pitambari cloth, Tulsi leaves, lotus flowers, and pure sandalwood paste
+- Ghee lamp, camphor, and dry fruit Panchamrita bhog
+
+## Devutthana Ekadashi (Prabodhini / Dev Uthani)
+
+Canonical URL: https://www.shoonaya.com/festival/devutthana-ekadashi
+
+Lord Vishnu awakens from His four-month yogic slumber, reopening auspicious wedding rites across the land
+
+### Significance
+Kartika Shukla Ekadashi is celebrated as Devutthana (Prabodhini) Ekadashi, marking the joyful awakening of Lord Vishnu from His four-month Chaturmasa sleep. The divine awakening is celebrated by ringing bells, conches, and singing awakening hymns (Prabodhini stotras). This day marks the joyous ceremonial wedding of sacred Tulsi (Vrinda) with Lord Shaligrama (Vishnu), which formally concludes Chaturmasa and reopens the season for Hindu weddings (lagna muhurats) and auspicious samskaras across the subcontinent.
+
+### Rituals
+- Awakening ceremony: Drawing footprints of Lord Vishnu with rice paste and ringing bells to wake the Lord at dusk
+- Tulsi Vivah: Constructing a sugarcane canopy (Mandap) over the Tulsi plant and performing full wedding rites with Shaligrama
+- Offering freshly harvested seasonal crops: sugarcane, water chestnuts (Singhara), sweet potatoes, and green ber fruits
+- Lighting rows of oil lamps around the courtyard and Tulsi altar
+
+### Recommended observances
+- Perform Tulsi Vivah in the home courtyard with devotion and Vedic hymns
+- Conclude the four months of Chaturmasa dietary restrictions with thanksgiving to Hari
+
+### Things to avoid
+- Do not pluck Tulsi leaves on this sacred day without bath or after sunset
+- Avoid disrespecting the Tulsi plant or allowing domestic footwear near its altar
+
+### Puja items
+- Shaligrama shila or Krishna murti, potted sacred Tulsi plant, red wedding chunari
+- Four whole sugarcane stalks with leaves to erect the wedding canopy (Mandap)
+- Singhara (water chestnuts), sweet potatoes, amla, ber fruits, raw turmeric, and yellow flowers
+
+## Kamada Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/kamada-ekadashi
+
+The wish-fulfilling Ekadashi of spring that liberates the seeker from curses and deep-seated desires
+
+### Significance
+Kamada Ekadashi falls on Chaitra Shukla Ekadashi, the first Ekadashi of the Hindu New Year (Vikram Samvat). According to the Varaha Purana, King Dilipa was narrated the legend of the Gandharva singer Lalit, who was cursed by King Pundarika into a demonic cannibal form (Rakshasa) due to inattention in singing. Lalit’s devoted wife Lalita prayed to Sage Shringi, who advised her to observe Kamada Ekadashi with pure intent and transfer its merit to her husband. Upon doing so, Lalit was instantly freed from the curse, reassuming his radiant celestial form.
+
+### Rituals
+- Dawn worship of Lord Vishnu (Vasudeva) with sweet milk, tulsi leaves, and yellow sandalwood
+- Recitation of the Kamada Ekadashi Vrata Katha from Varaha Purana
+- Fasting throughout the day, refraining from grains, beans, and heavy dining
+- Offering yellow flowers, lighting ghee deepaks, and singing devotional bhajans in evening
+
+### Recommended observances
+- Surrender worldly obsessions and dedicate the fast to the welfare of family and loved ones
+- Observe generous charity towards the hungry, poor, and monks on Dwadashi morning
+
+### Things to avoid
+- Do not consume rice, grains, pulses, or onion-garlic on this holy day
+- Avoid anger, harsh words, deceit, and lustful thoughts
+
+### Puja items
+- Fresh green Tulsi leaves, yellow marigold garlands, yellow silk cloth (Pitambari)
+- Ghee lamp, pure camphor, sandalwood paste, and unbroken rice (Akshata)
+- Seasonal fresh fruits (papaya, bananas) and dry fruits for Naivedya
+
+## Amalaki Ekadashi (Amla Ekadashi)
+
+Canonical URL: https://www.shoonaya.com/festival/amalaki-ekadashi
+
+Worship of the sacred Amla (Indian gooseberry) tree where Lord Vishnu and Lakshmi eternally abide
+
+### Significance
+Amalaki Ekadashi falls on Phalguna Shukla Ekadashi, nestled during the joyous spring Holi festival. The Brahmanda Purana states that the sacred Amalaki (Indian gooseberry / Emblica officinalis) tree sprang from the divine drops of tears shed by Lord Brahma in ecstatic meditation on Lord Vishnu. Lord Vishnu proclaimed that He resides perpetually within the Amla tree alongside Mata Lakshmi. Worshiping the Amalaki tree on this day destroys heaps of sins and grants vitality, longevity, and liberation.
+
+### Rituals
+- Visiting a living Amalaki (Amla) tree at dawn, sanctifying its base with water and cow milk
+- Placing a pitcher (Kalash) at the tree base and worshiping Lord Parashurama and Vishnu with sandalwood and incense
+- Circumambulating the Amla tree seven or twenty-one times while wrapping sacred thread
+- Offering amla fruits, sweets, and donating amla to Brahmins and the elderly
+
+### Recommended observances
+- Consume Amla fruit or its juice during the fast for physical and spiritual rejuvenation
+- Chant the names of Lord Vishnu and Mata Lakshmi with pure devotion
+
+### Things to avoid
+- Do not cut, damage, or disrespect the Amalaki tree
+- Refrain from consuming grains, beans, and non-satvik foods
+
+### Puja items
+- Fresh green Amla fruits (Indian gooseberry), raw cow milk, Ganga water
+- Yellow sandalwood paste, red vermilion (Kumkum), yellow cloth, and Kalawa thread
+- Ghee lamp, incense, dry fruits, and Panchamrita
+
+## Papmochani Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/papmochani-ekadashi
+
+The purifier that frees the repentant soul from the heaviest bonds of past sins and guilt
+
+### Significance
+Papmochani Ekadashi falls on Chaitra Krishna Ekadashi, the final Ekadashi of the lunar year before the New Year Pratipada. As its name signifies (Papa = sin, Mochani = liberator), this sacred fast cleanses past transgressions. In the Bhavishya Purana, Sage Medhavi, son of Cyavana, was seduced by the celestial nymph Manjughosha. When the sage realized he had lost years of austerity to sensory delusion, his father instructed both Medhavi and Manjughosha to observe Papmochani Ekadashi. Through this single observance, both were freed from sin and restored to spiritual radiance.
+
+### Rituals
+- Pre-dawn holy bath with prayer of repentance and humility
+- Puja of Lord Vishnu with yellow flowers, Tulsi leaves, and sweet panchamrita
+- Recitation of the Papmochani Vrata Katha and singing the 1000 names of Vishnu
+- Evening aarti and distributing fruits and sweets to the needy
+
+### Recommended observances
+- Acknowledge past mistakes sincerely in prayer and resolve never to repeat them
+- Practice unconditional charity, humility, and forgiveness towards others
+
+### Things to avoid
+- Do not harbor guilt or hopelessness; trust in divine forgiveness
+- Refrain from consuming grains, pulses, meat, alcohol, and intoxicating substances
+
+### Puja items
+- Tulsi leaves, yellow flowers, yellow sandalwood paste, and ghee lamp
+- Raw milk, curd, honey, sugar, and ghee for Panchamrita
+- Fresh seasonal fruits and white sweets for Naivedya
+
+## Apara Ekadashi (Achala Ekadashi)
+
+Canonical URL: https://www.shoonaya.com/festival/apara-ekadashi
+
+The bestower of boundless (apara) merit, wiping away heavy karmas and granting prosperity
+
+### Significance
+Apara Ekadashi falls on Jyeshtha Krishna Ekadashi. In the Brahma Purana, Lord Krishna explains to King Yudhishthira that the word "Apara" signifies "limitless" (A-para: having no shore or boundary). Observing this Ekadashi bestows limitless spiritual merit, equivalent to bathing in the sacred Triveni Sangam at Prayagraj during the Kumbha Mela, or giving charity of thousands of cows at Kurukshetra during a solar eclipse. In northern and eastern regions, it is also celebrated in honor of Goddess Bhadrakali.
+
+### Rituals
+- Morning bath and formal vow (Sankalpa) of fasting before the icon of Lord Trivikrama / Vishnu
+- Offering yellow flowers, Tulsi leaves, sandalwood paste, and seasonal fruits to the deity
+- Recitation of the Apara Ekadashi Vrata Mahatmya and Vishnu Sahasranama
+- Evening Deepdan and breaking the fast on Dwadashi after feeding ascetics or the poor
+
+### Recommended observances
+- Spend the day in peaceful contemplation, charity, and study of sacred scriptures
+- Give gifts of food, clean drinking water, and footwear to those walking under summer sun
+
+### Things to avoid
+- Never speak falsehood, give false witness, or deceive anyone
+- Avoid grains, lentils, meat, alcohol, and daytime slumber
+
+### Puja items
+- Tulsi leaves, yellow cloth, yellow flowers, and sandalwood paste
+- Ghee lamp, pure camphor, and water in a brass pitcher
+- Fresh mangoes, bananas, and dry fruits for Naivedya
+
+## Kamika Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/kamika-ekadashi
+
+The auspicious monsoon Ekadashi of Shravana erasing pitru dosha and granting liberation
+
+### Significance
+Kamika Ekadashi falls on Shravana Krishna Ekadashi, the first Ekadashi during the holy monsoon month of Shravana. In the Brahmavaivarta Purana, Lord Brahma explains to Sage Narada that worshiping Lord Vishnu on Kamika Ekadashi with fresh Tulsi leaves yields merit far surpassing that of bathing in the Ganges at Kashi or visiting the Kedarnath shrine. Worshipping the Lord with a single Tulsi sprig on this day frees the seeker from the deepest karmic stains and purifies seven generations of ancestors.
+
+### Rituals
+- Dawn bath followed by worship of Lord Vishnu (Shridhara) with freshly plucked Tulsi leaves and Manjaris
+- Recitation of the Kamika Ekadashi Vrata Katha and singing Vishnu Sahasranama
+- Fasting with fruit diet, keeping the mind anchored in the divine name
+- Evening Deepdan at temples and beneath the Tulsi plant
+
+### Recommended observances
+- Offer fresh green Tulsi leaves and yellow flowers to Lord Vishnu with love
+- Donate food, clothing, and umbrellasto priests and pilgrims during monsoon
+
+### Things to avoid
+- Do not pluck Tulsi leaves on the Ekadashi day itself; gather them on Dashami evening
+- Avoid grains, lentils, onion, garlic, and anger during the fast
+
+### Puja items
+- Fresh Tulsi leaves and Tulsi Manjaris (flower spikes), yellow flowers, sandalwood paste
+- Ghee lamp, camphor, seasonal fruits (mangoes, pomegranates)
+- Panchamrita and pure cow milk for the sacred bath
+
+## Putrada Ekadashi (Shravana)
+
+Canonical URL: https://www.shoonaya.com/festival/shravana-putrada-ekadashi
+
+Bestower of worthy progeny, family lineage continuity, and purification of domestic karma
+
+### Significance
+Shravana Putrada Ekadashi (also celebrated as Pavitra Ekadashi) falls on Shravana Shukla Ekadashi. In the Bhavishya Purana, King Mahijit of Mahishmati was childless despite being righteous. Sage Lomasha revealed that the king had denied a thirsty cow drinking water in a past life, which blocked his progeny. The sage instructed the king and queen to observe this Shravana Shukla Ekadashi and donate its merit for the birth of a child. By observing this fast, the queen conceived and bore a heroic son who continued the lineage.
+
+### Rituals
+- Child-seeking couples observe joint fasting with prayer to Lord Krishna / Vishnu as Bal Gopal
+- Ceremonial bathing of Laddu Gopal icon with milk, curd, honey, and offering fresh butter
+- Reading of the Putrada Ekadashi Katha and chanting the Santana Gopala Mantra
+- Dwadashi Parana following charity of fruits, clothes, and sweets to young children
+
+### Recommended observances
+- Pray for the moral character, wisdom, and health of children
+- Treat young children with loving kindness and generous gifts
+
+### Things to avoid
+- Avoid impatience, harsh discipline, or frustration towards children
+- Refrain from consuming grains, beans, and non-vegetarian food
+
+### Puja items
+- Laddu Gopal / Vishnu idol, small brass jhula (cradle), yellow silk clothing
+- Fresh butter (Makhan), rock sugar (Mishri), Tulsi leaves, and yellow flowers
+- Panchamrita, pure cow ghee lamp, and fragrant sandalwood paste
+
+## Aja Ekadashi (Ananda Ekadashi)
+
+Canonical URL: https://www.shoonaya.com/festival/aja-ekadashi
+
+The redeemer of lost kingdoms and restore of righteous glory, immortalized by King Harishchandra
+
+### Significance
+Aja Ekadashi falls on Bhadrapada Krishna Ekadashi. In the Brahmavaivarta Purana, the truthful King Harishchandra lost his entire kingdom, wealth, and family due to past karma and was forced to work as a crematorium attendant in Kashi. Sage Gautama advised him to observe the rigorous fast of Aja Ekadashi with pure devotion to Lord Hrishikesha. Upon completing the fast, Harishchandra’s past sins were dissolved, his dead son Rohitashwa was revived, his virtuous wife Taramati returned, and his entire kingdom was miraculously restored.
+
+### Rituals
+- Early morning bath with invocation of the sacred rivers
+- Worship of Lord Hrishikesha (Vishnu) with yellow flowers, Tulsi leaves, and dhoop
+- Listening to the inspiring legend of King Harishchandra and the power of truthfulness
+- All-night vigil (Jagran) with devotional singing of bhajans and Vishnu Sahasranama
+
+### Recommended observances
+- Uphold absolute truthfulness (Satya) in word and action throughout the day
+- Endure difficulties with patience, remembering King Harishchandra’s fortitude
+
+### Things to avoid
+- Do not speak untruth, break promises, or compromise moral integrity
+- Refrain from eating grains, pulses, and oil-heavy food
+
+### Puja items
+- Tulsi leaves, yellow chandan, yellow marigold flowers, and ghee deepak
+- Seven types of grain (Sapta-dhanya) for symbolic Dana on Dwadashi
+- Panchamrita, seasonal fruits, and dry fruits for Naivedya
+
+## Parivartini Ekadashi (Parsva / Vamana Ekadashi)
+
+Canonical URL: https://www.shoonaya.com/festival/parivartini-ekadashi
+
+The cosmic midpoint of Chaturmasa when Lord Vishnu turns His sleeping posture from left to right side
+
+### Significance
+Parivartini (also called Parsva) Ekadashi falls on Bhadrapada Shukla Ekadashi. Midpoint through His four-month cosmic slumber, Lord Vishnu turns His posture from the left side to the right side (Parivartana: turning over) while reclining upon Sheshanaga in the milk ocean. It is also celebrated as Vamana Jayanti, the appearance day of Lord Vishnu’s dwarfish Brahmin incarnation Vamana who restored cosmic balance by measuring the three worlds in three strides from King Mahabali. Worshiping the Lord on this day bestows freedom from sorrow and grants heavenly residence.
+
+### Rituals
+- Ceremonial darshan and abhishek of Lord Vamana and Vishnu with sacred water and milk
+- Offering curd, rice, seasonal fruits, and white umbrellas to young Brahmin boys
+- Recitation of the Parivartini Ekadashi Vrata Katha and Srimad Bhagavatam (Canto 8)
+- Evening aarti and lighting rows of lamps around the Tulsi plant and home altar
+
+### Recommended observances
+- Meditate upon the Trivikrama form of Lord Vishnu spanning all realms
+- Donate umbrellas, footwear, curd, and food to students and renunciants
+
+### Things to avoid
+- Do not consume grains, beans, or heavy meals on this holy midpoint day
+- Avoid pride, boastfulness, and untruthful speech
+
+### Puja items
+- Idol of Lord Vamana or Vishnu, yellow cloth, small wooden umbrella, water pitcher (Kamandalu)
+- Tulsi leaves, yellow flowers, sandalwood paste, and ghee lamp
+- Curd, butter, and seasonal fruits for Naivedya
+
+## Rama Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/rama-ekadashi
+
+The pre-Diwali Ekadashi dedicated to Mata Lakshmi (Rama) and Lord Keshav, bestowing supreme affluence
+
+### Significance
+Rama Ekadashi falls on Kartika Krishna Ekadashi, four days before Diwali. Named after Mata Lakshmi’s divine appellation "Rama", it is celebrated with joint adoration of Lord Keshava and Mahalakshmi. In the Brahma Vaivarta Purana, Princess Chandrabhaga and her husband Prince Shobhana observed this sacred fast. Through its spiritual merit, Shobhana gained an immortal celestial kingdom on Mount Mandara and enjoyed eternal companionship with his faithful wife. Observing this fast dispels poverty, karmic debts, and sorrow.
+
+### Rituals
+- Pre-dawn bath and joint puja of Lakshmi and Vishnu with lotus flowers and sandalwood
+- Recitation of the Rama Ekadashi Vrata Katha and Sri Suktam
+- Fasting with fruit diet and lighting continuous ghee deepaks at home and temple
+- Evening Tulsi puja with circumambulation and offering sweet kheer
+
+### Recommended observances
+- Chant the names of Lakshmi-Narayana and cultivate generosity towards the needy
+- Cleanse and illuminate your dwelling in anticipation of the festival of lights
+
+### Things to avoid
+- Avoid greed, gambling, harsh financial disputes, and anger
+- Do not consume grains, beans, garlic, or onions during the fast
+
+### Puja items
+- Lotus or rose flowers, yellow silk cloth, Tulsi leaves, and pure saffron (Kesar)
+- Pure cow ghee lamps, camphor, unbroken rice (Akshata), and betel leaves
+- Makhana kheer, fresh fruits, and dry fruits for Naivedya
+
+## Utpanna Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/utpanna-ekadashi
+
+Celebrating the birth of Ekadashi Devi who emerged from Lord Vishnu to slay the demon Mura
+
+### Significance
+Utpanna Ekadashi falls on Margashirsha Krishna Ekadashi. In the Bhavishya Purana, the demon Mura had driven the Devas from heaven. Lord Vishnu fought Mura for centuries and eventually reclined in a cave named Himavati at Badrikashrama to rest. As Mura attempted to strike the sleeping Lord, a radiant, armed female goddess emerged directly from Vishnu’s divine effulgence and incinerated Mura to ashes. Pleased, Lord Vishnu declared Her "Ekadashi Devi" and granted that whoever fasts on Her appearance day will be freed from all sins and receive direct entrance into Vaikuntha.
+
+### Rituals
+- Beginning the annual resolution (Sankalpa) of observing all 24 Ekadashis for newcomers
+- Early dawn worship of Lord Vishnu and Ekadashi Devi with yellow flowers and incense
+- Listening to the story of the slaying of demon Mura and the birth of Ekadashi Devi
+- Performing night vigil (Jagran) and giving charity to Brahmins on Dwadashi
+
+### Recommended observances
+- Begin your lifelong or annual Ekadashi vrata discipline on this auspicious originating day
+- Surrender all inner vices into the fire of divine knowledge
+
+### Things to avoid
+- Do not break the fast prematurely before Dwadashi morning Muhurat
+- Avoid grains, lentils, alcohol, non-vegetarian food, and anger
+
+### Puja items
+- Idol of Lord Vishnu, yellow silk cloth, Tulsi leaves, and yellow marigolds
+- Ghee lamp, pure camphor, and fresh panchamrita
+- Seasonal fruits, dry fruits, and mishri for Naivedya
+
+## Saphala Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/saphala-ekadashi
+
+The winter Ekadashi that makes all auspicious endeavors, sadhana, and righteous goals successful (saphala)
+
+### Significance
+Saphala Ekadashi falls on Pausha Krishna Ekadashi during the winter chill. As its name indicates (Saphala = fruitful / successful), this fast turns all virtuous endeavors into crowning success. In the Brahmanda Purana, Lord Krishna recounts the story of Prince Lumpaka, the wicked and exiled son of King Mahishmat, who lived in a dense forest. Shivering under a banyan tree on Pausha Krishna Ekadashi, Lumpaka unintentionally fasted and stayed awake all night under cold skies. Lord Vishnu accepted this penance, transforming Lumpaka into a righteous ruler and restoring his royal inheritance.
+
+### Rituals
+- Dawn bath and worship of Lord Narayana with seasonal winter fruits like pomegranates, betel nuts, and guavas
+- Fasting throughout the day, refraining from all grain dishes
+- Recitation of Saphala Ekadashi Vrata Katha and singing Vishnu Stotras
+- Lighting ghee lamps in the evening and keeping night vigil (Jagran)
+
+### Recommended observances
+- Focus mind on ethical goals and seek divine blessings for noble undertakings
+- Donate warm clothes, blankets, and food to the poor suffering from winter cold
+
+### Things to avoid
+- Do not succumb to laziness, despair, or procrastination
+- Avoid grains, lentils, alcohol, and tamasic habits during the fast
+
+### Puja items
+- Tulsi leaves, yellow flowers, yellow sandalwood paste, and ghee lamp
+- Pomegranate (Anar), coconut, cloves, betel nut, and seasonal guava fruits
+- Warm blanket or woolen shawl for donation on Dwadashi
+
+## Vijaya Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/vijaya-ekadashi
+
+The victory-granting fast observed by Bhagwan Sri Rama before crossing the ocean to conquer Lanka
+
+### Significance
+Vijaya Ekadashi falls on Phalguna Krishna Ekadashi. In the Skanda Purana, Lord Brahma recounts that when Bhagwan Sri Rama stood on the shores of the southern ocean with the Vanara army, contemplating how to cross over to Lanka, Sage Bakadalbhya advised Him to observe Vijaya Ekadashi along with His commanders. Sri Rama observed this sacred fast with full ritual protocol, following which the ocean granted passage and the bridge (Ram Setu) was successfully constructed, leading to total victory over Ravana. Observing this fast grants triumph in legitimate struggles and defeats inner and outer foes.
+
+### Rituals
+- Installing a sacred Kalash (pitcher) wrapped in seven sacred grains (Sapta Dhanya) on Dashami evening
+- Early morning worship of Lord Narayana and Sri Rama with yellow flowers, Tulsi, and chandan
+- Recitation of Vijaya Ekadashi Vrata Katha and reading of the Sundara Kanda from Ramayana
+- Dwadashi morning charity of the Kalash, grains, and gold/copper to a worthy teacher or priest
+
+### Recommended observances
+- Pray for courage, righteousness, and victory in righteous endeavors (Dharma-Yuddha)
+- Read or recite the Sundara Kanda or Rama Raksha Stotra
+
+### Things to avoid
+- Never use the fast to seek selfish harm or unjust revenge against opponents
+- Avoid grains, lentils, alcohol, non-vegetarian food, and laziness
+
+### Puja items
+- Sacred Kalash (copper or earthen), unhusked coconut, red cloth, mango leaves
+- Sapta-dhanya (seven grains: barley, wheat, rice, sesame, moong, gram, millet)
+- Tulsi leaves, yellow flowers, sandalwood paste, and ghee lamp
+
+## Yogini Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/yogini-ekadashi
+
+The purifier that cures ailments, bodily afflictions, and frees the soul from severe curses
+
+### Significance
+Yogini Ekadashi falls on Ashadha Krishna Ekadashi, just before Devshayani Ekadashi. In the Brahmavaivarta Purana, Hemamali, a Yaksha gardener in the service of Kubera (Lord of Wealth), neglected to bring flowers for Shiva puja due to infatuation with his wife. Enraged, Kubera cursed Hemamali with severe leprosy (Kustha) and separation from his beloved. Wandering in agony in the Himalayas, Hemamali met Sage Markandeya, who instructed him to observe Yogini Ekadashi with pure repentance. Through this observance, Hemamali was completely cured of disease and reunited with his wife.
+
+### Rituals
+- Purifying dawn bath and prayer for physical and mental healing
+- Worship of Lord Vishnu and Peepal tree with sacred water, milk, and sandalwood
+- Recitation of the Yogini Ekadashi Vrata Katha and Maha Mrityunjaya Mantra for healing
+- Giving charity of food, medicines, and clothing to sick persons and hospitals
+
+### Recommended observances
+- Serve the ailing, sick, and suffering with medicine, nourishment, and kind words
+- Maintain clean, satvik thoughts focused on spiritual and physical wellness
+
+### Things to avoid
+- Do not mock, shun, or look down upon any diseased or disabled individual
+- Avoid grains, lentils, onion, garlic, alcohol, and sensuous indulgence
+
+### Puja items
+- Tulsi leaves, yellow flowers, yellow sandalwood paste, and ghee lamp
+- Raw milk, Ganga water, and seasonal fruits for Naivedya
+- Medicines or warm clothing for charitable donation
+
+## Ekadashi (Fortnightly Vrata)
+
+Canonical URL: https://www.shoonaya.com/festival/ekadashi
+
+The supreme fortnightly fast observed on the eleventh tithi of every lunar cycle dedicated to Lord Vishnu
+
+### Significance
+Ekadashi occurs twice every lunar month, on the eleventh tithi of the waxing (Shukla) and waning (Krishna) fortnights. In the Padma Purana, Lord Krishna extols Ekadashi as the supreme among all fasts (Hari-vasara: the day of Lord Hari), declaring that neither sacrifice, charity, nor pilgrimage equates to the merit of abstaining from grains on Ekadashi. Beyond immense spiritual purification, scientific and ayurvedic wisdom affirms that fasting on the 11th tithi rebalances bodily bio-rhythms (Vata, Pitta, Kapha) aligning with the moon’s gravitational phases.
+
+### Rituals
+- Sankalpa on Dashami night: Light dinner and mental preparation for the sacred fast
+- Complete abstinence from grains (wheat, rice, corn, barley) and beans on Ekadashi
+- Worship of Lord Vishnu with Tulsi leaves, incense, deepak, and yellow flowers
+- Breaking the fast (Parana) on Dwadashi within the stipulated Harivasara and Dwadashi muhurat
+
+### Recommended observances
+- Spend the day in reading sacred scripture (Bhagavad Gita, Srimad Bhagavatam)
+- Practice mindfulness, charitable giving, and silent mantra japa
+
+### Things to avoid
+- Strictly avoid rice, wheat, grains, pulses, and root vegetables
+- Avoid anger, lying, gossiping, and day-time sleeping
+
+### Puja items
+- Tulsi leaves, yellow flowers, yellow sandalwood paste, and ghee lamp
+- Raw milk, fresh fruits (bananas, apples), and dry fruits for Naivedya
+- Copper Lota with sanctified Ganga water for Arghya
+
+## Putrada Ekadashi (Pausha)
+
+Canonical URL: https://www.shoonaya.com/festival/pausha-putrada-ekadashi
+
+The sacred Pausha Ekadashi for lineage, family well-being, and righteous progeny
+
+### Significance
+Pausha Putrada Ekadashi falls on the Shukla Paksha of Pausha month. According to the Bhavishyottara Purana, King Suketuman and Queen Shaibya observed this sacred fast under the guidance of holy sages to overcome the grief of childlessness, subsequently receiving a noble and virtuous heir. Devotees observe strict fasting and prayer to Lord Narayana seeking the blessing of righteous progeny, the clearing of deep ancestral burdens, and liberation from karmic sorrow.
+
+### Rituals
+- Early morning purification bath and solemn vrata sankalpa dedicated to Lord Narayana
+- Worship of Lord Vishnu with fresh Tulsi leaves, yellow marigolds, and panchamrit
+- Recitation of the Pausha Putrada Ekadashi Vrata Katha and Vishnu Sahasranama
+- Observing complete or fruit-based fasting with evening deepdan and nocturnal prayer
+
+### Recommended observances
+- Worship Lord Vishnu with devotion and chant the holy names
+- Maintain purity of speech, mind, and action throughout the day
+
+### Things to avoid
+- Do not consume grains, cereals, beans, or non-sattvic food
+- Avoid harsh speech, anger, daytime slumber, and disputes
+
+### Puja items
+- Fresh Tulsi leaves and yellow flowers
+- Ghee lamp, incense, and camphor
+- Panchamrit, seasonal fruits, and yellow cloth
+
+## Shattila Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/shattila-ekadashi
+
+The purification Ekadashi through the six-fold sacred use of sesame seeds
+
+### Significance
+Shattila Ekadashi occurs in the Krishna Paksha of the Magha month. In sacred tradition, this day emphasizes the divine purifying potency of sesame (tila) used in six holy ways: bathing in sesame water, applying sesame paste, offering sesame seeds in the sacred fire, offering sesame libations, donating sesame to the needy, and consuming sesame prasad. Observing this vrat purifies deep-seated karmas, bestows spiritual illumination, and ensures that the devotee never experiences spiritual or material famine.
+
+### Rituals
+- Bathing before dawn with sesame-infused holy water and applying sesame paste
+- Offering sesame seeds into the sacred havan fire while chanting Vishnu mantras
+- Giving generous donations of sesame seeds, warm clothes, and food to the needy
+- Listening to the Shattila Ekadashi Vrata Katha and keeping a prayerful night vigil
+
+### Recommended observances
+- Use sesame seeds in sacred charity and worship
+- Practice forgiveness, chanting, and meditation
+
+### Things to avoid
+- Do not eat grains or heavy meals
+- Avoid miserliness and unkind words
+
+### Puja items
+- White and black sesame seeds
+- Tulsi leaves and yellow flowers
+- Ghee lamp, havan samagri, and sweet fruits
+
+## Jaya Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/jaya-ekadashi
+
+The Ekadashi of spiritual triumph and liberation from degraded states
+
+### Significance
+Jaya Ekadashi falls on the Shukla Paksha of Magha month. According to the Padma Purana, Lord Krishna revealed the glory of this day to King Yudhishthira through the story of Malyavan and Pushpavati, who were redeemed from a ghostly, tormented existence by observing this sacred vow. Fasting on Jaya Ekadashi grants supreme spiritual victory (jaya) over the lower tendencies of the mind, absolves the harshest karmas, and elevates the soul directly toward the grace of Lord Vishnu.
+
+### Rituals
+- Early morning purification bath and setting a firm vow of truth and non-violence
+- Joint worship of Lord Krishna and Vishnu with fresh tulsi leaves and yellow flowers
+- Listening attentively to the Jaya Ekadashi Vrata Katha with family or community
+- Keeping a dedicated night vigil (jagaran) filled with devotional singing and contemplation
+
+### Recommended observances
+- Chant the holy names of Lord Vishnu and Sri Krishna
+- Offer respectful prayers for the upliftment of all beings
+
+### Things to avoid
+- Do not eat grains, pulses, or tamasic meals
+- Refrain from idle gossip and quarrel
+
+### Puja items
+- Tulsi leaves and marigold flowers
+- Incense, camphor, and pure ghee lamp
+- Panchamrit, fruits, and sandalwood
+
+## Varuthini Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/varuthini-ekadashi
+
+The armor of divine protection bestowing merit equal to ten thousand years of penance
+
+### Significance
+Varuthini Ekadashi occurs in the Krishna Paksha of the Vaishakha month (Chaitra Krishna in Purnimanta calendars). The sacred word Varuthini signifies protective armor or a divine shield. Dedicated to Lord Madhusudana and the Vamana avatar of Vishnu, this fast protects the practitioner from worldly tribulations, misfortunes, and physical illness. Scriptural teachings state that observing Varuthini Ekadashi yields spiritual merits equal to rigorous austerities and continuous charitable giving over many lifetimes.
+
+### Rituals
+- Dawn bath and dedicated invocation of the Vamana and Madhusudana forms of Vishnu
+- Chanting the sacred Vamana and Vishnu mantras while offering white and yellow blossoms
+- Observing a strict waterless or light fruit-based fast with disciplined meditation
+- Breaking fast (parana) with gratitude strictly within the prescribed Dwadashi window
+
+### Recommended observances
+- Contemplate Lord Vamana and maintain continuous japa
+- Practice non-violence and charity
+
+### Things to avoid
+- Do not eat grains or oil-cooked food
+- Avoid gambling, excessive sleep, and arrogance
+
+### Puja items
+- Tulsi leaves and yellow flowers
+- Ghee lamp, sandalwood paste, and incense
+- Panchamrit, bananas, and coconut
+
+## Mohini Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/mohini-ekadashi
+
+Commemorating the enchanting Mohini avatar that dispels worldly delusion and attachment
+
+### Significance
+Mohini Ekadashi is observed on the Shukla Paksha of Vaishakha month. It commemorates Lord Vishnu assuming His mesmerizing Mohini form to protect the celestial nectar (Amrita) from demonic forces during the Churning of the Ocean. Scriptural tradition recounts that sage Vasishtha advised Lord Rama to observe this fast during His search for Mata Sita. Observing Mohini Ekadashi dissolves the dense veil of attachment, worldly delusion (moha), and sorrow, bringing clarity, inner resolve, and divine devotion.
+
+### Rituals
+- Morning sacred purification bath and solemn dedication of the fast to Lord Vishnu
+- Adoration of Sri Hari and Sri Rama with fragrant white lotuses, chandan, and tulsi
+- Reading and reflecting upon the Mohini Ekadashi narrative from the sacred Puranas
+- Evening arati and a peaceful night spent in contemplation and devotional prayer
+
+### Recommended observances
+- Cultivate detachment from worldly pride and materialism
+- Feed animals and provide help to seekers
+
+### Things to avoid
+- Do not eat grains, beans, or onion-garlic
+- Avoid deceit, ego, and criticism of others
+
+### Puja items
+- Tulsi leaves, lotus or marigold flowers
+- Ghee lamp, camphor, and fragrant dhoop
+- Panchamrit, seasonal fruits, and sweets
+
+## Indira Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/indira-ekadashi
+
+The sacred Pitru Paksha Ekadashi liberating departed ancestors from lower realms
+
+### Significance
+Indira Ekadashi falls during the solemn period of Pitru Paksha in the Krishna Paksha of Ashwin month. According to the Brahmavaivarta Purana, King Indrasena observed this sacred vrat upon the guidance of Devrishi Narada, transferring the accumulated spiritual merit to his deceased father and granting him ascension to Vaikuntha. This fast holds supreme merit for liberating departed ancestors from suffering, reconciling family lineage obligations (pitru-rina), and bringing prosperity and blessings to future generations.
+
+### Rituals
+- Morning sacred bath and offering water libations (tarpan) with black sesame for ancestors
+- Solemn worship of Lord Shaligram with panchamrit, sacred tulsi leaves, and yellow chandan
+- Recitation of the Indira Ekadashi Vrata Katha and Chapter 8 of Srimad Bhagavad Gita
+- Dedicating the entire spiritual fruit of the day fast to ancestors before evening prayers
+
+### Recommended observances
+- Remember ancestors with gratitude and perform charity
+- Feed cows, birds, and the hungry
+
+### Things to avoid
+- Do not eat grains, salt, or heavy food
+- Avoid frivolous celebrations and disputes
+
+### Puja items
+- Black sesame seeds and pure water for tarpan
+- Tulsi leaves, yellow flowers, and chandan
+- Ghee lamp, incense, and fruit offerings
+
+## Papankusha Ekadashi
+
+Canonical URL: https://www.shoonaya.com/festival/papankusha-ekadashi
+
+The divine goad (ankusha) that reins in past sins and directs the mind toward liberation
+
+### Significance
+Papankusha Ekadashi falls on the Shukla Paksha of Ashwin month, dedicated to Lord Padmanabha. The name symbolizes a divine goad (ankusha) that subdues and purifies the unrestrained karmic tendencies of the senses, much like a goad guides an elephant. Observing this fast washes away accumulated negative karma from past lifetimes, promotes inner discipline and health, and prepares the devotee spiritually for the approaching sacred observances of the Kartik month.
+
+### Rituals
+- Morning worship of Lord Padmanabha (Vishnu) with fresh lotus blossoms and tulsi leaves
+- Chanting the sacred Padmanabha mantras and observing silent reflection through the day
+- Reading or listening attentively to the Papankusha Ekadashi Vrata Katha
+- Lighting a continuous ghee deepak in the evening and breaking fast on Dwadashi after charity
+
+### Recommended observances
+- Practice sense-control, patience, and meditation
+- Engage in charity on Dwadashi morning
+
+### Things to avoid
+- Do not eat grains, pulses, or tamasic foods
+- Avoid sensory indulgence, anger, and harsh words
+
+### Puja items
+- Tulsi leaves and lotus flowers
+- Pure ghee lamp, sandalwood paste, and incense
+- Panchamrit and seasonal fruit offerings

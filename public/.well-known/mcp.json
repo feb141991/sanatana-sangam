@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "shoonaya-mcp",
+  "title": "Shoonaya Spiritual Companion & Panchang MCP Server",
+  "description": "Model Context Protocol server for Shoonaya providing astronomy-backed Panchang calculations, council-ratified multi-tradition festival calendars, Bhakti scripture library search, and Pathshala learning modules.",
+  "version": "1.0.0",
+  "homepage": "https://www.shoonaya.com",
+  "endpoint": "https://www.shoonaya.com/.well-known/mcp/server-card.json",
+  "serverCard": "https://www.shoonaya.com/.well-known/mcp/server-card.json",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.shoonaya.com/api/mcp"
+    }
+  ]
+}
+
