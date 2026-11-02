@@ -6,6 +6,29 @@ This document records all production backend, mobile, database, and infrastructu
 
 ## Change Log
 
+### [Change #7] — 2026-11-02 16:20 IST
+* **Type:** Database Schema / Function Fix (`Shoonaya`)
+* **Scope:** 
+  - `supabase/migrations/20261102160000_fix_complete_japa_session_daily_sadhana_columns.sql`
+  - `supabase/rollbacks/20261102160000_fix_complete_japa_session_daily_sadhana_columns_rollback.sql`
+* **Trigger / Error:**
+  - Japa session save failing on device with HTTP 500.
+  - Live PostgreSQL RPC returned SQLSTATE `42703`:
+    `column "updated_at" of relation "daily_sadhana" does not exist`.
+* **Root Cause:**
+  - In migration `20261101020000_optimize_timezone_lookups.sql`, `complete_japa_session` attempted to insert and update `daily_sadhana.updated_at`.
+  - The `daily_sadhana` table has only `created_at` (no `updated_at`). Every completion attempting to upsert sadhana records raised 42703, aborting the transaction.
+* **Fix Applied:**
+  - Created and applied migration `20261102160000_fix_complete_japa_session_daily_sadhana_columns.sql`, replacing `complete_japa_session` with identical parameter types and names while omitting the non-existent `updated_at` column.
+* **Verification:**
+  - Migration applied cleanly via `supabase db push --linked`.
+  - Version assertion passed: `node scripts/assert-supabase-migration-version.mjs 20261102160000`.
+  - Live authenticated user RPC test passed:
+    `complete_japa_session` returned `success: true`, updated streak count to 1, awarded 5 karma points, and idempotent replay returned `idempotentReplay: true`.
+  - Synthetic test record cleanly purged afterward.
+
+---
+
 ### [Change #6] — 2026-11-02 14:15 IST
 * **Type:** Mobile Client UX Fix (`shoonaya-mobile`)
 * **Commit:** `43747f8` (`feat(onboarding): implement progressive auto-scroll on Preferences screen`)
