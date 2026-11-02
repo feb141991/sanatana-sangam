@@ -234,6 +234,30 @@ In-app notification creation and OS push delivery stay separate; nothing here cl
 - **To switch on (founder):** deploy the dispatcher gate, apply M1 to M4 (already live) plus the lifecycle migration; deploy this; run once
   with `?dryRun=true` and read `wouldInsertCount`; then set the two variables. To switch off: set the type mode to `disabled`.
 
+**Hand-over notices (Phase 1 of `SANSKARA_HANDOVER_SCOPE.md`; database layer written 2026-11-03, migration `20261103110000`, NOT applied).**
+- Six notices per manager of a child: `open_90`, `open_30`, `open_7`, `open_0` (before the 18th birthday, `open_0` on it) and `closing_30`,
+  `closing_7` (before the 12-month window ends). 09:00 in the recipient's own timezone. One generic text for all six: no child, age, date or stage.
+- **Same event type as the milestone reminders (`sanskar_milestone`), disjoint key space.** `event_id` is the child's subject id and `event_instance`
+  starts with `H` (milestone reminders: a subscription id and `L<lead>`). This keeps the explicit-user-requested class, the global budget-exemption
+  list and the tap route untouched. Each key is distinct from the milestone, legacy tithi and OneSignal keys (AGENTS 6). The milestone trigger is
+  narrowed to non-`H` instances and a second trigger validates `H` instances; neither sees the other's rows.
+- `sanskara_handover_due()` selects (server only, access by `sanskara_can('read_meta')`: a manager before 18, a former manager inside the window, consent given).
+  `sanskara_handover_still_valid()` is the send-time check. The notice is recomputed from the **current** birth date, so a changed date makes a prepared
+  notice stale. An `open_*` notice is suppressed while a claim is pending; `closing_*` is not.
+- Opt-in: `wants_sanskara_reminders` is required for the push (decision D-A). The in-app banner (Native) does not depend on it.
+- Cancellation by triggers: manager removed (every dependent deletion cascades through it), claim started (`open_*` only), recipient's opt-in off,
+  consent withdrawn or deletion cool-off. A notice already created for a local date, even a cancelled one, is not offered again for that date.
+- ROC pre-flight: no existing function is redefined or changes signature (no `PGRST203`); the only existing object altered is the trigger
+  `sanskara_validate_candidate` (dropped and recreated with a narrower `WHEN`); no data updated, no default changed; `CREATE TRIGGER` on `profiles`
+  takes a short lock (18 rows on 2026-10-30); rollback tested (`supabase/rollbacks/20261103110000_sanskara_handover_notices_rollback.sql`).
+- **Verified on scratch Postgres (real M1-M4, M4a, lifecycle, M5 and this migration):** `supabase/tests/sanskara_handover_notices.test.sql` (privileges,
+  dates, the exact set due, window arithmetic, every refusal reason, claim handling, every cancellation hook, send-time validity, milestone rows untouched);
+  27 of 27 mutations turned it red; rollback then re-apply passes; all eight Sanskara suites pass on the full stack. Two checks that could not fail on their
+  own (a window-end check that `sanskara_can` already makes, and a separate dependent-deleted trigger that the manager cascade already covers) were removed
+  rather than kept as untestable surface. The opt-in filter in the selector is kept as early pruning only; `still_valid` is what protects.
+- **Not verified:** a real Supabase branch; the producer, dispatcher branch and Native banners (next commits); the resolver and dispatcher against these
+  rows; any device.
+
 ## 6. Scheduled jobs
 
 | Job | Does | Cadence |

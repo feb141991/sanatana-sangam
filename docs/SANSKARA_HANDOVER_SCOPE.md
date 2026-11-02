@@ -1,6 +1,6 @@
 # Sanskara tracker: hand-over of a child's records (scope, 2026-11-03)
 
-Status: **scope only. Nothing here is built.** It extends `SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md` (E7, E10, section 13) and
+Status: **Phase 1 database layer written (2026-11-03, migration `20261103110000`, not applied); producer, dispatcher branch and Native banners follow. Early hand-over (section 3) is NOT started and is blocked on the decisions in it.** Decision D-A is taken: the push requires `wants_sanskara_reminders`, the banner does not. It extends `SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md` (E7, E10, section 13) and
 `SANSKARA_TRACKER_BACKEND_DESIGN.md`. Not legal advice.
 
 ## 1. What exists today

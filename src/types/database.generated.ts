@@ -7648,6 +7648,32 @@ export type Database = {
           },
         ]
       }
+      sanskara_handover_due: {
+        Args: { p_horizon?: string; p_late?: string; p_now?: string }
+        Returns: {
+          account_id: string
+          audience_variant: string
+          language: string
+          local_date: string
+          notice: string
+          profile_generation: number
+          quiet_hours_end: number
+          quiet_hours_start: number
+          scheduled_for: string
+          subject_id: string
+          timezone: string
+        }[]
+      }
+      sanskara_handover_still_valid: {
+        Args: {
+          p_account: string
+          p_local_date: string
+          p_notice: string
+          p_profile_generation: number
+          p_subject: string
+        }
+        Returns: boolean
+      }
       sanskara_record_private: {
         Row: {
           expected_due_date: string | null
