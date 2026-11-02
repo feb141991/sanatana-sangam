@@ -152,6 +152,10 @@
     {
       "path": "/api/cron/email-outbox",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/telemetry-audit",
+      "schedule": "0 */4 * * *"
     }
   ],
   "regions": [
