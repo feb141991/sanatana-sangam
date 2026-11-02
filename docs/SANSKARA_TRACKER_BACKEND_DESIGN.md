@@ -230,7 +230,7 @@ without the founder's approval, and `supabase db push` is never used.
 | M3 *(written, tested; APPLIED live)* | `sanskara_claims`; grant, revoke, list-access and shared-with-me functions; start, cancel and accept claim |
 | M4 *(written, tested; APPLIED live)* | `sanskara_subscriptions`; the live-reminder index; the cancellation triggers and the two hooks; the send-time check; insert-time validation of candidates; the due-reminders selector; `sanskara_set_reminder` and `sanskara_my_reminders`. (The admin account-delete list gained the Sanskara tables in the same commit.) |
 | M4a *(tested on scratch Postgres; APPLIED to production 2026-10-31)* | The optional display-only Kul pointer: `sanskara_subjects.kul_family_member_id`; `sanskara_create_dependent` gains an optional fourth argument; `sanskara_set_kul_link`; `sanskara_dependents` returns the pointer re-validated for the viewer; two internal helpers; two new audit actions. See "The Kul pointer" below. |
-| M5 | The scheduled jobs |
+| M5 *(written, tested on scratch Postgres; NOT applied)* | The three retention jobs: majority sweep, consent purge, audit and request-log retention, scheduled daily by pg_cron. The reminder producer is TypeScript and is not part of it. See "M5" below. |
 | M6 | Retirement of the old tables (empty-assertion first) |
 
 ## 9. What has and has not been verified
@@ -483,7 +483,7 @@ place"). Anyone who prefers the old "suspend and resume" semantics should say so
 - E10's hand-over offer ("if they were the last, the flow offers a hand-over to a current Kul member") is a client flow; no server
   function warns a last manager before they leave or delete. Deletion proceeds, which is "deletion over disclosure", but the offer
   itself is not built or tested here.
-- M5 (retention, consent purge, majority sweep, reminder producer) is not built, and nothing is scheduled.
+- M5 (retention, consent purge, majority sweep) is now written (see "M5" below); the reminder producer is still not built, and nothing is scheduled anywhere until the M5 migration is applied.
 - Not verified: a real Supabase branch, concurrency (a leave racing a grant), and the Native screen's behaviour when a share is
   voided while it is open.
 - Mutation checks run: voiding disabled, profile trigger removed, audit row naming the account, orphan trigger removed, follower
@@ -494,3 +494,43 @@ place"). Anyone who prefers the old "suspend and resume" semantics should say so
 Apply (founder step; the MCP `apply_migration` is blocked by the auto-mode classifier): run the SQL file, then record the version,
 for example `supabase migration repair --status applied 20261103090000`. Rollback: `supabase/rollbacks/20261103090000_sanskara_lifecycle_voids_grants_rollback.sql`
 (grants already voided stay revoked). Never `supabase db push` (AGENTS section 4).
+
+## M5: scheduled jobs (2026-11-03)
+
+Migration `20261103100000_sanskara_scheduled_jobs.sql`, rollback `supabase/rollbacks/20261103100000_sanskara_scheduled_jobs_rollback.sql`,
+test `supabase/tests/sanskara_scheduled_jobs.test.sql`. **Not applied to any database.** Depends on the lifecycle migration for nothing, but
+was tested after it.
+
+| Job (daily, UTC) | Does | Boundary |
+|---|---|---|
+| `sanskara_job_majority_sweep` 03:41 | Deletes dependents whose window has ended and who were never claimed (a claim deletes the dependent, so a survivor was unclaimed). Freezes dependents who reached 18 inside the window, revokes the managers' shares and deletes the subscriptions (which cancels pending reminders). | Same date arithmetic as `sanskara_can` and `sanskara_accept_claim`: on the day the window ends, access is already gone and the row is deleted. |
+| `sanskara_job_consent_purge` 03:43 | Deletes a person's own timeline 30 days after `suspended_at`, only if the owner's live `consent_religious_data` is still not true. | `suspended_at <= now - 30 days`. A timeline whose consent is false but was never marked is **not** purged. |
+| `sanskara_job_retention` 03:47 | Audit rows older than 12 months; request-log rows older than 7 days. | Up to 5000 rows of each per run. |
+
+Safety properties: correctness never depends on a job having run (`sanskara_can` derives everything from dates and the profile);
+every delete re-reads its condition under `FOR UPDATE SKIP LOCKED`; at most 200 subjects per step per run; `p_dry_run` counts
+without changing anything; audit rows carry only a reason (no actor, no target, no name); no notification is sent.
+
+Verified on scratch Postgres 18 (cron stood in for by a table): the full chain applies; all seven Sanskara suites pass; 11 of 11
+mutations turn the new suite red (boundary day, live-consent check, 30-day cutoff, freeze window, 12-month audit cut, share
+revocation, subscription deletion, dry run, batch limit, 7-day request log, audit naming the account); a two-session test showed
+the job skips a subject another transaction holds locked (returned at once, deleted nothing) and deletes it on the next run; the
+rollback leaves no job and no function, the lifecycle suite passes after it, and the migration re-applies and passes.
+
+Not verified: a real Supabase branch; real `pg_cron` (only the call shape `cron.schedule(name, schedule, command)` and
+`cron.unschedule(jobid)` is exercised, the same as the other migrations in this project); behaviour at production data volume;
+the timing of the first run against production.
+
+Decisions left to the founder:
+1. **Dependents whose managers have all withdrawn consent** are not purged earlier than the window. E8 names the owner only.
+2. **Frozen subjects are not hidden from the former manager.** They read until the window ends, by contract.
+3. **A person whose consent is false but whose `suspended_at` was never set** (e.g. withdrawn before M4's trigger existed) is
+   retained indefinitely. Count them before launch: `select count(*) from profiles p join sanskara_subjects s on s.account_id = p.id
+   where s.kind = 'account' and p.consent_religious_data is not true and s.suspended_at is null`.
+4. **Privacy-policy lines** for 30-day, 12-month and 7-day periods must match these numbers before launch.
+
+Apply (founder step): run the SQL file, then `supabase migration repair --status applied 20261103100000`. **First run
+`select public.sanskara_job_majority_sweep(now(), true); select public.sanskara_job_consent_purge(now(), true);
+select public.sanskara_job_retention(now(), true);` in the SQL editor** and read the counts before the first 03:41 UTC; the
+functions only exist after apply, so run them straight after, before the first scheduled run. Rollback: the rollback file
+(deleted rows are not restored). Never `supabase db push`.

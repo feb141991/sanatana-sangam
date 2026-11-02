@@ -12127,6 +12127,18 @@ export type Database = {
         Returns: Json
       }
       sanskara_viewer_kul: { Args: { p_account: string }; Returns: string }
+      sanskara_job_consent_purge: {
+        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
+        Returns: Json
+      }
+      sanskara_job_majority_sweep: {
+        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
+        Returns: Json
+      }
+      sanskara_job_retention: {
+        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
+        Returns: Json
+      }
       sanskara_void_kul_grants: {
         Args: { p_kul: string; p_user: string }
         Returns: number
