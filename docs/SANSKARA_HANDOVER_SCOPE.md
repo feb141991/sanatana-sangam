@@ -1,0 +1,85 @@
+# Sanskara tracker: hand-over of a child's records (scope, 2026-11-03)
+
+Status: **scope only. Nothing here is built.** It extends `SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md` (E7, E10, section 13) and
+`SANSKARA_TRACKER_BACKEND_DESIGN.md`. Not legal advice.
+
+## 1. What exists today
+
+- At 18 a dependent is frozen (M5 sweep, committed, not applied). Its managers become **former managers** (read-only) for 12 months
+  (`birth_date + 18y` to `+ 12 months`, UTC date).
+- A former manager calls `sanskara_start_claim` and gets a one-time token (shown once, 7 days or the window end, whichever is sooner; a new
+  claim cancels the old). The new adult calls `sanskara_accept_claim(token)`: records move to their own timeline (a rite they already have
+  wins; custom milestones all move; 100 records at most), grants end, the dependent is deleted. Every token failure answers the same `SK404`.
+- After the window the M5 sweep deletes the dependent. Nothing is kept.
+- Native has a hand-over modal (`SanskaraHandoverModal`, modes start/accept, `app/kul/sanskara.tsx`). Not run on a device.
+
+## 2. Gaps at 18 (buildable now, no new policy)
+
+| # | Gap | Consequence |
+|---|---|---|
+| G1 | Nothing tells a manager the 18th birthday or the window end is coming. | A family that forgets loses the records at window end. |
+| G2 | Nothing tells the claim is expiring, or that the window ends soon. | Same. |
+| G3 | `accept` returns `dropped_as_duplicates` but the person is only told a number. | A parent's version of a rite is silently dropped. |
+| G4 | E10: when the last manager leaves, the contract promises "a hand-over to a current Kul member"; it is not built. | The dependent is deleted. |
+
+### Proposed build (Phase 1)
+1. **Lifecycle notices to managers**, selected in SQL like `sanskara_reminders_due`, so access is decided by `sanskara_can` and not by TypeScript.
+   A new function `sanskara_lifecycle_due(now, horizon, late)` over dependents: D-90, D-30, D-7 and D0 of the 18th birthday ("handover_open"),
+   and D-30 and D-7 of the window end ("handover_closing"). Recipients: managers before 18, former managers after. A pending claim suppresses
+   the "start a hand-over" prompts and replaces them with an expiry notice.
+2. **Own event types and keys** (`sanskara_handover`), not `sanskar_milestone`, so D-7/D-1/D0 keys never overlap the milestone or legacy
+   keys (AGENTS 6). Generic text: no child name, no age, no date. Link `/kul/sanskara` only.
+3. **Same safety shape as M4**: insert trigger validating subject, role and window at insert; send-time check function; cancel on claim
+   accepted, dependent deleted, manager removed, consent withdrawn. The dispatcher gate gains a second branch. This is the bulk of the work.
+4. **Opt-in**: reuse `wants_sanskara_reminders`? A hand-over notice is a service notice about data the person holds, but they have not asked
+   for it. Recommendation: **require `wants_sanskara_reminders`** and show an in-screen banner (not a push) for everyone else, so the prompt
+   never depends on a push permission. Founder decision D-A.
+5. **Native**: banner on the dependent card from 90 days out ("Hand over"), a closing banner, the dropped-records list (G3, names of rites only), plus the
+   existing modal. No new native module (AGENTS 12 / 7), so it can ship over the air.
+6. **E10 (G4)** is a different operation (adding an adult manager to a minor), not a transfer to the child. Scope it separately; it should reuse
+   `sanskara_add_manager` rules, not claims.
+
+Size: one migration (selector, trigger, send-time check, rollback), one producer route, dispatcher branch, Native banners, tests with mutations.
+ROC pre-flight applies: **new function names only; no signature change to existing functions** (PGRST203).
+
+## 3. Early hand-over (before 18, with parent permission)
+
+Yes, it is a reasonable product idea (a 15-year-old keeping their own milestones). It is **not** a small extension, because it creates the thing
+the contract excludes: **a minor with an account of their own** (contract section 4 rule 6 and section 13: "outside v1; the app's minimum age is a
+separate decision"). I found no minimum-age check in the signup path I searched (onboarding validates the date of birth, 1920 or later, and nothing
+more); that needs confirming.
+
+### Blocking decisions (not mine to make)
+- **D-B Minimum age of an account.** If it is 18 there is no early hand-over. If it is lower, which age?
+- **D-C Legal.** A child's religious data under their own consent. India (DPDP: under 18 needs verifiable parental consent), UK/EU (age of digital
+  consent 13 to 16 by country), US (COPPA under 13). Needs a lawyer before any build, as the contract already says.
+- **D-D Who keeps access after the transfer.** (a) Parents lose access completely, as at 18 (simplest, strongest for the child, irreversible for
+  parents). (b) Parents keep a read-only view until 18 (needs a new grant kind the child cannot silently remove; then "the child owns it" is
+  only partly true). Recommendation: (a), with a clear screen for the parents before they agree.
+- **D-E Reversibility.** Records move, the dependent is deleted. A "take it back" needs the dependent to be kept, which keeps data nobody manages.
+  Recommendation: not reversible; say so before agreeing.
+
+### Proposed design if D-B to D-E allow it
+- **Reuse the claim mechanism with a parental-permission gate; new function names** (`sanskara_start_early_claim`, `sanskara_approve_early_claim`,
+  `sanskara_accept_early_claim`). Existing functions unchanged.
+- **Permission = every current manager approves.** One parent must not override another. The claim is `awaiting_approval` until all managers approve,
+  then the token is released to the initiator. Any manager can cancel at any time before acceptance. A manager removed or leaving resets approvals.
+- **Age floor** enforced in SQL from the dependent's birth date (the D-B value), checked at start and at accept, never from the client.
+- **Acceptor confirmation (recommended for the early path, and worth adding at 18 too):** accepting does not move anything; it creates a pending
+  acceptance the initiating manager confirms, seeing only the acceptor's chosen display name. Closes "the token was sent to the wrong person",
+  which matters more for a child's private notes. Adds one step and one table row.
+- **Consent on the child's side:** `consent_religious_data` is the child's own tick, recorded with the date and the age rule in force. Whether that
+  alone is lawful is D-C.
+- **After transfer** the child's timeline is an ordinary account timeline: owner rules, the 30-day purge on their own consent withdrawal, their own
+  reminders and quiet hours. Parents' subscriptions are deleted by the existing access-lost hook.
+- **Audit**: metadata only (initiated, approved, accepted, cancelled) with no names, as for the other events.
+- **Tests**: every manager approval combination, a manager removed mid-flow, age floor on the day before and the day of, token reuse, wrong
+  account, race between cancel and accept.
+
+## 4. Order of work and what each needs from you
+
+1. **Phase 1 (G1 to G3)**: needs D-A only. Can start now.
+2. **E10 last-manager offer**: separate small scope; needs a decision on whether the recipient must be a current Kul member only (contract says so).
+3. **Phase 2 (early hand-over)**: do not start until D-B, D-C, D-D, D-E are answered and a lawyer has seen it.
+
+Not verified in this scope: Native modal behaviour on a device; the minimum-age claim above (searched, not proved absent); production volume (0 dependents on 2026-10-30).
