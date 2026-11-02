@@ -10,6 +10,11 @@ import {
   withSanskaraWording,
   type SanskaraDueRow,
 } from '@/lib/sanskara-reminder-candidate';
+import {
+  buildSanskaraHandoverCandidates,
+  withSanskaraHandoverWording,
+  type SanskaraHandoverDueRow,
+} from '@/lib/sanskara-handover-candidate';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -28,7 +33,11 @@ type InsertOutcome =
  * on that one answer the next generic wording is tried (the trigger judges each attempt itself). Any other refusal is final
  * for this run. 23514 and 23505 are answers; every other database error is thrown.
  */
-async function insertWithWordings(supabase: SupabaseClient, first: NotificationCandidateInsert): Promise<InsertOutcome> {
+async function insertWithWordings(
+  supabase: SupabaseClient,
+  first: NotificationCandidateInsert,
+  reword: (candidate: NotificationCandidateInsert, variant: number) => NotificationCandidateInsert | null,
+): Promise<InsertOutcome> {
   let candidate: NotificationCandidateInsert | null = first;
   for (let variant = 0; candidate; variant += 1) {
     const { error } = await supabase.from('notification_candidates').insert(candidate);
@@ -38,20 +47,38 @@ async function insertWithWordings(supabase: SupabaseClient, first: NotificationC
     // The trigger's fixed messages (sanskara_candidate_*) describe a rule, never a person.
     const reason = /^sanskara_candidate_[a-z_]+$/.test(error.message) ? error.message : 'sanskara_candidate_refused';
     if (reason !== 'sanskara_candidate_not_discreet') return { outcome: 'refused', reason };
-    candidate = withSanskaraWording(first, variant + 1);
+    candidate = reword(first, variant + 1);
     if (!candidate) return { outcome: 'refused', reason };
   }
   return { outcome: 'refused', reason: 'sanskara_candidate_refused' };
 }
 
+type Tally = { created: number; reworded: number; duplicates: number; refused: number; refusedReasons: Record<string, number> };
+
+async function createAll(
+  supabase: SupabaseClient,
+  candidates: NotificationCandidateInsert[],
+  reword: (candidate: NotificationCandidateInsert, variant: number) => NotificationCandidateInsert | null,
+): Promise<Tally> {
+  const tally: Tally = { created: 0, reworded: 0, duplicates: 0, refused: 0, refusedReasons: {} };
+  for (const candidate of candidates) {
+    const result = await insertWithWordings(supabase, candidate, reword);
+    if (result.outcome === 'created') { tally.created += 1; if (result.reworded) tally.reworded += 1; }
+    else if (result.outcome === 'duplicate') tally.duplicates += 1;
+    else { tally.refused += 1; tally.refusedReasons[result.reason] = (tally.refusedReasons[result.reason] ?? 0) + 1; }
+  }
+  return tally;
+}
+
 /**
- * Creates a notification candidate for each Sanskara reminder that has become due.
+ * Creates a notification candidate for each Sanskara reminder, and each hand-over notice, that has become due.
  *
  * Selection is `sanskara_reminders_due()` (access decided by `sanskara_can`, not here). Each insert is validated by the
  * `sanskara_validate_candidate` trigger against the live subscription, record version, opt-in and access, and refused
  * with 23514 if any of them moved since the selection. A refusal is the expected answer to a change made in that gap, so it
  * is counted and the run goes on; it is not an error. Any other database error stops the run (503).
- * The dispatcher re-checks `sanskara_reminder_still_valid` again immediately before sending.
+ * The dispatcher re-checks `sanskara_reminder_still_valid` (reminders) or `sanskara_handover_still_valid` (hand-over notices)
+ * again immediately before sending.
  *
  * Off unless NOTIFICATION_RESOLVER_ENABLED is true and NOTIFICATION_CANDIDATE_MODE_SANSKAR_MILESTONE is `candidate`.
  * Nothing in the response or the logs names a person, a record or an id.
@@ -88,39 +115,40 @@ export async function GET(request: Request) {
     const rows = (data ?? []) as SanskaraDueRow[];
     const built = buildSanskaraReminderCandidates(rows, now);
 
+    // The hand-over notices: the same event type and gates, a disjoint key space, their own selector and validator.
+    const { data: handoverData, error: handoverError } = await supabase.rpc('sanskara_handover_due').limit(MAX_ROWS_PER_RUN);
+    if (handoverError) throw new Error(`sanskara_handover_due failed (${handoverError.code ?? 'no code'})`);
+    const handoverRows = (handoverData ?? []) as SanskaraHandoverDueRow[];
+    const handoverBuilt = buildSanskaraHandoverCandidates(handoverRows, now);
+
     if (safety.isDryRun || safety.skipDelivery) {
       return NextResponse.json(buildNotificationSafetyResponse(SANSKARA_EVENT_TYPE, safety, {
-        eligibleCount: rows.length,
-        skippedCount: built.malformedCount + built.outsideHorizonCount,
-        wouldInsertCount: built.candidates.length,
+        eligibleCount: rows.length + handoverRows.length,
+        skippedCount: built.malformedCount + built.outsideHorizonCount + handoverBuilt.malformedCount + handoverBuilt.outsideHorizonCount,
+        wouldInsertCount: built.candidates.length + handoverBuilt.candidates.length,
         wouldSendCount: 0,
       }));
     }
 
-    let created = 0;
-    let duplicates = 0;
-    let reworded = 0;
-    const refused: Record<string, number> = {};
-    for (const candidate of built.candidates) {
-      const result = await insertWithWordings(supabase, candidate);
-      if (result.outcome === 'created') { created += 1; if (result.reworded) reworded += 1; }
-      else if (result.outcome === 'duplicate') duplicates += 1;
-      else refused[result.reason] = (refused[result.reason] ?? 0) + 1;
-    }
+    const reminders = await createAll(supabase, built.candidates, withSanskaraWording);
+    const handover = await createAll(supabase, handoverBuilt.candidates, withSanskaraHandoverWording);
 
-    const refusedCount = Object.values(refused).reduce((sum, n) => sum + n, 0);
     const summary = {
       due: rows.length,
       truncated: rows.length >= MAX_ROWS_PER_RUN,
       malformed: built.malformedCount,
       outsideHorizon: built.outsideHorizonCount,
-      created,
-      reworded,
-      duplicates,
-      refused: refusedCount,
-      refusedReasons: refused,
+      ...reminders,
+      handover: {
+        due: handoverRows.length,
+        truncated: handoverRows.length >= MAX_ROWS_PER_RUN,
+        malformed: handoverBuilt.malformedCount,
+        outsideHorizon: handoverBuilt.outsideHorizonCount,
+        ...handover,
+      },
     };
-    if (built.malformedCount > 0 || refusedCount > 0 || summary.truncated) console.warn('[sanskara-reminders] rows not created', summary);
+    const notCreated = built.malformedCount + reminders.refused + handoverBuilt.malformedCount + handover.refused;
+    if (notCreated > 0 || summary.truncated || summary.handover.truncated) console.warn('[sanskara-reminders] rows not created', summary);
     console.info('[sanskara-reminders] producer completed', summary);
     return NextResponse.json({ success: true, pipeline_mode: 'candidate', ...summary });
   } catch (error) {

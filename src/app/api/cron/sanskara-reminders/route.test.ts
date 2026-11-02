@@ -34,9 +34,37 @@ function dueRow(subscription_id: string, overrides: Record<string, unknown> = {}
 
 type InsertResult = { error: { code: string; message: string } | null };
 
-function mockDatabase(rows: unknown[], options: { rpcError?: { code: string; message: string }; inserts?: InsertResult[] } = {}) {
-  const limit = vi.fn().mockResolvedValue(options.rpcError ? { data: null, error: options.rpcError } : { data: rows, error: null });
-  const rpc = vi.fn().mockReturnValue({ limit });
+function handoverRow(subject_id: string, overrides: Record<string, unknown> = {}) {
+  const scheduled = new Date(Date.now() + 2 * 60 * 60 * 1000);
+  return {
+    subject_id,
+    account_id: ACCOUNT,
+    notice: 'open_30',
+    audience_variant: 'manager',
+    profile_generation: 1,
+    local_date: scheduled.toISOString().slice(0, 10),
+    scheduled_for: scheduled.toISOString(),
+    timezone: 'UTC',
+    language: 'en',
+    quiet_hours_start: null,
+    quiet_hours_end: null,
+    ...overrides,
+  };
+}
+
+type Failure = { code: string; message: string };
+
+function mockDatabase(
+  rows: unknown[],
+  options: { rpcError?: Failure; inserts?: InsertResult[]; handoverRows?: unknown[]; handoverError?: Failure } = {},
+) {
+  const answers: Record<string, { data: unknown; error: Failure | null }> = {
+    sanskara_reminders_due: options.rpcError ? { data: null, error: options.rpcError } : { data: rows, error: null },
+    sanskara_handover_due: options.handoverError ? { data: null, error: options.handoverError } : { data: options.handoverRows ?? [], error: null },
+  };
+  const limit = vi.fn().mockImplementation((_n: number) => Promise.resolve(answers[currentRpc]));
+  let currentRpc = '';
+  const rpc = vi.fn().mockImplementation((name: string) => { currentRpc = name; return { limit }; });
   const queue = [...(options.inserts ?? [])];
   const insert = vi.fn().mockImplementation(() => Promise.resolve(queue.shift() ?? { error: null }));
   const from = vi.fn().mockReturnValue({ insert });
@@ -268,6 +296,91 @@ describe('Sanskara reminder producer cron', () => {
         expect(text).not.toContain(SUB_B);
         expect(text).not.toContain(ACCOUNT);
         expect(text).not.toContain('Open your timeline');
+      }
+    });
+  });
+
+  describe('hand-over notices', () => {
+    const SUBJECT_A = 'aaaaaaaa-1111-4222-8333-000000000001';
+    const SUBJECT_B = 'bbbbbbbb-1111-4222-8333-000000000002';
+
+    it('asks the hand-over selector too, with no arguments, and bounds it', async () => {
+      enable();
+      const db = mockDatabase([], { handoverRows: [] });
+      await GET(request());
+      expect(db.rpc).toHaveBeenCalledWith('sanskara_handover_due');
+      expect(db.limit.mock.calls).toEqual([[1000], [1000]]);
+    });
+
+    it('inserts a candidate in the H key space, keyed by the child\'s subject id, after the reminders', async () => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { handoverRows: [handoverRow(SUBJECT_A), handoverRow(SUBJECT_B, { notice: 'closing_7', audience_variant: 'former_manager' })] });
+      const body = await (await GET(request())).json();
+      expect(db.insert).toHaveBeenCalledTimes(3);
+      const inserted = db.insert.mock.calls.map((c) => c[0]);
+      expect(inserted[0]).toMatchObject({ event_id: SUB_A, event_instance: 'L1' });
+      expect(inserted[1]).toMatchObject({ event_id: SUBJECT_A, event_instance: 'Hopen_30', audience_variant: 'manager' });
+      expect(inserted[2]).toMatchObject({ event_id: SUBJECT_B, event_instance: 'Hclosing_7', audience_variant: 'former_manager' });
+      expect(body).toMatchObject({ created: 1, handover: { due: 2, created: 2, refused: 0, duplicates: 0 } });
+    });
+
+    it('keeps the two summaries apart: a hand-over refusal is not a reminder refusal', async () => {
+      enable();
+      mockDatabase([dueRow(SUB_A)], {
+        handoverRows: [handoverRow(SUBJECT_A)],
+        inserts: [{ error: null }, { error: { code: '23514', message: 'sanskara_candidate_requires_current_handover' } }],
+      });
+      const body = await (await GET(request())).json();
+      expect(body).toMatchObject({ created: 1, refused: 0, handover: { created: 0, refused: 1, refusedReasons: { sanskara_candidate_requires_current_handover: 1 } } });
+    });
+
+    it('rewords a hand-over notice with the hand-over wordings, not the reminder ones', async () => {
+      enable();
+      const notDiscreet = { code: '23514', message: 'sanskara_candidate_not_discreet' };
+      const db = mockDatabase([], { handoverRows: [handoverRow(SUBJECT_A)], inserts: [{ error: notDiscreet }, { error: null }] });
+      const body = await (await GET(request())).json();
+      const [first, second] = db.insert.mock.calls.map((c) => c[0]);
+      expect(second.title).not.toBe(first.title);
+      expect(second.event_instance).toBe('Hopen_30');
+      expect(second.metadata).toEqual(first.metadata);
+      expect(body.handover).toMatchObject({ created: 1, reworded: 1, refused: 0 });
+    });
+
+    it('skips a malformed hand-over row and carries on', async () => {
+      enable();
+      const db = mockDatabase([], { handoverRows: [handoverRow('nope'), handoverRow(SUBJECT_B)] });
+      const body = await (await GET(request())).json();
+      expect(db.insert).toHaveBeenCalledTimes(1);
+      expect(body.handover).toMatchObject({ created: 1, malformed: 1 });
+    });
+
+    it('answers 503 and creates nothing when the hand-over selector fails, even though reminders were selected', async () => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { handoverError: { code: '57014', message: 'canceling statement due to statement timeout' } });
+      const response = await GET(request());
+      expect(response.status).toBe(503);
+      expect(db.insert).not.toHaveBeenCalled();
+      expect(JSON.stringify(await response.json())).not.toContain('statement timeout');
+    });
+
+    it('creates nothing in a dry run, and counts both kinds', async () => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { handoverRows: [handoverRow(SUBJECT_A)] });
+      const body = await (await GET(request('test-secret', '?dryRun=true'))).json();
+      expect(db.insert).not.toHaveBeenCalled();
+      expect(body).toMatchObject({ dryRun: true, eligibleCount: 2, wouldInsertCount: 2, wouldSendCount: 0 });
+    });
+
+    it('puts no subject id, account id or notice text in the response or the logs', async () => {
+      enable();
+      mockDatabase([], { handoverRows: [handoverRow(SUBJECT_A), handoverRow(SUBJECT_B)], inserts: [{ error: null }, { error: { code: '23514', message: 'sanskara_candidate_not_discreet' } }, { error: { code: '23514', message: 'sanskara_candidate_not_discreet' } }] });
+      const out = JSON.stringify(await (await GET(request())).json());
+      const logged = JSON.stringify([...(console.info as ReturnType<typeof vi.fn>).mock.calls, ...(console.warn as ReturnType<typeof vi.fn>).mock.calls]);
+      for (const text of [out, logged]) {
+        expect(text).not.toContain(SUBJECT_A);
+        expect(text).not.toContain(SUBJECT_B);
+        expect(text).not.toContain(ACCOUNT);
+        expect(text).not.toContain('Open the app');
       }
     });
   });

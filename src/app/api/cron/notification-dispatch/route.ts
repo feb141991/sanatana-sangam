@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendPushNotification } from "@/lib/push-server";
 import { getCompletedJapaUserIds } from "@/lib/japa-candidate-producer";
+import { SANSKARA_HANDOVER_NOTICES } from "@/lib/sanskara-handover-candidate";
 import { recordNotificationDispatchBatch, type NotificationDispatchEventPayload } from "@/lib/notification-dispatch-audit";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
 import { getLocalDateIso, localSpiritualDate, resolveTimeZone } from "@/lib/sacred-time";
@@ -374,6 +375,33 @@ export async function GET(request: Request) {
           const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
             ? row.metadata as Record<string, unknown>
             : {};
+          // A hand-over notice (a child's managers, the hand-over at 18) shares the type but not the key space: it carries
+          // `notice`, and its validity is the child's, not a subscription's. The account asked about is the row's own user.
+          if (metadata.notice !== undefined) {
+            const handoverSubject = metadata.subject_id;
+            const handoverNotice = metadata.notice;
+            const handoverGeneration = metadata.profile_generation;
+            const handoverDate = metadata.local_date;
+            if (
+              typeof handoverSubject !== 'string' || !UUID_RE.test(handoverSubject)
+              || typeof handoverNotice !== 'string' || !SANSKARA_HANDOVER_NOTICES.includes(handoverNotice as never)
+              || !Number.isInteger(handoverGeneration)
+              || typeof handoverDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(handoverDate)
+            ) {
+              sanskaraInvalidIds.set(row.id, 'sanskara_handover_metadata_invalid');
+              continue;
+            }
+            const { data: handoverValid, error: handoverValidError } = await supabase.rpc('sanskara_handover_still_valid', {
+              p_subject: handoverSubject,
+              p_account: row.user_id,
+              p_notice: handoverNotice,
+              p_profile_generation: handoverGeneration as number,
+              p_local_date: handoverDate,
+            });
+            if (handoverValidError) throw handoverValidError;
+            if (handoverValid !== true) sanskaraInvalidIds.set(row.id, 'sanskara_handover_no_longer_valid');
+            continue;
+          }
           const subscriptionId = metadata.subscription_id;
           const generation = metadata.subscription_generation;
           const recordVersion = metadata.record_version;

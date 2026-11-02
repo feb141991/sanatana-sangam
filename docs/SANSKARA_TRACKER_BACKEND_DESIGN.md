@@ -255,8 +255,16 @@ In-app notification creation and OS push delivery stay separate; nothing here cl
   27 of 27 mutations turned it red; rollback then re-apply passes; all eight Sanskara suites pass on the full stack. Two checks that could not fail on their
   own (a window-end check that `sanskara_can` already makes, and a separate dependent-deleted trigger that the manager cascade already covers) were removed
   rather than kept as untestable surface. The opt-in filter in the selector is kept as early pruning only; `still_valid` is what protects.
-- **Not verified:** a real Supabase branch; the producer, dispatcher branch and Native banners (next commits); the resolver and dispatcher against these
-  rows; any device.
+- **Producer and dispatcher (written 2026-11-03, committed, NOT deployed).** The same cron route (`/api/cron/sanskara-reminders`, same two flags, same
+  dry run and disable switches) now also reads `sanskara_handover_due()` and inserts the `H` candidates after the reminders, with its own summary
+  under `handover` in the response (counts only). A failure of either selector is a 503 and nothing is inserted for that run. Builder:
+  `src/lib/sanskara-handover-candidate.ts`: one generic wording for all six notices (no stage, age or date; two wordings per language for the name
+  rule, 47-name corpus checked), expiry at the end of the local day. Dispatcher: a `sanskar_milestone` row whose metadata has `notice` is checked with
+  `sanskara_handover_still_valid` for **the row's own user** (never an account named in metadata); malformed metadata is skipped without asking
+  (`sanskara_handover_metadata_invalid`), a non-`true` answer is skipped (`sanskara_handover_no_longer_valid`), a failed check requeues the batch and
+  answers 503; the push still needs the recipient's `wants_sanskara_reminders`. 25 of 25 mutations on this TypeScript turned the tests red.
+- **Not verified:** a real Supabase branch; the Native banners (next commit); the resolver promoting these candidates and the dispatcher sending one against
+  the real database function; quiet-hours deferral; any device.
 
 ## 6. Scheduled jobs
 
