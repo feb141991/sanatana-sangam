@@ -59,6 +59,13 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   constraints, not only application checks.
 - Every migration requires RLS review, privilege review, rollback guidance,
   generated type updates and applied/unapplied environment reporting.
+- **Mandatory Migration Root Cause & Impact Warning (ROC Pre-Flight)**:
+  Before requesting approval or applying any database migration to production, always present a clear **Root-Cause Risk Assessment** covering:
+  1. **Function Overload Trap (`PGRST203`)**: Does the migration alter argument types, names, defaults, or parameter order of an existing PostgreSQL function? In Postgres, `CREATE OR REPLACE FUNCTION` silently leaves the old signature intact if parameter types or positions change, creating an overload. PostgREST resolves RPCs by named arguments and will fail with `PGRST203` (HTTP 500) whenever two overloads share argument names. Any redefined function MUST explicitly include `DROP FUNCTION IF EXISTS <old_signature>` in the same migration.
+  2. **Caller Contract & Mobile Client Compatibility**: Do active client versions (Android, iOS, web, background cron jobs) invoke this function or table with arguments matching the new signature? A breaking signature or return type change immediately breaks production devices.
+  3. **User Data & Opt-Out Safety (Rule 6)**: Does the migration alter column defaults or execute data updates? Blanket updates (`WHERE col = false OR col IS NULL`) overwrite explicit user opt-outs and are strictly prohibited. Report pre-flight counts of `true`/`false`/`NULL` before any update.
+  4. **Lock Contention & Concurrency**: Does the migration execute heavy DDL on active production tables (`ALTER TABLE ... ADD COLUMN NOT NULL`, index creation without `CONCURRENTLY`) that could cause statement timeouts or block live user traffic?
+  5. **Rollback & Reversibility**: Verify that a tested, matching rollback file exists in `supabase/rollbacks/`.
 - Never expose service-role credentials or production secrets.
 - Don’t run `supabase db push`. It would push every unapplied migration, and production already has history drift. Apply migrations individually or through reviewed target scripts only when explicitly approved.
 - Private Native API responses must stay `private, no-store`. For backend
