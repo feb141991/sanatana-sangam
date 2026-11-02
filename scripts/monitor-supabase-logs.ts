@@ -13,6 +13,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { createClient } from '@supabase/supabase-js';
 
 interface LogEntry {
   id?: string;
@@ -37,6 +38,83 @@ interface ClusteredError {
 }
 
 const DEFAULT_PATH = path.resolve(process.env.HOME || '', 'Downloads', 'supabase_logs.json');
+
+async function checkLiveBackendTelemetry(hours = 4) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    console.log('ℹ️  Skipping live DB telemetry check (missing SUPABASE_SERVICE_ROLE_KEY in env).\n');
+    return;
+  }
+
+  const supabase = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const sinceIso = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+
+  console.log(`\n===============================================================`);
+  console.log(`🌐 Live Backend & API Telemetry (Last ${hours} Hours, since ${sinceIso})`);
+  console.log(`===============================================================\n`);
+
+  // 1. Native API Diagnostic Events
+  const { data: apiErrors } = await supabase
+    .from('native_api_diagnostic_events')
+    .select('endpoint, final_status, outcome, duration_ms, server_request_id, received_at')
+    .gt('received_at', sinceIso)
+    .neq('final_status', 200)
+    .order('received_at', { ascending: false })
+    .limit(50);
+
+  if (!apiErrors || apiErrors.length === 0) {
+    console.log('✅ Native API Status: Clean (0 non-200 responses)');
+  } else {
+    console.log(`🚨 Native API Failures (${apiErrors.length} events):`);
+    const endpointMap: Record<string, number> = {};
+    for (const ev of apiErrors) {
+      const key = `${ev.endpoint} (HTTP ${ev.final_status || 'timeout'} - ${ev.outcome})`;
+      endpointMap[key] = (endpointMap[key] || 0) + 1;
+    }
+    for (const [k, count] of Object.entries(endpointMap)) {
+      console.log(`  • [${count}x] ${k}`);
+    }
+  }
+
+  // 2. Client Crash Events
+  const { data: clientErrors } = await supabase
+    .from('client_error_events')
+    .select('error_message, route, created_at')
+    .gt('created_at', sinceIso)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (!clientErrors || clientErrors.length === 0) {
+    console.log('✅ Client UI Crashes: Clean (0 unhandled client exceptions)');
+  } else {
+    console.log(`🚨 Client UI Exceptions (${clientErrors.length} events):`);
+    for (const ce of clientErrors.slice(0, 5)) {
+      console.log(`  • [${ce.created_at}] route=${ce.route}: ${ce.error_message?.slice(0, 80)}`);
+    }
+  }
+
+  // 3. Backend Monitoring Events
+  const { data: monErrors } = await supabase
+    .from('monitoring_events')
+    .select('domain, event_name, error_message, timestamp')
+    .gt('timestamp', sinceIso)
+    .eq('status', 'error')
+    .order('timestamp', { ascending: false })
+    .limit(20);
+
+  if (!monErrors || monErrors.length === 0) {
+    console.log('✅ Backend / AI Sinks: Clean (0 errors)');
+  } else {
+    console.log(`🚨 Backend Monitoring Errors (${monErrors.length} events):`);
+    for (const me of monErrors.slice(0, 5)) {
+      console.log(`  • [${me.timestamp}] domain=${me.domain} event=${me.event_name}: ${me.error_message?.slice(0, 80)}`);
+    }
+  }
+
+  console.log(`\n===============================================================\n`);
+}
 
 function classifyLogMessage(msg: string): { category: 'CRITICAL' | 'INFRASTRUCTURE' | 'BENIGN_NOISE'; title: string; description: string } {
   if (msg.includes('violates foreign key constraint')) {
@@ -206,22 +284,32 @@ export function parseAndAnalyzeLogs(filePath: string) {
   console.log(`\n===============================================================\n`);
 }
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   const isWatch = args.includes('--watch');
-  const targetPath = args.find(a => !a.startsWith('--')) || DEFAULT_PATH;
+  const checkLive = args.includes('--live') || !args.find(a => !a.startsWith('--'));
+  const targetPath = args.find(a => !a.startsWith('--')) || (fs.existsSync(DEFAULT_PATH) ? DEFAULT_PATH : null);
 
-  parseAndAnalyzeLogs(targetPath);
+  if (targetPath) {
+    parseAndAnalyzeLogs(targetPath);
+  } else {
+    console.log(`ℹ️  No log export file found at ${DEFAULT_PATH}.`);
+  }
 
-  if (isWatch) {
+  if (checkLive) {
+    await checkLiveBackendTelemetry(4);
+  }
+
+  if (isWatch && targetPath) {
     console.log(`👀 Watching for updates to ${targetPath}... (Press Ctrl+C to stop)`);
-    fs.watchFile(targetPath, { interval: 2000 }, (curr, prev) => {
+    fs.watchFile(targetPath, { interval: 2000 }, async (curr, prev) => {
       if (curr.mtimeMs !== prev.mtimeMs) {
         console.log(`\n🔄 Log file updated! Re-running analysis...`);
         parseAndAnalyzeLogs(targetPath);
+        if (checkLive) await checkLiveBackendTelemetry(4);
       }
     });
   }
 }
 
-main();
+main().catch(console.error);
