@@ -430,7 +430,7 @@ export async function publishMorningCard(
   // Select target account: explicit ID or prefer Shoonaya Facebook / Instagram
   const account = (options.accountId
     ? accounts[0]
-    : accounts.find((a: any) => a.account_type === "facebook_page" && a.display_name.toLowerCase().includes("shoonaya")) ||
+    : accounts.find((a: any) => a.account_type === "facebook_page" && (a.display_name?.toLowerCase().includes("shoonaya") ?? false)) ||
       accounts.find((a: any) => a.account_type === "facebook_page") ||
       accounts.find((a: any) => a.account_type === "instagram_business") ||
       accounts[0]) as SocialPlatformAccount;
@@ -450,7 +450,7 @@ export async function publishMorningCard(
     if (!account.access_token_enc) throw new Error("Account has no stored access token");
     accessToken = decryptSocialToken(account.access_token_enc, account.key_version);
   } catch (error) {
-    throw new MorningCardError(500, `Failed to decrypt access token for ${account.display_name}: ${error instanceof Error ? error.message : "unknown error"}`);
+    throw new MorningCardError(500, `Failed to decrypt access token for ${account.display_name || account.id}: ${error instanceof Error ? error.message : "unknown error"}`);
   }
 
   // 4. Send to publisher
@@ -491,7 +491,7 @@ export async function publishMorningCard(
       last_publish_attempt: {
         attempted_at: new Date().toISOString(),
         platform,
-        account_name: account.display_name,
+        account_name: account.display_name || account.id,
         error: errDetail
       }
     };
@@ -504,7 +504,7 @@ export async function publishMorningCard(
     publishedAt: new Date().toISOString(),
     platform,
     accountId: account.id,
-    accountName: account.display_name,
+    accountName: account.display_name || account.external_account_id || account.id,
     externalPostId: sendResult.externalPostId ?? null,
     permalinkUrl: sendResult.permalinkUrl ?? null,
     publishedBy: options.publishedBy
