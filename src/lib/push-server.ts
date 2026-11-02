@@ -274,10 +274,19 @@ async function sendViaExpo(
       });
 
       if (!response.ok) {
-        await response.text().catch(() => '');
-        console.error('Expo push batch failed:', response.status);
+        const errorText = await response.text().catch(() => '');
+        console.error('Expo push batch failed:', response.status, errorText);
+        const detailedMessage = errorText
+          ? `Expo push rejected (${response.status}): ${errorText.slice(0, 180)}`
+          : `Expo push request rejected (${response.status})`;
         for (const item of batch) {
-          if (!userOutcome.get(item.userId)?.sent) userOutcome.set(item.userId, { sent: false, errorCode: String(response.status), errorMessage: 'Expo push request rejected' });
+          if (!userOutcome.get(item.userId)?.sent) {
+            userOutcome.set(item.userId, {
+              sent: false,
+              errorCode: String(response.status),
+              errorMessage: detailedMessage,
+            });
+          }
         }
         continue;
       }

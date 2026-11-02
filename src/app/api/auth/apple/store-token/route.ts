@@ -72,9 +72,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
 
-    // Identity mismatch is a client error (wrong code submitted).
-    if (message.includes('identity mismatch')) {
-      return NextResponse.json({ error: 'Identity binding failed' }, { status: 400 });
+    // Identity mismatch or Apple rejection of invalid/expired code is a client error (400)
+    if (message.includes('identity mismatch') || message.includes('(400)')) {
+      return NextResponse.json({ error: 'Invalid or expired authorization code' }, { status: 400 });
     }
 
     console.error('apple/store-token: exchange failed for user', user.id, ':', message);

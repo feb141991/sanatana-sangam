@@ -6,6 +6,48 @@ This document records all production backend, mobile, database, and infrastructu
 
 ## Change Log
 
+### [Change #5] — 2026-11-02 13:40 IST
+* **Type:** Mobile Client Fix (shoonaya-mobile)
+* **Scope:** `components/home/FestivalQuizBanner.tsx`
+* **Trigger / Error:** 50+ entries in `native_auth_diagnostic_events` and `native_api_diagnostic_events` reporting `HTTP 401 AUTH_REQUIRED` on `GET /api/native/festival-quiz-seasons` during app startup on Android.
+* **Root Cause:**
+  `FestivalQuizBanner` self-fetched the endpoint inside a `useEffect` on Home without checking whether an authenticated session existed. For guest users or during startup before the session was restored, requests were sent without a Bearer token, triggering unnecessary 401 errors.
+* **Fix Applied:**
+  Checked `supabase.auth.getSession()` prior to dispatching `apiFetch('/api/native/festival-quiz-seasons')`. Bails immediately if no user session is present.
+* **Verification:**
+  - `npx tsc --noEmit` passed with 0 errors.
+  - Test suite (1770 tests) passed cleanly.
+
+---
+
+### [Change #4] — 2026-11-02 13:35 IST
+* **Type:** Database Schema Fix & Push Diagnostic Logging
+* **Scope:** 
+  - `supabase/migrations/20261102140000_drop_obsolete_complete_japa_session_overload.sql`
+  - `src/lib/push-server.ts`
+  - `src/app/api/auth/apple/store-token/route.ts`
+* **Trigger / Error:**
+  1. PostgreSQL / PostgREST Error `PGRST203`:
+     ```
+     Could not choose the best candidate function between: public.complete_japa_session(uuid, int, int, int, text...) and public.complete_japa_session(uuid, text, int, int, int...)
+     ```
+     causing all Japa completions on `/api/japa/complete` to fail with HTTP 500.
+  2. 13 Expo push deliveries failed with HTTP 403 (`Insufficient permissions to send push notifications to @rds-ventures/shoonaya.`) but the error message was swallowed into generic text.
+  3. Apple token store returning 500 when receiving expired or already-used authorization codes.
+* **Root Cause:**
+  1. Migration `20261101020000` redefined `complete_japa_session` with parameter order `(uuid, int, int, int, text...)` while migration `20260905232420` had `(uuid, text, int, int, int...)`. Postgres created a second overload instead of replacing it.
+  2. Expo project `@rds-ventures/shoonaya` has Enhanced Push Security enabled; requests require `EXPO_ACCESS_TOKEN`.
+  3. Apple token route returned 500 instead of 400 when Apple rejected client authorization codes.
+* **Fix Applied:**
+  1. Prepared migration `20261102140000_drop_obsolete_complete_japa_session_overload.sql` to drop the obsolete duplicate overload.
+  2. Improved `push-server.ts` to capture and record the actual error payload returned by Expo into `errorMessage`.
+  3. Mapped Apple 400 client rejections (`invalid_grant` / expired code) to HTTP 400 in `apple/store-token/route.ts`.
+* **Verification:**
+  - TypeScript compilation passed (0 errors).
+  - Migration rollback and syntax dry-run verified.
+
+---
+
 ### [Change #3] — 2026-11-02 13:20 IST
 * **Type:** Backend Bug Fix / Database Integrity
 * **Scope:** `src/app/api/cron/notification-dispatch/route.ts`
@@ -56,3 +98,4 @@ This document records all production backend, mobile, database, and infrastructu
 * **Fix Applied:**
   1. Added partial indexes for notification purging.
   2. Hardened Postgres function `search_path` and wrapped `auth.uid()` in scalar InitPlans for sub-millisecond query evaluation.
+
