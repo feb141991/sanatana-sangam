@@ -3505,6 +3505,18 @@ body::after {
   color: #334155 !important; /* slate-700 */
 }
 
+.admin-portal .text-slate-600:not(pre *, code *),
+.admin-portal .text-zinc-600:not(pre *, code *),
+.admin-portal .text-neutral-600:not(pre *, code *),
+[data-admin-portal="true"] .text-slate-600:not(pre *, code *),
+[data-admin-portal="true"] .text-zinc-600:not(pre *, code *),
+[data-admin-portal="true"] .text-neutral-600:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-slate-600:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-zinc-600:not(pre *, code *),
+[data-theme='dark'] .admin-portal .text-neutral-600:not(pre *, code *) {
+  color: #1E293B !important; /* slate-800: contrast 13.5:1 on white */
+}
+
 .admin-portal .text-muted:not(pre *, code *),
 [data-admin-portal="true"] .text-muted:not(pre *, code *),
 [data-admin-shell="true"] .text-muted:not(pre *, code *),
