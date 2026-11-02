@@ -67,12 +67,15 @@ This document records all production backend, mobile, database, and infrastructu
   2. Expo project `@rds-ventures/shoonaya` has Enhanced Push Security enabled; requests require `EXPO_ACCESS_TOKEN`.
   3. Apple token route returned 500 instead of 400 when Apple rejected client authorization codes.
 * **Fix Applied:**
-  1. Prepared migration `20261102140000_drop_obsolete_complete_japa_session_overload.sql` to drop the obsolete duplicate overload.
+  1. Prepared and applied migration `20261102140000_drop_obsolete_complete_japa_session_overload.sql` to drop the obsolete duplicate overload.
   2. Improved `push-server.ts` to capture and record the actual error payload returned by Expo into `errorMessage`.
   3. Mapped Apple 400 client rejections (`invalid_grant` / expired code) to HTTP 400 in `apple/store-token/route.ts`.
 * **Verification:**
   - TypeScript compilation passed (0 errors).
   - Migration rollback and syntax dry-run verified.
+  - Migration applied to linked remote Supabase database with `supabase db push --linked`.
+  - Version assertion passed: `node scripts/assert-supabase-migration-version.mjs 20261102140000`.
+  - Live RPC invocation verified against production: PostgREST `PGRST203` ambiguity resolved; `complete_japa_session` resolves cleanly.
 
 ---
 
