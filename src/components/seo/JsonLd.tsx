@@ -63,7 +63,6 @@ export function GeoArticleJsonLd({ geo, url }: { geo: GeoModel; url: string }) {
       OFFICIAL_SOCIAL_LINKS.linkedin,
       OFFICIAL_SOCIAL_LINKS.instagram,
       OFFICIAL_SOCIAL_LINKS.facebook,
-      OFFICIAL_SOCIAL_LINKS.googleBusiness,
     ],
   };
 
@@ -154,7 +153,6 @@ export function OrganizationJsonLd() {
           OFFICIAL_SOCIAL_LINKS.linkedin,
           OFFICIAL_SOCIAL_LINKS.instagram,
           OFFICIAL_SOCIAL_LINKS.facebook,
-          OFFICIAL_SOCIAL_LINKS.googleBusiness,
           "https://apps.apple.com/app/id6793055966",
           "https://play.google.com/store/apps/details?id=com.shoonaya.app",
         ],

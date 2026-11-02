@@ -29,8 +29,6 @@ describe("AEO & SEO JSON-LD Configuration", () => {
   it("contains valid HTTPS social links for sameAs knowledge graph", () => {
     expect(OFFICIAL_SOCIAL_LINKS.instagram).toMatch(/^https:\/\/www\.instagram\.com\//);
     expect(OFFICIAL_SOCIAL_LINKS.facebook).toMatch(/^https:\/\/www\.facebook\.com\//);
-    expect(OFFICIAL_SOCIAL_LINKS.googleBusiness).toBe("https://share.google/2sygcVyQbhizjyOv7");
-    expect(organization?.sameAs).toContain("https://share.google/2sygcVyQbhizjyOv7");
   });
 
   it("keeps Shoonaya distinct in the raw HTML homepage identity", () => {

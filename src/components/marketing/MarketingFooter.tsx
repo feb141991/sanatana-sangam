@@ -4,7 +4,6 @@ import {
   Instagram,
   Linkedin,
   Mail,
-  MapPin,
   ArrowRight,
   ShieldCheck,
   Sparkles,
@@ -240,15 +239,6 @@ export function MarketingFooter() {
                 className="flex size-10 items-center justify-center rounded-xl border border-[var(--card-border)] text-[var(--text-muted-warm)] transition-all hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] hover:scale-105"
               >
                 <Linkedin className="size-4" aria-hidden="true" />
-              </a>
-              <a
-                href={OFFICIAL_SOCIAL_LINKS.googleBusiness}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Shoonaya on Google Business"
-                className="flex size-10 items-center justify-center rounded-xl border border-[var(--card-border)] text-[var(--text-muted-warm)] transition-all hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] hover:scale-105"
-              >
-                <MapPin className="size-4" aria-hidden="true" />
               </a>
               <a
                 href={`mailto:${OFFICIAL_EMAIL}`}
