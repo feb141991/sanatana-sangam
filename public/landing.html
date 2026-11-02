@@ -17,6 +17,9 @@
     />
     <meta property="og:type" content="website" />
     <link rel="canonical" href="https://www.shoonaya.com/" />
+    <link rel="describedby" href="/llms.txt" />
+    <link rel="alternate" type="text/markdown" href="/llms.txt" />
+    <link rel="service-desc" type="application/json" href="/.well-known/mcp/server-card.json" />
     <meta property="og:url" content="https://www.shoonaya.com/" />
     <meta property="og:image" content="https://www.shoonaya.com/og-image.png?v=3" />
     <meta property="og:image:width" content="1200" />
@@ -7975,10 +7978,15 @@
             </div>
             <form
               class="footer-early-access-form"
+              toolname="requestEarlyAccess"
+              tooldescription="Submit user email to register for early access invitation"
+              toolautosubmit="false"
               onsubmit="event.preventDefault(); var email=this.querySelector('input').value; window.location.href='/early-access?email=' + encodeURIComponent(email);"
             >
               <input
                 type="email"
+                name="email"
+                toolparamdescription="Email address for Shoonaya early access invitation"
                 required
                 placeholder="Enter your email address…"
                 class="footer-early-access-input"
@@ -9688,5 +9696,7 @@
         </button>
       </div>
     </div>
+    <!-- WebMCP In-Browser Agent Tools -->
+    <script src="/assets/js/webmcp.js" defer></script>
   </body>
 </html>
