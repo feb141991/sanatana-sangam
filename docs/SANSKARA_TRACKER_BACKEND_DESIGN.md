@@ -4,7 +4,7 @@ Status: **v0.5. M1 to M4 are written, with rollbacks and tests, and verified on 
 2026-10-30: all four ARE applied in the live Supabase project (`supabase_migrations.schema_migrations` lists
 `20261029160000` to `20261029160300`), although the commit messages say "unapplied". Who applied them, and when, is not
 recorded; they were not applied by the session that wrote this section. See the addendum at the end for what was checked
-on the live objects. M5, M6, the routes, the reminder producer, the dispatcher changes and the screens are not written.**
+on the live objects. M5, M6, the routes, the screens are not written; the reminder producer and the dispatcher gate are written (2026-11-03), not deployed.**
 Implements the approved contract (`SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md`, v0.2: decisions D1 to D5 approved as
 recommended on 2026-10-29). Written 2026-10-29; live state recorded 2026-10-30.
 
@@ -148,7 +148,7 @@ server-owned event type, so producer metadata cannot widen it. Quiet hours, budg
 pipeline's, unchanged.
 
 **Selecting what to create.** `sanskara_reminders_due()` does the selection in SQL so that access is decided by the one
-`sanskara_can` and not re-implemented in TypeScript. The TypeScript producer (not yet written) calls it, then inserts one
+`sanskara_can` and not re-implemented in TypeScript. The TypeScript producer (`src/app/api/cron/sanskara-reminders/route.ts`, written 2026-11-03) calls it, then inserts one
 candidate per row: `event_id` = the subscription id, `event_instance` = `L<lead_days>`, `audience_variant` = `self`,
 `manager` or `viewer`, localised generic text, and `metadata` with exactly `subscription_id`, `subscription_generation`,
 `record_version`, `profile_generation` (and optionally `local_date`, `timezone`).
@@ -201,15 +201,44 @@ the same generation and not in the cool-off, and `sanskara_can('receive_reminder
 - The one-by-one send path is gone: Sanskara rows join the same grouped push as every other type.
 - Not verified: against the real `claim_due_scheduled_notifications`, the real database function or a device; the tests mock both.
   Real-device evidence of a delivered and tapped reminder is still required before anything here is called release-ready (AGENTS 6, 7).
-  The producer is still not written, so no `sanskar_milestone` row is created and this path has not run on live data.
+  The producer is written (next subsection) but off by default, so no `sanskar_milestone` row exists on live data and this path has not run there.
 
 In-app notification creation and OS push delivery stay separate; nothing here claims delivery from a token or ticket.
+
+**Reminder producer (done 2026-11-03; committed, NOT deployed, flag off).**
+- `GET /api/cron/sanskara-reminders` (`src/app/api/cron/sanskara-reminders/route.ts`, shaping in `src/lib/sanskara-reminder-candidate.ts`),
+  hourly at minute 17 in `vercel.json` (the first hourly cron here; a daily run would miss a reminder set up for the next morning).
+  Hourly because `sanskara_reminders_due` looks 36 hours ahead and 3 hours back, so every moment is seen several times.
+- **Off by default.** It does nothing, and does not touch the database, unless `NOTIFICATION_RESOLVER_ENABLED=true` **and**
+  `NOTIFICATION_CANDIDATE_MODE_SANSKAR_MILESTONE=candidate`. `NOTIFICATIONS_DRY_RUN`, `?dryRun=true`, `NOTIFICATIONS_DISABLED` and
+  `NOTIFICATIONS_DISABLE_TYPES` are honoured and create nothing.
+- Selection is `sanskara_reminders_due()` with no arguments, bounded to 1000 rows a run (earliest first; the response says `truncated`).
+  Access is decided there by `sanskara_can`; the producer never reads a name, title, rite or birth date.
+- One insert per candidate, not a batch, because the insert trigger can refuse any single row. `23514` is an expected answer to a change
+  made between selection and insert (counted as `refused`, run continues). `23505` is a duplicate. Any other database error stops the run
+  with 503, and the rest waits for the next hour. Database text is never echoed.
+- Output carries counts only: no subscription id, account id or reminder text in the response or the logs.
+- **Wording ladder.** The trigger refuses text containing a person's name (3+ characters) as a substring. One fixed sentence would make
+  every reminder for a child called "Kara" (the title said "Sanskara") fail forever and silently. Each language has two generic
+  wordings; on `sanskara_candidate_not_discreet` the producer tries the next, and the trigger judges each. If both are refused the
+  reminder is not sent (fails closed). Across a corpus of 43 plausible names every one survives at least one wording; only the plain
+  words "Date" and "Open" are blocked by both. Hindi and Punjabi wording is unreviewed by a native speaker.
+- Candidate shape: `event_id` = subscription id, `event_instance` = `L<lead>`, audience from the selector, link `/kul/sanskara`, expiry at the
+  end of the reminder's own local day, `source_status` `user_provided`, metadata exactly the six allowed keys.
+- **Verified:** 56 unit tests (builder and route, mocked database); 24 mutations turned them red; on scratch Postgres with the real M1 to M4
+  migrations the producer's real output (3 languages of fixture owners, children named Kara, Tim and Asha) was accepted by the real
+  `sanskara_validate_candidate` (Kara in English only on the second wording), the selector then returned 0 for them, and a candidate
+  prepared before its subscription was switched off was refused (`sanskara_candidate_requires_current_subscription`).
+- **Not verified:** a real Supabase branch; the resolver promoting these candidates; the dispatcher sending one; quiet-hours deferral of
+  a 09:00 reminder; production volume; any device. Real-device evidence of a delivered and tapped reminder is still required (AGENTS 6, 7).
+- **To switch on (founder):** deploy the dispatcher gate, apply M1 to M4 (already live) plus the lifecycle migration; deploy this; run once
+  with `?dryRun=true` and read `wouldInsertCount`; then set the two variables. To switch off: set the type mode to `disabled`.
 
 ## 6. Scheduled jobs
 
 | Job | Does | Cadence |
 |---|---|---|
-| Reminder producer | Section 5 | With the other producers |
+| Reminder producer | Section 5 | Written 2026-11-03; off until the per-type flag is set |
 | Majority sweep | Moves dependents reaching 18 to `frozen`, stops their managers' reminders, deletes frozen subjects 12 months after their 18th birthday unless claimed | Daily |
 | Consent purge | Deletes a subject's data 30 days after `suspended_at` if consent is still false | Daily |
 | Audit and request-log retention | Deletes audit rows older than 12 months and request-log rows older than 7 days | Daily |
@@ -368,8 +397,8 @@ the process this design describes (no shadow branch, applier not recorded). All 
 empty (0 subjects, 0 records, 0 subscriptions); `sanskara_rites` holds only `custom`; no profile has opted in to
 `wants_sanskara_reminders`. The legacy tables `user_sanskaras` and `user_sanskars` are empty; the old `sanskars`
 catalogue still holds its 16 rows (archive before M6). No `notifications` row and no `notification_schedule` row has type
-`sanskar_milestone`: reminders are inert. The old PWA producer, `POST /api/sanskar/schedule`, still exists and writes
-`notification_schedule` rows of that type, so it must be disabled before any new producer is scheduled.
+`sanskar_milestone`: reminders are inert. The old PWA producer, `POST /api/sanskar/schedule`, is now a retired route that answers 410
+(checked 2026-11-03); nothing else in `src` writes that type.
 
 **Checked and acceptable.**
 - Row-level security is enabled and forced on all ten tables; `anon` and `authenticated` hold no table grants.
@@ -412,7 +441,7 @@ routes first, then revoke direct RPC; display-only Kul pointer set and returned 
 the viewer's Kul membership re-checked on every read and a regression test for a manager who leaves the Kul;
 deletion, export and leave/remove hooks (M4 already has the cancellation hooks on `kul_members` and subscriptions);
 disable the old PWA Sanskara APIs; archive the 16-row catalogue and run M6; the Native API and screen; any new migration
-only after shadow verification. Reminder production stays off until the old producer is disabled and the dispatcher
+only after shadow verification. Reminder production stays off until the dispatcher
 integration is finished.
 
 ## The Kul pointer (M4a, 2026-10-30)
@@ -487,7 +516,7 @@ place"). Anyone who prefers the old "suspend and resume" semantics should say so
 - E10's hand-over offer ("if they were the last, the flow offers a hand-over to a current Kul member") is a client flow; no server
   function warns a last manager before they leave or delete. Deletion proceeds, which is "deletion over disclosure", but the offer
   itself is not built or tested here.
-- M5 (retention, consent purge, majority sweep) is now written (see "M5" below); the reminder producer is still not built, and nothing is scheduled anywhere until the M5 migration is applied.
+- M5 (retention, consent purge, majority sweep) is now written (see "M5" below); the reminder producer is built separately (section 5), and nothing is scheduled anywhere until the M5 migration is applied.
 - Not verified: a real Supabase branch, concurrency (a leave racing a grant), and the Native screen's behaviour when a share is
   voided while it is open.
 - Mutation checks run: voiding disabled, profile trigger removed, audit row naming the account, orphan trigger removed, follower

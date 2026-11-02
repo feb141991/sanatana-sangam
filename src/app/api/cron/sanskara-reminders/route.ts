@@ -1,0 +1,130 @@
+import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { NotificationCandidateInsert } from '@/types/database';
+import { getCandidateTypePipelineMode, isCandidateResolverGloballyEnabled } from '@/lib/notification-candidate-pipeline-mode';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
+import {
+  buildSanskaraReminderCandidates,
+  SANSKARA_EVENT_TYPE,
+  withSanskaraWording,
+  type SanskaraDueRow,
+} from '@/lib/sanskara-reminder-candidate';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+// Upper bound on one run. The selector orders by reminder time, so a backlog is the earliest-due first and the rest follows
+// on the next run (hourly).
+const MAX_ROWS_PER_RUN = 1000;
+
+type InsertOutcome =
+  | { outcome: 'created'; reworded: boolean }
+  | { outcome: 'duplicate' }
+  | { outcome: 'refused'; reason: string };
+
+/**
+ * Inserts one candidate. The insert trigger refuses text that repeats the person's name, which the producer cannot know, so
+ * on that one answer the next generic wording is tried (the trigger judges each attempt itself). Any other refusal is final
+ * for this run. 23514 and 23505 are answers; every other database error is thrown.
+ */
+async function insertWithWordings(supabase: SupabaseClient, first: NotificationCandidateInsert): Promise<InsertOutcome> {
+  let candidate: NotificationCandidateInsert | null = first;
+  for (let variant = 0; candidate; variant += 1) {
+    const { error } = await supabase.from('notification_candidates').insert(candidate);
+    if (!error) return { outcome: 'created', reworded: variant > 0 };
+    if (error.code === '23505') return { outcome: 'duplicate' };
+    if (error.code !== '23514') throw new Error(`Sanskara candidate insert failed (${error.code ?? 'no code'})`);
+    // The trigger's fixed messages (sanskara_candidate_*) describe a rule, never a person.
+    const reason = /^sanskara_candidate_[a-z_]+$/.test(error.message) ? error.message : 'sanskara_candidate_refused';
+    if (reason !== 'sanskara_candidate_not_discreet') return { outcome: 'refused', reason };
+    candidate = withSanskaraWording(first, variant + 1);
+    if (!candidate) return { outcome: 'refused', reason };
+  }
+  return { outcome: 'refused', reason: 'sanskara_candidate_refused' };
+}
+
+/**
+ * Creates a notification candidate for each Sanskara reminder that has become due.
+ *
+ * Selection is `sanskara_reminders_due()` (access decided by `sanskara_can`, not here). Each insert is validated by the
+ * `sanskara_validate_candidate` trigger against the live subscription, record version, opt-in and access, and refused
+ * with 23514 if any of them moved since the selection. A refusal is the expected answer to a change made in that gap, so it
+ * is counted and the run goes on; it is not an error. Any other database error stops the run (503).
+ * The dispatcher re-checks `sanskara_reminder_still_valid` again immediately before sending.
+ *
+ * Off unless NOTIFICATION_RESOLVER_ENABLED is true and NOTIFICATION_CANDIDATE_MODE_SANSKAR_MILESTONE is `candidate`.
+ * Nothing in the response or the logs names a person, a record or an id.
+ */
+export async function GET(request: Request) {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
+  if (request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const pipelineMode = getCandidateTypePipelineMode(SANSKARA_EVENT_TYPE);
+  const resolverEnabled = isCandidateResolverGloballyEnabled();
+  if (pipelineMode !== 'candidate' || !resolverEnabled) {
+    return NextResponse.json({
+      ok: true,
+      skipped: true,
+      reason: 'sanskara_candidate_pipeline_not_enabled',
+      pipelineMode,
+      resolverEnabled,
+    });
+  }
+
+  const safety = getNotificationSafetyState(SANSKARA_EVENT_TYPE, request);
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return NextResponse.json({ error: 'Missing Supabase environment' }, { status: 500 });
+
+  const supabase = createClient(url, serviceKey);
+  try {
+    const now = new Date();
+    const { data, error } = await supabase.rpc('sanskara_reminders_due').limit(MAX_ROWS_PER_RUN);
+    if (error) throw new Error(`sanskara_reminders_due failed (${error.code ?? 'no code'})`);
+    const rows = (data ?? []) as SanskaraDueRow[];
+    const built = buildSanskaraReminderCandidates(rows, now);
+
+    if (safety.isDryRun || safety.skipDelivery) {
+      return NextResponse.json(buildNotificationSafetyResponse(SANSKARA_EVENT_TYPE, safety, {
+        eligibleCount: rows.length,
+        skippedCount: built.malformedCount + built.outsideHorizonCount,
+        wouldInsertCount: built.candidates.length,
+        wouldSendCount: 0,
+      }));
+    }
+
+    let created = 0;
+    let duplicates = 0;
+    let reworded = 0;
+    const refused: Record<string, number> = {};
+    for (const candidate of built.candidates) {
+      const result = await insertWithWordings(supabase, candidate);
+      if (result.outcome === 'created') { created += 1; if (result.reworded) reworded += 1; }
+      else if (result.outcome === 'duplicate') duplicates += 1;
+      else refused[result.reason] = (refused[result.reason] ?? 0) + 1;
+    }
+
+    const refusedCount = Object.values(refused).reduce((sum, n) => sum + n, 0);
+    const summary = {
+      due: rows.length,
+      truncated: rows.length >= MAX_ROWS_PER_RUN,
+      malformed: built.malformedCount,
+      outsideHorizon: built.outsideHorizonCount,
+      created,
+      reworded,
+      duplicates,
+      refused: refusedCount,
+      refusedReasons: refused,
+    };
+    if (built.malformedCount > 0 || refusedCount > 0 || summary.truncated) console.warn('[sanskara-reminders] rows not created', summary);
+    console.info('[sanskara-reminders] producer completed', summary);
+    return NextResponse.json({ success: true, pipeline_mode: 'candidate', ...summary });
+  } catch (error) {
+    console.error('[sanskara-reminders] producer failed', error instanceof Error ? error.message : 'unknown');
+    return NextResponse.json({ error: 'Sanskara reminder generation failed' }, { status: 503 });
+  }
+}

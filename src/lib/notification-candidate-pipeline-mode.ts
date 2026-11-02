@@ -18,6 +18,7 @@ export const ALL_CANDIDATE_TYPES = [
   'quiz',
   'sankalpa_midpoint',
   'family_remembrance',
+  'sanskar_milestone',
   ...ALL_ROUTINE_TYPES,
   ...ALL_TIME_SENSITIVE_TYPES,
 ] as const;
