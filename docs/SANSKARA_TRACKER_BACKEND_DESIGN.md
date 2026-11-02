@@ -188,15 +188,20 @@ lapse (consent, Kul membership) only suspends it. Over-deleting is the safe erro
 only if the subscription is on and unchanged, the record is unchanged, dated and incomplete, the recipient is opted in with
 the same generation and not in the cool-off, and `sanskara_can('receive_reminder')` still holds. Any doubt is false.
 
-**Not yet done, and required before the producer is switched on** (files another session has uncommitted edits in; they
-must wait for that work to land and follow its per-feature preference map rather than add a parallel mechanism):
-- the dispatcher calls `sanskara_reminder_still_valid` for a `sanskar_milestone` row before sending (without it, a
-  reminder cancelled in the instant between the resolver claiming it and the dispatcher sending it could still be sent);
-- gate `sanskar_milestone` on `wants_sanskara_reminders` instead of `wants_family_notifications`, with the same
-  missing-column fallback the other new flags use;
-- stop sending `sanskara_id` and `kul_member_id` in the push data and send a neutral `type`, so the payload carries only
-  the opaque id and the route;
-- remove the one-by-one send path that existed only for those per-event ids.
+**Dispatcher gate (done 2026-11-03, `src/app/api/cron/notification-dispatch/route.ts` and `src/lib/notification-delivery-policy.ts`; committed, not deployed).**
+- Before any bell record or push, the dispatcher calls `sanskara_reminder_still_valid` with the four opaque values on the schedule
+  row. Only a literal `true` passes. `false`, `null` or anything else skips the row (`sanskara_reminder_no_longer_valid`); a row
+  without those values, or with a non-uuid id or a non-integer version, is skipped without asking (`sanskara_reminder_metadata_invalid`);
+  a call that fails requeues the whole claimed batch and answers 503, like the other completion lookups (unknown is not valid, and not final).
+- `sanskar_milestone` is gated on `wants_sanskara_reminders` (not `wants_family_notifications`), and fails closed: anything but `true`
+  skips it (`sanskara_reminders_disabled`), including a profile read made before the column exists (the `42703` fallbacks set it false).
+- The push payload is `{ type: "reminder" }` plus the route. No `sanskara_id`, no `kul_member_id`, no notification key, no producer
+  metadata. The link is always `/kul/sanskara`; a producer's `metadata.action_url` is ignored for this type (the candidate trigger already
+  refuses links with ids; this makes the delivery side agree). The real type stays in the server-side delivery records.
+- The one-by-one send path is gone: Sanskara rows join the same grouped push as every other type.
+- Not verified: against the real `claim_due_scheduled_notifications`, the real database function or a device; the tests mock both.
+  Real-device evidence of a delivered and tapped reminder is still required before anything here is called release-ready (AGENTS 6, 7).
+  The producer is still not written, so no `sanskar_milestone` row is created and this path has not run on live data.
 
 In-app notification creation and OS push delivery stay separate; nothing here claims delivery from a token or ticket.
 
@@ -268,9 +273,8 @@ Postgres does not write bound parameters (a child's name, private notes) to its 
 
 ## 10. Open questions
 
-1. **Coordination.** The dispatcher and delivery-policy files have another session's uncommitted edits; the changes listed
-   at the end of section 5 wait for them. **Do not schedule the producer until they are in**: until the dispatcher calls
-   the send-time check, a reminder cancelled while claimed could still be sent.
+1. **Coordination.** (Closed 2026-11-03.) The dispatcher gate in section 5 is committed. It must be **deployed** before the
+   producer is scheduled; deploying the producer first would send reminders without the send-time check.
 2. **Lead-time set** (0, 1, 3, 7, 14, 30 days) and **09:00** default are proposals; the catalogue step may refine them.
 3. **Claim token lifetime** (7 days is proposed, matching family link invitations) and how the token reaches the new
    adult.

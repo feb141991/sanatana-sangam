@@ -8,8 +8,8 @@ import { getLocalDateIso, localSpiritualDate, resolveTimeZone } from "@/lib/sacr
 import {
   getNotificationPreferenceSkipReason,
   getQuietHoursSkipReason,
+  getPushPayloadType,
   getScheduledNotificationActionPath,
-  getScheduledNotificationPushData,
 } from "@/lib/notification-delivery-policy";
 
 // ─── Notification Dispatcher Cron ───────────────────────────────────────────
@@ -129,7 +129,7 @@ export async function GET(request: Request) {
     // ── 3. Re-verify user eligibility at dispatch time ─────────────────────────
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
     const profileColumns = "id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_vrat_reminders, wants_tithi_reminders, wants_sankalpa_midpoint_reminders, japa_reminder_enabled, quiz_reminder_enabled, wants_shloka_reminders, wants_nitya_reminders, last_shloka_date";
-    const coverageColumns = "wants_sattvic_reminders, wants_mood_reminders, wants_evening_reminder, wants_madhyahn_reminder, dharm_veer_reminder_enabled";
+    const coverageColumns = "wants_sattvic_reminders, wants_mood_reminders, wants_evening_reminder, wants_madhyahn_reminder, dharm_veer_reminder_enabled, wants_sanskara_reminders";
     let { data: profiles, error: profileErr } = await supabase
       .from("profiles")
       .select(`${profileColumns}, wants_brahma_muhurta_reminders, ${coverageColumns}`)
@@ -149,6 +149,7 @@ export async function GET(request: Request) {
         wants_evening_reminder: false,
         wants_madhyahn_reminder: false,
         dharm_veer_reminder_enabled: false,
+        wants_sanskara_reminders: false,
       }));
     }
 
@@ -167,6 +168,7 @@ export async function GET(request: Request) {
         wants_evening_reminder: false,
         wants_madhyahn_reminder: false,
         dharm_veer_reminder_enabled: false,
+        wants_sanskara_reminders: false,
       })) as typeof profiles;
       profileErr = withoutBrahmaRes.error;
     }
@@ -185,6 +187,7 @@ export async function GET(request: Request) {
         wants_evening_reminder: false,
         wants_madhyahn_reminder: false,
         dharm_veer_reminder_enabled: false,
+        wants_sanskara_reminders: false,
       }));
       profileErr = fallbackRes.error;
     }
@@ -357,6 +360,55 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Could not verify quiz completion; delivery will retry' }, { status: 503 });
     }
 
+    // Sanskara reminders are prepared up to 48 hours ahead from a subscription, a record and the recipient's opt-in. Any
+    // of them can change before this run, so the database re-checks every one of them at the moment of sending
+    // (sanskara_reminder_still_valid) and a reminder it does not vouch for is skipped, never sent. A row without the
+    // opaque ids it was prepared on cannot be checked and is skipped. A check that could not be made at all (the call
+    // failed) retries the batch: unknown is not valid, but it is not final either.
+    const sanskaraInvalidIds = new Map<string, string>();
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const sanskaraRows = claimedRows.filter((row) => row.notification_type === 'sanskar_milestone');
+    if (sanskaraRows.length > 0) {
+      try {
+        for (const row of sanskaraRows) {
+          const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
+            ? row.metadata as Record<string, unknown>
+            : {};
+          const subscriptionId = metadata.subscription_id;
+          const generation = metadata.subscription_generation;
+          const recordVersion = metadata.record_version;
+          const profileGeneration = metadata.profile_generation;
+          if (
+            typeof subscriptionId !== 'string' || !UUID_RE.test(subscriptionId)
+            || !Number.isInteger(generation) || !Number.isInteger(recordVersion) || !Number.isInteger(profileGeneration)
+          ) {
+            sanskaraInvalidIds.set(row.id, 'sanskara_reminder_metadata_invalid');
+            continue;
+          }
+          const { data: stillValid, error: validError } = await supabase.rpc('sanskara_reminder_still_valid', {
+            p_subscription: subscriptionId,
+            p_generation: generation,
+            p_record_version: recordVersion,
+            p_profile_generation: profileGeneration,
+          });
+          if (validError) throw validError;
+          if (stillValid !== true) sanskaraInvalidIds.set(row.id, 'sanskara_reminder_no_longer_valid');
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'sanskara_validity_lookup_failed';
+        console.error('[notification-dispatch] Sanskara send-time check failed; requeuing claimed batch:', message);
+        const { error: requeueError } = await supabase
+          .from('notification_schedule')
+          .update({ status: 'pending', claimed_at: null, error: 'sanskara_validity_lookup_retry' })
+          .in('id', claimedRows.map((row) => row.id))
+          .eq('status', 'sending');
+        if (requeueError) {
+          console.error('[notification-dispatch] Could not requeue after Sanskara check failure:', requeueError.message);
+        }
+        return NextResponse.json({ error: 'Could not verify reminder eligibility; delivery will retry' }, { status: 503 });
+      }
+    }
+
     for (const row of claimedRows) {
       const profile = profileMap.get(row.user_id);
       if (!profile || profile.is_deleting) {
@@ -382,6 +434,20 @@ export async function GET(request: Request) {
           notificationType: row.notification_type,
           decision: "skipped",
           reason: preferenceSkipReason,
+          provider: "expo",
+        });
+        continue;
+      }
+
+      const sanskaraInvalidReason = sanskaraInvalidIds.get(row.id);
+      if (sanskaraInvalidReason) {
+        skippedRows.push({ id: row.id, reason: sanskaraInvalidReason });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: "skipped",
+          reason: sanskaraInvalidReason,
           provider: "expo",
         });
         continue;
@@ -546,29 +612,19 @@ export async function GET(request: Request) {
     // Rows sharing (notification_type, title, body, actionUrl) get one batched
     // push call instead of one per row -- this replaces what was previously up
     // to 200 sequential HTTP round-trips to the push provider on every
-    // 10-minute run. sanskar_milestone rows are deliberately excluded from
-    // grouping and always sent one-by-one: their push `data` payload carries
-    // per-event sanskara_id/kul_member_id that a shared batch `data` object
-    // can't represent (getScheduledNotificationActionPath falls back to a
-    // generic, non-unique '/kul/sanskara' path when metadata.action_url is
-    // absent, so "the actionUrl is always unique" can't be relied on to keep
-    // these out of a shared group automatically). Volume for this type is
-    // near-zero, so there's no meaningful cost to the simpler, safer path.
+    // 10-minute run. Sanskara reminders take the same path: their payload no
+    // longer carries a per-event id (only a neutral type and the route), so a
+    // shared batch `data` object represents every row exactly.
     const succeededIds: string[] = [];
     const failedRows: Array<{ id: string; retry_count: number; error: string }> = [];
 
     type EligibleRow = (typeof eligibleRows)[number];
     const pushGroups = new Map<string, EligibleRow[]>();
-    const soloRows: EligibleRow[] = [];
 
     for (const row of eligibleRows) {
       const notifType = row.notification_type ?? "generic";
-      if (notifType === "sanskar_milestone") {
-        soloRows.push(row);
-        continue;
-      }
       const actionPath = getScheduledNotificationActionPath(row);
-      const groupKey = `${notifType} ${row.title} ${row.body} ${actionPath}`;
+      const groupKey = `${notifType} ${row.title} ${row.body} ${actionPath}`;
       const group = pushGroups.get(groupKey);
       if (group) group.push(row);
       else pushGroups.set(groupKey, [row]);
@@ -652,11 +708,7 @@ export async function GET(request: Request) {
 
     for (const rows of pushGroups.values()) {
       const notifType = rows[0].notification_type ?? "generic";
-      await dispatchRowGroup(rows, { type: notifType });
-    }
-
-    for (const row of soloRows) {
-      await dispatchRowGroup([row], getScheduledNotificationPushData(row));
+      await dispatchRowGroup(rows, { type: getPushPayloadType(notifType) });
     }
 
     // ── 6. Update succeeded rows to status='sent' in batches of 100 ─────────

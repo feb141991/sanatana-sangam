@@ -14,6 +14,10 @@ const mocks = vi.hoisted(() => ({
   quizResponse: { data: null, error: null } as { data: unknown[] | null; error: { message: string } | null },
   quizDates: [] as string[],
   updates: [] as Array<{ table: string; update: unknown; ids?: string[] }>,
+  // The database's send-time check for Sanskara reminders.
+  sanskaraValid: true as boolean | null,
+  sanskaraRpcError: null as { message: string } | null,
+  rpcCalls: [] as Array<{ name: string; args: Record<string, unknown> }>,
 }));
 
 vi.mock('@/lib/push-server', () => ({
@@ -23,7 +27,13 @@ vi.mock('@/lib/notification-dispatch-audit', () => ({ recordNotificationDispatch
 vi.mock('@/lib/monitoring/events', () => ({ emitEvent: vi.fn(), emitError: vi.fn() }));
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
-    rpc: vi.fn().mockImplementation(async () => ({ data: mocks.claimedRows, error: null })),
+    rpc: vi.fn().mockImplementation(async (name: string, args: Record<string, unknown>) => {
+      if (name === 'sanskara_reminder_still_valid') {
+        mocks.rpcCalls.push({ name, args });
+        return mocks.sanskaraRpcError ? { data: null, error: mocks.sanskaraRpcError } : { data: mocks.sanskaraValid, error: null };
+      }
+      return { data: mocks.claimedRows, error: null };
+    }),
     from: (table: string) => {
       const response = () => {
         const profileError = table === 'profiles' && mocks.profileErrorQueue.length > 0
@@ -40,11 +50,15 @@ vi.mock('@supabase/supabase-js', () => ({
           return {
           in: vi.fn().mockImplementation(() => table === 'profiles'
             ? Promise.resolve(response())
-            : { eq: vi.fn().mockImplementation(async (_column: string, date: string) => {
+            : {
+              eq: vi.fn().mockImplementation(async (_column: string, date: string) => {
                 if (table === 'quiz_responses') mocks.quizDates.push(date);
                 else mocks.sadhanaDates.push(date);
                 return response();
-              }) }),
+              }),
+              // The bell-notification id lookup chains a second .in() (user ids, then keys).
+              in: vi.fn().mockResolvedValue({ data: [], error: null }),
+            }),
           };
         }),
         update: vi.fn().mockImplementation((update: unknown) => ({
@@ -109,6 +123,9 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
     mocks.sadhanaDates = [];
     mocks.quizDates = [];
     mocks.updates = [];
+    mocks.sanskaraValid = true;
+    mocks.sanskaraRpcError = null;
+    mocks.rpcCalls = [];
     vi.clearAllMocks();
   });
 
@@ -453,5 +470,131 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
         ids: ['schedule-brahma-1'],
       });
     });
+  });
+  // ── Sanskara reminders: the send-time gate ────────────────────────────────────────────────────────────────────────
+  const sanskaraMetadata = (n: number) => ({
+    subscription_id: `00000000-0000-4000-8000-00000000000${n}`,
+    subscription_generation: 1, record_version: 2, profile_generation: 3,
+    local_date: '2026-09-29', timezone: 'Europe/London',
+  });
+  const sanskaraRow = (n: number, patch: Record<string, unknown> = {}) => ({
+    id: `schedule-s${n}`, user_id: `user-s${n}`, notification_type: 'sanskar_milestone',
+    notification_key: `sanskar_milestone:${n}`, title: 'A reminder', body: 'You have a reminder.',
+    metadata: sanskaraMetadata(n), retry_count: 0, ...patch,
+  });
+  const sanskaraProfile = (n: number, patch: Record<string, unknown> = {}) => ({
+    ...mocks.profiles[0], id: `user-s${n}`, wants_sanskara_reminders: true, wants_family_notifications: true, ...patch,
+  });
+
+  it('sends a still-valid Sanskara reminder in one grouped push with a neutral payload', async () => {
+    mocks.claimedRows = [sanskaraRow(1), sanskaraRow(2)];
+    mocks.profiles = [sanskaraProfile(1), sanskaraProfile(2)];
+    vi.mocked(sendPushNotification).mockResolvedValueOnce({ sentUserIds: ['user-s1', 'user-s2'], skippedUserIds: [] } as never);
+    const response = await GET(request());
+    expect(response.status).toBe(200);
+    expect(mocks.rpcCalls).toEqual([
+      { name: 'sanskara_reminder_still_valid', args: { p_subscription: '00000000-0000-4000-8000-000000000001', p_generation: 1, p_record_version: 2, p_profile_generation: 3 } },
+      { name: 'sanskara_reminder_still_valid', args: { p_subscription: '00000000-0000-4000-8000-000000000002', p_generation: 1, p_record_version: 2, p_profile_generation: 3 } },
+    ]);
+    expect(sendPushNotification).toHaveBeenCalledTimes(1);
+    const [message, options] = vi.mocked(sendPushNotification).mock.calls[0];
+    expect(message.userIds).toEqual(['user-s1', 'user-s2']);
+    expect(message.data).toEqual({ type: 'reminder' });
+    expect(message.url).toBe('https://shoonaya.com/kul/sanskara');
+    expect(JSON.stringify(message)).not.toMatch(/sanskara_id|kul_member_id|subscription|00000000-0000/);
+    expect(options?.type).toBe('sanskar_milestone');
+    expect(mocks.updates).toContainEqual({ table: 'notification_schedule', update: expect.objectContaining({ status: 'sent' }), ids: ['schedule-s1', 'schedule-s2'] });
+  });
+
+  it('skips a Sanskara reminder the database no longer vouches for, before any bell or push', async () => {
+    mocks.claimedRows = [sanskaraRow(1)];
+    mocks.profiles = [sanskaraProfile(1)];
+    mocks.sanskaraValid = false;
+    const response = await GET(request());
+    expect(response.status).toBe(200);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_reminder_no_longer_valid' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it.each([[null], ['true'], [undefined]])('treats an answer of %s from the check as not valid', async (answer) => {
+    mocks.claimedRows = [sanskaraRow(1)];
+    mocks.profiles = [sanskaraProfile(1)];
+    mocks.sanskaraValid = answer as never;
+    await GET(request());
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_reminder_no_longer_valid' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it('retries the whole claimed batch, and sends nothing, when the check cannot be made', async () => {
+    mocks.claimedRows = [sanskaraRow(1)];
+    mocks.profiles = [sanskaraProfile(1)];
+    mocks.sanskaraRpcError = { message: 'statement timeout' };
+    const response = await GET(request());
+    expect(response.status).toBe(503);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'pending', claimed_at: null, error: 'sanskara_validity_lookup_retry' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it.each([
+    ['no metadata', {}],
+    ['a subscription id that is not a uuid', { ...sanskaraMetadata(1), subscription_id: 'abc' }],
+    ['a missing generation', { ...sanskaraMetadata(1), subscription_generation: undefined }],
+    ['a generation that is not an integer', { ...sanskaraMetadata(1), record_version: '2' }],
+    ['a fractional profile generation', { ...sanskaraMetadata(1), profile_generation: 1.5 }],
+  ])('skips, without asking the database, a Sanskara reminder with %s', async (_label, metadata) => {
+    mocks.claimedRows = [sanskaraRow(1, { metadata })];
+    mocks.profiles = [sanskaraProfile(1)];
+    await GET(request());
+    expect(mocks.rpcCalls).toHaveLength(0);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_reminder_metadata_invalid' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it('gates a Sanskara reminder on its own opt-in, not on the Family toggle', async () => {
+    mocks.claimedRows = [sanskaraRow(1)];
+    mocks.profiles = [sanskaraProfile(1, { wants_sanskara_reminders: false, wants_family_notifications: true })];
+    await GET(request());
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.profileSelects[0]).toContain('wants_sanskara_reminders');
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_reminders_disabled' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it('delivers a Sanskara reminder to a person who opted in even with Family notifications off', async () => {
+    mocks.claimedRows = [sanskaraRow(1)];
+    mocks.profiles = [sanskaraProfile(1, { wants_family_notifications: false })];
+    vi.mocked(sendPushNotification).mockResolvedValueOnce({ sentUserIds: ['user-s1'], skippedUserIds: [] } as never);
+    await GET(request());
+    expect(sendPushNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails closed for Sanskara reminders while the opt-in column does not exist', async () => {
+    mocks.claimedRows = [sanskaraRow(1)];
+    mocks.profiles = [sanskaraProfile(1)];
+    mocks.profileErrorQueue = [{ message: 'column does not exist', code: '42703' }];
+    await GET(request());
+    expect(mocks.profileSelects).toHaveLength(2);
+    expect(mocks.profileSelects[1]).not.toContain('wants_sanskara_reminders');
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_reminders_disabled' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it('ignores a producer-supplied link and never puts one in the push', async () => {
+    mocks.claimedRows = [sanskaraRow(1, { metadata: { ...sanskaraMetadata(1), action_url: '/kul/sanskara/some-record' } })];
+    mocks.profiles = [sanskaraProfile(1)];
+    vi.mocked(sendPushNotification).mockResolvedValueOnce({ sentUserIds: ['user-s1'], skippedUserIds: [] } as never);
+    await GET(request());
+    expect(vi.mocked(sendPushNotification).mock.calls[0][0].url).toBe('https://shoonaya.com/kul/sanskara');
   });
 });

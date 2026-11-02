@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_QUIET_HOURS,
   getNotificationPreferenceSkipReason,
+  getPushPayloadType,
   getQuietHoursSkipReason,
   getScheduledNotificationActionPath,
   getScheduledNotificationPushData,
@@ -11,15 +12,25 @@ describe("notification delivery policy", () => {
   const sanskarRow = {
     notification_type: "sanskar_milestone",
     notification_key: "sanskar_milestone:abc",
+    // Legacy keys a producer used to write; nothing may copy them into a push or a link.
     metadata: { sanskara_id: "namakarana", kul_member_id: "member-1" },
   };
 
-  it("delivers family notifications by default, suppresses when disabled", () => {
-    expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_family_notifications: false }))
-      .toBe("family_notifications_disabled");
+  it("delivers a Sanskara reminder only to a person who turned Sanskara reminders on", () => {
+    expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_sanskara_reminders: true })).toBeNull();
+    expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_sanskara_reminders: false }))
+      .toBe("sanskara_reminders_disabled");
+    // Fail closed: a profile read that could not see the column is not consent.
+    expect(getNotificationPreferenceSkipReason(sanskarRow, {})).toBe("sanskara_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_sanskara_reminders: null }))
+      .toBe("sanskara_reminders_disabled");
+  });
+
+  it("does not let the Family toggle decide a Sanskara reminder in either direction", () => {
     expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_family_notifications: true }))
+      .toBe("sanskara_reminders_disabled");
+    expect(getNotificationPreferenceSkipReason(sanskarRow, { wants_family_notifications: false, wants_sanskara_reminders: true }))
       .toBeNull();
-    expect(getNotificationPreferenceSkipReason(sanskarRow, {})).toBeNull();
   });
 
   it("delivers family remembrance by default, suppresses when opted out", () => {
@@ -121,20 +132,29 @@ describe("notification delivery policy", () => {
     expect(getScheduledNotificationActionPath(sanskarRow)).toBe("/kul/sanskara");
   });
 
-  it("preserves a valid producer-owned action path", () => {
+  it("preserves a valid producer-owned action path for other types", () => {
     expect(getScheduledNotificationActionPath({
-      ...sanskarRow,
-      metadata: { ...sanskarRow.metadata, action_url: "/kul/sanskara/namakarana" },
-    })).toBe("/kul/sanskara/namakarana");
+      notification_type: "family_remembrance",
+      metadata: { action_url: "/kul?section=family&x=1" },
+    })).toBe("/kul?section=family&x=1");
   });
 
-  it("forwards Sanskar identity through push data", () => {
-    expect(getScheduledNotificationPushData(sanskarRow)).toEqual({
-      type: "sanskar_milestone",
-      notification_key: "sanskar_milestone:abc",
-      sanskara_id: "namakarana",
-      kul_member_id: "member-1",
-    });
+  it("never lets producer metadata widen a Sanskara link beyond the screen", () => {
+    for (const action_url of ["/kul/sanskara/namakarana", "/kul/sanskara?record=1", "/mandali", "https://example.com"]) {
+      expect(getScheduledNotificationActionPath({ ...sanskarRow, metadata: { ...sanskarRow.metadata, action_url } }))
+        .toBe("/kul/sanskara");
+    }
+  });
+
+  it("carries no Sanskara identity and no revealing type in push data", () => {
+    expect(getPushPayloadType("sanskar_milestone")).toBe("reminder");
+    expect(getPushPayloadType("japa")).toBe("japa");
+    expect(getPushPayloadType(null)).toBe("generic");
+    const data = getScheduledNotificationPushData(sanskarRow);
+    expect(data.type).toBe("reminder");
+    expect(Object.keys(data)).not.toContain("sanskara_id");
+    expect(Object.keys(data)).not.toContain("kul_member_id");
+    expect(JSON.stringify(data)).not.toMatch(/namakarana|member-1|sanskar_milestone:abc.*namakarana/);
   });
 
   it("skips festival/vrat/tithi when user preferences are explicitly false", () => {

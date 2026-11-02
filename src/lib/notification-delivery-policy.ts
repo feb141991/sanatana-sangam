@@ -69,6 +69,7 @@ export type NotificationProfile = {
   is_deleting?: boolean | null;
   wants_brahma_muhurta_reminders?: boolean | null;
   wants_family_notifications?: boolean | null;
+  wants_sanskara_reminders?: boolean | null;
   wants_family_remembrance_reminders?: boolean | null;
   wants_festival_reminders?: boolean | null;
   wants_vrat_reminders?: boolean | null;
@@ -153,11 +154,13 @@ export function getNotificationPreferenceSkipReason(
     return "sankalpa_midpoint_reminders_disabled";
   }
 
+  // Sanskara reminders have their own explicit opt-in (default off), not the Family toggle. Anything but a plain `true`
+  // (false, null, or a column the profile read could not see) fails closed.
   if (
     row.notification_type === "sanskar_milestone" &&
-    profile.wants_family_notifications === false
+    profile.wants_sanskara_reminders !== true
   ) {
-    return "family_notifications_disabled";
+    return "sanskara_reminders_disabled";
   }
 
   if (
@@ -192,13 +195,16 @@ export function getNotificationPreferenceSkipReason(
 }
 
 export function getScheduledNotificationActionPath(row: ScheduledNotificationRow): string {
+  // A Sanskara reminder always opens the screen itself, never a record: the link carries no id, and the screen
+  // re-authorizes on open. The producer's metadata cannot widen it.
+  if (row.notification_type === "sanskar_milestone") return "/kul/sanskara";
+
   const metadataAction = row.metadata?.action_url;
   if (typeof metadataAction === "string" && metadataAction.startsWith("/")) {
     return metadataAction;
   }
 
   const notificationType = row.notification_type ?? "generic";
-  if (notificationType === "sanskar_milestone") return "/kul/sanskara";
   if (notificationType === "family_remembrance") return "/kul?section=family";
   if (notificationType === "sankalpa_midpoint") return "/sankalpa";
   if (notificationType === "shloka") return "/home?focus=shloka";
@@ -210,19 +216,22 @@ export function getScheduledNotificationActionPath(row: ScheduledNotificationRow
   return "/discover/mood";
 }
 
+// The `type` a push carries in its payload. The payload is readable by the push provider and the lock screen's
+// notification centre, so a Sanskara reminder says only that it is a reminder (the real type stays server-side, in the
+// delivery records). The app opens the screen from `url`, so no routing depends on this value.
+export function getPushPayloadType(notificationType: string | null | undefined): string {
+  if (notificationType === "sanskar_milestone") return "reminder";
+  return notificationType ?? "generic";
+}
+
 export function getScheduledNotificationPushData(
   row: ScheduledNotificationRow,
 ): Record<string, string> {
   const metadata = row.metadata ?? {};
   const data: Record<string, string> = {
-    type: row.notification_type ?? "generic",
+    type: getPushPayloadType(row.notification_type),
     notification_key: row.notification_key ?? "",
   };
-
-  if (row.notification_type === "sanskar_milestone") {
-    data.sanskara_id = String(metadata.sanskara_id ?? "");
-    data.kul_member_id = String(metadata.kul_member_id ?? "");
-  }
 
   if (row.notification_type === "sankalpa_midpoint") {
     data.sankalpa_id = String(metadata.sankalpa_id ?? "");
