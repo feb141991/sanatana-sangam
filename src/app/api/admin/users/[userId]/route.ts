@@ -496,12 +496,12 @@ export async function DELETE(
     admin.supabase.from("post_reactions").delete().eq("user_id", userId),
     admin.supabase.from("post_comments").delete().eq("author_id", userId),
     admin.supabase.from("posts").delete().eq("author_id", userId),
-    admin.supabase.from("user_blocked_profiles").delete().or(`blocker_id.eq.${userId},blocked_id.eq.${userId}`),
-    admin.supabase.from("user_muted_profiles").delete().or(`muter_id.eq.${userId},muted_id.eq.${userId}`),
+    admin.supabase.from("user_blocked_profiles").delete().or(`blocker_id.eq.${userId},blocked_user_id.eq.${userId}`),
+    admin.supabase.from("user_muted_profiles").delete().or(`muter_id.eq.${userId},muted_user_id.eq.${userId}`),
 
     // Settings, birth profiles, and moderation
     admin.supabase.from("user_settings").delete().eq("user_id", userId),
-    admin.supabase.from("birth_profiles").delete().eq("user_id", userId),
+    admin.supabase.from("birth_profiles").delete().eq("owner_id", userId),
     admin.supabase.from("user_warnings").delete().eq("user_id", userId),
     admin.supabase.from("user_activity_log").delete().or(`actor_id.eq.${userId},target_id.eq.${userId}`),
     admin.supabase.from("deleted_accounts").delete().eq("user_id", userId),
