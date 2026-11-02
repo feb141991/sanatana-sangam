@@ -295,3 +295,27 @@ retrofitted onto the mismatched existing entries.
   "Crows and Owls" frametale, ingested in Batch 2, not one of the 82). The single remaining gap is
   Book I's unidentified 33rd tale, which this project deliberately leaves un-ingested rather than
   guess at, per the "skip rather than invent" policy governing this entire effort.
+
+---
+
+## 7. Public web pages (added 2026-11-03)
+
+Status: **three stories public**, text only, on the founder's instruction of 2026-11-03.
+
+- Routes: `/stories/panchatantra` (hub), `/stories/panchatantra/<slug>` (English), `/stories/panchatantra/<slug>/hi` (Hindi).
+  Code: `src/lib/panchatantra-public.ts`, `src/app/(marketing)/stories/panchatantra/`. No second copy of any story: title and
+  moral come from `katha-library.ts`, the six-paragraph English and Hindi text from
+  `packages/dharma-rules/src/stories/panchatantra-expanded.json`.
+- Listed: `crane-and-crab`, `dharmabuddhi-papabuddhi`, `self-sacrificing-dove`. They were chosen because
+  `scripts/panchatantra-new-name-flags.json` records no new names for them. 84 of the 98 expanded entries add classical
+  names that were never checked against a source (`reviewStatus: structure_verified_names_pending_review`), so a story may
+  be listed only if it is not flagged; `src/lib/panchatantra-public.test.ts` fails otherwise.
+- Labelling (section 3, section 5): every page says the text is a Shoonaya retelling and not a translation of any single
+  edition, in English and in Hindi. No human source review of the expanded text has been recorded; the pages do not claim one.
+- No artwork is served. The Native illustrations (`assets/panchatantra`) have no recorded tool, date or rights status
+  (AGENTS.md section 11); a test fails if the pages import an image.
+- Overlap, not resolved: every katha, including all 98 Panchatantra stories, already has a public, indexable page at
+  `/bhakti/katha/<id>` (listed in `sitemap.ts`) that shows the shorter original text. The new pages carry different, longer
+  text for the three listed stories, with separate Hindi URLs and hreflang. Whether the old URL for those three should
+  point at the new one (canonical or redirect) is a decision for the founder.
+- Not verified: how the pages rank, dark mode, Android and iOS browsers, and the production deploy.

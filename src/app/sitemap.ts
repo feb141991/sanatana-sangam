@@ -1,4 +1,9 @@
 import { getAllJournalEssays } from "@/config/journal";
+import {
+  PANCHATANTRA_HUB_PATH,
+  listPublicPanchatantraStories,
+  panchatantraStoryUrl,
+} from "@/lib/panchatantra-public";
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { VRAT_DATABASE } from "@/lib/vrat-data";
@@ -207,5 +212,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
+    { url: `${BASE_URL}${PANCHATANTRA_HUB_PATH}`, changeFrequency: "monthly" as const, priority: 0.8 },
+    ...listPublicPanchatantraStories().flatMap((story) => {
+      const en = panchatantraStoryUrl(story.slug, "en");
+      const hi = panchatantraStoryUrl(story.slug, "hi");
+      const alternates = { languages: { en, hi } };
+      return [
+        { url: en, changeFrequency: "monthly" as const, priority: 0.7, alternates },
+        { url: hi, changeFrequency: "monthly" as const, priority: 0.7, alternates },
+      ];
+    }),
   ]));
 }

@@ -38,6 +38,7 @@ const ALWAYS_PUBLIC_EXACT = new Set([
   "/community",
   "/journal",
   "/blog",
+  "/stories/panchatantra",
   "/sources",
   "/get", // smart app link used by campaigns: sends phones to the right store (src/app/get/route.ts)
   "/payment",
@@ -70,6 +71,7 @@ const ALWAYS_PUBLIC_PREFIX = [
   "/traditions/",
   "/journal/",
   "/blog/",
+  "/stories/panchatantra/",
   "/beta/",
   "/sitemap",
   "/robots",
