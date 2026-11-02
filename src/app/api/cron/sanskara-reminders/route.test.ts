@@ -354,6 +354,22 @@ describe('Sanskara reminder producer cron', () => {
       expect(body.handover).toMatchObject({ created: 1, malformed: 1 });
     });
 
+    it.each(['PGRST202', '42883'])('keeps the reminders running when the hand-over function is not deployed yet (%s)', async (code) => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { handoverError: { code, message: 'Could not find the function public.sanskara_handover_due' } });
+      const response = await GET(request());
+      const body = await response.json();
+      expect(response.status).toBe(200);
+      expect(db.insert).toHaveBeenCalledTimes(1);
+      expect(body).toMatchObject({ created: 1, handover: { selectorDeployed: false, due: 0, created: 0 } });
+    });
+
+    it('reports the hand-over selector as deployed when it answers', async () => {
+      enable();
+      mockDatabase([], { handoverRows: [] });
+      expect((await (await GET(request())).json()).handover.selectorDeployed).toBe(true);
+    });
+
     it('answers 503 and creates nothing when the hand-over selector fails, even though reminders were selected', async () => {
       enable();
       const db = mockDatabase([dueRow(SUB_A)], { handoverError: { code: '57014', message: 'canceling statement due to statement timeout' } });

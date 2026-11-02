@@ -117,8 +117,12 @@ export async function GET(request: Request) {
 
     // The hand-over notices: the same event type and gates, a disjoint key space, their own selector and validator.
     const { data: handoverData, error: handoverError } = await supabase.rpc('sanskara_handover_due').limit(MAX_ROWS_PER_RUN);
-    if (handoverError) throw new Error(`sanskara_handover_due failed (${handoverError.code ?? 'no code'})`);
-    const handoverRows = (handoverData ?? []) as SanskaraHandoverDueRow[];
+    // The function is created by migration 20261103110000. Until it is applied PostgREST answers PGRST202 (or Postgres 42883):
+    // that skips only this phase, so the milestone reminders keep running whichever of the code and the migration ships first.
+    // Any other failure is real and stops the run.
+    const handoverNotDeployed = handoverError?.code === 'PGRST202' || handoverError?.code === '42883';
+    if (handoverError && !handoverNotDeployed) throw new Error(`sanskara_handover_due failed (${handoverError.code ?? 'no code'})`);
+    const handoverRows = (handoverNotDeployed ? [] : (handoverData ?? [])) as SanskaraHandoverDueRow[];
     const handoverBuilt = buildSanskaraHandoverCandidates(handoverRows, now);
 
     if (safety.isDryRun || safety.skipDelivery) {
@@ -140,6 +144,7 @@ export async function GET(request: Request) {
       outsideHorizon: built.outsideHorizonCount,
       ...reminders,
       handover: {
+        selectorDeployed: !handoverNotDeployed,
         due: handoverRows.length,
         truncated: handoverRows.length >= MAX_ROWS_PER_RUN,
         malformed: handoverBuilt.malformedCount,

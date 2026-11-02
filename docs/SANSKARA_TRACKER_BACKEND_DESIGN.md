@@ -263,6 +263,9 @@ In-app notification creation and OS push delivery stay separate; nothing here cl
   `sanskara_handover_still_valid` for **the row's own user** (never an account named in metadata); malformed metadata is skipped without asking
   (`sanskara_handover_metadata_invalid`), a non-`true` answer is skipped (`sanskara_handover_no_longer_valid`), a failed check requeues the batch and
   answers 503; the push still needs the recipient's `wants_sanskara_reminders`. 25 of 25 mutations on this TypeScript turned the tests red.
+- **Order of shipping:** the producer and the migration may ship in either order. If this code runs before migration `20261103110000` is applied, the
+  missing `sanskara_handover_due` (PGRST202 or 42883) skips only the hand-over phase and the response says `selectorDeployed: false`; the milestone reminders are unaffected.
+  The dispatcher branch needs no migration to be safe: no hand-over row can exist before it.
 - **Not verified:** a real Supabase branch; the Native banners (next commit); the resolver promoting these candidates and the dispatcher sending one against
   the real database function; quiet-hours deferral; any device.
 
