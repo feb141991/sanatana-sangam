@@ -365,6 +365,8 @@ begin
   update public.profiles set kul_id = public._t('K2') where id = public._t('A');
   perform public._t_matrix('sharer changed Kul (profiles)', public._t('SA'), public._t('D'), public._t('ra_b'), none);
   update public.profiles set kul_id = public._t('K1') where id = public._t('A');
+  -- Leaving voided the share (E2, E3); only a new share restores access, and a new share is what this line stands for.
+  update public.sanskara_grants set revoked_at = null, revoked_by = null where id = public._t('g_b');
   perform public._t_matrix('everything back in place', public._t('SA'), public._t('D'), public._t('ra_b'), viewer_b);
   -- A grant that names a Kul the grantee is not in.
   update public.sanskara_grants set kul_id = public._t('K2') where id = public._t('g_b');
@@ -522,7 +524,7 @@ begin
   perform public._t_admin();
   assert (select created_by from public.sanskara_records where id = (v->>'id')::uuid) = public._t('B'), 'the creator is the signed-in account';
   assert (select count(*) from public.sanskara_audit where action = 'record_created') = 2, 'one audit row per created record, none for the retry';
-  assert not exists (select 1 from public.sanskara_audit where detail <> '{}'::jsonb), 'audit rows carry no content';
+  assert not exists (select 1 from public.sanskara_audit where detail <> '{}'::jsonb and detail <> '{"reason": "kul_membership_ended"}'::jsonb), 'audit rows carry no content';
   delete from public.sanskara_records where subject_id = public._t('S1') and rite_key in ('rite_b2') or custom_title = 'Naming feast';
 
   -- create_record: a limit of one hundred records per person.

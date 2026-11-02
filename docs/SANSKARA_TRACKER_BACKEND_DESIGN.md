@@ -447,3 +447,50 @@ tables, built from production's column list on 2026-10-30; it is not a Supabase 
 **Changed in passing:** the three-argument `sanskara_create_dependent` is dropped and replaced by a four-argument form with a
 default (nothing calls it yet); one signature in the M2 test was updated to match. `sanskara_export_mine` does not export the pointer.
 **Not checked:** a Supabase branch, concurrency, and any route or screen.
+
+## Lifecycle hooks (2026-11-03): audit of contract section 9, and one defect fixed
+
+Method: read contract section 9 (E1 to E14), M1 to M4a and their tests, then built a scratch Postgres from production's column list,
+applied M1 to M4a and required the five existing Sanskara test files to pass before touching anything. Migration
+`20261103090000_sanskara_lifecycle_voids_grants` is **written and tested on the scratch database, not applied anywhere**.
+
+| Event | Before this change | Now |
+|---|---|---|
+| E1 revoke a share | Covered: `sanskara_revoke_grant` + `sanskara_on_access_lost`; grants and reminders tests | Unchanged |
+| E2 grantee leaves or is removed | Access denied at read time and pending reminders cancelled, **but the grant stayed live**: rejoining the Kul revived the share with no act by the owner. The M3 test asserted the revival ("works again when the membership does") | Grant revoked on the row, the grantee's reminder subscriptions deleted; only a new share restores access. `sanskara_lifecycle.test.sql` sections 1, 5 |
+| E3 sharer leaves or changes Kul | Same defect | Same fix, including a manager's shares, a profile whose `kul_id` moves without a membership delete, and the co-manager being untouched. Sections 2 to 4 |
+| E4 record completed | Covered (reminders test, direct write) | Unchanged |
+| E5 date changed | A trigger recomputes or cancels; I did not confirm a dedicated test of a date change | Not re-verified |
+| E6 manager added or removed | Covered (core test) | Unchanged |
+| E7 turns 18 | Access matrix, former-manager window and the granter-authority rule covered. **Freezing, and deletion when the 12 months end, are scheduled-job work (M5): not built** | Unchanged |
+| E7a claim | Covered (grants test section 4) | Unchanged |
+| E8 consent withdrawn | Shares suspended and reminders cancelled; `suspended_at` set and cleared (reminders test). **The 30-day purge is M5: not built** | Unchanged, by decision: consent is the owner's own reversible state, not a change of audience |
+| E9 owner deletes account | Reminders covered. No test that every Sanskara table is clean afterwards | Characterised: owner's subject, records, grants, subscriptions gone (section 7); deletion list in `admin/users/[userId]/route.ts` is guarded by `sanskara-account-deletion-contract.test.ts`; user deletion ends in `auth.admin.deleteUser`, which cascades |
+| E10 manager deletes account | The orphan-dependent trigger existed with **no test** of either outcome | Tested both ways (section 9): a co-manager keeps the dependent; the last manager's deletion removes dependent, records, shares and followers' reminders. Mutation: dropping the trigger turns it red |
+| E11 tree person changes | Covered (pointer test) | Unchanged |
+| E12 timezone change | Not examined | Not examined |
+| E13 offline grantee | Native cache: not in this change | Not in this change |
+| E14 grantee deleted | Reminders only | Grants, subscriptions gone, owner's record untouched (section 8) |
+| Export | `sanskara_export_mine` exists and is tested. It exports subjects, records (including private fields) and grants **given**; not managers, reminder subscriptions or the Kul pointer (the pointer omission is deliberate, M4a) | Unchanged. Whether managers and subscriptions belong in the export is a product decision |
+
+**A behaviour change from the documented M3 design.** M3's header said an environmental lapse (Kul membership) "only suspends"
+subscriptions, "so they can resume when it returns". That contradicts contract E2 and E3 ("void", "subscriptions cancelled") and
+is what let a removed member recover what they had been shown. Three existing tests encoded the old behaviour and were amended
+to the contract (grants test around the "lapsed share", reminders 3h and the due-list "back inside", core "everything back in
+place"). Anyone who prefers the old "suspend and resume" semantics should say so before this migration is applied.
+
+**What this does not close.**
+- E10's hand-over offer ("if they were the last, the flow offers a hand-over to a current Kul member") is a client flow; no server
+  function warns a last manager before they leave or delete. Deletion proceeds, which is "deletion over disclosure", but the offer
+  itself is not built or tested here.
+- M5 (retention, consent purge, majority sweep, reminder producer) is not built, and nothing is scheduled.
+- Not verified: a real Supabase branch, concurrency (a leave racing a grant), and the Native screen's behaviour when a share is
+  voided while it is open.
+- Mutation checks run: voiding disabled, profile trigger removed, audit row naming the account, orphan trigger removed, follower
+  reminder cleanup skipped. Each turned `sanskara_lifecycle.test.sql` red; restored, all six files pass. The claim that an audit
+  row naming the account would block account deletion was **tested and is false** on the scratch schema (the cascade removes it);
+  the migration says so.
+
+Apply (founder step; the MCP `apply_migration` is blocked by the auto-mode classifier): run the SQL file, then record the version,
+for example `supabase migration repair --status applied 20261103090000`. Rollback: `supabase/rollbacks/20261103090000_sanskara_lifecycle_voids_grants_rollback.sql`
+(grants already voided stay revoked). Never `supabase db push` (AGENTS section 4).

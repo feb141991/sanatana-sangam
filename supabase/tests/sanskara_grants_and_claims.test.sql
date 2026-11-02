@@ -229,17 +229,22 @@ begin
   assert jsonb_array_length(public.sanskara_shared_with_me()) = 1, 'H sees the minor''s Class B record, not the custom milestone (Class A)';
   assert (select count(*) from jsonb_array_elements(public.sanskara_shared_with_me()) x where x->'subject'->>'label' = 'Asha') = 1, 'a dependent''s records carry the child''s label';
 
-  -- The audience lapses: the share stays listed but grants nothing, and returns with the membership.
+  -- The audience ends (E2): the share is voided, so it is no longer listed, and it does not return with the membership.
   perform public._t_admin();
   delete from public.kul_members where user_id = public._t('H');
   perform public._t_as(public._t('H'));
   assert public.sanskara_shared_with_me() = '[]'::jsonb, 'a member who left the Kul sees nothing';
   perform public._t_as(public._t('A'));
-  assert jsonb_array_length(public.sanskara_list_access(public._t('S1'))) = 1, 'the lapsed share is still listed so it can be revoked';
+  assert jsonb_array_length(public.sanskara_list_access(public._t('S1'))) = 0, 'the voided share is no longer listed';
   perform public._t_admin();
   insert into public.kul_members (kul_id, user_id) values (public._t('K1'), public._t('H'));
   perform public._t_as(public._t('H'));
-  assert jsonb_array_length(public.sanskara_shared_with_me()) = 1, 'the share works again when the membership does';
+  assert public.sanskara_shared_with_me() = '[]'::jsonb, 'coming back to the Kul does not bring the share back';
+  -- Only a new share restores access: B shares the child's timeline with H again.
+  perform public._t_as(public._t('B'));
+  g2 := (public.sanskara_grant_view(public._t('r2b'), public._t('S1'), null, public._t('H'))->>'id')::uuid;
+  perform public._t_as(public._t('H'));
+  assert jsonb_array_length(public.sanskara_shared_with_me()) = 1, 'a new share works';
   perform public._t_admin();
   delete from public.sanskara_subject_managers where subject_id = public._t('S1') and account_id = public._t('B');
   perform public._t_as(public._t('H'));
@@ -268,7 +273,7 @@ begin
   assert public.sanskara_shared_with_me() = '[]'::jsonb, 'a grantee can leave a share';
   perform public._t_admin();
   assert (select revoked_by from public.sanskara_grants where id = g1) = public._t('D'), 'who ended it is recorded';
-  assert (select count(*) from public.sanskara_audit where action = 'grant_revoked') = 2, 'one audit row per ended share, none for the repeat';
+  assert (select count(*) from public.sanskara_audit where action = 'grant_revoked' and detail ->> 'reason' is distinct from 'kul_membership_ended') = 2, 'one audit row per ended share, none for the repeat';
   perform public._t_as(public._t('A'));
   assert public.sanskara_list_access(public._t('SA')) = '[]'::jsonb, 'ended shares are no longer listed';
   perform public._t_admin();

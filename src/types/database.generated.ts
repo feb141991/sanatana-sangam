@@ -12127,6 +12127,10 @@ export type Database = {
         Returns: Json
       }
       sanskara_viewer_kul: { Args: { p_account: string }; Returns: string }
+      sanskara_void_kul_grants: {
+        Args: { p_kul: string; p_user: string }
+        Returns: number
+      }
       skip:
         | { Args: { "": string }; Returns: string }
         | { Args: { how_many: number; why: string }; Returns: string }

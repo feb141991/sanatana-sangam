@@ -392,19 +392,20 @@ begin
   sh := public._t_sub('sub_l3', rec, public._t('H'));
   insert into public.sanskara_grants (id, subject_id, grantee_id, granted_by, kul_id, scope, record_id) values (public._t('g_l'), public._t('SA'), public._t('D'), public._t('A'), public._t('K1'), 'record', rec);
 
-  -- 3h. A Kul membership ends: the reminders that rested on it stop, the subscription is kept and works again with the membership.
+  -- 3h. A Kul membership ends (E2): the share is voided, so the reminders that rested on it stop and the subscription goes with it.
+  -- It does NOT come back with the membership: only a new share does (sanskara_lifecycle.test.sql).
   perform public._t_arm(sd);
   delete from public.kul_members where user_id = public._t('D');
   perform public._t_gone('a member who left the Kul', sd);
-  assert exists (select 1 from public.sanskara_subscriptions where id = sd and enabled), 'the subscription is kept';
+  assert not exists (select 1 from public.sanskara_subscriptions where id = sd), 'the subscription went with the voided share';
   perform public._t_as(public._t('D'));
   assert public.sanskara_my_reminders() = '[]'::jsonb, 'but it is not offered while the person has no access';
   perform public._t_admin();
   assert not public.sanskara_can('receive_reminder', public._t('SA'), public._t('D'), rec), 'but it cannot receive while outside the Kul';
   insert into public.kul_members (kul_id, user_id) values (public._t('K1'), public._t('D'));
-  assert public.sanskara_can('receive_reminder', public._t('SA'), public._t('D'), rec), 'and can again when the membership returns';
+  assert not public.sanskara_can('receive_reminder', public._t('SA'), public._t('D'), rec), 'and the share does not return with the membership';
   perform public._t_as(public._t('D'));
-  assert jsonb_array_length(public.sanskara_my_reminders()) = 1, 'and is offered again';
+  assert public.sanskara_my_reminders() = '[]'::jsonb, 'so nothing is offered again';
   perform public._t_admin();
   assert (select count(*) from public.notification_candidates where event_id = sd::text and status = 'cancelled') >= 1, 'what was cancelled stays cancelled';
   -- ... and the sharer leaving stops the followers'' pending reminders as well.
@@ -412,6 +413,10 @@ begin
   delete from public.kul_members where user_id = public._t('A');
   perform public._t_gone('the sharer left the Kul (a viewer)', sh);
   insert into public.kul_members (kul_id, user_id, role) values (public._t('K1'), public._t('A'), 'guardian');
+  -- Both leaves voided the shares (E2, E3). The blocks below test other events, so the shares are made again, with D's reminder.
+  update public.sanskara_grants set revoked_at = null, revoked_by = null where revoked_at is not null and revoked_by is null;
+  sd := public._t_sub('sub_l2b', rec, public._t('D'));
+  sh := public._t_sub('sub_l3b', rec, public._t('H'));
 
   -- 3i. The owner withdraws consent: everyone''s pending reminders for their records stop, the timeline is marked
   -- suspended, and it is unmarked when consent returns.
@@ -669,10 +674,14 @@ begin
   update public.sanskara_records set planned_date = null where id = public._t('ra_b');
   assert not exists (select 1 from public.sanskara_reminders_due(now_at) where subscription_id = a), 'a record with no date';
   update public.sanskara_records set planned_date = current_date + 30 where id = public._t('ra_b');
+  create temp table _keep_d on commit drop as select * from public.sanskara_subscriptions where id = d;
   delete from public.kul_members where user_id = public._t('D');
   assert not exists (select 1 from public.sanskara_reminders_due(now_at) where subscription_id = d), 'a viewer outside the Kul';
   insert into public.kul_members (kul_id, user_id) values (public._t('K1'), public._t('D'));
-  assert exists (select 1 from public.sanskara_reminders_due(now_at) where subscription_id = d), 'and back inside';
+  assert not exists (select 1 from public.sanskara_reminders_due(now_at) where subscription_id = d), 'coming back does not revive the share or the reminder (E2)';
+  update public.sanskara_grants set revoked_at = null, revoked_by = null where id = public._t('g_d');
+  insert into public.sanskara_subscriptions select * from _keep_d;
+  assert exists (select 1 from public.sanskara_reminders_due(now_at) where subscription_id = d), 'with a new share and the reminder set again, it is due';
 
   -- Already created: one candidate for the date, whatever its status, removes it (no duplicate, no re-creation after a cancel).
   perform public._t_ins(a, jsonb_build_object('local_date', current_date + 23), 'cancelled');
