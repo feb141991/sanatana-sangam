@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Clock } from "lucide-react";
 
@@ -84,9 +85,27 @@ export function PanchatantraStoryView({ story, lang, others }: PanchatantraStory
 
       <article className="mx-auto max-w-3xl px-6 py-14 sm:px-10 lg:py-20">
         <div className="space-y-6 text-lg leading-9 text-[var(--text-muted-warm)]">
-          {paragraphs.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
+          {paragraphs.map((paragraph, index) => {
+            const scene = story.scenes[index];
+            return (
+              <div key={index} className="space-y-6">
+                {scene ? (
+                  <figure>
+                    <Image
+                      src={scene.src}
+                      alt={isHindi ? scene.altHi : scene.alt}
+                      width={scene.width}
+                      height={scene.height}
+                      sizes="(min-width: 768px) 768px, 100vw"
+                      priority={index === 0}
+                      className="h-auto w-full rounded-3xl border border-[var(--card-border)]"
+                    />
+                  </figure>
+                ) : null}
+                <p>{paragraph}</p>
+              </div>
+            );
+          })}
         </div>
 
         <aside className="mt-12 rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] p-6 sm:p-8">

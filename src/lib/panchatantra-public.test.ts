@@ -1,14 +1,16 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
-import { middleware } from '@/middleware';
+import { config, middleware } from '@/middleware';
 import {
   PANCHATANTRA_HUB_PATH,
   PUBLIC_PANCHATANTRA_IDS,
   RETELLING_NOTICE,
   findPublicPanchatantraStory,
   listPublicPanchatantraStories,
+  panchatantraCoverImage,
+  panchatantraScenesFor,
   panchatantraStoryPath,
   panchatantraStoryUrl,
 } from './panchatantra-public';
@@ -88,6 +90,90 @@ describe('public Panchatantra stories: what a reader sees', () => {
   });
 });
 
+describe('public Panchatantra stories: artwork', () => {
+  const publicDir = resolve(root, 'public');
+  const withArt = ['crane-and-crab', 'dharmabuddhi-papabuddhi'];
+
+  it('illustrates exactly the stories that have a full set, one scene per paragraph', () => {
+    for (const story of listPublicPanchatantraStories()) {
+      if (withArt.includes(story.slug)) expect(story.scenes, story.slug).toHaveLength(story.body.length);
+    }
+    expect(listPublicPanchatantraStories().filter((s) => s.scenes.length > 0).map((s) => s.slug)).toEqual(withArt);
+  });
+
+  it('shows no artwork for a story that has no set, and never borrows another story\'s scenes', () => {
+    // The Native app has no illustration set for the self-sacrificing dove; the net and pigeon stories are different tales.
+    expect(findPublicPanchatantraStory('self-sacrificing-dove')?.scenes).toEqual([]);
+    expect(panchatantraScenesFor('panchatantra-self-sacrificing-dove', 6)).toEqual([]);
+    expect(panchatantraScenesFor('panchatantra-dove-king-and-net', 6)).toEqual([]);
+    expect(panchatantraScenesFor('panchatantra-hunter-and-pigeons', 6)).toEqual([]);
+  });
+
+  it('drops a set that does not match the paragraphs one for one instead of showing it out of step', () => {
+    expect(panchatantraScenesFor('panchatantra-crane-and-crab', 6)).toHaveLength(6);
+    for (const wrong of [0, 1, 5, 7]) expect(panchatantraScenesFor('panchatantra-crane-and-crab', wrong)).toEqual([]);
+  });
+
+  it('serves real WebP files that exist, stay within the Native 600 KB budget, and have no strays beside them', () => {
+    for (const story of listPublicPanchatantraStories().filter((s) => s.scenes.length > 0)) {
+      story.scenes.forEach((scene, index) => {
+        expect(scene.src, story.slug).toBe(`/images/panchatantra/${story.slug}/${index + 1}.webp`);
+        const bytes = readFileSync(resolve(publicDir, `.${scene.src}`));
+        expect(bytes.subarray(0, 4).toString('latin1'), scene.src).toBe('RIFF');
+        expect(bytes.subarray(8, 12).toString('latin1'), scene.src).toBe('WEBP');
+        expect(bytes.length, scene.src).toBeLessThanOrEqual(600 * 1024);
+      });
+      const onDisk = readdirSync(resolve(publicDir, 'images/panchatantra', story.slug)).sort();
+      expect(onDisk, story.slug).toEqual(story.scenes.map((_, i) => `${i + 1}.webp`));
+    }
+  });
+
+  it('declares the real pixel size of every image so the page does not shift while it loads', () => {
+    for (const story of listPublicPanchatantraStories().filter((s) => s.scenes.length > 0)) {
+      for (const scene of story.scenes) {
+        const bytes = readFileSync(resolve(publicDir, `.${scene.src}`));
+        // Lossy WebP (VP8): width and height are 14-bit little-endian values at bytes 26 and 28.
+        expect(bytes.subarray(12, 16).toString('latin1'), scene.src).toBe('VP8 ');
+        expect(bytes.readUInt16LE(26) & 0x3fff, scene.src).toBe(scene.width);
+        expect(bytes.readUInt16LE(28) & 0x3fff, scene.src).toBe(scene.height);
+      }
+    }
+  });
+
+  it('describes every scene in English and in Devanagari Hindi, without repeating a description', () => {
+    for (const story of listPublicPanchatantraStories().filter((s) => s.scenes.length > 0)) {
+      for (const scene of story.scenes) {
+        expect(scene.alt.trim().length, scene.src).toBeGreaterThan(30);
+        expect(devanagariShare(scene.altHi), scene.src).toBeGreaterThan(0.7);
+        expect(devanagariShare(scene.alt), scene.src).toBeLessThan(0.1);
+      }
+      expect(new Set(story.scenes.map((s) => s.alt)).size, story.slug).toBe(story.scenes.length);
+      expect(new Set(story.scenes.map((s) => s.altHi)).size, story.slug).toBe(story.scenes.length);
+    }
+  });
+
+  it('offers the first scene as an absolute cover image, and none for a story without artwork', () => {
+    const crane = findPublicPanchatantraStory('crane-and-crab')!;
+    expect(panchatantraCoverImage(crane, 'en')).toEqual({
+      url: 'https://www.shoonaya.com/images/panchatantra/crane-and-crab/1.webp',
+      width: 1376,
+      height: 774,
+      alt: crane.scenes[0].alt,
+    });
+    expect(panchatantraCoverImage(crane, 'hi')?.alt).toBe(crane.scenes[0].altHi);
+    expect(panchatantraCoverImage(findPublicPanchatantraStory('self-sacrificing-dove')!, 'en')).toBeUndefined();
+  });
+
+  it('is reachable without signing in: the middleware matcher leaves .webp files alone', () => {
+    const matcher = new RegExp(`^${config.matcher[0]}$`);
+    for (const story of listPublicPanchatantraStories().filter((s) => s.scenes.length > 0)) {
+      for (const scene of story.scenes) expect(matcher.test(scene.src), scene.src).toBe(false);
+    }
+    // The matcher still covers pages, so the sanity check below fails if it were loosened to match nothing.
+    expect(matcher.test('/stories/panchatantra')).toBe(true);
+  });
+});
+
 describe('public Panchatantra pages: source contract', () => {
   const view = read('src/app/(marketing)/stories/panchatantra/PanchatantraStoryView.tsx');
   const hub = read('src/app/(marketing)/stories/panchatantra/page.tsx');
@@ -97,11 +183,28 @@ describe('public Panchatantra pages: source contract', () => {
     expect(hub).toContain('RETELLING_NOTICE.en');
   });
 
-  it('serves no artwork: the Native illustrations have no recorded provenance or rights status', () => {
+  it('draws every image from the artwork table: no image path is written into a page', () => {
     for (const source of [view, hub]) {
-      expect(source).not.toMatch(/from ["']next\/image["']/);
       expect(source).not.toMatch(/<img\b/i);
       expect(source).not.toMatch(/\.(webp|png|jpe?g)["'`]/i);
+    }
+    expect(view).toMatch(/from ["']next\/image["']/);
+    expect(view).toContain('story.scenes[index]');
+    expect(view).toContain('isHindi ? scene.altHi : scene.alt');
+    // Only the first image is loaded eagerly; the rest wait until they are near the screen.
+    expect(view.match(/priority=/g)).toHaveLength(1);
+    expect(view).toContain('priority={index === 0}');
+  });
+
+  it('gives the page a cover image for link previews and structured data, in both languages', () => {
+    for (const path of [
+      'src/app/(marketing)/stories/panchatantra/[slug]/page.tsx',
+      'src/app/(marketing)/stories/panchatantra/[slug]/hi/page.tsx',
+    ]) {
+      const source = read(path);
+      expect(source, path).toContain('panchatantraCoverImage(story');
+      expect(source, path).toContain('images: [cover]');
+      expect(source, path).toContain('image: cover.url');
     }
   });
 

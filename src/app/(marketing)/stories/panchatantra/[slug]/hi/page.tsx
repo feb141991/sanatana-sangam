@@ -6,6 +6,7 @@ import {
   SITE_ORIGIN,
   findPublicPanchatantraStory,
   listPublicPanchatantraStories,
+  panchatantraCoverImage,
   panchatantraStoryUrl,
 } from "@/lib/panchatantra-public";
 import { PanchatantraStoryView } from "../../PanchatantraStoryView";
@@ -27,6 +28,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
   const enUrl = panchatantraStoryUrl(slug, "en");
   const title = `${story.titleHi}: पंचतंत्र की कहानी | Shoonaya`;
   const description = `${story.titleHi}, पंचतंत्र की एक कथा। ${story.moralHi}`;
+  const cover = panchatantraCoverImage(story, "hi");
 
   return {
     title,
@@ -35,7 +37,7 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
       canonical: url,
       languages: { en: enUrl, hi: url, "x-default": enUrl },
     },
-    openGraph: { title, description, url, type: "article", locale: "hi_IN" },
+    openGraph: { title, description, url, type: "article", locale: "hi_IN", ...(cover ? { images: [cover] } : {}) },
   };
 }
 
@@ -45,6 +47,7 @@ export default async function PanchatantraHindiStoryPage({ params }: StoryPagePr
   if (!story) notFound();
 
   const url = panchatantraStoryUrl(slug, "hi");
+  const cover = panchatantraCoverImage(story, "hi");
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -55,6 +58,7 @@ export default async function PanchatantraHindiStoryPage({ params }: StoryPagePr
       genre: "Fable",
       url,
       mainEntityOfPage: url,
+      ...(cover ? { image: cover.url } : {}),
       isBasedOn: { "@type": "Book", name: "The Panchatantra" },
       publisher: { "@type": "Organization", name: "Shoonaya", url: SITE_ORIGIN },
     },
