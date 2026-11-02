@@ -1,4 +1,4 @@
-import { OFFICIAL_SOCIAL_LINKS } from "@/config/official-links";
+import { OFFICIAL_EMAIL, OFFICIAL_SOCIAL_LINKS } from "@/config/official-links";
 import React from 'react';
 import type { GeoModel } from '@/lib/seo/geo-model';
 
@@ -63,6 +63,7 @@ export function GeoArticleJsonLd({ geo, url }: { geo: GeoModel; url: string }) {
       OFFICIAL_SOCIAL_LINKS.linkedin,
       OFFICIAL_SOCIAL_LINKS.instagram,
       OFFICIAL_SOCIAL_LINKS.facebook,
+      OFFICIAL_SOCIAL_LINKS.googleBusiness,
     ],
   };
 
@@ -141,14 +142,28 @@ export function OrganizationJsonLd() {
         "@type": "Organization",
         "@id": "https://www.shoonaya.com/#organization",
         "name": "Shoonaya",
+        "alternateName": [
+          "Shoonaya Dharma Companion",
+          "Sanatan Sangam Shoonaya",
+        ],
         "url": "https://www.shoonaya.com",
         "logo": "https://www.shoonaya.com/icons/icon-512x512.png",
-        "description": "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
+        "description": "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection across Hindu, Sikh, Buddhist, and Jain traditions.",
+        "email": OFFICIAL_EMAIL,
         "sameAs": [
           OFFICIAL_SOCIAL_LINKS.linkedin,
           OFFICIAL_SOCIAL_LINKS.instagram,
           OFFICIAL_SOCIAL_LINKS.facebook,
+          OFFICIAL_SOCIAL_LINKS.googleBusiness,
+          "https://apps.apple.com/app/id6793055966",
+          "https://play.google.com/store/apps/details?id=com.shoonaya.app",
         ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "Customer Support",
+          "email": OFFICIAL_EMAIL,
+          "url": "https://www.shoonaya.com/contact",
+        },
       },
       {
         "@type": "WebSite",
@@ -157,6 +172,68 @@ export function OrganizationJsonLd() {
         "name": "Shoonaya",
         "description": "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
         "publisher": { "@id": "https://www.shoonaya.com/#organization" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://www.shoonaya.com/panchang?date={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "MobileApplication",
+        "@id": "https://www.shoonaya.com/#mobile-app",
+        "name": "Shoonaya",
+        "operatingSystem": "iOS, Android",
+        "applicationCategory": "LifestyleApplication",
+        "description": "Daily spiritual companion featuring astronomy-backed Panchang, festival calendars, Bhakti scripture library, Japa mala, and Pathshala learning.",
+        "installUrl": "https://www.shoonaya.com/get",
+        "publisher": { "@id": "https://www.shoonaya.com/#organization" },
+      },
+      {
+        "@type": "Service",
+        "@id": "https://www.shoonaya.com/#service-panchang",
+        "name": "Astronomy-Backed Dharma Panchang & Festival Engine",
+        "provider": { "@id": "https://www.shoonaya.com/#organization" },
+        "serviceType": "Astrological & Spiritual Calendar Service",
+        "description": "Accurate tithi, nakshatra, yoga, karana, muhurta, and council-reviewed festival calculations across Hindu, Sikh, Buddhist, and Jain traditions.",
+        "areaServed": "Global",
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://www.shoonaya.com/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What traditions does Shoonaya support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Shoonaya supports four sacred traditions: Hindu (Vaishnava, Shaiva, Shakta), Sikh (Gurmat, Nanakshahi), Buddhist (Theravada, Tibetan Mahayana), and Jain (Shvetambara, Digambara).",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "How is the Shoonaya Panchang calculated?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Shoonaya computes astronomical positions using high-precision planetary ephemeris, Lahiri ayanamsha, and exact solar-lunar elongation angles anchored to traditional meridians.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Are festival dates universal or council-reviewed?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Shoonaya's festival calendar combines declarative rule families with rigorous council editorial review and critical apparatus concordances for each sacred observance.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": "Does Shoonaya support AI agents and Model Context Protocol (MCP)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Shoonaya provides machine-readable llms.txt, SEP-1649/SEP-2127 MCP server cards at /.well-known/mcp/server-card.json, streamable-http MCP endpoints at /api/mcp, and in-browser WebMCP tools via navigator.modelContext.",
+            },
+          },
+        ],
       },
     ],
   };
