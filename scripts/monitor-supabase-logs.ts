@@ -19,6 +19,7 @@ interface LogEntry {
   id?: string;
   timestamp?: string;
   time?: string;
+  date?: string;
   status?: string;
   level?: string;
   event_message?: string;
