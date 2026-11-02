@@ -6,6 +6,34 @@ This document records all production backend, mobile, database, and infrastructu
 
 ## Change Log
 
+### [Change #6] — 2026-11-02 14:15 IST
+* **Type:** Mobile Client UX Fix (`shoonaya-mobile`)
+* **Commit:** `43747f8` (`feat(onboarding): implement progressive auto-scroll on Preferences screen`)
+* **Scope:** 
+  - `app/(auth)/onboarding.tsx`
+  - `components/onboarding/ReligiousDataConsentCard.tsx`
+  - `__tests__/onboarding-shell-integration.test.ts`
+* **Trigger / Issue:**
+  Testers reported that "auto move to next option in very first page of onboarding is not working":
+  1. Selecting a Language did not auto-advance the view to the Tradition options.
+  2. Selecting a faith tradition (Hindu, Sikh, Buddhist, Jain) mounts the `ReligiousDataConsentCard` below the fold, but the screen stayed static. Testers found the "Continue" button disabled without knowing a consent card had appeared off-screen.
+  3. Selecting Universal/Exploring did not scroll down towards the active Continue button.
+  4. Toggling religious data consent to agreed did not scroll down to reveal the enabled Continue button.
+* **Root Cause:**
+  Progressive reveal and auto-scrolling (`stepScrollRef`, `scrollToSection`, `onLayout` tracking) were previously built only for Step 2 (`personal`: DOB -> Gender -> Rashi in commit `6e25d54`). Step 1 (`preferences`: Language -> Tradition -> Religious Data Consent) completely lacked layout measurement refs and touch progression triggers.
+* **Fix Applied:**
+  1. Added layout refs (`preferencesContainerYRef`, `traditionSectionYRef`, `consentSectionYRef`, `traditionRelativeYRef`, `consentRelativeYRef`) and advance guards (`hasAdvancedToTraditionRef`, `hasAdvancedToConsentRef`, `shouldScrollToConsentOnLayoutRef`).
+  2. Added auto-advance on Language selection to scroll smoothly to Tradition.
+  3. Added auto-advance on Tradition selection to scroll down and reveal `ReligiousDataConsentCard` (or scroll to end for Universal).
+  4. Added `onLayout` support to `ReligiousDataConsentCard` so that newly mounted cards accurately trigger progressive reveal.
+  5. Added auto-scroll to end on consent switch agreement in `handleReligiousConsentChange(true)`.
+  6. Added automated unit test in `__tests__/onboarding-shell-integration.test.ts` covering multi-field auto-scroll contracts.
+* **Verification:**
+  - `npx tsc --noEmit` passed with 0 errors.
+  - Test suite passed cleanly: **1771 pass, 0 fail**.
+
+---
+
 ### [Change #5] — 2026-11-02 13:40 IST
 * **Type:** Mobile Client Fix (shoonaya-mobile)
 * **Scope:** `components/home/FestivalQuizBanner.tsx`
