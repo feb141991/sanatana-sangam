@@ -46,11 +46,15 @@ ROC pre-flight applies: **new function names only; no signature change to existi
 
 Yes, it is a reasonable product idea (a 15-year-old keeping their own milestones). It is **not** a small extension, because it creates the thing
 the contract excludes: **a minor with an account of their own** (contract section 4 rule 6 and section 13: "outside v1; the app's minimum age is a
-separate decision"). I found no minimum-age check in the signup path I searched (onboarding validates the date of birth, 1920 or later, and nothing
-more); that needs confirming.
+separate decision"). **Correction (2026-11-03):** an earlier version of this section said no age rule exists. The Native app has an age-guidance policy,
+`lib/age-guidance.ts` version `2026-08-25.parental-guidance-v1`: accounts under 18 are **allowed without an age block**, with a notice asking for a
+parent's or guardian's awareness; the app is not directed to children under 13; **verified parental consent is not implemented**; legal review is
+**pending**. So under-18 accounts already exist in the product. What does not exist is any decision about *Sanskara* data for them.
 
 ### Blocking decisions (not mine to make)
-- **D-B Minimum age of an account.** If it is 18 there is no early hand-over. If it is lower, which age?
+- **D-B May Sanskara give under-18s their own timelines, and from what age?** (Not "what is the minimum age of an account": the app already allows under-18
+  accounts under the guidance policy above.) If the answer is no, there is no early hand-over and a child's records wait for 18. If yes, the answer needs an age
+  floor, and it needs a way for a parent's permission to be *verified*, which the app does not have today.
 - **D-C Legal.** A child's religious data under their own consent. India (DPDP: under 18 needs verifiable parental consent), UK/EU (age of digital
   consent 13 to 16 by country), US (COPPA under 13). Needs a lawyer before any build, as the contract already says.
 - **D-D Who keeps access after the transfer.** (a) Parents lose access completely, as at 18 (simplest, strongest for the child, irreversible for
@@ -64,7 +68,7 @@ more); that needs confirming.
   `sanskara_accept_early_claim`). Existing functions unchanged.
 - **Permission = every current manager approves.** One parent must not override another. The claim is `awaiting_approval` until all managers approve,
   then the token is released to the initiator. Any manager can cancel at any time before acceptance. A manager removed or leaving resets approvals.
-- **Age floor** enforced in SQL from the dependent's birth date (the D-B value), checked at start and at accept, never from the client.
+- **Age floor** enforced in SQL from the dependent's birth date (the D-B answer, if it is yes), checked at start and at accept, never from the client.
 - **Acceptor confirmation (recommended for the early path, and worth adding at 18 too):** accepting does not move anything; it creates a pending
   acceptance the initiating manager confirms, seeing only the acceptor's chosen display name. Closes "the token was sent to the wrong person",
   which matters more for a child's private notes. Adds one step and one table row.
@@ -82,4 +86,4 @@ more); that needs confirming.
 2. **E10 last-manager offer**: separate small scope; needs a decision on whether the recipient must be a current Kul member only (contract says so).
 3. **Phase 2 (early hand-over)**: do not start until D-B, D-C, D-D, D-E are answered and a lawyer has seen it.
 
-Not verified in this scope: Native modal behaviour on a device; the minimum-age claim above (searched, not proved absent); production volume (0 dependents on 2026-10-30).
+Not verified in this scope: Native modal behaviour on a device; production volume (0 dependents on 2026-10-30). Read from `lib/age-guidance.ts` (not from a device): the age policy above.
