@@ -512,6 +512,10 @@ export async function DELETE(
     admin.supabase.from("sanskara_subscriptions").delete().eq("account_id", userId),
     admin.supabase.from("sanskara_grants").delete().or(`grantee_id.eq.${userId},granted_by.eq.${userId}`),
     admin.supabase.from("sanskara_claims").delete().eq("created_by", userId),
+    // Early hand-over (migration 20261104100000): the approvals this person gave and the hand-overs they started. A hand-over
+    // that named this person as the acceptor keeps no acceptor (claimant_id is ON DELETE SET NULL) and cannot be confirmed.
+    admin.supabase.from("sanskara_early_approvals").delete().eq("manager_id", userId),
+    admin.supabase.from("sanskara_early_handovers").delete().eq("initiated_by", userId),
     admin.supabase.from("sanskara_subject_managers").delete().eq("account_id", userId),
     admin.supabase.from("sanskara_subjects").delete().eq("account_id", userId),
     admin.supabase.from("sanskara_request_log").delete().eq("account_id", userId),

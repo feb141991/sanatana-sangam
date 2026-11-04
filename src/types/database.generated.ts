@@ -7510,14 +7510,6 @@ export type Database = {
           },
         ]
       }
-      sanskara_accept_early_handover: {
-        Args: { p_request_id: string; p_token: string }
-        Returns: Json
-      }
-      sanskara_approve_early_handover: {
-        Args: { p_request_id: string; p_subject: string }
-        Returns: Json
-      }
       sanskara_audit: {
         Row: {
           action: string
@@ -7547,10 +7539,6 @@ export type Database = {
           target_id?: string | null
         }
         Relationships: []
-      }
-      sanskara_cancel_early_handover: {
-        Args: { p_request_id: string; p_subject: string }
-        Returns: Json
       }
       sanskara_claims: {
         Row: {
@@ -7595,14 +7583,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      sanskara_confirm_early_handover: {
-        Args: { p_request_id: string; p_subject: string }
-        Returns: Json
-      }
-      sanskara_early_handover_status: {
-        Args: { p_subject: string }
-        Returns: Json
       }
       sanskara_grants: {
         Row: {
@@ -7667,32 +7647,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      sanskara_handover_due: {
-        Args: { p_horizon?: string; p_late?: string; p_now?: string }
-        Returns: {
-          account_id: string
-          audience_variant: string
-          language: string
-          local_date: string
-          notice: string
-          profile_generation: number
-          quiet_hours_end: number
-          quiet_hours_start: number
-          scheduled_for: string
-          subject_id: string
-          timezone: string
-        }[]
-      }
-      sanskara_handover_still_valid: {
-        Args: {
-          p_account: string
-          p_local_date: string
-          p_notice: string
-          p_profile_generation: number
-          p_subject: string
-        }
-        Returns: boolean
       }
       sanskara_record_private: {
         Row: {
@@ -7830,10 +7784,6 @@ export type Database = {
           sensitivity?: string
         }
         Relationships: []
-      }
-      sanskara_start_early_handover: {
-        Args: { p_request_id: string; p_subject: string }
-        Returns: Json
       }
       sanskara_subject_managers: {
         Row: {
@@ -11992,8 +11942,16 @@ export type Database = {
         Returns: Json
       }
       sanskara_actor: { Args: { p_need_consent?: boolean }; Returns: string }
+      sanskara_accept_early_handover: {
+        Args: { p_request_id: string; p_token: string }
+        Returns: Json
+      }
       sanskara_add_manager: {
         Args: { p_account: string; p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_approve_early_handover: {
+        Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
       sanskara_can: {
@@ -12006,6 +11964,10 @@ export type Database = {
         Returns: boolean
       }
       sanskara_cancel_claim: {
+        Args: { p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_cancel_early_handover: {
         Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
@@ -12024,6 +11986,10 @@ export type Database = {
       }
       sanskara_claim_request: {
         Args: { p_account: string; p_operation: string; p_request: string }
+        Returns: Json
+      }
+      sanskara_confirm_early_handover: {
+        Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
       sanskara_create_dependent: {
@@ -12056,6 +12022,10 @@ export type Database = {
       }
       sanskara_dependents: { Args: never; Returns: Json }
       sanskara_export_mine: { Args: never; Returns: Json }
+      sanskara_early_handover_status: {
+        Args: { p_subject: string }
+        Returns: Json
+      }
       sanskara_finish_request: {
         Args: { p_account: string; p_request: string; p_result: Json }
         Returns: Json
@@ -12166,6 +12136,10 @@ export type Database = {
         Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
+      sanskara_start_early_handover: {
+        Args: { p_request_id: string; p_subject: string }
+        Returns: Json
+      }
       sanskara_update_record: {
         Args: {
           p_custom_title: string
@@ -12177,6 +12151,32 @@ export type Database = {
         Returns: Json
       }
       sanskara_viewer_kul: { Args: { p_account: string }; Returns: string }
+      sanskara_handover_due: {
+        Args: { p_horizon?: string; p_late?: string; p_now?: string }
+        Returns: {
+          account_id: string
+          audience_variant: string
+          language: string
+          local_date: string
+          notice: string
+          profile_generation: number
+          quiet_hours_end: number
+          quiet_hours_start: number
+          scheduled_for: string
+          subject_id: string
+          timezone: string
+        }[]
+      }
+      sanskara_handover_still_valid: {
+        Args: {
+          p_account: string
+          p_local_date: string
+          p_notice: string
+          p_profile_generation: number
+          p_subject: string
+        }
+        Returns: boolean
+      }
       sanskara_job_consent_purge: {
         Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
         Returns: Json

@@ -237,6 +237,37 @@ export const SANSKARA_ACTIONS: Readonly<Record<string, SanskaraAction>> = Object
     if (typeof token !== 'string' || !CLAIM_TOKEN.test(token)) return fail('token');
     return { ok: true, args: { p_request_id: requestId, p_token: token.toLowerCase() } };
   }),
+  // ── Early hand-over (before 18; off until the founder sets an age floor in the database) ──────────────────────────────
+  'early-handover-status': define('GET', 'sanskara_early_handover_status', ['subject'], (i) => {
+    const subject = uuid(i, 'subject');
+    return subject ? { ok: true, args: { p_subject: subject } } : fail('subject');
+  }),
+  'start-early-handover': define('POST', 'sanskara_start_early_handover', ['requestId', 'subjectId'], (i) => {
+    const requestId = uuid(i, 'requestId'); if (!requestId) return fail('requestId');
+    const subject = uuid(i, 'subjectId'); if (!subject) return fail('subjectId');
+    return { ok: true, args: { p_request_id: requestId, p_subject: subject } };
+  }),
+  'approve-early-handover': define('POST', 'sanskara_approve_early_handover', ['requestId', 'subjectId'], (i) => {
+    const requestId = uuid(i, 'requestId'); if (!requestId) return fail('requestId');
+    const subject = uuid(i, 'subjectId'); if (!subject) return fail('subjectId');
+    return { ok: true, args: { p_request_id: requestId, p_subject: subject } };
+  }),
+  'cancel-early-handover': define('POST', 'sanskara_cancel_early_handover', ['requestId', 'subjectId'], (i) => {
+    const requestId = uuid(i, 'requestId'); if (!requestId) return fail('requestId');
+    const subject = uuid(i, 'subjectId'); if (!subject) return fail('subjectId');
+    return { ok: true, args: { p_request_id: requestId, p_subject: subject } };
+  }),
+  'accept-early-handover': define('POST', 'sanskara_accept_early_handover', ['requestId', 'token'], (i) => {
+    const requestId = uuid(i, 'requestId'); if (!requestId) return fail('requestId');
+    const token = i.token;
+    if (typeof token !== 'string' || !CLAIM_TOKEN.test(token)) return fail('token');
+    return { ok: true, args: { p_request_id: requestId, p_token: token.toLowerCase() } };
+  }),
+  'confirm-early-handover': define('POST', 'sanskara_confirm_early_handover', ['requestId', 'subjectId'], (i) => {
+    const requestId = uuid(i, 'requestId'); if (!requestId) return fail('requestId');
+    const subject = uuid(i, 'subjectId'); if (!subject) return fail('subjectId');
+    return { ok: true, args: { p_request_id: requestId, p_subject: subject } };
+  }),
   'set-reminder': define('POST', 'sanskara_set_reminder', ['requestId', 'recordId', 'leadDays', 'enabled'], (i) => {
     const requestId = uuid(i, 'requestId'); if (!requestId) return fail('requestId');
     const record = uuid(i, 'recordId'); if (!record) return fail('recordId');
@@ -276,6 +307,8 @@ export const SANSKARA_REASON_ERRORS: Record<string, string> = {
   "SK422:sanskara_cannot_share_with_self": "Choose another person to share with.",
   "SK409:sanskara_conflict": "This hand-over conflicts with existing records. Refresh before trying again.",
   "SK403:sanskara_consent_required": "Religious-data consent is needed before this can be used.",
+  "SK422:sanskara_early_handover_not_available": "Handing over before 18 is not available.",
+  "SK422:sanskara_early_handover_age": "Handing over is not available for this child yet.",
   "SK422:sanskara_due_date_not_allowed": "An expected due date is only available for a prenatal milestone on your own timeline.",
   "SK400:sanskara_invalid_birth_date": "Enter a valid birth date for an eligible child.",
   "SK400:sanskara_invalid_date": "Enter a valid calendar date.",

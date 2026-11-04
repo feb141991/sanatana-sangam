@@ -15,9 +15,9 @@ const parse = (name: string, input: Record<string, unknown>) => findSanskaraActi
 describe('the action table', () => {
   const names = Object.keys(SANSKARA_ACTIONS);
 
-  it('has six reads and seventeen writes', () => {
-    expect(names.filter((n) => SANSKARA_ACTIONS[n].method === 'GET')).toHaveLength(6);
-    expect(names.filter((n) => SANSKARA_ACTIONS[n].method === 'POST')).toHaveLength(17);
+  it('has seven reads and twenty-two writes', () => {
+    expect(names.filter((n) => SANSKARA_ACTIONS[n].method === 'GET')).toHaveLength(7);
+    expect(names.filter((n) => SANSKARA_ACTIONS[n].method === 'POST')).toHaveLength(22);
   });
 
   it('only names functions that exist in the generated database types', () => {
@@ -192,6 +192,46 @@ describe('sharing, hand-over and reminders', () => {
     expect(parse('revoke-grant', { requestId: R, grantId: REC })).toEqual({ ok: true, args: { p_request_id: R, p_grant: REC } });
     expect(parse('start-claim', { requestId: R, subjectId: S })).toEqual({ ok: true, args: { p_request_id: R, p_subject: S } });
     expect(parse('cancel-claim', { requestId: R, subjectId: S })).toEqual({ ok: true, args: { p_request_id: R, p_subject: S } });
+  });
+});
+
+describe('early hand-over', () => {
+  it('start, approve, cancel and confirm take exactly a request id and a subject', () => {
+    const pairs: Array<[string, string]> = [
+      ['start-early-handover', 'sanskara_start_early_handover'],
+      ['approve-early-handover', 'sanskara_approve_early_handover'],
+      ['cancel-early-handover', 'sanskara_cancel_early_handover'],
+      ['confirm-early-handover', 'sanskara_confirm_early_handover'],
+    ];
+    for (const [name, rpc] of pairs) {
+      expect(findSanskaraAction(name)!.rpc, name).toBe(rpc);
+      expect(parse(name, { requestId: R, subjectId: S }), name).toEqual({ ok: true, args: { p_request_id: R, p_subject: S } });
+      for (const bad of ['', 'nope', 5, null, undefined]) {
+        expect(parse(name, { requestId: R, subjectId: bad }), `${name} ${String(bad)}`).toEqual({ ok: false, field: 'subjectId' });
+      }
+    }
+  });
+
+  it('accept takes exactly a 64-character hex token and no subject', () => {
+    expect(parse('accept-early-handover', { requestId: R, token: TOKEN.toUpperCase() }))
+      .toEqual({ ok: true, args: { p_request_id: R, p_token: TOKEN } });
+    for (const bad of ['', 'ab'.repeat(31), 'ab'.repeat(33), 'zz'.repeat(32), ` ${TOKEN}`, 5, null, undefined]) {
+      expect(parse('accept-early-handover', { requestId: R, token: bad }), String(bad)).toEqual({ ok: false, field: 'token' });
+    }
+    expect(parse('accept-early-handover', { requestId: R, token: TOKEN, subjectId: S })).toEqual({ ok: false, field: 'subjectId' });
+  });
+
+  it('status is a read of one subject', () => {
+    expect(findSanskaraAction('early-handover-status')).toMatchObject({ method: 'GET', rpc: 'sanskara_early_handover_status' });
+    expect(parse('early-handover-status', { subject: S })).toEqual({ ok: true, args: { p_subject: S } });
+    expect(parse('early-handover-status', {})).toEqual({ ok: false, field: 'subject' });
+    expect(parse('early-handover-status', { subject: [S, S] })).toEqual({ ok: false, field: 'subject' });
+  });
+
+  it('says plainly that the feature is off, and never as a generic failure', () => {
+    const off = mapSanskaraError({ code: 'SK422', message: 'sanskara_early_handover_not_available' });
+    expect(off).toMatchObject({ status: 422, code: 'sanskara_early_handover_not_available' });
+    expect(off.error).toBe('Handing over before 18 is not available.');
   });
 });
 
