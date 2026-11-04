@@ -7510,6 +7510,14 @@ export type Database = {
           },
         ]
       }
+      sanskara_accept_early_handover: {
+        Args: { p_request_id: string; p_token: string }
+        Returns: Json
+      }
+      sanskara_approve_early_handover: {
+        Args: { p_request_id: string; p_subject: string }
+        Returns: Json
+      }
       sanskara_audit: {
         Row: {
           action: string
@@ -7539,6 +7547,10 @@ export type Database = {
           target_id?: string | null
         }
         Relationships: []
+      }
+      sanskara_cancel_early_handover: {
+        Args: { p_request_id: string; p_subject: string }
+        Returns: Json
       }
       sanskara_claims: {
         Row: {
@@ -7583,6 +7595,14 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sanskara_confirm_early_handover: {
+        Args: { p_request_id: string; p_subject: string }
+        Returns: Json
+      }
+      sanskara_early_handover_status: {
+        Args: { p_subject: string }
+        Returns: Json
       }
       sanskara_grants: {
         Row: {
@@ -7810,6 +7830,10 @@ export type Database = {
           sensitivity?: string
         }
         Relationships: []
+      }
+      sanskara_start_early_handover: {
+        Args: { p_request_id: string; p_subject: string }
+        Returns: Json
       }
       sanskara_subject_managers: {
         Row: {

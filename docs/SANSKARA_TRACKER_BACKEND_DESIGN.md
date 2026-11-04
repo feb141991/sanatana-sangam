@@ -269,6 +269,22 @@ In-app notification creation and OS push delivery stay separate; nothing here cl
 - **Not verified:** a real Supabase branch; the Native banners (next commit); the resolver promoting these candidates and the dispatcher sending one against
   the real database function; quiet-hours deferral; any device.
 
+**Early hand-over, before 18 (database layer written 2026-11-04, migration `20261104100000`, NOT applied, OFF by default).** Scope: `SANSKARA_HANDOVER_SCOPE.md` section 3.
+- **Off until the founder inserts a row**: `insert into sanskara_settings (key, int_value) values ('early_handover_min_age', <10..17>)`; deleting the row switches it off. The floor is
+  constrained to 10 to 17. No age is chosen in code: D-B (may Sanskara give under-18s their own timelines, from what age) and D-C (legal review) are the founder's.
+- **Defaults taken from the scope's recommendations, changeable only by changing this migration**: D-D parents lose access completely (as at 18); D-E not reversible; every current manager must approve;
+  the acceptor must be confirmed by the manager who started it before anything moves.
+- Five client functions (`sanskara_start_/approve_/cancel_/accept_/confirm_early_handover`) and a manager-only `sanskara_early_handover_status`; all idempotent through the request log. The token
+  is returned once to the starter (hash stored; the stored replay omits it), 7 days, one open hand-over per child. The accepting account must be signed in as itself, not a manager, have consented, and
+  carry a **profile date of birth equal to the child's**; **only 3 of 26 profiles had a date of birth on 2026-11-04, so most children would first have to enter theirs** (fails closed, answers the same
+  `SK404` as every token failure). Adding or removing a manager resets approvals and clears an acceptor; removing the starter cancels it. Cancelling works even with the switch off.
+- **A regression caught by running the existing suites, not by this migration's own test:** the first draft restated `sanskara_audit_action_check` and omitted `kul_link_set` and `kul_link_cleared`
+  (added by `20261030100000`), which would have made every Kul-link write fail with 23514. The migration now carries them and the test inserts all twenty values.
+- Verified on scratch Postgres (stand-ins for `auth` and `cron`, rebuilt 2026-11-04): all nine Sanskara suites pass on the full stack; 34 of 36 mutations red (the two survivors are redundant by
+  construction: the explicit switch check in confirm is covered by the window check, and the scratch database does not grant `service_role` execute by default); rollback removes every object and restores the
+  15 audit values, and re-apply passes. Not verified: a real Supabase branch, any device, and everything needed before launch: the route (`/api/native/sanskara/*` actions and error mapping), the Native
+  screens (start, approve, accept, confirm), the notification to the other managers, and the privacy-policy wording. **Nothing in the Native app can reach this yet.**
+
 ## 6. Scheduled jobs
 
 | Job | Does | Cadence |

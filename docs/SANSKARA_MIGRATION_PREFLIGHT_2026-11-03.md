@@ -63,3 +63,16 @@ supabase migration repair --status applied <version>
 npm run verify:migrations:linked   # after the third, expect no drift
 ```
 Then update the migration status here and in `SANSKARA_TRACKER_BACKEND_DESIGN.md`.
+
+---
+
+## Addendum 2026-11-04: a fourth migration, `20261104100000_sanskara_early_handover` (early hand-over; OFF by default)
+- **Not applied anywhere.** Apply last, after the three above. File, rollback and test: `supabase/migrations/`, `supabase/rollbacks/`, `supabase/tests/sanskara_early_handover.test.sql`.
+- **1 `PGRST203`: pass.** Only new function names; no existing function touched. **2 Callers: pass.** Nothing calls these yet, in Native or the backend; generated types updated.
+  **3 User data: pass.** No row updated, no default changed, no opt-out touched. Creates tables only; with no settings row the feature does nothing.
+- **4 Locks: low.** One `ALTER TABLE ... ADD CONSTRAINT` on `sanskara_audit` (0 rows on 2026-11-03; brief `ACCESS EXCLUSIVE` plus a scan of an empty table) and one trigger on `sanskara_subject_managers` (0 rows).
+- **5 Rollback: pass.** Tested (removes all objects, restores the 15 audit values, deletes the five new audit values first); re-apply passes.
+- **A near miss to read:** restating `sanskara_audit_action_check` replaces it. Production's current list (read 2026-11-04) includes `kul_link_set` and `kul_link_cleared`; the first draft left them out
+  and the existing pointer suite failed. Fixed, and the new test inserts all 20 values. **Any later migration that restates this constraint must start from production's list, not from a file.**
+- The same reminder about the live database as before: Sanskara tables are empty and 0 of 26 profiles are opted in, so nothing here can affect a user until the founder sets the age floor.
+
