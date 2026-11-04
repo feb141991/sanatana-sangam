@@ -147,7 +147,7 @@ export function OrganizationJsonLd() {
         ],
         "url": "https://www.shoonaya.com",
         "logo": "https://www.shoonaya.com/icons/icon-512x512.png",
-        "description": "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection across Hindu, Sikh, Buddhist, and Jain traditions.",
+        "description": "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
         "email": OFFICIAL_EMAIL,
         "sameAs": [
           OFFICIAL_SOCIAL_LINKS.linkedin,

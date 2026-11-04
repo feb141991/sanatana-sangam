@@ -56,6 +56,9 @@ export const metadata: Metadata = {
   title: "Shoonaya: Find your infinite.",
   applicationName: "Shoonaya",
   description: brandDescription,
+  alternates: {
+    canonical: "https://www.shoonaya.com/",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

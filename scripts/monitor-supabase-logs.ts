@@ -136,6 +136,14 @@ function classifyLogMessage(msg: string): { category: 'CRITICAL' | 'INFRASTRUCTU
     };
   }
 
+  if (msg.includes('canceling statement due to user request')) {
+    return {
+      category: 'BENIGN_NOISE',
+      title: 'Client Aborted Request (SQLSTATE 57014)',
+      description: 'Mobile client or browser aborted an in-flight query when user navigated away or changed tabs.',
+    };
+  }
+
   if (msg.includes('522') || msg.includes('504')) {
     return {
       category: 'INFRASTRUCTURE',

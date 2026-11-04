@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { POST, GET } from "@/app/api/mcp/route";
+import { middleware } from "@/middleware";
+import sitemap from "@/app/sitemap";
 import { NextRequest } from "next/server";
 
 describe("Agent-Readiness 8-Pillars Validation", () => {
@@ -15,6 +17,27 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
     expect(robotsModule).toContain("PerplexityBot");
   });
 
+  it("Pillar 1: middleware serves Content-Signal in robots.txt text and header", async () => {
+    const req = new NextRequest("https://www.shoonaya.com/robots.txt");
+    const res = await middleware(req);
+    expect(res.headers.get("Content-Signal")).toBe("search=yes, ai-train=no");
+    expect(res.headers.get("Content-Type")).toContain("text/plain");
+
+    const text = await res.text();
+    expect(text).toContain("Content-Signal: search=yes, ai-train=no");
+    expect(text).toContain("Sitemap: https://www.shoonaya.com/sitemap.xml");
+  });
+
+  it("Pillar 2 & 3: Structured data in landing.html and JsonLd contains Organization, sameAs, and Offers", () => {
+    const landingHtml = readFileSync(resolve(process.cwd(), "public/landing.html"), "utf8");
+    expect(landingHtml).toContain('"@type": "Organization"');
+    expect(landingHtml).toContain('"@type": "Service"');
+    expect(landingHtml).toContain('"@type": "SoftwareApplication"');
+    expect(landingHtml).toContain("https://apps.apple.com/app");
+    expect(landingHtml).toContain("https://play.google.com/store/apps");
+    expect(landingHtml).toContain('"price": "0"');
+  });
+
   it("Pillar 4: llms.txt strictly adheres to llmstxt.org and links machine endpoints", () => {
     const llms = readFileSync(resolve(process.cwd(), "public/llms.txt"), "utf8");
     expect(llms.startsWith("# Shoonaya")).toBe(true);
@@ -22,6 +45,15 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
     expect(llms).toContain("/.well-known/mcp/server-card.json");
     expect(llms).toContain("/api/mcp");
     expect(llms).toContain("/assets/js/webmcp.js");
+  });
+
+  it("Pillar 5: Content negotiation rewrites Accept: text/markdown to llms.txt", async () => {
+    const req = new NextRequest("https://www.shoonaya.com/", {
+      headers: { Accept: "text/markdown" },
+    });
+    const res = await middleware(req);
+    expect(res.headers.get("Content-Type")).toContain("text/markdown");
+    expect(res.headers.get("Vary")).toBe("Accept");
   });
 
   it("Pillar 6 & 8: publishes valid SEP-1649 / SEP-2127 MCP server card", () => {
@@ -120,5 +152,21 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
     const festData = await festRes.json();
     expect(festData.result.content[0].text).toContain("Ekadashi");
   });
-});
 
+  it("Findability: Sitemap carries recent lastmod dates on every URL", async () => {
+    const entries = await sitemap();
+    expect(entries.length).toBeGreaterThan(50);
+    for (const entry of entries) {
+      expect(entry.lastModified).toBeDefined();
+    }
+  });
+
+  it("Commercial Legibility: Landing HTML links about, pricing, contact, privacy, and terms", () => {
+    const landingHtml = readFileSync(resolve(process.cwd(), "public/landing.html"), "utf8");
+    expect(landingHtml).toContain('href="/about"');
+    expect(landingHtml).toContain('href="/pricing"');
+    expect(landingHtml).toContain('href="/contact"');
+    expect(landingHtml).toContain('href="/privacy"');
+    expect(landingHtml).toContain('href="/terms"');
+  });
+});

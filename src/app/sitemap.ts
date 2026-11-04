@@ -198,7 +198,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
-  return filterSitemapIndexableRoutes(deduplicateSitemap([
+  const now = new Date();
+  const rawEntries: MetadataRoute.Sitemap = [
     ...staticRoutes,
     ...vratRoutes,
     ...stotramRoutes,
@@ -222,5 +223,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { url: hi, changeFrequency: "monthly" as const, priority: 0.7, alternates },
       ];
     }),
-  ]));
+  ].map((entry: MetadataRoute.Sitemap[number]) => ({
+    ...entry,
+    lastModified: entry.lastModified ?? now,
+  }));
+
+  return filterSitemapIndexableRoutes(deduplicateSitemap(rawEntries));
 }
