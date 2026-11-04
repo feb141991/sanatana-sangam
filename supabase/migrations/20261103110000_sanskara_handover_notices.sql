@@ -43,9 +43,15 @@
 -- supabase/rollbacks/20261103110000_sanskara_handover_notices_rollback.sql.
 -- ROC pre-flight: no existing function is redefined or has its signature changed (no PGRST203 risk); the only existing object
 -- altered is the trigger sanskara_validate_candidate, dropped and recreated with a narrower WHEN. No data is updated and no
--- column default changes. CREATE TRIGGER on profiles takes a short SHARE ROW EXCLUSIVE lock (18 rows on 2026-10-30).
+-- column default changes. CREATE TRIGGER on profiles takes a short SHARE ROW EXCLUSIVE lock (26 rows on 2026-11-04). DROP TRIGGER on
+-- notification_candidates takes ACCESS EXCLUSIVE until commit, and that table is written by the every-10-minute resolver, dispatch and
+-- quiz crons (3 days to 2026-11-04: 35 to 51 s on average per run, longest 1,615 to 2,329 s). Without a limit this migration would queue
+-- behind a running job and hold every other writer of the table behind itself, so it sets lock_timeout = 5s and fails with nothing
+-- applied instead. Apply it between runs, and run it again if it times out.
 
 begin;
+-- See the lock note in the header: fail after 5 s rather than queue behind a running cron on notification_candidates or a write to profiles.
+set local lock_timeout = '5s';
 
 -- ── Dates ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 

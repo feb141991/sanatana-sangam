@@ -587,9 +587,9 @@ was tested after it.
 
 | Job (daily, UTC) | Does | Boundary |
 |---|---|---|
-| `sanskara_job_majority_sweep` 03:41 | Deletes dependents whose window has ended and who were never claimed (a claim deletes the dependent, so a survivor was unclaimed). Freezes dependents who reached 18 inside the window, revokes the managers' shares and deletes the subscriptions (which cancels pending reminders). | Same date arithmetic as `sanskara_can` and `sanskara_accept_claim`: on the day the window ends, access is already gone and the row is deleted. |
-| `sanskara_job_consent_purge` 03:43 | Deletes a person's own timeline 30 days after `suspended_at`, only if the owner's live `consent_religious_data` is still not true. | `suspended_at <= now - 30 days`. A timeline whose consent is false but was never marked is **not** purged. |
-| `sanskara_job_retention` 03:47 | Audit rows older than 12 months; request-log rows older than 7 days. | Up to 5000 rows of each per run. |
+| `sanskara_job_majority_sweep` 19:47 | Deletes dependents whose window has ended and who were never claimed (a claim deletes the dependent, so a survivor was unclaimed). Freezes dependents who reached 18 inside the window, revokes the managers' shares and deletes the subscriptions (which cancels pending reminders). | Same date arithmetic as `sanskara_can` and `sanskara_accept_claim`: on the day the window ends, access is already gone and the row is deleted. |
+| `sanskara_job_consent_purge` 19:49 | Deletes a person's own timeline 30 days after `suspended_at`, only if the owner's live `consent_religious_data` is still not true. | `suspended_at <= now - 30 days`. A timeline whose consent is false but was never marked is **not** purged. |
+| `sanskara_job_retention` 19:57 | Audit rows older than 12 months; request-log rows older than 7 days. | Up to 5000 rows of each per run. |
 
 Safety properties: correctness never depends on a job having run (`sanskara_can` derives everything from dates and the profile);
 every delete re-reads its condition under `FOR UPDATE SKIP LOCKED`; at most 200 subjects per step per run; `p_dry_run` counts
@@ -615,6 +615,6 @@ Decisions left to the founder:
 
 Apply (founder step): run the SQL file, then `supabase migration repair --status applied 20261103100000`. **First run
 `select public.sanskara_job_majority_sweep(now(), true); select public.sanskara_job_consent_purge(now(), true);
-select public.sanskara_job_retention(now(), true);` in the SQL editor** and read the counts before the first 03:41 UTC; the
+select public.sanskara_job_retention(now(), true);` in the SQL editor** and read the counts before the first 19:47 UTC; the
 functions only exist after apply, so run them straight after, before the first scheduled run. Rollback: the rollback file
 (deleted rows are not restored). Never `supabase db push`.

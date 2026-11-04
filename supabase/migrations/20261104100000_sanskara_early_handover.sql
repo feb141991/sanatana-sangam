@@ -42,6 +42,9 @@
 -- supabase/rollbacks/20261104100000_sanskara_early_handover_rollback.sql (it deletes the five new audit action values first).
 
 begin;
+-- ALTER TABLE ... ADD CONSTRAINT takes ACCESS EXCLUSIVE on sanskara_audit and CREATE TRIGGER takes SHARE ROW EXCLUSIVE on
+-- sanskara_subject_managers. Give up after 5 s instead of queueing; nothing is applied and it can be run again.
+set local lock_timeout = '5s';
 
 -- ── Audit actions ───────────────────────────────────────────────────────────────────────────────────────────────────
 -- The list below is production's CURRENT list (read 2026-11-04: it already holds the two kul_link_* values added by 20261030100000)

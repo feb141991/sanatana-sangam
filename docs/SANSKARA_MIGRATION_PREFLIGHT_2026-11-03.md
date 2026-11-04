@@ -26,13 +26,13 @@ Per AGENTS.md section 4. **Nothing here has been applied. This is the request fo
    data once it runs (see "What happens at first run"), but only rows that satisfy the retention rules, and there are none today.
 4. **Lock contention: low risk.** No `ADD COLUMN`, no index build, no table rewrite. `CREATE TRIGGER` takes a short `SHARE ROW EXCLUSIVE` lock on `profiles` (26 rows) and
    `sanskara_claims`/`sanskara_subject_managers` (empty); migration 3's `DROP TRIGGER`/`CREATE TRIGGER` on `notification_candidates` takes a brief exclusive lock inside one transaction.
-   Producers insert into that table from crons, so **apply 3 away from the minute a cron fires** (the Sanskara cron runs at :17 once enabled; others are daily). Expected wait: milliseconds.
+   That table is written by the every-10-minute resolver (:01, :11 ...), dispatch (:03, :13 ...) and quiz (:05, :15 ...) crons, which averaged 35 to 51 s a run and peaked above 1,600 s in the 3 days to 2026-11-04, plus the Sanskara producer (:17 once enabled). So migrations 1, 3 and 4 set `lock_timeout = '5s'` and fail with nothing applied rather than queue behind one. **Apply 3 at about :07 to :10 past the hour**, between runs, and run it again if it times out.
 5. **Rollback and reversibility: pass, with one honest limit.** A rollback file exists for each (`supabase/rollbacks/<version>_*_rollback.sql`). Re-tested on scratch Postgres this session:
    3 (rollback then re-apply, all suites green) and 2 (earlier this session). 1's rollback exists and its suite passes; I did not re-run its rollback in this session. **Limit:** rows a job
    or the void hook has already deleted or revoked cannot be restored; that is their purpose.
 
 ## What happens at first run (migration 2 schedules jobs at apply time)
-`sanskara-majority-sweep-daily` 03:41 UTC, `sanskara-consent-purge-daily` 03:43, `sanskara-retention-daily` 03:47. With the tables empty every job returns zero. **Before the
+`sanskara-majority-sweep-daily` 19:47 UTC, `sanskara-consent-purge-daily` 19:49, `sanskara-retention-daily` 19:57 (moved from 03:41, 03:43 and 03:47 on 2026-11-04: those are the resolver's :41 and the dispatcher's :43). With the tables empty every job returns zero. **Before the
 first dated run**, dry-run each (read-only):
 ```sql
 select public.sanskara_job_majority_sweep(now(), true);

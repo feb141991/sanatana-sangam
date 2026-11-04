@@ -32,6 +32,9 @@
 -- Grants already revoked by this migration cannot be restored by the rollback (that is the point of voiding them).
 
 begin;
+-- CREATE TRIGGER on profiles takes SHARE ROW EXCLUSIVE, which waits behind any open write to profiles and holds later writers
+-- behind it. Give up after 5 s instead of queueing: this is one transaction, so nothing is applied and it can simply be run again.
+set local lock_timeout = '5s';
 
 create function public.sanskara_void_kul_grants(p_user uuid, p_kul uuid) returns integer
 language plpgsql security definer set search_path = ''

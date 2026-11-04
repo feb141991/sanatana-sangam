@@ -196,10 +196,16 @@ revoke all on function public.sanskara_job_majority_sweep(timestamptz, boolean, 
 revoke all on function public.sanskara_job_consent_purge(timestamptz, boolean, integer) from public, anon, authenticated, service_role;
 revoke all on function public.sanskara_job_retention(timestamptz, boolean, integer) from public, anon, authenticated, service_role;
 
--- Daily, after the UTC date has turned (the functions use the UTC date, like sanskara_can). Off the hour, away from the
--- other jobs in this project (03:37 auth diagnostics).
-select cron.schedule('sanskara-majority-sweep-daily', '41 3 * * *', $$select public.sanskara_job_majority_sweep()$$);
-select cron.schedule('sanskara-consent-purge-daily', '43 3 * * *', $$select public.sanskara_job_consent_purge()$$);
-select cron.schedule('sanskara-retention-daily', '47 3 * * *', $$select public.sanskara_job_retention()$$);
+-- Daily at 19:47, 19:49 and 19:57 UTC (01:17 to 01:27 IST): the quiet band the other daily purges use (19:15 to 21:30 UTC, see
+-- 20261101010000_stagger_daily_purge_crons.sql), on minutes that none of the every-10-minute jobs uses. Production on 2026-11-04:
+-- notification resolver :01 :11 :21 :31 :41 :51, dispatch :03 :13 :23 :33 :43 :53, quiz reminders :05 :15 :25 :35 :45 :55, social
+-- tick :07 :22 :37 :52. The first version of this file used 03:41, 03:43 and 03:47, which is the resolver's and the dispatcher's
+-- minute in every hour and the same early-morning pile-up that 20261101010000 had just removed.
+-- The functions use the UTC date, like sanskara_can. Running late in the UTC day instead of just after it turns is safe for the
+-- reason in the header: access, the window and consent are derived from dates at every read, so a job that runs later only deletes
+-- later. A dependent who reaches 18 is frozen at the next 19:47 UTC, not at 03:41.
+select cron.schedule('sanskara-majority-sweep-daily', '47 19 * * *', $$select public.sanskara_job_majority_sweep()$$);
+select cron.schedule('sanskara-consent-purge-daily', '49 19 * * *', $$select public.sanskara_job_consent_purge()$$);
+select cron.schedule('sanskara-retention-daily', '57 19 * * *', $$select public.sanskara_job_retention()$$);
 
 commit;
