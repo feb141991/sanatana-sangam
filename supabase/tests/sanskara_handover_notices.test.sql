@@ -76,6 +76,9 @@ begin
     'title', 'Saved date', 'body', 'A saved date is near. Please open the app.', 'action_url', '/kul/sanskara', 'timezone', 'UTC') || p_patch;
   meta := jsonb_build_object('subject_id', public._t(p_subject), 'notice', p_notice, 'profile_generation', v_pgen,
                              'local_date', (base ->> 'local_date'), 'timezone', base ->> 'timezone') || p_meta;
+  -- A cancelled candidate for the same key would collide with the table's unique key (as in production); the test re-arms, so clear it.
+  delete from public.notification_candidates where user_id = public._t(p_account) and event_type = 'sanskar_milestone'
+    and event_id = base ->> 'event_id' and event_instance = base ->> 'event_instance' and local_date = (base ->> 'local_date')::date and status = 'cancelled';
   insert into public.notification_candidates (user_id, event_type, event_id, event_instance, local_date, audience_variant, scheduled_for, expires_at,
                                               title, body, action_url, language, timezone, metadata)
   values (public._t(p_account), 'sanskar_milestone', base ->> 'event_id', base ->> 'event_instance', (base ->> 'local_date')::date, base ->> 'audience',
