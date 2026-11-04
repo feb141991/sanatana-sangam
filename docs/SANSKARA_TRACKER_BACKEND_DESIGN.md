@@ -222,7 +222,7 @@ In-app notification creation and OS push delivery stay separate; nothing here cl
   every reminder for a child called "Kara" (the title said "Sanskara") fail forever and silently. Each language has two generic
   wordings; on `sanskara_candidate_not_discreet` the producer tries the next, and the trigger judges each. If both are refused the
   reminder is not sent (fails closed). Across a corpus of 43 plausible names every one survives at least one wording; only the plain
-  words "Date" and "Open" are blocked by both. Hindi and Punjabi wording is unreviewed by a native speaker.
+  words "Date" and "Open" are blocked by both. Hindi and Punjabi wording (reminders and hand-over notices) was reviewed and approved by the founder, Prince Sharma, on 2026-11-04.
 - Candidate shape: `event_id` = subscription id, `event_instance` = `L<lead>`, audience from the selector, link `/kul/sanskara`, expiry at the
   end of the reminder's own local day, `source_status` `user_provided`, metadata exactly the six allowed keys.
 - **Verified:** 56 unit tests (builder and route, mocked database); 24 mutations turned them red; on scratch Postgres with the real M1 to M4

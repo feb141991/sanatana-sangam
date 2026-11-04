@@ -19,7 +19,7 @@ Status: **Phase 1 database layer written (2026-11-03, migration `20261103110000`
 |---|---|---|
 | G1 | Nothing tells a manager the 18th birthday or the window end is coming. | A family that forgets loses the records at window end. |
 | G2 | Nothing tells the claim is expiring, or that the window ends soon. | Same. |
-| G3 | `accept` returns `dropped_as_duplicates` but the person is only told a number. | A parent's version of a rite is silently dropped. |
+| G3 | `accept` returns `dropped_as_duplicates` but the modal ignored it. | A parent's version of a rite would be silently dropped. **Status 2026-11-04:** the case cannot occur yet (production `sanskara_rites` holds only `custom`, and custom milestones always move). The modal now says how many were not added and that the person's own record was kept (Native `acceptResultMessage`, no contract change). Naming the dropped rites would need a new preview function and is deferred until reviewed rites exist (catalogue step 2). |
 | G4 | E10: when the last manager leaves, the contract promises "a hand-over to a current Kul member"; it is not built. | The dependent is deleted. |
 
 ### Proposed build (Phase 1)

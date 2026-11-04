@@ -59,7 +59,7 @@ function languageFor(value: string | null): Language {
 // or more) as a substring. Fixed copy would make every reminder for, say, a child called "Tim" or "Kara" fail forever and
 // silently. The wordings share as few letter sequences as possible; the producer tries the next one only when the trigger
 // answers sanskara_candidate_not_discreet, and the trigger judges each attempt again. If every wording is refused the
-// reminder is not sent. Hindi and Punjabi are unreviewed by a native speaker.
+// reminder is not sent. Hindi and Punjabi wording was reviewed and approved by the founder, Prince Sharma, on 2026-11-04.
 type Wording = { title: string; today: string; soon: string };
 const COPY: Record<Language, Wording[]> = {
   en: [

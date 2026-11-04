@@ -49,7 +49,7 @@ function languageFor(value: string | null): Language {
 // One wording for all six notices, so the lock screen shows no stage, no age, no date and no relationship. What is due, and
 // for whom, is shown inside the app after access is checked again. Two wordings per language because the insert trigger refuses
 // text that contains the child's name (three letters or more) as a substring; the producer tries the next only on that answer.
-// Hindi and Punjabi are unreviewed by a native speaker.
+// Hindi and Punjabi wording was reviewed and approved by the founder, Prince Sharma, on 2026-11-04.
 type Wording = { title: string; body: string };
 const WORDINGS: Record<Language, Wording[]> = {
   en: [
