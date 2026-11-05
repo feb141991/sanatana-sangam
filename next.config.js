@@ -42,6 +42,19 @@ const nextConfig = {
         destination: '/live-darshan',
         permanent: true,
       },
+      // Canonical apex redirect: shoonaya.com -> www.shoonaya.com for all routes
+      // except /.well-known/* so Digital Asset Links & AASA verify with HTTP 200 (no redirects).
+      {
+        source: '/((?!\\.well-known/).*)',
+        has: [
+          {
+            type: 'host',
+            value: 'shoonaya.com',
+          },
+        ],
+        destination: 'https://www.shoonaya.com/:path*',
+        permanent: true,
+      },
       {
         source: '/landing.html',
         destination: '/',
