@@ -6,6 +6,27 @@ This document records all production backend, mobile, database, and infrastructu
 
 ## Change Log
 
+### [Change #9] — 2026-11-05 18:20 IST
+* **Type:** Digital Asset Links Apex Exemption & CI Resilient Retry (`Shoonaya`)
+* **Scope:**
+  - `src/middleware.ts` (Apex domain canonical redirect with `.well-known` exemption for Google Play DAL)
+  - `src/middleware.test.ts` (Unit test coverage for apex redirect and assetlinks exemption)
+  - `packages/dharma-rules/harness/fixture-loader.ts` (Resilient retry with backoff for golden fixture loading)
+* **Trigger / Error:**
+  1. Google Play Console prompted to verify website association for `shoonaya.com` (`https://shoonaya.com/.well-known/assetlinks.json`). Apex domains returning 308 redirects fail Google's Digital Asset Links crawler because Android strict security rules refuse to follow redirects.
+  2. GitHub Actions CI run `42027431319` experienced an unhandled transient Cloudflare 522 origin timeout on Supabase PostgREST during golden fixture retrieval.
+* **Fix Applied:**
+  1. Updated `src/middleware.ts` to redirect `shoonaya.com` to canonical `www.shoonaya.com` for normal traffic while strictly exempting `/.well-known/*` so Digital Asset Links and Credential Sharing resolve directly with `HTTP 200 OK`.
+  2. Added unit tests in `src/middleware.test.ts` verifying both the redirect and the exemption.
+  3. Added exponential backoff retry in `fixture-loader.ts` for database-backed golden fixture and profile loading.
+* **Verification:**
+  - `npx vitest run src/middleware.test.ts` -> 14/14 passed.
+  - `npx vitest run src/lib/seo/agent-readiness.test.ts` -> 11/11 passed.
+  - `npm test --workspace=@sangam/panchang-engine` -> 134/134 passed.
+  - Asset integrity test (`npm run check:assets`) -> 205 images passed.
+
+---
+
 ### [Change #8] — 2026-11-05 17:30 IST
 * **Type:** Play Console Compliance, CI Verification & Android Bundle Optimization (`Shoonaya` & `shoonaya-mobile`)
 * **Scope:**

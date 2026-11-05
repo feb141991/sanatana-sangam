@@ -143,4 +143,22 @@ describe("middleware request correlation id", () => {
     expect(response.headers.get("x-request-id")).toMatch(UUID_V4);
     expect(response.headers.get("x-request-id")).not.toBe("not-a-real-uuid");
   });
+
+  it("redirects apex shoonaya.com to www.shoonaya.com for regular web traffic", async () => {
+    const request = new NextRequest("https://shoonaya.com/panchang", {
+      headers: { host: "shoonaya.com" },
+    });
+    const response = await middleware(request);
+    expect(response.status).toBe(308);
+    expect(response.headers.get("location")).toBe("https://www.shoonaya.com/panchang");
+  });
+
+  it("exempts /.well-known/ paths from apex redirect so Digital Asset Links verify with HTTP 200", async () => {
+    const request = new NextRequest("https://shoonaya.com/.well-known/assetlinks.json", {
+      headers: { host: "shoonaya.com" },
+    });
+    const response = await middleware(request);
+    expect(response.status).not.toBe(308);
+    expect(response.headers.get("location")).toBeNull();
+  });
 });

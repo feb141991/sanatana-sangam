@@ -241,6 +241,19 @@ async function middlewareHandler(req: NextRequest, requestId: string) {
     return res;
   }
 
+  // ── Step 0a: Apex domain redirect (shoonaya.com → www.shoonaya.com) ─────────
+  // Redirect apex to www for canonical branding/SEO, but exempt /.well-known/
+  // so Google Play Digital Asset Links & Apple App Site Association verify cleanly
+  // with HTTP 200 without redirects (which the Google DAL crawler refuses to follow).
+  const host = req.headers.get("host")?.replace(/:\d+$/, "") || "";
+  if (host === "shoonaya.com" && !pathname.startsWith("/.well-known/")) {
+    const canonicalUrl = req.nextUrl.clone();
+    canonicalUrl.host = "www.shoonaya.com";
+    canonicalUrl.port = "";
+    canonicalUrl.protocol = "https:";
+    return NextResponse.redirect(canonicalUrl, 308);
+  }
+
   // ── Step 0: Content negotiation for AI agents (Accept: text/markdown) ────
   const acceptHeader = req.headers.get("accept") || "";
   const isAgentMarkdownRequest =

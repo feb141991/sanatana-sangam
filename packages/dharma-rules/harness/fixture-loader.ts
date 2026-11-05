@@ -290,6 +290,30 @@ function parseJson(filePath: string): unknown {
   }
 }
 
+async function fetchWithRetry<T>(
+  fn: () => Promise<{ data: T | null; error: any }>,
+  resourceName: string,
+  retries = 3,
+  delayMs = 2500,
+): Promise<T> {
+  let lastError: any = null;
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fn();
+      if (!res.error && res.data !== null) {
+        return res.data;
+      }
+      lastError = res.error;
+    } catch (err) {
+      lastError = err;
+    }
+    if (attempt < retries) {
+      await new Promise(resolve => setTimeout(resolve, delayMs * attempt));
+    }
+  }
+  throw new Error(`Failed to load ${resourceName} from Supabase: ${lastError?.message ?? String(lastError)}`);
+}
+
 /**
  * Load and validate all golden fixtures from `public.golden_fixtures`.
  *
@@ -301,13 +325,13 @@ function parseJson(filePath: string): unknown {
  */
 export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
   const supabase = goldenFixturesClient();
-  const { data, error } = await supabase
-    .from('golden_fixtures')
-    .select('case_id, festival_id, year, location, profile, expected, tolerance, source, reasoning, approved');
-
-  if (error) {
-    throw new Error(`Failed to load golden_fixtures from Supabase: ${error.message}`);
-  }
+  const data = await fetchWithRetry<any[]>(
+    () =>
+      supabase
+        .from('golden_fixtures')
+        .select('case_id, festival_id, year, location, profile, expected, tolerance, source, reasoning, approved'),
+    'golden_fixtures',
+  );
 
   return (data ?? []).map(row => {
     const raw: Record<string, unknown> = {
@@ -355,13 +379,13 @@ export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
 
 export async function loadCalendarProfileFixtureDefinitions(): Promise<CalendarProfileFixtureDefinition[]> {
   const supabase = goldenFixturesClient();
-  const { data, error } = await supabase
-    .from('calendar_profiles')
-    .select('slug, month_system, scholarly_status');
-
-  if (error) {
-    throw new Error(`Failed to load calendar_profiles from Supabase: ${error.message}`);
-  }
+  const data = await fetchWithRetry<any[]>(
+    () =>
+      supabase
+        .from('calendar_profiles')
+        .select('slug, month_system, scholarly_status'),
+    'calendar_profiles',
+  );
 
   return (data ?? []).map(row => ({
     slug: row.slug,
