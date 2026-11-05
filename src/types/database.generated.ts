@@ -1393,6 +1393,32 @@ export type Database = {
         }
         Relationships: []
       }
+      email_consent_events: {
+        Row: {
+          action: string
+          category: string
+          created_at: string
+          id: number
+          region: string | null
+          region_source: string | null
+          source: string
+          user_id: string
+          wording_version: string | null
+        }
+        Insert: {
+          action: string
+          category: string
+          created_at?: string
+          id?: never
+          region?: string | null
+          region_source?: string | null
+          source: string
+          user_id: string
+          wording_version?: string | null
+        }
+        Update: never
+        Relationships: []
+      }
       email_outbox: {
         Row: {
           attempt_count: number
@@ -12259,6 +12285,18 @@ export type Database = {
         Returns: Json
       }
       sanskara_viewer_kul: { Args: { p_account: string }; Returns: string }
+      set_email_consent: {
+        Args: {
+          p_category: string
+          p_granted: boolean
+          p_region?: string
+          p_region_source?: string
+          p_source: string
+          p_user_id: string
+          p_wording_version?: string
+        }
+        Returns: Json
+      }
       sanskara_early_approval_due: {
         Args: { p_late?: string; p_now?: string }
         Returns: {

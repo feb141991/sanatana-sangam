@@ -520,6 +520,10 @@ export async function DELETE(
     admin.supabase.from("sanskara_subjects").delete().eq("account_id", userId),
     admin.supabase.from("sanskara_request_log").delete().eq("account_id", userId),
     admin.supabase.from("sanskara_audit").delete().or(`actor_id.eq.${userId},target_id.eq.${userId}`),
+
+    // E-mail consent history (migration 20261106090000). Also cascades from auth.users; listed so this path never depends on that alone
+    // (guarded by src/lib/email-consent-account-deletion-contract.test.ts). The history leaves with the account.
+    admin.supabase.from("email_consent_events").delete().eq("user_id", userId),
   ];
 
   await Promise.allSettled(childCleanupTasks);
