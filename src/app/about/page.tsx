@@ -67,7 +67,7 @@ const SANCTUARY_TOOLS = [
     name: "Live Darshan and Sacred Places",
     imageSrc: "/relics/camphor-flame.png",
     icon: Eye,
-    href: "/darshan",
+    href: "/live-darshan",
     description:
       "Visit available Darshan streams and discover sacred places connected to Hindu, Sikh, Jain, and Buddhist communities.",
   },

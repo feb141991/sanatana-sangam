@@ -65,7 +65,7 @@ const FOOTER_COLUMNS = [
       { href: "/ai-chat", label: "Dharma Mitra AI Companion" },
       { href: "/features/pathshala", label: "Pathshala & Scripture Study" },
       { href: "/kundali", label: "Kundali & Rashiphal" },
-      { href: "/darshan", label: "Live Darshan Streams" },
+      { href: "/live-darshan", label: "Live Darshan Streams" },
       { href: "/kul", label: "Kul Private Family Spaces" },
       { href: "/community", label: "Mandali Community Circles" },
     ],

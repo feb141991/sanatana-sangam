@@ -33,6 +33,16 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/festivals',
+        destination: '/features/sacred-calendar',
+        permanent: false,
+      },
+      {
+        source: '/darshan',
+        destination: '/live-darshan',
+        permanent: true,
+      },
+      {
         source: '/landing.html',
         destination: '/',
         permanent: true,

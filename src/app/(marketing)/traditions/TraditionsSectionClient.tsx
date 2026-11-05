@@ -10,6 +10,7 @@ type TraditionItem = {
   slug: string;
   badge: string;
   color: string;
+  accentColor?: string;
   glowColor: string;
   bgSoft: string;
   borderSoft: string;
@@ -30,6 +31,7 @@ const TRADITIONS: TraditionItem[] = [
     slug: "hindu",
     badge: "Sanatan Dharma · हिन्दू धर्म",
     color: "#D88A1C",
+    accentColor: "#E59828",
     glowColor: "rgba(216, 138, 28, 0.45)",
     bgSoft: "rgba(216, 138, 28, 0.1)",
     borderSoft: "rgba(200, 146, 74, 0.3)",
@@ -61,9 +63,10 @@ const TRADITIONS: TraditionItem[] = [
     slug: "sikh",
     badge: "Sikhi · ਸਿੱਖ ਧਰਮ",
     color: "#1B5E8B",
+    accentColor: "#5BA4D4",
     glowColor: "rgba(27, 94, 139, 0.45)",
-    bgSoft: "rgba(27, 94, 139, 0.1)",
-    borderSoft: "rgba(91, 164, 212, 0.3)",
+    bgSoft: "rgba(91, 164, 212, 0.12)",
+    borderSoft: "rgba(91, 164, 212, 0.35)",
     contextLabel: "Selected teaching",
     script: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥",
     scriptStyle: {
@@ -91,9 +94,10 @@ const TRADITIONS: TraditionItem[] = [
     slug: "buddhist",
     badge: "Buddhism · बौद्ध धर्म",
     color: "#8B2D3E",
+    accentColor: "#E07A8B",
     glowColor: "rgba(139, 45, 62, 0.45)",
-    bgSoft: "rgba(139, 45, 62, 0.1)",
-    borderSoft: "rgba(212, 130, 122, 0.3)",
+    bgSoft: "rgba(224, 122, 139, 0.12)",
+    borderSoft: "rgba(224, 122, 139, 0.35)",
     contextLabel: "Selected teaching",
     script: "Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.",
     scriptStyle: {
@@ -121,9 +125,10 @@ const TRADITIONS: TraditionItem[] = [
     slug: "jain",
     badge: "Jainism · जैन धर्म",
     color: "#2A6B4A",
+    accentColor: "#52B788",
     glowColor: "rgba(42, 107, 74, 0.45)",
-    bgSoft: "rgba(42, 107, 74, 0.1)",
-    borderSoft: "rgba(106, 185, 154, 0.3)",
+    bgSoft: "rgba(82, 183, 136, 0.12)",
+    borderSoft: "rgba(82, 183, 136, 0.35)",
     contextLabel: "Selected teaching",
     script: "परस्परोपग्रहो जीवानाम् ।",
     scriptStyle: {
@@ -204,7 +209,7 @@ export function TraditionsSectionClient() {
         <div
           role="tablist"
           aria-label="Choose tradition"
-          className="relative flex items-center rounded-full p-1 border border-[rgba(200,160,110,0.28)] bg-[rgba(250,246,239,0.7)] backdrop-blur-xl shadow-[0_8px_32px_rgba(100,60,20,0.08)]"
+          className="relative flex items-center rounded-full p-1 border border-[var(--card-border)] bg-[var(--surface-soft)]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
         >
           {TRADITIONS.map((trad, idx) => {
             const isActive = activeIndex === idx;
@@ -286,7 +291,7 @@ export function TraditionsSectionClient() {
               <span
                 className="text-[110px] sm:text-[150px] lg:text-[170px] leading-none select-none transition-all duration-300"
                 style={{
-                  color: activeTrad.color,
+                  color: activeTrad.accentColor || activeTrad.color,
                   textShadow: `0 0 48px ${activeTrad.glowColor}`,
                   fontFamily:
                     "'Gurmukhi MN', 'Noto Sans Gurmukhi', sans-serif",
@@ -397,11 +402,11 @@ export function TraditionsSectionClient() {
         <div>
           <div
             className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] mb-4 sm:mb-5"
-            style={{ color: activeTrad.color }}
+            style={{ color: activeTrad.accentColor || activeTrad.color }}
           >
             <span
               className="w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: activeTrad.color }}
+              style={{ backgroundColor: activeTrad.accentColor || activeTrad.color }}
             />
             {activeTrad.badge}
           </div>
@@ -424,7 +429,10 @@ export function TraditionsSectionClient() {
             <div className="font-serif italic text-base sm:text-lg text-[var(--text-muted-warm)] leading-relaxed mb-2">
               {activeTrad.translation}
             </div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--brand-primary-strong)]">
+            <div
+              className="text-[11px] font-semibold uppercase tracking-wider"
+              style={{ color: activeTrad.accentColor || "var(--brand-primary-strong)" }}
+            >
               {activeTrad.source}
             </div>
           </div>
@@ -438,7 +446,7 @@ export function TraditionsSectionClient() {
                 style={{
                   backgroundColor: activeTrad.bgSoft,
                   borderColor: activeTrad.borderSoft,
-                  color: activeTrad.color,
+                  color: activeTrad.accentColor || activeTrad.color,
                 }}
               >
                 {feat}
