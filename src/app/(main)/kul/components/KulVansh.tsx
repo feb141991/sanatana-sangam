@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   CalendarDays,
+  ChevronDown,
   ChevronLeft,
   Crown,
   Edit3,
@@ -13,6 +14,7 @@ import {
   MoreVertical,
   Network,
   Orbit,
+  Pencil,
   Plus,
   ScrollText,
   Sparkles,
@@ -79,69 +81,69 @@ export function KulVansh({
   }
 
   return (
-    <div className="relative min-h-[calc(100svh-120px)] overflow-hidden bg-[var(--surface-base)] pb-28">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(201,163,91,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(201,163,91,0.055)_1px,transparent_1px)] bg-[length:34px_34px]" />
-      <div className="absolute -right-28 top-10 h-72 w-72 rounded-full bg-[var(--brand-primary-soft)]/48 blur-3xl" />
-      <div className="absolute -left-24 bottom-20 h-64 w-64 rounded-full bg-[var(--brand-primary-soft)]/36 blur-3xl" />
-
-      <div className={`relative z-10 ${isImmersiveView ? 'space-y-3 pt-2' : 'space-y-4 px-1 pt-2 sm:px-2'}`}>
-        <header className={isImmersiveView ? 'space-y-3 px-3 sm:px-4' : 'space-y-4'}>
-          <div className="grid min-h-12 grid-cols-[44px_1fr_44px] items-center gap-2">
-            <button
-              type="button"
-              onClick={onBack}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface-raised)]/76 theme-ink shadow-sm backdrop-blur-md"
-              aria-label="Back to Kul hub"
-            >
-              <ChevronLeft size={22} />
-            </button>
-            <div className="min-w-0 text-center">
-              <p className="truncate text-xl font-medium leading-tight theme-ink premium-serif">Kul Vriksha</p>
-              <p className="mt-0.5 text-xs theme-muted">{familyMembers.length} members preserved</p>
+    <div className="relative min-h-[calc(100svh-120px)] bg-[var(--surface-base)] pb-28">
+      <div className={`relative z-10 ${isImmersiveView ? 'space-y-3 pt-2' : 'space-y-4 px-2 pt-3 sm:px-4'}`}>
+        <header className="rounded-2xl border border-[var(--card-border)] bg-[var(--surface-raised)]/80 px-4 py-3 shadow-[var(--shadow-soft)] backdrop-blur-md">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onBack}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-cream)] shadow-sm transition hover:border-[var(--brand-primary)]"
+                aria-label="Back to Kul hub"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <div>
+                <h1 className="font-display text-lg font-medium leading-tight text-[var(--text-cream)] sm:text-xl">
+                  Kul Vriksha
+                </h1>
+                <p className="text-xs text-[var(--text-muted-warm)]">
+                  {familyMembers.length} {familyMembers.length === 1 ? 'member' : 'members'} · Lineage Sanctuary
+                </p>
+              </div>
             </div>
-            <button
-              type="button"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface-raised)]/70 theme-muted shadow-sm backdrop-blur-md"
-              aria-label="Kul Vriksha options"
-            >
-              <MoreVertical size={20} />
-            </button>
-          </div>
 
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {VIEW_OPTIONS.map((option) => {
-              const Icon = option.icon;
-              const active = activeView === option.key;
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  onClick={() => selectView(option.key)}
-                  className={`flex min-h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-left transition ${
-                    active
-                      ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white shadow-sm'
-                      : 'border-[var(--card-border)] bg-[var(--surface-raised)]/62 theme-muted backdrop-blur-md hover:border-[var(--brand-primary)]'
-                  }`}
+            {/* Clean, compact view selector & action button */}
+            <div className="flex items-center gap-2.5">
+              <div className="relative">
+                <select
+                  value={activeView}
+                  onChange={(e) => selectView(e.target.value as VanshView)}
+                  className="h-9 cursor-pointer appearance-none rounded-full border border-[var(--card-border)] bg-[var(--card-bg)] pl-3.5 pr-8 text-xs font-medium text-[var(--text-cream)] shadow-sm transition hover:border-[var(--brand-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+                  aria-label="Choose lineage view"
                 >
-                  <Icon size={16} className={active ? 'text-white' : 'theme-muted'} />
-                  <span className="min-w-0 whitespace-nowrap">
-                    <span className="flex items-center gap-1.5 text-sm font-medium">
-                      {option.label}
-                    </span>
-                  </span>
+                  {VIEW_OPTIONS.map((opt) => (
+                    <option key={opt.key} value={opt.key}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                />
+              </div>
+
+              {canManageVansh && (
+                <button
+                  type="button"
+                  onClick={() => setShowAdd(true)}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--brand-primary)] px-3.5 text-xs font-semibold text-white shadow-sm transition hover:opacity-95"
+                >
+                  <Plus size={15} />
+                  <span>Add Member</span>
                 </button>
-              );
-            })}
+              )}
+            </div>
           </div>
         </header>
 
         {familyMembers.length === 0 && !showAdd ? (
           <EmptyVanshState canManageVansh={canManageVansh} onAdd={() => setShowAdd(true)} />
         ) : (
-          <section className={`relative overflow-hidden ${isImmersiveView ? '' : 'px-1 sm:px-2'}`}>
-            {!isImmersiveView && <ViewHeader activeMeta={activeMeta} memberCount={familyMembers.length} />}
-
-            <div className={isImmersiveView ? '' : 'mt-3'}>
+          <section className="relative">
+            <div className="mt-2">
               {activeView === 'lineage' && (
                 <LineageTree
                   roots={graph.roots}
@@ -315,12 +317,7 @@ function LineageTree({
   }
 
   return (
-    <div className="relative min-h-[590px] overflow-x-auto rounded-[2.5rem] bg-[radial-gradient(circle_at_50%_10%,rgba(250,238,218,0.72),transparent_28%),linear-gradient(180deg,rgba(255,253,249,0.38),rgba(255,253,249,0.08))] py-8 pb-12 backdrop-blur-[2px]">
-      <div className="pointer-events-none absolute inset-0 opacity-40">
-        <div className="absolute -left-8 top-20 h-28 w-28 rounded-full border border-[var(--brand-primary-soft)]" />
-        <div className="absolute -right-10 top-36 h-32 w-32 rounded-full border border-[var(--brand-primary-soft)]" />
-        <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full border border-[var(--brand-primary-soft)]/70" />
-      </div>
+    <div className="relative min-h-[560px] overflow-x-auto rounded-3xl border border-[var(--card-border)] bg-[var(--surface-raised)]/60 py-10 pb-16 shadow-[var(--shadow-soft)] backdrop-blur-sm">
       <div className="relative flex min-w-max flex-col items-center gap-10 px-8">
         {roots.map((root) => (
           <TreeBranch key={root.member.id} node={root} canManage={canManage} onSelect={onSelect} onEdit={onEdit} onDelete={onDelete} />
@@ -384,11 +381,10 @@ function MemberNodeCard({
   onDelete: (id: string, name: string) => void;
 }) {
   const isRemembered = !member.is_alive;
-  const genNumber = inferGeneration(member);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       className="group relative"
@@ -396,42 +392,31 @@ function MemberNodeCard({
       <button
         type="button"
         onClick={() => onSelect(member)}
-        className="relative flex h-[148px] w-[148px] flex-col items-center justify-between rounded-[1.4rem] border border-[var(--card-border)] bg-[var(--card-bg)]/95 p-3 text-center shadow-[var(--shadow-soft)] backdrop-blur-md transition-all duration-200 hover:-translate-y-1 hover:border-[var(--brand-primary)]/40 hover:shadow-[var(--shadow-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+        className="relative flex h-[138px] w-[138px] flex-col items-center justify-between rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-3 text-center shadow-[var(--shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:border-[var(--brand-primary)]/50 hover:shadow-[var(--shadow-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
       >
-        {/* Top Header Row: Gen Tag & Status */}
-        <div className="flex w-full items-center justify-between">
-          <span className="rounded-full bg-[var(--brand-primary-soft)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-primary-strong)]">
-            Gen {genNumber}
+        {/* Top corner: Only show a subtle Diya if remembered; keep living cards serene */}
+        {isRemembered ? (
+          <span
+            className="absolute right-2 top-2 flex h-5 items-center gap-1 rounded-full border border-amber-500/25 bg-amber-500/10 px-1.5 text-[9px] font-medium text-amber-700 dark:text-amber-300"
+            title="Sacred Remembrance (स्मृति)"
+          >
+            <span className="text-[10px]">🪔</span>
           </span>
-          {isRemembered ? (
-            <span
-              className="inline-flex items-center gap-1 rounded-full border border-amber-500/25 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300"
-              title="Sacred Remembrance (स्मृति)"
-            >
-              <span>🪔</span>
-              <span className="text-[9px] font-serif">स्मृति</span>
-            </span>
-          ) : member.linked_user_id ? (
-            <span
-              className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"
-              title="Active on Shoonaya"
-            />
-          ) : (
-            <span
-              className="h-2 w-2 rounded-full bg-[var(--brand-primary)]/40"
-              title="Family Record"
-            />
-          )}
-        </div>
+        ) : member.linked_user_id ? (
+          <span
+            className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"
+            title="Active on Shoonaya"
+          />
+        ) : null}
 
         {/* Center: Avatar */}
-        <div className="my-auto py-1">
+        <div className="pt-1.5">
           <MemberAvatar member={member} size="sm" />
         </div>
 
-        {/* Bottom: Name & Relationship/Role */}
+        {/* Bottom: Name & Relationship */}
         <div className="w-full">
-          <p className="truncate font-display text-sm font-medium leading-tight text-[var(--text-cream)]">
+          <p className="truncate font-display text-[13px] font-medium leading-tight text-[var(--text-cream)]">
             {member.name}
           </p>
           <p className="mt-0.5 truncate text-[11px] leading-tight text-[var(--text-muted-warm)]">
