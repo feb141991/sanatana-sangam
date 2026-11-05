@@ -865,7 +865,9 @@ export async function GET(request: Request) {
       failed: failedRows.length,
     });
   } catch (error: any) {
-    emitError("notifications", error, "P2", { route: "/api/cron/notification-dispatch" });
+    const message = error instanceof Error ? error.message : String(error);
+    const isDatabaseDown = /PGRST|timeout|ECONNREFUSED|connect|57014|503/i.test(message);
+    emitError("notifications", error, isDatabaseDown ? "P0" : "P2", { route: "/api/cron/notification-dispatch" });
     console.error("[notification-dispatch] Cron crashed:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Dispatcher crashed" },

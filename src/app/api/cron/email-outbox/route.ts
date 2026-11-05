@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { processEmailOutboxBatch } from '@/lib/email-outbox';
+import { postSlackOperationalAlert } from '@/lib/slack-alerts';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -23,7 +24,19 @@ export async function GET(request: Request) {
     const result = await processEmailOutboxBatch(createServiceRoleSupabaseClient(), undefined, limit);
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
-    console.error('[email-outbox] cron run failed', error instanceof Error ? error.message : 'unknown');
+    const message = error instanceof Error ? error.message : 'unknown';
+    console.error('[email-outbox] cron run failed', message);
+
+    const isDatabaseDown = /PGRST|timeout|ECONNREFUSED|connect|57014|503/i.test(message);
+    await postSlackOperationalAlert({
+      severity: isDatabaseDown ? 'P0' : 'P1',
+      domain: 'cron',
+      title: isDatabaseDown ? '[P0] Database Unreachable in Email Outbox' : '[P1] Email Outbox Worker Failed',
+      desc: `The 5-minute email outbox worker failed to claim or process batches from Supabase:\n\`\`\`${message}\`\`\``,
+      route: '/api/cron/email-outbox',
+      metadata: { error: message },
+    });
+
     return NextResponse.json({ error: 'Email delivery run failed' }, { status: 500 });
   }
 }

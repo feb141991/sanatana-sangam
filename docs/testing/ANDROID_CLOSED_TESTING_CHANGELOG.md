@@ -6,6 +6,27 @@ This document records all production backend, mobile, database, and infrastructu
 
 ## Change Log
 
+### [Change #11] — 2026-11-06 00:47 IST
+* **Type:** Operational Alerting & Database Failure Notification (`Shoonaya`)
+* **Scope:**
+  - `src/app/api/cron/email-outbox/route.ts`
+  - `src/app/api/cron/email-outbox/__tests__/route.test.ts`
+  - `src/app/api/cron/notification-dispatch/route.ts`
+  - `src/app/api/cron/telemetry-audit/route.ts`
+  - `src/app/api/cron/telemetry-audit/__tests__/route.test.ts`
+* **Trigger / Error:**
+  - Database stalls (`PGRST002`, `CONNECT_TIMEOUT`, SQLSTATE `57014`) failed to alert administrators via Slack because crons were swallowing errors to `console.error` only, and `telemetry-audit` had a circular dependency where it queried Supabase to check if Supabase was failing.
+* **Fix Applied:**
+  1. Added direct `postSlackOperationalAlert()` with `P0` severity to `/api/cron/email-outbox` whenever batch claims or processing throw database/network errors.
+  2. Hardened `/api/cron/telemetry-audit` to detect Supabase query failure objects (`apiErr || clientErr || monErr`) or thrown exceptions and dispatch instant `[P0] Database Query Failure: Telemetry Audit Blocked` Slack cards.
+  3. Escalated database-related dispatcher crashes in `/api/cron/notification-dispatch` to `P0` so Slack alerting is triggered immediately.
+  4. Added unit test suites verifying P0 Slack alerts on database connection failures.
+* **Verification:**
+  - Vitest cron test suites (`email-outbox`, `telemetry-audit`, `notification-dispatch`) -> 89/89 passed.
+  - Full TypeScript build check (`npx tsc --noEmit`) -> 0 errors.
+
+---
+
 ### [Change #10] — 2026-11-06 00:35 IST
 * **Type:** Test Harness Resilience & Offline Snapshot Cache Fallback (`Shoonaya`)
 * **Scope:**

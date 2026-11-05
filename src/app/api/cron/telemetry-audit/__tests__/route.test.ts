@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => {
     mockNativeApiErrors: [] as any[],
     mockClientErrors: [] as any[],
     mockMonEvents: [] as any[],
+    mockDbError: null as any,
     mockInsert: vi.fn().mockResolvedValue({ error: null }),
   };
 });
@@ -18,6 +19,28 @@ vi.mock('@/lib/slack-alerts', () => ({
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     from: (table: string) => {
+      if (mocks.mockDbError) {
+        return {
+          select: () => ({
+            gt: () => ({
+              neq: () => ({
+                order: () => ({
+                  limit: vi.fn().mockResolvedValue({ data: null, error: mocks.mockDbError }),
+                }),
+              }),
+              in: () => ({
+                order: () => ({
+                  limit: vi.fn().mockResolvedValue({ data: null, error: mocks.mockDbError }),
+                }),
+              }),
+              order: () => ({
+                limit: vi.fn().mockResolvedValue({ data: null, error: mocks.mockDbError }),
+              }),
+            }),
+          }),
+          insert: mocks.mockInsert,
+        };
+      }
       if (table === 'native_api_diagnostic_events') {
         return {
           select: () => ({
@@ -78,6 +101,7 @@ describe('/api/cron/telemetry-audit', () => {
     mocks.mockNativeApiErrors = [];
     mocks.mockClientErrors = [];
     mocks.mockMonEvents = [];
+    mocks.mockDbError = null;
   });
 
   afterEach(() => {
@@ -185,5 +209,25 @@ describe('/api/cron/telemetry-audit', () => {
     expect(body.summary.clean).toBe(false);
     expect(body.summary.clientCrashes).toBe(1);
     expect(postSlackOperationalAlert).toHaveBeenCalled();
+  });
+
+  it('dispatches P0 Slack alert when database query fails during audit', async () => {
+    mocks.mockDbError = { message: 'connection timeout after 5000ms', code: 'CONNECT_TIMEOUT' };
+
+    const req = new Request('https://shoonaya.com/api/cron/telemetry-audit', {
+      headers: { authorization: 'Bearer test-cron-secret-123' },
+    });
+    const res = await GET(req);
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body.error).toBe('Database query failed');
+
+    expect(postSlackOperationalAlert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'P0',
+        title: expect.stringContaining('Database Query Failure'),
+        desc: expect.stringContaining('connection timeout after 5000ms'),
+      })
+    );
   });
 });
