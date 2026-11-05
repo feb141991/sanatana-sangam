@@ -83,11 +83,16 @@ describe('verified Native app associations', () => {
   it('associates the canonical web domain with the EAS-signed Android app', () => {
     const statements = JSON.parse(
       readFileSync('public/.well-known/assetlinks.json', 'utf8'),
-    ) as Array<{ target: { package_name: string; sha256_cert_fingerprints: string[] } }>;
+    ) as Array<{ relation: string[]; target: { package_name: string; sha256_cert_fingerprints: string[] } }>;
 
     expect(statements[0].target.package_name).toBe('com.shoonaya.app');
+    expect(statements[0].relation).toContain('delegate_permission/common.handle_all_urls');
+    expect(statements[0].relation).toContain('delegate_permission/common.get_login_creds');
     expect(statements[0].target.sha256_cert_fingerprints).toContain(
       '44:C4:9E:E8:73:BD:B1:94:EB:53:62:64:90:82:D9:D9:B0:03:9B:FE:74:CD:BD:FC:6D:34:97:93:EE:31:B8:9A',
+    );
+    expect(statements[0].target.sha256_cert_fingerprints).toContain(
+      'DE:25:49:CC:03:06:52:E9:9E:94:C3:7F:8F:73:82:A3:CF:FA:10:B9:32:76:C0:0D:A7:E6:A4:88:D4:5E:44:13',
     );
   });
 });

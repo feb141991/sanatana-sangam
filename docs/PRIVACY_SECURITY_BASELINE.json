@@ -1,14 +1,14 @@
 {
   "schemaVersion": 2,
-  "sourceFingerprint": "7589f70a8fd2b0be571fa5d13ef06d385f970b81da77c9ed2ab30fbcc756d8c6",
+  "sourceFingerprint": "5553f322e6fa70c743c51f8f896be31c26048137f03eafcf45b77881cb27fed2",
   "repositories": {
     "backend": {
-      "headCommit": "1233a17b969fed5442f85445eb50997df7d8706a",
+      "headCommit": "4a293edc93fe9560862ca8ea3ad9df71c6dc2069",
       "isClean": false
     },
     "native": {
-      "headCommit": "60124fc59a0d4cb889919da19cba1da1a277157a",
-      "isClean": false
+      "headCommit": "36c2a391a40d1291b710583a4a7547be544a4ad8",
+      "isClean": true
     }
   },
   "environment": {
@@ -34,32 +34,32 @@
       "DECISION_REQUIRED": 3
     },
     "scannedFiles": {
-      "backend": 3048,
-      "native": 1458
+      "backend": 3298,
+      "native": 875
     },
     "discoveredStorageKeys": {
       "backend": 42,
-      "native": 70
+      "native": 64
     },
-    "discoveredProviders": 11
+    "discoveredProviders": 10
   },
   "databaseAccessProbe": {
     "profiles": {
       "state": "SECURED",
       "anonymousCount": null,
-      "administrativeCount": 14,
+      "administrativeCount": 28,
       "errorCode": "42501",
       "explanation": "The anonymous role was explicitly denied access."
     },
     "tableCounts": {
       "profiles": {
         "state": "OK",
-        "count": 14,
+        "count": 28,
         "code": null
       },
       "birth_profiles": {
         "state": "OK",
-        "count": 0,
+        "count": 1,
         "code": null
       },
       "posts": {
@@ -69,17 +69,17 @@
       },
       "post_comments": {
         "state": "OK",
-        "count": 30,
+        "count": 0,
         "code": null
       },
       "content_reports": {
         "state": "OK",
-        "count": 2,
+        "count": 0,
         "code": null
       },
       "user_blocked_profiles": {
         "state": "OK",
-        "count": 2,
+        "count": 0,
         "code": null
       },
       "user_muted_profiles": {
@@ -104,7 +104,7 @@
       },
       "calendar_governance_diagnostics_cache": {
         "state": "OK",
-        "count": 20,
+        "count": 28,
         "code": null
       },
       "user_settings": {
@@ -156,14 +156,20 @@
       "evidence": [
         {
           "repository": "backend",
+          "file": "AGENTS.md",
+          "line": 423,
+          "marker": "auth\\.users"
+        },
+        {
+          "repository": "backend",
           "file": "package.json",
-          "line": 104,
+          "line": 113,
           "marker": "google-auth-library"
         },
         {
           "repository": "backend",
           "file": "package.json",
-          "line": 114,
+          "line": 123,
           "marker": "twilio"
         },
         {
@@ -296,12 +302,6 @@
           "repository": "backend",
           "file": "src/app/(main)/onboarding/OnboardingClient.tsx",
           "line": 370,
-          "marker": "\\/api\\/auth\\/"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/(main)/onboarding/OnboardingClient.tsx",
-          "line": 400,
           "marker": "\\/api\\/auth\\/"
         }
       ]
@@ -514,6 +514,12 @@
       "evidence": [
         {
           "repository": "backend",
+          "file": "AGENTS.md",
+          "line": 254,
+          "marker": "date_of_birth"
+        },
+        {
+          "repository": "backend",
           "file": "src/app/(main)/kul/components/KulVansh.tsx",
           "line": 711,
           "marker": "birth_place"
@@ -655,12 +661,6 @@
           "file": "src/app/(main)/onboarding/OnboardingClient.tsx",
           "line": 490,
           "marker": "date_of_birth"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 179,
-          "marker": "date_of_birth"
         }
       ]
     },
@@ -735,37 +735,37 @@
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 5997,
+          "line": 6534,
           "marker": "home_latitude"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 5998,
+          "line": 6535,
           "marker": "home_longitude"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 6113,
+          "line": 6659,
           "marker": "home_latitude"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 6114,
+          "line": 6660,
           "marker": "home_longitude"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 6229,
+          "line": 6784,
           "marker": "home_latitude"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 6230,
+          "line": 6785,
           "marker": "home_longitude"
         },
         {
@@ -1274,6 +1274,12 @@
         },
         {
           "repository": "backend",
+          "file": "AGENTS.md",
+          "line": 417,
+          "marker": "\\/api\\/mandali\\/"
+        },
+        {
+          "repository": "backend",
           "file": "BRAINSTORM_REVIEW.md",
           "line": 375,
           "marker": "content_reports"
@@ -1361,12 +1367,6 @@
           "file": "src/app/admin/monitoring/ApiMonitoringSection.tsx",
           "line": 206,
           "marker": "\\/api\\/mandali\\/"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/admin/monitoring/MonitoringClient.tsx",
-          "line": 120,
-          "marker": "content_reports"
         }
       ]
     },
@@ -1402,38 +1402,26 @@
         {
           "repository": "backend",
           "file": "AGENTS.md",
-          "line": 122,
+          "line": 169,
           "marker": "sarvam"
         },
         {
           "repository": "backend",
           "file": "AGENTS.md",
-          "line": 123,
+          "line": 170,
+          "marker": "sarvam"
+        },
+        {
+          "repository": "backend",
+          "file": "AGENTS.md",
+          "line": 291,
           "marker": "sarvam"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 86,
+          "line": 162,
           "marker": "sarvam"
-        },
-        {
-          "repository": "backend",
-          "file": "package.json",
-          "line": 28,
-          "marker": "ai_pipeline"
-        },
-        {
-          "repository": "backend",
-          "file": "package.json",
-          "line": 29,
-          "marker": "ai_pipeline"
-        },
-        {
-          "repository": "backend",
-          "file": "package.json",
-          "line": 30,
-          "marker": "ai_pipeline"
         },
         {
           "repository": "backend",
@@ -1473,6 +1461,24 @@
         },
         {
           "repository": "backend",
+          "file": "package.json",
+          "line": 37,
+          "marker": "ai_pipeline"
+        },
+        {
+          "repository": "backend",
+          "file": "package.json",
+          "line": 38,
+          "marker": "ai_pipeline"
+        },
+        {
+          "repository": "backend",
+          "file": "package.json",
+          "line": 39,
+          "marker": "ai_pipeline"
+        },
+        {
+          "repository": "backend",
           "file": "packages/dharma-rules/src/festivals/festival-content.json",
           "line": 9794,
           "marker": "sarvam"
@@ -1480,7 +1486,7 @@
         {
           "repository": "backend",
           "file": "packages/dharma-rules/src/festivals/festival-content.json",
-          "line": 13608,
+          "line": 14904,
           "marker": "sarvam"
         },
         {
@@ -1536,12 +1542,6 @@
           "file": "packages/pramana-serve/src/provider-selector.ts",
           "line": 20,
           "marker": "sarvam"
-        },
-        {
-          "repository": "backend",
-          "file": "packages/pramana-serve/src/provider-selector.ts",
-          "line": 22,
-          "marker": "sarvam"
         }
       ]
     },
@@ -1581,7 +1581,7 @@
         {
           "repository": "backend",
           "file": "src/app/admin/monitoring/MonitoringClient.tsx",
-          "line": 106,
+          "line": 107,
           "marker": "push_tokens"
         },
         {
@@ -1753,25 +1753,25 @@
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 85,
+          "line": 161,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 86,
+          "line": 162,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 89,
+          "line": 165,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "package.json",
-          "line": 96,
+          "line": 105,
           "marker": "@vercel\\/analytics"
         },
         {
@@ -1783,37 +1783,43 @@
         {
           "repository": "backend",
           "file": "src/app/layout.tsx",
-          "line": 175,
+          "line": 185,
           "marker": "WebConsentManager"
         },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 5,
+          "line": 6,
           "marker": "@vercel\\/analytics"
         },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 19,
+          "line": 24,
           "marker": "WebConsentManager"
         },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 47,
+          "line": 70,
           "marker": "googletagmanager\\.com\\/gtag"
         },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 56,
+          "line": 79,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "src/lib/web-consent.test.ts",
           "line": 32,
+          "marker": "WebConsentManager"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/web-consent.test.ts",
+          "line": 96,
           "marker": "WebConsentManager"
         }
       ]
@@ -1964,13 +1970,13 @@
         {
           "repository": "backend",
           "file": "src/app/api/native/profile/route.ts",
-          "line": 107,
+          "line": 112,
           "marker": "avatars"
         },
         {
           "repository": "backend",
           "file": "src/app/api/native/profile/route.ts",
-          "line": 176,
+          "line": 181,
           "marker": "avatars"
         },
         {
@@ -2035,7 +2041,7 @@
         {
           "repository": "backend",
           "file": ".claude/knowledge/INDEX.md",
-          "line": 63,
+          "line": 65,
           "marker": "subscriptions"
         },
         {
@@ -2083,7 +2089,13 @@
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 491,
+          "line": 492,
+          "marker": "subscriptions"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 512,
           "marker": "subscriptions"
         },
         {
@@ -2130,6 +2142,12 @@
         },
         {
           "repository": "backend",
+          "file": "src/lib/sanskara-account-deletion-contract.test.ts",
+          "line": 38,
+          "marker": "subscriptions"
+        },
+        {
+          "repository": "backend",
           "file": "src/lib/terms-content.ts",
           "line": 83,
           "marker": "subscriptions"
@@ -2143,31 +2161,19 @@
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 25,
+          "line": 417,
           "marker": "subscriptions"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 370,
+          "line": 7955,
           "marker": "subscriptions"
         },
         {
           "repository": "backend",
-          "file": "src/types/database.ts",
-          "line": 19,
-          "marker": "subscriptions"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/migrations/20260525230000_push_notifications.sql",
-          "line": 1,
-          "marker": "subscriptions"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/migrations/20260525230000_push_notifications.sql",
-          "line": 2,
+          "file": "src/types/database.generated.ts",
+          "line": 7988,
           "marker": "subscriptions"
         }
       ]
@@ -2275,6 +2281,30 @@
         },
         {
           "repository": "backend",
+          "file": "src/app/api/jyotish/chart/route.test.ts",
+          "line": 93,
+          "marker": "session_token"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/jyotish/chart/route.test.ts",
+          "line": 114,
+          "marker": "guest_birth_lat|guest_date_of_birth|guest.*chart"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/jyotish/chart/route.test.ts",
+          "line": 120,
+          "marker": "session_token"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/jyotish/chart/route.test.ts",
+          "line": 123,
+          "marker": "session_token"
+        },
+        {
+          "repository": "backend",
           "file": "src/app/api/jyotish/chart/route.ts",
           "line": 18,
           "marker": "session_token"
@@ -2294,55 +2324,31 @@
         {
           "repository": "backend",
           "file": "src/app/api/jyotish/chart/route.ts",
-          "line": 64,
+          "line": 68,
           "marker": "session_token"
         },
         {
           "repository": "backend",
           "file": "src/app/api/jyotish/chart/route.ts",
-          "line": 81,
+          "line": 108,
           "marker": "session_token"
         },
         {
           "repository": "backend",
           "file": "src/app/api/jyotish/chart/route.ts",
-          "line": 82,
+          "line": 109,
           "marker": "session_token"
         },
         {
           "repository": "backend",
           "file": "src/app/api/jyotish/chart/route.ts",
-          "line": 84,
+          "line": 111,
           "marker": "session_token"
         },
         {
           "repository": "backend",
           "file": "src/app/api/jyotish/chart/route.ts",
-          "line": 125,
-          "marker": "session_token"
-        },
-        {
-          "repository": "backend",
-          "file": "src/types/database.generated.ts",
-          "line": 151,
-          "marker": "session_token"
-        },
-        {
-          "repository": "backend",
-          "file": "src/types/database.generated.ts",
-          "line": 182,
-          "marker": "session_token"
-        },
-        {
-          "repository": "backend",
-          "file": "src/types/database.generated.ts",
-          "line": 213,
-          "marker": "session_token"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/migrations/016_birth_profiles.sql",
-          "line": 3,
+          "line": 127,
           "marker": "session_token"
         }
       ]
@@ -2378,6 +2384,18 @@
           "file": ".claude/skills/ui-ux-pro-max/SKILL.md",
           "line": 470,
           "marker": "backup"
+        },
+        {
+          "repository": "backend",
+          "file": "next.config.js",
+          "line": 179,
+          "marker": "\\/api\\/admin\\/"
+        },
+        {
+          "repository": "backend",
+          "file": "next.config.js",
+          "line": 180,
+          "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
@@ -2502,25 +2520,13 @@
         {
           "repository": "backend",
           "file": "src/app/admin/crons/CronDashboardClient.tsx",
-          "line": 181,
+          "line": 182,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/crons/CronDashboardClient.tsx",
-          "line": 210,
-          "marker": "\\/api\\/admin\\/"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/admin/dharm-veer-review/page.tsx",
-          "line": 103,
-          "marker": "\\/api\\/admin\\/"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/admin/dharm-veer-review/page.tsx",
-          "line": 129,
+          "line": 211,
           "marker": "\\/api\\/admin\\/"
         }
       ]
@@ -2864,6 +2870,11 @@
         "classification": "sensitive_candidate"
       },
       {
+        "name": "sanskara_opt_in_generation",
+        "type": "number",
+        "classification": "unclassified"
+      },
+      {
         "name": "scripture_script",
         "type": "string",
         "classification": "unclassified"
@@ -2939,6 +2950,11 @@
         "classification": "public_candidate"
       },
       {
+        "name": "wants_brahma_muhurta_reminders",
+        "type": "boolean",
+        "classification": "internal_candidate"
+      },
+      {
         "name": "wants_community_notifications",
         "type": "boolean",
         "classification": "internal_candidate"
@@ -2965,6 +2981,11 @@
       },
       {
         "name": "wants_sankalpa_midpoint_reminders",
+        "type": "boolean",
+        "classification": "internal_candidate"
+      },
+      {
+        "name": "wants_sanskara_reminders",
         "type": "boolean",
         "classification": "internal_candidate"
       },
@@ -3167,13 +3188,13 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/layout.tsx",
-        "line": 52,
+        "line": 57,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/layout.tsx",
-        "line": 99,
+        "line": 104,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3263,7 +3284,7 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/panchang/today/page.tsx",
-        "line": 56,
+        "line": 52,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3563,7 +3584,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 523,
+        "line": 539,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3617,7 +3638,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/ai/chat/route.ts",
-        "line": 360,
+        "line": 401,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3647,7 +3668,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/cron/brahma-muhurta/route.ts",
-        "line": 78,
+        "line": 80,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3731,13 +3752,25 @@
       {
         "repository": "backend",
         "file": "src/app/api/cron/notification-dispatch/route.ts",
-        "line": 131,
+        "line": 135,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/cron/notification-dispatch/route.ts",
-        "line": 137,
+        "line": 142,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/notification-dispatch/route.ts",
+        "line": 161,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/notification-dispatch/route.ts",
+        "line": 179,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3756,6 +3789,18 @@
         "repository": "backend",
         "file": "src/app/api/cron/observance-series-candidates/route.ts",
         "line": 44,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/personalise/route.ts",
+        "line": 81,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/personalise/route.ts",
+        "line": 102,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3839,19 +3884,19 @@
       {
         "repository": "backend",
         "file": "src/app/api/home/personalise/route.ts",
-        "line": 42,
+        "line": 18,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/home/personalise/route.ts",
-        "line": 68,
+        "line": 44,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/journal/entry/route.ts",
-        "line": 41,
+        "line": 42,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3947,13 +3992,13 @@
       {
         "repository": "backend",
         "file": "src/app/api/native/home-summary/route.ts",
-        "line": 532,
+        "line": 559,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/native/kul/route.ts",
-        "line": 246,
+        "line": 247,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3977,13 +4022,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/native/profile/route.ts",
-        "line": 130,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/native/profile/route.ts",
-        "line": 340,
+        "line": 135,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3994,8 +4033,14 @@
       },
       {
         "repository": "backend",
+        "file": "src/app/api/native/profile/route.ts",
+        "line": 392,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
         "file": "src/app/api/native/progress/route.ts",
-        "line": 64,
+        "line": 66,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -4007,13 +4052,19 @@
       {
         "repository": "backend",
         "file": "src/app/api/native/progress-summary/route.ts",
-        "line": 167,
+        "line": 170,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/native/shloka/read/route.ts",
         "line": 38,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/shloka/today/route.ts",
+        "line": 35,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -4132,12 +4183,6 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/sanskar/schedule/route.ts",
-        "line": 82,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
         "file": "src/app/api/seva-tier/check/route.ts",
         "line": 21,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
@@ -4164,30 +4209,6 @@
         "repository": "backend",
         "file": "src/app/api/user/delete/request/route.ts",
         "line": 46,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/user/delete/route.ts",
-        "line": 32,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/user/delete/route.ts",
-        "line": 47,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/user/delete/status/route.ts",
-        "line": 22,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/user/export/route.ts",
-        "line": 39,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       }
     ],
@@ -4357,7 +4378,7 @@
             {
               "repository": "backend",
               "file": "src/app/layout.tsx",
-              "line": 147,
+              "line": 150,
               "marker": "storage_key"
             }
           ]
@@ -4368,7 +4389,7 @@
             {
               "repository": "backend",
               "file": "src/app/layout.tsx",
-              "line": 145,
+              "line": 148,
               "marker": "storage_key"
             },
             {
@@ -4830,18 +4851,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/language-context.test.ts",
-              "line": 21,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/i18n/LanguageContext.tsx",
-              "line": 22,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/i18n/LanguageContext.tsx",
               "line": 22,
               "marker": "storage_key"
@@ -4859,24 +4868,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/language-context.test.ts",
-              "line": 22,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/hooks/useAiChat.ts",
-              "line": 11,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/i18n/LanguageContext.tsx",
-              "line": 23,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "hooks/useAiChat.ts",
               "line": 11,
               "marker": "storage_key"
@@ -4890,58 +4881,8 @@
           ]
         },
         {
-          "key": "@shoonaya/reader_controls_pinned",
-          "evidence": [
-            {
-              "repository": "native",
-              "file": "lib/readerPrefs.ts",
-              "line": 5,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
-          "key": "@shoonaya/reader_first_time_hint_seen",
-          "evidence": [
-            {
-              "repository": "native",
-              "file": "lib/readerPrefs.ts",
-              "line": 6,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
-          "key": "@shoonaya/reader_layout_mode",
-          "evidence": [
-            {
-              "repository": "native",
-              "file": "lib/readerPrefs.ts",
-              "line": 80,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
-          "key": "@shoonaya/reader_theme_choice",
-          "evidence": [
-            {
-              "repository": "native",
-              "file": "lib/readerPrefs.ts",
-              "line": 7,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
           "key": "auth_storage_v1.install",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/secureAuthStorage.ts",
-              "line": 11,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/secureAuthStorage.ts",
@@ -4955,14 +4896,14 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/settings/detail-screen.tsx",
-              "line": 85,
+              "file": "__tests__/user-scoped-storage.test.ts",
+              "line": 97,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "app/settings/detail-screen.tsx",
-              "line": 85,
+              "line": 90,
               "marker": "storage_key"
             }
           ]
@@ -4972,14 +4913,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/telemetryUpload.ts",
-              "line": 133,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/telemetryUpload.ts",
-              "line": 133,
+              "line": 189,
               "marker": "storage_key"
             }
           ]
@@ -4990,25 +4925,13 @@
             {
               "repository": "native",
               "file": "__tests__/telemetry.test.ts",
-              "line": 499,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/telemetry.test.ts",
-              "line": 499,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/telemetry.ts",
-              "line": 354,
+              "line": 602,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "lib/telemetry.ts",
-              "line": 354,
+              "line": 359,
               "marker": "storage_key"
             }
           ]
@@ -5018,14 +4941,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/telemetryUpload.ts",
-              "line": 30,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/telemetryUpload.ts",
-              "line": 30,
+              "line": 32,
               "marker": "storage_key"
             }
           ]
@@ -5036,25 +4953,19 @@
             {
               "repository": "native",
               "file": "__tests__/telemetry.test.ts",
-              "line": 454,
+              "line": 535,
               "marker": "storage_key"
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/telemetry.test.ts",
-              "line": 454,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/telemetry.ts",
-              "line": 350,
+              "file": "__tests__/telemetry.test.ts",
+              "line": 552,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "lib/telemetry.ts",
-              "line": 350,
+              "line": 355,
               "marker": "storage_key"
             }
           ]
@@ -5062,12 +4973,6 @@
         {
           "key": "shoonaya_device_startup_prefs_v1",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/startup-scenes/preferences.ts",
-              "line": 9,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/startup-scenes/preferences.ts",
@@ -5081,12 +4986,6 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/heroLayoutPreference.ts",
-              "line": 4,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/heroLayoutPreference.ts",
               "line": 4,
               "marker": "storage_key"
@@ -5096,12 +4995,6 @@
         {
           "key": "shoonaya_greeting_pick",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/greetingPreference.ts",
-              "line": 7,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/greetingPreference.ts",
@@ -5115,12 +5008,6 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/guestSession.ts",
-              "line": 3,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/guestSession.ts",
               "line": 3,
               "marker": "storage_key"
@@ -5130,12 +5017,6 @@
         {
           "key": "shoonaya_hero_pick",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/heroPreference.ts",
-              "line": 17,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/heroPreference.ts",
@@ -5151,24 +5032,6 @@
               "repository": "native",
               "file": "__tests__/hero-size-configuration.test.ts",
               "line": 68,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/hero-size-configuration.test.ts",
-              "line": 68,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/heroLayoutPreference.ts",
-              "line": 3,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/heroPreference.ts",
-              "line": 18,
               "marker": "storage_key"
             },
             {
@@ -5190,14 +5053,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/homeCache.ts",
-              "line": 146,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/homeCache.ts",
-              "line": 146,
+              "line": 150,
               "marker": "storage_key"
             }
           ]
@@ -5207,20 +5064,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/homeCache.ts",
-              "line": 147,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/startup-scenes/preferences.ts",
-              "line": 10,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/homeCache.ts",
-              "line": 147,
+              "line": 151,
               "marker": "storage_key"
             },
             {
@@ -5239,24 +5084,12 @@
               "file": "__tests__/home-discovery.test.ts",
               "line": 262,
               "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/home-discovery.test.ts",
-              "line": 262,
-              "marker": "storage_key"
             }
           ]
         },
         {
           "key": "shoonaya_kul_cache_aes_key_v1",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/kulSnapshotCache.ts",
-              "line": 15,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/kulSnapshotCache.ts",
@@ -5270,12 +5103,6 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/kulSnapshotCache.ts",
-              "line": 14,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/kulSnapshotCache.ts",
               "line": 14,
               "marker": "storage_key"
@@ -5285,12 +5112,6 @@
         {
           "key": "shoonaya_last_optional_update_prompt_ms",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/updateManager.ts",
-              "line": 27,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/updateManager.ts",
@@ -5304,12 +5125,6 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/mandaliCache.ts",
-              "line": 45,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/mandaliCache.ts",
               "line": 45,
               "marker": "storage_key"
@@ -5319,12 +5134,6 @@
         {
           "key": "shoonaya_mandali_cache_v1_user_",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/mandaliCache.ts",
-              "line": 46,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/mandaliCache.ts",
@@ -5356,30 +5165,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/settings-cache.test.ts",
-              "line": 70,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/settings-cache.test.ts",
-              "line": 120,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/settings-cache.test.ts",
-              "line": 125,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/settingsCache.ts",
-              "line": 29,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/settingsCache.ts",
               "line": 29,
               "marker": "storage_key"
@@ -5400,18 +5185,6 @@
               "file": "__tests__/notifications-cache.test.ts",
               "line": 197,
               "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/notifications-cache.test.ts",
-              "line": 195,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/notifications-cache.test.ts",
-              "line": 197,
-              "marker": "storage_key"
             }
           ]
         },
@@ -5423,12 +5196,6 @@
               "file": "__tests__/notifications-cache.test.ts",
               "line": 87,
               "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/notifications-cache.test.ts",
-              "line": 87,
-              "marker": "storage_key"
             }
           ]
         },
@@ -5437,14 +5204,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/pathshalaCache.ts",
-              "line": 54,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/pathshalaCache.ts",
-              "line": 56,
+              "line": 54,
               "marker": "storage_key"
             }
           ]
@@ -5457,24 +5218,12 @@
               "file": "__tests__/pathshala-cache.test.ts",
               "line": 94,
               "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/pathshala-cache.test.ts",
-              "line": 94,
-              "marker": "storage_key"
             }
           ]
         },
         {
           "key": "shoonaya_profile_cache_v1_guest",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/profileCache.ts",
-              "line": 69,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/profileCache.ts",
@@ -5486,12 +5235,6 @@
         {
           "key": "shoonaya_profile_cache_v1_user_",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/profileCache.ts",
-              "line": 70,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/profileCache.ts",
@@ -5508,12 +5251,6 @@
               "file": "__tests__/reaction-outbox.test.ts",
               "line": 95,
               "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/reaction-outbox.test.ts",
-              "line": 95,
-              "marker": "storage_key"
             }
           ]
         },
@@ -5525,12 +5262,6 @@
               "file": "__tests__/reaction-outbox.test.ts",
               "line": 105,
               "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/reaction-outbox.test.ts",
-              "line": 105,
-              "marker": "storage_key"
             }
           ]
         },
@@ -5539,20 +5270,14 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/components/reader/ReaderIntro.tsx",
-              "line": 45,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/components/reader/ReaderShell.tsx",
-              "line": 145,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "components/reader/ReaderIntro.tsx",
               "line": 45,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "components/reader/ReaderShell.tsx",
+              "line": 145,
               "marker": "storage_key"
             }
           ]
@@ -5563,12 +5288,6 @@
             {
               "repository": "native",
               "file": "__tests__/sankalpa-outbox.test.ts",
-              "line": 96,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/sankalpa-outbox.test.ts",
               "line": 96,
               "marker": "storage_key"
             }
@@ -5582,11 +5301,16 @@
               "file": "__tests__/settings-cache.test.ts",
               "line": 157,
               "marker": "storage_key"
-            },
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_telemetry_guest_install_id_v1",
+          "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/settings-cache.test.ts",
-              "line": 157,
+              "file": "lib/telemetryUpload.ts",
+              "line": 35,
               "marker": "storage_key"
             }
           ]
@@ -5596,14 +5320,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/telemetryUpload.ts",
-              "line": 28,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/telemetryUpload.ts",
-              "line": 28,
+              "line": 30,
               "marker": "storage_key"
             }
           ]
@@ -5614,13 +5332,7 @@
             {
               "repository": "native",
               "file": "__tests__/telemetry.test.ts",
-              "line": 105,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/telemetry.test.ts",
-              "line": 105,
+              "line": 106,
               "marker": "storage_key"
             }
           ]
@@ -5636,18 +5348,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/language-context.test.ts",
-              "line": 23,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/i18n/LanguageContext.tsx",
-              "line": 24,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/i18n/LanguageContext.tsx",
               "line": 24,
               "marker": "storage_key"
@@ -5659,12 +5359,6 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/components/home/BrahmaMuhurtaPrompt.tsx",
-              "line": 60,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "components/home/BrahmaMuhurtaPrompt.tsx",
               "line": 60,
               "marker": "storage_key"
@@ -5672,79 +5366,8 @@
           ]
         },
         {
-          "key": "shoonaya-dharmveer-history",
-          "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/dharm-veer/[id].tsx",
-              "line": 294,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/dharm-veer/[id].tsx",
-              "line": 299,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/dharm-veer/[id].tsx",
-              "line": 330,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/dharm-veer/[id].tsx",
-              "line": 335,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/dharm-veer.tsx",
-              "line": 122,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/dharm-veer/[id].tsx",
-              "line": 313,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/dharm-veer/[id].tsx",
-              "line": 318,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/dharm-veer/[id].tsx",
-              "line": 349,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/dharm-veer/[id].tsx",
-              "line": 354,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/dharm-veer.tsx",
-              "line": 122,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
           "key": "shoonaya-first-week-dismissed",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/firstWeekGuideStorage.ts",
-              "line": 8,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/firstWeekGuideStorage.ts",
@@ -5758,12 +5381,6 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/firstWeekGuideStorage.ts",
-              "line": 7,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/firstWeekGuideStorage.ts",
               "line": 7,
               "marker": "storage_key"
@@ -5775,43 +5392,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/rashiphalPreference.ts",
-              "line": 5,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/rashiphalPreference.ts",
               "line": 5,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
-          "key": "shoonaya:last_name_story",
-          "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(auth)/onboarding.tsx",
-              "line": 510,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/name-story.tsx",
-              "line": 32,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/(auth)/onboarding.tsx",
-              "line": 510,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/name-story.tsx",
-              "line": 32,
               "marker": "storage_key"
             }
           ]
@@ -5821,38 +5403,20 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/_layout.tsx",
-              "line": 267,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/_layout.tsx",
-              "line": 343,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/_layout.tsx",
-              "line": 351,
+              "file": "app/_layout.tsx",
+              "line": 309,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "app/_layout.tsx",
-              "line": 264,
+              "line": 397,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "app/_layout.tsx",
-              "line": 340,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/_layout.tsx",
-              "line": 348,
+              "line": 405,
               "marker": "storage_key"
             }
           ]
@@ -5862,14 +5426,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/traditions.ts",
-              "line": 208,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/traditions.ts",
-              "line": 208,
+              "line": 219,
               "marker": "storage_key"
             }
           ]
@@ -5881,18 +5439,6 @@
               "repository": "native",
               "file": "__tests__/dyuta-storage.test.ts",
               "line": 33,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/dyuta-storage.test.ts",
-              "line": 33,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/dyuta/storage.ts",
-              "line": 5,
               "marker": "storage_key"
             },
             {
@@ -5914,18 +5460,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/dyuta-storage.test.ts",
-              "line": 35,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/dyuta/storage.ts",
-              "line": 7,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/dyuta/storage.ts",
               "line": 7,
               "marker": "storage_key"
@@ -5943,18 +5477,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/dyuta-storage.test.ts",
-              "line": 34,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/dyuta/storage.ts",
-              "line": 6,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/dyuta/storage.ts",
               "line": 6,
               "marker": "storage_key"
@@ -5966,31 +5488,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/japaContextCache.ts",
-              "line": 5,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/japaContextCache.ts",
               "line": 5,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
-          "key": "shoonaya.japa.customMantra",
-          "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(tabs)/japa.tsx",
-              "line": 127,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": "app/(tabs)/japa.tsx",
-              "line": 127,
               "marker": "storage_key"
             }
           ]
@@ -6000,14 +5499,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(tabs)/japa.tsx",
-              "line": 130,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 130,
+              "line": 134,
               "marker": "storage_key"
             }
           ]
@@ -6017,14 +5510,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(tabs)/japa.tsx",
-              "line": 128,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 128,
+              "line": 132,
               "marker": "storage_key"
             }
           ]
@@ -6055,30 +5542,6 @@
               "file": "__tests__/japa-pending-completion.test.ts",
               "line": 144,
               "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/japa-pending-completion.test.ts",
-              "line": 107,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/japa-pending-completion.test.ts",
-              "line": 112,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/japa-pending-completion.test.ts",
-              "line": 138,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/japa-pending-completion.test.ts",
-              "line": 144,
-              "marker": "storage_key"
             }
           ]
         },
@@ -6087,14 +5550,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(tabs)/japa.tsx",
-              "line": 125,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 125,
+              "line": 130,
               "marker": "storage_key"
             }
           ]
@@ -6104,14 +5561,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(tabs)/japa.tsx",
-              "line": 124,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 124,
+              "line": 129,
               "marker": "storage_key"
             }
           ]
@@ -6121,14 +5572,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(tabs)/japa.tsx",
-              "line": 126,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 126,
+              "line": 131,
               "marker": "storage_key"
             }
           ]
@@ -6138,14 +5583,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/(tabs)/japa.tsx",
-              "line": 129,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 129,
+              "line": 133,
               "marker": "storage_key"
             }
           ]
@@ -6153,12 +5592,6 @@
         {
           "key": "shoonaya.mood.pulse.dismissed.v2",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/moodPulsePreference.ts",
-              "line": 12,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/moodPulsePreference.ts",
@@ -6178,18 +5611,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/mood-status-cache.test.ts",
-              "line": 94,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/moodStatusCache.ts",
-              "line": 8,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/moodStatusCache.ts",
               "line": 8,
               "marker": "storage_key"
@@ -6201,14 +5622,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/app/pathshala/[pathId]/[lessonId].tsx",
-              "line": 91,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "app/pathshala/[pathId]/[lessonId].tsx",
-              "line": 90,
+              "line": 98,
               "marker": "storage_key"
             }
           ]
@@ -6218,14 +5633,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/notifications.ts",
-              "line": 112,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/notifications.ts",
-              "line": 112,
+              "line": 74,
               "marker": "storage_key"
             }
           ]
@@ -6235,14 +5644,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/notifications.ts",
-              "line": 113,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/notifications.ts",
-              "line": 113,
+              "line": 75,
               "marker": "storage_key"
             }
           ]
@@ -6253,25 +5656,13 @@
             {
               "repository": "native",
               "file": "__tests__/quiz-cache.test.ts",
-              "line": 132,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/quiz-cache.test.ts",
-              "line": 132,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/quizCache.ts",
-              "line": 12,
+              "line": 141,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "lib/quizCache.ts",
-              "line": 12,
+              "line": 13,
               "marker": "storage_key"
             }
           ]
@@ -6279,12 +5670,6 @@
         {
           "key": "shoonaya.security.installation_id.v1",
           "evidence": [
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/securityEmail.ts",
-              "line": 8,
-              "marker": "storage_key"
-            },
             {
               "repository": "native",
               "file": "lib/securityEmail.ts",
@@ -6300,18 +5685,6 @@
               "repository": "native",
               "file": "__tests__/seva-cache.test.ts",
               "line": 72,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/seva-cache.test.ts",
-              "line": 72,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/sevaCache.ts",
-              "line": 8,
               "marker": "storage_key"
             },
             {
@@ -6333,18 +5706,6 @@
             },
             {
               "repository": "native",
-              "file": ".claude/worktrees/reader-experience/__tests__/vrat-cache.test.ts",
-              "line": 58,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
-              "file": ".claude/worktrees/reader-experience/lib/vratCache.ts",
-              "line": 10,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "native",
               "file": "lib/vratCache.ts",
               "line": 10,
               "marker": "storage_key"
@@ -6357,6 +5718,12 @@
       {
         "provider": "Supabase",
         "evidence": [
+          {
+            "repository": "backend",
+            "file": "AGENTS.md",
+            "line": 427,
+            "marker": "@supabase\\/"
+          },
           {
             "repository": "backend",
             "file": "brain/e8cbdd88-9845-4eae-8361-dcc85556285e/scratch/check_user.js",
@@ -6372,13 +5739,13 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 93,
+            "line": 102,
             "marker": "@supabase\\/"
           },
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 94,
+            "line": 103,
             "marker": "@supabase\\/"
           },
           {
@@ -6950,12 +6317,6 @@
             "file": "packages/sadhana-engine/supabase/functions/ai-nitya-sequence/index.ts",
             "line": 67,
             "marker": "createClient\\("
-          },
-          {
-            "repository": "backend",
-            "file": "packages/sadhana-engine/supabase/functions/ai-nudge/index.ts",
-            "line": 37,
-            "marker": "@supabase\\/"
           }
         ]
       },
@@ -6965,7 +6326,7 @@
           {
             "repository": "backend",
             "file": "src/components/privacy/WebConsentManager.tsx",
-            "line": 47,
+            "line": 70,
             "marker": "googletagmanager\\.com\\/gtag"
           }
         ]
@@ -6976,25 +6337,25 @@
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 85,
+            "line": 161,
             "marker": "pagead2\\.googlesyndication\\.com"
           },
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 86,
+            "line": 162,
             "marker": "pagead2\\.googlesyndication\\.com"
           },
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 89,
+            "line": 165,
             "marker": "pagead2\\.googlesyndication\\.com"
           },
           {
             "repository": "backend",
             "file": "src/components/privacy/WebConsentManager.tsx",
-            "line": 56,
+            "line": 79,
             "marker": "pagead2\\.googlesyndication\\.com"
           }
         ]
@@ -7017,7 +6378,7 @@
           {
             "repository": "backend",
             "file": "AGENTS.md",
-            "line": 83,
+            "line": 91,
             "marker": "onesignal"
           },
           {
@@ -7533,7 +6894,7 @@
           {
             "repository": "backend",
             "file": "src/app/admin/monitoring/MonitoringClient.tsx",
-            "line": 702,
+            "line": 744,
             "marker": "onesignal"
           },
           {
@@ -7605,17 +6966,6 @@
         ]
       },
       {
-        "provider": "Firebase Analytics",
-        "evidence": [
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/docs/STORE_PRIVACY_EVIDENCE.md",
-            "line": 20,
-            "marker": "@react-native-firebase\\/analytics"
-          }
-        ]
-      },
-      {
         "provider": "Expo Notifications",
         "evidence": [
           {
@@ -7632,86 +6982,20 @@
           },
           {
             "repository": "native",
-            "file": ".claude/worktrees/reader-experience/__tests__/helpers/pushRegistrationHarness.ts",
-            "line": 81,
+            "file": "__tests__/notification-tap-routing.test.ts",
+            "line": 30,
             "marker": "expo-notifications"
           },
           {
             "repository": "native",
-            "file": ".claude/worktrees/reader-experience/__tests__/helpers/pushRegistrationHarness.ts",
-            "line": 86,
-            "marker": "getExpoPushTokenAsync"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/app/_layout.tsx",
-            "line": 18,
+            "file": "__tests__/notification-tap-routing.test.ts",
+            "line": 129,
             "marker": "expo-notifications"
           },
           {
             "repository": "native",
-            "file": ".claude/worktrees/reader-experience/app.json",
-            "line": 175,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/docs/IOS_PUSH_REGISTRATION_REVIEW_2026_09_10.md",
-            "line": 26,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/lib/notifications.ts",
-            "line": 5,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/lib/notifications.ts",
-            "line": 26,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/lib/notifications.ts",
-            "line": 40,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/lib/notifications.ts",
-            "line": 44,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/lib/notifications.ts",
-            "line": 429,
-            "marker": "getExpoPushTokenAsync"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/package-lock.json",
-            "line": 44,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/package-lock.json",
-            "line": 6739,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/package-lock.json",
-            "line": 6741,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": ".claude/worktrees/reader-experience/package.json",
-            "line": 38,
+            "file": "AGENTS.md",
+            "line": 379,
             "marker": "expo-notifications"
           },
           {
@@ -7723,7 +7007,7 @@
           {
             "repository": "native",
             "file": "app.json",
-            "line": 175,
+            "line": 185,
             "marker": "expo-notifications"
           },
           {
@@ -7735,26 +7019,50 @@
           {
             "repository": "native",
             "file": "lib/notifications.ts",
-            "line": 26,
+            "line": 25,
             "marker": "expo-notifications"
           },
           {
             "repository": "native",
             "file": "lib/notifications.ts",
-            "line": 40,
+            "line": 39,
             "marker": "expo-notifications"
           },
           {
             "repository": "native",
             "file": "lib/notifications.ts",
-            "line": 44,
+            "line": 43,
             "marker": "expo-notifications"
           },
           {
             "repository": "native",
             "file": "lib/notifications.ts",
-            "line": 429,
+            "line": 409,
             "marker": "getExpoPushTokenAsync"
+          },
+          {
+            "repository": "native",
+            "file": "lib/notificationTap.ts",
+            "line": 8,
+            "marker": "expo-notifications"
+          },
+          {
+            "repository": "native",
+            "file": "lib/notificationTap.ts",
+            "line": 12,
+            "marker": "expo-notifications"
+          },
+          {
+            "repository": "native",
+            "file": "lib/notificationTap.ts",
+            "line": 16,
+            "marker": "expo-notifications"
+          },
+          {
+            "repository": "native",
+            "file": "lib/notificationTap.ts",
+            "line": 139,
+            "marker": "expo-notifications"
           },
           {
             "repository": "native",
@@ -7805,7 +7113,7 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 114,
+            "line": 123,
             "marker": "twilio"
           },
           {
@@ -7945,6 +7253,30 @@
             "file": "src/lib/whatsapp/provider.ts",
             "line": 116,
             "marker": "twilio"
+          },
+          {
+            "repository": "native",
+            "file": ".claude/agents/shoonaya-cfo.md",
+            "line": 3,
+            "marker": "twilio"
+          },
+          {
+            "repository": "native",
+            "file": ".claude/agents/shoonaya-cfo.md",
+            "line": 33,
+            "marker": "twilio"
+          },
+          {
+            "repository": "native",
+            "file": ".claude/agents/shoonaya-ciso.md",
+            "line": 46,
+            "marker": "twilio"
+          },
+          {
+            "repository": "native",
+            "file": ".claude/STAFF_TRIGGERS.md",
+            "line": 87,
+            "marker": "twilio"
           }
         ]
       },
@@ -7960,19 +7292,25 @@
           {
             "repository": "backend",
             "file": "AGENTS.md",
-            "line": 122,
+            "line": 169,
             "marker": "sarvam"
           },
           {
             "repository": "backend",
             "file": "AGENTS.md",
-            "line": 123,
+            "line": 170,
+            "marker": "sarvam"
+          },
+          {
+            "repository": "backend",
+            "file": "AGENTS.md",
+            "line": 291,
             "marker": "sarvam"
           },
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 86,
+            "line": 162,
             "marker": "sarvam"
           },
           {
@@ -7984,7 +7322,7 @@
           {
             "repository": "backend",
             "file": "packages/dharma-rules/src/festivals/festival-content.json",
-            "line": 13608,
+            "line": 14904,
             "marker": "sarvam"
           },
           {
@@ -8544,12 +7882,6 @@
             "file": "packages/sadhana-engine/supabase/functions/ai-nudge/index.ts",
             "line": 31,
             "marker": "sarvam"
-          },
-          {
-            "repository": "backend",
-            "file": "packages/sadhana-engine/supabase/functions/ai-nudge/index.ts",
-            "line": 345,
-            "marker": "sarvam"
           }
         ]
       },
@@ -8559,13 +7891,13 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 96,
+            "line": 105,
             "marker": "@vercel\\/analytics"
           },
           {
             "repository": "backend",
             "file": "src/components/privacy/WebConsentManager.tsx",
-            "line": 5,
+            "line": 6,
             "marker": "@vercel\\/analytics"
           }
         ]
@@ -8576,19 +7908,25 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 97,
+            "line": 106,
             "marker": "@vercel\\/speed-insights"
           },
           {
             "repository": "backend",
             "file": "src/components/privacy/WebConsentManager.tsx",
-            "line": 6,
+            "line": 7,
             "marker": "@vercel\\/speed-insights"
           }
         ]
       }
     ],
     "dobAndLocationPaths": [
+      {
+        "repository": "backend",
+        "file": "AGENTS.md",
+        "line": 254,
+        "marker": "date_of_birth"
+      },
       {
         "repository": "backend",
         "file": "src/app/(main)/kul/components/KulVansh.tsx",
@@ -8849,6 +8187,18 @@
       },
       {
         "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.test.ts",
+        "line": 71,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.test.ts",
+        "line": 72,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
         "line": 10,
         "marker": "date_of_birth"
@@ -8874,109 +8224,253 @@
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 56,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/jyotish/chart/route.ts",
         "line": 60,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 61,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 62,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 67,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 69,
+        "line": 64,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 65,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 66,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 72,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 93,
+        "line": 74,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 95,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 96,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 97,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 129,
+        "line": 82,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 133,
+        "line": 85,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 148,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 134,
+        "line": 149,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 135,
+        "line": 150,
         "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 183,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 187,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 188,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.ts",
+        "line": 189,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 32,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 34,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 35,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 36,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 53,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 58,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 60,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 80,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 81,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 105,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 111,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/jyotish/chart/route.validation.test.ts",
+        "line": 115,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 575,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 581,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 584,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 589,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 594,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 600,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 615,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 636,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/profile.test.ts",
+        "line": 642,
+        "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/native/profile/route.ts",
-        "line": 231,
+        "line": 244,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/native/profile/route.ts",
-        "line": 232,
+        "line": 245,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/native/profile/route.ts",
-        "line": 234,
+        "line": 246,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/native/profile/route.ts",
-        "line": 236,
+        "line": 250,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/route.ts",
+        "line": 254,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/native/profile/route.ts",
+        "line": 261,
         "marker": "date_of_birth"
       },
       {
@@ -9072,145 +8566,145 @@
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 129,
+        "line": 173,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 130,
+        "line": 174,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 131,
+        "line": 175,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 136,
+        "line": 180,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 160,
+        "line": 205,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 161,
+        "line": 206,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 162,
+        "line": 207,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 167,
+        "line": 212,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 191,
+        "line": 237,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 192,
+        "line": 238,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 193,
+        "line": 239,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 198,
+        "line": 244,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 2188,
+        "line": 2448,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 2212,
+        "line": 2473,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 2236,
+        "line": 2498,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 5984,
+        "line": 6518,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 5997,
+        "line": 6534,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 5998,
+        "line": 6535,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6100,
+        "line": 6643,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6113,
+        "line": 6659,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6114,
+        "line": 6660,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6216,
+        "line": 6768,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6229,
+        "line": 6784,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6230,
+        "line": 6785,
         "marker": "home_(?:latitude|longitude)"
       },
       {
@@ -9228,7 +8722,7 @@
       {
         "repository": "backend",
         "file": "src/types/database.ts",
-        "line": 304,
+        "line": 311,
         "marker": "date_of_birth"
       },
       {
@@ -9350,6 +8844,18 @@
         "file": "supabase/migrations/20260906113108_harden_mandali_existing_city_resolution.sql",
         "line": 142,
         "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/migrations/20261104100000_sanskara_early_handover.sql",
+        "line": 302,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/migrations/20261104100000_sanskara_early_handover.sql",
+        "line": 344,
+        "marker": "date_of_birth"
       },
       {
         "repository": "backend",
@@ -9508,286 +9014,112 @@
         "marker": "date_of_birth"
       },
       {
-        "repository": "native",
-        "file": "__tests__/kundali-contract-and-detail.test.ts",
-        "line": 189,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": "__tests__/kundali-contract-and-detail.test.ts",
-        "line": 193,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": "__tests__/kundali-contract-and-detail.test.ts",
-        "line": 194,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": "__tests__/kundali-contract-and-detail.test.ts",
-        "line": 195,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": "__tests__/kundali-contract-and-detail.test.ts",
-        "line": 247,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": "__tests__/kundali-contract-and-detail.test.ts",
-        "line": 253,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": "__tests__/personal-details-contract.test.ts",
-        "line": 23,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": "__tests__/progressive-profiling.test.ts",
-        "line": 131,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/kundali-contract-and-detail.test.ts",
-        "line": 189,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/kundali-contract-and-detail.test.ts",
-        "line": 193,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/kundali-contract-and-detail.test.ts",
-        "line": 194,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/kundali-contract-and-detail.test.ts",
-        "line": 195,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/kundali-contract-and-detail.test.ts",
-        "line": 247,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/kundali-contract-and-detail.test.ts",
-        "line": 253,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/personal-details-contract.test.ts",
-        "line": 23,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/progressive-profiling.test.ts",
-        "line": 131,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/(tabs)/tirtha.tsx",
-        "line": 504,
-        "marker": "requestForegroundPermissionsAsync"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/kundali.tsx",
-        "line": 31,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/kundali.tsx",
-        "line": 213,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/kundali.tsx",
-        "line": 217,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/kundali.tsx",
-        "line": 218,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/kundali.tsx",
-        "line": 219,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/kundali.tsx",
-        "line": 365,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
+        "repository": "backend",
+        "file": "supabase/tests/birth_profiles_persistence.test.sql",
         "line": 18,
         "marker": "date_of_birth"
       },
       {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 26,
+        "repository": "backend",
+        "file": "supabase/tests/birth_profiles_persistence.test.sql",
+        "line": 19,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/birth_profiles_persistence.test.sql",
+        "line": 32,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/birth_profiles_persistence.test.sql",
+        "line": 36,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/sanskara_early_handover.test.sql",
+        "line": 52,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/sanskara_early_handover.test.sql",
+        "line": 246,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/sanskara_early_handover.test.sql",
+        "line": 250,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/sanskara_early_handover.test.sql",
+        "line": 321,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/sanskara_early_handover.test.sql",
+        "line": 325,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/tests/sanskara_early_handover.test.sql",
+        "line": 458,
         "marker": "date_of_birth"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 57,
+        "file": "__tests__/date-input.test.ts",
+        "line": 153,
         "marker": "date_of_birth"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 64,
+        "file": "__tests__/date-input.test.ts",
+        "line": 155,
         "marker": "date_of_birth"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 85,
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 189,
         "marker": "date_of_birth"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 93,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 140,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 141,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/personal-details.tsx",
-        "line": 159,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/components/mandali/JoinMandaliPrompt.tsx",
-        "line": 148,
-        "marker": "requestForegroundPermissionsAsync"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/docs/PROFILE_WIRING_ACCEPTANCE.md",
-        "line": 14,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 133,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 137,
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 193,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 138,
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 194,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 139,
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 195,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 487,
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 247,
         "marker": "date_of_birth"
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 500,
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 253,
         "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 504,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 505,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/kundali-contract.ts",
-        "line": 506,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/locationSync.ts",
-        "line": 57,
-        "marker": "requestForegroundPermissionsAsync"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/locationSync.ts",
-        "line": 143,
-        "marker": "requestForegroundPermissionsAsync"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/lib/onboarding-contract.ts",
-        "line": 172,
-        "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": "app/(tabs)/tirtha.tsx",
-        "line": 504,
-        "marker": "requestForegroundPermissionsAsync"
       }
     ],
     "termsAndConsentPaths": [
@@ -9974,13 +9306,13 @@
       {
         "repository": "backend",
         "file": "package.json",
-        "line": 75,
+        "line": 81,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "package.json",
-        "line": 77,
+        "line": 83,
         "marker": "privacy"
       },
       {
@@ -10598,13 +9930,7 @@
       {
         "repository": "backend",
         "file": "src/app/(marketing)/community/page.tsx",
-        "line": 100,
-        "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/(marketing)/community/page.tsx",
-        "line": 280,
+        "line": 82,
         "marker": "privacy"
       },
       {
@@ -10736,7 +10062,7 @@
       {
         "repository": "backend",
         "file": "src/app/admin/observance-content/page.tsx",
-        "line": 1301,
+        "line": 1487,
         "marker": "privacy"
       },
       {
@@ -10747,20 +10073,26 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/ai/chat/route.ts",
-        "line": 361,
+        "file": "src/app/api/ai/chat/route.consistency.test.ts",
+        "line": 73,
         "marker": "consent_religious_data"
       },
       {
         "repository": "backend",
         "file": "src/app/api/ai/chat/route.ts",
-        "line": 369,
+        "line": 402,
+        "marker": "consent_religious_data"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/ai/chat/route.ts",
+        "line": 410,
         "marker": "consent_religious_data"
       },
       {
         "repository": "backend",
         "file": "src/app/api/calendar/day/route.ts",
-        "line": 167,
+        "line": 169,
         "marker": "privacy"
       },
       {
@@ -10773,6 +10105,30 @@
         "repository": "backend",
         "file": "src/app/api/calendar/upcoming/route.ts",
         "line": 262,
+        "marker": "privacy"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/personalise/route.ts",
+        "line": 21,
+        "marker": "consent_religious_data"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/personalise/route.ts",
+        "line": 103,
+        "marker": "consent_religious_data"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/personalise/route.ts",
+        "line": 165,
+        "marker": "consent_religious_data"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/sanskara-reminders/route.test.ts",
+        "line": 302,
         "marker": "privacy"
       },
       {
@@ -10808,25 +10164,25 @@
       {
         "repository": "backend",
         "file": "src/app/api/home/personalise/route.ts",
-        "line": 69,
+        "line": 45,
         "marker": "consent_religious_data"
       },
       {
         "repository": "backend",
         "file": "src/app/api/home/personalise/route.ts",
-        "line": 76,
+        "line": 52,
         "marker": "consent_religious_data"
       },
       {
         "repository": "backend",
         "file": "src/app/api/mandali/report/route.ts",
-        "line": 6,
+        "line": 7,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "src/app/api/native/profile/route.ts",
-        "line": 24,
+        "line": 27,
         "marker": "consent_religious_data"
       },
       {
@@ -10966,30 +10322,6 @@
         "file": "src/app/data-deletion/page.tsx",
         "line": 118,
         "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/data-deletion/page.tsx",
-        "line": 124,
-        "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/data-deletion/page.tsx",
-        "line": 125,
-        "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/data-deletion/page.tsx",
-        "line": 128,
-        "marker": "terms"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/data-deletion/page.tsx",
-        "line": 129,
-        "marker": "terms"
       }
     ],
     "ugcSafetyPaths": [
@@ -11075,6 +10407,12 @@
         "repository": "backend",
         "file": ".claude/knowledge/architecture/mandali-daily-prompt-materialization.md",
         "line": 23,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": ".claude/knowledge/architecture/notification-target-context.md",
+        "line": 16,
         "marker": "moderation"
       },
       {
@@ -11344,25 +10682,25 @@
       {
         "repository": "backend",
         "file": "src/app/admin/moderation/ModerationClient.tsx",
-        "line": 156,
+        "line": 159,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/moderation/ModerationClient.tsx",
-        "line": 161,
+        "line": 164,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/moderation/ModerationClient.tsx",
-        "line": 181,
+        "line": 184,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/moderation/ModerationClient.tsx",
-        "line": 309,
+        "line": 318,
         "marker": "moderation"
       },
       {
@@ -11398,7 +10736,7 @@
       {
         "repository": "backend",
         "file": "src/app/admin/monitoring/MonitoringClient.tsx",
-        "line": 120,
+        "line": 121,
         "marker": "content_reports"
       },
       {
@@ -11410,55 +10748,85 @@
       {
         "repository": "backend",
         "file": "src/app/admin/page.tsx",
-        "line": 518,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/admin/page.tsx",
         "line": 522,
         "marker": "moderation"
       },
       {
         "repository": "backend",
-        "file": "src/app/admin/reports/page.tsx",
-        "line": 209,
+        "file": "src/app/admin/page.tsx",
+        "line": 526,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 212,
+        "line": 219,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 213,
+        "line": 222,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 214,
+        "line": 223,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 356,
+        "line": 224,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 357,
+        "line": 366,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 358,
+        "line": 367,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/reports/page.tsx",
+        "line": 368,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/settings/page.tsx",
+        "line": 165,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/settings/page.tsx",
+        "line": 169,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/settings/page.tsx",
+        "line": 192,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/settings/page.tsx",
+        "line": 229,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/settings/page.tsx",
+        "line": 232,
         "marker": "moderation"
       },
       {
@@ -11668,25 +11036,61 @@
       {
         "repository": "backend",
         "file": "src/app/api/admin/alerts/route.ts",
-        "line": 199,
+        "line": 271,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/alerts/route.ts",
-        "line": 211,
+        "line": 283,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/alerts/route.ts",
-        "line": 214,
+        "line": 286,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/alerts/route.ts",
-        "line": 226,
+        "line": 294,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/route.ts",
+        "line": 295,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/route.ts",
+        "line": 298,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/test-slack/route.ts",
+        "line": 49,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/test-slack/route.ts",
+        "line": 72,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/test-slack/route.ts",
+        "line": 73,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/test-slack/route.ts",
+        "line": 81,
         "marker": "moderation"
       },
       {
@@ -11740,31 +11144,37 @@
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 498,
+        "line": 499,
         "marker": "user_blocked_profiles"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 499,
+        "line": 500,
         "marker": "user_muted_profiles"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 501,
+        "line": 502,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/content-negotiation/route.ts",
+        "line": 64,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/api/live-darshan/report/route.ts",
-        "line": 11,
-        "marker": "content_reports"
+        "line": 1,
+        "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/api/live-darshan/report/route.ts",
-        "line": 38,
+        "line": 12,
         "marker": "content_reports"
       },
       {
@@ -11776,8 +11186,20 @@
       {
         "repository": "backend",
         "file": "src/app/api/live-darshan/report/route.ts",
-        "line": 50,
+        "line": 40,
         "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/live-darshan/report/route.ts",
+        "line": 51,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/live-darshan/report/route.ts",
+        "line": 60,
+        "marker": "moderation"
       },
       {
         "repository": "backend",
@@ -11806,25 +11228,37 @@
       {
         "repository": "backend",
         "file": "src/app/api/mandali/report/route.ts",
-        "line": 48,
+        "line": 1,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/mandali/report/route.ts",
+        "line": 49,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/api/mandali/report/route.ts",
-        "line": 57,
+        "line": 58,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/api/mandali/report/route.ts",
-        "line": 74,
+        "line": 75,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/mandali/report/route.ts",
+        "line": 90,
         "marker": "user_hidden_content"
       },
       {
         "repository": "backend",
         "file": "src/app/api/mandali/report/route.ts",
-        "line": 83,
+        "line": 99,
         "marker": "user_hidden_content"
       },
       {
@@ -12016,7 +11450,7 @@
       {
         "repository": "backend",
         "file": "src/lib/admin-route-registry.test.ts",
-        "line": 16,
+        "line": 17,
         "marker": "moderation"
       },
       {
@@ -12090,108 +11524,6 @@
         "file": "src/lib/admin-url-state.test.ts",
         "line": 83,
         "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.test.ts",
-        "line": 112,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.test.ts",
-        "line": 113,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.test.ts",
-        "line": 117,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 10,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 11,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 19,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 108,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 128,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 130,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 131,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 136,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/admin-url-state.ts",
-        "line": 137,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/api/profile.ts",
-        "line": 15,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/api/profile.ts",
-        "line": 16,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/data/chanakya-neeti.ts",
-        "line": 310,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/data/chanakya-neeti.ts",
-        "line": 322,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/festival-stories.ts",
-        "line": 1296,
-        "marker": "moderation"
       }
     ],
     "deletionAndExportPaths": [
@@ -12245,6 +11577,12 @@
       },
       {
         "repository": "backend",
+        "file": "src/app/api/admin/api-probe/route.test.ts",
+        "line": 46,
+        "marker": "\\/api\\/user\\/export"
+      },
+      {
+        "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
         "line": 416,
         "marker": "deleteUser\\("
@@ -12252,7 +11590,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 512,
+        "line": 528,
         "marker": "deleteUser\\("
       },
       {
@@ -12344,6 +11682,18 @@
         "file": "src/app/api/user/delete/status/route.ts",
         "line": 35,
         "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/user/export/route.test.ts",
+        "line": 35,
+        "marker": "\\/api\\/user\\/export"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/user/export/route.test.ts",
+        "line": 37,
+        "marker": "\\/api\\/user\\/export"
       },
       {
         "repository": "backend",
@@ -12516,25 +11866,43 @@
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 5985,
+        "line": 44,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6101,
+        "line": 50,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/types/database.generated.ts",
-        "line": 6217,
+        "line": 56,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 6519,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 6644,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 6769,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/types/database.ts",
-        "line": 323,
+        "line": 330,
         "marker": "deletion_requested_at"
       },
       {
@@ -12670,6 +12038,12 @@
         "marker": "deletion_requested_at"
       },
       {
+        "repository": "backend",
+        "file": "supabase/tests/sanskara_reminder_preferences.test.sql",
+        "line": 41,
+        "marker": "deletion_requested_at"
+      },
+      {
         "repository": "native",
         "file": "__tests__/get-request-single-flight.test.ts",
         "line": 66,
@@ -12677,38 +12051,14 @@
       },
       {
         "repository": "native",
-        "file": ".claude/worktrees/reader-experience/__tests__/get-request-single-flight.test.ts",
-        "line": 66,
-        "marker": "\\/api\\/user\\/export"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/detail-screen.tsx",
-        "line": 804,
-        "marker": "\\/api\\/user\\/export"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/app/settings/detail-screen.tsx",
-        "line": 826,
-        "marker": "deletion_requested_at"
-      },
-      {
-        "repository": "native",
-        "file": ".claude/worktrees/reader-experience/docs/ANTIGRAVITY_APPLE_ACCOUNT_REVOCATION_PROMPT.md",
-        "line": 19,
-        "marker": "deleteUser\\("
-      },
-      {
-        "repository": "native",
         "file": "app/settings/detail-screen.tsx",
-        "line": 804,
+        "line": 935,
         "marker": "\\/api\\/user\\/export"
       },
       {
         "repository": "native",
         "file": "app/settings/detail-screen.tsx",
-        "line": 826,
+        "line": 956,
         "marker": "deletion_requested_at"
       }
     ]
@@ -13029,7 +12379,7 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/layout.tsx",
-          "line": 52,
+          "line": 57,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         }
       ]
@@ -13045,19 +12395,19 @@
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 85,
+          "line": 161,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 86,
+          "line": 162,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 89,
+          "line": 165,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
@@ -13069,13 +12419,13 @@
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 47,
+          "line": 70,
           "marker": "googletagmanager\\.com\\/gtag"
         },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 56,
+          "line": 79,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
@@ -13099,14 +12449,14 @@
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 45,
-          "marker": "preferences\\.analytics"
+          "line": 68,
+          "marker": "\\{saved\\.analytics\\s*&&"
         },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 55,
-          "marker": "preferences\\.advertising"
+          "line": 78,
+          "marker": "\\{saved\\.advertising\\s*&&"
         }
       ]
     },
@@ -13116,18 +12466,72 @@
       "name": "Native analytics consent control",
       "status": "VERIFIED",
       "canonicalOwnership": "native",
-      "description": "Native analytics is present and a consent-control path was discovered; event ordering still requires focused tests.",
+      "description": "No Native Firebase Analytics SDK was discovered; an analytics-consent runtime control is therefore not required.",
       "evidence": [
         {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/docs/STORE_PRIVACY_EVIDENCE.md",
-          "line": 20,
-          "marker": "@react-native-firebase\\/analytics"
+          "repository": "backend",
+          "file": "src/app/api/native/product-analytics/route.test.ts",
+          "line": 33,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/native/profile/profile.test.ts",
+          "line": 156,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/native/profile/profile.test.ts",
+          "line": 158,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/native/profile/profile.test.ts",
+          "line": 165,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/native/profile/profile.test.ts",
+          "line": 169,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/native/profile/profile.test.ts",
+          "line": 170,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/native/profile/profile.test.ts",
+          "line": 171,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/native/profile/route.ts",
+          "line": 29,
+          "marker": "analytics.*consent|consent.*analytics"
         },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 34,
+          "line": 19,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/marketing/diaspora/claims.ts",
+          "line": 77,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/privacy-content.ts",
+          "line": 77,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
@@ -13150,6 +12554,18 @@
         },
         {
           "repository": "backend",
+          "file": "src/lib/web-consent.test.ts",
+          "line": 39,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/web-consent.test.ts",
+          "line": 40,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
           "file": "src/lib/web-consent.ts",
           "line": 33,
           "marker": "analytics.*consent|consent.*analytics"
@@ -13161,33 +12577,75 @@
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/docs/ANTIGRAVITY_HOME_DISCOVERY_PROMPTS.md",
-          "line": 15,
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 6510,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/docs/GYAN_CHAUPAR_NATIVE_SCOPE.md",
-          "line": 111,
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 6635,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/docs/MAHABHARATA_DYUTA_NATIVE_SCOPE.md",
-          "line": 60,
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 6760,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/lib/telemetry.ts",
-          "line": 7,
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 6,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
-          "repository": "native",
-          "file": "lib/telemetry.ts",
-          "line": 7,
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 8,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 34,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 41,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 51,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 52,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 53,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 54,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 55,
           "marker": "analytics.*consent|consent.*analytics"
         }
       ]
@@ -13198,7 +12656,7 @@
       "name": "Discovered browser and native storage keys",
       "status": "VERIFIED",
       "canonicalOwnership": "shared_contract",
-      "description": "42 backend/PWA and 70 Native literal storage keys were discovered. Dynamic keys require manual review.",
+      "description": "42 backend/PWA and 64 Native literal storage keys were discovered. Dynamic keys require manual review.",
       "evidence": [
         {
           "repository": "backend",
@@ -13311,13 +12769,13 @@
         {
           "repository": "backend",
           "file": "src/app/layout.tsx",
-          "line": 147,
+          "line": 150,
           "marker": "storage_key"
         },
         {
           "repository": "backend",
           "file": "src/app/layout.tsx",
-          "line": 145,
+          "line": 148,
           "marker": "storage_key"
         },
         {
@@ -13422,21 +12880,15 @@
         },
         {
           "repository": "native",
-          "file": ".claude/worktrees/reader-experience/__tests__/age-guidance.test.ts",
-          "line": 23,
-          "marker": "minimumAge|ageGate|parentalConsent|parental_consent"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/lib/age-guidance.ts",
-          "line": 8,
-          "marker": "minimumAge|ageGate|parentalConsent|parental_consent"
-        },
-        {
-          "repository": "native",
           "file": "lib/age-guidance.ts",
           "line": 8,
           "marker": "minimumAge|ageGate|parentalConsent|parental_consent"
+        },
+        {
+          "repository": "backend",
+          "file": "AGENTS.md",
+          "line": 254,
+          "marker": "date_of_birth"
         },
         {
           "repository": "backend",
@@ -13569,6 +13021,12 @@
           "file": "src/app/(main)/kundali/KundaliClient.tsx",
           "line": 1410,
           "marker": "birth_(?:lat|lng|time|place)"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/(main)/kundali/KundaliClient.tsx",
+          "line": 1411,
+          "marker": "birth_(?:lat|lng|time|place)"
         }
       ]
     },
@@ -13673,31 +13131,31 @@
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 2585,
+          "line": 3027,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 2593,
+          "line": 3035,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 2601,
+          "line": 3043,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
         },
         {
           "repository": "backend",
           "file": "src/types/database.ts",
-          "line": 354,
+          "line": 361,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
         },
         {
           "repository": "backend",
           "file": "src/types/database.ts",
-          "line": 362,
+          "line": 369,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
         },
         {
@@ -13748,32 +13206,56 @@
         },
         {
           "repository": "backend",
-          "file": "src/app/api/ai/chat/route.ts",
-          "line": 361,
+          "file": "src/app/api/ai/chat/route.consistency.test.ts",
+          "line": 73,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "src/app/api/ai/chat/route.ts",
-          "line": 369,
+          "line": 402,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/ai/chat/route.ts",
+          "line": 410,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/cron/personalise/route.ts",
+          "line": 21,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/cron/personalise/route.ts",
+          "line": 103,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/cron/personalise/route.ts",
+          "line": 165,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "src/app/api/home/personalise/route.ts",
-          "line": 69,
+          "line": 45,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "src/app/api/home/personalise/route.ts",
-          "line": 76,
+          "line": 52,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "src/app/api/native/profile/route.ts",
-          "line": 24,
+          "line": 27,
           "marker": "consent_religious_data"
         },
         {
@@ -13815,19 +13297,19 @@
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 5976,
+          "line": 6511,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 6092,
+          "line": 6636,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "src/types/database.generated.ts",
-          "line": 6208,
+          "line": 6761,
           "marker": "consent_religious_data"
         },
         {
@@ -13850,56 +13332,32 @@
         },
         {
           "repository": "backend",
-          "file": "supabase/public_schema.sql",
-          "line": 5344,
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 43,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
-          "file": "supabase/public_schema.sql",
-          "line": 5426,
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 54,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
-          "file": "supabase/public_schema.sql",
-          "line": 5429,
+          "file": "supabase/migrations/20261012090256_native_product_analytics_consent_and_events.sql",
+          "line": 96,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
-          "file": "supabase/step1_tables.sql",
-          "line": 4616,
+          "file": "supabase/migrations/20261029160000_sanskara_reminder_preferences.sql",
+          "line": 48,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
-          "file": "supabase/step1_tables.sql",
-          "line": 4698,
-          "marker": "consent_religious_data"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/step1_tables.sql",
-          "line": 4701,
-          "marker": "consent_religious_data"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/tables_only.sql",
-          "line": 1608,
-          "marker": "consent_religious_data"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/tables_only.sql",
-          "line": 1690,
-          "marker": "consent_religious_data"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/tables_only.sql",
-          "line": 1693,
+          "file": "supabase/migrations/20261029160000_sanskara_reminder_preferences.sql",
+          "line": 67,
           "marker": "consent_religious_data"
         }
       ],
@@ -13999,6 +13457,12 @@
         },
         {
           "repository": "backend",
+          "file": ".claude/knowledge/architecture/notification-target-context.md",
+          "line": 16,
+          "marker": "moderation"
+        },
+        {
+          "repository": "backend",
           "file": ".claude/knowledge/INDEX.md",
           "line": 24,
           "marker": "content_reports"
@@ -14086,12 +13550,6 @@
           "file": "LAUNCH_TRACKER.md",
           "line": 81,
           "marker": "moderation"
-        },
-        {
-          "repository": "backend",
-          "file": "packages/SanatanSangam_ProductGaps.md",
-          "line": 190,
-          "marker": "moderation"
         }
       ]
     },
@@ -14165,14 +13623,38 @@
         },
         {
           "repository": "backend",
+          "file": "src/components/seo/JsonLd.tsx",
+          "line": 161,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "backend",
           "file": "src/lib/library-content-summary.ts",
           "line": 570,
           "marker": "support@shoonaya|\\/support|contact.*support"
         },
         {
           "repository": "backend",
+          "file": "src/lib/marketing/campaign-links.test.ts",
+          "line": 144,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/marketing/dispatcher.test.ts",
+          "line": 449,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/marketing/dispatcher.test.ts",
+          "line": 455,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "backend",
           "file": "src/lib/privacy-content.ts",
-          "line": 83,
+          "line": 94,
           "marker": "support@shoonaya|\\/support|contact.*support"
         },
         {
@@ -14189,98 +13671,74 @@
         },
         {
           "repository": "native",
-          "file": ".claude/worktrees/reader-experience/android/gradle.properties",
+          "file": "__tests__/save-error.test.ts",
+          "line": 106,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/save-error.test.ts",
+          "line": 121,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/save-error.test.ts",
+          "line": 122,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/save-error.test.ts",
+          "line": 123,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/user-facing-error.test.ts",
+          "line": 62,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/user-facing-error.test.ts",
+          "line": 98,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/user-facing-error.test.ts",
+          "line": 99,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/user-facing-error.test.ts",
+          "line": 100,
+          "marker": "support@shoonaya|\\/support|contact.*support"
+        },
+        {
+          "repository": "native",
+          "file": "android/gradle.properties",
           "line": 22,
           "marker": "support@shoonaya|\\/support|contact.*support"
         },
         {
           "repository": "native",
-          "file": ".claude/worktrees/reader-experience/app/(tabs)/profile.tsx",
-          "line": 1710,
+          "file": "app/(tabs)/profile.tsx",
+          "line": 1766,
           "marker": "support@shoonaya|\\/support|contact.*support"
         },
         {
           "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 5196,
+          "file": "lib/save-error.ts",
+          "line": 101,
           "marker": "support@shoonaya|\\/support|contact.*support"
         },
         {
           "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 5343,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 7601,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 7824,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 7826,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 7836,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 8388,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 8390,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 9297,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 9299,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 9783,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 10764,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 10787,
-          "marker": "support@shoonaya|\\/support|contact.*support"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/package-lock.json",
-          "line": 11254,
+          "file": "lib/user-facing-error.ts",
+          "line": 135,
           "marker": "support@shoonaya|\\/support|contact.*support"
         }
       ]
@@ -14291,7 +13749,7 @@
       "name": "Account deletion and export paths",
       "status": "VERIFIED",
       "canonicalOwnership": "backend",
-      "description": "86 deletion/export source locations were discovered. Completeness requires cascade tests.",
+      "description": "89 deletion/export source locations were discovered. Completeness requires cascade tests.",
       "evidence": [
         {
           "repository": "backend",
@@ -14343,6 +13801,12 @@
         },
         {
           "repository": "backend",
+          "file": "src/app/api/admin/api-probe/route.test.ts",
+          "line": 46,
+          "marker": "\\/api\\/user\\/export"
+        },
+        {
+          "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
           "line": 416,
           "marker": "deleteUser\\("
@@ -14350,7 +13814,7 @@
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 512,
+          "line": 528,
           "marker": "deleteUser\\("
         },
         {
@@ -14445,6 +13909,18 @@
         },
         {
           "repository": "backend",
+          "file": "src/app/api/user/export/route.test.ts",
+          "line": 35,
+          "marker": "\\/api\\/user\\/export"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/user/export/route.test.ts",
+          "line": 37,
+          "marker": "\\/api\\/user\\/export"
+        },
+        {
+          "repository": "backend",
           "file": "src/lib/account-deletion-notices.test.ts",
           "line": 14,
           "marker": "deletion_requested_at"
@@ -14453,24 +13929,6 @@
           "repository": "backend",
           "file": "src/lib/account-deletion-notices.test.ts",
           "line": 45,
-          "marker": "deletion_requested_at"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/account-deletion-notices.test.ts",
-          "line": 88,
-          "marker": "deletion_requested_at"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/account-deletion-notices.ts",
-          "line": 57,
-          "marker": "deletion_requested_at"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/account-deletion-notices.ts",
-          "line": 95,
           "marker": "deletion_requested_at"
         }
       ]
@@ -14486,7 +13944,7 @@
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 503,
+          "line": 504,
           "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
         },
         {
@@ -14511,30 +13969,6 @@
           "repository": "native",
           "file": "__tests__/birth-profiles-safety.test.ts",
           "line": 31,
-          "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/__tests__/birth-profiles-safety.test.ts",
-          "line": 30,
-          "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/__tests__/birth-profiles-safety.test.ts",
-          "line": 31,
-          "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/docs/KUNDALI_DATA_INCIDENT_2026-08-29.md",
-          "line": 5,
-          "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
-        },
-        {
-          "repository": "native",
-          "file": ".claude/worktrees/reader-experience/docs/remediation/2026-08-29-synthetic-containment-receipt.md",
-          "line": 65,
           "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
         }
       ]

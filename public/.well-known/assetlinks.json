@@ -1,11 +1,15 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "com.shoonaya.app",
       "sha256_cert_fingerprints": [
-        "44:C4:9E:E8:73:BD:B1:94:EB:53:62:64:90:82:D9:D9:B0:03:9B:FE:74:CD:BD:FC:6D:34:97:93:EE:31:B8:9A"
+        "44:C4:9E:E8:73:BD:B1:94:EB:53:62:64:90:82:D9:D9:B0:03:9B:FE:74:CD:BD:FC:6D:34:97:93:EE:31:B8:9A",
+        "DE:25:49:CC:03:06:52:E9:9E:94:C3:7F:8F:73:82:A3:CF:FA:10:B9:32:76:C0:0D:A7:E6:A4:88:D4:5E:44:13"
       ]
     }
   }

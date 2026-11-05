@@ -35,8 +35,8 @@ check('web optional vendors are loaded only by the consent manager', () => {
   assert.doesNotMatch(layout, /googletagmanager\.com|pagead2\.googlesyndication\.com|OneSignalSDK/);
   assert.match(layout, /WebConsentManager/);
   const consent = read('src/components/privacy/WebConsentManager.tsx');
-  assert.match(consent, /preferences\.analytics/);
-  assert.match(consent, /preferences\.advertising/);
+  assert.match(consent, /(?:saved|preferences)\.analytics/);
+  assert.match(consent, /(?:saved|preferences)\.advertising/);
   // Web push was intentionally removed with OneSignal. Keep the verifier in
   // sync with the current consent contract and prevent a stale push toggle or
   // vendor integration from silently returning.
@@ -52,7 +52,10 @@ if (existsSync(nativeRoot)) {
   });
 
   check('native religious-data setting is not default-on', () => {
-    const settings = read('app/settings.tsx', nativeRoot);
+    const settingsFile = existsSync(resolve(nativeRoot, 'app/settings/detail-screen.tsx'))
+      ? 'app/settings/detail-screen.tsx'
+      : 'app/settings.tsx';
+    const settings = read(settingsFile, nativeRoot);
     assert.match(settings, /consent_religious_data:\s*false/);
     assert.doesNotMatch(settings, /consent_religious_data:\s*true/);
   });
@@ -108,7 +111,12 @@ check('public provenance contract fails closed and has a Native entry point', ()
   const disclosure = read('src/lib/public-source-disclosures.ts');
   assert.match(disclosure, /explicitlyPublicDomain/);
   assert.match(disclosure, /rightsLabel:\s*'Public-domain edition'/);
-  if (existsSync(nativeRoot)) assert.match(read('app/settings.tsx', nativeRoot), /openLegalUrl\('\/sources'\)/);
+  if (existsSync(nativeRoot)) {
+    const settingsFile = existsSync(resolve(nativeRoot, 'app/settings/detail-screen.tsx'))
+      ? 'app/settings/detail-screen.tsx'
+      : 'app/settings.tsx';
+    assert.match(read(settingsFile, nativeRoot), /openLegalUrl\('\/sources'\)/);
+  }
 });
 
 const policy = read('src/lib/compliance/policy-config.ts');

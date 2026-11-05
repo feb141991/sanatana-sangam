@@ -1,8 +1,8 @@
 # Machine-Generated Privacy and Security Engineering Baseline
 
 **Schema version:** 2
-**Source fingerprint:** `7589f70a8fd2b0be571fa5d13ef06d385f970b81da77c9ed2ab30fbcc756d8c6`
-**Repositories:** Backend `1233a17b96` (modified), Native `60124fc59a` (modified)
+**Source fingerprint:** `5553f322e6fa70c743c51f8f896be31c26048137f03eafcf45b77881cb27fed2`
+**Repositories:** Backend `4a293edc93` (modified), Native `36c2a391a4` (clean)
 
 > This is an engineering evidence inventory, not legal advice. UNKNOWN and
 > ERROR states are never equivalent to a secure or compliant result.
@@ -11,9 +11,9 @@
 
 - Audited data categories: 14
 - Inventory checks: 12
-- Scanned files: backend 3048, Native 1458
-- Literal storage keys: backend 42, Native 70
-- Providers/SDKs discovered: 11
+- Scanned files: backend 3298, Native 875
+- Literal storage keys: backend 42, Native 64
+- Providers/SDKs discovered: 10
 - Check VERIFIED: 11
 - Check NOT_FOUND: 0
 - Check DRIFT: 0
@@ -38,7 +38,7 @@
 | `CAT-07-COMMUNITY-MANDALI` | Mandali/community content and safety actions | `public.posts, public.post_comments, public.content_reports, public.user_blocked_profiles, public.user_muted_profiles, public.user_hidden_content, public.moderation_logs` | Supabase | PENDING_DECISION (Content deleted on user request; safety reports retention pending counsel decision) | **PARTIAL** | 25 |
 | `CAT-08-AI-PRAMANA` | AI prompts, generated content, RAG retrieval and TTS | `Ephemeral request memory, transient streaming response, serverless execution logs` | Sarvam AI (TTS/Chat), Supabase (embeddings/vectors) | PENDING_DECISION (Zero persistent prompt storage policy; provider log retention pending DPA) | **VERIFIED** | 25 |
 | `CAT-09-NOTIFICATIONS` | Notifications, device tokens and delivery receipts | `public.push_tokens, public.notifications, public.notification_deliveries, public.notification_preferences` | Expo Push Service, Firebase Cloud Messaging (FCM), Apple Push Notification service (APNs), OneSignal | PENDING_DECISION (Invalid tokens pruned immediately; delivery history retention pending approval) | **VERIFIED** | 25 |
-| `CAT-10-ANALYTICS-ADS` | Analytics, diagnostics, cookies and advertising | `Client cookies (shoonaya_consent_v1), browser localStorage, vendor cloud telemetry` | Google Analytics 4, Google AdSense, Vercel Analytics, Vercel Speed Insights | PENDING_DECISION (Web consent state retained 12 months; vendor data retention configured in consoles) | **VERIFIED** | 11 |
+| `CAT-10-ANALYTICS-ADS` | Analytics, diagnostics, cookies and advertising | `Client cookies (shoonaya_consent_v1), browser localStorage, vendor cloud telemetry` | Google Analytics 4, Google AdSense, Vercel Analytics, Vercel Speed Insights | PENDING_DECISION (Web consent state retained 12 months; vendor data retention configured in consoles) | **VERIFIED** | 12 |
 | `CAT-11-MEDIA-UPLOADS` | Uploads, profile images, share cards and media | `Supabase Storage S3 buckets (avatars, mandali-uploads, share-cards)` | Supabase Storage | PENDING_DECISION (Objects deleted on user replacement or account purge; CDN cache TTL) | **VERIFIED** | 25 |
 | `CAT-12-PAYMENTS` | Payments, subscriptions and store purchases | `public.subscriptions, public.payment_orders, public.transactions` | Razorpay, Apple In-App Purchases (if active), Google Play Billing (if active) | PENDING_DECISION (Statutory legal hold period e.g. 7 years for financial records) | **VERIFIED** | 25 |
 | `CAT-13-GUEST-DATA` | Guest-mode and unauthenticated records | `Browser localStorage / Native AsyncStorage, ephemeral birth_profiles (if session saved)` | Supabase (ephemeral), Local Device Storage | PENDING_DECISION (Guest profile purge schedule pending decision) | **DECISION_REQUIRED** | 25 |
@@ -48,7 +48,7 @@
 
 - Profiles state: **SECURED**
 - Anonymous row count: unavailable
-- Administrative row count: 14
+- Administrative row count: 28
 - Explanation: The anonymous role was explicitly denied access.
 - Limitation: The Data API probes verify effective anonymous access and aggregate counts. Exact live PostgreSQL grants, policy expressions, view security and RPC privileges require a separate metadata query through an approved database connection or Supabase MCP.
 
@@ -59,7 +59,7 @@
 | INV-PROF-01 | VERIFIED | Sensitive profile access | Anonymous profiles access probe | 20 |
 | INV-PROF-02 | VERIFIED | Sensitive profile access | Profile read and write paths | 30 |
 | INV-SDK-01 | VERIFIED | Third-party SDKs and trackers | Web tracker initialization | 11 |
-| INV-SDK-02 | VERIFIED | Third-party SDKs and trackers | Native analytics consent control | 12 |
+| INV-SDK-02 | VERIFIED | Third-party SDKs and trackers | Native analytics consent control | 30 |
 | INV-CACHE-01 | VERIFIED | Client storage and identity | Discovered browser and native storage keys | 30 |
 | INV-AGE-01 | VERIFIED | DOB, birth and location | Centralized age-policy enforcement | 30 |
 | INV-TERMS-01 | VERIFIED | Terms and consent | Versioned Terms acceptance receipts | 22 |
@@ -67,11 +67,11 @@
 | INV-UGC-01 | VERIFIED | UGC safety | Mandali safety paths | 30 |
 | INV-UGC-02 | VERIFIED | UGC safety | Published support path | 30 |
 | INV-LIFE-01 | VERIFIED | Data lifecycle | Account deletion and export paths | 30 |
-| INV-LIFE-02 | VERIFIED | Data lifecycle | Guest birth-profile retention | 9 |
+| INV-LIFE-02 | VERIFIED | Data lifecycle | Guest birth-profile retention | 5 |
 
 ## Profile Contract
 
-Generated types expose 92 profile columns:
+Generated types expose 95 profile columns:
 
 | Column | Type | Engineering classification |
 |---|---|---|
@@ -142,6 +142,7 @@ Generated types expose 92 profile columns:
 | `quiz_reminder_enabled` | `boolean` | internal_candidate |
 | `quiz_reminder_time` | `string` | internal_candidate |
 | `sampradaya` | `string \| null` | sensitive_candidate |
+| `sanskara_opt_in_generation` | `number` | unclassified |
 | `scripture_script` | `string` | unclassified |
 | `seeking` | `string[]` | unclassified |
 | `seva_score` | `number` | internal_candidate |
@@ -157,12 +158,14 @@ Generated types expose 92 profile columns:
 | `unsubscribe_token` | `string \| null` | sensitive_candidate |
 | `updated_at` | `string` | unclassified |
 | `username` | `string` | public_candidate |
+| `wants_brahma_muhurta_reminders` | `boolean` | internal_candidate |
 | `wants_community_notifications` | `boolean` | internal_candidate |
 | `wants_family_notifications` | `boolean` | internal_candidate |
 | `wants_family_remembrance_reminders` | `boolean` | internal_candidate |
 | `wants_festival_reminders` | `boolean` | internal_candidate |
 | `wants_nitya_reminders` | `boolean` | internal_candidate |
 | `wants_sankalpa_midpoint_reminders` | `boolean` | internal_candidate |
+| `wants_sanskara_reminders` | `boolean` | internal_candidate |
 | `wants_shloka_reminders` | `boolean` | internal_candidate |
 | `wants_tithi_reminders` | `boolean` | internal_candidate |
 | `wants_vrat_reminders` | `boolean` | internal_candidate |
@@ -174,10 +177,9 @@ Generated types expose 92 profile columns:
 - Google Analytics 4: 1 evidence locations
 - Google AdSense: 4 evidence locations
 - OneSignal: 100 evidence locations
-- Firebase Analytics: 1 evidence locations
-- Expo Notifications: 24 evidence locations
+- Expo Notifications: 17 evidence locations
 - Razorpay: 5 evidence locations
-- Twilio: 24 evidence locations
+- Twilio: 28 evidence locations
 - Sarvam AI: 100 evidence locations
 - Vercel Analytics: 2 evidence locations
 - Vercel Speed Insights: 2 evidence locations

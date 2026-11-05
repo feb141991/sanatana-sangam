@@ -614,7 +614,7 @@ function buildInventory(input: { files: SourceFile[]; profilesState: AccessProbe
   // actual fields, not the other way around.
   const webConsentGateEvidence = evidenceFor(
     input.files.filter((file) => file.relativePath === "src/components/privacy/WebConsentManager.tsx"),
-    [/preferences\.analytics/, /preferences\.advertising/],
+    [/\{saved\.analytics\s*&&/, /\{saved\.advertising\s*&&/],
   );
   const WEB_CONSENT_GATE_COUNT = 2;
   const analyticsConsentEvidence = evidenceFor(input.files, [/setAnalyticsCollectionEnabled/, /analytics.*consent|consent.*analytics/i]);
