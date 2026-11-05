@@ -31,8 +31,8 @@ const TRADITIONS: TraditionItem[] = [
     slug: "hindu",
     badge: "Sanatan Dharma · हिन्दू धर्म",
     color: "#D88A1C",
-    accentColor: "#E59828",
-    glowColor: "rgba(216, 138, 28, 0.45)",
+    accentColor: "#9F6314",
+    glowColor: "rgba(216, 138, 28, 0.35)",
     bgSoft: "rgba(216, 138, 28, 0.1)",
     borderSoft: "rgba(200, 146, 74, 0.3)",
     contextLabel: "Selected teaching",
@@ -63,10 +63,10 @@ const TRADITIONS: TraditionItem[] = [
     slug: "sikh",
     badge: "Sikhi · ਸਿੱਖ ਧਰਮ",
     color: "#1B5E8B",
-    accentColor: "#5BA4D4",
-    glowColor: "rgba(27, 94, 139, 0.45)",
-    bgSoft: "rgba(91, 164, 212, 0.12)",
-    borderSoft: "rgba(91, 164, 212, 0.35)",
+    accentColor: "#1B5E8B",
+    glowColor: "rgba(27, 94, 139, 0.35)",
+    bgSoft: "rgba(27, 94, 139, 0.10)",
+    borderSoft: "rgba(27, 94, 139, 0.30)",
     contextLabel: "Selected teaching",
     script: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥",
     scriptStyle: {
@@ -94,10 +94,10 @@ const TRADITIONS: TraditionItem[] = [
     slug: "buddhist",
     badge: "Buddhism · बौद्ध धर्म",
     color: "#8B2D3E",
-    accentColor: "#E07A8B",
-    glowColor: "rgba(139, 45, 62, 0.45)",
-    bgSoft: "rgba(224, 122, 139, 0.12)",
-    borderSoft: "rgba(224, 122, 139, 0.35)",
+    accentColor: "#8B2D3E",
+    glowColor: "rgba(139, 45, 62, 0.35)",
+    bgSoft: "rgba(139, 45, 62, 0.10)",
+    borderSoft: "rgba(139, 45, 62, 0.30)",
     contextLabel: "Selected teaching",
     script: "Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.",
     scriptStyle: {
@@ -125,10 +125,10 @@ const TRADITIONS: TraditionItem[] = [
     slug: "jain",
     badge: "Jainism · जैन धर्म",
     color: "#2A6B4A",
-    accentColor: "#52B788",
-    glowColor: "rgba(42, 107, 74, 0.45)",
-    bgSoft: "rgba(82, 183, 136, 0.12)",
-    borderSoft: "rgba(82, 183, 136, 0.35)",
+    accentColor: "#2A6B4A",
+    glowColor: "rgba(42, 107, 74, 0.35)",
+    bgSoft: "rgba(42, 107, 74, 0.10)",
+    borderSoft: "rgba(42, 107, 74, 0.30)",
     contextLabel: "Selected teaching",
     script: "परस्परोपग्रहो जीवानाम् ।",
     scriptStyle: {
@@ -209,7 +209,7 @@ export function TraditionsSectionClient() {
         <div
           role="tablist"
           aria-label="Choose tradition"
-          className="relative flex items-center rounded-full p-1 border border-[var(--card-border)] bg-[var(--surface-soft)]/90 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
+          className="relative flex items-center rounded-full p-1 border border-[var(--card-border)] bg-[var(--surface-soft)]/90 backdrop-blur-xl shadow-[0_4px_24px_rgba(62,42,31,0.08)]"
         >
           {TRADITIONS.map((trad, idx) => {
             const isActive = activeIndex === idx;
@@ -311,7 +311,7 @@ export function TraditionsSectionClient() {
                   cx="100"
                   cy="100"
                   r="88"
-                  stroke="#D4827A"
+                  stroke={activeTrad.color}
                   strokeWidth="7"
                   fill="none"
                 />
@@ -319,12 +319,12 @@ export function TraditionsSectionClient() {
                   cx="100"
                   cy="100"
                   r="18"
-                  stroke="#D4827A"
+                  stroke={activeTrad.color}
                   strokeWidth="5"
                   fill="none"
                 />
-                <circle cx="100" cy="100" r="6" fill="#D4827A" />
-                <g stroke="#D4827A" strokeWidth="4" strokeLinecap="round">
+                <circle cx="100" cy="100" r="6" fill={activeTrad.color} />
+                <g stroke={activeTrad.color} strokeWidth="4" strokeLinecap="round">
                   <line x1="100" y1="18" x2="100" y2="82" />
                   <line x1="100" y1="118" x2="100" y2="182" />
                   <line x1="18" y1="100" x2="82" y2="100" />
@@ -334,7 +334,7 @@ export function TraditionsSectionClient() {
                   <line x1="157" y1="43" x2="114" y2="86" />
                   <line x1="86" y1="114" x2="43" y2="157" />
                 </g>
-                <g fill="#D4827A">
+                <g fill={activeTrad.color}>
                   <circle cx="100" cy="14" r="7" />
                   <circle cx="100" cy="186" r="7" />
                   <circle cx="14" cy="100" r="7" />
@@ -355,7 +355,7 @@ export function TraditionsSectionClient() {
               >
                 <path
                   d="M100 178 C72 178 48 155 48 126 L48 82 C48 73 55 67 63 70 C65 60 73 55 82 59 L82 48 C82 38 88 32 97 32 C106 32 112 38 112 48 L112 59 C121 55 129 60 131 70 C139 67 146 73 146 82 L146 126 C146 155 128 178 100 178Z"
-                  stroke="#6AB99A"
+                  stroke={activeTrad.color}
                   strokeWidth="4.5"
                   fill="none"
                   strokeLinejoin="round"
@@ -365,7 +365,7 @@ export function TraditionsSectionClient() {
                   y1="59"
                   x2="82"
                   y2="42"
-                  stroke="#6AB99A"
+                  stroke={activeTrad.color}
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
@@ -374,7 +374,7 @@ export function TraditionsSectionClient() {
                   y1="59"
                   x2="112"
                   y2="42"
-                  stroke="#6AB99A"
+                  stroke={activeTrad.color}
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
@@ -382,12 +382,12 @@ export function TraditionsSectionClient() {
                   cx="97"
                   cy="122"
                   r="24"
-                  stroke="#6AB99A"
+                  stroke={activeTrad.color}
                   strokeWidth="3.5"
                   fill="none"
                 />
-                <circle cx="97" cy="122" r="7" fill="#6AB99A" />
-                <g stroke="#6AB99A" strokeWidth="2" strokeLinecap="round">
+                <circle cx="97" cy="122" r="7" fill={activeTrad.color} />
+                <g stroke={activeTrad.color} strokeWidth="2" strokeLinecap="round">
                   <line x1="97" y1="98" x2="97" y2="115" />
                   <line x1="97" y1="129" x2="97" y2="146" />
                   <line x1="73" y1="122" x2="90" y2="122" />

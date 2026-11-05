@@ -6,7 +6,11 @@ import { marketingNavItems } from "@/config/marketing";
 
 export function MarketingShell({ children }: { children: ReactNode }) {
   return (
-    <div className="marketing-site min-h-dvh bg-[var(--surface-base)] text-[var(--text-cream)]">
+    <div
+      className="marketing-site min-h-dvh bg-[var(--surface-base)] text-[var(--text-cream)]"
+      data-theme="light"
+      data-marketing-shell="true"
+    >
       <NotchNavbar
         items={marketingNavItems}
         cta={{ href: "/early-access", label: "Request Early Access" }}

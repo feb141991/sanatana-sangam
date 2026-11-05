@@ -47,8 +47,8 @@ const TIMELINE_NODES = [
     year: "2026 CE",
     name: "Shoonaya",
     tradition: "A daily spiritual sanctuary",
-    color: "#C5A059",
-    bgSoft: "rgba(197, 160, 89, 0.2)",
+    color: "#D88A1C",
+    bgSoft: "rgba(216, 138, 28, 0.15)",
     description: "Sacred time, practice, and connection for everyday life.",
     isCurrent: true,
   },
@@ -125,7 +125,7 @@ export default function TraditionsPage() {
                     <div
                       className={`absolute -left-[1.85rem] top-1.5 flex items-center justify-center rounded-full transition-transform group-hover:scale-125 ${
                         node.isCurrent
-                          ? "h-4 w-4 ring-4 ring-[#C5A059]/20"
+                          ? "h-4 w-4 ring-4 ring-[#D88A1C]/25"
                           : "h-3 w-3"
                       }`}
                       style={{

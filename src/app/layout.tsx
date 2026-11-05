@@ -147,8 +147,13 @@ export default function RootLayout({
             __html: `try{
   var __t=localStorage.getItem('sh_tradition');
   if(__t)document.documentElement.setAttribute('data-tradition',__t);
-  var __theme=localStorage.getItem('sh_theme');
-  if(__theme==='light'){document.body.style.background='#FAF6EF';}
+  var __pref=localStorage.getItem('sangam_theme_preference')||localStorage.getItem('sh_theme');
+  var __isLight=__pref==='light'||(!__pref&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches);
+  var __isMarketing=window.location.pathname.match(/^\\/(traditions|features|journal|community|faq|contact|about|early-access|play|sitemap|site-map|stories)(\\/|$)/);
+  if(__isLight||__isMarketing){
+    document.body.style.background='#FAF6EF';
+    if(__isLight)document.documentElement.setAttribute('data-theme','light');
+  }
 }catch(e){}`,
           }}
         />

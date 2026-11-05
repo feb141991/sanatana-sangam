@@ -170,7 +170,10 @@ html[data-practice-immersive='true'] body {
   --dur-slow:     420ms;
 }
 
-:root[data-theme='light'] {
+:root[data-theme='light'],
+[data-theme='light'],
+.marketing-site,
+[data-marketing-shell="true"] {
   --brand-primary:        #D88A1C;
   --brand-primary-strong: #9F6314;
   --brand-primary-soft:   rgba(216, 138, 28, 0.12);
@@ -719,7 +722,9 @@ pre {
   overflow-wrap: anywhere;
 }
 
-:root[data-theme='light'] body {
+:root[data-theme='light'] body,
+body:has(.marketing-site),
+body:has([data-marketing-shell="true"]) {
   background:
     linear-gradient(rgba(62, 42, 31, 0.012) 1px, transparent 1px),
     linear-gradient(90deg, rgba(62, 42, 31, 0.010) 1px, transparent 1px),
@@ -2254,7 +2259,11 @@ body::after {
 }
 
 :root[data-theme='light'] body::before,
-:root[data-theme='light'] body::after {
+:root[data-theme='light'] body::after,
+body:has(.marketing-site)::before,
+body:has(.marketing-site)::after,
+body:has([data-marketing-shell="true"])::before,
+body:has([data-marketing-shell="true"])::after {
   opacity: 0;
 }
 
@@ -2422,7 +2431,17 @@ body::after {
 :root[data-theme='light'] .glass-panel-strong,
 :root[data-theme='light'] .glass-nav,
 :root[data-theme='light'] .glass-chip,
-:root[data-theme='light'] .glass-input {
+:root[data-theme='light'] .glass-input,
+.marketing-site .glass-panel,
+.marketing-site .glass-panel-strong,
+.marketing-site .glass-nav,
+.marketing-site .glass-chip,
+.marketing-site .glass-input,
+[data-marketing-shell="true"] .glass-panel,
+[data-marketing-shell="true"] .glass-panel-strong,
+[data-marketing-shell="true"] .glass-nav,
+[data-marketing-shell="true"] .glass-chip,
+[data-marketing-shell="true"] .glass-input {
   border-color: rgba(95, 58, 22, 0.13);
   background: rgba(255, 251, 244, 0.92);
   backdrop-filter: blur(10px) saturate(108%);
@@ -2525,7 +2544,9 @@ body::after {
   box-shadow: var(--shadow-soft);
 }
 
-:root[data-theme='light'] .surface-panel {
+:root[data-theme='light'] .surface-panel,
+.marketing-site .surface-panel,
+[data-marketing-shell="true"] .surface-panel {
   border-color: rgba(95, 58, 22, 0.10);
   background: rgba(255, 251, 244, 0.94);
   box-shadow: 0 10px 28px rgba(49, 35, 20, 0.07);
@@ -2538,7 +2559,9 @@ body::after {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
-:root[data-theme='light'] .surface-card {
+:root[data-theme='light'] .surface-card,
+.marketing-site .surface-card,
+[data-marketing-shell="true"] .surface-card {
   border-color: rgba(95, 58, 22, 0.09);
   background: rgba(255, 251, 244, 0.92);
   box-shadow: 0 6px 20px rgba(49, 35, 20, 0.06);
@@ -2551,7 +2574,9 @@ body::after {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 
-:root[data-theme='light'] .surface-soft-card {
+:root[data-theme='light'] .surface-soft-card,
+.marketing-site .surface-soft-card,
+[data-marketing-shell="true"] .surface-soft-card {
   border-color: rgba(95, 58, 22, 0.08);
   background: rgba(247, 241, 232, 0.92);
   box-shadow: 0 4px 14px rgba(49, 35, 20, 0.05);
@@ -3003,7 +3028,9 @@ body::after {
   transition: transform var(--dur-base) var(--ease-spring), box-shadow var(--dur-base) var(--ease-out);
 }
 
-:root[data-theme='light'] .clay-card {
+:root[data-theme='light'] .clay-card,
+.marketing-site .clay-card,
+[data-marketing-shell="true"] .clay-card {
   background: rgba(255, 253, 248, 0.94);
   border-color: rgba(95, 58, 22, 0.12);
   box-shadow: var(--shadow-soft);
