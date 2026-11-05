@@ -25,7 +25,7 @@
  * - Canonical logical fixture identity is computed for governance checks.
  */
 
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, resolve, extname } from 'node:path';
 import Ajv from 'ajv';
 import { createClient } from '@supabase/supabase-js';
@@ -42,6 +42,9 @@ const FIXTURES_ROOT = resolve(__dirname, '../__fixtures__');
 export const SNAPSHOT_DIR  = join(FIXTURES_ROOT, 'snapshot');
 const INVALID_DIR          = join(FIXTURES_ROOT, 'fixtures-invalid');
 const SCHEMAS_DIR          = join(FIXTURES_ROOT, 'schemas');
+const CACHE_DIR            = join(FIXTURES_ROOT, 'cache');
+const GOLDEN_CACHE_FILE    = join(CACHE_DIR, 'golden_fixtures.cache.json');
+const PROFILES_CACHE_FILE  = join(CACHE_DIR, 'calendar_profiles.cache.json');
 
 // ── DB client for golden_fixtures ───────────────────────────────────────────
 
@@ -291,7 +294,7 @@ function parseJson(filePath: string): unknown {
 }
 
 async function fetchWithRetry<T>(
-  fn: () => Promise<{ data: T | null; error: any }>,
+  fn: () => PromiseLike<{ data: T | null; error: any }>,
   resourceName: string,
   retries = 3,
   delayMs = 2500,
@@ -318,20 +321,46 @@ async function fetchWithRetry<T>(
  * Load and validate all golden fixtures from `public.golden_fixtures`.
  *
  * Async because it's a DB read, unlike every other loader in this file.
- * Every row is put back through the exact same golden.schema.json validation
- * a file used to get, so a malformed row (e.g. written by the admin GUI) is
- * caught here rather than surfacing as a confusing engine-comparison failure
- * three functions later.
+ * Resilient: attempts fetch from Supabase with retry; if the database is
+ * unreachable (maintenance, network timeout, Cloudflare 522/521, or missing credentials),
+ * it seamlessly falls back to the committed snapshot cache in `__fixtures__/cache/`
+ * so test suites and CI runs are 100% deterministic and never fail due to network stalls.
  */
 export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
-  const supabase = goldenFixturesClient();
-  const data = await fetchWithRetry<any[]>(
-    () =>
-      supabase
-        .from('golden_fixtures')
-        .select('case_id, festival_id, year, location, profile, expected, tolerance, source, reasoning, approved'),
-    'golden_fixtures',
-  );
+  let data: any[] | null = null;
+
+  try {
+    const supabase = goldenFixturesClient();
+    data = await fetchWithRetry<any[]>(
+      () =>
+        supabase
+          .from('golden_fixtures')
+          .select('case_id, festival_id, year, location, profile, expected, tolerance, source, reasoning, approved'),
+      'golden_fixtures',
+      2,
+      1500,
+    );
+
+    // Refresh local cache file on successful DB read
+    if (data && data.length > 0) {
+      try {
+        if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+        writeFileSync(GOLDEN_CACHE_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      } catch {
+        // Cache refresh is best-effort and non-fatal
+      }
+    }
+  } catch (err) {
+    if (existsSync(GOLDEN_CACHE_FILE)) {
+      console.warn(
+        `[fixture-loader] Supabase read failed (${(err as Error).message}); ` +
+        `falling back to offline snapshot cache (${GOLDEN_CACHE_FILE}).`
+      );
+      data = JSON.parse(readFileSync(GOLDEN_CACHE_FILE, 'utf-8'));
+    } else {
+      throw err;
+    }
+  }
 
   return (data ?? []).map(row => {
     const raw: Record<string, unknown> = {
@@ -378,14 +407,39 @@ export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
 }
 
 export async function loadCalendarProfileFixtureDefinitions(): Promise<CalendarProfileFixtureDefinition[]> {
-  const supabase = goldenFixturesClient();
-  const data = await fetchWithRetry<any[]>(
-    () =>
-      supabase
-        .from('calendar_profiles')
-        .select('slug, month_system, scholarly_status'),
-    'calendar_profiles',
-  );
+  let data: any[] | null = null;
+
+  try {
+    const supabase = goldenFixturesClient();
+    data = await fetchWithRetry<any[]>(
+      () =>
+        supabase
+          .from('calendar_profiles')
+          .select('slug, month_system, scholarly_status'),
+      'calendar_profiles',
+      2,
+      1500,
+    );
+
+    if (data && data.length > 0) {
+      try {
+        if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+        writeFileSync(PROFILES_CACHE_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      } catch {
+        // Cache refresh is best-effort and non-fatal
+      }
+    }
+  } catch (err) {
+    if (existsSync(PROFILES_CACHE_FILE)) {
+      console.warn(
+        `[fixture-loader] Supabase read failed (${(err as Error).message}); ` +
+        `falling back to offline snapshot cache (${PROFILES_CACHE_FILE}).`
+      );
+      data = JSON.parse(readFileSync(PROFILES_CACHE_FILE, 'utf-8'));
+    } else {
+      throw err;
+    }
+  }
 
   return (data ?? []).map(row => ({
     slug: row.slug,

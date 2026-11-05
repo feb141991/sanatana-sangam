@@ -1,0 +1,67 @@
+[
+  {
+    "slug": "legacy-ujjain",
+    "month_system": null,
+    "scholarly_status": "[S] sentinel - ratification pending"
+  },
+  {
+    "slug": "tamil_solar",
+    "month_system": "solar",
+    "scholarly_status": "[S] ratification pending"
+  },
+  {
+    "slug": "malayalam_solar",
+    "month_system": "solar",
+    "scholarly_status": "[S] ratification pending"
+  },
+  {
+    "slug": "bengali_solar",
+    "month_system": "solar",
+    "scholarly_status": "[S] ratification pending"
+  },
+  {
+    "slug": "north_indian_purnimanta",
+    "month_system": "purnimanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "gujarati_amanta",
+    "month_system": "amanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "marathi_amanta",
+    "month_system": "amanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "kannada_telugu_amanta",
+    "month_system": "amanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "kannada_amanta",
+    "month_system": "amanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "telugu_amanta",
+    "month_system": "amanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "odia",
+    "month_system": "amanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "nepali_bikram",
+    "month_system": "purnimanta",
+    "scholarly_status": "approved"
+  },
+  {
+    "slug": "global_sanatan",
+    "month_system": "amanta",
+    "scholarly_status": "approved"
+  }
+]

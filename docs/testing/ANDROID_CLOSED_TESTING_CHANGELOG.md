@@ -6,6 +6,27 @@ This document records all production backend, mobile, database, and infrastructu
 
 ## Change Log
 
+### [Change #10] — 2026-11-06 00:35 IST
+* **Type:** Test Harness Resilience & Offline Snapshot Cache Fallback (`Shoonaya`)
+* **Scope:**
+  - `packages/dharma-rules/harness/fixture-loader.ts`
+  - `packages/dharma-rules/__fixtures__/cache/golden_fixtures.cache.json`
+  - `packages/dharma-rules/__fixtures__/cache/calendar_profiles.cache.json`
+* **Trigger / Error:**
+  - Database stalls, statement timeouts (`57014`), and transient origin 522/521 network dropouts during CI test runs when fetching `public.golden_fixtures` and `public.calendar_profiles` directly from Supabase.
+  - Test suites failed whenever Supabase paused, restarted, or experienced network latency, breaking automated CI builds despite clean code changes.
+* **Fix Applied:**
+  1. Extracted and committed an offline snapshot cache of all 298 council-ratified `golden_fixtures` and 13 `calendar_profiles` into `packages/dharma-rules/__fixtures__/cache/`.
+  2. Enhanced `loadGoldenFixtures()` and `loadCalendarProfileFixtureDefinitions()` in `fixture-loader.ts` with multi-tier loading:
+     - Queries Supabase with exponential backoff (`fetchWithRetry`).
+     - On success, updates the local cache file asynchronously.
+     - On failure (timeout, Cloudflare 522, missing credentials, or database maintenance), emits a clear warning and seamlessly falls back to the committed snapshot cache so tests never fail due to network or database hiccups.
+* **Verification:**
+  - Live database query test: `npx vitest run harness/disputed-years.test.ts harness/yogini-variants.test.ts harness/lunar-span.test.ts` -> 43/43 passed.
+  - Forced offline fallback test: Ran with unreachable dummy URL (`NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:9999`) -> 6/6 passed seamlessly using cache.
+
+---
+
 ### [Change #9] — 2026-11-05 18:20 IST
 * **Type:** Digital Asset Links Apex Exemption & CI Resilient Retry (`Shoonaya`)
 * **Scope:**
