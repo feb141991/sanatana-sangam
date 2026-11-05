@@ -337,6 +337,13 @@ export function KulHub({
                 <button onClick={saveKulName} className="rounded-full bg-[var(--brand-primary)] px-3 py-2 text-[11px] font-medium text-white">
                   {t('done')}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingName(false)}
+                  className="rounded-full border border-[var(--card-border)] px-3 py-2 text-[11px] font-medium theme-muted hover:theme-ink"
+                >
+                  {t('cancel')}
+                </button>
               </div>
             ) : (
               <div className="mt-1 flex items-center gap-2">
@@ -347,8 +354,9 @@ export function KulHub({
                       setNewKulName(kul.name);
                       setEditingName(true);
                     }}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--card-border)] text-[var(--brand-primary)]"
-                    aria-label="Edit Kul name"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--card-border)] text-[var(--brand-primary)] hover:bg-[var(--brand-primary-soft)] transition-colors"
+                    aria-label="Edit family circle name"
+                    title="Edit family circle name"
                   >
                     <Pencil size={15} />
                   </button>

@@ -447,3 +447,50 @@ export async function POST(request: NextRequest) {
     return fail("Could not update your family circle. Please retry.", 503);
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  const { user, error: authError, supabase } = await getApiUser(request);
+  if (!user || !supabase) return getApiAuthFailureResponse(authError);
+  const body: unknown = await request.json().catch(() => null);
+  if (!isRecord(body)) return fail("Invalid family details.", 400);
+
+  try {
+    const membership = await resolveNativeKulMembership(supabase, user.id);
+    if (!membership || membership.role !== "guardian") {
+      return fail("Only a family guardian can update the family circle name.", 403);
+    }
+
+    const updates: Record<string, string> = {};
+    if ("name" in body) {
+      const name = textField(body.name, 60);
+      if (!name || name.length < 2) return fail("Enter a valid family name.", 400);
+      updates.name = name;
+    }
+    if ("emoji" in body) {
+      const emoji =
+        typeof body.emoji === "string" && ALLOWED_EMOJI.has(body.emoji)
+          ? body.emoji
+          : null;
+      if (!emoji) return fail("Choose a valid emblem.", 400);
+      updates.avatar_emoji = emoji;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return fail("No updates provided.", 400);
+    }
+
+    const { error } = await supabase
+      .from("kuls")
+      .update(updates)
+      .eq("id", membership.kulId);
+    if (error) return fail("Could not update family details. Please retry.", 500);
+
+    return NextResponse.json(
+      { success: true, ...updates },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  } catch (error) {
+    console.error("[native-kul] name update failed", { userId: user.id, error });
+    return fail("Could not update your family circle name. Please retry.", 503);
+  }
+}

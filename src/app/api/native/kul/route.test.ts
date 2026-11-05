@@ -8,7 +8,7 @@ vi.mock("@/lib/api-auth", async (importOriginal) => ({
   getApiUser: (...args: unknown[]) => getApiUser(...args),
 }));
 
-import { GET, POST } from "./route";
+import { GET, POST, PATCH } from "./route";
 import { POST as postMessage } from "./messages/route";
 import { PATCH as patchTask, POST as postTask } from "./tasks/route";
 import { POST as postEvent } from "./events/route";
@@ -547,6 +547,72 @@ describe("/api/native/kul", () => {
       completed: true,
       alreadyCompleted: true,
     });
+    expect(writes).toHaveLength(0);
+  });
+
+  it("allows a guardian to rename the family circle", async () => {
+    const { supabase, writes } = createSupabase({
+      profiles: [{ data: { kul_id: "kul-1" }, error: null }],
+      kul_members: [{ data: { kul_id: "kul-1", role: "guardian" }, error: null }],
+      kuls: [{ data: { id: "kul-1", name: "Sharma Parivar" }, error: null }],
+    });
+    getApiUser.mockResolvedValue({
+      user: { id: "user-1" },
+      error: null,
+      supabase,
+    });
+    const response = await PATCH(
+      request("https://shoonaya.com/api/native/kul", "PATCH", {
+        name: "Sharma Kutumb",
+      }),
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      success: true,
+      name: "Sharma Kutumb",
+    });
+    expect(writes).toHaveLength(1);
+    expect(writes[0]).toMatchObject({
+      table: "kuls",
+      payload: { name: "Sharma Kutumb" },
+    });
+  });
+
+  it("blocks a non-guardian from renaming the family circle", async () => {
+    const { supabase, writes } = createSupabase({
+      profiles: [{ data: { kul_id: "kul-1" }, error: null }],
+      kul_members: [{ data: { kul_id: "kul-1", role: "sadhak" }, error: null }],
+    });
+    getApiUser.mockResolvedValue({
+      user: { id: "user-1" },
+      error: null,
+      supabase,
+    });
+    const response = await PATCH(
+      request("https://shoonaya.com/api/native/kul", "PATCH", {
+        name: "Renamed by Member",
+      }),
+    );
+    expect(response.status).toBe(403);
+    expect(writes).toHaveLength(0);
+  });
+
+  it("rejects an invalid or too short name", async () => {
+    const { supabase, writes } = createSupabase({
+      profiles: [{ data: { kul_id: "kul-1" }, error: null }],
+      kul_members: [{ data: { kul_id: "kul-1", role: "guardian" }, error: null }],
+    });
+    getApiUser.mockResolvedValue({
+      user: { id: "user-1" },
+      error: null,
+      supabase,
+    });
+    const response = await PATCH(
+      request("https://shoonaya.com/api/native/kul", "PATCH", {
+        name: "A",
+      }),
+    );
+    expect(response.status).toBe(400);
     expect(writes).toHaveLength(0);
   });
 });
