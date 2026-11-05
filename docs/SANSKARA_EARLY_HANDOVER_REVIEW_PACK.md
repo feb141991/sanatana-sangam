@@ -31,21 +31,38 @@ consent for religious data; a wrong, expired or used code always gets the same "
 | **D-D** | After the move, do parents keep any view? | **No.** Parents lose access completely, as at 18 (built this way). | A read-only parent view needs a new kind of access the child cannot silently remove, and means "the child owns it" is only partly true. |
 | **D-E** | Can it be undone? | **No.** Records move and the child profile is deleted (built this way). The parents' screen says so before they agree. | Undo needs the child profile kept, which keeps data nobody manages. |
 
-## 3. Draft privacy-policy wording (for the lawyer; not published)
+## 3. Draft privacy-policy wording (for the lawyer; not published; Drafts A and B revised 2026-11-05)
 
 The public policy today (Children and Sensitive Data section) says younger seekers should use the app with a parent or guardian involved.
 It says **nothing** about: family milestone timelines, children's profiles kept by a parent, the hand-over at 18, or the early hand-over.
 That gap exists whether or not the early hand-over is switched on, so the first two paragraphs below are needed for the tracker itself.
 
-**Draft A. Family milestone timelines (needed now, tracker already exists)**
-> You can keep a milestone timeline for a child you look after, using the child's first name or nickname and birth date. Only you and any
-> other adult you add as a manager can see it. Dates, rites and notes you save there are religious and family information, and we treat
-> them as sensitive. Reminders about them are off until you turn them on, and their text never names the child. If you withdraw your
-> consent, the timeline is deleted after 30 days. We keep a short log of who changed what (not the contents) for 12 months.
+**Draft A. Milestone timelines (needed now, tracker already exists)**
+> You can keep a timeline of milestones for yourself and for a child you look after. For a child you enter a name you choose and a birth
+> date. Each milestone has a title, a date and a status, and you can add notes, a place and who performed it. This is religious and family
+> information, so we treat it as sensitive and ask for your consent first.
+>
+> **Who can see it.** You, and any other adult you add as a manager of the child's timeline (they must be in your Kul). A manager can see,
+> change, share and delete everything on it. You can also share with members of your own Kul, view only, and stop a share at any time.
+> A share never includes notes, place or performer, and it stops if either of you leaves the Kul.
+>
+> **Reminders** are off until you turn them on, and their text never names the child, the milestone or the date.
+>
+> **Deleting.** You can delete any milestone at any time. Deleting your account deletes your own timeline. A child's timeline stays with
+> its other managers; if you were the only manager, it is deleted.
+>
+> **Withdrawing consent.** Your own timeline is hidden and deleted after 30 days. A child's timeline is hidden once no manager has given
+> consent, but withdrawing does not delete it: it stays until it is deleted or handed over (see below).
+>
+> **Record of actions.** We keep a short log of sharing, manager changes, hand-overs and deletions (who, what kind and when; never the
+> content) for 12 months.
 
-**Draft B. At 18**
-> When a child reaches 18, the managers keep read-only access for 12 months so the person can take over their own records. After that the
-> records are deleted if nobody has taken them over.
+**Draft B. When the child turns 18**
+> On the child's 18th birthday the timeline is frozen: nobody can change it, every share ends and reminders stop. For the next 12 months
+> the managers can still read it, notes included, so they can hand it over. A manager starts a hand-over and gets a one-time code, shown
+> once and valid for 7 days. The person enters the code in their own Shoonaya account, the records move to their own timeline (where they
+> already have a record of the same rite, theirs is kept) and the managers lose all access. We hold no contact details for the child, so
+> the managers must pass the code on themselves. When the 12 months end, access stops and anything not handed over is deleted.
 
 **Draft C. Early hand-over (only if D-B and D-C allow it)**
 > Before 18, a child can take over their own timeline, but only if every adult managing it agrees, the child enters a one-time code in
@@ -53,9 +70,23 @@ That gap exists whether or not the early hand-over is switched on, so the first 
 > lose access permanently. This cannot be undone. If the child has not taken over within 7 days, the code stops working. We keep a short
 > log of the steps (not the contents).
 
-Facts the wording must match, and the one gap I found: hand-over request rows and approval rows are removed when an involved account is deleted,
-but **cancelled and completed hand-over rows have no purge job**. Either add one (my suggestion: 12 months, like the audit log) or say
-nothing about their lifetime. I have not built it because the retention period is a decision.
+Facts the wording rests on (read from the migrations and the Native app on 2026-11-05; read, not run, and not seen on a device):
+
+1. **Withdrawing consent deletes only a person's own timeline.** `sanskara_job_consent_purge` selects `kind = 'account'`. A child's timeline
+   is hidden (`sanskara_can`) but kept. The earlier Draft A said it was deleted after 30 days; that was wrong for a child. **Founder and lawyer
+   decision:** should withdrawal also delete a child's timeline? Today it does not.
+2. **The app has no screen to delete a whole timeline or to download a copy.** `delete-dependent`, `delete-mine` and `export` exist in the API
+   (`src/lib/native-sanskara.ts`), but nothing in the Native app calls them (a search of `app/` and `lib/`). The drafts therefore promise only
+   deleting a milestone and deleting the account. Add "delete the whole timeline" and "download a copy" only once a screen offers them. The
+   contract (E7) promised an export before the 12 months end, so that is a build gap, not only a wording one.
+3. **A former manager can read notes and download a copy** (`sanskara_can`, `former_manager`, contract E7). Draft B says "notes included".
+   Whether that is acceptable is question 8 in section 4.
+4. **Account deletion:** a child's timeline with no manager left is deleted by a trigger (`sanskara_delete_orphan_dependent`).
+5. **Audit log:** sharing, manager changes, claims and deletions only (contract section 7), not every edit. It holds account ids, not content.
+6. **"Deleted" means deleted from the live database.** How long the provider's backups keep it is not checked.
+7. **Early hand-over rows** (Draft C): there are no "completed" rows, because the confirm step deletes the child profile and the hand-over with
+   it. Only cancelled rows persist (account ids, a code hash and timestamps), and they go when the child profile does. The 12-month trail is
+   `sanskara_audit`. How long to keep cancelled rows is still the founder's decision (section 6, item 5).
 
 ## 4. Questions for the lawyer (D-C)
 
@@ -75,6 +106,9 @@ I can state what the code does; I cannot say what is lawful. Please confirm or c
 6. **Wording.** Review drafts A to C, and the confirmation text shown to parents before they agree (Native `lib/sanskaraEarlyHandover.ts`,
    `earlyStartWarning` and `earlyConfirmWarning`).
 7. **Retention.** Are 30 days after withdrawal, 12 months for the audit log, and the 12-month former-manager window acceptable?
+8. **Access after 18.** For up to 12 months after a child turns 18, the former managers (parents) can read the now-adult's records, notes
+   included, and the person is told nothing by us (we hold no contact details for them). Is that acceptable without the adult's own consent?
+   Would a shorter window, or hiding notes after 18, be needed? Also: should withdrawing consent delete a child's timeline (section 3, fact 1)?
 
 ## 5. What I have not verified
 
