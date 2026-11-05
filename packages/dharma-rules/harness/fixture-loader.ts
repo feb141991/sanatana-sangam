@@ -318,51 +318,62 @@ async function fetchWithRetry<T>(
 }
 
 /**
+ * The saved copies in `__fixtures__/cache/` are for offline local work only.
+ * They are an old answer to "what does the database say is correct", so a run
+ * against them does not verify a date. CI never uses them, whatever is set: if
+ * the database cannot be read there, the calendar check must fail, not pass.
+ * Locally they need an explicit DHARMA_FIXTURES_OFFLINE=1.
+ */
+export function canUseOfflineFixtureCache(env: NodeJS.ProcessEnv = process.env): boolean {
+  const inCi = Boolean(env.CI) && env.CI !== 'false';
+  return !inCi && env.DHARMA_FIXTURES_OFFLINE === '1';
+}
+
+export async function readFixtureRows(
+  resourceName: string,
+  cacheFile: string,
+  read: () => PromiseLike<{ data: any[] | null; error: any }>,
+): Promise<any[]> {
+  const offlineAllowed = canUseOfflineFixtureCache();
+  try {
+    const data = await fetchWithRetry<any[]>(read, resourceName, 2, 1500);
+    // Only an opted-in run rewrites the tracked copies; a normal test run must not dirty the tree.
+    if (offlineAllowed && data.length > 0) {
+      try {
+        mkdirSync(CACHE_DIR, { recursive: true });
+        writeFileSync(cacheFile, JSON.stringify(data, null, 2), 'utf-8');
+      } catch {
+        // Refreshing the saved copy is best-effort.
+      }
+    }
+    return data;
+  } catch (err) {
+    if (!offlineAllowed || !existsSync(cacheFile)) throw err;
+    console.warn(
+      `[fixture-loader] OFFLINE: ${resourceName} could not be read (${(err as Error).message}). ` +
+        `Using the saved copy ${cacheFile}. This run does not verify any date against the database.`,
+    );
+    return JSON.parse(readFileSync(cacheFile, 'utf-8'));
+  }
+}
+
+/**
  * Load and validate all golden fixtures from `public.golden_fixtures`.
  *
  * Async because it's a DB read, unlike every other loader in this file.
- * Resilient: attempts fetch from Supabase with retry; if the database is
- * unreachable (maintenance, network timeout, Cloudflare 522/521, or missing credentials),
- * it seamlessly falls back to the committed snapshot cache in `__fixtures__/cache/`
- * so test suites and CI runs are 100% deterministic and never fail due to network stalls.
+ * Every row is put back through the exact same golden.schema.json validation
+ * a file used to get, so a malformed row (e.g. written by the admin GUI) is
+ * caught here rather than surfacing as a confusing engine-comparison failure
+ * three functions later. A failed read throws; see canUseOfflineFixtureCache.
  */
 export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
-  let data: any[] | null = null;
+  const data = await readFixtureRows('golden_fixtures', GOLDEN_CACHE_FILE, () =>
+    goldenFixturesClient()
+      .from('golden_fixtures')
+      .select('case_id, festival_id, year, location, profile, expected, tolerance, source, reasoning, approved'),
+  );
 
-  try {
-    const supabase = goldenFixturesClient();
-    data = await fetchWithRetry<any[]>(
-      () =>
-        supabase
-          .from('golden_fixtures')
-          .select('case_id, festival_id, year, location, profile, expected, tolerance, source, reasoning, approved'),
-      'golden_fixtures',
-      2,
-      1500,
-    );
-
-    // Refresh local cache file on successful DB read
-    if (data && data.length > 0) {
-      try {
-        if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
-        writeFileSync(GOLDEN_CACHE_FILE, JSON.stringify(data, null, 2), 'utf-8');
-      } catch {
-        // Cache refresh is best-effort and non-fatal
-      }
-    }
-  } catch (err) {
-    if (existsSync(GOLDEN_CACHE_FILE)) {
-      console.warn(
-        `[fixture-loader] Supabase read failed (${(err as Error).message}); ` +
-        `falling back to offline snapshot cache (${GOLDEN_CACHE_FILE}).`
-      );
-      data = JSON.parse(readFileSync(GOLDEN_CACHE_FILE, 'utf-8'));
-    } else {
-      throw err;
-    }
-  }
-
-  return (data ?? []).map(row => {
+  return data.map(row => {
     const raw: Record<string, unknown> = {
       caseId: row.case_id,
       festivalId: row.festival_id,
@@ -407,41 +418,11 @@ export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
 }
 
 export async function loadCalendarProfileFixtureDefinitions(): Promise<CalendarProfileFixtureDefinition[]> {
-  let data: any[] | null = null;
+  const data = await readFixtureRows('calendar_profiles', PROFILES_CACHE_FILE, () =>
+    goldenFixturesClient().from('calendar_profiles').select('slug, month_system, scholarly_status'),
+  );
 
-  try {
-    const supabase = goldenFixturesClient();
-    data = await fetchWithRetry<any[]>(
-      () =>
-        supabase
-          .from('calendar_profiles')
-          .select('slug, month_system, scholarly_status'),
-      'calendar_profiles',
-      2,
-      1500,
-    );
-
-    if (data && data.length > 0) {
-      try {
-        if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
-        writeFileSync(PROFILES_CACHE_FILE, JSON.stringify(data, null, 2), 'utf-8');
-      } catch {
-        // Cache refresh is best-effort and non-fatal
-      }
-    }
-  } catch (err) {
-    if (existsSync(PROFILES_CACHE_FILE)) {
-      console.warn(
-        `[fixture-loader] Supabase read failed (${(err as Error).message}); ` +
-        `falling back to offline snapshot cache (${PROFILES_CACHE_FILE}).`
-      );
-      data = JSON.parse(readFileSync(PROFILES_CACHE_FILE, 'utf-8'));
-    } else {
-      throw err;
-    }
-  }
-
-  return (data ?? []).map(row => ({
+  return data.map(row => ({
     slug: row.slug,
     monthSystem: row.month_system,
     scholarlyStatus: row.scholarly_status,

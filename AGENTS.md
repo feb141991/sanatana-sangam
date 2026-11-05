@@ -431,6 +431,11 @@ Rules:
 - A new reason in a Sanskara migration must have reviewed public text in SANSKARA_REASON_ERRORS; native-sanskara.test.ts scans the migrations and fails when coverage is missing. Origin: Native prompt preparation found version conflicts were reported as reused request IDs and every rule refusal as a limit.
 - save-private uses the private row version, or 0 when no private row exists. Never substitute the record version.
 
+### Saved Golden Fixtures Never Verify a Date
+- `verify:calendar` compares the engine with `public.golden_fixtures`. If that read fails in CI, the check fails. A retry may ride out a short blip, but CI never falls back to a saved copy, because a passing run would then say nothing about the current ratified dates.
+- `packages/dharma-rules/__fixtures__/cache/` is for offline local work only, behind `DHARMA_FIXTURES_OFFLINE=1`, and such a run says that it verifies nothing. A normal test run neither reads nor rewrites those files.
+- Origin: on 2026-11-06 `faa3969` made the harness fall back to the saved copies on any database failure, including in CI, so the calendar check could go green during an outage. Guard: `packages/dharma-rules/harness/fixture-loader-offline.test.ts`.
+
 ### The Homepage Calendar Is a Daily Snapshot, Not a Live Query
 - `public/landing.html` reads `GET /api/public/calendar/upcoming`, never `/api/calendar/upcoming`. The route takes no cookies or auth, and serves a snapshot (`src/lib/calendar/public-calendar-snapshot.ts`) cached for 24 hours and built from the guest response of `/api/calendar/upcoming`, so there is one governed source for dates. Only `resolved` and `reviewed` occurrences with a valid civil date enter it.
 - A failed refresh throws, so the last good copy keeps serving. Past 7 days a copy is refused and the page says the calendar could not load. A copy older than 36 hours says "as of <date>" on its cards, and dates that have passed are dropped in the browser. The browser gives up after 8 seconds.
