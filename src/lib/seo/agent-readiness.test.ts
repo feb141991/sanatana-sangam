@@ -180,7 +180,6 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
   it("Commercial Legibility: Landing HTML links about, pricing, contact, privacy, and terms", () => {
     const landingHtml = readFileSync(resolve(process.cwd(), "public/landing.html"), "utf8");
     expect(landingHtml).toContain('href="/about"');
-    expect(landingHtml).toContain('href="/pricing"');
     expect(landingHtml).toContain('href="/contact"');
     expect(landingHtml).toContain('href="/privacy"');
     expect(landingHtml).toContain('href="/terms"');

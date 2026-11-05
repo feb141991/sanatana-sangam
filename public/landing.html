@@ -3597,6 +3597,15 @@
         padding: 120px 56px 128px;
         text-align: left;
       }
+      /* The hero content fills the splash and comes later in paint order, so
+         without this it covers the Explore button and swallows mouse clicks. */
+      #splash-bottom {
+        z-index: 3;
+        pointer-events: none;
+      }
+      #splash-bottom > * {
+        pointer-events: auto;
+      }
       .hero-nav {
         position: absolute;
         top: 18px;
@@ -8145,7 +8154,6 @@
               <div class="footer-col-title">Trust &amp; Ethics</div>
               <ul class="footer-links-list">
                 <li><a href="/about">About Our Foundation</a></li>
-                <li><a href="/pricing">Pricing &amp; Plans (100% Free)</a></li>
                 <li><a href="/contact">Contact Support</a></li>
                 <li><a href="/privacy">Privacy</a></li>
                 <li><a href="/terms">Terms of Devotion</a></li>
@@ -9372,6 +9380,7 @@
           r && r.setAttribute("aria-expanded", "true"),
           (document.body.style.overflow = "hidden"),
           (e.style.transform = "translateX(0)"),
+          (e.style.boxShadow = "4px 0 32px rgba(0, 0, 0, 0.55)"),
           (t.style.background = "rgba(0,0,0,0.55)"),
           (t.style.pointerEvents = "auto"));
       }
@@ -9390,6 +9399,7 @@
           (document.body.style.overflow = ""),
           setTimeout(function () {
             ((n.style.pointerEvents = "none"),
+              (e.style.boxShadow = ""),
               n.setAttribute("aria-hidden", "true"));
           }, 280));
       }
@@ -9494,7 +9504,6 @@
           flex-direction: column;
           gap: 4px;
           overflow-y: auto;
-          box-shadow: 4px 0 32px rgba(0, 0, 0, 0.55);
           border-right: 1px solid rgba(197, 160, 89, 0.18);
         "
       >
@@ -9559,9 +9568,8 @@
             font-weight: 600;
           }
         </style>
-        <a href="#discover" class="drawer-highlight" onclick="closeDrawer()">Discover</a>
         <a href="/traditions" onclick="closeDrawer()">Traditions</a>
-        <a href="#festivals" onclick="closeDrawer()">Calendar</a>
+        <a href="/features/sacred-calendar" onclick="closeDrawer()">Calendar</a>
         <a href="/community" onclick="closeDrawer()">Community</a>
         <a href="/features" onclick="closeDrawer()">Features</a>
         <a href="/about" onclick="closeDrawer()">About</a>

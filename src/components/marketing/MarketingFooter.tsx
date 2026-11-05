@@ -97,7 +97,6 @@ const FOOTER_COLUMNS = [
   {
     title: "Trust & Governance",
     links: [
-      { href: "/pricing", label: "Pricing & Access (100% Free)" },
       { href: "/privacy", label: "Privacy Policy (Zero Trackers)" },
       { href: "/terms", label: "Terms of Service" },
       { href: "/guidelines", label: "Community Guidelines" },
