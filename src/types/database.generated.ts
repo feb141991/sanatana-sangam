@@ -8019,63 +8019,63 @@ export type Database = {
           },
         ]
       }
-      sanskars: {
+      sanskars_catalogue_archive_20261105: {
         Row: {
           can_self_perform: boolean | null
           duration_hours: number | null
-          id: string
+          id: string | null
           key_mantras: string[] | null
-          life_stage: string
-          name: string
+          life_stage: string | null
+          name: string | null
           name_meaning: string | null
           name_sanskrit: string | null
           notes: string | null
           presiding_deity: string | null
           priest_required: boolean | null
           samagri: string[] | null
-          sequence_number: number
-          significance: string
-          slug: string
+          sequence_number: number | null
+          significance: string | null
+          slug: string | null
           typical_age: string | null
-          vidhi_steps: Json
+          vidhi_steps: Json | null
         }
         Insert: {
           can_self_perform?: boolean | null
           duration_hours?: number | null
-          id?: string
+          id?: string | null
           key_mantras?: string[] | null
-          life_stage: string
-          name: string
+          life_stage?: string | null
+          name?: string | null
           name_meaning?: string | null
           name_sanskrit?: string | null
           notes?: string | null
           presiding_deity?: string | null
           priest_required?: boolean | null
           samagri?: string[] | null
-          sequence_number: number
-          significance: string
-          slug: string
+          sequence_number?: number | null
+          significance?: string | null
+          slug?: string | null
           typical_age?: string | null
-          vidhi_steps: Json
+          vidhi_steps?: Json | null
         }
         Update: {
           can_self_perform?: boolean | null
           duration_hours?: number | null
-          id?: string
+          id?: string | null
           key_mantras?: string[] | null
-          life_stage?: string
-          name?: string
+          life_stage?: string | null
+          name?: string | null
           name_meaning?: string | null
           name_sanskrit?: string | null
           notes?: string | null
           presiding_deity?: string | null
           priest_required?: boolean | null
           samagri?: string[] | null
-          sequence_number?: number
-          significance?: string
-          slug?: string
+          sequence_number?: number | null
+          significance?: string | null
+          slug?: string | null
           typical_age?: string | null
-          vidhi_steps?: Json
+          vidhi_steps?: Json | null
         }
         Relationships: []
       }
@@ -10124,109 +10124,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_sanskaras: {
-        Row: {
-          completed_date: string | null
-          created_at: string | null
-          expected_date: string | null
-          id: string
-          kul_member_id: string | null
-          location: string | null
-          notes: string | null
-          performed_by: string | null
-          sanskara_id: string
-          user_id: string
-        }
-        Insert: {
-          completed_date?: string | null
-          created_at?: string | null
-          expected_date?: string | null
-          id?: string
-          kul_member_id?: string | null
-          location?: string | null
-          notes?: string | null
-          performed_by?: string | null
-          sanskara_id: string
-          user_id: string
-        }
-        Update: {
-          completed_date?: string | null
-          created_at?: string | null
-          expected_date?: string | null
-          id?: string
-          kul_member_id?: string | null
-          location?: string | null
-          notes?: string | null
-          performed_by?: string | null
-          sanskara_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_sanskaras_kul_member_id_fkey"
-            columns: ["kul_member_id"]
-            isOneToOne: false
-            referencedRelation: "kul_family_members"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_sanskars: {
-        Row: {
-          beneficiary_dob: string | null
-          beneficiary_name: string | null
-          completed_date: string | null
-          created_at: string | null
-          family_members: string[] | null
-          id: string
-          location: string | null
-          notes: string | null
-          priest_name: string | null
-          sanskar_id: string
-          scheduled_date: string | null
-          status: string | null
-          user_id: string
-        }
-        Insert: {
-          beneficiary_dob?: string | null
-          beneficiary_name?: string | null
-          completed_date?: string | null
-          created_at?: string | null
-          family_members?: string[] | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          priest_name?: string | null
-          sanskar_id: string
-          scheduled_date?: string | null
-          status?: string | null
-          user_id: string
-        }
-        Update: {
-          beneficiary_dob?: string | null
-          beneficiary_name?: string | null
-          completed_date?: string | null
-          created_at?: string | null
-          family_members?: string[] | null
-          id?: string
-          location?: string | null
-          notes?: string | null
-          priest_name?: string | null
-          sanskar_id?: string
-          scheduled_date?: string | null
-          status?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_sanskars_sanskar_id_fkey"
-            columns: ["sanskar_id"]
-            isOneToOne: false
-            referencedRelation: "sanskars"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_warnings: {
         Row: {
           admin_name: string | null
@@ -12055,11 +11952,11 @@ export type Database = {
         Args: { p_request_id: string; p_token: string }
         Returns: Json
       }
-      sanskara_actor: { Args: { p_need_consent?: boolean }; Returns: string }
       sanskara_accept_early_handover: {
         Args: { p_request_id: string; p_token: string }
         Returns: Json
       }
+      sanskara_actor: { Args: { p_need_consent?: boolean }; Returns: string }
       sanskara_add_manager: {
         Args: { p_account: string; p_request_id: string; p_subject: string }
         Returns: Json
@@ -12080,6 +11977,14 @@ export type Database = {
       sanskara_cancel_claim: {
         Args: { p_request_id: string; p_subject: string }
         Returns: Json
+      }
+      sanskara_cancel_early_approval_notices: {
+        Args: { p_account: string; p_handover: string; p_reason: string }
+        Returns: number
+      }
+      sanskara_cancel_early_confirm_notices: {
+        Args: { p_account: string; p_handover: string; p_reason: string }
+        Returns: number
       }
       sanskara_cancel_early_handover: {
         Args: { p_request_id: string; p_subject: string }
@@ -12144,7 +12049,50 @@ export type Database = {
         Returns: Json
       }
       sanskara_dependents: { Args: never; Returns: Json }
-      sanskara_export_mine: { Args: never; Returns: Json }
+      sanskara_early_approval_due: {
+        Args: { p_late?: string; p_now?: string }
+        Returns: {
+          account_id: string
+          handover_id: string
+          language: string
+          local_date: string
+          profile_generation: number
+          quiet_hours_end: number
+          quiet_hours_start: number
+          scheduled_for: string
+          timezone: string
+        }[]
+      }
+      sanskara_early_approval_still_valid: {
+        Args: {
+          p_account: string
+          p_handover: string
+          p_profile_generation: number
+        }
+        Returns: boolean
+      }
+      sanskara_early_confirm_due: {
+        Args: { p_now?: string }
+        Returns: {
+          account_id: string
+          handover_id: string
+          language: string
+          local_date: string
+          profile_generation: number
+          quiet_hours_end: number
+          quiet_hours_start: number
+          scheduled_for: string
+          timezone: string
+        }[]
+      }
+      sanskara_early_confirm_still_valid: {
+        Args: {
+          p_account: string
+          p_handover: string
+          p_profile_generation: number
+        }
+        Returns: boolean
+      }
       sanskara_early_handover_status: {
         Args: { p_subject: string }
         Returns: Json
@@ -12154,6 +12102,7 @@ export type Database = {
         Returns: boolean
       }
       sanskara_early_min_age: { Args: never; Returns: number }
+      sanskara_export_mine: { Args: never; Returns: Json }
       sanskara_finish_request: {
         Args: { p_account: string; p_request: string; p_result: Json }
         Returns: Json
@@ -12167,9 +12116,50 @@ export type Database = {
         }
         Returns: Json
       }
+      sanskara_handover_due: {
+        Args: { p_horizon?: string; p_late?: string; p_now?: string }
+        Returns: {
+          account_id: string
+          audience_variant: string
+          language: string
+          local_date: string
+          notice: string
+          profile_generation: number
+          quiet_hours_end: number
+          quiet_hours_start: number
+          scheduled_for: string
+          subject_id: string
+          timezone: string
+        }[]
+      }
+      sanskara_handover_notice_date: {
+        Args: { p_birth: string; p_notice: string }
+        Returns: string
+      }
+      sanskara_handover_still_valid: {
+        Args: {
+          p_account: string
+          p_local_date: string
+          p_notice: string
+          p_profile_generation: number
+          p_subject: string
+        }
+        Returns: boolean
+      }
+      sanskara_job_consent_purge: {
+        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
+        Returns: Json
+      }
+      sanskara_job_majority_sweep: {
+        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
+        Returns: Json
+      }
+      sanskara_job_retention: {
+        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
+        Returns: Json
+      }
       sanskara_list_access: { Args: { p_subject: string }; Returns: Json }
       sanskara_manager_picker: { Args: { p_subject: string }; Returns: Json }
-      sanskara_sole_manager_dependents: { Args: Record<PropertyKey, never>; Returns: Json }
       sanskara_move_records_early: {
         Args: { p_account: string; p_subject: string }
         Returns: Json
@@ -12266,6 +12256,7 @@ export type Database = {
         Returns: Json
       }
       sanskara_shared_with_me: { Args: never; Returns: Json }
+      sanskara_sole_manager_dependents: { Args: never; Returns: Json }
       sanskara_start_claim: {
         Args: { p_request_id: string; p_subject: string }
         Returns: Json
@@ -12285,6 +12276,13 @@ export type Database = {
         Returns: Json
       }
       sanskara_viewer_kul: { Args: { p_account: string }; Returns: string }
+      sanskara_void_kul_grants: {
+        Args: { p_kul: string; p_user: string }
+        Returns: number
+      }
+      skip:
+        | { Args: { "": string }; Returns: string }
+        | { Args: { how_many: number; why: string }; Returns: string }
       set_email_consent: {
         Args: {
           p_category: string
@@ -12297,91 +12295,6 @@ export type Database = {
         }
         Returns: Json
       }
-      sanskara_early_approval_due: {
-        Args: { p_late?: string; p_now?: string }
-        Returns: {
-          account_id: string
-          handover_id: string
-          language: string
-          local_date: string
-          profile_generation: number
-          quiet_hours_end: number
-          quiet_hours_start: number
-          scheduled_for: string
-          timezone: string
-        }[]
-      }
-      sanskara_early_approval_still_valid: {
-        Args: { p_account: string; p_handover: string; p_profile_generation: number }
-        Returns: boolean
-      }
-      sanskara_early_confirm_due: {
-        Args: { p_now?: string }
-        Returns: {
-          account_id: string
-          handover_id: string
-          language: string
-          local_date: string
-          profile_generation: number
-          quiet_hours_end: number
-          quiet_hours_start: number
-          scheduled_for: string
-          timezone: string
-        }[]
-      }
-      sanskara_early_confirm_still_valid: {
-        Args: { p_account: string; p_handover: string; p_profile_generation: number }
-        Returns: boolean
-      }
-      sanskara_handover_due: {
-        Args: { p_horizon?: string; p_late?: string; p_now?: string }
-        Returns: {
-          account_id: string
-          audience_variant: string
-          language: string
-          local_date: string
-          notice: string
-          profile_generation: number
-          quiet_hours_end: number
-          quiet_hours_start: number
-          scheduled_for: string
-          subject_id: string
-          timezone: string
-        }[]
-      }
-      sanskara_handover_notice_date: {
-        Args: { p_birth: string; p_notice: string }
-        Returns: string
-      }
-      sanskara_handover_still_valid: {
-        Args: {
-          p_account: string
-          p_local_date: string
-          p_notice: string
-          p_profile_generation: number
-          p_subject: string
-        }
-        Returns: boolean
-      }
-      sanskara_job_consent_purge: {
-        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
-        Returns: Json
-      }
-      sanskara_job_majority_sweep: {
-        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
-        Returns: Json
-      }
-      sanskara_job_retention: {
-        Args: { p_batch?: number; p_dry_run?: boolean; p_now?: string }
-        Returns: Json
-      }
-      sanskara_void_kul_grants: {
-        Args: { p_kul: string; p_user: string }
-        Returns: number
-      }
-      skip:
-        | { Args: { "": string }; Returns: string }
-        | { Args: { how_many: number; why: string }; Returns: string }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
