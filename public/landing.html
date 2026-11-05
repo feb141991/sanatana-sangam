@@ -2231,7 +2231,7 @@
       .world-map {
         position: relative;
         width: 100%;
-        max-width: 620px;
+        max-width: 420px;
       }
       .world-svg {
         display: block;
@@ -2246,12 +2246,27 @@
       }
       .city-dot {
         position: absolute;
-        width: 8px;
-        height: 8px;
-        margin: -4px 0 0 -4px;
+        width: 10px;
+        height: 10px;
+        margin: -5px 0 0 -5px;
         border-radius: 50%;
-        box-shadow: 0 0 0 0 rgba(200, 146, 74, 0.5);
-        animation: cityPulse 3s ease-in-out infinite var(--d);
+        cursor: pointer;
+        pointer-events: auto;
+        transition: opacity 0.2s ease;
+      }
+      .city-dot::after {
+        content: "";
+        position: absolute;
+        inset: -7px;
+      }
+      .city-dot.is-dimmed {
+        opacity: 0.2;
+      }
+      .city-dot.is-selected {
+        z-index: 1;
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+        animation: cityPulse 3s ease-in-out infinite;
       }
       @keyframes cityPulse {
         0%,
@@ -2259,12 +2274,132 @@
           box-shadow: 0 0 0 0 rgba(200, 146, 74, 0.5);
         }
         50% {
-          box-shadow: 0 0 0 8px rgba(200, 146, 74, 0);
+          box-shadow: 0 0 0 10px rgba(200, 146, 74, 0);
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .city-dot {
+        .city-dot.is-selected {
           animation: none;
+        }
+      }
+      .places-head {
+        position: relative;
+        z-index: 2;
+      }
+      .place-filters,
+      .place-chips {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+      }
+      .place-filter,
+      .place-chip {
+        min-height: 44px;
+        padding: 0 14px;
+        border-radius: 999px;
+        font-family: var(--fb);
+        font-size: 13px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .place-filter {
+        border: 0;
+        background: transparent;
+      }
+      .place-filter[aria-pressed="true"] {
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 5px;
+      }
+      .place-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(200, 160, 110, 0.28);
+        background: transparent;
+      }
+      .place-chip::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        flex: none;
+        border-radius: 50%;
+        background: var(--place-color);
+      }
+      .place-chip[aria-pressed="true"] {
+        border-color: var(--ink);
+        font-weight: 600;
+      }
+      .place-chip[hidden] {
+        display: none;
+      }
+      .place-filter:focus-visible,
+      .place-chip:focus-visible,
+      .place-live:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+      }
+      .place-details {
+        width: 100%;
+        min-height: 132px;
+        text-align: left;
+        border-top: 1px solid rgba(200, 160, 110, 0.28);
+        padding-top: 16px;
+      }
+      .place-meta {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .place-name {
+        margin: 4px 0 2px;
+        font-family: var(--fd);
+        font-size: 22px;
+        font-weight: 600;
+        line-height: 1.25;
+        color: var(--ink);
+      }
+      .place-loc {
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .place-line {
+        margin: 8px 0 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--ink);
+      }
+      .place-live {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        font-size: 13px;
+        color: var(--ink);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      @media (max-width: 480px) {
+        .community-map {
+          padding: 32px 16px;
+        }
+        .place-filters {
+          flex-wrap: nowrap;
+          gap: 0;
+        }
+        .place-filter {
+          flex: 1 1 auto;
+          padding: 0 4px;
+        }
+        .place-chips {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+        .place-chip {
+          padding: 0 10px;
+          font-size: 12px;
         }
       }
       .map-label {
@@ -7671,55 +7806,101 @@
           traditions in their own context where available.
         </div>
         <div class="community-grid reveal">
-          <div class="community-map">
+          <div class="community-map" id="sacred-places">
+            <div class="places-head">
+              <div class="map-label">Sacred places</div>
+              <div class="map-sub">A small selection across four traditions, not a ranking. Locations are approximate.</div>
+            </div>
             <div class="world-map" aria-hidden="true">
-              <!-- Land from world-atlas@2.0.2 land-110m (Natural Earth, public domain; package ISC), downloaded 2026-11-05 and sampled to dots. The city dots mark regions, not members. -->
-              <svg class="world-svg" viewBox="0 0 800 313" fill="none">
+              <!-- Land from world-atlas@2.0.2 land-110m (Natural Earth, public domain; package ISC), downloaded 2026-11-05, cropped to 58-102E, 6-38N and sampled to dots, with no borders drawn. Each dot is a named place below, not a member or a community count. Keyboard and screen readers use the buttons below. -->
+              <svg class="world-svg" viewBox="0 0 800 628" fill="none">
                 <path
-                  d="M192 8h0m8 0h0m24 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m88 0h0m8 0h0m48 0h0m104 0h0m8 0h0M136 16h0m72 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m200 0h0m80 0h0M128 24h0m8 0h0m8 0h0m32 0h0m16 0h0m24 0h0m8 0h0m56 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m176 0h0m64 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0M40 32h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m24 0h0m16 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m104 0h0m8 0h0m8 0h0m8 0h0m64 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0M24 40h0m192 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m40 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0m8 0h0M40 48h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m32 0h0m48 0h0m8 0h0m112 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M48 56h0m8 0h0m40 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m40 0h0m8 0h0m8 0h0m8 0h0m160 0h0m16 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m48 0h0M40 64h0m72 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m128 0h0m56 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0M120 72h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M128 80h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M128 88h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m144 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M128 96h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m152 0h0m8 0h0m8 0h0m32 0h0m16 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0M136 104h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m160 0h0m8 0h0m40 0h0m16 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m8 0h0M144 112h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m160 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0M144 120h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m168 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M152 128h0m8 0h0m8 0h0m8 0h0m200 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M168 136h0m8 0h0m40 0h0m152 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M168 144h0m8 0h0m8 0h0m16 0h0m40 0h0m128 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m40 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0M200 152h0m8 0h0m160 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0m8 0h0m48 0h0m8 0h0m8 0h0M208 160h0m32 0h0m128 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m80 0h0m8 0h0m56 0h0m8 0h0M216 168h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m176 0h0M232 176h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m104 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m32 0h0M224 184h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m136 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m128 0h0m24 0h0m8 0h0M224 192h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m144 0h0m16 0h0m8 0h0m40 0h0m8 0h0M224 200h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m232 0h0m8 0h0m8 0h0M232 208h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m240 0h0M232 216h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m208 0h0M240 224h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m176 0h0m8 0h0m8 0h0m8 0h0m16 0h0M248 232h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m128 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m160 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M248 240h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m144 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m152 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M248 248h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m152 0h0m8 0h0m8 0h0m8 0h0m8 0h0m184 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M248 256h0m8 0h0m8 0h0m8 0h0m8 0h0m160 0h0m8 0h0m8 0h0m8 0h0m200 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M240 264h0m8 0h0m8 0h0m8 0h0m448 0h0m8 0h0m8 0h0M240 272h0m8 0h0m8 0h0m8 0h0m528 0h0M240 280h0m8 0h0m480 0h0m56 0h0M240 288h0m8 0h0m528 0h0M240 296h0m8 0h0M240 304h0m8 0h0"
                   stroke="currentColor"
-                  stroke-width="3.6"
+                  stroke-width="6.4"
                   stroke-linecap="round"
+                  d="M16 16h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 32h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 48h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 64h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 80h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 96h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 112h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 128h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 144h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 160h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 176h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 192h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 208h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 224h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 240h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M176 256h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M176 272h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 288h0m192 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 304h0m16 0h0m192 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m32 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M16 320h0m208 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m64 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M240 336h0m32 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m112 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M272 352h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m128 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M272 368h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m176 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M288 384h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m208 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M288 400h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m224 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M288 416h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m240 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0M288 432h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m256 0h0m64 0h0m16 0h0m16 0h0m16 0h0M304 448h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m336 0h0m16 0h0m16 0h0m16 0h0M304 464h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m336 0h0m16 0h0m16 0h0m16 0h0M304 480h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m336 0h0m16 0h0m16 0h0m16 0h0M320 496h0m16 0h0m16 0h0m16 0h0m16 0h0m16 0h0m336 0h0m16 0h0m32 0h0M320 512h0m16 0h0m16 0h0m16 0h0m16 0h0m368 0h0M336 528h0m16 0h0m16 0h0m16 0h0m368 0h0M336 544h0m16 0h0m16 0h0m16 0h0M336 560h0m16 0h0m16 0h0m368 0h0M352 576h0m48 0h0m16 0h0m320 0h0m16 0h0M400 592h0m16 0h0m336 0h0m16 0h0M400 608h0m16 0h0m352 0h0M416 624h0m352 0h0m16 0h0"
                 />
               </svg>
               <div class="city-dots">
-                <div
-                  class="city-dot"
-                  style="left: 50.0%; top: 23.0%; --d: 0s; background: var(--saffron)"
-                ></div>
-                <div
-                  class="city-dot"
-                  style="left: 71.1%; top: 43.1%; --d: 0.5s; background: var(--kumkum)"
-                ></div>
-                <div
-                  class="city-dot"
-                  style="left: 29.4%; top: 30.7%; --d: 1s; background: var(--peacock)"
-                ></div>
-                <div
-                  class="city-dot"
-                  style="left: 70.8%; top: 37.2%; --d: 1.5s; background: var(--c-sikh)"
-                ></div>
-                <div
-                  class="city-dot"
-                  style="left: 92.0%; top: 83.6%; --d: 2s; background: var(--gold)"
-                ></div>
-                <div
-                  class="city-dot"
-                  style="left: 16.0%; top: 32.8%; --d: 0.8s; background: var(--c-jain)"
-                ></div>
-                <div
-                  class="city-dot"
-                  style="left: 78.8%; top: 58.7%; --d: 1.2s; background: var(--c-buddhist)"
-                ></div>
-                <div
-                  class="city-dot"
-                  style="left: 60.2%; top: 60.5%; --d: 0.3s; background: var(--saffron)"
-                ></div>
+                <span class="city-dot is-selected" data-place="mahakaleshwar" style="left: 40.4%; top: 46.3%; background: var(--c-hindu)"></span>
+                <span class="city-dot" data-place="kashi" style="left: 56.8%; top: 39.7%; background: var(--c-hindu)"></span>
+                <span class="city-dot" data-place="harmandir" style="left: 38.4%; top: 19.9%; background: var(--c-sikh)"></span>
+                <span class="city-dot" data-place="hazur" style="left: 43.9%; top: 58.9%; background: var(--c-sikh)"></span>
+                <span class="city-dot" data-place="bodhgaya" style="left: 61.3%; top: 41.6%; background: var(--c-buddhist)"></span>
+                <span class="city-dot" data-place="lumbini" style="left: 57.4%; top: 32.9%; background: var(--c-buddhist)"></span>
+                <span class="city-dot" data-place="palitana" style="left: 31.3%; top: 51.6%; background: var(--c-jain)"></span>
+                <span class="city-dot" data-place="shravanabelagola" style="left: 42.0%; top: 78.6%; background: var(--c-jain)"></span>
               </div>
             </div>
-            <div style="position: relative; z-index: 2">
-              <div class="map-label">Across distances</div>
-              <div class="map-sub">connection for families and seekers</div>
+            <div class="place-filters" role="group" aria-label="Filter sacred places by tradition">
+              <button type="button" class="place-filter" data-tradition="all" aria-pressed="true">All</button>
+              <button type="button" class="place-filter" data-tradition="hindu" aria-pressed="false">Hindu</button>
+              <button type="button" class="place-filter" data-tradition="sikh" aria-pressed="false">Sikh</button>
+              <button type="button" class="place-filter" data-tradition="buddhist" aria-pressed="false">Buddhist</button>
+              <button type="button" class="place-filter" data-tradition="jain" aria-pressed="false">Jain</button>
+            </div>
+            <div class="place-chips" role="group" aria-label="Choose a sacred place">
+              <button type="button" class="place-chip" data-place="mahakaleshwar" data-tradition="hindu" aria-pressed="true" style="--place-color: var(--c-hindu)">Mahakaleshwar</button>
+              <button type="button" class="place-chip" data-place="kashi" data-tradition="hindu" aria-pressed="false" style="--place-color: var(--c-hindu)">Kashi Vishwanath</button>
+              <button type="button" class="place-chip" data-place="harmandir" data-tradition="sikh" aria-pressed="false" style="--place-color: var(--c-sikh)">Harmandir Sahib</button>
+              <button type="button" class="place-chip" data-place="hazur" data-tradition="sikh" aria-pressed="false" style="--place-color: var(--c-sikh)">Hazur Sahib</button>
+              <button type="button" class="place-chip" data-place="bodhgaya" data-tradition="buddhist" aria-pressed="false" style="--place-color: var(--c-buddhist)">Bodh Gaya</button>
+              <button type="button" class="place-chip" data-place="lumbini" data-tradition="buddhist" aria-pressed="false" style="--place-color: var(--c-buddhist)">Lumbini</button>
+              <button type="button" class="place-chip" data-place="palitana" data-tradition="jain" aria-pressed="false" style="--place-color: var(--c-jain)">Palitana</button>
+              <button type="button" class="place-chip" data-place="shravanabelagola" data-tradition="jain" aria-pressed="false" style="--place-color: var(--c-jain)">Shravanabelagola</button>
+            </div>
+            <div class="place-details" aria-live="polite">
+              <div class="place-detail" data-place="mahakaleshwar">
+                <div class="place-meta" style="color: var(--c-hindu)">Hindu</div>
+                <h3 class="place-name">Shri Mahakaleshwar</h3>
+                <div class="place-loc">Ujjain, Madhya Pradesh</div>
+                <p class="place-line">One of the twelve Jyotirlingas of Shiva, on the Shipra river.</p>
+                <a class="place-live" href="/early-access">Listed in Live Darshan in the app. Request early access</a>
+              </div>
+              <div class="place-detail" data-place="kashi" hidden>
+                <div class="place-meta" style="color: var(--c-hindu)">Hindu</div>
+                <h3 class="place-name">Kashi Vishwanath</h3>
+                <div class="place-loc">Varanasi, Uttar Pradesh</div>
+                <p class="place-line">One of the twelve Jyotirlingas of Shiva, on the Ganga.</p>
+              </div>
+              <div class="place-detail" data-place="harmandir" hidden>
+                <div class="place-meta" style="color: var(--c-sikh)">Sikh</div>
+                <h3 class="place-name">Sri Harmandir Sahib</h3>
+                <div class="place-loc">Amritsar, Punjab</div>
+                <p class="place-line">Also known as the Golden Temple, and managed by the SGPC.</p>
+                <a class="place-live" href="/early-access">Listed in Live Darshan in the app. Request early access</a>
+              </div>
+              <div class="place-detail" data-place="hazur" hidden>
+                <div class="place-meta" style="color: var(--c-sikh)">Sikh</div>
+                <h3 class="place-name">Takht Sachkhand Sri Hazur Sahib</h3>
+                <div class="place-loc">Nanded, Maharashtra</div>
+                <p class="place-line">One of the five Takhts, marking where Guru Gobind Singh's earthly life ended in 1708.</p>
+                <a class="place-live" href="/early-access">Listed in Live Darshan in the app. Request early access</a>
+              </div>
+              <div class="place-detail" data-place="bodhgaya" hidden>
+                <div class="place-meta" style="color: var(--c-buddhist)">Buddhist</div>
+                <h3 class="place-name">Mahabodhi Temple</h3>
+                <div class="place-loc">Bodh Gaya, Bihar</div>
+                <p class="place-line">By Buddhist tradition, where the Buddha attained enlightenment.</p>
+              </div>
+              <div class="place-detail" data-place="lumbini" hidden>
+                <div class="place-meta" style="color: var(--c-buddhist)">Buddhist</div>
+                <h3 class="place-name">Lumbini</h3>
+                <div class="place-loc">Rupandehi, Nepal</div>
+                <p class="place-line">By Buddhist tradition, the birthplace of the Buddha.</p>
+              </div>
+              <div class="place-detail" data-place="palitana" hidden>
+                <div class="place-meta" style="color: var(--c-jain)">Jain</div>
+                <h3 class="place-name">Shatrunjaya Hill</h3>
+                <div class="place-loc">Palitana, Gujarat</div>
+                <p class="place-line">A hill of temples sacred to Shvetambara Jains.</p>
+              </div>
+              <div class="place-detail" data-place="shravanabelagola" hidden>
+                <div class="place-meta" style="color: var(--c-jain)">Jain</div>
+                <h3 class="place-name">Shravanabelagola</h3>
+                <div class="place-loc">Hassan district, Karnataka</div>
+                <p class="place-line">A Jain pilgrimage centre, home to the Gommateshwara (Bahubali) statue on Vindhyagiri hill.</p>
+              </div>
             </div>
           </div>
           <div>
@@ -7778,6 +7959,64 @@
           </div>
         </div>
       </section>
+      <script>
+        (function () {
+          var root = document.getElementById("sacred-places");
+          if (!root) return;
+          var all = function (selector) {
+            return Array.prototype.slice.call(root.querySelectorAll(selector));
+          };
+          var chips = all(".place-chip");
+          var filters = all(".place-filter");
+          var dots = all(".city-dot");
+          var details = all(".place-detail");
+          var traditionOf = {};
+          chips.forEach(function (chip) {
+            traditionOf[chip.dataset.place] = chip.dataset.tradition;
+          });
+          function select(place) {
+            chips.forEach(function (chip) {
+              chip.setAttribute("aria-pressed", String(chip.dataset.place === place));
+            });
+            dots.forEach(function (dot) {
+              dot.classList.toggle("is-selected", dot.dataset.place === place);
+            });
+            details.forEach(function (detail) {
+              detail.hidden = detail.dataset.place !== place;
+            });
+          }
+          function filter(tradition) {
+            filters.forEach(function (button) {
+              button.setAttribute("aria-pressed", String(button.dataset.tradition === tradition));
+            });
+            chips.forEach(function (chip) {
+              chip.hidden = tradition !== "all" && chip.dataset.tradition !== tradition;
+            });
+            dots.forEach(function (dot) {
+              dot.classList.toggle(
+                "is-dimmed",
+                tradition !== "all" && traditionOf[dot.dataset.place] !== tradition,
+              );
+            });
+          }
+          root.addEventListener("click", function (event) {
+            var target = event.target;
+            if (target.classList.contains("place-filter")) {
+              var tradition = target.dataset.tradition;
+              filter(tradition);
+              var selected = root.querySelector('.place-chip[aria-pressed="true"]');
+              if (tradition !== "all" && selected.dataset.tradition !== tradition) {
+                select(root.querySelector('.place-chip[data-tradition="' + tradition + '"]').dataset.place);
+              }
+            } else if (target.classList.contains("place-chip") || target.classList.contains("city-dot")) {
+              var place = target.dataset.place;
+              var active = root.querySelector('.place-filter[aria-pressed="true"]').dataset.tradition;
+              if (active !== "all" && traditionOf[place] !== active) filter("all");
+              select(place);
+            }
+          });
+        })();
+      </script>
 
       <section class="cta-section" id="cta-section">
         <div class="cta-bg"></div>
