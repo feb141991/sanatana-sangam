@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { isThemePreference, THEME_STORAGE_KEY, type ThemePreference } from '@/lib/theme-preferences';
 
 type ResolvedTheme = 'dark' | 'light';
@@ -19,6 +20,7 @@ function getSystemTheme(): ResolvedTheme {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [preference, setPreferenceState] = useState<ThemePreference>('system');
   const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('dark');
 
@@ -40,9 +42,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [preference]);
 
   useEffect(() => {
+    if (
+      pathname &&
+      pathname.match(
+        /^\/(traditions|features|journal|community|faq|contact|about|early-access|play|sitemap|site-map|stories|sources|guidelines|privacy|terms|what-is-shoonaya)(\/|$)/
+      )
+    ) {
+      document.documentElement.dataset.theme = 'light';
+      document.documentElement.style.colorScheme = 'light';
+      return;
+    }
     document.documentElement.dataset.theme = resolvedTheme;
     document.documentElement.style.colorScheme = resolvedTheme;
-  }, [resolvedTheme]);
+  }, [resolvedTheme, pathname]);
 
   function setPreference(nextPreference: ThemePreference) {
     setPreferenceState(nextPreference);

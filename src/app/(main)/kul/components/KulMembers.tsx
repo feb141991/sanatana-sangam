@@ -51,20 +51,20 @@ export function KulMembers({
               key={member.id}
               whileHover={{ y: -2 }}
               onClick={() => onMemberClick(member)}
-              className="group glass-panel rounded-[2rem] p-4 flex items-center gap-4 border border-[#C5A059]/15 hover:border-[#C5A059]/15 cursor-pointer transition-all shadow-sm"
+              className="group rounded-[1.6rem] border border-[var(--card-border)] bg-[var(--card-bg)]/95 p-4 flex items-center gap-4 hover:border-[var(--brand-primary)]/40 hover:shadow-[var(--shadow-soft)] cursor-pointer transition-all shadow-sm backdrop-blur-md"
             >
               <div className="relative">
                 <Avatar name={name} url={profile?.avatar_url} size={12} activeSymbolId={profile?.active_symbol_id} />
                 {member.role === 'guardian' && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-400 flex items-center justify-center text-[10px] shadow-sm border border-[#C5A059]/15">
-                    <Crown size={10} className="text-yellow-900" />
+                  <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[var(--brand-primary)] text-white flex items-center justify-center text-[10px] shadow-sm border border-[var(--surface-raised)]">
+                    <Crown size={10} />
                   </div>
                 )}
               </div>
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <h3 className="font-bold theme-ink truncate">{name}</h3>
+                  <h3 className="font-display font-medium text-base theme-ink truncate">{name}</h3>
                   {relic && (
                     <Image
                       src={relic.imageUrl}
@@ -77,12 +77,12 @@ export function KulMembers({
                     />
                   )}
                 </div>
-                <p className="text-[10px] uppercase tracking-widest theme-muted font-semibold mt-0.5">
+                <p className="text-[10px] uppercase tracking-wider text-[var(--brand-primary-strong)] font-semibold mt-0.5">
                   {member.role}
                 </p>
               </div>
 
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--surface-soft)] border border-[#C5A059]/15 text-[color:var(--brand-muted)] opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--surface-soft)] border border-[var(--card-border)] text-[var(--brand-primary)] opacity-0 group-hover:opacity-100 transition-opacity">
                 <ChevronRight size={14} />
               </div>
             </motion.div>

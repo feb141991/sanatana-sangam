@@ -14,7 +14,7 @@ export function MarketingPageHero({
   children,
 }: MarketingPageHeroProps) {
   return (
-    <section className="relative w-full overflow-hidden border-b border-[var(--card-border)] px-6 pb-20 pt-36 sm:px-10 lg:px-14 xl:px-20 lg:pb-28 lg:pt-44">
+    <section className="relative w-full overflow-hidden border-b border-[var(--card-border)] bg-[#FAF6EF] px-6 pb-20 pt-36 sm:px-10 lg:px-14 xl:px-20 lg:pb-28 lg:pt-44">
       {/* Devotional Ambient Light Halos (Slow Breathing & Drifting) */}
       <div
         className="pointer-events-none absolute -top-28 right-10 md:right-1/4 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(216,138,28,0.15)_0%,rgba(197,160,89,0.05)_50%,transparent_75%)] blur-3xl animate-aurora"

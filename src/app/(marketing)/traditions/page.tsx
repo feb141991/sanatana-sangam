@@ -56,7 +56,7 @@ const TIMELINE_NODES = [
 
 export default function TraditionsPage() {
   return (
-    <main>
+    <main className="bg-[#FAF6EF] text-[#3E2A1F]">
       {/* Begin with the distinct traditions Shoonaya draws from. */}
       <MarketingPageHero
         eyebrow="Traditions and teachings"

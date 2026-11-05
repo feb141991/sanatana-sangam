@@ -383,35 +383,76 @@ function MemberNodeCard({
   onEdit: (member: FamilyMember) => void;
   onDelete: (id: string, name: string) => void;
 }) {
+  const isRemembered = !member.is_alive;
+  const genNumber = inferGeneration(member);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
-      className="group relative w-[132px] text-center"
+      className="group relative"
     >
-      <button type="button" onClick={() => onSelect(member)} className="block w-full">
-        <MemberAvatar member={member} size="lg" />
-        <p className="mt-3 truncate text-lg font-medium theme-ink premium-serif">{member.name}</p>
-        <p className="mt-1 truncate text-xs theme-muted">{member.role || relationFallback(member)}</p>
-        <div className="mx-auto mt-2 flex w-fit items-center justify-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--surface-raised)]/70 px-2.5 py-1 text-[11px] theme-muted backdrop-blur-md">
-          {member.linked_user_id && <span className="h-2 w-2 rounded-full bg-[var(--brand-primary)]" />}
-          <span>{member.birth_year || member.birth_date ? birthLabel(member) : member.is_alive ? 'Living' : 'Remembered'}</span>
+      <button
+        type="button"
+        onClick={() => onSelect(member)}
+        className="relative flex h-[148px] w-[148px] flex-col items-center justify-between rounded-[1.4rem] border border-[var(--card-border)] bg-[var(--card-bg)]/95 p-3 text-center shadow-[var(--shadow-soft)] backdrop-blur-md transition-all duration-200 hover:-translate-y-1 hover:border-[var(--brand-primary)]/40 hover:shadow-[var(--shadow-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+      >
+        {/* Top Header Row: Gen Tag & Status */}
+        <div className="flex w-full items-center justify-between">
+          <span className="rounded-full bg-[var(--brand-primary-soft)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--brand-primary-strong)]">
+            Gen {genNumber}
+          </span>
+          {isRemembered ? (
+            <span
+              className="inline-flex items-center gap-1 rounded-full border border-amber-500/25 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300"
+              title="Sacred Remembrance (स्मृति)"
+            >
+              <span>🪔</span>
+              <span className="text-[9px] font-serif">स्मृति</span>
+            </span>
+          ) : member.linked_user_id ? (
+            <span
+              className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"
+              title="Active on Shoonaya"
+            />
+          ) : (
+            <span
+              className="h-2 w-2 rounded-full bg-[var(--brand-primary)]/40"
+              title="Family Record"
+            />
+          )}
+        </div>
+
+        {/* Center: Avatar */}
+        <div className="my-auto py-1">
+          <MemberAvatar member={member} size="sm" />
+        </div>
+
+        {/* Bottom: Name & Relationship/Role */}
+        <div className="w-full">
+          <p className="truncate font-display text-sm font-medium leading-tight text-[var(--text-cream)]">
+            {member.name}
+          </p>
+          <p className="mt-0.5 truncate text-[11px] leading-tight text-[var(--text-muted-warm)]">
+            {member.role || relationFallback(member)}
+          </p>
         </div>
       </button>
 
+      {/* Guardian Action Buttons (hover / focus) */}
       {canManage && (
-        <div className="absolute -right-2 -top-2 flex gap-1 opacity-0 transition group-hover:opacity-100">
+        <div className="absolute -right-2 -top-2 flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-within:opacity-100">
           <button
             type="button"
             onClick={(event) => {
               event.stopPropagation();
               onEdit(member);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--card-border)] bg-[var(--surface-raised)] text-[var(--brand-primary)] shadow-sm"
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-[var(--card-border)] bg-[var(--surface-raised)] text-[var(--brand-primary)] shadow-sm hover:scale-110 transition-transform"
             aria-label={`Edit ${member.name}`}
           >
-            <Edit3 size={13} />
+            <Edit3 size={12} />
           </button>
           <button
             type="button"
@@ -419,10 +460,10 @@ function MemberNodeCard({
               event.stopPropagation();
               onDelete(member.id, member.name);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 shadow-sm dark:border-red-500/20 dark:bg-red-500/10"
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-600 shadow-sm hover:scale-110 transition-transform dark:border-red-500/20 dark:bg-red-500/10"
             aria-label={`Remove ${member.name}`}
           >
-            <Trash2 size={13} />
+            <Trash2 size={12} />
           </button>
         </div>
       )}

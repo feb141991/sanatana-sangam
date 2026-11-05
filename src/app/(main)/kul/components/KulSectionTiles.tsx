@@ -101,7 +101,7 @@ export function KulSectionTiles({
         <p className="text-[12px] font-medium theme-ink premium-serif">Open a space</p>
         <p className="text-[10px] theme-muted">Family tools</p>
       </div>
-      <div className="flex items-start gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex items-start gap-2.5 overflow-x-auto pb-1 scrollbar-none">
       {tiles.map(({ key, badge }) => {
         const meta = KUL_SECTION_META[key];
         const active = currentView === key;
@@ -114,23 +114,23 @@ export function KulSectionTiles({
           >
             <Link
               href={getKulSectionHref(key)}
-              className={`group relative flex w-[76px] flex-col items-center gap-2 rounded-[1.4rem] px-2 py-3 text-center transition-all ${
+              className={`group relative flex h-[88px] w-[88px] flex-col items-center justify-between rounded-2xl border p-2.5 text-center transition-all ${
                 active 
-                  ? 'bg-[var(--brand-primary)]/12 text-[var(--brand-primary)]'
-                  : 'hover:bg-[var(--surface-raised)]'
+                  ? 'border-[var(--brand-primary)] bg-[var(--brand-primary)]/12 shadow-[0_4px_16px_rgba(216,138,28,0.16)] text-[var(--brand-primary)]'
+                  : 'border-[var(--card-border)] bg-[var(--surface-raised)]/90 hover:border-[var(--brand-primary)]/40 hover:-translate-y-0.5'
               }`}
             >
-              <div className={`flex h-14 w-14 items-center justify-center rounded-full border transition-all ${
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all ${
                 active
-                  ? 'border-[var(--brand-primary)]/30 bg-[var(--brand-primary)]/14 text-[var(--brand-primary)]'
-                  : 'border-[var(--card-border)] bg-[var(--surface-raised)] text-[var(--brand-primary)]'
+                  ? 'border-[var(--brand-primary)]/40 bg-[var(--brand-primary)]/20 text-[var(--brand-primary)]'
+                  : 'border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--brand-primary)]'
               }`}>
-                <Icon size={20} strokeWidth={1.8} />
+                <Icon size={19} strokeWidth={1.8} />
               </div>
               {badge != null && badge > 0 && (
-                <span className="absolute right-3 top-2 h-2.5 w-2.5 rounded-full bg-[var(--brand-primary)] shadow-sm" />
+                <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-[var(--brand-primary)] ring-2 ring-[var(--surface-raised)] shadow-sm" />
               )}
-              <span className="line-clamp-2 min-h-[28px] text-[11px] font-medium leading-tight theme-ink">
+              <span className="line-clamp-1 text-[11px] font-medium leading-tight theme-ink">
                 {meta.label}
               </span>
             </Link>

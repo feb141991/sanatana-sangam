@@ -10,6 +10,7 @@ import {
   Copy,
   GitBranch,
   ImagePlus,
+  Info,
   Loader2,
   MessageCircle,
   Pencil,
@@ -202,6 +203,7 @@ export function KulHub({
   }[];
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showKutumbInfo, setShowKutumbInfo] = useState(false);
   const { t } = useLanguage();
   const completedTasks = tasks.filter((task) => task.completed).length;
   const openTasks = tasks.length - completedTasks;
@@ -320,7 +322,47 @@ export function KulHub({
           </motion.div>
 
           <div className="min-w-0 flex-1 pb-1">
-            <p className="text-[11px] theme-muted">Lineage of {gotra}</p>
+            <div className="relative inline-flex items-center gap-1.5 flex-wrap">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--brand-primary)]">
+                Kutumb (कुटुम्ब)
+              </span>
+              <span className="text-[11px] text-[var(--text-muted-warm)]">
+                · Family Sanctuary
+              </span>
+              <div className="relative inline-block">
+                <button
+                  type="button"
+                  onClick={() => setShowKutumbInfo(prev => !prev)}
+                  onMouseEnter={() => setShowKutumbInfo(true)}
+                  onMouseLeave={() => setShowKutumbInfo(false)}
+                  className="flex h-4 w-4 items-center justify-center rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)] hover:bg-[var(--brand-primary)] hover:text-white transition-colors"
+                  aria-label="About Kutumb"
+                  title="What is Kutumb?"
+                >
+                  <Info size={10} />
+                </button>
+                {showKutumbInfo && (
+                  <div
+                    role="tooltip"
+                    className="absolute left-0 top-6 z-50 w-72 sm:w-80 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-raised)] p-4 shadow-[var(--shadow-strong)] backdrop-blur-xl transition-all"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-base">🪔</span>
+                      <h4 className="font-display font-medium text-sm text-[var(--text-cream)]">
+                        Kutumb (कुटुम्ब) · Sacred Family Sanctuary
+                      </h4>
+                    </div>
+                    <p className="text-[12px] leading-relaxed text-[var(--text-muted-warm)]">
+                      <strong className="text-[var(--brand-primary-strong)] font-medium">Kutumba</strong> is the ancient Sanskrit term for the sacred household, family clan, and spiritual hearth, celebrated in <em className="font-serif">Vasudhaiva Kutumbakam</em> (&quot;The world is one family&quot;).
+                    </p>
+                    <p className="mt-2 text-[11px] leading-relaxed text-[var(--text-dim)] border-t border-[var(--card-border)] pt-2">
+                      In Shoonaya, your Kutumb is a private generational sanctuary to preserve ancestral lineage (Vansh), share daily practice (Japa &amp; Nitya Karma), and nurture shared sacred roots.
+                    </p>
+                  </div>
+                )}
+              </div>
+              <span className="text-[11px] text-[var(--text-dim)] ml-1">· Lineage of {gotra}</span>
+            </div>
             {editingName ? (
               <div className="mt-1 flex items-center gap-2">
                 <input

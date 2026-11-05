@@ -137,7 +137,9 @@ export default function RootLayout({
          * Light users get #FAF6EF. No flicker on either theme.
          */}
         <style
-          dangerouslySetInnerHTML={{ __html: `body{background:#0C0A07}` }}
+          dangerouslySetInnerHTML={{
+            __html: `body{background:#0C0A07}html[data-theme='light'],html[data-theme='light'] body{background:#FAF6EF !important;color:#3E2A1F}`,
+          }}
         />
 
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
@@ -149,10 +151,11 @@ export default function RootLayout({
   if(__t)document.documentElement.setAttribute('data-tradition',__t);
   var __pref=localStorage.getItem('sangam_theme_preference')||localStorage.getItem('sh_theme');
   var __isLight=__pref==='light'||(!__pref&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches);
-  var __isMarketing=window.location.pathname.match(/^\\/(traditions|features|journal|community|faq|contact|about|early-access|play|sitemap|site-map|stories)(\\/|$)/);
+  var __isMarketing=window.location.pathname.match(/^\\/(traditions|features|journal|community|faq|contact|about|early-access|play|sitemap|site-map|stories|sources|guidelines|privacy|terms|what-is-shoonaya)(\\/|$)/);
   if(__isLight||__isMarketing){
-    document.body.style.background='#FAF6EF';
-    if(__isLight)document.documentElement.setAttribute('data-theme','light');
+    document.documentElement.setAttribute('data-theme','light');
+    document.documentElement.style.colorScheme='light';
+    if(document.body)document.body.style.background='#FAF6EF';
   }
 }catch(e){}`,
           }}

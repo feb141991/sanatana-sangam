@@ -128,7 +128,7 @@ export function MarketingFooter() {
           <div className="flex shrink-0 items-center gap-3">
             <Link
               href="/early-access"
-              className="card-lift shimmer-trigger inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-7 text-xs font-semibold uppercase tracking-wider text-[var(--surface-base)] shadow-sm hover:opacity-90 transition active:scale-95"
+              className="card-lift shimmer-trigger inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-7 text-xs font-semibold uppercase tracking-wider text-white shadow-sm hover:opacity-90 transition active:scale-95"
             >
               Request Early Access
               <ArrowRight className="size-3.5" />
