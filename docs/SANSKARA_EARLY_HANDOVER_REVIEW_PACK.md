@@ -75,10 +75,13 @@ Facts the wording rests on (read from the migrations and the Native app on 2026-
 1. **Withdrawing consent deletes only a person's own timeline.** `sanskara_job_consent_purge` selects `kind = 'account'`. A child's timeline
    is hidden (`sanskara_can`) but kept. The earlier Draft A said it was deleted after 30 days; that was wrong for a child. **Founder and lawyer
    decision:** should withdrawal also delete a child's timeline? Today it does not.
-2. **The app has no screen to delete a whole timeline or to download a copy.** `delete-dependent`, `delete-mine` and `export` exist in the API
-   (`src/lib/native-sanskara.ts`), but nothing in the Native app calls them (a search of `app/` and `lib/`). The drafts therefore promise only
-   deleting a milestone and deleting the account. Add "delete the whole timeline" and "download a copy" only once a screen offers them. The
-   contract (E7) promised an export before the 12 months end, so that is a build gap, not only a wording one.
+2. **Screens to delete a whole timeline and to download a copy are written, not shipped.** `delete-dependent`, `delete-mine` and `export` existed in
+   the API (`src/lib/native-sanskara.ts`) but nothing in the Native app called them. On 2026-11-05 the Native app gained a "Your Sanskāra data" sheet
+   that does (Native commit `e108cd7`, local, not pushed). It has not run on a device and is in no build or over-the-air update. The drafts therefore
+   still promise only deleting a milestone and deleting the account. Add "delete the whole timeline" and "download a copy" to Draft A, and "download a
+   copy" to Draft B, only once the screens are in a release and have been seen working. The sheet works after consent is withdrawn (it reads the export,
+   not the overview). The account-wide "Download your data" in Settings (`/api/user/export`) holds no Sanskāra data, so this sheet is the only way to
+   take it.
 3. **A former manager can read notes and download a copy** (`sanskara_can`, `former_manager`, contract E7). Draft B says "notes included".
    Whether that is acceptable is question 8 in section 4.
 4. **Account deletion:** a child's timeline with no manager left is deleted by a trigger (`sanskara_delete_orphan_dependent`).
