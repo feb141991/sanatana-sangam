@@ -6,6 +6,24 @@ This document records all production backend, mobile, database, and infrastructu
 
 ## Change Log
 
+### [Change #12] — 2026-11-06 03:10 IST
+* **Type:** Reader UX & Vrat Fasting Card Architecture (`shoonaya-mobile`)
+* **Scope:**
+  - `shoonaya-mobile/app/vrat/[slug].tsx` (Card repositioning to final chapter & bottom of scroll)
+  - `shoonaya-mobile/components/vrat/VratFastingCard.tsx` (Compact horizontal layout & contextual states)
+* **Trigger / User Feedback:**
+  - The massive fasting vow card (~600px tall) was placed at the very top of the Vrat article on Chapter 0, greeting users with a four-rhythm fasting selector and vow button before they had read the spiritual significance, rules, or katha.
+* **Fix Applied:**
+  1. **Relocated Card to Final Chapter & Scroll Bottom**: Removed the card from Chapter 0. It now appears on the **final chapter** (after the sacred katha is read) in chaptered mode, and at the **bottom of the page** right above the read-completion card in scroll mode.
+  2. **Compact Horizontal Redesign**: Replaced the multi-section vertical stack with a sleek, compact horizontal card (~120px):
+     - **On Vrat Day (`isEligibleToday === true`)**: Fasting rhythm horizontal scroll picker (`phalahar`, `nirjala`, etc.), direct one-tap `🙏 Log Fast (+25 Karma)` button, green badge if already observed, and compact sunrise parana timing.
+     - **On Upcoming Days (`isEligibleToday === false`)**: Non-intrusive upcoming badge, horizontal rhythm selection, quick sankalpa commitment, reminder toggle, and Dharma Mitra assistant button.
+* **Verification:**
+  - Native test suite: 1,922/1,922 passed (`npm test` in `shoonaya-mobile`).
+  - TypeScript build check: 0 errors (`npx tsc --noEmit` in `shoonaya-mobile`).
+
+---
+
 ### [Change #11] — 2026-11-06 00:47 IST
 * **Type:** Operational Alerting & Database Failure Notification (`Shoonaya`)
 * **Scope:**
