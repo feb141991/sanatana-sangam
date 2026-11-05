@@ -1,6 +1,7 @@
 import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
 
 export async function POST(request: NextRequest) {
   const authError = await verifyAdminCookieAuth(request);
@@ -10,6 +11,7 @@ export async function POST(request: NextRequest) {
     // Purges and revalidates all ISR & Edge caches across the entire website
     revalidatePath("/", "layout");
     revalidatePath("/panchang");
+    invalidatePublicCalendarSnapshot();
     revalidatePath("/calendar");
     revalidatePath("/vrat");
     revalidatePath("/admin/monitoring");

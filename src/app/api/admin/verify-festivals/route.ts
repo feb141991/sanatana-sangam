@@ -4,6 +4,7 @@ import { requireAdminAccess } from '@/lib/admin';
 import { attachFestivalTrust, mapOccurrenceToFestival, getFallbackFestivalCalendar, type FestivalSourceRow } from '@/lib/festivals';
 import { verifyFestivalDatesWithAI, buildAIUpdatePayload } from '@/lib/festival-verify';
 import type { Database } from '@/types/database';
+import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
 
 export async function POST(req: NextRequest) {
   const authError = await verifyAdminCookieAuth(req);
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest) {
       }));
     }
 
+    invalidatePublicCalendarSnapshot();
     return NextResponse.json({
       ...report,
       source,

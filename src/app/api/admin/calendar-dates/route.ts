@@ -7,6 +7,7 @@ import { assessAdminDate, isValidHoldReason, type AdminDateRow } from '@/lib/cal
 import { fixtureCaseId } from '@/lib/calendar/admin-date-register';
 import { validateDateCandidate } from '@/lib/calendar/fixture-correction';
 import type { Database } from '@/types/database.generated';
+import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
 
 const PAGE_SIZE = 25;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -192,5 +193,6 @@ export async function POST(request: NextRequest) {
     .maybeSingle();
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
   if (!held) return NextResponse.json({ error: 'Occurrence changed during hold; refresh the register.' }, { status: 409 });
+  invalidatePublicCalendarSnapshot();
   return NextResponse.json({ ok: true, held, reviewer: token.username });
 }

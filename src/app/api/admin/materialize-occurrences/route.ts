@@ -2,6 +2,7 @@ import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { materializeOccurrencesForYears } from '@/lib/calendar/materialize';
+import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
 
 export async function POST(req: NextRequest) {
   const authError = await verifyAdminCookieAuth(req);
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
       commit,
     });
 
+    if (commit) invalidatePublicCalendarSnapshot();
     return NextResponse.json({
       success: true,
       message: commit

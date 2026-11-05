@@ -4943,13 +4943,40 @@
     <script>
       function loadShoonayaPublicCalendar() {
         if (!window.shoonayaPublicCalendarPromise) {
+          // A daily snapshot, not a live query. Give up after 8 seconds so the
+          // page never sits on "Loading" while the backend is slow.
+          var controller = new AbortController();
+          var timeout = setTimeout(function () {
+            controller.abort();
+          }, 8000);
           window.shoonayaPublicCalendarPromise = fetch(
-            "/api/calendar/upcoming?days=60&reviewed=1&tradition=all&calendar_profile=legacy-ujjain&tz=Asia%2FKolkata",
-            { headers: { Accept: "application/json" } },
-          ).then(function (response) {
-            if (!response.ok) throw new Error("Calendar unavailable");
-            return response.json();
-          });
+            "/api/public/calendar/upcoming",
+            { headers: { Accept: "application/json" }, signal: controller.signal },
+          )
+            .then(function (response) {
+              if (!response.ok) throw new Error("Calendar unavailable");
+              return response.json();
+            })
+            .then(function (payload) {
+              clearTimeout(timeout);
+              // Between refreshes a date can pass; never show it as upcoming.
+              var today = new Intl.DateTimeFormat("en-CA", {
+                timeZone: "Asia/Kolkata",
+              }).format(new Date());
+              payload.displayObservances = (payload.displayObservances || []).filter(
+                function (item) {
+                  return item && item.civilDate >= today;
+                },
+              );
+              // A copy older than a normal refresh says so on every card.
+              var generated = new Date(payload.generatedAt);
+              window.shoonayaCalendarAsOf =
+                Date.now() - generated.getTime() > 36 * 60 * 60 * 1000
+                  ? " · as of " +
+                    generated.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+                  : "";
+              return payload;
+            });
         }
         return window.shoonayaPublicCalendarPromise;
       }
@@ -4997,7 +5024,7 @@
                 escapeText(traditionLabels[tradition] || "Dharmic calendar") +
                 '</span><span class="hero-observance-name">' +
                 escapeText(item.display_name) +
-                '</span><span class="hero-observance-meta">Reviewed occurrence · Ujjain reference</span></span>' +
+                '</span><span class="hero-observance-meta">Reviewed occurrence · Ujjain reference' + escapeText(window.shoonayaCalendarAsOf || "") + '</span></span>' +
                 "</a>"
               );
             })
@@ -7586,7 +7613,7 @@
                   color +
                   '">' +
                   escapeText(countdown(diff)) +
-                  '</div><div class="days-label">Reviewed occurrence</div></div><a class="festival-pill" href="/features/sacred-calendar">Calendar →</a></div></article>'
+                  '</div><div class="days-label">Reviewed occurrence' + escapeText(window.shoonayaCalendarAsOf || "") + '</div></div><a class="festival-pill" href="/features/sacred-calendar">Calendar →</a></div></article>'
                 );
               })
               .join("");

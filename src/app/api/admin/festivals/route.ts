@@ -11,6 +11,7 @@ import {
 import { resolveVratSlug } from '@/lib/vrat-data';
 import type { Database } from '@/types/database';
 import type { Json } from '@/types/database';
+import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
 
 type FestivalAdminStats = {
   total: number;
@@ -215,6 +216,7 @@ export async function PATCH(request: NextRequest) {
 
     if (updateError) throw updateError;
 
+    invalidatePublicCalendarSnapshot();
     return NextResponse.json({
       success: true,
       festival: updated ? mapOccurrenceToFestival(updated) : null,

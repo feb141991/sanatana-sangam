@@ -4,6 +4,7 @@ import { attachFestivalTrust, mapOccurrenceToFestival, getFallbackFestivalCalend
 import { verifyFestivalDatesWithAI, buildAIUpdatePayload, type VerificationReport } from '@/lib/festival-verify';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import type { Database } from '@/types/database';
+import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
 
 export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
@@ -110,6 +111,7 @@ export async function GET(request: Request) {
     );
   }
 
+  invalidatePublicCalendarSnapshot();
   return NextResponse.json({
     message: allClear
       ? `All ${report.totalChecked} AI-checkable festival dates verified`

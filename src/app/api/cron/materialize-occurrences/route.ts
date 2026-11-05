@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 import { materializeOccurrencesForYears } from '@/lib/calendar/materialize';
 import { ensureYearMaterialized } from '@/lib/calendar/resolve-occurrences';
 import { resolveObservanceLocationBucket } from '@sangam/panchang-engine';
+import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
 
 /**
  * Extends every real (profile, location) combination a live request has
@@ -225,6 +226,8 @@ export async function GET(request: NextRequest) {
       ? await seedActiveProfileLocationCombinations(supabase, targetYears)
       : { scanned: 0, unique: 0, attempted: 0, complete: 0, failed: 0, deferred: 0 };
 
+    // This is the daily refresh: the next visit rebuilds the homepage snapshot.
+    invalidatePublicCalendarSnapshot();
     return NextResponse.json({
       success: true,
       message: commit
