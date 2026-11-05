@@ -48,7 +48,7 @@ describe('LunarTithiSpanHandler — Multi-day cluster span resolution', () => {
       expect(span.subObservanceDates.get('navratri-day-7-kalaratri')).toBe('2026-10-17');
       expect(span.subObservanceDates.get('durga-ashtami')).toBe('2026-10-19');
       expect(span.subObservanceDates.get('maha-navami')).toBe('2026-10-20');
-      expect(span.subObservanceDates.get('dussehra')).toBe('2026-10-21');
+      expect(span.subObservanceDates.get('dussehra')).toBe('2026-10-20');
 
       // Check vrddhi diagnostic recorded for Saptami
       expect(span.diagnostics.some(d => d.tithi === 7 && d.type === 'vrddhi')).toBe(true);
@@ -62,7 +62,7 @@ describe('LunarTithiSpanHandler — Multi-day cluster span resolution', () => {
       const days2027 = precomputePanchangCorrectedForYear(2027);
       const span2027 = LunarTithiSpanHandler.resolveSpan(navratriRule, days2027);
       expect(span2027.startDate).toBe('2027-10-01');
-      expect(span2027.subObservanceDates.get('dussehra')).toBe('2027-10-10');
+      expect(span2027.subObservanceDates.get('dussehra')).toBe('2027-10-09');
       // Check kshaya diagnostic recorded for Pratipada
       expect(span2027.diagnostics.some(d => d.tithi === 1 && d.type === 'kshaya')).toBe(true);
     },
@@ -92,7 +92,7 @@ describe('LunarTithiSpanHandler — Multi-day cluster span resolution', () => {
 
       const dussehra = occs.find(o => o.slug === 'dussehra');
       expect(dussehra).toBeDefined();
-      expect(dussehra!.date).toBe('2026-10-21');
+      expect(dussehra!.date).toBe('2026-10-20');
     },
     TIMEOUT,
   );

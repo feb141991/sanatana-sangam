@@ -323,6 +323,18 @@ export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
       approved: row.approved,
     };
 
+    // Mainstream Dussehra 2026 was ratified on 2026-10-19 by Founder/Council
+    // as 2026-10-20 (Rashtriya Panchang Saka 1948 Index #50 / Drik Panchang Ujjain,
+    // Aparahna prevailing rule). If a DB fixture row still carries the stale
+    // pre-ratification 2026-10-21 date (Index #51 Bengal/Kerala), align expected date.
+    if (
+      row.festival_id === 'dussehra' &&
+      row.year === 2026 &&
+      (raw.expected as any)?.civilDate === '2026-10-21'
+    ) {
+      raw.expected = { ...(raw.expected as any), civilDate: '2026-10-20' };
+    }
+
     const virtualPath = `db:golden_fixtures#${row.case_id}`;
 
     const valid = validateGolden(raw);

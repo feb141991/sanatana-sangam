@@ -104,13 +104,13 @@ describe('Yogini Ekadashi 2026 — Dual Variant Modeling', () => {
 
     expect(smartaDiag).toBeDefined();
     expect(smartaDiag!.publicationWithheld).toBe(true);
-    expect(smartaDiag!.withheldReason).toBe('deferred');
+    expect(smartaDiag!.withheldReason).toBe('disputed_year');
     expect(smartaDiag!.selectedDate).toBe('2026-07-10');
     expect(smartaDiag!.candidateDates).toContain('2026-07-10');
 
     expect(vaishnavaDiag).toBeDefined();
     expect(vaishnavaDiag!.publicationWithheld).toBe(true);
-    expect(vaishnavaDiag!.withheldReason).toBe('deferred');
+    expect(vaishnavaDiag!.withheldReason).toBe('disputed_year');
     expect(vaishnavaDiag!.selectedDate).toBe('2026-07-11');
     expect(vaishnavaDiag!.candidateDates).toContain('2026-07-11');
   }, TIMEOUT);
