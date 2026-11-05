@@ -2228,10 +2228,16 @@
         justify-content: center;
         gap: 20px;
       }
-      .world-svg {
+      .world-map {
+        position: relative;
         width: 100%;
-        max-width: 420px;
-        opacity: 0.15;
+        max-width: 620px;
+      }
+      .world-svg {
+        display: block;
+        width: 100%;
+        color: var(--ink);
+        opacity: 0.26;
       }
       .city-dots {
         position: absolute;
@@ -2242,6 +2248,7 @@
         position: absolute;
         width: 8px;
         height: 8px;
+        margin: -4px 0 0 -4px;
         border-radius: 50%;
         box-shadow: 0 0 0 0 rgba(200, 146, 74, 0.5);
         animation: cityPulse 3s ease-in-out infinite var(--d);
@@ -2253,6 +2260,11 @@
         }
         50% {
           box-shadow: 0 0 0 8px rgba(200, 146, 74, 0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .city-dot {
+          animation: none;
         }
       }
       .map-label {
@@ -3605,6 +3617,11 @@
       }
       #splash-bottom > * {
         pointer-events: auto;
+      }
+      /* Its job ends once the page is open; on phones it is fixed and would
+         otherwise float over the content for the whole scroll. */
+      body.landing-entered #splash-bottom {
+        display: none;
       }
       .hero-nav {
         position: absolute;
@@ -7655,96 +7672,50 @@
         </div>
         <div class="community-grid reveal">
           <div class="community-map">
-            <svg class="world-svg" viewBox="0 0 800 420" fill="none">
-              <path
-                d="M130 140 Q160 120 200 130 Q240 135 260 120 Q280 108 310 115 Q340 122 360 110 Q400 95 440 105 Q480 115 500 108 Q530 100 560 112 Q590 124 610 118 Q640 110 660 120 L670 200 Q640 210 610 200 Q580 192 550 205 Q520 218 490 210 Q460 202 430 215 Q400 228 370 220 Q340 212 310 225 Q280 238 250 230 Q220 222 190 235 Q160 248 130 240 Z"
-                fill="currentColor"
-                opacity=".3"
-              />
-              <path
-                d="M540 170 Q560 165 575 175 Q585 185 580 200 Q575 215 560 225 Q545 230 540 215 Q535 200 538 185 Z"
-                fill="currentColor"
-                opacity=".6"
-              />
-              <path
-                d="M345 115 Q355 110 360 118 Q358 128 350 130 Q342 128 343 118 Z"
-                fill="currentColor"
-                opacity=".6"
-              />
-              <path
-                d="M370 120 Q380 116 385 124 Q383 133 375 134 Q367 132 368 122 Z"
-                fill="currentColor"
-                opacity=".5"
-              />
-              <path
-                d="M160 150 Q200 145 220 155 Q225 170 215 178 Q195 182 165 175 Q148 168 150 155 Z"
-                fill="currentColor"
-                opacity=".5"
-              />
-              <path
-                d="M620 250 Q660 244 675 258 Q682 270 672 280 Q655 288 630 282 Q612 272 615 258 Z"
-                fill="currentColor"
-                opacity=".4"
-              />
-            </svg>
-            <div class="city-dots">
-              <div
-                class="city-dot"
-                style="left: 42%; top: 28%; --d: 0s; background: var(--saffron)"
-              ></div>
-              <div
-                class="city-dot"
-                style="
-                  left: 67%;
-                  top: 43%;
-                  --d: 0.5s;
-                  background: var(--kumkum);
-                "
-              ></div>
-              <div
-                class="city-dot"
-                style="left: 22%; top: 38%; --d: 1s; background: var(--peacock)"
-              ></div>
-              <div
-                class="city-dot"
-                style="
-                  left: 47%;
-                  top: 30%;
-                  --d: 1.5s;
-                  background: var(--c-sikh);
-                "
-              ></div>
-              <div
-                class="city-dot"
-                style="left: 79%; top: 64%; --d: 2s; background: var(--gold)"
-              ></div>
-              <div
-                class="city-dot"
-                style="
-                  left: 19%;
-                  top: 36%;
-                  --d: 0.8s;
-                  background: var(--c-jain);
-                "
-              ></div>
-              <div
-                class="city-dot"
-                style="
-                  left: 73%;
-                  top: 55%;
-                  --d: 1.2s;
-                  background: var(--c-buddhist);
-                "
-              ></div>
-              <div
-                class="city-dot"
-                style="
-                  left: 65%;
-                  top: 48%;
-                  --d: 0.3s;
-                  background: var(--saffron);
-                "
-              ></div>
+            <div class="world-map" aria-hidden="true">
+              <!-- Land from world-atlas@2.0.2 land-110m (Natural Earth, public domain; package ISC), downloaded 2026-11-05 and sampled to dots. The city dots mark regions, not members. -->
+              <svg class="world-svg" viewBox="0 0 800 313" fill="none">
+                <path
+                  d="M192 8h0m8 0h0m24 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m88 0h0m8 0h0m48 0h0m104 0h0m8 0h0M136 16h0m72 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m200 0h0m80 0h0M128 24h0m8 0h0m8 0h0m32 0h0m16 0h0m24 0h0m8 0h0m56 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m176 0h0m64 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0M40 32h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m24 0h0m16 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m104 0h0m8 0h0m8 0h0m8 0h0m64 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0M24 40h0m192 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m40 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0m8 0h0M40 48h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m32 0h0m48 0h0m8 0h0m112 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M48 56h0m8 0h0m40 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m40 0h0m8 0h0m8 0h0m8 0h0m160 0h0m16 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m48 0h0M40 64h0m72 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m128 0h0m56 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0M120 72h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M128 80h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M128 88h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m144 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M128 96h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m152 0h0m8 0h0m8 0h0m32 0h0m16 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0M136 104h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m160 0h0m8 0h0m40 0h0m16 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m8 0h0M144 112h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m160 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0M144 120h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m168 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M152 128h0m8 0h0m8 0h0m8 0h0m200 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m24 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M168 136h0m8 0h0m40 0h0m152 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M168 144h0m8 0h0m8 0h0m16 0h0m40 0h0m128 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m40 0h0m8 0h0m8 0h0m32 0h0m8 0h0m8 0h0M200 152h0m8 0h0m160 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m56 0h0m8 0h0m48 0h0m8 0h0m8 0h0M208 160h0m32 0h0m128 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m80 0h0m8 0h0m56 0h0m8 0h0M216 168h0m16 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m176 0h0M232 176h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m104 0h0m32 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m32 0h0M224 184h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m136 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m128 0h0m24 0h0m8 0h0M224 192h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m144 0h0m16 0h0m8 0h0m40 0h0m8 0h0M224 200h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m232 0h0m8 0h0m8 0h0M232 208h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m112 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m240 0h0M232 216h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m208 0h0M240 224h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m120 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m24 0h0m176 0h0m8 0h0m8 0h0m8 0h0m16 0h0M248 232h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m128 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m160 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M248 240h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m144 0h0m8 0h0m8 0h0m8 0h0m8 0h0m32 0h0m152 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M248 248h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m152 0h0m8 0h0m8 0h0m8 0h0m8 0h0m184 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M248 256h0m8 0h0m8 0h0m8 0h0m8 0h0m160 0h0m8 0h0m8 0h0m8 0h0m200 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0m8 0h0M240 264h0m8 0h0m8 0h0m8 0h0m448 0h0m8 0h0m8 0h0M240 272h0m8 0h0m8 0h0m8 0h0m528 0h0M240 280h0m8 0h0m480 0h0m56 0h0M240 288h0m8 0h0m528 0h0M240 296h0m8 0h0M240 304h0m8 0h0"
+                  stroke="currentColor"
+                  stroke-width="3.6"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <div class="city-dots">
+                <div
+                  class="city-dot"
+                  style="left: 50.0%; top: 23.0%; --d: 0s; background: var(--saffron)"
+                ></div>
+                <div
+                  class="city-dot"
+                  style="left: 71.1%; top: 43.1%; --d: 0.5s; background: var(--kumkum)"
+                ></div>
+                <div
+                  class="city-dot"
+                  style="left: 29.4%; top: 30.7%; --d: 1s; background: var(--peacock)"
+                ></div>
+                <div
+                  class="city-dot"
+                  style="left: 70.8%; top: 37.2%; --d: 1.5s; background: var(--c-sikh)"
+                ></div>
+                <div
+                  class="city-dot"
+                  style="left: 92.0%; top: 83.6%; --d: 2s; background: var(--gold)"
+                ></div>
+                <div
+                  class="city-dot"
+                  style="left: 16.0%; top: 32.8%; --d: 0.8s; background: var(--c-jain)"
+                ></div>
+                <div
+                  class="city-dot"
+                  style="left: 78.8%; top: 58.7%; --d: 1.2s; background: var(--c-buddhist)"
+                ></div>
+                <div
+                  class="city-dot"
+                  style="left: 60.2%; top: 60.5%; --d: 0.3s; background: var(--saffron)"
+                ></div>
+              </div>
             </div>
             <div style="position: relative; z-index: 2">
               <div class="map-label">Across distances</div>
