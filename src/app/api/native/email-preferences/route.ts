@@ -60,9 +60,14 @@ export async function GET(request: NextRequest) {
   const limited = await checkDurableRateLimit(`email-preferences:read:user:${auth.user.id}`, READ_LIMIT, 60_000, admin);
   if (limited) return limited;
 
+  const policy = policyFor(request, request.nextUrl.searchParams.get('deviceRegion'));
+  // Onboarding shows the switch before the profile row exists, so the wording must be readable without one. Nothing about the
+  // person is read or returned here.
+  if (request.nextUrl.searchParams.get('policyOnly') === '1') return respond({ policy });
+
   try {
     const summary = await getEmailConsentSummary(auth.user.id, admin as never);
-    return respond({ ...summary, policy: policyFor(request, request.nextUrl.searchParams.get('deviceRegion')) });
+    return respond({ ...summary, policy });
   } catch (error) {
     return failure(error);
   }

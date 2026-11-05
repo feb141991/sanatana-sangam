@@ -77,6 +77,28 @@ describe('GET /api/native/email-preferences', () => {
     expect((await res.json()).policy).toEqual({ region, regionSource, wordingVersion: wording });
   });
 
+  it('policyOnly returns just the policy, reads nothing about the person, and works before a profile exists', async () => {
+    profileRead = { data: null, error: null };
+    const res = await GET(request('GET', { headers: { 'x-vercel-ip-country': 'FR' }, query: '?policyOnly=1' }));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ policy: { region: 'FR', regionSource: 'ip_header', wordingVersion: 'eu-uk-v1' } });
+  });
+
+  it('policyOnly still requires a signed-in account and still obeys the rate limit', async () => {
+    getApiUser.mockResolvedValue({ user: null, supabase: null, error: Object.assign(new Error('x'), { status: 401 }) });
+    expect((await GET(request('GET', { query: '?policyOnly=1' }))).status).toBe(401);
+    getApiUser.mockResolvedValue({ user: { id: 'user-1' }, supabase: {}, error: null });
+    rateLimit.mockResolvedValue(new Response('{}', { status: 429 }));
+    expect((await GET(request('GET', { query: '?policyOnly=1' }))).status).toBe(429);
+  });
+
+  it('only the exact value 1 selects policyOnly', async () => {
+    for (const value of ['0', 'true', '', 'yes']) {
+      const res = await GET(request('GET', { query: `?policyOnly=${value}` }));
+      expect(Object.keys(await res.json()).sort(), value).toEqual(['festivals', 'lastChangedAt', 'newsletter', 'policy']);
+    }
+  });
+
   it('a failed read is a retryable 503 with no detail, never "everything off"', async () => {
     profileRead = { data: null, error: { code: '57014', message: 'canceling statement on relation profiles' } };
     const res = await GET(request('GET'));
