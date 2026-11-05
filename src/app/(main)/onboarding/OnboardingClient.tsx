@@ -514,6 +514,14 @@ export default function OnboardingClient({
       }
 
       queryClient.invalidateQueries({ queryKey: queryKeys.profile(userId) }).catch(() => {});
+      try {
+        window.localStorage.removeItem('shoonaya_hero_pick');
+        window.localStorage.removeItem('user_cover_photo');
+        if (tradition) {
+          window.localStorage.setItem('sh_tradition', tradition);
+          document.documentElement.setAttribute('data-tradition', tradition);
+        }
+      } catch {}
       router.replace(nextPath);
       router.refresh();
     } catch (error) {

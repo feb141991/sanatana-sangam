@@ -491,6 +491,14 @@ export function HeroSection({
     lockSelectedHero: Boolean(selectedHeroId),
   });
 
+  // If a previously stored hero pick belongs to another tradition, purge it so it doesn't linger
+  useEffect(() => {
+    if (selectedHeroId && heroTheme.id !== selectedHeroId && tradition) {
+      try { window.localStorage.removeItem('shoonaya_hero_pick'); } catch {}
+      setSelectedHeroId(null);
+    }
+  }, [selectedHeroId, heroTheme.id, tradition]);
+
   const pickerThemes = (() => {
     const trad = tradition ?? 'hindu';
     const all  = [...heroThemes, ...HOME_HERO_THEMES];

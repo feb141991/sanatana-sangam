@@ -39,6 +39,15 @@ export type ResolveHomeHeroThemeInput = {
 
 export const HOME_HERO_THEMES: HomeHeroTheme[] = [
   {
+    id: 'hindu-default',
+    label: 'Hindu default',
+    heroImage: '/assets/images/heroes/hindu/shiva-default.webp',
+    heroAlt: 'Soft devotional Shiva artwork',
+    objectPosition: '58% 25%',
+    traditions: ['hindu'],
+    priority: 20,
+  },
+  {
     id: 'shaiva-default',
     label: 'Shaiva default',
     heroImage: '/assets/images/heroes/hindu/shiva-default.webp',
@@ -773,23 +782,46 @@ export function resolveHomeHeroTheme(input: ResolveHomeHeroThemeInput): HomeHero
     ...(input.dbThemes ?? []),
     ...HOME_HERO_THEMES,
   ];
-  const selected = input.selectedHeroId
+
+  const hasExplicitTradition = Boolean(
+    input.tradition &&
+    input.tradition !== 'all' &&
+    input.tradition !== 'exploring' &&
+    input.tradition !== 'other' &&
+    input.tradition !== 'none'
+  );
+
+  const rawSelected = input.selectedHeroId
     ? allThemes.find(theme => theme.id === input.selectedHeroId)
+    : undefined;
+
+  // Stale picks from another tradition must never override the user's explicit tradition
+  const selected = rawSelected && (!hasExplicitTradition || !rawSelected.traditions?.length || matches(rawSelected.traditions, input.tradition))
+    ? rawSelected
     : undefined;
 
   if (selected && input.lockSelectedHero) return selected;
 
   const festivalSlug = slugifyFestivalName(input.festival?.name);
-  const festivalMatch = allThemes
-    .filter(theme => matches(theme.festivalSlugs, festivalSlug))
-    .filter(theme => !theme.traditions?.length || matches(theme.traditions, input.tradition) || matches(theme.traditions, input.festival?.tradition))
-    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+  const festivalMatch = festivalSlug
+    ? allThemes
+        .filter(theme => matches(theme.festivalSlugs, festivalSlug))
+        .filter(theme => {
+          if (!theme.traditions?.length) return true;
+          if (hasExplicitTradition) {
+            return matches(theme.traditions, input.tradition);
+          }
+          return matches(theme.traditions, input.festival?.tradition);
+        })
+        .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0]
+    : undefined;
 
   if (festivalMatch) return festivalMatch;
   if (selected) return selected;
 
   const ishtaMatch = allThemes
     .filter(theme => matches(theme.ishtaDevatas, input.ishtaDevata))
+    .filter(theme => !hasExplicitTradition || !theme.traditions?.length || matches(theme.traditions, input.tradition))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 
   if (ishtaMatch) return ishtaMatch;
@@ -803,7 +835,13 @@ export function resolveHomeHeroTheme(input: ResolveHomeHeroThemeInput): HomeHero
 
   const traditionMatch = allThemes
     .filter(theme => matches(theme.traditions, input.tradition))
-    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+    .sort((a, b) => {
+      const aIsGeneral = !a.festivalSlugs?.length;
+      const bIsGeneral = !b.festivalSlugs?.length;
+      if (aIsGeneral && !bIsGeneral) return -1;
+      if (!aIsGeneral && bIsGeneral) return 1;
+      return (b.priority ?? 0) - (a.priority ?? 0);
+    })[0];
 
   return traditionMatch ?? allThemes.find(theme => theme.id === 'global-default') ?? HOME_HERO_THEMES[0];
 }
