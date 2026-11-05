@@ -32,9 +32,9 @@ const TRADITION_SEALS = [
     name: "Sikh Dharma",
     focus: "Gurbani, Gurpurabs & Nitnem",
     href: "/traditions/sikh",
-    color: "#E67E22",
-    bg: "rgba(230, 126, 34, 0.1)",
-    border: "rgba(230, 126, 34, 0.25)",
+    color: "#1B5E8B",
+    bg: "rgba(27, 94, 139, 0.1)",
+    border: "rgba(27, 94, 139, 0.25)",
   },
   {
     symbol: "卐",
@@ -97,6 +97,7 @@ const FOOTER_COLUMNS = [
   {
     title: "Trust & Governance",
     links: [
+      { href: "/pricing", label: "Pricing & Access (100% Free)" },
       { href: "/privacy", label: "Privacy Policy (Zero Trackers)" },
       { href: "/terms", label: "Terms of Service" },
       { href: "/guidelines", label: "Community Guidelines" },

@@ -243,18 +243,39 @@ async function middlewareHandler(req: NextRequest, requestId: string) {
 
   // ── Step 0: Content negotiation for AI agents (Accept: text/markdown) ────
   const acceptHeader = req.headers.get("accept") || "";
-  if (
-    (pathname === "/" || pathname === "/index.html") &&
-    (acceptHeader.includes("text/markdown") || acceptHeader.includes("text/x-markdown"))
-  ) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/llms.txt";
-    const markdownRes = NextResponse.rewrite(url, {
-      request: { headers: forwardedHeaders },
-    });
-    markdownRes.headers.set("Content-Type", "text/markdown; charset=utf-8");
-    markdownRes.headers.set("Vary", "Accept");
-    return markdownRes;
+  const isAgentMarkdownRequest =
+    acceptHeader.includes("text/markdown") ||
+    acceptHeader.includes("text/x-markdown");
+
+  if (isAgentMarkdownRequest) {
+    if (pathname === "/" || pathname === "/index.html") {
+      const url = req.nextUrl.clone();
+      url.pathname = "/llms.txt";
+      const markdownRes = NextResponse.rewrite(url, {
+        request: { headers: forwardedHeaders },
+      });
+      markdownRes.headers.set("Content-Type", "text/markdown; charset=utf-8");
+      markdownRes.headers.set("Vary", "Accept");
+      return markdownRes;
+    }
+
+    const isPublicPage =
+      ALWAYS_PUBLIC_EXACT.has(pathname) ||
+      ALWAYS_PUBLIC_PREFIX.some((prefix) => pathname.startsWith(prefix)) ||
+      pathname.startsWith("/vrat/") ||
+      pathname.startsWith("/festival/");
+
+    if (isPublicPage && !pathname.startsWith("/api/")) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/api/content-negotiation";
+      url.searchParams.set("path", pathname);
+      const markdownRes = NextResponse.rewrite(url, {
+        request: { headers: forwardedHeaders },
+      });
+      markdownRes.headers.set("Content-Type", "text/markdown; charset=utf-8");
+      markdownRes.headers.set("Vary", "Accept");
+      return markdownRes;
+    }
   }
 
   // ── Step 0b: Robots.txt with Content-Signal Directive ─────────────────────

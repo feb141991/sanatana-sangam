@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { POST, GET } from "@/app/api/mcp/route";
+import { GET as getMarkdown } from "@/app/api/content-negotiation/route";
 import { middleware } from "@/middleware";
 import sitemap from "@/app/sitemap";
 import { NextRequest } from "next/server";
@@ -47,13 +48,28 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
     expect(llms).toContain("/assets/js/webmcp.js");
   });
 
-  it("Pillar 5: Content negotiation rewrites Accept: text/markdown to llms.txt", async () => {
-    const req = new NextRequest("https://www.shoonaya.com/", {
+  it("Pillar 5: Content negotiation rewrites Accept: text/markdown to llms.txt and token-efficient page markdown", async () => {
+    // 1. Root /
+    const rootReq = new NextRequest("https://www.shoonaya.com/", {
       headers: { Accept: "text/markdown" },
     });
-    const res = await middleware(req);
-    expect(res.headers.get("Content-Type")).toContain("text/markdown");
-    expect(res.headers.get("Vary")).toBe("Accept");
+    const rootRes = await middleware(rootReq);
+    expect(rootRes.headers.get("Content-Type")).toContain("text/markdown");
+    expect(rootRes.headers.get("Vary")).toBe("Accept");
+
+    // 2. /pricing
+    const pricingReq = new NextRequest("https://www.shoonaya.com/pricing", {
+      headers: { Accept: "text/markdown" },
+    });
+    const pricingRes = await middleware(pricingReq);
+    expect(pricingRes.headers.get("Content-Type")).toContain("text/markdown");
+
+    // 3. /vrat/ekadashi
+    const vratReq = new NextRequest("https://www.shoonaya.com/vrat/ekadashi", {
+      headers: { Accept: "text/markdown" },
+    });
+    const vratRes = await middleware(vratReq);
+    expect(vratRes.headers.get("Content-Type")).toContain("text/markdown");
   });
 
   it("Pillar 6 & 8: publishes valid SEP-1649 / SEP-2127 MCP server card", () => {
@@ -168,5 +184,27 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
     expect(landingHtml).toContain('href="/contact"');
     expect(landingHtml).toContain('href="/privacy"');
     expect(landingHtml).toContain('href="/terms"');
+  });
+
+  it("Token Budget: Serves token-efficient markdown representations for other pages", async () => {
+    // Pricing
+    const pReq = new NextRequest("https://www.shoonaya.com/api/content-negotiation?path=/pricing");
+    const pRes = await getMarkdown(pReq);
+    const pText = await pRes.text();
+    expect(pText).toContain("# Shoonaya Pricing");
+    expect(pText).toContain("₹0");
+
+    // Vrat
+    const vReq = new NextRequest("https://www.shoonaya.com/api/content-negotiation?path=/vrat/ekadashi");
+    const vRes = await getMarkdown(vReq);
+    const vText = await vRes.text();
+    expect(vText).toContain("Ekadashi");
+    expect(vText).toContain("Significance");
+
+    // About
+    const aReq = new NextRequest("https://www.shoonaya.com/api/content-negotiation?path=/about");
+    const aRes = await getMarkdown(aReq);
+    const aText = await aRes.text();
+    expect(aText).toContain("# About Shoonaya");
   });
 });
