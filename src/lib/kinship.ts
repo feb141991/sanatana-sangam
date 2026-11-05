@@ -91,3 +91,4 @@ export function getKinshipTier(generation: number): KinshipTier {
       };
   }
 }
+

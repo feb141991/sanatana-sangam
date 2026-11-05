@@ -38,3 +38,4 @@ describe('getKinshipTier', () => {
     expect(tier.label).toBe('Grandchildren');
   });
 });
+
