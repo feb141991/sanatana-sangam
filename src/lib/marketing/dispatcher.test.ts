@@ -8,6 +8,11 @@ vi.mock("@/lib/email", () => ({
   sendShoonayaEmail: (...args: unknown[]) => sendShoonayaEmail(...args)
 }));
 
+const checkEmailSuppression = vi.fn();
+vi.mock("@/lib/email-suppression", () => ({
+  checkEmailSuppression: (...args: unknown[]) => checkEmailSuppression(...args)
+}));
+
 const whatsappSendText = vi.fn();
 let whatsappIsMock = false;
 vi.mock("@/lib/whatsapp/provider", () => ({
@@ -161,6 +166,7 @@ function createMockSupabase(config: MockConfig) {
 describe("Marketing Campaign Dispatcher", () => {
   beforeEach(() => {
     sendShoonayaEmail.mockClear();
+    checkEmailSuppression.mockReset().mockResolvedValue("clear");
     whatsappSendText.mockClear();
     whatsappIsMock = false;
     (process.env as any).NODE_ENV = "test";
@@ -461,5 +467,107 @@ describe("Marketing Campaign Dispatcher: tracked links", () => {
     expect(variant.cta_url).toBe("https://www.shoonaya.com");
     expect(variant.body).toBe("See https://www.shoonaya.com/panchang");
     expect(variantMatchesApprovedManifest(variant)).toBe(true);
+  });
+});
+
+describe("Marketing dispatcher: the bounce and complaint suppression list", () => {
+  const optedIn = (id: string) => ({ id, marketing_consent: true, email_newsletter: true, is_banned: false, unsubscribe_token: `t-${id}` });
+  const claimed = (id: string, user: string) => ({ id, campaign_id: "c-1", variant_id: "v-1", recipient_user_id: user, channel: "email", status: "claimed" } as any);
+
+  beforeEach(() => {
+    sendShoonayaEmail.mockReset().mockResolvedValue({ success: true, id: "resend_msg_1" });
+    checkEmailSuppression.mockReset().mockResolvedValue("clear");
+    whatsappSendText.mockReset();
+    whatsappIsMock = false;
+    (process.env as any).NODE_ENV = "test";
+    (process.env as any).VERCEL_ENV = "test";
+  });
+
+  it("does not send to an address on the suppression list, records it as suppressed, and still sends to the others", async () => {
+    checkEmailSuppression.mockImplementation(async (_client: unknown, email: string) => (email === "bounced@shoonaya.com" ? "suppressed" : "clear"));
+    const { supabase, dispatchUpdates } = createMockSupabase({
+      claimedRows: [claimed("d-1", "u-1"), claimed("d-2", "u-2")],
+      profiles: { "u-1": optedIn("u-1"), "u-2": optedIn("u-2") },
+      emails: { "u-1": "bounced@shoonaya.com", "u-2": "fine@shoonaya.com" }
+    });
+
+    const result = await dispatchMarketingBatch(supabase, { campaign: baseCampaign(), variant: approvedVariant(), dryRun: false });
+
+    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
+    expect(sendShoonayaEmail.mock.calls[0][0].to).toBe("fine@shoonaya.com");
+    expect(result.sent).toBe(1);
+    expect(result.suppressed).toBe(1);
+    expect(result.dispatches.find(d => d.recipient_user_id === "u-1")).toMatchObject({ status: "suppressed", error_code: "email_suppressed" });
+    expect(dispatchUpdates.some(u => u.status === "suppressed" && u.last_error_code === "email_suppressed")).toBe(true);
+  });
+
+  it("when the list cannot be checked it does not send and does not condemn the address: the claim is released as retryable", async () => {
+    checkEmailSuppression.mockResolvedValue("unavailable");
+    const { supabase, dispatchUpdates } = createMockSupabase({
+      claimedRows: [claimed("d-1", "u-1")],
+      profiles: { "u-1": optedIn("u-1") },
+      emails: { "u-1": "user1@shoonaya.com" }
+    });
+
+    const result = await dispatchMarketingBatch(supabase, { campaign: baseCampaign(), variant: approvedVariant(), dryRun: false });
+
+    expect(sendShoonayaEmail).not.toHaveBeenCalled();
+    expect(result.sent).toBe(0);
+    expect(result.suppressed).toBe(0);
+    expect(result.retryable).toBe(1);
+    expect(result.dispatches[0]).toMatchObject({ status: "retryable", error_code: "suppression_check_unavailable" });
+    expect(dispatchUpdates.some(u => u.status === "retryable" && u.last_error_code === "suppression_check_unavailable")).toBe(true);
+    expect(dispatchUpdates.some(u => u.status === "suppressed")).toBe(false);
+  });
+
+  it("asks about the recipient's own resolved address", async () => {
+    const { supabase } = createMockSupabase({
+      claimedRows: [claimed("d-1", "u-1")],
+      profiles: { "u-1": optedIn("u-1") },
+      emails: { "u-1": "user1@shoonaya.com" }
+    });
+    await dispatchMarketingBatch(supabase, { campaign: baseCampaign(), variant: approvedVariant(), dryRun: false });
+    expect(checkEmailSuppression).toHaveBeenCalledTimes(1);
+    expect(checkEmailSuppression.mock.calls[0][1]).toBe("user1@shoonaya.com");
+  });
+
+  it("does not look anyone up who is already ineligible for lack of consent", async () => {
+    const { supabase } = createMockSupabase({
+      claimedRows: [claimed("d-1", "u-1")],
+      profiles: { "u-1": { ...optedIn("u-1"), marketing_consent: false } },
+      emails: { "u-1": "user1@shoonaya.com" }
+    });
+    const result = await dispatchMarketingBatch(supabase, { campaign: baseCampaign(), variant: approvedVariant(), dryRun: false });
+    expect(checkEmailSuppression).not.toHaveBeenCalled();
+    expect(result.dispatches[0]).toMatchObject({ status: "suppressed", error_code: "missing_marketing_consent" });
+  });
+
+  it("the preview (dry run) shows a suppressed address as suppressed and calls no provider", async () => {
+    checkEmailSuppression.mockResolvedValue("suppressed");
+    const { supabase, claimCalls } = createMockSupabase({
+      pendingRows: [{ id: "d-1", recipient_user_id: "u-1" }],
+      profiles: { "u-1": optedIn("u-1") },
+      emails: { "u-1": "bounced@shoonaya.com" }
+    });
+    const result = await dispatchMarketingBatch(supabase, { campaign: baseCampaign(), variant: approvedVariant(), dryRun: true });
+    expect(result.sent).toBe(0);
+    expect(result.suppressed).toBe(1);
+    expect(result.dispatches[0]).toMatchObject({ status: "suppressed", error_code: "email_suppressed" });
+    expect(sendShoonayaEmail).not.toHaveBeenCalled();
+    expect(claimCalls).toHaveLength(0);
+  });
+
+  it("never applies the e-mail suppression list to a WhatsApp send", async () => {
+    whatsappSendText.mockResolvedValue({ messageId: "wa_1" });
+    const { supabase } = createMockSupabase({
+      claimedRows: [{ ...claimed("d-1", "u-1"), channel: "whatsapp" }],
+      profiles: { "u-1": { ...optedIn("u-1"), whatsapp_opt_in: true, whatsapp_number: "+919876543210" } }
+    });
+    await dispatchMarketingBatch(supabase, {
+      campaign: baseCampaign(),
+      variant: approvedVariant({ channel: "whatsapp" as const }),
+      dryRun: false
+    });
+    expect(checkEmailSuppression).not.toHaveBeenCalled();
   });
 });

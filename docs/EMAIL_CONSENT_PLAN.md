@@ -1,6 +1,8 @@
 # E-mail consent, sending and unsubscribe: plan and state (2026-11-06)
 
-Status: Stage 1 (database) written and tested on a scratch database, **not applied anywhere**. Stages 2 and 3 are listed with what each changes.
+Status: Stage 1 (database) and Stage 2 (backend) are written and tested; **nothing is applied, pushed or deployed**. Stage 2 depends on the
+Stage 1 migration: until it is applied, the new preferences route and the unsubscribe route answer a retryable 503 (consent is never changed
+without being recorded). Stage 3 (Native app) is listed with what it changes.
 Not legal advice. Statements about GDPR, UK PECR, India's DPDP Act, CAN-SPAM and similar laws are my understanding and are listed for a lawyer
 in section 7.
 
@@ -64,14 +66,29 @@ apply or the test red. **Not** verified: the real migration chain, a Supabase br
 ## 6. Stages
 
 1. **Database** (this document's migration): ledger, trigger, `set_email_consent`, festival default. Needs approval before it is applied.
-2. **Backend:** `/api/native/email-preferences` (read and change, Bearer and cookie auth); `/api/unsubscribe` records through the ledger and
-   offers per-type withdrawal; the campaign dispatcher checks the suppression list; the footer gains the postal address and a reason line.
+2. **Backend (written, tested, not deployed):**
+   - `GET/POST /api/native/email-preferences` (Bearer and cookie auth through `getApiUser`; rate limited; no caching). GET returns the two
+     choices, when they last changed, and the policy (region, where it came from, wording version). POST changes ONE choice for the verified
+     session's account (never an id from the body), with source `onboarding` or `settings` only.
+   - `/api/unsubscribe` withdraws through `set_email_consent` (`unsubscribe_link`, or `one_click` for the mail client's request), never grants,
+     answers 503 instead of a success page if the change was not recorded, and no longer links to the retired web settings page.
+   - The campaign dispatcher asks the suppression list (bounces and complaints) before every e-mail, in the preview and the live send; "could not
+     check" releases the claim as retryable and is never a silent send or a permanent suppression.
+   - Commercial mail carries a reason line ("you chose to get...") and the postal address from the `SHOONAYA_POSTAL_ADDRESS` environment
+     variable (up to four lines; unset means no line, nothing is invented).
+   - A guard test fails if any code under `src/` assigns a consent column directly instead of going through the recorded function.
 3. **Native app:** Settings, Email (two switches, last changed); onboarding records its consent through the API with the wording version and
    device region. **Not built:** the later "ask once" prompt (it needs a placement decision on Home), and any WhatsApp switch.
 
+Stage 2 verification (backend worktree, branch `email-consent-api`): 31 deliberate breaks of the new code each turned a test red; the full
+`vitest` run is 2637 passed, 4 failed, 0 skipped. The 4 failures (2 in `rule-approval-baseline`, 2 in `narrow-read-performance`) fail identically on
+the commit without these changes and are not part of this work. `tsc --noEmit` is clean. **Not** verified: any request against a deployed
+backend, Vercel's country header on this deployment, a real e-mail rendered in a mail client, the Resend webhook, PostgREST.
+
 ## 7. Open items
 
-Founder: apply the migration (after the pre-flight in its header); the postal address text for the footer; confirm the Resend webhook is
+Founder: apply the migration (after the pre-flight in its header); set `SHOONAYA_POSTAL_ADDRESS` in the backend environment (the exact text;
+commercial mail shows no address until it is set); confirm the Resend webhook is
 registered and the sending domain has SPF and DKIM (the DNS lookup found no Resend DKIM record on `shoonaya.app` or `shoonaya.com`, and the
 code's default sender is `shoonaya.app`); decide the stale campaign `9f6e1d9a-3e18-4ba5-9d5b-703cae5f7a46` (status `dispatching` since 2026-10-08,
 no dispatches); schedule the festival cron only after consent has been collected.

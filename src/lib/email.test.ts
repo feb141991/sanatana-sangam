@@ -92,6 +92,52 @@ describe('email rendering and delivery contract', () => {
     expect(result).toEqual({ success: true, id: 'email_123' });
   });
 
+  describe('the footer of commercial mail', () => {
+    const base = {
+      to: 'devotee@example.com', subject: 'Digest', shloka: '', meaning: '', title: 'This week', body: 'Text',
+      ctaText: 'Open', ctaUrl: 'https://www.shoonaya.com', unsubUrl: 'https://www.shoonaya.com/api/unsubscribe?token=t',
+    };
+    async function html(options: Partial<typeof base> & { unsubType?: 'newsletter' | 'festivals' }) {
+      fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ id: 'e1' }), { status: 200 }));
+      await sendShoonayaEmail({ ...base, ...options });
+      return JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body)).html as string;
+    }
+
+    it.each([
+      ['newsletter', 'you chose to get the Shoonaya digest'],
+      ['festivals', 'you chose to get festival emails from Shoonaya'],
+      [undefined, 'you chose to get optional emails from Shoonaya'],
+    ] as const)('says why the person is receiving it (%s) and where to change it', async (unsubType, reason) => {
+      const out = await html({ unsubType });
+      expect(out).toContain(reason);
+      expect(out).toContain('Settings, then Email');
+    });
+
+    it('shows the postal address from SHOONAYA_POSTAL_ADDRESS, escaped, one line per row, on commercial mail only', async () => {
+      vi.stubEnv('SHOONAYA_POSTAL_ADDRESS', 'Shoonaya <Test> & Co\n12 Example Road\n\nCity 000000');
+      const commercial = await html({ unsubType: 'newsletter' });
+      expect(commercial).toContain('Shoonaya &lt;Test&gt; &amp; Co<br>12 Example Road<br>City 000000');
+      expect(commercial).not.toContain('<Test>');
+
+      fetchMock.mockReset();
+      fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ id: 'e2' }), { status: 200 }));
+      await sendShoonayaEmail({ ...base, unsubUrl: undefined });
+      const transactional = JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body)).html as string;
+      expect(transactional).not.toContain('12 Example Road');
+      expect(transactional).not.toContain('you chose to get');
+    });
+
+    it('invents no address when none is configured, and caps what is shown', async () => {
+      vi.stubEnv('SHOONAYA_POSTAL_ADDRESS', '');
+      expect(await html({ unsubType: 'newsletter' })).not.toMatch(/Road|Street|Pin|<br>\s*<\/p>/);
+      fetchMock.mockReset();
+      vi.stubEnv('SHOONAYA_POSTAL_ADDRESS', 'L1\nL2\nL3\nL4\nL5\nL6');
+      const capped = await html({ unsubType: 'newsletter' });
+      expect(capped).toContain('L1<br>L2<br>L3<br>L4');
+      expect(capped).not.toContain('L5');
+    });
+  });
+
   it.each([
     [409, false, 'provider_http_409'],
     [429, true, 'provider_rate_limited'],

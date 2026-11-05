@@ -124,6 +124,8 @@ export interface ConsentDecision {
     | "placeholder_email"
     | "account_banned"
     | "account_deleted"
+    | "email_suppressed"
+    | "suppression_check_unavailable"
     | "uncertain_consent"
     | "unsupported_channel";
 }

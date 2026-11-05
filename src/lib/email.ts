@@ -43,6 +43,26 @@ function safeHttpUrl(value: string): URL | null {
   }
 }
 
+/**
+ * The sender's postal address for commercial mail, from SHOONAYA_POSTAL_ADDRESS (up to four lines, newline separated). Shown only on mail
+ * that carries an unsubscribe link. Nothing is invented: unset means no address line, and the founder owns the text.
+ */
+function postalAddressHtml(): string {
+  const raw = process.env.SHOONAYA_POSTAL_ADDRESS?.trim();
+  if (!raw) return '';
+  const lines = raw.slice(0, 400).split(/\r?\n/).map((line) => line.trim()).filter(Boolean).slice(0, 4);
+  return lines.length > 0 ? `<p class="legal">${lines.map(escapeEmailHtml).join('<br>')}</p>` : '';
+}
+
+function reasonLine(unsubType: EmailOptions['unsubType']): string {
+  const what = unsubType === 'newsletter'
+    ? 'the Shoonaya digest'
+    : unsubType === 'festivals'
+      ? 'festival emails from Shoonaya'
+      : 'optional emails from Shoonaya';
+  return `You are receiving this because you chose to get ${what}. You can change this at any time in the Shoonaya app under Settings, then Email.`;
+}
+
 function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsubUrl, unsubType }: EmailOptions) {
   const safeCtaUrl = safeHttpUrl(ctaUrl) ?? new URL('https://www.shoonaya.com');
   const safeUnsubUrl = unsubUrl ? safeHttpUrl(unsubUrl) : null;
@@ -95,7 +115,7 @@ function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsub
         <div class="footer">
           <div class="signs">🕉️ ☬ ☸️ 🤲</div>
           <p class="legal">A daily spiritual sanctuary for sacred time, practice, and connection.<br>© 2026 Shoonaya. All rights reserved.</p>
-          ${categoryUnsubUrl ? `<p class="legal"><a href="${escapeEmailHtml(categoryUnsubUrl.toString())}">${unsubscribeLabel}</a></p>` : ''}
+          ${categoryUnsubUrl ? `<p class="legal">${escapeEmailHtml(reasonLine(unsubType))}</p><p class="legal"><a href="${escapeEmailHtml(categoryUnsubUrl.toString())}">${unsubscribeLabel}</a></p>${postalAddressHtml()}` : ''}
         </div>
       </div>
     </body>

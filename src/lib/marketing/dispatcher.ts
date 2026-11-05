@@ -4,8 +4,10 @@ import { sendShoonayaEmail } from "@/lib/email";
 import { APP } from "@/lib/config";
 import { createWhatsAppProvider } from "@/lib/whatsapp/provider";
 import { resolveRecipientEmails } from "@/lib/server/recipient-emails";
+import { checkEmailSuppression } from "@/lib/email-suppression";
 import { resolveCampaignCtaUrl, trackLinksInText, withCampaignTracking, type LinkContext } from "./campaign-links";
 import type {
+  ConsentDecision,
   MarketingCampaign,
   MarketingCampaignVariant,
   MarketingChannel,
@@ -50,6 +52,24 @@ interface DispatchResolution {
   provider?: string | null;
   providerMessageId?: string | null;
   errorCode?: string | null;
+}
+
+/**
+ * Consent is not the only reason an e-mail must not go: an address that bounced or complained is on the suppression list (recorded by the
+ * Resend webhook). The outbox always asked; the campaign path did not. "Could not check" is its own answer, not a silent send and not a
+ * permanent suppression.
+ */
+async function applyEmailSuppression(
+  supabase: any,
+  decision: ConsentDecision,
+  channel: MarketingChannel,
+  profile: RecipientProfile | null
+): Promise<ConsentDecision> {
+  if (!decision.eligible || channel !== "email") return decision;
+  const outcome = await checkEmailSuppression(supabase, profile?.email);
+  if (outcome === "suppressed") return { eligible: false, reasonCode: "email_suppressed" };
+  if (outcome === "unavailable") return { eligible: false, reasonCode: "suppression_check_unavailable" };
+  return decision;
 }
 
 async function resolveClaim(
@@ -217,7 +237,12 @@ export async function dispatchMarketingBatch(
 
     for (const row of rows) {
       const profile = profilesById[row.recipient_user_id] ?? null;
-      const consent = evaluateMarketingConsent(profile, variant.channel, campaign.campaign_type);
+      const consent = await applyEmailSuppression(
+        supabase,
+        evaluateMarketingConsent(profile, variant.channel, campaign.campaign_type),
+        variant.channel,
+        profile
+      );
 
       if (consent.eligible) {
         result.sent++;
@@ -274,7 +299,25 @@ export async function dispatchMarketingBatch(
     //    freshest profile state -- a claim can only have happened moments ago, but
     //    consent could still have changed in that window.
     const profile = profilesById[row.recipient_user_id] ?? null;
-    const consent = evaluateMarketingConsent(profile, variant.channel, campaign.campaign_type);
+    const consent = await applyEmailSuppression(
+      supabase,
+      evaluateMarketingConsent(profile, variant.channel, campaign.campaign_type),
+      variant.channel,
+      profile
+    );
+
+    // Could not check the suppression list: do not send, and do not condemn the address either. The claim is released as retryable.
+    if (!consent.eligible && consent.reasonCode === "suppression_check_unavailable") {
+      result.retryable++;
+      result.dispatches.push({
+        recipient_user_id: row.recipient_user_id,
+        channel: variant.channel,
+        status: "retryable",
+        error_code: consent.reasonCode
+      });
+      await resolveClaim(supabase, row, { status: "retryable", errorCode: consent.reasonCode });
+      continue;
+    }
 
     if (!consent.eligible) {
       result.suppressed++;
