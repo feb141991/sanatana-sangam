@@ -52,15 +52,32 @@ function handoverRow(subject_id: string, overrides: Record<string, unknown> = {}
   };
 }
 
+function earlyRow(handover_id: string, overrides: Record<string, unknown> = {}) {
+  const scheduled = new Date(Date.now() + 60 * 1000);
+  return {
+    handover_id,
+    account_id: ACCOUNT,
+    profile_generation: 1,
+    local_date: scheduled.toISOString().slice(0, 10),
+    scheduled_for: scheduled.toISOString(),
+    timezone: 'UTC',
+    language: 'en',
+    quiet_hours_start: null,
+    quiet_hours_end: null,
+    ...overrides,
+  };
+}
+
 type Failure = { code: string; message: string };
 
 function mockDatabase(
   rows: unknown[],
-  options: { rpcError?: Failure; inserts?: InsertResult[]; handoverRows?: unknown[]; handoverError?: Failure } = {},
+  options: { rpcError?: Failure; inserts?: InsertResult[]; handoverRows?: unknown[]; handoverError?: Failure; earlyRows?: unknown[]; earlyError?: Failure } = {},
 ) {
   const answers: Record<string, { data: unknown; error: Failure | null }> = {
     sanskara_reminders_due: options.rpcError ? { data: null, error: options.rpcError } : { data: rows, error: null },
     sanskara_handover_due: options.handoverError ? { data: null, error: options.handoverError } : { data: options.handoverRows ?? [], error: null },
+    sanskara_early_approval_due: options.earlyError ? { data: null, error: options.earlyError } : { data: options.earlyRows ?? [], error: null },
   };
   const limit = vi.fn().mockImplementation((_n: number) => Promise.resolve(answers[currentRpc]));
   let currentRpc = '';
@@ -309,7 +326,7 @@ describe('Sanskara reminder producer cron', () => {
       const db = mockDatabase([], { handoverRows: [] });
       await GET(request());
       expect(db.rpc).toHaveBeenCalledWith('sanskara_handover_due');
-      expect(db.limit.mock.calls).toEqual([[1000], [1000]]);
+      expect(db.limit.mock.calls).toEqual([[1000], [1000], [1000]]);
     });
 
     it('inserts a candidate in the H key space, keyed by the child\'s subject id, after the reminders', async () => {
@@ -397,6 +414,98 @@ describe('Sanskara reminder producer cron', () => {
         expect(text).not.toContain(SUBJECT_B);
         expect(text).not.toContain(ACCOUNT);
         expect(text).not.toContain('Open the app');
+      }
+    });
+  });
+
+  describe('early-hand-over approval notices', () => {
+    const HANDOVER_A = 'bbbbbbbb-1111-4222-8333-000000000001';
+    const HANDOVER_B = 'bbbbbbbb-1111-4222-8333-000000000002';
+
+    it('asks for the approval selector and creates one E-key candidate per due manager', async () => {
+      enable();
+      const db = mockDatabase([], { earlyRows: [earlyRow(HANDOVER_A), earlyRow(HANDOVER_B)] });
+      const body = await (await GET(request())).json();
+      expect(db.rpc).toHaveBeenCalledWith('sanskara_early_approval_due');
+      expect(db.insert).toHaveBeenCalledTimes(2);
+      const first = db.insert.mock.calls[0][0];
+      expect(first).toMatchObject({ event_type: 'sanskar_milestone', event_id: HANDOVER_A, event_instance: 'Eapproval', audience_variant: 'manager' });
+      expect(Object.keys(first.metadata).sort()).toEqual(['handover_id', 'local_date', 'profile_generation', 'timezone']);
+      expect(body).toMatchObject({ earlyApproval: { selectorDeployed: true, due: 2, created: 2, refused: 0, duplicates: 0 } });
+    });
+
+    it('counts a refusal by the insert trigger as an answer, not an error', async () => {
+      enable();
+      mockDatabase([], {
+        earlyRows: [earlyRow(HANDOVER_A)],
+        inserts: [{ error: { code: '23514', message: 'sanskara_candidate_requires_current_handover' } }],
+      });
+      const response = await GET(request());
+      expect(response.status).toBe(200);
+      expect((await response.json()).earlyApproval).toMatchObject({ created: 0, refused: 1, refusedReasons: { sanskara_candidate_requires_current_handover: 1 } });
+    });
+
+    it('tries the next generic wording only when the trigger says the text is not discreet', async () => {
+      enable();
+      const db = mockDatabase([], {
+        earlyRows: [earlyRow(HANDOVER_A)],
+        inserts: [{ error: { code: '23514', message: 'sanskara_candidate_not_discreet' } }, { error: null }],
+      });
+      const body = await (await GET(request())).json();
+      expect(db.insert).toHaveBeenCalledTimes(2);
+      expect(db.insert.mock.calls[1][0].title).not.toBe(db.insert.mock.calls[0][0].title);
+      expect(body.earlyApproval).toMatchObject({ created: 1, reworded: 1 });
+    });
+
+    it('counts a malformed row and skips it', async () => {
+      enable();
+      const db = mockDatabase([], { earlyRows: [earlyRow('nope'), earlyRow(HANDOVER_B)] });
+      const body = await (await GET(request())).json();
+      expect(db.insert).toHaveBeenCalledTimes(1);
+      expect(body.earlyApproval).toMatchObject({ created: 1, malformed: 1 });
+    });
+
+    it.each(['PGRST202', '42883'])('skips only this phase when the selector is not deployed yet (%s)', async (code) => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { earlyError: { code, message: 'Could not find the function public.sanskara_early_approval_due' } });
+      const body = await (await GET(request())).json();
+      expect(db.insert).toHaveBeenCalledTimes(1);
+      expect(body).toMatchObject({ created: 1, earlyApproval: { selectorDeployed: false, due: 0, created: 0 } });
+    });
+
+    it('stops the run (503) on any other selector failure, without echoing the database text', async () => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { earlyError: { code: '57014', message: 'canceling statement due to statement timeout' } });
+      const response = await GET(request());
+      expect(response.status).toBe(503);
+      expect(db.insert).not.toHaveBeenCalled();
+      expect(JSON.stringify(await response.json())).not.toContain('statement timeout');
+    });
+
+    it('creates nothing in a dry run, and counts it', async () => {
+      enable();
+      const db = mockDatabase([], { earlyRows: [earlyRow(HANDOVER_A)] });
+      const body = await (await GET(request('test-secret', '?dryRun=true'))).json();
+      expect(db.insert).not.toHaveBeenCalled();
+      expect(body).toMatchObject({ dryRun: true, eligibleCount: 1, wouldInsertCount: 1, wouldSendCount: 0 });
+    });
+
+    it('counts a malformed approval row as skipped in a dry run', async () => {
+      enable();
+      mockDatabase([], { earlyRows: [earlyRow('nope'), earlyRow(HANDOVER_A)] });
+      const body = await (await GET(request('test-secret', '?dryRun=true'))).json();
+      expect(body).toMatchObject({ eligibleCount: 2, skippedCount: 1, wouldInsertCount: 1 });
+    });
+
+    it('puts no hand-over id or account id in the response or the logs', async () => {
+      enable();
+      mockDatabase([], { earlyRows: [earlyRow(HANDOVER_A), earlyRow(HANDOVER_B)], inserts: [{ error: null }, { error: { code: '23514', message: 'sanskara_candidate_requires_current_handover' } }] });
+      const out = JSON.stringify(await (await GET(request())).json());
+      const logged = JSON.stringify([...(console.info as ReturnType<typeof vi.fn>).mock.calls, ...(console.warn as ReturnType<typeof vi.fn>).mock.calls]);
+      for (const text of [out, logged]) {
+        expect(text).not.toContain(HANDOVER_A);
+        expect(text).not.toContain(HANDOVER_B);
+        expect(text).not.toContain(ACCOUNT);
       }
     });
   });

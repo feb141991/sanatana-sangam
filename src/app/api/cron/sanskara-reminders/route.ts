@@ -15,6 +15,10 @@ import {
   withSanskaraHandoverWording,
   type SanskaraHandoverDueRow,
 } from '@/lib/sanskara-handover-candidate';
+import {
+  buildSanskaraEarlyApprovalCandidates,
+  type SanskaraEarlyApprovalDueRow,
+} from '@/lib/sanskara-early-approval-candidate';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -71,14 +75,14 @@ async function createAll(
 }
 
 /**
- * Creates a notification candidate for each Sanskara reminder, and each hand-over notice, that has become due.
+ * Creates a notification candidate for each Sanskara reminder, each hand-over notice, and each early-hand-over approval notice, that has become due.
  *
  * Selection is `sanskara_reminders_due()` (access decided by `sanskara_can`, not here). Each insert is validated by the
  * `sanskara_validate_candidate` trigger against the live subscription, record version, opt-in and access, and refused
  * with 23514 if any of them moved since the selection. A refusal is the expected answer to a change made in that gap, so it
  * is counted and the run goes on; it is not an error. Any other database error stops the run (503).
- * The dispatcher re-checks `sanskara_reminder_still_valid` (reminders) or `sanskara_handover_still_valid` (hand-over notices)
- * again immediately before sending.
+ * The dispatcher re-checks `sanskara_reminder_still_valid` (reminders), `sanskara_handover_still_valid` (hand-over notices) or
+ * `sanskara_early_approval_still_valid` (early-approval notices) again immediately before sending.
  *
  * Off unless NOTIFICATION_RESOLVER_ENABLED is true and NOTIFICATION_CANDIDATE_MODE_SANSKAR_MILESTONE is `candidate`.
  * Nothing in the response or the logs names a person, a record or an id.
@@ -125,17 +129,29 @@ export async function GET(request: Request) {
     const handoverRows = (handoverNotDeployed ? [] : (handoverData ?? [])) as SanskaraHandoverDueRow[];
     const handoverBuilt = buildSanskaraHandoverCandidates(handoverRows, now);
 
+    // The notice to the other managers of an early hand-over that is waiting for their agreement: the same event type and gates, the 'E'
+    // key space, its own selector and validator. Created by migration 20261104110000; until it is applied PostgREST answers PGRST202 (or
+    // Postgres 42883) and only this phase is skipped. Any other failure is real and stops the run.
+    const { data: earlyData, error: earlyError } = await supabase.rpc('sanskara_early_approval_due').limit(MAX_ROWS_PER_RUN);
+    const earlyNotDeployed = earlyError?.code === 'PGRST202' || earlyError?.code === '42883';
+    if (earlyError && !earlyNotDeployed) throw new Error(`sanskara_early_approval_due failed (${earlyError.code ?? 'no code'})`);
+    const earlyRows = (earlyNotDeployed ? [] : (earlyData ?? [])) as SanskaraEarlyApprovalDueRow[];
+    const earlyBuilt = buildSanskaraEarlyApprovalCandidates(earlyRows, now);
+
     if (safety.isDryRun || safety.skipDelivery) {
       return NextResponse.json(buildNotificationSafetyResponse(SANSKARA_EVENT_TYPE, safety, {
-        eligibleCount: rows.length + handoverRows.length,
-        skippedCount: built.malformedCount + built.outsideHorizonCount + handoverBuilt.malformedCount + handoverBuilt.outsideHorizonCount,
-        wouldInsertCount: built.candidates.length + handoverBuilt.candidates.length,
+        eligibleCount: rows.length + handoverRows.length + earlyRows.length,
+        skippedCount: built.malformedCount + built.outsideHorizonCount + handoverBuilt.malformedCount + handoverBuilt.outsideHorizonCount
+          + earlyBuilt.malformedCount + earlyBuilt.outsideHorizonCount,
+        wouldInsertCount: built.candidates.length + handoverBuilt.candidates.length + earlyBuilt.candidates.length,
         wouldSendCount: 0,
       }));
     }
 
     const reminders = await createAll(supabase, built.candidates, withSanskaraWording);
     const handover = await createAll(supabase, handoverBuilt.candidates, withSanskaraHandoverWording);
+    // The early-approval notice shares the generic hand-over wordings, so the same next-wording step applies on a "not discreet" refusal.
+    const earlyApproval = await createAll(supabase, earlyBuilt.candidates, withSanskaraHandoverWording);
 
     const summary = {
       due: rows.length,
@@ -151,9 +167,18 @@ export async function GET(request: Request) {
         outsideHorizon: handoverBuilt.outsideHorizonCount,
         ...handover,
       },
+      earlyApproval: {
+        selectorDeployed: !earlyNotDeployed,
+        due: earlyRows.length,
+        truncated: earlyRows.length >= MAX_ROWS_PER_RUN,
+        malformed: earlyBuilt.malformedCount,
+        outsideHorizon: earlyBuilt.outsideHorizonCount,
+        ...earlyApproval,
+      },
     };
-    const notCreated = built.malformedCount + reminders.refused + handoverBuilt.malformedCount + handover.refused;
-    if (notCreated > 0 || summary.truncated || summary.handover.truncated) console.warn('[sanskara-reminders] rows not created', summary);
+    const notCreated = built.malformedCount + reminders.refused + handoverBuilt.malformedCount + handover.refused
+      + earlyBuilt.malformedCount + earlyApproval.refused;
+    if (notCreated > 0 || summary.truncated || summary.handover.truncated || summary.earlyApproval.truncated) console.warn('[sanskara-reminders] rows not created', summary);
     console.info('[sanskara-reminders] producer completed', summary);
     return NextResponse.json({ success: true, pipeline_mode: 'candidate', ...summary });
   } catch (error) {

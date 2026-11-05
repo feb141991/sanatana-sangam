@@ -375,6 +375,30 @@ export async function GET(request: Request) {
           const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
             ? row.metadata as Record<string, unknown>
             : {};
+          // An early-hand-over approval notice (the other managers of a child, before 18) carries `handover_id` and no `notice`. Its
+          // validity is the hand-over's and the recipient's, asked about the ROW'S OWN user.
+          if (metadata.handover_id !== undefined) {
+            const earlyHandover = metadata.handover_id;
+            const earlyGeneration = metadata.profile_generation;
+            const earlyDate = metadata.local_date;
+            if (
+              metadata.notice !== undefined
+              || typeof earlyHandover !== 'string' || !UUID_RE.test(earlyHandover)
+              || !Number.isInteger(earlyGeneration)
+              || typeof earlyDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(earlyDate)
+            ) {
+              sanskaraInvalidIds.set(row.id, 'sanskara_early_approval_metadata_invalid');
+              continue;
+            }
+            const { data: earlyValid, error: earlyValidError } = await supabase.rpc('sanskara_early_approval_still_valid', {
+              p_handover: earlyHandover,
+              p_account: row.user_id,
+              p_profile_generation: earlyGeneration as number,
+            });
+            if (earlyValidError) throw earlyValidError;
+            if (earlyValid !== true) sanskaraInvalidIds.set(row.id, 'sanskara_early_approval_no_longer_valid');
+            continue;
+          }
           // A hand-over notice (a child's managers, the hand-over at 18) shares the type but not the key space: it carries
           // `notice`, and its validity is the child's, not a subscription's. The account asked about is the row's own user.
           if (metadata.notice !== undefined) {

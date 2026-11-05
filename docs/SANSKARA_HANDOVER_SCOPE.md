@@ -1,6 +1,6 @@
 # Sanskara tracker: hand-over of a child's records (scope, 2026-11-03)
 
-Status: **Phase 1 database layer written (2026-11-03, migration `20261103110000`, not applied); producer, dispatcher branch and Native banners follow. Early hand-over (section 3): the DATABASE layer is written (2026-11-04, migration `20261104100000`, not applied) and is OFF until the founder inserts an age floor; the route (`/api/native/sanskara/*-early-handover`, 2026-11-04) and the Native card and code entry are written and unit-tested but NOT run on a device; manager push notification, privacy-policy wording and the lawyer's review are NOT done, and D-B to D-E are still the founder's. A manager learns of a pending approval by opening the child's screen (no push).** Decision D-A is taken: the push requires `wants_sanskara_reminders`, the banner does not. It extends `SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md` (E7, E10, section 13) and
+Status: **Phase 1 database layer written (2026-11-03, migration `20261103110000`, not applied); producer, dispatcher branch and Native banners follow. Early hand-over (section 3): the DATABASE layer is written (2026-11-04, migration `20261104100000`, not applied) and is OFF until the founder inserts an age floor; the route (`/api/native/sanskara/*-early-handover`, 2026-11-04) and the Native card and code entry are written and unit-tested but NOT run on a device; the manager notice (migration `20261104110000`, producer phase, dispatcher check) is written and passes its SQL and unit tests on a scratch database but is NOT applied and NOT seen on a device; privacy-policy wording and the lawyer's review are NOT done (review pack: `docs/SANSKARA_EARLY_HANDOVER_REVIEW_PACK.md`), and D-B to D-E are still the founder's. A manager who has opted in to Sanskara reminders gets one generic push when another manager starts a hand-over; a manager who has not opted in learns of it by opening the child's screen. The starter gets no push when the child enters the code.** Decision D-A is taken: the push requires `wants_sanskara_reminders`, the banner does not. It extends `SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md` (E7, E10, section 13) and
 `SANSKARA_TRACKER_BACKEND_DESIGN.md`. Not legal advice.
 
 ## 1. What exists today
@@ -87,3 +87,19 @@ parent's or guardian's awareness; the app is not directed to children under 13; 
 3. **Phase 2 (early hand-over)**: do not start until D-B, D-C, D-D, D-E are answered and a lawyer has seen it.
 
 Not verified in this scope: Native modal behaviour on a device; production volume (0 dependents on 2026-10-30). Read from `lib/age-guidance.ts` (not from a device): the age policy above.
+
+## 5. Manager notice for an early hand-over (2026-11-04)
+
+- **What:** when a manager starts an early hand-over, each OTHER current manager who has not agreed, has opted in to Sanskara reminders
+  (`wants_sanskara_reminders`, decision D-A) and has given consent gets one push per hand-over. Same event type as the other Sanskara notices,
+  key space `event_id = hand-over id`, `event_instance = 'Eapproval'` (reminders use `L`, 18-year notices `H`). The text is the existing generic,
+  reviewed wording: no child, no relationship, no date. Tap opens `/kul/sanskara` (the child's card opens by itself when a manager has something to do).
+- **Where:** selector `sanskara_early_approval_due`, send-time check `sanskara_early_approval_still_valid`, insert validator, cancel triggers (migration
+  `20261104110000`, rollback in `supabase/rollbacks/`); producer phase in `/api/cron/sanskara-reminders` (hourly, so up to an hour late); dispatcher
+  branch in `/api/cron/notification-dispatch`.
+- **Cancelled when:** the hand-over leaves "awaiting approval" or is deleted, that manager agrees or is removed, or the recipient turns off the opt-in,
+  withdraws consent or enters account deletion. Restarting a hand-over cancels the old one and notifies once more for the new one.
+- **Known gaps:** a manager added to the child after the hand-over started is notified only within 24 hours of the start; the starter is not
+  notified when the child enters the code (they see it on the child's screen); a cancelled notice is not offered again for the same hand-over.
+- **Order of work:** the feature is off until an age floor is set, so none of this does anything yet. Deploy the dispatcher branch before applying the
+  migration and turning on the producer, as for the 18-year notices.
