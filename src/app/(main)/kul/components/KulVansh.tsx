@@ -22,6 +22,7 @@ import {
   TreePine,
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { getKinshipTier } from '@/lib/kinship';
 import { FamilyMember, MemberRow } from '../types';
 
 type VanshView = 'lineage' | 'mandala' | 'timeline' | 'constellation' | 'scroll' | 'courtyard';
@@ -90,16 +91,16 @@ export function KulVansh({
                 type="button"
                 onClick={onBack}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--card-border)] bg-[var(--card-bg)] text-[var(--text-cream)] shadow-sm transition hover:border-[var(--brand-primary)]"
-                aria-label="Back to Kul hub"
+                aria-label="Back to Kutumb hub"
               >
                 <ChevronLeft size={20} />
               </button>
               <div>
                 <h1 className="font-display text-lg font-medium leading-tight text-[var(--text-cream)] sm:text-xl">
-                  Kul Vriksha
+                  Kutumb Vriksha
                 </h1>
                 <p className="text-xs text-[var(--text-muted-warm)]">
-                  {familyMembers.length} {familyMembers.length === 1 ? 'member' : 'members'} · Lineage Sanctuary
+                  {familyMembers.length} {familyMembers.length === 1 ? 'member' : 'members'} · Kutumb Lineage Sanctuary
                 </p>
               </div>
             </div>
@@ -279,7 +280,7 @@ function EmptyVanshState({ canManageVansh, onAdd }: { canManageVansh: boolean; o
         <TreePine size={30} />
       </div>
       <h3 className="mt-5 text-2xl font-medium theme-ink premium-serif">{t('kulVanshEmptyTitle')}</h3>
-      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed theme-muted">Add the first person and the Kul Vriksha will form from here.</p>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed theme-muted">Add the first person and your Kutumb Vriksha will form from here.</p>
       {canManageVansh && (
         <button onClick={onAdd} className="mt-6 rounded-full bg-[var(--brand-primary)] px-6 py-3 text-sm font-medium text-white shadow-[0_14px_34px_rgba(216,138,28,0.26)]">
           {t('kulCreateFirstBranch')}
@@ -367,6 +368,53 @@ function TreeBranch({
   );
 }
 
+function KinshipBadge({ generation }: { generation: number }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tier = getKinshipTier(generation);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onFocus={() => setShowTooltip(true)}
+      onBlur={() => setShowTooltip(false)}
+    >
+      <span
+        tabIndex={0}
+        role="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowTooltip((prev) => !prev);
+        }}
+        className="inline-flex cursor-help items-center gap-0.5 rounded-full border border-[var(--brand-primary)]/25 bg-[var(--brand-primary-soft)] px-1.5 py-0.5 text-[9px] font-medium leading-none text-[var(--brand-primary)] shadow-sm transition hover:border-[var(--brand-primary)]/50 focus-visible:outline-none"
+        aria-label={`${tier.label}, generation ${generation}. ${tier.tooltip}`}
+      >
+        <span>{tier.label}</span>
+      </span>
+
+      {showTooltip && (
+        <div
+          role="tooltip"
+          className="absolute left-0 top-full z-50 mt-1.5 w-52 rounded-xl border border-[var(--card-border)] bg-[var(--surface-raised)] p-2.5 text-left shadow-xl backdrop-blur-md"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between gap-1 text-[10px] font-semibold text-[var(--brand-primary)]">
+            <span>{tier.label}</span>
+            <span className="rounded bg-[var(--brand-primary)]/15 px-1 py-0.5 text-[8.5px]">Gen {tier.generation}</span>
+          </div>
+          <p className="mt-0.5 text-[9.5px] text-[var(--text-dim)]">
+            {tier.hindiLabel} · {tier.description}
+          </p>
+          <p className="mt-1 text-[10.5px] leading-snug text-[var(--text-cream)]">
+            {tier.tooltip}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function MemberNodeCard({
   member,
   canManage,
@@ -394,6 +442,11 @@ function MemberNodeCard({
         onClick={() => onSelect(member)}
         className="relative flex h-[138px] w-[138px] flex-col items-center justify-between rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-3 text-center shadow-[var(--shadow-soft)] transition-all duration-200 hover:-translate-y-1 hover:border-[var(--brand-primary)]/50 hover:shadow-[var(--shadow-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
       >
+        {/* Top left corner: Human Kinship Badge with Tooltip */}
+        <div className="absolute left-2 top-2 z-10">
+          <KinshipBadge generation={inferGeneration(member)} />
+        </div>
+
         {/* Top corner: Only show a subtle Diya if remembered; keep living cards serene */}
         {isRemembered ? (
           <span
@@ -512,7 +565,15 @@ function TimelineView({
         {generations.map(([generation, members]) => (
           <div key={generation} className="relative w-64 pt-8">
             <div className="absolute left-0 top-0 h-6 w-6 rounded-full border-4 border-[var(--surface-base)] bg-[var(--brand-primary)] shadow-sm" />
-            <p className="text-sm font-medium text-[var(--brand-primary)]">Generation {generation}</p>
+            {(() => {
+              const tier = getKinshipTier(generation);
+              return (
+                <div className="flex items-baseline gap-1.5">
+                  <p className="text-sm font-medium text-[var(--brand-primary)]">{tier.label} · Gen {generation}</p>
+                  <span className="text-[11px] text-[var(--text-muted-warm)]">({tier.hindiLabel})</span>
+                </div>
+              );
+            })()}
             <div className="mt-4 space-y-3">
               {members.map((member) => (
                 <button key={member.id} type="button" onClick={() => onSelect(member)} className="flex w-full items-center gap-3 rounded-2xl bg-[var(--surface-raised)]/76 p-3 text-left shadow-sm backdrop-blur-md">
@@ -723,11 +784,18 @@ function AncestralScrollView({
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.45 }}
           >
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-[#c9a35b]/34" />
-              <p className="rounded-full bg-[#FAEEDA]/72 px-3 py-1 text-sm font-medium text-[#854F0B]">Generation {generation}</p>
-              <div className="h-px flex-1 bg-[#c9a35b]/34" />
-            </div>
+            {(() => {
+              const tier = getKinshipTier(generation);
+              return (
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-[#c9a35b]/34" />
+                  <p className="rounded-full bg-[#FAEEDA]/72 px-3 py-1 text-sm font-medium text-[#854F0B]">
+                    {tier.label} · Generation {generation} ({tier.hindiLabel})
+                  </p>
+                  <div className="h-px flex-1 bg-[#c9a35b]/34" />
+                </div>
+              );
+            })()}
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {members.map((member) => (
                 <button key={member.id} type="button" onClick={() => onSelect(member)} className="group flex items-center gap-3 rounded-[1.35rem] border border-[#C5A059]/15 bg-[var(--surface-soft)] p-3 text-left shadow-[0_10px_30px_rgba(62,42,31,0.06)] backdrop-blur-md transition hover:-translate-y-0.5 ">
