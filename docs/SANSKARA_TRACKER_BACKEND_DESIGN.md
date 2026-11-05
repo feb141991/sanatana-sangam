@@ -564,9 +564,11 @@ to the contract (grants test around the "lapsed share", reminders 3h and the due
 place"). Anyone who prefers the old "suspend and resume" semantics should say so before this migration is applied.
 
 **What this does not close.**
-- E10's hand-over offer ("if they were the last, the flow offers a hand-over to a current Kul member") is a client flow; no server
-  function warns a last manager before they leave or delete. Deletion proceeds, which is "deletion over disclosure", but the offer
-  itself is not built or tested here.
+- E10's hand-over offer ("if they were the last, the flow offers a hand-over to a current Kul member"). **2026-11-05:** the backend half is written
+  (migration `20261105100000`, NOT applied): `sanskara_manager_picker(subject)` lists the managers and the same-Kul members who could be added (not deleting, with
+  consent, not already managers), `sanskara_sole_manager_dependents()` lists the children whose only manager is the caller. The hand-over itself is the existing
+  `sanskara_add_manager` (current Kul member only, no acceptance step, as E6 says: immediate) followed by `sanskara_remove_manager`. The Native flow is in
+  the Native repository. Deletion of an account whose children have no other manager still deletes them, unchanged.
 - M5 (retention, consent purge, majority sweep) is now written (see "M5" below); the reminder producer is built separately (section 5), and nothing is scheduled anywhere until the M5 migration is applied.
 - Not verified: a real Supabase branch, concurrency (a leave racing a grant), and the Native screen's behaviour when a share is
   voided while it is open.

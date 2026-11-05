@@ -83,7 +83,7 @@ parent's or guardian's awareness; the app is not directed to children under 13; 
 ## 4. Order of work and what each needs from you
 
 1. **Phase 1 (G1 to G3)**: needs D-A only. Can start now.
-2. **E10 last-manager offer**: separate small scope; needs a decision on whether the recipient must be a current Kul member only (contract says so).
+2. **E10 last-manager offer**: built 2026-11-05 on the existing add/remove manager functions; the recipient must be a current member of the caller's Kul (the contract says so; `sanskara_add_manager` enforces it). Migration `20261105100000` is NOT applied.
 3. **Phase 2 (early hand-over)**: do not start until D-B, D-C, D-D, D-E are answered and a lawyer has seen it.
 
 Not verified in this scope: Native modal behaviour on a device; production volume (0 dependents on 2026-10-30). Read from `lib/age-guidance.ts` (not from a device): the age policy above.

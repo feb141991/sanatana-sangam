@@ -130,6 +130,14 @@ export const SANSKARA_ACTIONS: Readonly<Record<string, SanskaraAction>> = Object
     return subject ? { ok: true, args: { p_subject: subject } } : fail('subject');
   }),
 
+  // Who manages a child and which members of the caller's Kul could be added (G4: hand a child's timeline to another adult).
+  managers: define('GET', 'sanskara_manager_picker', ['subject'], (i) => {
+    const subject = uuid(i, 'subject');
+    return subject ? { ok: true, args: { p_subject: subject } } : fail('subject');
+  }),
+  // The caller's children for whom the caller is the only manager: what an account deletion would delete.
+  'sole-manager-dependents': define('GET', 'sanskara_sole_manager_dependents', [], () => ({ ok: true, args: noArgs as ArgsOf<'sanskara_sole_manager_dependents'> })),
+
   // ── Writes (POST, all idempotent on requestId) ───────────────────────────────────────────────────────────────────────
   'create-dependent': define('POST', 'sanskara_create_dependent', ['requestId', 'name', 'birthDate', 'kulFamilyMemberId'], (i) => {
     const requestId = uuid(i, 'requestId'); if (!requestId) return fail('requestId');

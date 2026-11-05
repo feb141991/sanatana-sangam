@@ -16,7 +16,7 @@ describe('the action table', () => {
   const names = Object.keys(SANSKARA_ACTIONS);
 
   it('has seven reads and twenty-two writes', () => {
-    expect(names.filter((n) => SANSKARA_ACTIONS[n].method === 'GET')).toHaveLength(7);
+    expect(names.filter((n) => SANSKARA_ACTIONS[n].method === 'GET')).toHaveLength(9);
     expect(names.filter((n) => SANSKARA_ACTIONS[n].method === 'POST')).toHaveLength(22);
   });
 
@@ -68,6 +68,16 @@ describe('reads', () => {
     expect(parse('access', {})).toEqual({ ok: false, field: 'subject' });
     expect(parse('access', { subject: S })).toEqual({ ok: true, args: { p_subject: S } });
     expect(parse('access', { subject: ['a', 'b'] })).toEqual({ ok: false, field: 'subject' });
+  });
+
+  it('manager picker needs a uuid subject; the sole-manager list takes nothing', () => {
+    expect(parse('managers', {})).toEqual({ ok: false, field: 'subject' });
+    expect(parse('managers', { subject: 'nope' })).toEqual({ ok: false, field: 'subject' });
+    expect(parse('managers', { subject: [S, S] })).toEqual({ ok: false, field: 'subject' });
+    expect(parse('managers', { subject: S })).toEqual({ ok: true, args: { p_subject: S } });
+    expect(parse('sole-manager-dependents', {})).toEqual({ ok: true, args: {} });
+    expect(SANSKARA_ACTIONS.managers.rpc).toBe('sanskara_manager_picker');
+    expect(SANSKARA_ACTIONS['sole-manager-dependents'].rpc).toBe('sanskara_sole_manager_dependents');
   });
 
   it('turns a query string into the same input shape, repeated keys becoming arrays', () => {

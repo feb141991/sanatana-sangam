@@ -12142,6 +12142,8 @@ export type Database = {
         Returns: Json
       }
       sanskara_list_access: { Args: { p_subject: string }; Returns: Json }
+      sanskara_manager_picker: { Args: { p_subject: string }; Returns: Json }
+      sanskara_sole_manager_dependents: { Args: Record<PropertyKey, never>; Returns: Json }
       sanskara_move_records_early: {
         Args: { p_account: string; p_subject: string }
         Returns: Json
