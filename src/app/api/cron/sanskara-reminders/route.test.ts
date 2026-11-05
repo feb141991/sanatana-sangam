@@ -72,12 +72,13 @@ type Failure = { code: string; message: string };
 
 function mockDatabase(
   rows: unknown[],
-  options: { rpcError?: Failure; inserts?: InsertResult[]; handoverRows?: unknown[]; handoverError?: Failure; earlyRows?: unknown[]; earlyError?: Failure } = {},
+  options: { rpcError?: Failure; inserts?: InsertResult[]; handoverRows?: unknown[]; handoverError?: Failure; earlyRows?: unknown[]; earlyError?: Failure; confirmRows?: unknown[]; confirmError?: Failure } = {},
 ) {
   const answers: Record<string, { data: unknown; error: Failure | null }> = {
     sanskara_reminders_due: options.rpcError ? { data: null, error: options.rpcError } : { data: rows, error: null },
     sanskara_handover_due: options.handoverError ? { data: null, error: options.handoverError } : { data: options.handoverRows ?? [], error: null },
     sanskara_early_approval_due: options.earlyError ? { data: null, error: options.earlyError } : { data: options.earlyRows ?? [], error: null },
+    sanskara_early_confirm_due: options.confirmError ? { data: null, error: options.confirmError } : { data: options.confirmRows ?? [], error: null },
   };
   const limit = vi.fn().mockImplementation((_n: number) => Promise.resolve(answers[currentRpc]));
   let currentRpc = '';
@@ -326,7 +327,7 @@ describe('Sanskara reminder producer cron', () => {
       const db = mockDatabase([], { handoverRows: [] });
       await GET(request());
       expect(db.rpc).toHaveBeenCalledWith('sanskara_handover_due');
-      expect(db.limit.mock.calls).toEqual([[1000], [1000], [1000]]);
+      expect(db.limit.mock.calls).toEqual([[1000], [1000], [1000], [1000]]);
     });
 
     it('inserts a candidate in the H key space, keyed by the child\'s subject id, after the reminders', async () => {
@@ -507,6 +508,66 @@ describe('Sanskara reminder producer cron', () => {
         expect(text).not.toContain(HANDOVER_B);
         expect(text).not.toContain(ACCOUNT);
       }
+    });
+  });
+
+  describe('early-hand-over notice to the starter (the child has entered the code)', () => {
+    const HANDOVER_A = 'cccccccc-1111-4222-8333-000000000001';
+
+    it('asks for the confirm selector and creates one Econfirm candidate for the starter', async () => {
+      enable();
+      const db = mockDatabase([], { confirmRows: [earlyRow(HANDOVER_A)] });
+      const body = await (await GET(request())).json();
+      expect(db.rpc).toHaveBeenCalledWith('sanskara_early_confirm_due');
+      expect(db.insert).toHaveBeenCalledTimes(1);
+      const first = db.insert.mock.calls[0][0];
+      expect(first).toMatchObject({ event_type: 'sanskar_milestone', event_id: HANDOVER_A, event_instance: 'Econfirm', audience_variant: 'starter' });
+      expect(Object.keys(first.metadata).sort()).toEqual(['confirm_handover_id', 'local_date', 'profile_generation', 'timezone']);
+      expect(body).toMatchObject({ earlyConfirm: { selectorDeployed: true, due: 1, created: 1, refused: 0 } });
+    });
+
+    it('keeps the two early notices apart in one run', async () => {
+      enable();
+      const db = mockDatabase([], { earlyRows: [earlyRow(HANDOVER_A)], confirmRows: [earlyRow(HANDOVER_A)] });
+      const body = await (await GET(request())).json();
+      expect(db.insert.mock.calls.map((c) => c[0].event_instance).sort()).toEqual(['Eapproval', 'Econfirm']);
+      expect(body).toMatchObject({ earlyApproval: { created: 1 }, earlyConfirm: { created: 1 } });
+    });
+
+    it.each(['PGRST202', '42883'])('skips only this phase when the selector is not deployed yet (%s)', async (code) => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { confirmError: { code, message: 'Could not find the function public.sanskara_early_confirm_due' } });
+      const body = await (await GET(request())).json();
+      expect(db.insert).toHaveBeenCalledTimes(1);
+      expect(body).toMatchObject({ created: 1, earlyConfirm: { selectorDeployed: false, due: 0, created: 0 } });
+    });
+
+    it('stops the run (503) on any other selector failure, without echoing the database text', async () => {
+      enable();
+      const db = mockDatabase([dueRow(SUB_A)], { confirmError: { code: '57014', message: 'canceling statement due to statement timeout' } });
+      const response = await GET(request());
+      expect(response.status).toBe(503);
+      expect(db.insert).not.toHaveBeenCalled();
+      expect(JSON.stringify(await response.json())).not.toContain('statement timeout');
+    });
+
+    it('counts a refusal by the insert trigger as an answer, and a malformed row as malformed', async () => {
+      enable();
+      mockDatabase([], {
+        confirmRows: [earlyRow('nope'), earlyRow(HANDOVER_A)],
+        inserts: [{ error: { code: '23514', message: 'sanskara_candidate_requires_current_handover' } }],
+      });
+      const response = await GET(request());
+      expect(response.status).toBe(200);
+      expect((await response.json()).earlyConfirm).toMatchObject({ created: 0, refused: 1, malformed: 1 });
+    });
+
+    it('creates nothing in a dry run, and counts a malformed row as skipped', async () => {
+      enable();
+      const db = mockDatabase([], { confirmRows: [earlyRow('nope'), earlyRow(HANDOVER_A)] });
+      const body = await (await GET(request('test-secret', '?dryRun=true'))).json();
+      expect(db.insert).not.toHaveBeenCalled();
+      expect(body).toMatchObject({ dryRun: true, eligibleCount: 2, skippedCount: 1, wouldInsertCount: 1, wouldSendCount: 0 });
     });
   });
 });

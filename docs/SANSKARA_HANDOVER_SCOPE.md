@@ -1,6 +1,6 @@
 # Sanskara tracker: hand-over of a child's records (scope, 2026-11-03)
 
-Status: **Phase 1 database layer written (2026-11-03, migration `20261103110000`, not applied); producer, dispatcher branch and Native banners follow. Early hand-over (section 3): the DATABASE layer is written (2026-11-04, migration `20261104100000`, not applied) and is OFF until the founder inserts an age floor; the route (`/api/native/sanskara/*-early-handover`, 2026-11-04) and the Native card and code entry are written and unit-tested but NOT run on a device; the manager notice (migration `20261104110000`, producer phase, dispatcher check) is written and passes its SQL and unit tests on a scratch database but is NOT applied and NOT seen on a device; privacy-policy wording and the lawyer's review are NOT done (review pack: `docs/SANSKARA_EARLY_HANDOVER_REVIEW_PACK.md`), and D-B to D-E are still the founder's. A manager who has opted in to Sanskara reminders gets one generic push when another manager starts a hand-over; a manager who has not opted in learns of it by opening the child's screen. The starter gets no push when the child enters the code.** Decision D-A is taken: the push requires `wants_sanskara_reminders`, the banner does not. It extends `SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md` (E7, E10, section 13) and
+Status: **Phase 1 database layer written (2026-11-03, migration `20261103110000`, not applied); producer, dispatcher branch and Native banners follow. Early hand-over (section 3): the DATABASE layer is written (2026-11-04, migration `20261104100000`, not applied) and is OFF until the founder inserts an age floor; the route (`/api/native/sanskara/*-early-handover`, 2026-11-04) and the Native card and code entry are written and unit-tested but NOT run on a device; the manager notice (migration `20261104110000`, producer phase, dispatcher check) is written and passes its SQL and unit tests on a scratch database but is NOT applied and NOT seen on a device; privacy-policy wording and the lawyer's review are NOT done (review pack: `docs/SANSKARA_EARLY_HANDOVER_REVIEW_PACK.md`), and D-B to D-E are still the founder's. A manager who has opted in to Sanskara reminders gets one generic push when another manager starts a hand-over; a manager who has not opted in learns of it by opening the child's screen. The manager who started it gets one generic push when the child enters the code (same migration, written 2026-11-05, same status).** Decision D-A is taken: the push requires `wants_sanskara_reminders`, the banner does not. It extends `SANSKARA_TRACKER_AUTHORIZATION_CONTRACT.md` (E7, E10, section 13) and
 `SANSKARA_TRACKER_BACKEND_DESIGN.md`. Not legal advice.
 
 ## 1. What exists today
@@ -99,7 +99,16 @@ Not verified in this scope: Native modal behaviour on a device; production volum
   branch in `/api/cron/notification-dispatch`.
 - **Cancelled when:** the hand-over leaves "awaiting approval" or is deleted, that manager agrees or is removed, or the recipient turns off the opt-in,
   withdraws consent or enters account deletion. Restarting a hand-over cancels the old one and notifies once more for the new one.
-- **Known gaps:** a manager added to the child after the hand-over started is notified only within 24 hours of the start; the starter is not
-  notified when the child enters the code (they see it on the child's screen); a cancelled notice is not offered again for the same hand-over.
+- **The starter's notice (2026-11-05):** when the child has entered the code (`awaiting_confirmation`), the manager who started the hand-over gets one
+  generic push that it is waiting for their confirmation. `event_instance = 'Econfirm'`, audience `starter`, metadata key `confirm_handover_id` (the
+  approval notice uses `handover_id`; the dispatcher and the cancel triggers tell them apart by that key). Selector `sanskara_early_confirm_due`, send-time
+  check `sanskara_early_confirm_still_valid` (starter only, still awaiting confirmation with a child's code entered, unexpired, feature on, age window,
+  opt-in generation, `manage_managers` access). Cancelled when the hand-over leaves `awaiting_confirmation` (cancelled, or a manager change sends it back),
+  is deleted (what a confirmed hand-over does), the starter is removed, or the starter opts out, withdraws consent or enters deletion. It names no child
+  and not the account that entered the code. No age limit: the hand-over expires by itself after 7 days, so a late notice is still useful.
+- **Late-added managers (2026-11-05):** the 24-hour window of the approval notice runs from the later of the hand-over start and the day that manager
+  was added (`sanskara_subject_managers.added_at`), so a manager added on day 3 is told; an old hand-over is still never announced to long-standing managers.
+- **Known gaps:** a cancelled notice is not offered again for the same hand-over (a spent key); the producer is hourly, so a notice can be up to an
+  hour late; a manager who has not opted in learns of it by opening the child's screen.
 - **Order of work:** the feature is off until an age floor is set, so none of this does anything yet. Deploy the dispatcher branch before applying the
   migration and turning on the producer, as for the 18-year notices.

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildSanskaraEarlyApprovalCandidates,
+  buildSanskaraEarlyConfirmCandidates,
+  SANSKARA_EARLY_CONFIRM_INSTANCE,
   SANSKARA_EARLY_APPROVAL_INSTANCE,
   type SanskaraEarlyApprovalDueRow,
 } from './sanskara-early-approval-candidate';
@@ -103,6 +105,51 @@ describe('buildSanskaraEarlyApprovalCandidates', () => {
   it('counts, and does not insert, a row scheduled beyond the horizon', () => {
     const result = build([row({ scheduled_for: '2026-11-07T06:00:00.000Z' })]);
     expect(result.candidates).toHaveLength(0);
+    expect(result.outsideHorizonCount).toBe(1);
+  });
+});
+
+// The starter's notice: the child has entered the code. Same wording and horizon, its own key, audience and metadata key.
+describe('buildSanskaraEarlyConfirmCandidates', () => {
+  const buildConfirm = (rows: SanskaraEarlyApprovalDueRow[], now = NOW) => buildSanskaraEarlyConfirmCandidates(rows, now);
+  const CONFIRM_METADATA = ['confirm_handover_id', 'local_date', 'profile_generation', 'timezone'];
+
+  it('maps a due row to the Econfirm key, to the starter, keyed by the hand-over id', () => {
+    const { candidates } = buildConfirm([row()]);
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0]).toMatchObject({
+      user_id: ACCOUNT, event_type: 'sanskar_milestone', event_id: HANDOVER, event_instance: 'Econfirm', audience_variant: 'starter',
+      action_url: SANSKARA_ACTION_URL,
+    });
+    expect(SANSKARA_EARLY_CONFIRM_INSTANCE).toBe('Econfirm');
+  });
+
+  it('keeps a key space of its own: not the approval notice\'s, not L or H', () => {
+    const [candidate] = buildConfirm([row()]).candidates;
+    expect(candidate.event_instance).not.toBe(SANSKARA_EARLY_APPROVAL_INSTANCE);
+    expect(candidate.event_instance).not.toMatch(/^[LH]/);
+  });
+
+  it('carries confirm_handover_id and not handover_id, so the dispatcher and the cancel triggers can tell them apart', () => {
+    const [candidate] = buildConfirm([row()]).candidates;
+    expect(Object.keys(candidate.metadata as object).sort()).toEqual(CONFIRM_METADATA);
+    expect(candidate.metadata).not.toHaveProperty('handover_id');
+    const [approval] = build([row()]).candidates;
+    expect(approval.metadata).not.toHaveProperty('confirm_handover_id');
+  });
+
+  it('names no child and no account that entered the code, and uses the same reviewed generic wording', () => {
+    const [candidate] = buildConfirm([row({ language: 'hi' })]).candidates;
+    expect(candidate.title).toBe(SANSKARA_HANDOVER_WORDINGS.hi[0].title);
+    expect(candidate.body).toBe(SANSKARA_HANDOVER_WORDINGS.hi[0].body);
+    expect(JSON.stringify(candidate)).not.toMatch(/subject|child|name|birth|claimant|initiat/i);
+  });
+
+  it('counts, and does not insert, malformed and out-of-horizon rows', () => {
+    const far = new Date(NOW.getTime() + 49 * 60 * 60 * 1000).toISOString();
+    const result = buildConfirm([row({ handover_id: 'nope' }), row({ scheduled_for: far }), row()]);
+    expect(result.candidates).toHaveLength(1);
+    expect(result.malformedCount).toBe(1);
     expect(result.outsideHorizonCount).toBe(1);
   });
 });

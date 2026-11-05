@@ -16,6 +16,7 @@ import { SANSKARA_HANDOVER_WORDINGS } from './sanskara-handover-candidate';
  */
 
 export const SANSKARA_EARLY_APPROVAL_INSTANCE = 'Eapproval';
+export const SANSKARA_EARLY_CONFIRM_INSTANCE = 'Econfirm';
 
 /** How long the notice stays deliverable after it is due. Past this it is no longer news and is dropped by the pipeline. */
 const NOTICE_LIFETIME_MS = 12 * 60 * 60 * 1000;
@@ -58,7 +59,22 @@ function isWellFormed(row: SanskaraEarlyApprovalDueRow): boolean {
     && typeof row.scheduled_for === 'string' && Number.isFinite(Date.parse(row.scheduled_for));
 }
 
+type Kind = { instance: string; audience: string; handoverKey: string };
+const APPROVAL: Kind = { instance: SANSKARA_EARLY_APPROVAL_INSTANCE, audience: 'manager', handoverKey: 'handover_id' };
+// The starter's notice, sent once the child has entered the code. Its metadata key differs (`confirm_handover_id`) so the dispatcher and the
+// cancellation triggers can tell the two kinds apart without a fifth metadata key.
+const CONFIRM: Kind = { instance: SANSKARA_EARLY_CONFIRM_INSTANCE, audience: 'starter', handoverKey: 'confirm_handover_id' };
+
 export function buildSanskaraEarlyApprovalCandidates(rows: SanskaraEarlyApprovalDueRow[], now: Date): SanskaraEarlyApprovalBuild {
+  return build(rows, now, APPROVAL);
+}
+
+/** Rows of `sanskara_early_confirm_due()`: the manager who started a hand-over, once the child has entered the code. */
+export function buildSanskaraEarlyConfirmCandidates(rows: SanskaraEarlyApprovalDueRow[], now: Date): SanskaraEarlyApprovalBuild {
+  return build(rows, now, CONFIRM);
+}
+
+function build(rows: SanskaraEarlyApprovalDueRow[], now: Date, kind: Kind): SanskaraEarlyApprovalBuild {
   const candidates: NotificationCandidateInsert[] = [];
   let malformedCount = 0;
   let outsideHorizonCount = 0;
@@ -77,9 +93,9 @@ export function buildSanskaraEarlyApprovalCandidates(rows: SanskaraEarlyApproval
       user_id: row.account_id,
       event_type: SANSKARA_EVENT_TYPE,
       event_id: row.handover_id,
-      event_instance: SANSKARA_EARLY_APPROVAL_INSTANCE,
+      event_instance: kind.instance,
       local_date: row.local_date,
-      audience_variant: 'manager',
+      audience_variant: kind.audience,
       scheduled_for: scheduledFor.toISOString(),
       expires_at: expiresAt.toISOString(),
       priority: 30,
@@ -94,7 +110,7 @@ export function buildSanskaraEarlyApprovalCandidates(rows: SanskaraEarlyApproval
       source_refs: {},
       // Exactly the keys the insert trigger allows.
       metadata: {
-        handover_id: row.handover_id,
+        [kind.handoverKey]: row.handover_id,
         profile_generation: row.profile_generation,
         local_date: row.local_date,
         timezone,

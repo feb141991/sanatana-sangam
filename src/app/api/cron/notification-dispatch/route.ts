@@ -375,6 +375,30 @@ export async function GET(request: Request) {
           const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata)
             ? row.metadata as Record<string, unknown>
             : {};
+          // The early-hand-over notice to the STARTER (the child has entered the code) carries `confirm_handover_id`, never `handover_id` or
+          // `notice`. Its validity is the hand-over's and the starter's, asked about the ROW'S OWN user.
+          if (metadata.confirm_handover_id !== undefined) {
+            const confirmHandover = metadata.confirm_handover_id;
+            const confirmGeneration = metadata.profile_generation;
+            const confirmDate = metadata.local_date;
+            if (
+              metadata.notice !== undefined || metadata.handover_id !== undefined
+              || typeof confirmHandover !== 'string' || !UUID_RE.test(confirmHandover)
+              || !Number.isInteger(confirmGeneration)
+              || typeof confirmDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(confirmDate)
+            ) {
+              sanskaraInvalidIds.set(row.id, 'sanskara_early_confirm_metadata_invalid');
+              continue;
+            }
+            const { data: confirmValid, error: confirmValidError } = await supabase.rpc('sanskara_early_confirm_still_valid', {
+              p_handover: confirmHandover,
+              p_account: row.user_id,
+              p_profile_generation: confirmGeneration as number,
+            });
+            if (confirmValidError) throw confirmValidError;
+            if (confirmValid !== true) sanskaraInvalidIds.set(row.id, 'sanskara_early_confirm_no_longer_valid');
+            continue;
+          }
           // An early-hand-over approval notice (the other managers of a child, before 18) carries `handover_id` and no `notice`. Its
           // validity is the hand-over's and the recipient's, asked about the ROW'S OWN user.
           if (metadata.handover_id !== undefined) {

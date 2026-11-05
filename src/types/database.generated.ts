@@ -12275,6 +12275,24 @@ export type Database = {
         Args: { p_account: string; p_handover: string; p_profile_generation: number }
         Returns: boolean
       }
+      sanskara_early_confirm_due: {
+        Args: { p_now?: string }
+        Returns: {
+          account_id: string
+          handover_id: string
+          language: string
+          local_date: string
+          profile_generation: number
+          quiet_hours_end: number
+          quiet_hours_start: number
+          scheduled_for: string
+          timezone: string
+        }[]
+      }
+      sanskara_early_confirm_still_valid: {
+        Args: { p_account: string; p_handover: string; p_profile_generation: number }
+        Returns: boolean
+      }
       sanskara_handover_due: {
         Args: { p_horizon?: string; p_late?: string; p_now?: string }
         Returns: {

@@ -28,7 +28,7 @@ vi.mock('@/lib/monitoring/events', () => ({ emitEvent: vi.fn(), emitError: vi.fn
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     rpc: vi.fn().mockImplementation(async (name: string, args: Record<string, unknown>) => {
-      if (name === 'sanskara_reminder_still_valid' || name === 'sanskara_handover_still_valid' || name === 'sanskara_early_approval_still_valid') {
+      if (name === 'sanskara_reminder_still_valid' || name === 'sanskara_handover_still_valid' || name === 'sanskara_early_approval_still_valid' || name === 'sanskara_early_confirm_still_valid') {
         mocks.rpcCalls.push({ name, args });
         return mocks.sanskaraRpcError ? { data: null, error: mocks.sanskaraRpcError } : { data: mocks.sanskaraValid, error: null };
       }
@@ -669,6 +669,81 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
     vi.mocked(sendPushNotification).mockResolvedValueOnce({ sentUserIds: ['user-s1', 'user-s2', 'user-s3'], skippedUserIds: [] } as never);
     await GET(request());
     expect(mocks.rpcCalls.map((c) => c.name).sort()).toEqual(['sanskara_early_approval_still_valid', 'sanskara_handover_still_valid', 'sanskara_reminder_still_valid']);
+  });
+
+  // ── The starter's notice (the child has entered the code): `confirm_handover_id`, its own check ───────────────────────────────────
+  const confirmMetadata = (patch: Record<string, unknown> = {}) => ({
+    confirm_handover_id: HANDOVER, profile_generation: 3, local_date: '2026-11-04', timezone: 'Europe/London', ...patch,
+  });
+  const confirmRow = (n: number, metadata: Record<string, unknown> = confirmMetadata()) =>
+    sanskaraRow(n, { notification_key: `sanskar_milestone:c${n}`, metadata });
+
+  it('asks the CONFIRM check about the hand-over and the row\'s own user, never the approval check', async () => {
+    mocks.claimedRows = [confirmRow(1, { ...confirmMetadata(), account_id: 'someone-else' })];
+    mocks.profiles = [sanskaraProfile(1)];
+    vi.mocked(sendPushNotification).mockResolvedValueOnce({ sentUserIds: ['user-s1'], skippedUserIds: [] } as never);
+    await GET(request());
+    expect(mocks.rpcCalls).toEqual([
+      { name: 'sanskara_early_confirm_still_valid', args: { p_handover: HANDOVER, p_account: 'user-s1', p_profile_generation: 3 } },
+    ]);
+    const [message] = vi.mocked(sendPushNotification).mock.calls[0];
+    expect(message.data).toEqual({ type: 'reminder' });
+    expect(JSON.stringify(message)).not.toMatch(new RegExp(`${HANDOVER}|handover|confirm`, 'i'));
+  });
+
+  it.each([[false], [null], ['true'], [undefined]])('skips a starter notice the database answers %s for, before any push', async (answer) => {
+    mocks.claimedRows = [confirmRow(1)];
+    mocks.profiles = [sanskaraProfile(1)];
+    mocks.sanskaraValid = answer as never;
+    await GET(request());
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_early_confirm_no_longer_valid' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it.each([
+    ['a non-uuid hand-over', { confirm_handover_id: 'nope' }],
+    ['a fractional generation', { profile_generation: 1.5 }],
+    ['a malformed date', { local_date: '04/11/2026' }],
+    ['the approval key as well', { handover_id: HANDOVER }],
+    ['a hand-over notice\'s `notice` as well', { notice: 'open_30' }],
+  ])('skips a starter notice with %s without asking the database', async (_label, patch) => {
+    mocks.claimedRows = [confirmRow(1, confirmMetadata(patch))];
+    mocks.profiles = [sanskaraProfile(1)];
+    await GET(request());
+    expect(mocks.rpcCalls).toHaveLength(0);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_early_confirm_metadata_invalid' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it('requeues the batch and answers 503 when the confirm check itself fails', async () => {
+    mocks.claimedRows = [confirmRow(1)];
+    mocks.profiles = [sanskaraProfile(1)];
+    mocks.sanskaraRpcError = { message: 'statement timeout' };
+    const response = await GET(request());
+    expect(response.status).toBe(503);
+    expect(sendPushNotification).not.toHaveBeenCalled();
+  });
+
+  it('requires the starter\'s own Sanskara opt-in for the push, whatever the database says', async () => {
+    mocks.claimedRows = [confirmRow(1)];
+    mocks.profiles = [sanskaraProfile(1, { wants_sanskara_reminders: false })];
+    await GET(request());
+    expect(sendPushNotification).not.toHaveBeenCalled();
+    expect(mocks.updates).toContainEqual({
+      table: 'notification_schedule', update: { status: 'skipped', error: 'sanskara_reminders_disabled' }, ids: ['schedule-s1'],
+    });
+  });
+
+  it('judges a mixed batch row by row: approval and confirm notices each use their own check', async () => {
+    mocks.claimedRows = [earlyRow(1), confirmRow(2)];
+    mocks.profiles = [sanskaraProfile(1), sanskaraProfile(2)];
+    vi.mocked(sendPushNotification).mockResolvedValueOnce({ sentUserIds: ['user-s1', 'user-s2'], skippedUserIds: [] } as never);
+    await GET(request());
+    expect(mocks.rpcCalls.map((c) => c.name).sort()).toEqual(['sanskara_early_approval_still_valid', 'sanskara_early_confirm_still_valid']);
   });
 
   it('sends a still-valid Sanskara reminder in one grouped push with a neutral payload', async () => {

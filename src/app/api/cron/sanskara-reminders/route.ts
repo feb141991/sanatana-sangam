@@ -17,6 +17,7 @@ import {
 } from '@/lib/sanskara-handover-candidate';
 import {
   buildSanskaraEarlyApprovalCandidates,
+  buildSanskaraEarlyConfirmCandidates,
   type SanskaraEarlyApprovalDueRow,
 } from '@/lib/sanskara-early-approval-candidate';
 
@@ -138,12 +139,19 @@ export async function GET(request: Request) {
     const earlyRows = (earlyNotDeployed ? [] : (earlyData ?? [])) as SanskaraEarlyApprovalDueRow[];
     const earlyBuilt = buildSanskaraEarlyApprovalCandidates(earlyRows, now);
 
+    // The starter's notice (the child has entered the code). Same migration, same skip-if-not-deployed rule.
+    const { data: confirmData, error: confirmError } = await supabase.rpc('sanskara_early_confirm_due').limit(MAX_ROWS_PER_RUN);
+    const confirmNotDeployed = confirmError?.code === 'PGRST202' || confirmError?.code === '42883';
+    if (confirmError && !confirmNotDeployed) throw new Error(`sanskara_early_confirm_due failed (${confirmError.code ?? 'no code'})`);
+    const confirmRows = (confirmNotDeployed ? [] : (confirmData ?? [])) as SanskaraEarlyApprovalDueRow[];
+    const confirmBuilt = buildSanskaraEarlyConfirmCandidates(confirmRows, now);
+
     if (safety.isDryRun || safety.skipDelivery) {
       return NextResponse.json(buildNotificationSafetyResponse(SANSKARA_EVENT_TYPE, safety, {
-        eligibleCount: rows.length + handoverRows.length + earlyRows.length,
+        eligibleCount: rows.length + handoverRows.length + earlyRows.length + confirmRows.length,
         skippedCount: built.malformedCount + built.outsideHorizonCount + handoverBuilt.malformedCount + handoverBuilt.outsideHorizonCount
-          + earlyBuilt.malformedCount + earlyBuilt.outsideHorizonCount,
-        wouldInsertCount: built.candidates.length + handoverBuilt.candidates.length + earlyBuilt.candidates.length,
+          + earlyBuilt.malformedCount + earlyBuilt.outsideHorizonCount + confirmBuilt.malformedCount + confirmBuilt.outsideHorizonCount,
+        wouldInsertCount: built.candidates.length + handoverBuilt.candidates.length + earlyBuilt.candidates.length + confirmBuilt.candidates.length,
         wouldSendCount: 0,
       }));
     }
@@ -152,6 +160,7 @@ export async function GET(request: Request) {
     const handover = await createAll(supabase, handoverBuilt.candidates, withSanskaraHandoverWording);
     // The early-approval notice shares the generic hand-over wordings, so the same next-wording step applies on a "not discreet" refusal.
     const earlyApproval = await createAll(supabase, earlyBuilt.candidates, withSanskaraHandoverWording);
+    const earlyConfirm = await createAll(supabase, confirmBuilt.candidates, withSanskaraHandoverWording);
 
     const summary = {
       due: rows.length,
@@ -175,10 +184,18 @@ export async function GET(request: Request) {
         outsideHorizon: earlyBuilt.outsideHorizonCount,
         ...earlyApproval,
       },
+      earlyConfirm: {
+        selectorDeployed: !confirmNotDeployed,
+        due: confirmRows.length,
+        truncated: confirmRows.length >= MAX_ROWS_PER_RUN,
+        malformed: confirmBuilt.malformedCount,
+        outsideHorizon: confirmBuilt.outsideHorizonCount,
+        ...earlyConfirm,
+      },
     };
     const notCreated = built.malformedCount + reminders.refused + handoverBuilt.malformedCount + handover.refused
-      + earlyBuilt.malformedCount + earlyApproval.refused;
-    if (notCreated > 0 || summary.truncated || summary.handover.truncated || summary.earlyApproval.truncated) console.warn('[sanskara-reminders] rows not created', summary);
+      + earlyBuilt.malformedCount + earlyApproval.refused + confirmBuilt.malformedCount + earlyConfirm.refused;
+    if (notCreated > 0 || summary.truncated || summary.handover.truncated || summary.earlyApproval.truncated || summary.earlyConfirm.truncated) console.warn('[sanskara-reminders] rows not created', summary);
     console.info('[sanskara-reminders] producer completed', summary);
     return NextResponse.json({ success: true, pipeline_mode: 'candidate', ...summary });
   } catch (error) {
