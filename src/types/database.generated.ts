@@ -7584,6 +7584,76 @@ export type Database = {
           },
         ]
       }
+      sanskara_early_approvals: {
+        Row: {
+          approved_at: string
+          handover_id: string
+          manager_id: string
+        }
+        Insert: {
+          approved_at?: string
+          handover_id: string
+          manager_id: string
+        }
+        Update: {
+          approved_at?: string
+          handover_id?: string
+          manager_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_early_approvals_handover_id_fkey"
+            columns: ["handover_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_early_handovers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sanskara_early_handovers: {
+        Row: {
+          claimant_id: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          initiated_by: string
+          responded_at: string | null
+          status: string
+          subject_id: string
+          token_hash: string
+        }
+        Insert: {
+          claimant_id?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          initiated_by: string
+          responded_at?: string | null
+          status?: string
+          subject_id: string
+          token_hash: string
+        }
+        Update: {
+          claimant_id?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          initiated_by?: string
+          responded_at?: string | null
+          status?: string
+          subject_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanskara_early_handovers_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "sanskara_subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sanskara_grants: {
         Row: {
           created_at: string
@@ -7782,6 +7852,24 @@ export type Database = {
           prenatal?: boolean
           rite_key?: string
           sensitivity?: string
+        }
+        Relationships: []
+      }
+      sanskara_settings: {
+        Row: {
+          int_value: number
+          key: string
+          updated_at: string
+        }
+        Insert: {
+          int_value: number
+          key: string
+          updated_at?: string
+        }
+        Update: {
+          int_value?: number
+          key?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -11971,6 +12059,15 @@ export type Database = {
         Args: { p_request_id: string; p_subject: string }
         Returns: Json
       }
+      sanskara_cancel_handover: {
+        Args: {
+          p_account: string
+          p_only_open: boolean
+          p_reason: string
+          p_subject: string
+        }
+        Returns: number
+      }
       sanskara_cancel_reminder_rows: {
         Args: { p_ids: string[]; p_reason: string }
         Returns: number
@@ -12026,6 +12123,11 @@ export type Database = {
         Args: { p_subject: string }
         Returns: Json
       }
+      sanskara_early_in_window: {
+        Args: { p_subject: string }
+        Returns: boolean
+      }
+      sanskara_early_min_age: { Args: never; Returns: number }
       sanskara_finish_request: {
         Args: { p_account: string; p_request: string; p_result: Json }
         Returns: Json
@@ -12040,6 +12142,10 @@ export type Database = {
         Returns: Json
       }
       sanskara_list_access: { Args: { p_subject: string }; Returns: Json }
+      sanskara_move_records_early: {
+        Args: { p_account: string; p_subject: string }
+        Returns: Json
+      }
       sanskara_my_reminders: { Args: never; Returns: Json }
       sanskara_my_timeline: { Args: never; Returns: Json }
       sanskara_on_access_lost: {
@@ -12184,6 +12290,10 @@ export type Database = {
           subject_id: string
           timezone: string
         }[]
+      }
+      sanskara_handover_notice_date: {
+        Args: { p_birth: string; p_notice: string }
+        Returns: string
       }
       sanskara_handover_still_valid: {
         Args: {
