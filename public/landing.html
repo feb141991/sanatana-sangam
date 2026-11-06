@@ -3356,7 +3356,7 @@
         }
         .stats-band {
           padding: 32px 24px;
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0;
         }
         .stat-item {
@@ -3462,7 +3462,7 @@
           max-width: 320px !important;
         }
         .stats-band {
-          grid-template-columns: 1fr 1fr !important;
+          grid-template-columns: 1fr !important;
           gap: 0 !important;
           padding: 32px 20px !important;
         }
@@ -3470,9 +3470,6 @@
           border-right: none !important;
           border-bottom: 1px solid rgba(200, 160, 110, 0.18) !important;
           padding: 16px 12px !important;
-        }
-        .stat-item:nth-child(odd) {
-          border-right: 1px solid rgba(200, 160, 110, 0.18) !important;
         }
         .stat-num {
           font-size: 36px !important;

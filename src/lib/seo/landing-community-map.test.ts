@@ -75,3 +75,11 @@ describe("homepage Explore button", () => {
     expect(landingHtml).toMatch(/body\.landing-entered #splash-bottom \{\s*display: none;/);
   });
 });
+
+describe("homepage on a phone", () => {
+  it("stacks the stats row in the phone rules, whose !important beats every earlier breakpoint", () => {
+    const phone = landingHtml.slice(landingHtml.indexOf('id="general-mobile-css"'));
+    expect(phone).toMatch(/\.stats-band \{\s*grid-template-columns: 1fr !important;/);
+    expect(phone).not.toMatch(/\.stats-band \{\s*grid-template-columns: 1fr 1fr/);
+  });
+});
