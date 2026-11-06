@@ -434,6 +434,7 @@ Rules:
 ### Saved Golden Fixtures Never Verify a Date
 - `verify:calendar` compares the engine with `public.golden_fixtures`. If that read fails in CI, the check fails. A retry may ride out a short blip, but CI never falls back to a saved copy, because a passing run would then say nothing about the current ratified dates.
 - `packages/dharma-rules/__fixtures__/cache/` is for offline local work only, behind `DHARMA_FIXTURES_OFFLINE=1`, and such a run says that it verifies nothing. A normal test run neither reads nor rewrites those files.
+- A push skips `verify:calendar` only when nothing it imports changed (`scripts/ci/calendar-check-scope.mjs`); if the changed files cannot be worked out it runs, and it runs in full every night, because golden fixtures can change in the database with no commit. `packages/dharma-rules/harness/calendar-check-scope.test.ts` fails if the check comes to import a file the scope does not cover.
 - Origin: on 2026-11-06 `faa3969` made the harness fall back to the saved copies on any database failure, including in CI, so the calendar check could go green during an outage. Guard: `packages/dharma-rules/harness/fixture-loader-offline.test.ts`.
 
 ### The Homepage Calendar Is a Daily Snapshot, Not a Live Query
