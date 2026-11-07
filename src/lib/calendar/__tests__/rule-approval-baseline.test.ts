@@ -7,6 +7,23 @@ import { calculateObservancesForYear } from '../engine';
  * content gate. Confirmed 2026-09-24 via
  * scripts/audit-rule-approval-and-source-evidence.ts -- see
  * docs/audits/rule-approval-and-source-evidence-2026-09-24/receipt.json.
+ * Re-confirmed 2026-11-07 after commit 99320ce ("promote 9 deferred Ekadashi
+ * rules and unwithhold 25 Ekadashis under council review
+ * founder:pt-prince-20261031", 2026-11-01 -- see
+ * docs/content-reviews/ekadashi-series-2026-v1.md and
+ * docs/reviews/RATIFICATION_PT_PRINCE_20261031.md) had already landed
+ * before this baseline was next updated. Re-ran the audit script; the new
+ * numbers below are that commit's real, ratified effect, preserved as a
+ * second dated snapshot at
+ * docs/audits/rule-approval-and-source-evidence-2026-11-07/receipt.json
+ * (the 2026-09-24 one is left untouched as history, not overwritten).
+ * total_rules 117->124 (+7, all landing in the implicit-default bucket, none
+ * reclassified as requires_tradition_profile/externally_curated -- the two
+ * blocked rules are still exactly pavarana-end-of-vassa and kathina, see the
+ * next test). included 70->80 (+10); missing-citation 57->65 (+8, all 8 new
+ * ekadashi-named slugs -- vaikunta/pausha-putrada/shattila/jaya/varuthini/
+ * mohini/indira/papankusha-ekadashi -- consistent with every pre-existing
+ * ekadashi rule also lacking a citation; nothing here fabricates one).
  *
  * These numbers are expected to CHANGE as scholar/product work classifies
  * more rules and sources more citations -- a change here is real progress
@@ -26,7 +43,7 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
     }
     expect(counts).toEqual({
       explicit: 0,
-      implicitDefault: 115,
+      implicitDefault: 122,
       requiresTraditionProfile: 1,
       externallyCurated: 1,
     });
@@ -66,7 +83,7 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
   it('included rules missing a citation', () => {
     const included = CANONICAL_RULES.filter((r) => r.launch_status === 'included');
     const missing = included.filter((r) => !r.citation);
-    expect(included.length).toBe(70);
-    expect(missing.length).toBe(57);
+    expect(included.length).toBe(80);
+    expect(missing.length).toBe(65);
   });
 });

@@ -1,0 +1,138 @@
+{
+  "_label": "RULE APPROVAL / SOURCE-EVIDENCE AUDIT -- classification and gap report, not a new gate and not a citation-fabrication tool",
+  "generated_at": "2026-11-07T13:22:26.609Z",
+  "generator": "scripts/audit-rule-approval-and-source-evidence.ts",
+  "total_rules": 124,
+  "classification": {
+    "computable_explicit": 0,
+    "computable_implicit_default": 122,
+    "requires_tradition_profile": 1,
+    "externally_curated": 1
+  },
+  "finding_implicit_default": {
+    "description": "Rules relying on the undefined-derivability-means-computed default in engine.ts:176, never explicitly classified.",
+    "count": 122,
+    "of_total": 124
+  },
+  "blocked_rules": [
+    {
+      "id": "pavarana-end-of-vassa",
+      "derivability": "requires_tradition_profile",
+      "reason": "requires a tradition-profile method this codebase does not yet implement as a computable rule"
+    },
+    {
+      "id": "kathina",
+      "derivability": "externally_curated",
+      "reason": "externally curated -- not engine-computable, governed by manual_date_override/locked_for_regeneration only"
+    }
+  ],
+  "included_rules_missing_citation": {
+    "count": 65,
+    "of_included": 80,
+    "note": "validate-rules.ts currently requires a citation only for VARIANT rules (sampradaya/variant_key set), not every included rule. This is the gap between that narrower CI bar and festival-rule-schema.md #7's broader \"every rule needs sources[]\" requirement. Not fabricated or backfilled here.",
+    "slugs": [
+      "makar-sankranti",
+      "holi",
+      "chaitra-navratri-begins",
+      "ram-navami",
+      "guru-purnima",
+      "raksha-bandhan",
+      "ganesh-chaturthi",
+      "radha-ashtami",
+      "ganeshotsav-day-2",
+      "ganeshotsav-day-3",
+      "ganeshotsav-day-4",
+      "ganeshotsav-day-5",
+      "ganeshotsav-day-6",
+      "ganeshotsav-day-7",
+      "ganeshotsav-day-8",
+      "ganeshotsav-day-9",
+      "ganeshotsav-day-10",
+      "anant-chaturdashi-ganesh-visarjan",
+      "navratri-begins",
+      "dhanteras",
+      "govardhan-puja",
+      "bhai-dooj",
+      "chhath-puja",
+      "chhath-nahay-khay",
+      "chhath-kharna",
+      "chhath-usha-arghya",
+      "vaikunta-ekadashi",
+      "kamada-ekadashi",
+      "nirjala-ekadashi",
+      "devshayani-ekadashi",
+      "shravana-putrada-ekadashi",
+      "parivartini-ekadashi",
+      "devutthana-ekadashi",
+      "amalaki-ekadashi",
+      "papmochani-ekadashi",
+      "guru-gobind-singh-gurpurab",
+      "lohri",
+      "guru-ravidas-jayanti",
+      "holla-mohalla",
+      "baisakhi",
+      "guru-arjan-dev-martyrdom",
+      "bandhi-chhor-divas",
+      "guru-nanak-gurpurab",
+      "guru-tegh-bahadur-martyrdom",
+      "sahibzade-shaheedi-diwas",
+      "mahavir-jayanti",
+      "paryushana-parva-begins",
+      "paryushana-day-2",
+      "paryushana-day-3",
+      "paryushana-day-4",
+      "paryushana-day-5",
+      "paryushana-day-6",
+      "paryushana-day-7",
+      "samvatsari-paryushana-ends",
+      "ekadashi",
+      "pradosh-vrat",
+      "purnima-vrat",
+      "amavasya-vrat",
+      "pausha-putrada-ekadashi",
+      "shattila-ekadashi",
+      "jaya-ekadashi",
+      "varuthini-ekadashi",
+      "mohini-ekadashi",
+      "indira-ekadashi",
+      "papankusha-ekadashi"
+    ]
+  },
+  "included_rules_with_disputed_years": {
+    "count": 5,
+    "note": "Presence of disputed_years does not itself block publication of OTHER years -- confirm the current/next year is not in the list before trusting a specific date.",
+    "detail": [
+      {
+        "id": "krishna-janmashtami::gaudiya_iskcon",
+        "disputed_years": [
+          2027
+        ]
+      },
+      {
+        "id": "guru-ravidas-jayanti",
+        "disputed_years": [
+          2027
+        ]
+      },
+      {
+        "id": "paryushana-parva-begins",
+        "disputed_years": [
+          2027,
+          2028
+        ]
+      },
+      {
+        "id": "yogini-ekadashi::smarta",
+        "disputed_years": [
+          2026
+        ]
+      },
+      {
+        "id": "yogini-ekadashi::vaishnava_vidhava",
+        "disputed_years": [
+          2026
+        ]
+      }
+    ]
+  }
+}
