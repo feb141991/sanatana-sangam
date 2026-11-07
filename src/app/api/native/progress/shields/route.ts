@@ -5,7 +5,7 @@ import { nativeProgressWindow } from '@/lib/native-progress-window';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-/** The two Shield counters, with exactly the same source/window as Progress. */
+/** The three Shield counters, with exactly the same source/window as Progress. */
 export async function GET(request: NextRequest) {
   const started = performance.now();
   let authMs = 0;

@@ -40,10 +40,10 @@ describe('narrow screen reads (synthetic fixture, not live latency)', () => {
     const before = [...db.traces]; db.traces.length = 0;
     const response = await shields(request('/api/native/progress/shields'));
     const body = await response.text(); const payload = JSON.parse(body);
-    expect(payload).toEqual({ latestStreakCount: [...old.sadhana182d].sort((a,b)=>b.date.localeCompare(a.date))[0].streak_count, totalJapaSessions: old.totalJapaSessions });
+    expect(payload).toEqual({ latestStreakCount: [...old.sadhana182d].sort((a,b)=>b.date.localeCompare(a.date))[0].streak_count, totalJapaSessions: old.totalJapaSessions, totalVratsObserved: old.totalVratsObserved });
     expect(payload.totalJapaSessions).toBe(1205);
-    expect(before).toHaveLength(7); expect(db.traces).toHaveLength(2);
-    expect(db.traces.map(t=>t.rows)).toEqual([1,0]);
+    expect(before).toHaveLength(9); expect(db.traces).toHaveLength(3);
+    expect(db.traces.map(t=>t.rows)).toEqual([1,0,0]);
     expect(response.headers.get('Server-Timing')).toMatch(/auth;dur=.*query;dur=.*total;dur=/);
     console.log(JSON.stringify({fixture:'synthetic-shields',oldQueries:before.length,newQueries:db.traces.length,oldRows:before.reduce((n,t)=>n+t.rows,0),newRows:db.traces.reduce((n,t)=>n+t.rows,0),oldBytes:Buffer.byteLength(oldBody),newBytes:Buffer.byteLength(body)}));
   });
@@ -65,7 +65,7 @@ describe('narrow screen reads (synthetic fixture, not live latency)', () => {
     expect((await shields(request('/api/native/progress/shields'))).status).toBe(401);expect(db.traces).toHaveLength(0);
   });
   it('does not turn read errors into zero earned shields', async () => {
-    for(const table of ['daily_sadhana','mala_sessions']) {
+    for(const table of ['daily_sadhana','mala_sessions','vrat_observations']) {
       mock.client=fixtureDatabase(fixtures(),new Set([table]));
       expect((await shields(request('/api/native/progress/shields'))).status).toBe(503);
     }
@@ -75,7 +75,7 @@ describe('narrow screen reads (synthetic fixture, not live latency)', () => {
     mock.client=fixtureDatabase(tables);
     expect(await (await shields(request('/api/native/progress/shields'))).json()).toMatchObject({latestStreakCount:7});
     tables.daily_sadhana=[];tables.mala_sessions=[];mock.client=fixtureDatabase(tables);
-    expect(await (await shields(request('/api/native/progress/shields'))).json()).toEqual({latestStreakCount:0,totalJapaSessions:0});
+    expect(await (await shields(request('/api/native/progress/shields'))).json()).toEqual({latestStreakCount:0,totalJapaSessions:0,totalVratsObserved:0});
   });
   it('does not publish unapproved content or scan the legacy daily table', async () => {
     const tables=fixtures();tables.dharm_veers[0].review_status='pending_review';
