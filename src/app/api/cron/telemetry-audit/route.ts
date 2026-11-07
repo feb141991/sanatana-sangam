@@ -48,10 +48,19 @@ export async function GET(request: Request) {
 
   try {
     // 1. Audit Native API Diagnostic Events
+    //
+    // Filtered on both received_at AND client_occurred_at. The Native app
+    // buffers failures offline and flushes them in a batch on reconnect, so
+    // received_at alone lets a stale, already-resolved failure from hours or
+    // days ago (client_occurred_at) land inside a recent audit window just
+    // because it happened to be *reported* late -- firing a real-time alert
+    // for an incident that isn't live. client_occurred_at must also fall
+    // inside the window for the failure to count as current.
     const { data: apiErrors, error: apiErr } = await supabase
       .from('native_api_diagnostic_events')
-      .select('endpoint, method, final_status, outcome, duration_ms, received_at')
+      .select('endpoint, method, final_status, outcome, duration_ms, received_at, client_occurred_at')
       .gt('received_at', sinceIso)
+      .gt('client_occurred_at', sinceIso)
       .neq('final_status', 200)
       .order('received_at', { ascending: false })
       .limit(100);
@@ -65,11 +74,27 @@ export async function GET(request: Request) {
       .limit(50);
 
     // 3. Audit Monitoring Events (P0 / P1 / critical errors)
+    //
+    // Excludes this cron's own route. Every run that finds an incident
+    // writes its own P0/P1 heartbeat into monitoring_events (below); without
+    // this exclusion the next run's query picks that heartbeat back up as a
+    // "critical backend event" and re-alerts on it, which produces another
+    // P0/P1 heartbeat for the run after that -- a self-sustaining false-
+    // positive loop with no real incident behind it. Confirmed against
+    // monitoring_events: six straight 4-hourly runs (2026-11-06 16:00
+    // through 2026-11-07 08:00) each reported "1 critical backend event"
+    // that was only ever the previous run's own heartbeat. This exclusion
+    // is safe: postSlackOperationalAlert (src/lib/slack-alerts.ts) only
+    // posts to Slack, it never writes to monitoring_events, so this route's
+    // own infrastructure failures (the "Database Query Failure" / "Cron
+    // crashed" paths below) never depend on this query seeing their own
+    // past rows -- there are none to exclude.
     const { data: monEvents, error: monErr } = await supabase
       .from('monitoring_events')
       .select('severity, domain, route, error_code, error_message, timestamp')
       .gt('timestamp', sinceIso)
       .in('severity', ['P0', 'P1'])
+      .neq('route', '/api/cron/telemetry-audit')
       .order('timestamp', { ascending: false })
       .limit(50);
 
