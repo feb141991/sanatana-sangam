@@ -69,11 +69,23 @@ stand-in tables shaped from the live column lists, the real cadence migrations a
 pgTAP is replaced by a small local shim. **This is not a Supabase branch and not the full migration chain**, and
 nothing has run on a device.
 
-### Not part of v3 (separate changes)
+### The day shape (producer changes, a separate commit, also unapplied and undeployed)
 
-Moving Shloka from 19:00 to the morning; dropping the quiz 18:00 follow-up in the producer; alternating quiz and
-Dharm Veer on a fixed day count and sending Dharm Veer only when something is unread; retiring the AI digest;
-tap tracking. Until the producers change, v3 only limits what they ask for.
+- **Shloka moves from 19:00 to 07:00 local** (`SHLOKA_REMINDER_LOCAL_HOUR`). 07:00 is the earliest legal
+  delivery time and is exactly three hours before the 10:00 learning slot, so the spacing rule does not push that
+  slot later. A person whose quiet hours cover 07:00 is moved past them. Because the cron enqueues the *next*
+  occurrence, users east of UTC who already received a 19:00 reminder that day get no Shloka reminder on the first
+  day after the deploy (a one-day gap, not a duplicate).
+- **The quiz 18:00 follow-up is off** (`QUIZ_EVENING_NUDGE_ENABLED = false`). Rows already scheduled still deliver.
+- The Shloka *legacy* queue path (used only when the routine mode is `legacy`) still carries its old copy; it is
+  not the live path.
+
+### Not done yet
+
+Alternating quiz and Dharm Veer on a fixed day count, and sending Dharm Veer only when something is unread (the
+Dharm Veer cron skips every user who has quiz reminders on, so today they never receive both; "unread" would have
+to be defined, and `dharm_veer_responses` records a decision, not a view); retiring the AI digest; tap tracking.
+Until those change, v3 only limits what the producers ask for.
 
 ## Previous contract (engagement-cadence-v2, in force until v3 is applied)
 

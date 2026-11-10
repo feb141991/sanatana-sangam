@@ -15,6 +15,19 @@ export interface DevoteeProfileForQuiz {
   notification_quiet_hours_end?: number | null;
 }
 
+/**
+ * The 18:00 "still unfinished" follow-up is OFF (founder decision, 2026-11-08, "drop it for now"). The
+ * 10:00 learning slot already carries the quiz, and engagement-cadence-v3 allows one learning push a day
+ * (shared with dharm_veer), so a second quiz push could only be refused or take the slot from Dharm Veer.
+ * The stage's code is kept so it can be switched back on in one place; nothing else should enable it.
+ */
+export const QUIZ_EVENING_NUDGE_ENABLED = false;
+
+export interface QuizStageOptions {
+  /** Overrides QUIZ_EVENING_NUDGE_ENABLED. Tests and a deliberate future re-enable only. */
+  eveningNudge?: boolean;
+}
+
 const EVENING_REMINDER_TIME = '18:00';
 const EVENING_REMINDER_EXPIRES = '20:45';
 const AVAILABILITY_WINDOW_MINUTES = 60;
@@ -81,8 +94,10 @@ export function getDueQuizReminderStage(
   devotee: DevoteeProfileForQuiz,
   localDate: string,
   now: Date,
+  options: QuizStageOptions = {},
 ): QuizReminderStage | null {
   if (devotee.quiz_reminder_enabled === false) return null;
+  const eveningNudge = options.eveningNudge ?? QUIZ_EVENING_NUDGE_ENABLED;
 
   const timezone = resolveTimeZone(devotee.timezone);
   if (getLocalDateIso(now, timezone) !== localDate) return null;
@@ -99,7 +114,7 @@ export function getDueQuizReminderStage(
     return 'available';
   }
 
-  const eveningTime = effectiveLocalTime(devotee, EVENING_REMINDER_TIME, 'evening_nudge');
+  const eveningTime = eveningNudge ? effectiveLocalTime(devotee, EVENING_REMINDER_TIME, 'evening_nudge') : null;
   const eveningMinute = eveningTime ? parseClock(eveningTime) : null;
   if (
     eveningMinute !== null &&
@@ -117,8 +132,10 @@ export function produceQuizCandidate(
   devotee: DevoteeProfileForQuiz,
   localDate: string,
   stage: QuizReminderStage = 'available',
+  options: QuizStageOptions = {},
 ): NotificationCandidateInsert | null {
   if (devotee.quiz_reminder_enabled === false) return null;
+  if (stage === 'evening_nudge' && !(options.eveningNudge ?? QUIZ_EVENING_NUDGE_ENABLED)) return null;
 
   const timezone = resolveTimeZone(devotee.timezone);
   const sendTime = effectiveLocalTime(

@@ -4,10 +4,10 @@ Daily Quiz reminders use the existing candidate, resolver, and dispatch pipeline
 
 ## Delivery behavior
 
-- The first reminder is sent at the member's chosen local time (default 08:00; allowed range 07:00–15:00).
-- A second, separate reminder is scheduled for 18:00 local time, three hours before the 21:00 evening cutoff. It is created only when `quiz_responses` has no row for that user and local date.
+- The first reminder is sent at the member's chosen local time (default 10:00; allowed range 07:00–15:00).
+- **The second, 18:00 "still unfinished" reminder is switched OFF** (founder decision 2026-11-08, "drop it for now"): the morning slot already carries the quiz, and engagement-cadence-v3 allows one learning push a day, shared with Dharm Veer. The code is kept behind `QUIZ_EVENING_NUDGE_ENABLED` in `src/lib/quiz-candidate-producer.ts`; evening rows already scheduled before the change are still delivered and still re-checked for completion. When it was on, it was created only when `quiz_responses` had no row for that user and local date.
 - Both stages are checked again immediately before dispatch. If the quiz was completed after a candidate or schedule row was created, that push is skipped. If the completion lookup is unavailable, dispatch requeues the claimed batch and sends nothing until it can verify completion. Candidate identity is stable across language changes during the same local day; notification copy still follows the language captured when the candidate was created.
-- Quiet hours, the shared five-notifications-per-local-day budget, and three-hour minimum spacing still apply. The evening reminder may therefore be delayed within its 20:45 expiry or suppressed if no safe slot remains.
+- Quiet hours and three-hour minimum spacing still apply, so a reminder may be delayed or, if no safe slot remains, suppressed. The daily allowance is the learning slot (one push a day, shared with Dharm Veer) under `engagement-cadence-v3` once that migration is applied; until then the older shared five-a-day budget applies. See `ENGAGEMENT_CADENCE_POLICY.md`.
 - The quiz preference is stored in `profiles.quiz_reminder_enabled` / `quiz_reminder_time`, and users control it in Native Settings. OS notification permission is still required for lock-screen delivery.
 
 ## Rollout gates

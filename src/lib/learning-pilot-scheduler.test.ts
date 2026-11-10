@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { produceDharmVeerCandidate } from './dharm-veer-candidate-producer';
-import { produceQuizCandidate } from './quiz-candidate-producer';
+import { produceQuizCandidate, QUIZ_EVENING_NUDGE_ENABLED } from './quiz-candidate-producer';
 import {
   generateLearningEngagementCandidates,
   type UnifiedLearningProfile,
@@ -84,12 +84,20 @@ describe('learning-pilot-scheduler', () => {
       expect(produceQuizCandidate({ id: 'opt-out', timezone: 'Asia/Kolkata', quiz_reminder_enabled: false }, '2026-11-08')).toBeNull();
     });
 
-    it('creates a separately keyed 6 PM reminder candidate', () => {
+    it('does NOT create the 6 PM follow-up by default: the 10:00 learning slot already carries the quiz', () => {
+      expect(QUIZ_EVENING_NUDGE_ENABLED).toBe(false);
+      const user = { id: 'quiz-user', timezone: 'Asia/Kolkata', quiz_reminder_enabled: true };
+      expect(produceQuizCandidate(user, '2026-11-08', 'evening_nudge')).toBeNull();
+      // the morning stage is untouched
+      expect(produceQuizCandidate(user, '2026-11-08', 'available')?.event_instance).toBe('available');
+    });
+
+    it('creates a separately keyed 6 PM reminder candidate when the follow-up is deliberately enabled', () => {
       const cand = produceQuizCandidate({
         id: 'quiz-user',
         timezone: 'Asia/Kolkata',
         quiz_reminder_enabled: true,
-      }, '2026-11-08', 'evening_nudge');
+      }, '2026-11-08', 'evening_nudge', { eveningNudge: true });
 
       expect(cand?.event_instance).toBe('evening_nudge');
       expect(cand?.scheduled_for).toBe('2026-11-08T12:30:00.000Z');
@@ -127,8 +135,10 @@ describe('learning-pilot-scheduler', () => {
         quiz_reminder_time: '08:00',
       };
       expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T02:35:00.000Z'))).toBe('available');
-      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T12:35:00.000Z'))).toBe('evening_nudge');
-      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T16:00:00.000Z'))).toBeNull();
+      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T12:35:00.000Z'), { eveningNudge: true })).toBe('evening_nudge');
+      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T16:00:00.000Z'), { eveningNudge: true })).toBeNull();
+      // By default the evening window yields no stage at all.
+      expect(getDueQuizReminderStage(user, '2026-11-08', new Date('2026-11-08T12:35:00.000Z'))).toBeNull();
     });
   });
 

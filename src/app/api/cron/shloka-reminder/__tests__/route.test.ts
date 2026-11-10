@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GET } from '../route';
 import { sendPushNotification } from '@/lib/push-server';
+import { getNextLocalHourUtc } from '@/lib/sacred-time';
+import { SHLOKA_REMINDER_LOCAL_HOUR } from '@/lib/shloka-candidate-producer';
 
 const mocks = vi.hoisted(() => {
   return {
@@ -34,9 +36,9 @@ vi.mock('@/lib/sacred-time', async (importOriginal) => {
   return {
     ...actual,
     getNextLocalHourUtc: vi.fn(() => ({
-      sendAt: new Date('2026-11-08T13:30:00.000Z'),
+      sendAt: new Date('2026-11-08T01:30:00.000Z'),
       localDateIso: '2026-11-08',
-      localHour: 19,
+      localHour: 7,
     })),
   };
 });
@@ -129,7 +131,9 @@ describe('cron/shloka-reminder pipeline exclusivity', () => {
     // Assert candidate upsert called
     expect(mocks.mockCandidatesUpsert).toHaveBeenCalledTimes(1);
     const candidate = mocks.mockCandidatesUpsert.mock.calls[0][0][0];
-    expect(candidate.scheduled_for).toBe('2026-11-08T13:30:00.000Z');
+    expect(candidate.scheduled_for).toBe('2026-11-08T01:30:00.000Z');
+    // The cron asks for the same local hour the producer uses: the two cannot drift apart.
+    expect(getNextLocalHourUtc).toHaveBeenCalledWith(expect.any(Date), 'Asia/Kolkata', SHLOKA_REMINDER_LOCAL_HOUR, 0);
     // Legacy queue is not involved in candidate mode.
     expect(mocks.mockQueue).not.toHaveBeenCalled();
   });
@@ -153,7 +157,7 @@ describe('cron/shloka-reminder pipeline exclusivity', () => {
     const [, scheduleRows] = mocks.mockQueue.mock.calls[0];
     expect(scheduleRows[0]).toMatchObject({
       notification_type: 'shloka',
-      send_at: '2026-11-08T13:30:00.000Z',
+      send_at: '2026-11-08T01:30:00.000Z',
       notification_key: 'shloka:devotee-shloka-1:2026-11-08',
       metadata: { local_date: '2026-11-08', timezone: 'Asia/Kolkata', type: 'streak' },
     });
