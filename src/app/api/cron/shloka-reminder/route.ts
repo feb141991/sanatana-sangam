@@ -5,17 +5,18 @@ import { enqueueNotificationSchedule } from '@/lib/notification-schedule-queue';
 import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getRoutinePipelineMode } from '@/lib/notification-candidate-pipeline-mode';
-import { produceShlokaCandidate } from '@/lib/shloka-candidate-producer';
+import { produceShlokaCandidate, SHLOKA_REMINDER_LOCAL_HOUR } from '@/lib/shloka-candidate-producer';
 import type { NotificationCandidateInsert } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
 
 // ─── Shloka Streak Reminder Cron ─────────────────────────────────────────────
 // Schedule: 0 6 * * * (daily; see vercel.json).
-// In candidate mode, produces each opted-in user's 19:00 local slot regardless
-// of the cron's current local hour, then central resolution dispatches it later.
-// Legacy mode also enters the shared schedule, so the single daily UTC cron
-// can enqueue each user's next local 19:00 without sending at cron time.
+// In candidate mode, produces each opted-in user's next morning slot
+// (SHLOKA_REMINDER_LOCAL_HOUR, 07:00 local) regardless of the cron's current
+// local hour, then central resolution dispatches it later. Legacy mode also
+// enters the shared schedule, so the single daily UTC cron can enqueue each
+// user's next local slot without sending at cron time.
 // In disabled mode: halts cleanly without sending.
 
 export async function GET(request: Request) {
@@ -54,7 +55,7 @@ export async function GET(request: Request) {
   try {
     const actionPath = '/home?focus=shloka';
     const now = new Date();
-    const targetLocalHour = 19;
+    const targetLocalHour = SHLOKA_REMINDER_LOCAL_HOUR;
 
     const { data: users, error: usersError } = await supabase
       .from('profiles')

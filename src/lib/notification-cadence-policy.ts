@@ -1,19 +1,81 @@
 import { getLocalDateIso, getLocalHour, isHourInQuietWindow, resolveTimeZone } from './sacred-time';
 
 /**
- * Engagement push cadence. These limits apply only to non-exempt engagement
- * notifications; security, explicit user requests, approved ritual windows,
- * and reviewed observances retain their existing policy.
+ * Engagement push cadence (engagement-cadence-v3: one other nudge a day).
+ *
+ * Every notification belongs to exactly one class:
+ *   exempt   security, explicit user reminders, ritual windows, reviewed observances and the
+ *            person-initiated Mandali rows. Never counted, never suppressed by this policy.
+ *   shloka   one per user per local day, never crowded out by other nudges.
+ *   learning one per user per local day, shared by quiz and dharm_veer (the learning slot).
+ *   other    one per user per local day, shared by every remaining type.
+ * `dailyCeiling` caps shloka + learning + other together. It is an outer safety ceiling, not a
+ * target: the class limits already allow at most three.
+ *
+ * These numbers are enforced a second time in the database (`notification_cadence_limit`,
+ * `notification_cadence_class`). The two MUST agree exactly: if the resolver accepts a row the trigger
+ * then refuses, the whole claimed batch rolls back and retries. notification-cadence-parity.test.ts
+ * reads the SQL and fails if either side drifts.
  */
 export const NOTIFICATION_CADENCE_POLICY = {
-  version: 'engagement-cadence-v2',
-  maxBudgetedPerLocalDate: 5,
-  maxPerCanonicalTypePerLocalDate: 5,
+  version: 'engagement-cadence-v3',
+  dailyCeiling: 7,
+  classLimits: { shloka: 1, learning: 1, other: 1 },
   minSpacingMinutes: 180,
   earliestLocalMinute: 7 * 60,
   latestLocalMinute: 21 * 60,
   searchStepMinutes: 15,
 } as const;
+
+export type NotificationCadenceClass = 'exempt' | 'shloka' | 'learning' | 'other';
+export type CountedCadenceClass = Exclude<NotificationCadenceClass, 'exempt'>;
+export type CadenceBlockKey = 'daily_ceiling' | 'shloka_slot' | 'learning_slot' | 'other_nudge';
+
+/** Mirrors the array in public.notification_is_budget_exempt (migration 20261003174633). */
+export const BUDGET_EXEMPT_EVENT_TYPES: readonly string[] = [
+  'security', 'account', 'moderation', 'auth', 'transactional', 'critical_alert',
+  'user_reminder', 'custom_reminder', 'explicit_request', 'user_sadhana_reminder',
+  'sankalpa_midpoint', 'japa', 'brahma_muhurta', 'sandhya', 'nitya_madhyahn',
+  'nitya_sandhya', 'ritual_window', 'pradosha_window', 'pradosha_kala',
+  'ekadashi_parana', 'nitya', 'aarti', 'observance', 'festival', 'vrat', 'tithi',
+  'observance_series', 'sankranti', 'sanskar_milestone', 'family_remembrance',
+];
+
+/**
+ * Rows another person's action (or the person's own safety action) causes. They are not a Shoonaya
+ * nudge, and the Mandali triggers write them without a local_date, so the resolver could never see
+ * them while the database counted them. Mirrors the list in public.notification_cadence_class.
+ */
+export const PERSON_INITIATED_EVENT_TYPES: readonly string[] = [
+  'connection_request', 'connection_accepted', 'connection_rejected', 'connection_cancelled',
+  'post_reaction', 'comment_reaction', 'mandali_comment', 'user_blocked', 'content_reported',
+];
+
+export const SHLOKA_EVENT_TYPES: readonly string[] = ['shloka'];
+export const LEARNING_EVENT_TYPES: readonly string[] = ['quiz', 'dharm_veer'];
+
+/**
+ * The class of a notification, from its type and (for generic bell rows) its semantic key. Unknown
+ * types are `other`: a new feature is counted until someone decides it should not be.
+ */
+export function classifyNotificationCadence(
+  rawEventType: string,
+  notificationKey?: string | null,
+): NotificationCadenceClass {
+  const type = canonicalNotificationBudgetType(rawEventType, notificationKey);
+  if (BUDGET_EXEMPT_EVENT_TYPES.includes(type) || PERSON_INITIATED_EVENT_TYPES.includes(type)) return 'exempt';
+  if (SHLOKA_EVENT_TYPES.includes(type)) return 'shloka';
+  if (LEARNING_EVENT_TYPES.includes(type)) return 'learning';
+  return 'other';
+}
+
+export function cadenceBlockKeyForClass(cadenceClass: CountedCadenceClass): CadenceBlockKey {
+  switch (cadenceClass) {
+    case 'shloka': return 'shloka_slot';
+    case 'learning': return 'learning_slot';
+    default: return 'other_nudge';
+  }
+}
 
 export interface NotificationQuietHours {
   startHour: number | null;

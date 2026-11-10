@@ -273,9 +273,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Could not verify Japa completion; delivery will retry' }, { status: 503 });
     }
 
-    // Shloka candidates are generated before the user's local evening. Recheck
-    // their read state at delivery so a user who opens the daily text after
-    // candidate generation does not receive a stale reminder.
+    // Shloka candidates are generated before they are due (a day ahead, for the
+    // user's morning slot). Recheck their read state at delivery so a user who
+    // opens the daily text after candidate generation does not receive a stale
+    // reminder.
     const shlokaRows = claimedRows.filter((row) => row.notification_type === 'shloka');
     const shlokaMissingDateIds = new Set<string>();
     const completedShlokaIds = new Set<string>();

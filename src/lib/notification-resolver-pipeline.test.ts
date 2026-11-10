@@ -115,9 +115,12 @@ describe('notification-resolver-pipeline', () => {
   it('promotes accepted candidates into notification_schedule and updates candidate records', async () => {
     process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
     process.env.NOTIFICATION_CANDIDATE_MODE_DEVOTIONAL_ENGAGEMENT = 'candidate';
+    process.env.NOTIFICATION_CANDIDATE_MODE_SHLOKA = 'candidate';
+    process.env.NOTIFICATION_CANDIDATE_MODE_QUIZ = 'candidate';
 
-    const cand1 = makeCandidate({ id: 'cand-1', event_type: 'devotional_engagement', priority: 50 });
-    const cand2 = makeCandidate({ id: 'cand-2', event_type: 'devotional_engagement', priority: 51 });
+    // One of each class: Shloka, the learning slot and the single other nudge are all admitted on one day.
+    const cand1 = makeCandidate({ id: 'cand-1', event_type: 'shloka', priority: 50 });
+    const cand2 = makeCandidate({ id: 'cand-2', event_type: 'quiz', priority: 51 });
     const cand3 = makeCandidate({ id: 'cand-3', event_type: 'devotional_engagement', priority: 52 });
 
     const mockSupabase = {
@@ -156,10 +159,12 @@ describe('notification-resolver-pipeline', () => {
 
   it('uses profile quiet hours and local-date schedule history when spacing candidates', async () => {
     process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
-    process.env.NOTIFICATION_CANDIDATE_MODE_MOOD = 'candidate';
+    process.env.NOTIFICATION_CANDIDATE_MODE_QUIZ = 'candidate';
+    // A learning-slot candidate: the earlier Sattvic row is the day's one "other" nudge, which is a separate class,
+    // so this test exercises only quiet hours and three-hour spacing.
     const candidate = makeCandidate({
-      id: 'mood-candidate',
-      event_type: 'mood',
+      id: 'quiz-candidate',
+      event_type: 'quiz',
       local_date: '2026-11-08',
       scheduled_for: '2026-11-08T02:00:00.000Z', // 07:30 Asia/Kolkata
       expires_at: '2026-11-08T18:00:00.000Z',
@@ -210,7 +215,7 @@ describe('notification-resolver-pipeline', () => {
     expect(historyQuery.gte).toHaveBeenCalledWith('send_at', '2026-11-07T10:00:00.000Z');
     expect(persistedArgs[0].p_schedule_rows[0].send_at).toBe('2026-11-08T03:30:00.000Z'); // 09:00 local, after quiet hours
     expect(persistedArgs[0].p_schedule_rows[0].metadata.delivery_cadence?.delay_minutes).toBe(90);
-    expect(persistedArgs[0].p_schedule_rows[0].metadata.delivery_cadence?.policy_version).toBe('engagement-cadence-v2');
+    expect(persistedArgs[0].p_schedule_rows[0].metadata.delivery_cadence?.policy_version).toBe('engagement-cadence-v3');
   });
 
   it('fails closed if delivery-history lookup fails', async () => {

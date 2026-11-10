@@ -3,9 +3,13 @@ import type {
   NotificationResolverEventInsert,
 } from '@/types/database';
 import {
+  cadenceBlockKeyForClass,
   canonicalNotificationBudgetType,
+  classifyNotificationCadence,
   findNextCadenceSlot,
   NOTIFICATION_CADENCE_POLICY,
+  type CadenceBlockKey,
+  type CountedCadenceClass,
   type NotificationQuietHours,
 } from './notification-cadence-policy';
 import { isValidTimeZone } from './sacred-time';
@@ -155,13 +159,16 @@ export function isBudgetExempt(priorityClass: NotificationPriorityClass): boolea
 
 /**
  * Deterministically resolves a set of notification candidates against user history,
- * shared engagement limits, delivery cadence, priority hierarchies, and expiration windows.
+ * per-class daily allowances, delivery cadence, priority hierarchies, and expiration windows.
  *
- * Rules:
- * 1. Transactional, explicit user reminders, ritual windows, and reviewed observances
- *    are 100% budget-exempt and never suppressed by engagement caps.
- * 2. All non-exempt engagement shares a maximum of five per user/local civil date;
- *    each canonical event type also has a five-per-day ceiling.
+ * Rules (engagement-cadence-v3, "one other nudge a day"):
+ * 1. Exempt candidates -- security, explicit user reminders, ritual windows, reviewed
+ *    observances -- are never counted and never suppressed by engagement limits.
+ * 2. Every other candidate belongs to one counted class and is admitted only while its class
+ *    has room: shloka (1 per user/local date), learning (1, shared by quiz and dharm_veer) and
+ *    other (1, shared by every remaining type). Shloka and the learning slot are therefore
+ *    never crowded out by other nudges. An outer ceiling caps the three together; it is a
+ *    backstop, not a target. The database enforces the same numbers.
  * 3. Flexible engagement pushes remain at their requested time unless that would
  *    create a burst, fall in quiet hours, or be outside the daytime delivery window.
  * 4. Flexible engagement pushes are spaced at least three hours apart.
@@ -200,9 +207,12 @@ export function resolveCandidates(input: {
     reasons[reason] = (reasons[reason] || 0) + 1;
   };
 
-  // 1. Count all non-exempt history and retain delivery instants for cadence.
-  const historyBudgetedByGroup = new Map<string, number>();
-  const historyBudgetedByType = new Map<string, number>();
+  type ClassCounts = { total: number; byClass: Record<CountedCadenceClass, number> };
+  const emptyCounts = (): ClassCounts => ({ total: 0, byClass: { shloka: 0, learning: 0, other: 0 } });
+  const copyCounts = (counts: ClassCounts): ClassCounts => ({ total: counts.total, byClass: { ...counts.byClass } });
+
+  // 1. Count all non-exempt history by class and retain delivery instants for cadence.
+  const historyCountsByGroup = new Map<string, ClassCounts>();
   const historyDeliveryInstantsByGroup = new Map<string, Date[]>();
   const seenHistoryNotificationKeys = new Set<string>();
 
@@ -213,16 +223,22 @@ export function resolveCandidates(input: {
       seenHistoryNotificationKeys.add(identity);
     }
     const groupKey = `${item.user_id}::${item.local_date}`;
-    // Re-derive from the trusted event type. A stale/manual priority_class from
-    // a legacy row must not make engagement disappear from the shared budget.
-    const pClass = resolvePriorityClassForEventType(item.notification_type);
+    // Re-derive the class from the trusted type AND key (a generic bell row carries its real type
+    // in its key). A stale/manual priority_class on a legacy row must not make engagement
+    // disappear from the daily allowances, and a bell row must not be counted differently here
+    // than the database counts it.
+    const cadenceClass = classifyNotificationCadence(item.notification_type, item.notification_key);
 
-    if (pClass === 'routine_engagement' || pClass === 'devotional_engagement') {
-      historyBudgetedByGroup.set(groupKey, (historyBudgetedByGroup.get(groupKey) || 0) + 1);
-      const typeKey = `${groupKey}::${canonicalNotificationBudgetType(item.notification_type)}`;
-      historyBudgetedByType.set(typeKey, (historyBudgetedByType.get(typeKey) || 0) + 1);
+    if (cadenceClass !== 'exempt') {
+      const counts = historyCountsByGroup.get(groupKey) ?? emptyCounts();
+      counts.total += 1;
+      counts.byClass[cadenceClass] += 1;
+      historyCountsByGroup.set(groupKey, counts);
     }
 
+    const pClass = resolvePriorityClassForEventType(
+      canonicalNotificationBudgetType(item.notification_type, item.notification_key),
+    );
     if (pClass !== 'transactional_safety') {
       const instant = new Date(item.sent_at);
       if (Number.isFinite(instant.getTime())) {
@@ -245,20 +261,35 @@ export function resolveCandidates(input: {
   // accepted times are then assigned chronologically so a later high-priority
   // reminder cannot push an earlier one past its window.
   for (const [groupKey, groupCandidates] of candidatesByGroup) {
-    let currentBudgetedCount = historyBudgetedByGroup.get(groupKey) || 0;
-    const budgetedByType = new Map<string, number>();
+    const historyCounts = historyCountsByGroup.get(groupKey) ?? emptyCounts();
+    // `reserved` includes provisional reservations for candidates selected but not yet given a slot.
+    const reserved = copyCounts(historyCounts);
+    // `acceptedCounts` is history plus candidates actually accepted so far (for the audit trail).
+    const acceptedCounts = copyCounts(historyCounts);
     const groupUserId = groupCandidates[0]?.user_id;
     const blockedInstants = [...(historyDeliveryInstantsByGroup.get(groupKey) ?? [])];
 
-    for (const candidate of groupCandidates) {
-      const typeKey = `${groupKey}::${canonicalNotificationBudgetType(candidate.event_type)}`;
-      budgetedByType.set(typeKey, historyBudgetedByType.get(typeKey) || 0);
-    }
+    const blockKeyFor = (cadenceClass: CountedCadenceClass): CadenceBlockKey | null => {
+      if (reserved.total >= NOTIFICATION_CADENCE_POLICY.dailyCeiling) return 'daily_ceiling';
+      if (reserved.byClass[cadenceClass] >= NOTIFICATION_CADENCE_POLICY.classLimits[cadenceClass]) {
+        return cadenceBlockKeyForClass(cadenceClass);
+      }
+      return null;
+    };
+    const reserve = (cadenceClass: CountedCadenceClass) => {
+      reserved.total += 1;
+      reserved.byClass[cadenceClass] += 1;
+    };
+    const release = (cadenceClass: CountedCadenceClass) => {
+      reserved.total = Math.max(0, reserved.total - 1);
+      reserved.byClass[cadenceClass] = Math.max(0, reserved.byClass[cadenceClass] - 1);
+    };
 
     // Filter out pre-terminal candidates (cancelled / expired) first
     const competingCandidates: Array<{
       candidate: NotificationCandidate;
       priorityClass: NotificationPriorityClass;
+      cadenceClass: ReturnType<typeof classifyNotificationCadence>;
       scheduledInstant: Date;
       expiresInstant: Date;
     }> = [];
@@ -311,10 +342,10 @@ export function resolveCandidates(input: {
         continue;
       }
 
-      const priorityClass = resolvePriorityClass(candidate);
       competingCandidates.push({
         candidate,
-        priorityClass,
+        priorityClass: resolvePriorityClass(candidate),
+        cadenceClass: classifyNotificationCadence(candidate.event_type),
         scheduledInstant,
         expiresInstant,
       });
@@ -336,13 +367,14 @@ export function resolveCandidates(input: {
 
     let winningEngagementId: string | null = null;
 
-    const budgetedCandidates: typeof competingCandidates = [];
+    type Competing = typeof competingCandidates[number];
+    const budgetedCandidates: Competing[] = [];
 
     // Exempt, time-sensitive candidates keep their producer's exact slot and
     // block nearby flexible engagement from clustering around them.
     for (const item of competingCandidates) {
       const { candidate, priorityClass, scheduledInstant } = item;
-      if (isBudgetExempt(priorityClass)) {
+      if (item.cadenceClass === 'exempt') {
         accepted.push(candidate);
         evaluations.push({
           candidate,
@@ -369,33 +401,17 @@ export function resolveCandidates(input: {
       }
     }
 
-    // Select budgeted candidates in the established priority order. The total
-    // ceiling is deliberately shared across types: five-per-type alone would
-    // multiply into an unbounded daily volume as features grow.
-    const selectedForCadence: typeof competingCandidates = [];
-    const capacityLimitedCandidates: typeof competingCandidates = [];
-    const acceptedBudgetedByType = new Map<string, number>();
-    for (const candidate of groupCandidates) {
-      const typeKey = `${groupKey}::${canonicalNotificationBudgetType(candidate.event_type)}`;
-      acceptedBudgetedByType.set(typeKey, historyBudgetedByType.get(typeKey) || 0);
-    }
+    // Select budgeted candidates in the established priority order, each against its own class
+    // allowance and the shared outer ceiling.
+    const selectedForCadence: Competing[] = [];
+    const capacityLimitedCandidates: Competing[] = [];
     for (const item of budgetedCandidates) {
-      const { candidate, priorityClass } = item;
-      const typeKey = `${groupKey}::${canonicalNotificationBudgetType(candidate.event_type)}`;
-      const currentTypeCount = budgetedByType.get(typeKey) || 0;
-
-      if (currentBudgetedCount >= NOTIFICATION_CADENCE_POLICY.maxBudgetedPerLocalDate) {
+      const cadenceClass = item.cadenceClass as CountedCadenceClass;
+      if (blockKeyFor(cadenceClass)) {
         capacityLimitedCandidates.push(item);
         continue;
       }
-
-      if (currentTypeCount >= NOTIFICATION_CADENCE_POLICY.maxPerCanonicalTypePerLocalDate) {
-        capacityLimitedCandidates.push(item);
-        continue;
-      }
-
-      currentBudgetedCount += 1;
-      budgetedByType.set(typeKey, currentTypeCount + 1);
+      reserve(cadenceClass);
       selectedForCadence.push(item);
     }
 
@@ -409,9 +425,9 @@ export function resolveCandidates(input: {
       return a.candidate.priority - b.candidate.priority;
     });
 
-    let acceptedBudgetedCount = historyBudgetedByGroup.get(groupKey) || 0;
-    const acceptAtCadenceSlot = (item: typeof competingCandidates[number]): boolean => {
+    const acceptAtCadenceSlot = (item: Competing): boolean => {
       const { candidate, priorityClass } = item;
+      const cadenceClass = item.cadenceClass as CountedCadenceClass;
       const cadenceSlot = findNextCadenceSlot({
         scheduledFor: candidate.scheduled_for,
         expiresAt: candidate.expires_at,
@@ -469,10 +485,8 @@ export function resolveCandidates(input: {
 
       accepted.push(acceptedCandidate);
       winningEngagementId ??= candidate.id ?? null;
-      acceptedBudgetedCount += 1;
-      const acceptedTypeKey = `${groupKey}::${canonicalNotificationBudgetType(candidate.event_type)}`;
-      const acceptedTypeCount = (acceptedBudgetedByType.get(acceptedTypeKey) || 0) + 1;
-      acceptedBudgetedByType.set(acceptedTypeKey, acceptedTypeCount);
+      acceptedCounts.total += 1;
+      acceptedCounts.byClass[cadenceClass] += 1;
       blockedInstants.push(cadenceSlot.scheduledFor);
 
       const reason = cadenceSlot.delayMinutes > 0
@@ -491,11 +505,11 @@ export function resolveCandidates(input: {
         resolved_at: now.toISOString(),
         metadata: {
           priority_class: priorityClass,
-          budgeted_count: acceptedBudgetedCount,
-          budgeted_limit: NOTIFICATION_CADENCE_POLICY.maxBudgetedPerLocalDate,
-          canonical_event_type: canonicalNotificationBudgetType(candidate.event_type),
-          per_type_count: acceptedTypeCount,
-          per_type_limit: NOTIFICATION_CADENCE_POLICY.maxPerCanonicalTypePerLocalDate,
+          budgeted_count: acceptedCounts.total,
+          daily_ceiling: NOTIFICATION_CADENCE_POLICY.dailyCeiling,
+          cadence_class: cadenceClass,
+          class_count: acceptedCounts.byClass[cadenceClass],
+          class_limit: NOTIFICATION_CADENCE_POLICY.classLimits[cadenceClass],
           delivery_cadence: deliveryCadence,
         },
       });
@@ -507,31 +521,24 @@ export function resolveCandidates(input: {
       if (acceptAtCadenceSlot(item)) continue;
 
       // A selected candidate that has no safe same-day slot did not consume
-      // capacity. Release its provisional total and per-type reservation so a
-      // lower-priority candidate can use the actual free slot below.
-      currentBudgetedCount -= 1;
-      const typeKey = `${groupKey}::${canonicalNotificationBudgetType(item.candidate.event_type)}`;
-      budgetedByType.set(typeKey, Math.max(0, (budgetedByType.get(typeKey) || 0) - 1));
+      // capacity. Release its provisional reservation so a lower-priority
+      // candidate can use the actual free slot below.
+      release(item.cadenceClass as CountedCadenceClass);
     }
 
     // Capacity blocked only candidates provisionally while cadence assignment
     // was pending. Backfill any capacity released by a candidate with no safe
-    // slot, preserving the original priority order and all shared limits.
+    // slot, preserving the original priority order and every shared limit.
     for (const item of capacityLimitedCandidates) {
       const { candidate, priorityClass } = item;
-      const typeKey = `${groupKey}::${canonicalNotificationBudgetType(candidate.event_type)}`;
-      const currentTypeCount = budgetedByType.get(typeKey) || 0;
+      const cadenceClass = item.cadenceClass as CountedCadenceClass;
       const canDefer = allowDeferrals
         && item.scheduledInstant.getTime() < item.expiresInstant.getTime()
         && now.getTime() < item.expiresInstant.getTime();
-      const blockReason = currentBudgetedCount >= NOTIFICATION_CADENCE_POLICY.maxBudgetedPerLocalDate
-        ? 'daily_budget_cap'
-        : currentTypeCount >= NOTIFICATION_CADENCE_POLICY.maxPerCanonicalTypePerLocalDate
-          ? 'per_type_budget_cap'
-          : null;
+      const blockKey = blockKeyFor(cadenceClass);
 
-      if (blockReason) {
-        const reason = `${blockReason}_${canDefer ? 'deferrable' : 'reached'}`;
+      if (blockKey) {
+        const reason = `${blockKey}_${canDefer ? 'deferrable' : 'reached'}`;
         const decision = canDefer ? 'deferred' : 'suppressed';
         (canDefer ? deferred : suppressed).push(candidate);
         evaluations.push({ candidate, decision, reason, priorityClass, winningCandidateId: winningEngagementId });
@@ -544,29 +551,25 @@ export function resolveCandidates(input: {
           winning_candidate_id: winningEngagementId,
           policy_version: policyVersion,
           resolved_at: now.toISOString(),
-          metadata: blockReason === 'daily_budget_cap'
+          metadata: blockKey === 'daily_ceiling'
             ? {
                 priority_class: priorityClass,
-                budgeted_count: currentBudgetedCount,
-                budgeted_limit: NOTIFICATION_CADENCE_POLICY.maxBudgetedPerLocalDate,
+                budgeted_count: reserved.total,
+                daily_ceiling: NOTIFICATION_CADENCE_POLICY.dailyCeiling,
               }
             : {
                 priority_class: priorityClass,
-                canonical_event_type: canonicalNotificationBudgetType(candidate.event_type),
-                type_count: currentTypeCount,
-                type_limit: NOTIFICATION_CADENCE_POLICY.maxPerCanonicalTypePerLocalDate,
+                cadence_class: cadenceClass,
+                class_count: reserved.byClass[cadenceClass],
+                class_limit: NOTIFICATION_CADENCE_POLICY.classLimits[cadenceClass],
               },
         });
         recordReason(reason);
         continue;
       }
 
-      currentBudgetedCount += 1;
-      budgetedByType.set(typeKey, currentTypeCount + 1);
-      if (!acceptAtCadenceSlot(item)) {
-        currentBudgetedCount -= 1;
-        budgetedByType.set(typeKey, currentTypeCount);
-      }
+      reserve(cadenceClass);
+      if (!acceptAtCadenceSlot(item)) release(cadenceClass);
     }
   }
 

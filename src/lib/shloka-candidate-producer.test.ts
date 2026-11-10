@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   produceShlokaCandidate,
+  SHLOKA_REMINDER_LOCAL_HOUR,
   type DevoteeProfileForShloka,
 } from './shloka-candidate-producer';
 
@@ -73,16 +74,32 @@ describe('shloka-candidate-producer', () => {
     expect(cand!.body).not.toContain('🔥');
   });
 
-  it('defers send time outside quiet hours when 19:00 falls in quiet window', () => {
+  it('sends in the morning, at 08:00 local, by default', () => {
+    expect(SHLOKA_REMINDER_LOCAL_HOUR).toBe(8);
+    const cand = produceShlokaCandidate(devotee, '2026-11-08');
+    // 08:00 IST is 02:30 UTC
+    expect(cand!.scheduled_for).toBe('2026-11-08T02:30:00.000Z');
+  });
+
+  it('keeps 08:00 under the default 22:00-06:00 quiet hours, and when quiet hours end exactly at 08:00', () => {
+    for (const end of [6, 8]) {
+      const cand = produceShlokaCandidate(
+        { ...devotee, notification_quiet_hours_start: 22, notification_quiet_hours_end: end },
+        '2026-11-08',
+      );
+      expect(cand!.scheduled_for, `quiet hours end ${end}`).toBe('2026-11-08T02:30:00.000Z');
+    }
+  });
+
+  it('moves past quiet hours when 08:00 falls inside them', () => {
     const quietDevotee: DevoteeProfileForShloka = {
       ...devotee,
-      notification_quiet_hours_start: 18,
-      notification_quiet_hours_end: 6,
+      notification_quiet_hours_start: 22,
+      notification_quiet_hours_end: 9,
     };
     const cand = produceShlokaCandidate(quietDevotee, '2026-11-08');
     expect(cand).not.toBeNull();
-    const scheduled = new Date(cand!.scheduled_for);
-    // 07:00 IST is 01:30 UTC
-    expect(scheduled.toISOString()).toContain('T01:30:00.000Z');
+    // quiet until 09:00, so 10:00 IST, which is 04:30 UTC
+    expect(cand!.scheduled_for).toBe('2026-11-08T04:30:00.000Z');
   });
 });

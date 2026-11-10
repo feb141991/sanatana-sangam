@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  BUDGET_EXEMPT_EVENT_TYPES,
+  cadenceBlockKeyForClass,
   canonicalNotificationBudgetType,
+  classifyNotificationCadence,
   findNextCadenceSlot,
   NOTIFICATION_CADENCE_POLICY,
+  PERSON_INITIATED_EVENT_TYPES,
 } from './notification-cadence-policy';
 
 const noBlockedInstants: Date[] = [];
@@ -107,6 +111,60 @@ describe('notification cadence policy', () => {
     });
 
     expect(slot?.scheduledFor.toISOString()).toBe('2026-10-25T07:00:00.000Z');
-    expect(NOTIFICATION_CADENCE_POLICY.maxBudgetedPerLocalDate).toBe(5);
+  });
+});
+
+describe('engagement-cadence-v3 policy: one other nudge a day', () => {
+  it('states the agreed numbers: one Shloka, one learning slot, one other nudge, ceiling 7', () => {
+    expect(NOTIFICATION_CADENCE_POLICY.version).toBe('engagement-cadence-v3');
+    expect(NOTIFICATION_CADENCE_POLICY.dailyCeiling).toBe(7);
+    expect(NOTIFICATION_CADENCE_POLICY.classLimits).toEqual({ shloka: 1, learning: 1, other: 1 });
+  });
+
+  it('keeps the outer ceiling above what the class limits can ever allow, so it stays a backstop', () => {
+    const classTotal = Object.values(NOTIFICATION_CADENCE_POLICY.classLimits).reduce((sum, limit) => sum + limit, 0);
+    expect(classTotal).toBe(3);
+    expect(NOTIFICATION_CADENCE_POLICY.dailyCeiling).toBeGreaterThan(classTotal);
+  });
+
+  it('puts Shloka and its streak aliases in one protected class', () => {
+    for (const type of ['shloka', 'streak', 'streak_nudge']) {
+      expect(classifyNotificationCadence(type)).toBe('shloka');
+    }
+    expect(classifyNotificationCadence('general', 'streak:2026-11-10')).toBe('shloka');
+  });
+
+  it('puts quiz and dharm_veer in one shared learning slot', () => {
+    for (const type of ['quiz', 'quiz_daily', 'dharm_veer']) {
+      expect(classifyNotificationCadence(type)).toBe('learning');
+    }
+  });
+
+  it('counts every remaining type as the single other nudge, including unknown new types', () => {
+    for (const type of ['mood', 'mood_checkin', 'sattvic_reminder', 'daily_digest', 'weekly_summary', 'mandali_prompt', 'something_new']) {
+      expect(classifyNotificationCadence(type)).toBe('other');
+    }
+    expect(classifyNotificationCadence('general', 'mood-evening:2026-11-10')).toBe('other');
+  });
+
+  it('never counts what the person chose, ritual windows, observances, security or Mandali activity', () => {
+    for (const type of [...BUDGET_EXEMPT_EVENT_TYPES, ...PERSON_INITIATED_EVENT_TYPES]) {
+      expect(classifyNotificationCadence(type)).toBe('exempt');
+    }
+    expect(classifyNotificationCadence('general', 'mandali_comment:abc')).toBe('exempt');
+    expect(classifyNotificationCadence('general', 'japa:2026-11-10')).toBe('exempt');
+  });
+
+  it('keeps the exempt and person-initiated lists disjoint from the counted classes', () => {
+    for (const type of ['shloka', 'quiz', 'dharm_veer', 'mood', 'daily_digest']) {
+      expect(BUDGET_EXEMPT_EVENT_TYPES).not.toContain(type);
+      expect(PERSON_INITIATED_EVENT_TYPES).not.toContain(type);
+    }
+  });
+
+  it('names the reason for each refusal after the allowance that was used', () => {
+    expect(cadenceBlockKeyForClass('shloka')).toBe('shloka_slot');
+    expect(cadenceBlockKeyForClass('learning')).toBe('learning_slot');
+    expect(cadenceBlockKeyForClass('other')).toBe('other_nudge');
   });
 });
