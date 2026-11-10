@@ -96,30 +96,30 @@ export function getNotificationPreferenceSkipReason(
 
   if (
     row.notification_type === "japa" &&
-    profile.japa_reminder_enabled === false
+    profile.japa_reminder_enabled !== true
   ) {
     return "japa_reminders_disabled";
   }
 
   if (
     row.notification_type === "brahma_muhurta" &&
-    profile.wants_brahma_muhurta_reminders === false
+    profile.wants_brahma_muhurta_reminders !== true
   ) {
     return "brahma_muhurta_reminders_disabled";
   }
 
-  // Quiz reminders are default-on. Recheck at delivery so a user who turned it off
+  // Quiz reminders require explicit opt-in (default off). Recheck at delivery so a user who turned it off
   // after a row was queued is not sent the reminder.
   if (
     row.notification_type === "quiz" &&
-    profile.quiz_reminder_enabled === false
+    profile.quiz_reminder_enabled !== true
   ) {
     return "quiz_reminders_disabled";
   }
 
   if (
     row.notification_type === "shloka" &&
-    profile.wants_shloka_reminders === false
+    profile.wants_shloka_reminders !== true
   ) {
     return "shloka_reminders_disabled";
   }
@@ -138,18 +138,18 @@ export function getNotificationPreferenceSkipReason(
   };
   const independentPreference = independentPreferences[type];
   if (independentPreference) {
-    return profile[independentPreference] === false ? `${type}_reminders_disabled` : null;
+    return profile[independentPreference] !== true ? `${type}_reminders_disabled` : null;
   }
   if (
     type.startsWith("nitya") &&
-    profile.wants_nitya_reminders === false
+    profile.wants_nitya_reminders !== true
   ) {
     return "nitya_reminders_disabled";
   }
 
   if (
     row.notification_type === "sankalpa_midpoint" &&
-    profile.wants_sankalpa_midpoint_reminders === false
+    profile.wants_sankalpa_midpoint_reminders !== true
   ) {
     return "sankalpa_midpoint_reminders_disabled";
   }
@@ -165,28 +165,28 @@ export function getNotificationPreferenceSkipReason(
 
   if (
     row.notification_type === "family_remembrance" &&
-    profile.wants_family_remembrance_reminders === false
+    profile.wants_family_remembrance_reminders !== true
   ) {
     return "family_remembrance_reminders_disabled";
   }
 
   if (
     row.notification_type === "festival" &&
-    profile.wants_festival_reminders === false
+    profile.wants_festival_reminders !== true
   ) {
     return "festival_reminders_disabled";
   }
 
   if (
     row.notification_type === "vrat" &&
-    profile.wants_vrat_reminders === false
+    profile.wants_vrat_reminders !== true
   ) {
     return "vrat_reminders_disabled";
   }
 
   if (
     row.notification_type === "tithi" &&
-    profile.wants_tithi_reminders === false
+    profile.wants_tithi_reminders !== true
   ) {
     return "tithi_reminders_disabled";
   }

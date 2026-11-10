@@ -19,7 +19,7 @@ import {
  */
 
 const MIGRATIONS = path.join(process.cwd(), 'supabase', 'migrations');
-const CADENCE_V3 = '20261110100000_one_nudge_a_day_cadence.sql';
+const CADENCE_V3 = '20261110140000_one_nudge_a_day_cadence.sql';
 const SQL_TEST = path.join(process.cwd(), 'supabase', 'tests', 'notification_cadence_atomicity.test.sql');
 
 function read(file: string): string {

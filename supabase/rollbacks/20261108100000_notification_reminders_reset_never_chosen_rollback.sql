@@ -1,7 +1,12 @@
 -- Rollback for 20261108100000_notification_reminders_reset_never_chosen.sql.
--- Restores each backed-up reminder value, but ONLY where the profile still holds the `false` this migration wrote: a switch a person has turned
--- on since the reset is a real choice and is left alone. Then drops the backup table. This puts back reminders nobody chose (including Brahma
--- Muhurta for people who never chose it): use it only if the reset itself was wrong.
+-- Restores each backed-up reminder value, but ONLY where:
+--   1. The profile has NOT been modified since the reset (p.updated_at <= b.taken_at).
+--      If a person has modified their profile or preferences after the reset (p.updated_at > b.taken_at),
+--      a `false` value could be a deliberate opt-out made subsequently in Settings or Onboarding;
+--      blindly restoring `b.col` (true) would destroy that deliberate opt-out (Rule 6).
+--   2. The profile still holds the `false` this migration wrote (p.col is not distinct from false).
+--
+-- Then drops the backup table only after verifying restored rows.
 begin;
 set local lock_timeout = '5s';
 
@@ -26,7 +31,8 @@ set
       wants_tithi_reminders = case when p.wants_tithi_reminders is not distinct from false and b.wants_tithi_reminders is distinct from false then b.wants_tithi_reminders else p.wants_tithi_reminders end,
       wants_vrat_reminders = case when p.wants_vrat_reminders is not distinct from false and b.wants_vrat_reminders is distinct from false then b.wants_vrat_reminders else p.wants_vrat_reminders end
 from public.notification_reset_backup_20261108 b
-where b.user_id = p.id;
+where b.user_id = p.id
+  and (p.updated_at is null or p.updated_at <= b.taken_at);
 
 drop table public.notification_reset_backup_20261108;
 

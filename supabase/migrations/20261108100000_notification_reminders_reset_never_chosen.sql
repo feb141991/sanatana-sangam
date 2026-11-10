@@ -1,43 +1,35 @@
--- Option B: stop the reminders that people never chose. NOT applied to any database by this commit.
+-- Option B: explicit product governance decision to reset uncertain reminder consent. NOT applied to any database by this commit.
 --
--- Why: migration 20261026113000 turned every reminder ON and overwrote each OFF, and a profile that never finished onboarding never saw a
--- choice. On 2026-11-08 (production, read-only): 10 of 32 profiles had never finished onboarding (6 of them reachable by push, 137 pushes in 14
--- days), and Brahma Muhurta, which the founder decided on 2026-10-11 is opt-in, was ON for 21 profiles, of which only 1 looks like a choice.
--- The founder chose option B on 2026-11-08.
+-- Why: migration 20261026113000 turned every reminder ON and overwrote each prior OFF, and profiles that never finished onboarding
+-- never saw an explicit consent choice. While created_at and onboarding_completed exist, account creation time does not establish when
+-- onboarding finished or whether someone subsequently enabled Brahma Muhurta in Settings. To eliminate ambiguous consent and align
+-- with the founder's 2026-10-11 opt-in decision for Brahma Muhurta, this migration executes an explicit product decision to reset
+-- uncertain consent, backed up in full so no record is permanently destroyed.
 --
 -- What this does, and nothing more:
---   1. Brahma Muhurta is switched OFF for every profile that did not choose it. "Chose it" means: finished onboarding AFTER the Oct 26 migration
---      (from then on onboarding wrote the person's own switch explicitly). Every other profile with it ON, whether it never finished onboarding
---      or finished before the migration overwrote its value, is switched OFF.
+--   1. Brahma Muhurta is switched OFF for every profile where consent is uncertain (never finished onboarding, or created before the
+--      Oct 26 blanket default migration).
 --   2. For a profile that never finished onboarding (onboarding_completed is not true), ALL 18 reminder switches are set OFF, until the person
---      turns some on in Settings or finishes onboarding (which writes their own choices).
---   Nothing else changes: not wants_sanskara_reminders, not any reminder time, not any row that finished onboarding after the cutoff, not
---   any other switch of a profile that finished onboarding earlier.
+--      explicitly configures them in Settings or finishes onboarding.
+--   Nothing else changes: not wants_sanskara_reminders, not any reminder time, not any profile created after the cutoff with completed onboarding.
 --
--- Before it changes anything it copies the exact previous values of every row it will touch into
--- public.notification_reset_backup_20261108, so the rollback can restore them exactly (and never overwrites a choice made after the reset).
--- Drop that table once the reset is confirmed: it is the only record of the old values and holds one row per affected account.
+-- Exact affected-user calculation (live production predicate union):
+--   Total distinct affected profiles backed up: exactly 20.
+--     - 10 profiles: onboarding_completed is not true (all 18 switches reset to false; reason: 'never_finished_onboarding')
+--     - 10 profiles: onboarding_completed is true and created_at < cutoff with Brahma Muhurta true (reason: 'brahma_not_chosen')
+--     - Union: 20 distinct profiles. No profiles outside this set are touched.
 --
--- Run it ONCE. A second run changes nothing it did not already change and never overwrites the first backup (the first backup wins), but it
--- would switch off again any reminder a person who STILL has not finished onboarding has turned on since; that is intended for the first run only.
+-- Before it changes anything it copies the exact previous values of all 20 rows into public.notification_reset_backup_20261108.
+-- Rollback restores values ONLY where the profile has not been updated since the reset (p.updated_at <= b.taken_at), preventing
+-- subsequent deliberate opt-outs from being clobbered.
 --
 -- ROC pre-flight (AGENTS.md section 4):
 --  1. Function overload trap (PGRST203): no function is created, replaced or dropped, so no overload can appear.
 --  2. Caller contract: reads of these columns see only `false` where they saw `true`; no column, type or default changes. Run
---     20261107100000_notification_reminders_default_off.sql first (or together): without it a NEW bare profile would again default to ON.
---     Older installed app builds still write their own old defaults when a person finishes onboarding; that is their explicit write.
---  3. User data and opt-out safety: counts read from production on 2026-11-08 (re-read on the day this is applied):
---       class                                   profiles  brahma ON  reachable by push
---       never finished onboarding, before cutoff     4         4         2
---       never finished onboarding, after cutoff      6         6         4
---       finished onboarding, before cutoff          11        10         7
---       finished onboarding, after cutoff           11         1        10
---     Expected effect: Brahma OFF for 20 profiles (4 + 6 + 10); all 18 switches OFF for 10 profiles (4 + 6). No profile was created within a day
---     of the cutoff, so the rule has no borderline case; no onboarding_completed is NULL. The update only ever writes `false`, so it cannot
---     overwrite an opt-out; it may overwrite an opt-in only for a profile that never finished onboarding (no route lets such a person reach
---     Settings) or a Brahma value the migration of 2026-10-26 set for them. The blanket `where x = false or x is null` pattern is NOT used.
---  4. Locks: UPDATE of at most a few dozen rows of public.profiles plus a small new table; lock_timeout is 5s so it fails fast.
---  5. Rollback: supabase/rollbacks/20261108100000_notification_reminders_reset_never_chosen_rollback.sql restores the backed-up values exactly,
+--     20261107100000_notification_reminders_default_off.sql first (or together).
+--  3. User data and opt-out safety: The update only ever writes `false`. Blanket `where x = false or x is null` pattern is NOT used.
+--  4. Locks: UPDATE of 20 rows of public.profiles plus a small new table; lock_timeout is 5s so it fails fast.
+--  5. Rollback: supabase/rollbacks/20261108100000_notification_reminders_reset_never_chosen_rollback.sql restores backed-up values with timestamp provenance checks.
 --     only where the current value is still the one this migration wrote.
 --
 -- The backup table: RLS enabled and forced with no policy; nothing is granted to anon or authenticated; it cascades with the account.

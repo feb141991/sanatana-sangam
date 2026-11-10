@@ -1,7 +1,7 @@
 # Engagement notification cadence
 
 > **Policy `engagement-cadence-v3` ("one other nudge a day") is WRITTEN, NOT APPLIED (2026-11-10).**
-> Migration `20261110100000_one_nudge_a_day_cadence.sql` and its rollback are in the repository and the
+> Migration `20261110140000_one_nudge_a_day_cadence.sql` and its rollback are in the repository and the
 > resolver change is committed, but production still enforces `engagement-cadence-v2` (the contract under
 > "Previous contract" below) until that migration is applied. Nothing here has been run against a Supabase
 > branch or production.
@@ -51,9 +51,9 @@ History is classified by type **and** key on both sides, so a generic bell row (
 
 1. Deploy the resolver change **first or together with** the migration. Applying the migration under the old
    resolver (limit 5) makes every surplus acceptance raise and stall the batch.
-2. Apply `20261110100000` (function replacement only: no table DDL, no data update, no index build).
-   Afterwards run `node scripts/assert-supabase-migration-version.mjs 20261110100000`.
-3. Roll back with `supabase/rollbacks/20261110100000_one_nudge_a_day_cadence_rollback.sql`, deploying the
+2. Apply `20261110140000` (function replacement only: no table DDL, no data update, no index build).
+   Afterwards run `node scripts/assert-supabase-migration-version.mjs 20261110140000`.
+3. Roll back with `supabase/rollbacks/20261110140000_one_nudge_a_day_cadence_rollback.sql`, deploying the
    previous resolver first or with it.
 
 **Transition:** rows already admitted under v2 stay. A user who already has two "other" rows today gets no third

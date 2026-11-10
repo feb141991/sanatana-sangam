@@ -1,105 +1,11 @@
--- engagement-cadence-v3: one other nudge a day, with Shloka and the learning slot protected.
---
--- WRITTEN, NOT APPLIED. Founder decisions 2026-11-08: reminders are chosen, not defaulted
--- (separate migrations); at most ONE other nudge a day; Shloka protected; one learning slot a
--- day shared by quiz and dharm_veer; 7 is an outer safety ceiling, not a target.
---
--- What changes
---   Old: every non-exempt type shared ONE allowance of five rows per user per local day, so a
---        busy day starved Shloka (83% of Shloka candidates were suppressed in the 14 days before
---        2026-11-07).
---   New: each non-exempt row belongs to exactly one class and is admitted only while its class has room:
---          shloka    1 per local day, never crowded out by other nudges
---          learning  1 per local day, shared by quiz + dharm_veer (the 10:00 learning slot)
---          other     1 per local day, shared by every remaining non-exempt type
---        plus an outer ceiling of 7 across the three classes (a backstop that normal operation
---        does not reach: the class limits already allow at most 3).
---   Exempt (never counted, never suppressed here) is unchanged for the types the old list covered
---   (security, explicit user reminders, ritual windows, observances, family milestones), PLUS nine
---   person-initiated or receipt rows the Mandali triggers write (connection_*, post_reaction,
---   comment_reaction, mandali_comment, user_blocked, content_reported). Those are another person's
---   action, not a Shoonaya nudge, and they do not carry a local_date, so the resolver could never
---   see them while this database counted them: that disagreement would abort resolver batches.
---
--- ROC pre-flight (AGENTS.md section 4)
---   1. Function overload trap (PGRST203): the three redefined functions keep their EXACT signatures
---      (enforce_notification_schedule_cadence(), validate_notification_schedule_cadence_statement(),
---      persist_notification_candidate_resolution_internal(jsonb, jsonb, jsonb) with the same
---      defaults), so CREATE OR REPLACE replaces them in place and no overload is created. The four
---      new helpers are new names. A self-check at the end counts one definition per name.
---   2. Caller contract: no signature, return shape or grant changes. The resolver and the
---      notification_schedule trigger callers are unchanged. What does change is behaviour: rows the
---      old rule admitted are now refused (reason in notification_cadence_events). The TypeScript
---      resolver (src/lib/notification-resolver.ts) is changed in the same commit and must be
---      deployed WITH or BEFORE this migration is applied, never after: until it is, the resolver
---      still accepts up to five and every surplus makes persist_notification_candidate_resolution
---      raise, which requeues the WHOLE claimed batch (all users) every ten minutes.
---   3. User data / opt-outs: this migration updates no rows and changes no column default.
---   4. Locks: function replacement only; no table DDL, no index build, no data scan.
---   5. Rollback: supabase/rollbacks/20261110100000_one_nudge_a_day_cadence_rollback.sql restores the
---      three original bodies and drops the four helpers.
---
--- Transition: rows already admitted today under the old rule stay (they are never deleted). A user who
--- already has two "other" rows today simply gets no third; the class check looks only at the class
--- being added, so such history cannot block Shloka or the learning slot.
-
-CREATE OR REPLACE FUNCTION public.notification_cadence_policy_version()
-RETURNS TEXT
-LANGUAGE sql
-IMMUTABLE
-SET search_path = ''
-AS $$
-  SELECT 'engagement-cadence-v3'::TEXT;
-$$;
-
--- The ONLY place the daily limits live in the database. Unknown scopes return 0 so a typo fails closed.
--- src/lib/notification-cadence-policy.ts mirrors these numbers; the parity test fails if they differ.
-CREATE OR REPLACE FUNCTION public.notification_cadence_limit(p_scope TEXT)
-RETURNS INTEGER
-LANGUAGE sql
-IMMUTABLE
-SET search_path = ''
-AS $$
-  SELECT CASE p_scope
-    WHEN 'ceiling' THEN 7
-    WHEN 'shloka' THEN 1
-    WHEN 'learning' THEN 1
-    WHEN 'other' THEN 1
-    ELSE 0
-  END;
-$$;
-
--- 'exempt' | 'shloka' | 'learning' | 'other'.
-CREATE OR REPLACE FUNCTION public.notification_cadence_class(
-  p_event_type TEXT,
-  p_notification_key TEXT DEFAULT NULL
-)
-RETURNS TEXT
-LANGUAGE sql
-IMMUTABLE
-SET search_path = ''
-AS $$
-  SELECT CASE
-    WHEN public.notification_is_budget_exempt(p_event_type, p_notification_key) THEN 'exempt'
-    WHEN canonical.event_type = ANY(ARRAY[
-      'connection_request', 'connection_accepted', 'connection_rejected', 'connection_cancelled',
-      'post_reaction', 'comment_reaction', 'mandali_comment', 'user_blocked', 'content_reported'
-    ]::TEXT[]) THEN 'exempt'
-    WHEN canonical.event_type = 'shloka' THEN 'shloka'
-    WHEN canonical.event_type = ANY(ARRAY['quiz', 'dharm_veer']::TEXT[]) THEN 'learning'
-    ELSE 'other'
-  END
-  FROM (
-    SELECT public.canonical_notification_budget_type(p_event_type, p_notification_key) AS event_type
-  ) AS canonical;
-$$;
-
-REVOKE ALL ON FUNCTION public.notification_cadence_policy_version() FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.notification_cadence_limit(TEXT) FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON FUNCTION public.notification_cadence_class(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.notification_cadence_policy_version() TO service_role;
-GRANT EXECUTE ON FUNCTION public.notification_cadence_limit(TEXT) TO service_role;
-GRANT EXECUTE ON FUNCTION public.notification_cadence_class(TEXT, TEXT) TO service_role;
+-- Rollback for 20261110140000_one_nudge_a_day_cadence.sql.
+-- Restores the three original function bodies (five shared budgeted rows per user per local day,
+-- policy version engagement-cadence-v2) and drops the four helpers. Run the original bodies FIRST:
+-- they do not reference the helpers, so nothing dangles. Rows already refused or admitted stay as they
+-- are; notification_cadence_events rows written as v3 are kept (harmless history). Deploy the previous
+-- TypeScript resolver (limit 5) before or with this rollback, or the resolver will accept fewer rows than
+-- this database now allows (safe direction: it only suppresses more).
+-- The Mandali types that v3 stopped counting are counted again after rollback, as before.
 
 CREATE OR REPLACE FUNCTION public.enforce_notification_schedule_cadence()
 RETURNS TRIGGER
@@ -114,9 +20,6 @@ DECLARE
   v_quiet_end INTEGER;
   v_local_date DATE;
   v_existing_budgeted INTEGER := 0;
-  v_existing_same_class INTEGER := 0;
-  v_cadence_class TEXT;
-  v_block_reason TEXT;
   v_requested_at TIMESTAMPTZ;
   v_slot TIMESTAMPTZ;
   v_conflict_at TIMESTAMPTZ;
@@ -126,8 +29,7 @@ DECLARE
   v_found_slot BOOLEAN := FALSE;
   v_shift_reason TEXT;
 BEGIN
-  v_cadence_class := public.notification_cadence_class(NEW.notification_type, NEW.notification_key);
-  IF v_cadence_class = 'exempt' THEN
+  IF public.notification_is_budget_exempt(NEW.notification_type, NEW.notification_key) THEN
     RETURN NEW;
   END IF;
 
@@ -177,13 +79,12 @@ BEGIN
   ) THEN
     INSERT INTO public.notification_cadence_events (
       user_id, notification_type, canonical_type, notification_key,
-      local_date, decision, reason, requested_at, policy_version
+      local_date, decision, reason, requested_at
     ) VALUES (
       NEW.user_id, NEW.notification_type,
       public.canonical_notification_budget_type(NEW.notification_type, NEW.notification_key),
       NEW.notification_key, v_local_date,
-      'duplicate', 'idempotency_key_already_admitted', v_requested_at,
-      public.notification_cadence_policy_version()
+      'duplicate', 'idempotency_key_already_admitted', v_requested_at
     ) ON CONFLICT (user_id, notification_key, decision, policy_version) DO NOTHING;
     RETURN NULL;
   END IF;
@@ -226,48 +127,20 @@ BEGIN
     UNION ALL
     SELECT * FROM notification_history
   )
-  -- engagement-cadence-v3. The old rule was one shared allowance of five.
-  -- Now a row is admitted only if its own class still has room, and the
-  -- outer ceiling (see notification_cadence_limit) has not been reached:
-  --   shloka   one per local day, never crowded out by other nudges;
-  --   learning one per local day, shared by quiz and dharm_veer;
-  --   other    one per local day, shared by every remaining non-exempt type.
-  -- Exempt classes (explicit user reminders, ritual windows, observances,
-  -- security, person-initiated Mandali rows) never reach this point.
-  SELECT count(DISTINCT counted.dedupe_key)::INTEGER,
-         count(DISTINCT counted.dedupe_key) FILTER (
-           WHERE counted.cadence_class = v_cadence_class
-         )::INTEGER
-  INTO v_existing_budgeted, v_existing_same_class
-  FROM (
-    SELECT history.dedupe_key,
-           public.notification_cadence_class(history.event_type, history.notification_key) AS cadence_class
-    FROM history
-    WHERE history.local_date = v_local_date
-  ) AS counted
-  WHERE counted.cadence_class <> 'exempt';
+  SELECT count(DISTINCT history.dedupe_key)::INTEGER
+  INTO v_existing_budgeted
+  FROM history
+  WHERE history.local_date = v_local_date
+    AND NOT public.notification_is_budget_exempt(history.event_type, history.notification_key);
 
-  v_block_reason := CASE
-    WHEN v_existing_budgeted >= public.notification_cadence_limit('ceiling')
-      THEN 'daily_ceiling_reached'
-    WHEN v_existing_same_class >= public.notification_cadence_limit(v_cadence_class)
-      THEN CASE v_cadence_class
-        WHEN 'shloka' THEN 'shloka_slot_reached'
-        WHEN 'learning' THEN 'learning_slot_reached'
-        ELSE 'other_nudge_reached'
-      END
-    ELSE NULL
-  END;
-
-  IF v_block_reason IS NOT NULL THEN
+  IF v_existing_budgeted >= 5 THEN
     INSERT INTO public.notification_cadence_events (
       user_id, notification_type, canonical_type, notification_key,
-      local_date, decision, reason, requested_at, policy_version
+      local_date, decision, reason, requested_at
     ) VALUES (
       NEW.user_id, NEW.notification_type,
       public.canonical_notification_budget_type(NEW.notification_type, NEW.notification_key),
-      NEW.notification_key, v_local_date, 'suppressed', v_block_reason, NEW.send_at,
-      public.notification_cadence_policy_version()
+      NEW.notification_key, v_local_date, 'suppressed', 'daily_budget_full', NEW.send_at
     ) ON CONFLICT (user_id, notification_key, decision, policy_version) DO NOTHING;
     RETURN NULL;
   END IF;
@@ -376,12 +249,11 @@ BEGIN
   IF NOT v_found_slot THEN
     INSERT INTO public.notification_cadence_events (
       user_id, notification_type, canonical_type, notification_key,
-      local_date, decision, reason, requested_at, policy_version
+      local_date, decision, reason, requested_at
     ) VALUES (
       NEW.user_id, NEW.notification_type,
       public.canonical_notification_budget_type(NEW.notification_type, NEW.notification_key),
-      NEW.notification_key, v_local_date, 'suppressed', 'no_safe_same_day_slot', NEW.send_at,
-      public.notification_cadence_policy_version()
+      NEW.notification_key, v_local_date, 'suppressed', 'no_safe_same_day_slot', NEW.send_at
     ) ON CONFLICT (user_id, notification_key, decision, policy_version) DO NOTHING;
     RETURN NULL;
   END IF;
@@ -391,14 +263,14 @@ BEGIN
     || jsonb_build_object('timezone', v_timezone, 'local_date', v_local_date::TEXT);
   IF v_slot > v_requested_at THEN
     NEW.metadata := NEW.metadata || jsonb_build_object(
-      'cadence_policy_version', public.notification_cadence_policy_version(),
+      'cadence_policy_version', 'engagement-cadence-v2',
       'cadence_delay_minutes', greatest(0, round(extract(epoch FROM (v_slot - v_requested_at)) / 60)::INTEGER)
     );
   END IF;
 
   INSERT INTO public.notification_cadence_events (
     user_id, notification_type, canonical_type, notification_key,
-    local_date, decision, reason, requested_at, scheduled_at, metadata, policy_version
+    local_date, decision, reason, requested_at, scheduled_at, metadata
   ) VALUES (
     NEW.user_id, NEW.notification_type,
     public.canonical_notification_budget_type(NEW.notification_type, NEW.notification_key),
@@ -409,8 +281,7 @@ BEGIN
     jsonb_build_object(
       'timezone', v_timezone,
       'delay_minutes', greatest(0, round(extract(epoch FROM (v_slot - v_requested_at)) / 60)::INTEGER)
-    ),
-    public.notification_cadence_policy_version()
+    )
   ) ON CONFLICT (user_id, notification_key, decision, policy_version) DO NOTHING;
 
   RETURN NEW;
@@ -426,14 +297,12 @@ AS $$
 DECLARE
   v_group RECORD;
   v_budgeted_count INTEGER := 0;
-  v_same_class_count INTEGER := 0;
 BEGIN
   FOR v_group IN
     SELECT DISTINCT inserted.user_id,
-      public.try_parse_notification_date(inserted.metadata ->> 'local_date') AS local_date,
-      public.notification_cadence_class(inserted.notification_type, inserted.notification_key) AS cadence_class
+      public.try_parse_notification_date(inserted.metadata ->> 'local_date') AS local_date
     FROM inserted_rows AS inserted
-    WHERE public.notification_cadence_class(inserted.notification_type, inserted.notification_key) <> 'exempt'
+    WHERE NOT public.notification_is_budget_exempt(inserted.notification_type, inserted.notification_key)
   LOOP
     WITH schedule_history AS (
       SELECT
@@ -483,31 +352,19 @@ BEGIN
       UNION ALL
       SELECT * FROM notification_history
     )
-    -- Only the class this statement inserted into is held to its limit, so
-    -- rows admitted under the old five-per-day rule cannot make an unrelated
-    -- insert fail while they are still in today's history.
-    SELECT count(DISTINCT counted.dedupe_key)::INTEGER,
-           count(DISTINCT counted.dedupe_key) FILTER (
-             WHERE counted.cadence_class = v_group.cadence_class
-           )::INTEGER
-    INTO v_budgeted_count, v_same_class_count
-    FROM (
-      SELECT history.dedupe_key,
-             public.notification_cadence_class(history.event_type, history.notification_key) AS cadence_class
-      FROM history
-      WHERE history.local_date = v_group.local_date
-    ) AS counted
-    WHERE counted.cadence_class <> 'exempt';
+    SELECT count(DISTINCT history.dedupe_key)::INTEGER
+    INTO v_budgeted_count
+    FROM history
+    WHERE history.local_date = v_group.local_date
+      AND NOT public.notification_is_budget_exempt(history.event_type, history.notification_key);
 
-    IF v_budgeted_count > public.notification_cadence_limit('ceiling')
-      OR v_same_class_count > public.notification_cadence_limit(v_group.cadence_class) THEN
+    IF v_budgeted_count > 5 THEN
       RAISE EXCEPTION USING
         ERRCODE = 'P0001',
         MESSAGE = 'notification_cadence_conflict',
         DETAIL = format(
-          'user_id=%s local_date=%s class=%s class_total=%s total=%s',
-          v_group.user_id, v_group.local_date, v_group.cadence_class,
-          v_same_class_count, v_budgeted_count
+          'user_id=%s local_date=%s total=%s limit=5',
+          v_group.user_id, v_group.local_date, v_budgeted_count
         );
     END IF;
 
@@ -569,7 +426,7 @@ BEGIN
        AND abs(extract(epoch FROM (history.delivery_at - inserted.send_at))) < 10800
       WHERE inserted.user_id = v_group.user_id
         AND public.try_parse_notification_date(inserted.metadata ->> 'local_date') = v_group.local_date
-        AND public.notification_cadence_class(inserted.notification_type, inserted.notification_key) <> 'exempt'
+        AND NOT public.notification_is_budget_exempt(inserted.notification_type, inserted.notification_key)
       LIMIT 1
     ) THEN
       RAISE EXCEPTION USING
@@ -602,12 +459,6 @@ DECLARE
   v_rows INTEGER := 0;
   v_existing_budgeted INTEGER := 0;
   v_new_budgeted INTEGER := 0;
-  v_existing_shloka INTEGER := 0;
-  v_existing_learning INTEGER := 0;
-  v_existing_other INTEGER := 0;
-  v_new_shloka INTEGER := 0;
-  v_new_learning INTEGER := 0;
-  v_new_other INTEGER := 0;
   v_candidate_date DATE;
 BEGIN
   IF coalesce(jsonb_typeof(p_schedule_rows), 'null') <> 'array'
@@ -622,7 +473,7 @@ BEGIN
       user_id UUID, notification_type TEXT, title TEXT, body TEXT,
       send_at TIMESTAMPTZ, notification_key TEXT, metadata JSONB
     )
-    WHERE public.notification_cadence_class(r.notification_type, r.notification_key) <> 'exempt'
+    WHERE NOT public.notification_is_budget_exempt(r.notification_type, r.notification_key)
       AND (
         public.try_parse_notification_date(r.metadata ->> 'local_date') IS NULL
         OR nullif(btrim(r.notification_key), '') IS NULL
@@ -638,7 +489,7 @@ BEGIN
       user_id UUID, notification_type TEXT, title TEXT, body TEXT,
       send_at TIMESTAMPTZ, notification_key TEXT, metadata JSONB
     )
-    WHERE public.notification_cadence_class(r.notification_type, r.notification_key) <> 'exempt'
+    WHERE NOT public.notification_is_budget_exempt(r.notification_type, r.notification_key)
     ORDER BY r.user_id, local_date
   LOOP
     v_candidate_date := v_group.local_date;
@@ -687,37 +538,21 @@ BEGIN
       UNION ALL
       SELECT * FROM notification_history
     )
-    SELECT count(DISTINCT counted.dedupe_key)::INTEGER,
-           count(DISTINCT counted.dedupe_key) FILTER (WHERE counted.cadence_class = 'shloka')::INTEGER,
-           count(DISTINCT counted.dedupe_key) FILTER (WHERE counted.cadence_class = 'learning')::INTEGER,
-           count(DISTINCT counted.dedupe_key) FILTER (WHERE counted.cadence_class = 'other')::INTEGER
-    INTO v_existing_budgeted, v_existing_shloka, v_existing_learning, v_existing_other
-    FROM (
-      SELECT history.dedupe_key,
-             public.notification_cadence_class(history.event_type, history.notification_key) AS cadence_class
-      FROM history
-      WHERE history.local_date = v_candidate_date
-    ) AS counted
-    WHERE counted.cadence_class <> 'exempt';
+    SELECT count(DISTINCT history.dedupe_key)::INTEGER
+    INTO v_existing_budgeted
+    FROM history
+    WHERE history.local_date = v_candidate_date
+      AND NOT public.notification_is_budget_exempt(history.event_type, history.notification_key);
 
-    SELECT count(DISTINCT r.notification_key)::INTEGER,
-           count(DISTINCT r.notification_key) FILTER (
-             WHERE public.notification_cadence_class(r.notification_type, r.notification_key) = 'shloka'
-           )::INTEGER,
-           count(DISTINCT r.notification_key) FILTER (
-             WHERE public.notification_cadence_class(r.notification_type, r.notification_key) = 'learning'
-           )::INTEGER,
-           count(DISTINCT r.notification_key) FILTER (
-             WHERE public.notification_cadence_class(r.notification_type, r.notification_key) = 'other'
-           )::INTEGER
-    INTO v_new_budgeted, v_new_shloka, v_new_learning, v_new_other
+    SELECT count(DISTINCT r.notification_key)::INTEGER
+    INTO v_new_budgeted
     FROM jsonb_to_recordset(p_schedule_rows) AS r(
       user_id UUID, notification_type TEXT, title TEXT, body TEXT,
       send_at TIMESTAMPTZ, notification_key TEXT, metadata JSONB
     )
     WHERE r.user_id = v_group.user_id
       AND public.try_parse_notification_date(r.metadata ->> 'local_date') = v_candidate_date
-      AND public.notification_cadence_class(r.notification_type, r.notification_key) <> 'exempt'
+      AND NOT public.notification_is_budget_exempt(r.notification_type, r.notification_key)
       AND NOT EXISTS (
         SELECT 1
         FROM public.notification_schedule AS existing_schedule
@@ -731,23 +566,13 @@ BEGIN
           AND existing_notification.notification_key = r.notification_key
       );
 
-    -- A class is checked only when this batch adds to it, so legacy rows from
-    -- before engagement-cadence-v3 cannot stall an unrelated candidate.
-    IF v_existing_budgeted + v_new_budgeted > public.notification_cadence_limit('ceiling')
-      OR (v_new_shloka > 0
-          AND v_existing_shloka + v_new_shloka > public.notification_cadence_limit('shloka'))
-      OR (v_new_learning > 0
-          AND v_existing_learning + v_new_learning > public.notification_cadence_limit('learning'))
-      OR (v_new_other > 0
-          AND v_existing_other + v_new_other > public.notification_cadence_limit('other')) THEN
+    IF v_existing_budgeted + v_new_budgeted > 5 THEN
       RAISE EXCEPTION USING
         ERRCODE = 'P0001',
         MESSAGE = 'notification_cadence_conflict',
         DETAIL = format(
-          'user_id=%s local_date=%s existing=%s/%s/%s/%s requested=%s/%s/%s/%s (total/shloka/learning/other)',
-          v_group.user_id, v_candidate_date,
-          v_existing_budgeted, v_existing_shloka, v_existing_learning, v_existing_other,
-          v_new_budgeted, v_new_shloka, v_new_learning, v_new_other
+          'user_id=%s local_date=%s existing=%s requested=%s limit=5',
+          v_group.user_id, v_candidate_date, v_existing_budgeted, v_new_budgeted
         );
     END IF;
   END LOOP;
@@ -849,49 +674,19 @@ BEGIN
 END;
 $$;
 
--- Self-check: exactly one definition of each redefined or new function (no overload), and the
--- classifier answers the cases this change exists for. Any failure rolls the migration back.
+
+DROP FUNCTION IF EXISTS public.notification_cadence_class(TEXT, TEXT);
+DROP FUNCTION IF EXISTS public.notification_cadence_limit(TEXT);
+DROP FUNCTION IF EXISTS public.notification_cadence_policy_version();
+
 DO $check$
-DECLARE
-  v_name TEXT;
-  v_count INTEGER;
+DECLARE v_count INTEGER;
 BEGIN
-  FOREACH v_name IN ARRAY ARRAY[
-    'enforce_notification_schedule_cadence',
-    'validate_notification_schedule_cadence_statement',
-    'persist_notification_candidate_resolution_internal',
-    'notification_cadence_class',
-    'notification_cadence_limit',
-    'notification_cadence_policy_version'
-  ] LOOP
-    SELECT count(*) INTO v_count
-    FROM pg_proc AS p JOIN pg_namespace AS n ON n.oid = p.pronamespace
-    WHERE n.nspname = 'public' AND p.proname = v_name;
-    IF v_count <> 1 THEN
-      RAISE EXCEPTION 'cadence v3 self-check: % has % definitions, expected 1', v_name, v_count;
-    END IF;
-  END LOOP;
-
-  IF public.notification_cadence_class('shloka', NULL) <> 'shloka'
-    OR public.notification_cadence_class('streak', NULL) <> 'shloka'
-    OR public.notification_cadence_class('quiz', NULL) <> 'learning'
-    OR public.notification_cadence_class('dharm_veer', NULL) <> 'learning'
-    OR public.notification_cadence_class('mood', NULL) <> 'other'
-    OR public.notification_cadence_class('daily_digest', NULL) <> 'other'
-    OR public.notification_cadence_class('japa', NULL) <> 'exempt'
-    OR public.notification_cadence_class('festival', NULL) <> 'exempt'
-    OR public.notification_cadence_class('post_reaction', NULL) <> 'exempt'
-    OR public.notification_cadence_class('general', 'mandali_comment:1') <> 'exempt'
-    OR public.notification_cadence_class('general', 'mood-evening:2026-11-10') <> 'other' THEN
-    RAISE EXCEPTION 'cadence v3 self-check: classifier answered an unexpected class';
-  END IF;
-
-  IF public.notification_cadence_limit('ceiling') <> 7
-    OR public.notification_cadence_limit('shloka') <> 1
-    OR public.notification_cadence_limit('learning') <> 1
-    OR public.notification_cadence_limit('other') <> 1
-    OR public.notification_cadence_limit('typo') <> 0 THEN
-    RAISE EXCEPTION 'cadence v3 self-check: limits are not 7/1/1/1 with a fail-closed default';
+  SELECT count(*) INTO v_count FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+  WHERE n.nspname = 'public' AND p.proname IN ('notification_cadence_class', 'notification_cadence_limit', 'notification_cadence_policy_version');
+  IF v_count <> 0 THEN RAISE EXCEPTION 'rollback left % cadence v3 helpers behind', v_count; END IF;
+  IF pg_get_functiondef('public.enforce_notification_schedule_cadence()'::regprocedure) NOT LIKE '%>= 5%' THEN
+    RAISE EXCEPTION 'rollback did not restore the five-per-day trigger';
   END IF;
 END
 $check$;
