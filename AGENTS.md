@@ -128,6 +128,35 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   recorded in shoonaya-mobile's AGENTS.md. This applies equally to human and
   AI-agent contributors.
 
+- **The daily cadence limits live twice and must agree exactly.** The resolver
+  (`src/lib/notification-cadence-policy.ts`, `notification-resolver.ts`) and the
+  database (`notification_cadence_limit`, `notification_cadence_class` and the
+  three functions that call them) enforce the same numbers. Change both in one
+  commit; `src/lib/notification-cadence-parity.test.ts` reads the SQL and fails
+  if they differ. If the resolver accepts a row the trigger refuses, the persist
+  call raises and the WHOLE claimed batch, every user's candidates, returns to
+  pending and retries every ten minutes until the offending candidate expires.
+  Deploy a resolver that is stricter than or equal to the database before
+  applying a migration that tightens the database, never after.
+- **Classify history by type AND key, and classify only what both sides can
+  see.** A generic bell row (`type = general`) carries its real type in its
+  `notification_key`. A row that carries no `local_date` (the Mandali triggers
+  write none) is invisible to the resolver, so it must be exempt on both sides
+  or loaded on both; counting it on one side only is a standing disagreement.
+  An unknown type is counted ("other"), never silently free.
+- A new notification type is counted against the single daily "other" nudge
+  until a person decides otherwise. Adding it to an exempt list is a product
+  decision that needs the founder, because exempt rows are never suppressed.
+- Why this rule exists: on 2026-11-10 the move from "five shared pushes a day"
+  to "one other nudge a day" (engagement-cadence-v3) tightened the allowance
+  from five to one, which turned every latent difference between the two sides
+  into a batch-wide stall. Building it found two: the resolver classified
+  `notifications` history by raw type while the database used type plus key (so
+  a `japa:` bell row counted as an engagement push in the resolver only), and
+  Mandali reaction rows were counted by the database while the resolver could
+  not see them. Both were closed in the same change and are pinned by the parity
+  test. This applies equally to human and AI-agent contributors.
+
 ### 7. Platform and Build Precision
 - Keep these states distinct: committed, pushed, deployed, built, installed,
   launched and smoke-tested.

@@ -1,5 +1,82 @@
 # Engagement notification cadence
 
+> **Policy `engagement-cadence-v3` ("one other nudge a day") is WRITTEN, NOT APPLIED (2026-11-10).**
+> Migration `20261110100000_one_nudge_a_day_cadence.sql` and its rollback are in the repository and the
+> resolver change is committed, but production still enforces `engagement-cadence-v2` (the contract under
+> "Previous contract" below) until that migration is applied. Nothing here has been run against a Supabase
+> branch or production.
+
+## engagement-cadence-v3
+
+Founder decisions, 2026-11-08: at most one other nudge a day; Shloka and a daily learning slot are protected;
+**7 is an outer safety ceiling, not a target**; the Daily Quiz 18:00 follow-up is dropped for now.
+
+Every notification belongs to exactly one class:
+
+| Class | Types | Allowance per user per local day |
+|---|---|---|
+| exempt | security and account; explicit user reminders (Japa, Sankalpa, family and Sanskāra milestones); ritual windows (Brahma Muhurta, Nitya, Aarti and the rest); reviewed observances; and nine person-initiated Mandali rows (connection requests, reactions, comments, block and report receipts) | never counted, never suppressed here |
+| shloka | `shloka` (and the `streak` aliases) | 1 |
+| learning | `quiz`, `dharm_veer` (one slot, shared) | 1 |
+| other | every remaining non-exempt type, including types added later | 1 (shared) |
+
+The ceiling of **7** caps shloka + learning + other together. The class limits already allow at most three, so
+the ceiling is a backstop against a mislabelled producer, not a working limit. Exempt rows do not count toward it.
+
+Why the Mandali rows are exempt: they are another person's action, not a Shoonaya nudge; counting them would
+let a reaction at 09:00 use up the day's one other nudge. They are also written by database triggers without a
+`local_date`, so the resolver could never see them while the database counted them, and that disagreement would
+roll back whole resolver batches (see "The two sides must agree"). This is a product decision made while
+building v3; reversing it is one list entry on each side.
+
+**What changes for a person:** Shloka is no longer crowded out (83% of Shloka candidates were suppressed in the
+14 days before 2026-11-07, because it was the last to be considered at 19:00); mood, Sattvic, the weekly summary
+and similar share one slot instead of up to five; and the AI digest, if still running, is one of those.
+
+### The two sides must agree
+
+The limits are enforced in the resolver (`src/lib/notification-resolver.ts`, numbers in
+`src/lib/notification-cadence-policy.ts`) and in the database (`notification_cadence_limit`,
+`notification_cadence_class`, and the three functions that use them). If the resolver accepts a row the trigger
+then refuses, `persist_notification_candidate_resolution` raises, and **every candidate claimed in that run, for
+every user, goes back to pending and is retried ten minutes later** until the offending candidate expires.
+`src/lib/notification-cadence-parity.test.ts` reads the SQL and fails if the limits, class lists, exempt list,
+alias map or version string differ; `supabase/tests/notification_cadence_atomicity.test.sql` asserts the same
+classes. Change both sides in one commit.
+
+History is classified by type **and** key on both sides, so a generic bell row (`type = general`,
+`notification_key = quiz:...`) is counted as the quiz it mirrors, and a push plus its bell row count once.
+
+### Rollout order
+
+1. Deploy the resolver change **first or together with** the migration. Applying the migration under the old
+   resolver (limit 5) makes every surplus acceptance raise and stall the batch.
+2. Apply `20261110100000` (function replacement only: no table DDL, no data update, no index build).
+   Afterwards run `node scripts/assert-supabase-migration-version.mjs 20261110100000`.
+3. Roll back with `supabase/rollbacks/20261110100000_one_nudge_a_day_cadence_rollback.sql`, deploying the
+   previous resolver first or with it.
+
+**Transition:** rows already admitted under v2 stay. A user who already has two "other" rows today gets no third
+that day, and cannot block Shloka or the learning slot, because each check looks only at the class being added.
+
+### Verification (and what it does not show)
+
+SQL: the existing 34-assertion test passed unmodified on a scratch PostgreSQL 18 built from the real migrations
+before the change; the rewritten test passes 89 of 89 after it; 35 of 35 deliberate breakages of the migration
+turn it red; the rollback restores the original behaviour (the original test passes 34 of 34 afterwards) and the
+migration re-applies. Resolver: 27 of 27 deliberate breakages turn the vitest files red. The scratch database uses
+stand-in tables shaped from the live column lists, the real cadence migrations and the live exempt-type function;
+pgTAP is replaced by a small local shim. **This is not a Supabase branch and not the full migration chain**, and
+nothing has run on a device.
+
+### Not part of v3 (separate changes)
+
+Moving Shloka from 19:00 to the morning; dropping the quiz 18:00 follow-up in the producer; alternating quiz and
+Dharm Veer on a fixed day count and sending Dharm Veer only when something is unread; retiring the AI digest;
+tap tracking. Until the producers change, v3 only limits what they ask for.
+
+## Previous contract (engagement-cadence-v2, in force until v3 is applied)
+
 **Status (2026-10-03):** the base database guard is applied to production as
 `20261002181447`; the fail-closed reservation check is applied as
 `20261002185143`. Producer/resolver source commit `5a6237c` is deployed to Vercel

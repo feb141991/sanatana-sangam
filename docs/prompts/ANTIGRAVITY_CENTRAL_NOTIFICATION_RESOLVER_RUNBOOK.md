@@ -295,6 +295,9 @@ Implement the resolver as a deterministic, testable domain function. Do not wire
 
 ### Policy
 
+> **Superseded in the repository by `engagement-cadence-v3` (2026-11-10, written, not applied):** one Shloka, one learning slot
+> and one other nudge a day, with a ceiling of 7. See `docs/notifications/ENGAGEMENT_CADENCE_POLICY.md`. The text below describes v2.
+
 The implemented policy is versioned as `engagement-cadence-v2` in
 `src/lib/notification-cadence-policy.ts`. It replaces the original one-routine/two-devotional
 starting defaults below; do not reintroduce those limits independently in producers:
