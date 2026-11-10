@@ -365,6 +365,9 @@ describe('GET /api/cron/notification-dispatch Japa completion guard', () => {
         metadata: { local_date: '2026-09-29', timezone: 'Europe/London' },
         retry_count: 0,
       };
+      // A mood row is skipped unless the profile opted in, and that check runs before quiet hours. Opt in so this
+      // test reaches the default-quiet-hours rule it is about.
+      mocks.profiles[0].wants_mood_reminders = true;
 
       const response = await GET(request());
 
