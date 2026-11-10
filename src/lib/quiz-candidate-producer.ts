@@ -31,6 +31,12 @@ export interface QuizStageOptions {
 const EVENING_REMINDER_TIME = '18:00';
 const EVENING_REMINDER_EXPIRES = '20:45';
 const AVAILABILITY_WINDOW_MINUTES = 60;
+/**
+ * How far past its chosen time the morning quiz may be pushed by the three-hour spacing rule (it sits behind
+ * the morning Shloka, so on most days it IS pushed). Added to the candidate's expiry so a shift moves the quiz
+ * instead of dropping it. Equal to the minimum spacing; a second shift beyond it is genuinely unsafe and is refused.
+ */
+const SPACING_SHIFT_ALLOWANCE_MINUTES = 180;
 
 function parseClock(value: string): number | null {
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return null;
@@ -147,7 +153,7 @@ export function produceQuizCandidate(
 
   const scheduledForDate = localTimeToUtc(localDate, sendTime, timezone);
   const expiryTime = stage === 'available'
-    ? formatClock((parseClock(sendTime) ?? 0) + AVAILABILITY_WINDOW_MINUTES)
+    ? formatClock((parseClock(sendTime) ?? 0) + AVAILABILITY_WINDOW_MINUTES + SPACING_SHIFT_ALLOWANCE_MINUTES)
     : EVENING_REMINDER_EXPIRES;
   const expiresAtDate = localTimeToUtc(localDate, expiryTime, timezone);
   if (!scheduledForDate || !expiresAtDate || expiresAtDate <= scheduledForDate) return null;

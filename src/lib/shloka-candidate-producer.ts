@@ -5,12 +5,16 @@ import { getTraditionMeta } from './tradition-config';
 
 /**
  * Local hour of the daily Shloka reminder. It was 19:00 and sat last in the day, behind every other nudge,
- * so the shared allowance was usually spent before it was considered. Founder decision 2026-11-08: Shloka
- * goes in the morning, protected. 07:00 is the earliest legal delivery time and is exactly three hours
- * before the 10:00 learning slot, so the three-hour spacing rule does not push that slot later. A person
- * whose quiet hours cover 07:00 is moved past them (below). The cron imports this so the two never differ.
+ * so the shared allowance was usually spent before it was considered. Founder decisions: Shloka goes in
+ * the morning, protected (2026-11-08); "around 08:00 or 09:00" (2026-11-10), so 08:00.
+ *
+ * The three-hour spacing rule means the learning slot cannot follow sooner than three hours later: a quiz
+ * chosen for 10:00 goes out at about 11:00 on a day Shloka is sent, and at about 12:00 if quiet hours push
+ * Shloka to 09:00. quiz-candidate-producer lets the quiz candidate live long enough to absorb that shift;
+ * without it a 09:00 Shloka would drop the quiz entirely. A person whose quiet hours cover 08:00 is moved
+ * past them (below). The cron imports this constant so the two never differ.
  */
-export const SHLOKA_REMINDER_LOCAL_HOUR = 7;
+export const SHLOKA_REMINDER_LOCAL_HOUR = 8;
 
 export interface DevoteeProfileForShloka {
   id: string;
@@ -27,7 +31,7 @@ export interface DevoteeProfileForShloka {
 }
 
 /**
- * Produces a validated daily Shloka candidate (morning, 07:00 local) for a devotee on a specific local civil date.
+ * Produces a validated daily Shloka candidate (morning, 08:00 local) for a devotee on a specific local civil date.
  * Enforces:
  * 1. Opted-in reminder preference (wants_shloka_reminders !== false).
  * 2. Activity suppression (skips if devotee already read today's shloka, i.e. last_shloka_date === localDate).
@@ -59,7 +63,7 @@ export function produceShlokaCandidate(
 
   const timezone = resolveTimeZone(devotee.timezone);
 
-  // 3. Morning (SHLOKA_REMINDER_LOCAL_HOUR, 07:00 local)
+  // 3. Morning (SHLOKA_REMINDER_LOCAL_HOUR, 08:00 local)
   let hour = SHLOKA_REMINDER_LOCAL_HOUR;
   let minute = 0;
   let sendTime = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;

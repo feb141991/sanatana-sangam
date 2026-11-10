@@ -74,30 +74,32 @@ describe('shloka-candidate-producer', () => {
     expect(cand!.body).not.toContain('🔥');
   });
 
-  it('sends in the morning, at 07:00 local, by default', () => {
-    expect(SHLOKA_REMINDER_LOCAL_HOUR).toBe(7);
+  it('sends in the morning, at 08:00 local, by default', () => {
+    expect(SHLOKA_REMINDER_LOCAL_HOUR).toBe(8);
     const cand = produceShlokaCandidate(devotee, '2026-11-08');
-    // 07:00 IST is 01:30 UTC
-    expect(cand!.scheduled_for).toBe('2026-11-08T01:30:00.000Z');
+    // 08:00 IST is 02:30 UTC
+    expect(cand!.scheduled_for).toBe('2026-11-08T02:30:00.000Z');
   });
 
-  it('keeps 07:00 under the default 22:00-06:00 quiet hours', () => {
-    const cand = produceShlokaCandidate(
-      { ...devotee, notification_quiet_hours_start: 22, notification_quiet_hours_end: 6 },
-      '2026-11-08',
-    );
-    expect(cand!.scheduled_for).toBe('2026-11-08T01:30:00.000Z');
+  it('keeps 08:00 under the default 22:00-06:00 quiet hours, and when quiet hours end exactly at 08:00', () => {
+    for (const end of [6, 8]) {
+      const cand = produceShlokaCandidate(
+        { ...devotee, notification_quiet_hours_start: 22, notification_quiet_hours_end: end },
+        '2026-11-08',
+      );
+      expect(cand!.scheduled_for, `quiet hours end ${end}`).toBe('2026-11-08T02:30:00.000Z');
+    }
   });
 
-  it('moves past quiet hours when 07:00 falls inside them', () => {
+  it('moves past quiet hours when 08:00 falls inside them', () => {
     const quietDevotee: DevoteeProfileForShloka = {
       ...devotee,
       notification_quiet_hours_start: 22,
-      notification_quiet_hours_end: 8,
+      notification_quiet_hours_end: 9,
     };
     const cand = produceShlokaCandidate(quietDevotee, '2026-11-08');
     expect(cand).not.toBeNull();
-    // quiet until 08:00, so 09:00 IST, which is 03:30 UTC
-    expect(cand!.scheduled_for).toBe('2026-11-08T03:30:00.000Z');
+    // quiet until 09:00, so 10:00 IST, which is 04:30 UTC
+    expect(cand!.scheduled_for).toBe('2026-11-08T04:30:00.000Z');
   });
 });

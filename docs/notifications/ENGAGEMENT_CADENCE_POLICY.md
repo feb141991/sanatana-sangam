@@ -71,11 +71,17 @@ nothing has run on a device.
 
 ### The day shape (producer changes, a separate commit, also unapplied and undeployed)
 
-- **Shloka moves from 19:00 to 07:00 local** (`SHLOKA_REMINDER_LOCAL_HOUR`). 07:00 is the earliest legal
-  delivery time and is exactly three hours before the 10:00 learning slot, so the spacing rule does not push that
-  slot later. A person whose quiet hours cover 07:00 is moved past them. Because the cron enqueues the *next*
-  occurrence, users east of UTC who already received a 19:00 reminder that day get no Shloka reminder on the first
-  day after the deploy (a one-day gap, not a duplicate).
+- **Shloka moves from 19:00 to 08:00 local** (`SHLOKA_REMINDER_LOCAL_HOUR`; founder: "around 08:00 or 09:00").
+  A person whose quiet hours cover 08:00 is moved past them (quiet hours ending at 09:00 give 10:00). Because
+  the cron enqueues the *next* occurrence, users east of UTC who already received a 19:00 reminder that day get no
+  Shloka reminder on the first day after the deploy (a one-day gap, not a duplicate).
+- **The quiz is moved later, not dropped.** The three-hour spacing rule keeps the quiz three hours behind
+  Shloka: a quiz chosen for 10:00 goes out at about 11:00 on a day Shloka is sent (12:00 behind a 09:00 Shloka,
+  13:00 behind a 10:00 one). Its candidate therefore lives until chosen time + 4 hours (60-minute creation window
+  + one 180-minute shift); before this, a 09:00 Shloka made the quiz `no_safe_cadence_slot` and a 08:00 one left
+  it exactly on its expiry. A second shift (for example a chosen Japa time in the way) is still refused.
+  `notification-day-shape.test.ts` pins all of this against the real producers. **Settings and onboarding say
+  "10:00 AM" for the quiz; on a Shloka day it arrives about an hour later.**
 - **The quiz 18:00 follow-up is off** (`QUIZ_EVENING_NUDGE_ENABLED = false`). Rows already scheduled still deliver.
 - The Shloka *legacy* queue path (used only when the routine mode is `legacy`) still carries its old copy; it is
   not the live path.

@@ -91,17 +91,17 @@ describe('notification resolver & engagement policy', () => {
       ...overrides,
     });
 
-    it('admits Shloka in the morning, the learning slot at 10:00 and one other nudge in the evening', () => {
-      const shloka = makeCandidate({ id: 'shloka', event_type: 'shloka', priority: 40, scheduled_for: '2026-11-08T01:30:00.000Z' }); // 07:00 IST
-      const quiz = makeCandidate({ id: 'quiz', event_type: 'quiz', priority: 50, scheduled_for: '2026-11-08T04:30:00.000Z' }); // 10:00 IST
+    it('admits Shloka in the morning, the learning slot after it and one other nudge in the evening', () => {
+      const shloka = makeCandidate({ id: 'shloka', event_type: 'shloka', priority: 40, scheduled_for: '2026-11-08T02:30:00.000Z' }); // 08:00 IST
+      const quiz = makeCandidate({ id: 'quiz', event_type: 'quiz', priority: 50, scheduled_for: '2026-11-08T05:30:00.000Z' }); // 11:00 IST: three hours after Shloka
       const mood = makeCandidate({ id: 'mood', event_type: 'mood_checkin', priority: 60, scheduled_for: '2026-11-08T12:30:00.000Z' }); // 18:00 IST
 
       const res = resolveCandidates({ candidates: [shloka, quiz, mood], now: earlyNow, allowDeferrals: false });
 
       expect(res.accepted.map((c) => c.id)).toEqual(['shloka', 'quiz', 'mood']);
       expect(res.accepted.map((c) => c.scheduled_for)).toEqual([
-        '2026-11-08T01:30:00.000Z',
-        '2026-11-08T04:30:00.000Z',
+        '2026-11-08T02:30:00.000Z',
+        '2026-11-08T05:30:00.000Z',
         '2026-11-08T12:30:00.000Z',
       ]);
       expect(res.suppressed).toHaveLength(0);
