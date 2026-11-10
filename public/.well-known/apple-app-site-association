@@ -4,6 +4,7 @@
       {
         "appIDs": ["3K78ST7PG3.com.shoonaya.app"],
         "components": [
+          {"/": "/", "comment": "Root landing and home"},
           {"/": "/panchang", "comment": "Daily Panchang"},
           {"/": "/panchang/*", "comment": "Panchang detail"},
           {"/": "/vrat", "comment": "Vrat catalogue"},
@@ -18,7 +19,8 @@
           {"/": "/live-darshan", "comment": "Live Darshan"},
           {"/": "/seva", "comment": "Seva"},
           {"/": "/mantras", "comment": "Mantras"},
-          {"/": "/kul/join", "comment": "KUL family invitation"},
+          {"/": "/kul", "comment": "KUL family lineage"},
+          {"/": "/kul/*", "comment": "KUL sub-routes and invitations"},
           {"/": "/festivals/*", "comment": "Backend festival alias"},
           {"/": "/home", "comment": "Home and notification focus aliases"},
           {"/": "/my-progress", "comment": "Practice progress"},
@@ -28,7 +30,21 @@
           {"/": "/nitya-karma", "comment": "Nitya Karma"},
           {"/": "/nitya-karma/plans", "comment": "Guided plan alias"},
           {"/": "/nitya-plans", "comment": "Guided plans"},
-          {"/": "/shloka", "comment": "Daily shloka"}
+          {"/": "/shloka", "comment": "Daily shloka"},
+          {"/": "/rashiphala", "comment": "Rashiphala"},
+          {"/": "/rashiphala/*", "comment": "Rashiphala detail"},
+          {"/": "/rashiphal", "comment": "Rashiphal alias"},
+          {"/": "/rashiphal/*", "comment": "Rashiphal alias detail"},
+          {"/": "/kundali", "comment": "Kundali"},
+          {"/": "/kundali/*", "comment": "Kundali detail"},
+          {"/": "/sankalpa", "comment": "Sankalpa"},
+          {"/": "/sankalpa/*", "comment": "Sankalpa detail"},
+          {"/": "/settings", "comment": "Settings"},
+          {"/": "/settings/*", "comment": "Settings sub-screens"},
+          {"/": "/features", "comment": "Features marketing"},
+          {"/": "/features/*", "comment": "Feature marketing pages"},
+          {"/": "/about", "comment": "About page"},
+          {"/": "/guest", "comment": "Guest mode"}
         ]
       }
     ]
