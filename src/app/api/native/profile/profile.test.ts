@@ -153,6 +153,28 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(updatedUserFilter).toBe("user-reminder-coverage-gap");
   });
 
+  it("lets a person switch lock-screen discretion on and off, as a strict boolean only", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-discreet" }, error: null, supabase: mockSupabase });
+
+    for (const value of [true, false]) {
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ notification_discreet_mode: value }),
+      }));
+      expect(res.status).toBe(200);
+      expect(updatedPayload).toEqual({ notification_discreet_mode: value });
+      expect(updatedUserFilter).toBe("user-discreet");
+    }
+
+    for (const bad of ["true", 1, null, "yes"]) {
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ notification_discreet_mode: bad }),
+      }));
+      expect(res.status).toBe(400);
+    }
+  });
+
   it("accepts product analytics consent as a separate opt-in setting", async () => {
     getApiUser.mockResolvedValue({
       user: { id: "user-analytics-consent" },

@@ -2,6 +2,7 @@ import { getNotificationSafetyState } from '@/lib/notification-safety';
 import { recordNotificationDeliveryBatch, type AuditRecordPayload } from '@/lib/notification-delivery-audit';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { findDeletingUserIds } from '@/lib/deleting-recipients';
+import { DISCREET_PUSH_COPY, findDiscreetUserIds, shouldShowDiscreetCopy } from '@/lib/discreet-recipients';
 import { hashPushToken } from '@/lib/push-token-audit';
 import { prunePushBindings, type PushBindingSnapshot } from '@/lib/push-binding';
 
@@ -233,6 +234,11 @@ async function sendViaExpo(
   const usersWithTokens = targetUserIds.filter((id) => tokensByUser.has(id));
   if (usersWithTokens.length === 0) return { sentUserIds, skippedUserIds, failedUserIds };
 
+  // A person who asked for discretion sees only a neutral line on their lock screen. If we cannot tell who asked, every
+  // recipient gets the neutral line: a private message shown in full because a lookup failed is the worse mistake.
+  const discreet = await findDiscreetUserIds(supabase, usersWithTokens);
+  if (discreet.lookupFailed) console.error('discreet-mode lookup failed; sending neutral text to all recipients:', discreet.error?.message);
+
   const outbox: Array<{ userId: string; token: string; bindingVersion: string; message: Record<string, unknown> }> = [];
   for (const userId of usersWithTokens) {
     for (const binding of tokensByUser.get(userId)!) {
@@ -242,8 +248,9 @@ async function sendViaExpo(
         token, bindingVersion: binding.binding_version,
         message: {
           to: token,
-          title: message.title,
-          body: message.body,
+          ...(shouldShowDiscreetCopy(messageType, userId, discreet)
+            ? { title: DISCREET_PUSH_COPY.title, body: DISCREET_PUSH_COPY.body }
+            : { title: message.title, body: message.body }),
           sound: 'default', channelId: 'default',
           data: { ...message.data, url: message.url ?? undefined },
         },
