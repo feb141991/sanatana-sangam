@@ -79,7 +79,7 @@ export async function GET(request: Request) {
 
     // ── Step 1: Timezone window filter (coarse — keeps cron fast) ────────────
     const windowUsers = users.filter((user) => {
-      if ((user as any).wants_nitya_reminders === false) return false;
+      if ((user as any).wants_nitya_reminders !== true) return false;
       const tz = resolveTimeZone((user as any).timezone);
       return canSendInLocalWindow(
         now, tz, TARGET_LOCAL_HOUR,

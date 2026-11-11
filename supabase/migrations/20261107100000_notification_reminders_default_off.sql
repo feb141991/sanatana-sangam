@@ -25,9 +25,8 @@
 --     is 5s so it fails fast rather than queueing behind a long writer.
 --  5. Rollback: supabase/rollbacks/20261107100000_notification_reminders_default_off_rollback.sql restores the previous defaults (true).
 --
--- Known residual, not fixed here: the delivery policy (src/lib/notification-delivery-policy.ts) skips a reminder only when its flag is
--- `=== false`, so a NULL in one of the six nullable columns is treated as ON. New rows get false, not NULL, so this does not create
--- any; an explicit NULL (or a row that already holds one) would still send. Treating anything but true as OFF is a separate change.
+-- This default does not rewrite explicit NULLs. Deploy the producer and delivery
+-- checks that require true so a missing preference cannot authorize a reminder.
 
 begin;
 set local lock_timeout = '5s';

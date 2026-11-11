@@ -87,7 +87,7 @@ export function producePradoshaCandidate(
   const { window, userId, userTimezone, wantsPradoshaReminders, wantsVratReminders, latitude } = context;
 
   // 1. Check user preferences
-  if (wantsPradoshaReminders === false || wantsVratReminders === false) {
+  if (wantsPradoshaReminders === false || wantsVratReminders !== true) {
     return {
       candidate: null,
       status: 'suppressed',

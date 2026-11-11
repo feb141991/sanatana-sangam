@@ -326,6 +326,8 @@ ${PSQL} -d postgres -f "${REPO_ROOT}/supabase/migrations/20261107100000_notifica
 echo "PASS: Migration 1 re-applied cleanly."
 
 echo "=== 4. Testing Migration 2: 20261108100000_notification_reminders_reset_never_chosen.sql ==="
+PREFLIGHT=$(${PSQL} -d postgres -t -A -f "${REPO_ROOT}/scripts/notification-routing/reminder-reset-preflight.sql")
+test "${PREFLIGHT%%$'\n'*}" = '20|10|10|20'
 ${PSQL} -d postgres -f "${REPO_ROOT}/supabase/migrations/20261108100000_notification_reminders_reset_never_chosen.sql"
 
 BACKUP_COUNT=$(${PSQL} -d postgres -t -A -c "SELECT count(*) FROM public.notification_reset_backup_20261108;")
@@ -355,11 +357,20 @@ if [ "${EXPLICIT_OPTIN_VAL}" != "t" ]; then
 fi
 echo "PASS: Explicit opt-in post-cutoff was preserved."
 
+# A second execution must not reset a new choice or replace the snapshot.
+${PSQL} -d postgres -c "UPDATE public.profiles SET wants_shloka_reminders = true WHERE id = 'a0000000-0000-0000-0000-000000000001';"
+if ${PSQL} -d postgres -f "${REPO_ROOT}/supabase/migrations/20261108100000_notification_reminders_reset_never_chosen.sql"; then
+  echo "FAIL: the already-backed-up reset was allowed to run again"
+  exit 1
+fi
+REPLAY_PREF=$(${PSQL} -d postgres -t -A -c "SELECT wants_shloka_reminders FROM public.profiles WHERE id = 'a0000000-0000-0000-0000-000000000001';")
+test "${REPLAY_PREF}" = t
+
 # Test Provenance-Guarded Rollback 2
-# Simulate one user updating preferences after the migration ran
+# Even a same-value write without an updated_at change must block rollback.
 ${PSQL} -d postgres -c "
   UPDATE public.profiles
-  SET updated_at = now() + interval '1 minute', wants_brahma_muhurta_reminders = false
+  SET wants_brahma_muhurta_reminders = false
   WHERE id = 'c0000000-0000-0000-0000-000000000001';
 "
 
@@ -412,21 +423,23 @@ fi
 echo "PASS: Cadence limits verified: shloka=1, learning=1, other=1, ceiling=7."
 
 # Test Cadence trigger enforcement:
+# Choose a future UTC day rather than depending on the test runner's clock.
+TEST_DATE=$(${PSQL} -d postgres -t -A -c "SELECT (now() AT TIME ZONE 'UTC')::date + 1;")
 # 1st Shloka succeeds
 ${PSQL} -d postgres -c "
   INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
-  VALUES ('e0000000-0000-0000-0000-000000000001', 'shloka', 'shloka:2026-11-10:1', now(), '{\"local_date\": \"2026-11-10\"}'::jsonb);
+  VALUES ('e0000000-0000-0000-0000-000000000001', 'shloka', 'shloka:${TEST_DATE}:1', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
 "
 echo "PASS: 1st Shloka scheduled successfully."
 
 # 2nd Shloka on same day is suppressed by BEFORE INSERT trigger
 ${PSQL} -d postgres -c "
   INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
-  VALUES ('e0000000-0000-0000-0000-000000000001', 'shloka', 'shloka:2026-11-10:2', now(), '{\"local_date\": \"2026-11-10\"}'::jsonb);
+  VALUES ('e0000000-0000-0000-0000-000000000001', 'shloka', 'shloka:${TEST_DATE}:2', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
 "
 
 SECOND_SHLOKA_SCHEDULED=$(${PSQL} -d postgres -t -A -c "
-  SELECT count(*) FROM public.notification_schedule WHERE notification_key = 'shloka:2026-11-10:2';
+  SELECT count(*) FROM public.notification_schedule WHERE notification_key = 'shloka:${TEST_DATE}:2';
 ")
 if [ "${SECOND_SHLOKA_SCHEDULED}" -ne 0 ]; then
   echo "FAIL: 2nd Shloka was scheduled but should have been suppressed by cadence trigger!"
@@ -434,7 +447,7 @@ if [ "${SECOND_SHLOKA_SCHEDULED}" -ne 0 ]; then
 fi
 
 SUPPRESSION_REASON=$(${PSQL} -d postgres -t -A -c "
-  SELECT reason FROM public.notification_cadence_events WHERE notification_key = 'shloka:2026-11-10:2' AND decision = 'suppressed';
+  SELECT reason FROM public.notification_cadence_events WHERE notification_key = 'shloka:${TEST_DATE}:2' AND decision = 'suppressed';
 ")
 if [ "${SUPPRESSION_REASON}" != "shloka_slot_reached" ]; then
   echo "FAIL: Expected suppression reason 'shloka_slot_reached', got '${SUPPRESSION_REASON}'!"
@@ -445,7 +458,7 @@ echo "PASS: 2nd Shloka correctly suppressed by database cadence trigger with rea
 # Mandali exempt item MUST SUCCEED even if other slots are full
 ${PSQL} -d postgres -c "
   INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
-  VALUES ('e0000000-0000-0000-0000-000000000001', 'mandali_comment', 'comment:1', now(), '{\"local_date\": \"2026-11-10\"}'::jsonb);
+  VALUES ('e0000000-0000-0000-0000-000000000001', 'mandali_comment', 'comment:1', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
 "
 echo "PASS: Person-initiated Mandali event exempted from daily cadence limits."
 

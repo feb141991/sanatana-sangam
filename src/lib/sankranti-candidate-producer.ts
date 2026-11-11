@@ -94,7 +94,7 @@ export function produceSankrantiCandidate(
   }
 
   // 1. Check user preferences
-  if (wantsSankrantiReminders === false || wantsObservanceReminders === false) {
+  if (wantsSankrantiReminders === false || wantsObservanceReminders !== true) {
     return {
       candidate: null,
       status: 'suppressed',

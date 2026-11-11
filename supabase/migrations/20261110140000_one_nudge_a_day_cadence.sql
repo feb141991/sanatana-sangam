@@ -43,6 +43,9 @@
 -- already has two "other" rows today simply gets no third; the class check looks only at the class
 -- being added, so such history cannot block Shloka or the learning slot.
 
+BEGIN;
+SET LOCAL lock_timeout = '5s';
+
 CREATE OR REPLACE FUNCTION public.notification_cadence_policy_version()
 RETURNS TEXT
 LANGUAGE sql
@@ -895,3 +898,5 @@ BEGIN
   END IF;
 END
 $check$;
+
+COMMIT;

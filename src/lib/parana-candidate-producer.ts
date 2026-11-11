@@ -90,7 +90,7 @@ export function produceParanaCandidate(
   }
 
   // Preference check
-  if (context.wantsVratReminders === false) {
+  if (context.wantsVratReminders !== true) {
     return {
       candidate: null,
       status: 'suppressed',

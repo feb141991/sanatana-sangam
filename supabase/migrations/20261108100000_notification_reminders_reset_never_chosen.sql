@@ -13,34 +13,33 @@
 --      explicitly configures them in Settings or finishes onboarding.
 --   Nothing else changes: not wants_sanskara_reminders, not any reminder time, not any profile created after the cutoff with completed onboarding.
 --
--- Exact affected-user calculation (live production predicate union):
---   Total distinct affected profiles backed up: exactly 20.
---     - 10 profiles: onboarding_completed is not true (all 18 switches reset to false; reason: 'never_finished_onboarding')
---     - 10 profiles: onboarding_completed is true and created_at < cutoff with Brahma Muhurta true (reason: 'brahma_not_chosen')
---     - Union: 20 distinct profiles. No profiles outside this set are touched.
---
--- Before it changes anything it copies the exact previous values of all 20 rows into public.notification_reset_backup_20261108.
--- Rollback restores values ONLY where the profile has not been updated since the reset (p.updated_at <= b.taken_at), preventing
--- subsequent deliberate opt-outs from being clobbered.
+-- The 2026-11-08 snapshot implied 20 distinct profiles: 10 unfinished profiles
+-- plus 10 completed profiles in the legacy Brahma cohort. This is not a fixed
+-- apply count; rerun scripts/notification-routing/reminder-reset-preflight.sql.
+-- Backup and reset run under the same short write lock. Only the precise row
+-- version written by the reset is eligible for rollback.
 --
 -- ROC pre-flight (AGENTS.md section 4):
 --  1. Function overload trap (PGRST203): no function is created, replaced or dropped, so no overload can appear.
 --  2. Caller contract: reads of these columns see only `false` where they saw `true`; no column, type or default changes. Run
 --     20261107100000_notification_reminders_default_off.sql first (or together).
 --  3. User data and opt-out safety: The update only ever writes `false`. Blanket `where x = false or x is null` pattern is NOT used.
---  4. Locks: UPDATE of 20 rows of public.profiles plus a small new table; lock_timeout is 5s so it fails fast.
---  5. Rollback: supabase/rollbacks/20261108100000_notification_reminders_reset_never_chosen_rollback.sql restores backed-up values with timestamp provenance checks.
---     only where the current value is still the one this migration wrote.
+--  4. Locks: UPDATE of the preflight cohort of public.profiles plus a small new table; lock_timeout is 5s so it fails fast.
+--  5. Rollback: supabase/rollbacks/20261108100000_notification_reminders_reset_never_chosen_rollback.sql restores backed-up values only for the exact row versions written by the reset.
 --
 -- The backup table: RLS enabled and forced with no policy; nothing is granted to anon or authenticated; it cascades with the account.
 
 begin;
 set local lock_timeout = '5s';
+-- Keep backups and mutations consistent with concurrent profile preference writes.
+lock table public.profiles in share row exclusive mode;
 
-create table if not exists public.notification_reset_backup_20261108 (
+-- Deliberately fail if an earlier backup exists; do not reset later choices on a re-run.
+create table public.notification_reset_backup_20261108 (
   user_id uuid primary key references auth.users(id) on delete cascade,
   reason text not null check (reason in ('never_finished_onboarding', 'brahma_not_chosen')),
   taken_at timestamptz not null default now(),
+  post_reset_xmin text,
   dharm_veer_reminder_enabled boolean,
   japa_reminder_enabled boolean,
   nitya_reminder_enabled boolean,
@@ -69,7 +68,7 @@ create temp table _notification_reset_pre on commit drop as
   select id, onboarding_completed, created_at, wants_sanskara_reminders, dharm_veer_reminder_enabled, japa_reminder_enabled, nitya_reminder_enabled, quiz_reminder_enabled, wants_brahma_muhurta_reminders, wants_community_notifications, wants_evening_reminder, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_madhyahn_reminder, wants_mood_reminders, wants_nitya_reminders, wants_sankalpa_midpoint_reminders, wants_sattvic_reminders, wants_shloka_reminders, wants_tithi_reminders, wants_vrat_reminders
   from public.profiles;
 
--- 1. Back up exactly the rows that will change (first backup wins: a re-run cannot overwrite it with already-reset values).
+-- 1. Back up exactly the rows that will change.
 insert into public.notification_reset_backup_20261108 (user_id, reason, dharm_veer_reminder_enabled, japa_reminder_enabled, nitya_reminder_enabled, quiz_reminder_enabled, wants_brahma_muhurta_reminders, wants_community_notifications, wants_evening_reminder, wants_family_notifications, wants_family_remembrance_reminders, wants_festival_reminders, wants_madhyahn_reminder, wants_mood_reminders, wants_nitya_reminders, wants_sankalpa_midpoint_reminders, wants_sattvic_reminders, wants_shloka_reminders, wants_tithi_reminders, wants_vrat_reminders)
 select p.id,
        case when p.onboarding_completed is not true then 'never_finished_onboarding' else 'brahma_not_chosen' end,
@@ -96,7 +95,7 @@ where (p.onboarding_completed is not true and (
        or wants_vrat_reminders is distinct from false))
    or (p.wants_brahma_muhurta_reminders is true
        and not (p.onboarding_completed is true and p.created_at >= timestamptz '2026-10-26 11:30:00+05:30'))
-on conflict (user_id) do nothing;
+;
 
 -- 2. Everything OFF for a profile that never finished onboarding.
 update public.profiles
@@ -145,6 +144,12 @@ set wants_brahma_muhurta_reminders = false
 where wants_brahma_muhurta_reminders is true
   and not (onboarding_completed is true and created_at >= timestamptz '2026-10-26 11:30:00+05:30');
 
+-- Capture the new tuple version, independent of updated_at and of the boolean values.
+update public.notification_reset_backup_20261108 b
+set post_reset_xmin = p.xmin::text
+from public.profiles p
+where p.id = b.user_id;
+
 -- The migration checks its own result and aborts (rolling everything back) if any of these fails.
 do $check$
 declare
@@ -175,11 +180,11 @@ begin
        or wants_vrat_reminders is distinct from false);
   if v_bad > 0 then raise exception 'notification reset: % never-onboarded profile(s) still have a reminder on', v_bad; end if;
 
-  -- b. nobody has Brahma Muhurta on unless they finished onboarding after the cutoff
+  -- b. the approved reset cohort no longer has Brahma Muhurta enabled
   select count(*) into v_bad from public.profiles
   where wants_brahma_muhurta_reminders is true
     and not (onboarding_completed is true and created_at >= timestamptz '2026-10-26 11:30:00+05:30');
-  if v_bad > 0 then raise exception 'notification reset: % profile(s) still have Brahma Muhurta on without choosing it', v_bad; end if;
+  if v_bad > 0 then raise exception 'notification reset: % profile(s) in the reset cohort still have Brahma Muhurta enabled', v_bad; end if;
 
   -- c. no profile outside the backed-up set changed at all (the 18 switches and Sanskara)
   select count(*) into v_bad

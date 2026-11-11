@@ -157,6 +157,14 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   not see them. Both were closed in the same change and are pinned by the parity
   test. This applies equally to human and AI-agent contributors.
 
+- **A reset must not confuse unchanged values with unchanged choices.** The
+  November 2026 reminder reset uses a preflight cohort count, one backup, and
+  exact post-update row versions. Restore only columns touched by the reset,
+  and skip any profile subsequently updated, including a same-value opt-out.
+  Before cadence SQL changes, pause and drain the resolver; the v3 cron route
+  verifies the database policy before claiming. Guards: the notification
+  scratch migration harness and the resolver route compatibility tests.
+
 ### 7. Platform and Build Precision
 - Keep these states distinct: committed, pushed, deployed, built, installed,
   launched and smoke-tested.

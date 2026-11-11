@@ -136,7 +136,7 @@ export function produceSeriesCandidates(
   }
 
   // Preference check: series are festival/observance multi-day events
-  if (context.wantsFestivalReminders === false) {
+  if (context.wantsFestivalReminders !== true) {
     return {
       candidates: [],
       diagnostics: ['user_wants_festival_reminders_false'],

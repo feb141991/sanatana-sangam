@@ -76,7 +76,7 @@ export async function GET(request: Request) {
     const eligibleUsers = users.filter((user) => {
       const timeZone = resolveTimeZone((user as any).timezone);
       if ((user as any).is_deleting === true) return false;
-      if ((user as any).wants_shloka_reminders === false) return false;
+      if ((user as any).wants_shloka_reminders !== true) return false;
       const targetDate = getNextLocalHourUtc(now, timeZone, targetLocalHour, 0).localDateIso;
       return user.last_shloka_date !== targetDate;
     });

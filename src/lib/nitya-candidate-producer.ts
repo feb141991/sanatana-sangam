@@ -88,7 +88,7 @@ const BRAHMA_TOLERANCE_MS = 60 * 60_000;
  * Produces a validated morning Brahma Muhurta Nitya candidate for a devotee on a local civil date.
  *
  * Enforces:
- * 1. Opt-in: wants_nitya_reminders !== false.
+ * 1. Opt-in: wants_nitya_reminders === true.
  * 2. Active account: is_deleting !== true.
  * 3. Daily completion: startedToday !== true.
  * 4. Quiet-hours safety for 05:00 morning window.
@@ -108,7 +108,7 @@ export function produceMorningNityaCandidate(
     customBody?: string;
   }
 ): NotificationCandidateInsert | null {
-  if (devotee.wants_nitya_reminders === false) {
+  if (devotee.wants_nitya_reminders !== true) {
     return null;
   }
 

@@ -49,12 +49,12 @@ History is classified by type **and** key on both sides, so a generic bell row (
 
 ### Rollout order
 
-1. Deploy the resolver change **first or together with** the migration. Applying the migration under the old
-   resolver (limit 5) makes every surplus acceptance raise and stall the batch.
-2. Apply `20261110140000` (function replacement only: no table DDL, no data update, no index build).
-   Afterwards run `node scripts/assert-supabase-migration-version.mjs 20261110140000`.
-3. Roll back with `supabase/rollbacks/20261110140000_one_nudge_a_day_cadence_rollback.sql`, deploying the
-   previous resolver first or with it.
+1. Verify the migration versions are unique (`20261110100000` is the separate profile-tradition lock), and run the notification Vitest suites, TypeScript, and `bash scripts/shadow/verify-notification-migrations-shadow.sh`. Verify the supported Native onboarding build starts reminder switches off and writes the person's choices. Old installed builds can still write `true` explicitly; a database default cannot distinguish that write from a choice. Confirm the supported-client rollout before treating the consent issue as closed.
+2. In an approved production window, pause resolver invocations. Deploy the intended v3 revision with `NOTIFICATION_RESOLVER_ENABLED=false`. Use the authenticated resolver `?dryRun=true` response to check `revision` and `cadenceVersion` on the production alias without claiming candidates. Confirm the previous deployment cannot receive new cron invocations and no prior run is active. Check `public.notification_resolver_lock.lease_expires_at` and drain the previous deployment's running invocations; do not clear live leases to force the transition.
+3. Apply `20261107100000` individually and check all 18 defaults are false. Run `scripts/notification-routing/reminder-reset-preflight.sql` against the live profiles immediately before considering `20261108100000`. Review fresh counts from `scripts/notification-routing/reminder-preference-counts.sql` (true/false/NULL) and the distinct cohort count; the historical 20 is not an apply requirement. This is an explicit reset of uncertain preferences, not proof of who opted in. Apply it once only after the cohort is approved. Compare the backup count and per-reason counts with the approved preflight. Keep the restricted backup until the review is complete.
+4. Apply `20261110140000` individually. Its SQL runs in one transaction with a five-second lock timeout. For **each** migration run `node scripts/assert-supabase-migration-version.mjs <version>` and verify the linked history. Confirm `SELECT public.notification_cadence_policy_version();` returns `engagement-cadence-v3`.
+5. Resume only the verified v3 revision. Live runs skip before claiming when the version RPC is absent or mismatched, and report an error if the version cannot be read. Observe the next scheduled resolver and dispatch runs for claimed/promoted counts, batch aborts, and PGRST203 errors. This is an operational check; it does not establish device delivery.
+6. For cadence rollback: pause and drain again, roll back SQL, deploy the matching v2 resolver, then resume. Never put the v2 resolver back on the live cron while v3 SQL is active. The reminder data rollback is separate: it restores only the affected columns on untouched tuple versions and can re-enable old reminders. Review and approve restoration separately.
 
 **Transition:** rows already admitted under v2 stay. A user who already has two "other" rows today gets no third
 that day, and cannot block Shloka or the learning slot, because each check looks only at the class being added.

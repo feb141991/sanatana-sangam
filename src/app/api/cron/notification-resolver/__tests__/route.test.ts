@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GET } from '../route';
+import { executeCandidateResolverPipeline } from '@/lib/notification-resolver-pipeline';
+
+const { rpc } = vi.hoisted(() => ({ rpc: vi.fn() }));
+vi.mock('@supabase/supabase-js', () => ({ createClient: () => ({ rpc }) }));
 
 vi.mock('@/lib/notification-resolver-pipeline', () => ({
   executeCandidateResolverPipeline: vi.fn().mockImplementation(async (opts) => {
@@ -33,6 +37,9 @@ describe('cron/notification-resolver route', () => {
   const originalEnv = { ...process.env };
 
   beforeEach(() => {
+    delete process.env.NOTIFICATION_RESOLVER_ENABLED;
+    vi.clearAllMocks();
+    rpc.mockResolvedValue({ data: 'engagement-cadence-v3', error: null });
     process.env.CRON_SECRET = 'cron-secret-123';
     process.env.INTERNAL_DISPATCH_SECRET = 'dispatch-secret-456';
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
@@ -68,7 +75,8 @@ describe('cron/notification-resolver route', () => {
     expect(body.skipReason).toBe('resolver_globally_disabled');
   });
 
-  it('supports dryRun query parameter', async () => {
+  it('supports dryRun without a database policy check during the rollout', async () => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
     const req = new Request('https://shoonaya.com/api/cron/notification-resolver?dryRun=true', {
       headers: { authorization: 'Bearer dispatch-secret-456' },
     });
@@ -77,6 +85,7 @@ describe('cron/notification-resolver route', () => {
     const body = await res.json();
     expect(body.ok).toBe(true);
     expect(body.dryRun).toBe(true);
+    expect(rpc).not.toHaveBeenCalled();
   });
 
   it('passes runRetentionCleanup=true only when retention=true param is supplied', async () => {
@@ -100,4 +109,40 @@ describe('cron/notification-resolver route', () => {
       expect.objectContaining({ runRetentionCleanup: true })
     );
   });
+  it.each([
+    { data: null, error: { code: 'PGRST202' } },
+    { data: 'engagement-cadence-v2', error: null },
+  ])('does not claim candidates against an old database: %j', async (database) => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    process.env.VERCEL_GIT_COMMIT_SHA = 'test-release';
+    rpc.mockResolvedValue(database);
+    const res = await GET(new Request('https://shoonaya.com/api/cron/notification-resolver', {
+      headers: { authorization: 'Bearer cron-secret-123' },
+    }));
+    expect(await res.json()).toMatchObject({ skipped: true, skipReason: 'cadence_version_mismatch', candidatesClaimed: 0,
+      revision: 'test-release', cadenceVersion: 'engagement-cadence-v3' });
+    expect(executeCandidateResolverPipeline).not.toHaveBeenCalled();
+  });
+
+  it('permits live work only when the database reports the same version', async () => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    const res = await GET(new Request('https://shoonaya.com/api/cron/notification-resolver', {
+      headers: { authorization: 'Bearer cron-secret-123' },
+    }));
+    expect(res.status).toBe(200);
+    expect(rpc).toHaveBeenCalledWith('notification_cadence_policy_version');
+    expect(executeCandidateResolverPipeline).toHaveBeenCalledOnce();
+  });
+
+  it('reports a failed database version read without claiming work', async () => {
+    process.env.NOTIFICATION_RESOLVER_ENABLED = 'true';
+    rpc.mockResolvedValue({ data: null, error: { code: '42501', message: 'private database detail' } });
+    const res = await GET(new Request('https://shoonaya.com/api/cron/notification-resolver', {
+      headers: { authorization: 'Bearer cron-secret-123' },
+    }));
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ ok: false, error: 'cadence_version_check_unavailable' });
+    expect(executeCandidateResolverPipeline).not.toHaveBeenCalled();
+  });
+
 });

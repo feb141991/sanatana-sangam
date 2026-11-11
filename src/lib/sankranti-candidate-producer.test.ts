@@ -20,6 +20,7 @@ describe('sankranti-candidate-producer', () => {
     const context: SankrantiCandidateContext = {
       userId: 'user-sankranti-1',
       userTimezone: 'Asia/Kolkata',
+      wantsObservanceReminders: true,
       latitude: 19.076,
       longitude: 72.877,
       window: {
@@ -42,6 +43,7 @@ describe('sankranti-candidate-producer', () => {
     const context: SankrantiCandidateContext = {
       userId: 'user-sankranti-2',
       userTimezone: 'Asia/Kolkata',
+      wantsObservanceReminders: true,
       latitude: 28.6139,
       longitude: 77.2090,
       window: {
@@ -80,6 +82,7 @@ describe('sankranti-candidate-producer', () => {
     const context: SankrantiCandidateContext = {
       userId: 'user-sankranti-3',
       userTimezone: 'Asia/Kolkata',
+      wantsObservanceReminders: true,
       latitude: 13.0827,
       longitude: 80.2707,
       window: {
@@ -101,6 +104,7 @@ describe('sankranti-candidate-producer', () => {
     const res = produceSankrantiCandidate({
       userId: 'user-sankranti-no-lat',
       userTimezone: 'Asia/Kolkata',
+      wantsObservanceReminders: true,
       window: {
         sankrantiSlug: 'makar-sankranti',
         sankrantiName: 'Makar Sankranti',
@@ -121,6 +125,7 @@ describe('sankranti-candidate-producer', () => {
     const context: SankrantiCandidateContext = {
       userId: 'user-sankranti-4',
       userTimezone: 'Asia/Kolkata',
+      wantsObservanceReminders: true,
       wantsSankrantiReminders: false,
       window: {
         sankrantiSlug: 'makar-sankranti',
@@ -141,6 +146,7 @@ describe('sankranti-candidate-producer', () => {
     const res = produceSankrantiCandidate({
       userId: 'user-sankranti-legacy',
       userTimezone: 'Asia/Kolkata',
+      wantsObservanceReminders: true,
       window: { sankrantiSlug: 'makar', sankrantiName: 'Makar Sankranti', localDate: '2026-01-14' },
     });
     expect(res.candidate).toBeNull();
@@ -153,6 +159,7 @@ describe('sankranti-candidate-producer', () => {
     const context: SankrantiCandidateContext = {
       userId: 'user-sankranti-polar',
       userTimezone: 'Europe/Helsinki',
+      wantsObservanceReminders: true,
       latitude: 65.0,
       longitude: 25.46,
       window: {
@@ -175,6 +182,7 @@ describe('sankranti-candidate-producer', () => {
     const context: SankrantiCandidateContext = {
       userId: 'user-sankranti-inverted',
       userTimezone: 'Asia/Kolkata',
+      wantsObservanceReminders: true,
       latitude: 19.076,
       longitude: 72.877,
       window: {
