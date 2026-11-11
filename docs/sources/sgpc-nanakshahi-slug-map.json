@@ -10,6 +10,5 @@
   { "slug": "guru-ram-das-gurpurab", "name_includes": ["ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ", "ਰਾਮਦਾਸ"] },
   { "slug": "guru-har-krishan-gurpurab", "name_includes": ["ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ", "ਹਰਿਕ੍ਰਿਸ਼ਨ"] },
   { "slug": "sahibzade-elder-shaheedi-diwas", "name_includes": ["ਵੱਡੇ ਸਾਹਿਬਜ਼ਾਦੇ"] },
-  { "slug": "sahibzade-younger-shaheedi-diwas", "name_includes": ["ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦੇ"] },
-  { "slug": "baisakhi-nanakshahi", "name_includes": ["ਖ਼ਾਲਸਾ ਸਾਜਣਾ ਦਿਵਸ"] }
+  { "slug": "sahibzade-younger-shaheedi-diwas", "name_includes": ["ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦੇ"] }
 ]

@@ -3,7 +3,7 @@ import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
 import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, MONTH_NAMES, nextMonthIndex, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
 import { evaluateCondition } from '@sangam/dharma-rules';
-import { findMappedSidebarRow, latestEdition, mappedDateForEdition, regionalCalendarProvenanceFor, type RegionalCalendarDateResult } from './regional-calendar-provenance';
+import { editionForDate, findMappedSidebarRow, mappedDateForEdition, regionalCalendarProvenanceFor, SGPC_EDITIONS, type RegionalCalendarDateResult } from './regional-calendar-provenance';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
 export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
@@ -617,47 +617,17 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
-export const SikhLunarAnchorHandler = {
-  evaluate(rule: ObservanceRule, year: number, location: LocationInput = DEFAULT_LOCATION): RegionalCalendarDateResult[] {
-    const anchor = rule.sikh_lunar_anchor;
-    if (!anchor) return [];
-    const days = precomputePanchangCorrectedForYear(year, location);
-    const anchorRule = {
-      ...rule,
-      rule_family: 'lunar_tithi' as const,
-      lunar_masa_name: anchor.lunar_masa_name,
-      lunar_tithi_index: anchor.lunar_tithi_index,
-      corrected_month_system: anchor.month_system,
-      corrected_allow_skipped_tithi: true,
-      allow_skipped_tithi: true,
-      prefer_last_match: false,
-    };
-    const date = LunarTithiHandler.evaluate(anchorRule, days)
-      .filter(candidate => Number(candidate.slice(0, 4)) === year)[0];
-    if (!date) return [];
-    const printed = regionalCalendarProvenanceFor(rule.slug, date).calendar_provenance;
-    if (printed?.provenance === 'sgpc_edition') return [{ date, calendarProvenance: printed }];
-    return [{ date, calendarProvenance: {
-      provenance: 'computed_expected',
-      edition: null,
-      reason: `Computed from the Sikh lunar anchor ${anchor.lunar_masa_name} Shukla ${anchor.lunar_tithi_index} at sunrise; no covering SGPC edition prints this date.`,
-    } }];
-  },
-};
-
 export const NanakshahiHandler = {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[] {
-    if (rule.sikh_lunar_anchor) return SikhLunarAnchorHandler.evaluate(rule, year);
     if (!rule.nanakshahi_month || rule.nanakshahi_day === undefined) return [];
-    const edition = latestEdition();
-    if (!edition || !findMappedSidebarRow(edition, rule.slug)) return [];
-    const date = mappedDateForEdition(edition, rule.slug, year);
-    if (!date || Number(date.slice(0, 4)) !== year) return [];
-    return [{ date, calendarProvenance: regionalCalendarProvenanceFor(rule.slug, date).calendar_provenance ?? {
-      provenance: 'computed_expected',
-      edition: null,
-      reason: 'Computed from the latest available Nanakshahi edition pattern; no matching SGPC printed date is available.',
-    } }];
+    for (const edition of SGPC_EDITIONS) {
+      if (!findMappedSidebarRow(edition, rule.slug)) continue;
+      const date = mappedDateForEdition(edition, rule.slug, year);
+      if (!date || Number(date.slice(0, 4)) !== year || editionForDate(date)?.edition !== edition.edition) continue;
+      const provenance = regionalCalendarProvenanceFor(rule.slug, date).calendar_provenance;
+      if (provenance?.provenance === 'sgpc_edition') return [{ date, calendarProvenance: provenance }];
+    }
+    return [];
   }
 };
 
@@ -905,9 +875,7 @@ function buildOccurrencesMap(
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
-    if (rule.sikh_lunar_anchor) {
-      occurrencesMap[rk] = SikhLunarAnchorHandler.evaluate(rule, year, location).map(result => result.date);
-    } else if (rule.rule_family === 'solar_fixed') {
+    if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
       occurrencesMap[rk] = LunarTithiHandler.evaluate(rule, days);
@@ -953,7 +921,7 @@ function buildOccurrencesMap(
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
       if (gate && !isPublishableForYear(rule, year)) continue;
-      if (rule.sikh_lunar_anchor) continue;
+      if (rule.tradition === 'sikh' && rule.slug !== 'lohri') continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
@@ -1409,9 +1377,7 @@ function buildOccurrencesMapCorrected(
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
-    if (r.sikh_lunar_anchor) {
-      occurrencesMap[rk] = SikhLunarAnchorHandler.evaluate(r, year, location).map(result => result.date);
-    } else if (r.rule_family === 'solar_fixed') {
+    if (r.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(r, year);
     } else if (r.rule_family === 'lunar_tithi') {
       occurrencesMap[rk] = LunarTithiHandler.evaluate(r, d);
@@ -1458,7 +1424,7 @@ function buildOccurrencesMapCorrected(
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
       if (gate && !isPublishableForYear(rule, year)) continue;
-      if (rule.sikh_lunar_anchor) continue;
+      if (rule.tradition === 'sikh' && rule.slug !== 'lohri') continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;

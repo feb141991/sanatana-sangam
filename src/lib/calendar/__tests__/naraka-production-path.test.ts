@@ -75,7 +75,6 @@ describe('calendar production-path inclusion and recurring vrat dates', () => {
       .sort((a, b) => a.slug.localeCompare(b.slug));
 
     expect(family).toEqual([
-      { slug: 'bandhi-chhor-divas', date: '2026-11-08' },
       { slug: 'bhai-dooj', date: '2026-11-10' },
       { slug: 'dhanteras', date: '2026-11-06' },
       { slug: 'diwali', date: '2026-11-08' },

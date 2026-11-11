@@ -53,14 +53,14 @@ describe('regional calendar provenance', () => {
     for (const verificationType of ['historical_commemoration', 'lunar_tithi', 'solar_fixed']) {
       expect(isFinalCalendarDate({ date: '2027-01-05', spiritual_tradition: null, calendar_profile: 'legacy-ujjain', observance_definitions: { slug: 'guru-gobind-singh-gurpurab', tradition: 'sikh', verification_type: verificationType } })).toBe(false);
     }
-    expect(regionalCalendarProvenanceFor('guru-tegh-bahadur-martyrdom', '2027-12-14').calendar_provenance).toMatchObject({ provenance: 'approximate', edition: null });
-    expect(regionalCalendarProvenanceFor('sahibzade-shaheedi-diwas', '2026-12-26').calendar_provenance).toMatchObject({ provenance: 'approximate', edition: null });
+    expect(regionalCalendarProvenanceFor('guru-tegh-bahadur-martyrdom', '2027-12-14').calendar_provenance).toBeUndefined();
+    expect(regionalCalendarProvenanceFor('sahibzade-shaheedi-diwas', '2026-12-26').calendar_provenance).toMatchObject({ provenance: 'cultural_convention', edition: null });
   });
 
   it('fails closed for missing and non-final provenance', () => {
     expect(isFinalCalendarDate(sikh())).toBe(false);
-    expect(isFinalCalendarDate(sikh({ source_provenance: { calendar_provenance: { provenance: 'computed_expected', edition: null, reason: 'pending' } } }))).toBe(false);
-    expect(parseCalendarProvenance({ calendar_provenance: { provenance: 'approximate', edition: null, reason: 'pending' } })?.provenance).toBe('approximate');
+    expect(isFinalCalendarDate(sikh({ source_provenance: { calendar_provenance: { provenance: 'cultural_convention', edition: null, reason: 'pending' } } }))).toBe(false);
+    expect(parseCalendarProvenance({ calendar_provenance: { provenance: 'cultural_convention', edition: null, reason: 'pending' } })?.provenance).toBe('cultural_convention');
   });
 
   it('fails closed on real production-shaped Sikh rows without Nanakshahi fields', () => {

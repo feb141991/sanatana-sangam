@@ -253,17 +253,6 @@
         "maximum": 31,
         "description": "Day of the month in the Nanakshahi calendar"
       },
-      "sikh_lunar_anchor": {
-        "type": "object",
-        "required": ["lunar_masa_name", "lunar_tithi_index", "month_system", "selection"],
-        "properties": {
-          "lunar_masa_name": { "type": "string", "minLength": 1 },
-          "lunar_tithi_index": { "type": "integer", "minimum": 1, "maximum": 15 },
-          "month_system": { "type": "string", "enum": ["amanta", "purnimanta"] },
-          "selection": { "type": "string", "enum": ["first_qualifying_date"] }
-        },
-        "additionalProperties": false
-      },
       "relative_base_slug": {
         "type": "string",
         "description": "Slug of the reference festival this rule is offset from"

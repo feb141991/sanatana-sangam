@@ -2,11 +2,11 @@ import { editionForDate, findMappedSidebarRow, latestEdition, mappedDateForEditi
 
 export type CalendarDateProvenance =
   | { provenance: 'sgpc_edition'; edition: number; disagreementDays?: number; reason?: string }
-  | { provenance: 'computed_expected' | 'approximate' | 'unavailable' | 'cultural_convention'; edition: null; disagreementDays?: number; reason: string };
+  | { provenance: 'cultural_convention'; edition: null; reason: string };
 
 export type RegionalCalendarDateResult = { date: string; calendarProvenance: CalendarDateProvenance };
 
-const CULTURAL_CONVENTION_SLUGS = new Set(['lohri']);
+const CULTURAL_CONVENTION_SLUGS = new Set(['lohri', 'sahibzade-shaheedi-diwas']);
 const SIKH_SLUGS = new Set(['baisakhi', 'guru-nanak-gurpurab', 'bandhi-chhor-divas', 'guru-tegh-bahadur-martyrdom', 'guru-gobind-singh-gurpurab', 'guru-ravidas-jayanti', 'guru-arjan-dev-martyrdom', 'guru-amar-das-gurpurab', 'guru-ram-das-gurpurab', 'guru-har-krishan-gurpurab', 'sahibzade-elder-shaheedi-diwas', 'sahibzade-younger-shaheedi-diwas', 'holla-mohalla', 'sahibzade-shaheedi-diwas', 'lohri']);
 
 export function isInsideEdition(date: string, edition: { from: string; to: string }) {
@@ -15,10 +15,13 @@ export function isInsideEdition(date: string, edition: { from: string; to: strin
 
 export function regionalCalendarProvenanceFor(slug: string, date: string, editions: readonly SgpcEdition[] = SGPC_EDITIONS): { calendar_provenance?: CalendarDateProvenance } {
   if (CULTURAL_CONVENTION_SLUGS.has(slug)) {
-    return { calendar_provenance: { provenance: 'cultural_convention', edition: null, reason: 'Lohri is a Punjabi cultural convention and is not an SGPC sidebar entry.' } };
+    const reason = slug === 'lohri'
+      ? 'Lohri is a Punjabi cultural convention and is not an SGPC sidebar entry.'
+      : 'This legacy Sahibzade observance remains a cultural convention pending council direction.';
+    return { calendar_provenance: { provenance: 'cultural_convention', edition: null, reason } };
   }
   if (slug === 'holla-mohalla') {
-    return { calendar_provenance: { provenance: 'approximate', edition: null, reason: 'Holla Mohalla is derived as Holi plus one civil day; no covering SGPC edition currently contains that date.' } };
+    return {};
   }
 
   const targetYear = Number(date.slice(0, 4));
@@ -30,15 +33,6 @@ export function regionalCalendarProvenanceFor(slug: string, date: string, editio
     }
   }
 
-  if (SIKH_SLUGS.has(slug)) {
-    return {
-      calendar_provenance: {
-        provenance: 'approximate',
-        edition: null,
-        reason: 'Date comes from a Nanakshahi table outside a matching printed edition and may differ by weeks.',
-      },
-    };
-  }
   return {};
 }
 
@@ -52,7 +46,7 @@ export function parseCalendarProvenance(source: unknown): CalendarDateProvenance
       ...(typeof candidate.disagreementDays === 'number' ? { disagreementDays: candidate.disagreementDays } : {}),
       ...(typeof candidate.reason === 'string' ? { reason: candidate.reason } : {}) };
   }
-  if ((candidate.provenance === 'computed_expected' || candidate.provenance === 'approximate' || candidate.provenance === 'unavailable' || candidate.provenance === 'cultural_convention') && candidate.edition === null && typeof candidate.reason === 'string') {
+  if (candidate.provenance === 'cultural_convention' && candidate.edition === null && typeof candidate.reason === 'string') {
     return { provenance: candidate.provenance, edition: null,
       ...(typeof candidate.disagreementDays === 'number' ? { disagreementDays: candidate.disagreementDays } : {}), reason: candidate.reason };
   }
