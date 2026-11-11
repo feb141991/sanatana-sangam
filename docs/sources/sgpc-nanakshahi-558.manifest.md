@@ -27,6 +27,27 @@ a search engine's synthesis of it.
 
 ## Extraction method
 
+## 557 characterization provenance
+
+The preceding Samvat 557 edition was used only as characterization evidence
+for the 558 boundary analysis. It was not copied into this repository and is
+not a shipped edition.
+
+| Field | Value |
+|---|---|
+| Source URL | `https://sgpc.net/wp-content/uploads/2025/03/Calender-Nanakshahi-557.pdf` |
+| Size | 6,747,744 bytes |
+| SHA-256 | `3ff7374abc5759ffb2b68332343b371c40a0c243f1e7e2b349909bfb4f33659b` |
+| Downloaded | 2026-11-11 |
+| Edition | 14 March 2025 - 13 March 2026 |
+| Format and verification | Image-only PDF; read visually and by Gurmukhi OCR |
+| Repository status | Not copied into the repository; characterization evidence only |
+
+SGPC prints Hola Mohalla in Samvat 557 at 02 Chet (2025-03-15) and 21
+Phagun (2026-03-04). Lohri is absent from both the 557 and 558 editions;
+13 January 2027 falls inside Samvat 558, so that absence is a real finding,
+not an edition-boundary omission.
+
 Neither official PDF (the poster-format "Calendar" or the tabular "Jantri")
 has plain, reliably linear text. `pdftotext -layout`'s row-reconstruction
 heuristic **demonstrably misorders cells** in the main grid — spot-checked
@@ -112,7 +133,7 @@ separate SGPC entries: installation 19 Chet, birth 25 Chet, martyrdom 29
 Maghar; the rule's own "Shaheedi Diwas ... martyrdom" description
 disambiguates which one applies).
 
-## Not resolved — genuinely absent or ambiguous, not guessed
+## Not resolved — absent from this edition, ambiguous, or not independently sourced
 
 - **`lohri`**: not present anywhere in SGPC's Gurpurab list across all 3
   pages (confirmed, not just missed). It's a separate Punjabi harvest
@@ -120,9 +141,14 @@ disambiguates which one applies).
   ("night before Makar Sankranti") independently fixes it to **13
   January** every Gregorian year by long-standing convention — but that
   is not an SGPC citation and hasn't been entered as one here.
-- **`holla-mohalla`**: also absent from SGPC's list (a Nihang cultural
-  gathering at Anandpur Sahib, not one of the listed Gurpurabs). No
-  citation available from this source.
+- **`holla-mohalla`**: not covered by this edition's date range. The 558
+  edition begins on 1 Chet 558 (14 March 2026), after the 2026 Holla
+  Mohalla date, and ends on 30 Phagun 558 (13 March 2027), before the 2027
+  Holla Mohalla date. The 557
+  characterization fixtures record 02 Chet (2025-03-15) and 21 Phagun
+  (2026-03-04). This is an edition-boundary limitation, not evidence that
+  SGPC omitted the observance. The app rule remains a convention relation:
+  Holi plus one civil day.
 - **`sahibzade-shaheedi-diwas`**: genuinely ambiguous. The rule's own
   description says "the four Sahibzade," but SGPC's list carries **two**
   separate martyrdom dates — elder Sahibzadas + other Chamkaur martyrs (08
