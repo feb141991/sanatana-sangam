@@ -1,4 +1,4 @@
-import { editionForDate, findMappedSidebarRow, latestEdition, mappedDateForEdition, SGPC_EDITIONS } from './sgpc-edition-registry';
+import { editionForDate, findMappedSidebarRow, latestEdition, mappedDateForEdition, SGPC_EDITIONS, type SgpcEdition } from './sgpc-edition-registry';
 
 export type CalendarDateProvenance =
   | { provenance: 'sgpc_edition'; edition: number; disagreementDays?: number; reason?: string }
@@ -13,7 +13,7 @@ export function isInsideEdition(date: string, edition: { from: string; to: strin
   return date >= edition.from && date <= edition.to;
 }
 
-export function regionalCalendarProvenanceFor(slug: string, date: string): { calendar_provenance?: CalendarDateProvenance } {
+export function regionalCalendarProvenanceFor(slug: string, date: string, editions: readonly SgpcEdition[] = SGPC_EDITIONS): { calendar_provenance?: CalendarDateProvenance } {
   if (CULTURAL_CONVENTION_SLUGS.has(slug)) {
     return { calendar_provenance: { provenance: 'cultural_convention', edition: null, reason: 'Lohri is a Punjabi cultural convention and is not an SGPC sidebar entry.' } };
   }
@@ -22,7 +22,7 @@ export function regionalCalendarProvenanceFor(slug: string, date: string): { cal
   }
 
   const targetYear = Number(date.slice(0, 4));
-  const coveringEdition = editionForDate(date);
+  const coveringEdition = editionForDate(date, editions);
   if (coveringEdition) {
     const row = findMappedSidebarRow(coveringEdition, slug);
     if (row && mappedDateForEdition(coveringEdition, slug, targetYear) === date) {

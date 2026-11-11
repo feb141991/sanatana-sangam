@@ -81,8 +81,8 @@ export function dateForEditionRow(edition: SgpcEdition, row: SgpcSidebarRow, tar
   return addDays(target, Number(row.day.split('-')[0]) - 1);
 }
 
-export function editionForDate(date: string): SgpcEdition | null {
-  return SGPC_EDITIONS.find(edition => date >= edition.from && date <= edition.to) ?? null;
+export function editionForDate(date: string, editions: readonly SgpcEdition[] = SGPC_EDITIONS): SgpcEdition | null {
+  return editions.find(edition => date >= edition.from && date <= edition.to) ?? null;
 }
 
 export function latestEdition(): SgpcEdition | null {

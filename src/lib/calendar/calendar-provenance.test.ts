@@ -32,6 +32,18 @@ describe('regional calendar provenance', () => {
     expect(editionForDate('2027-03-14')).toBeNull();
   });
 
+  it('accepts a future edition as a data-only registration', () => {
+    const futureEdition = {
+      edition: 559,
+      from: '2027-03-14',
+      to: '2028-03-13',
+      monthStarts: { Chet: '2027-03-14' },
+      rows: [{ index: 1, day: '1', month: 'Chet', name_gurmukhi: 'ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਨਾਨਕ ਦੇਵ' }],
+    };
+    expect(editionForDate('2027-03-14', [futureEdition])?.edition).toBe(559);
+    expect(regionalCalendarProvenanceFor('guru-nanak-gurpurab', '2027-03-14', [futureEdition]).calendar_provenance).toMatchObject({ provenance: 'sgpc_edition', edition: 559 });
+  });
+
   it('keeps cultural Lohri outside the SGPC final-date gate', () => {
     expect(isFinalCalendarDate({ date: '2027-01-13', observance_definitions: { slug: 'lohri', tradition: 'sikh', verification_type: 'solar_fixed' } })).toBe(true);
     expect(parseCalendarProvenance({ provenance: 'cultural_convention', edition: null, reason: 'convention' })?.provenance).toBe('cultural_convention');
