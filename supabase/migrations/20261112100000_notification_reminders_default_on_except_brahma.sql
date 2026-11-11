@@ -1,7 +1,6 @@
 -- Reminder defaults for a NEW profile: everything ON except Brahma Muhurta. NOT applied to any database by this commit.
 -- Founder decision 2026-11-12 ("keep only Brahma Muhurta off, the rest all on; the user can switch off what they don't want").
--- Supersedes the all-OFF defaults of 20261107100000 (apply that first, or skip it: this migration sets every one of the 18 columns, so
--- the end state is the same either way).
+-- It replaces an earlier all-OFF draft (20261107100000, removed before it was ever applied) and sets every one of the 18 columns itself.
 --
 -- Default ON (17): shloka, Japa (default time 07:00 is a separate column default, untouched), festival, vrat, tithi, mood, sattvic,
 --   evening, midday, community, family, family remembrance, Dharm Veer, quiz, both Nitya columns, Sankalpa midpoint.

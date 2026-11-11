@@ -153,6 +153,23 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(updatedUserFilter).toBe("user-reminder-coverage-gap");
   });
 
+  it("keeps nitya_reminder_enabled equal to wants_nitya_reminders on every write", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-nitya-mirror" }, error: null, supabase: mockSupabase });
+
+    for (const value of [false, true]) {
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ wants_nitya_reminders: value }),
+      }));
+      expect(res.status).toBe(200);
+      expect(updatedPayload).toEqual({ wants_nitya_reminders: value, nitya_reminder_enabled: value });
+    }
+
+    // A write that does not mention Nitya must not touch either column.
+    await PATCH(new NextRequest("http://localhost:3000/api/native/profile", { method: "PATCH", body: JSON.stringify({ wants_mood_reminders: false }) }));
+    expect(updatedPayload).toEqual({ wants_mood_reminders: false });
+  });
+
   it("accepts product analytics consent as a separate opt-in setting", async () => {
     getApiUser.mockResolvedValue({
       user: { id: "user-analytics-consent" },

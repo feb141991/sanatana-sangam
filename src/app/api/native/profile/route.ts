@@ -201,6 +201,13 @@ export async function PATCH(req: NextRequest) {
       updates[field] = value;
     }
 
+    // Two columns have always described the one Nitya reminder: the dispatcher reads wants_nitya_reminders, and the older
+    // nitya_reminder_enabled is still shown by the account export and the admin views. Keep them equal on every write so the
+    // second one can never contradict what the person chose (the push preferences route already does the same).
+    if (typeof updates.wants_nitya_reminders === "boolean") {
+      updates.nitya_reminder_enabled = updates.wants_nitya_reminders;
+    }
+
     if ("observance_reminder_lead_days" in rawBody) {
       const sanitized = sanitizeObservanceLeadDays(rawBody.observance_reminder_lead_days);
       if (sanitized === null) {
