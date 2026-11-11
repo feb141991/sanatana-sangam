@@ -78,6 +78,17 @@ test('558 month/day values reproduce Gregorian dates from the month-start table'
   assert.deepEqual(dateAtMonthStart('Poh', '8'), ['2026-12-23']);
 });
 
+test('print order follows Nanakshahi month and day order', () => {
+  const monthOrder = ['Chet', 'Vaisakh', 'Jeth', 'Harh', 'Sawan', 'Bhadon', 'Assu', 'Katak', 'Maghar', 'Poh', 'Magh', 'Phagun'];
+  const key = (row) => [monthOrder.indexOf(row.month), Number(row.day.split('-')[0])];
+  const ordered = [...sidebar.rows].sort((a, b) => a.print_order - b.print_order);
+  for (let i = 1; i < ordered.length; i += 1) {
+    const previous = key(ordered[i - 1]);
+    const current = key(ordered[i]);
+    assert.equal(previous[0] < current[0] || (previous[0] === current[0] && previous[1] <= current[1]), true, `print order ${ordered[i - 1].index} -> ${ordered[i].index}`);
+  }
+});
+
 test('review stamps remain true only for unchanged rows', () => {
   for (const row of sidebar.rows) {
     assert.equal(row.reviewed_by, 'Pt Prince Sharma');

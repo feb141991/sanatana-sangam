@@ -4486,10 +4486,10 @@
         "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)",
         "reason": "Independent OCR included a stray colon prefix; punctuation removed"
       },
-      "print_order": 92
+      "print_order": 93
     },
     {
-    "index": 92,
+      "index": 92,
       "day": "13",
       "month": "Poh",
       "name_legacy": "ShIdI idhwVw Coty swihbzwdy Aqy mwqw gujrI jI",
@@ -4582,7 +4582,7 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-    "print_order": 93
+      "print_order": 92
     },
     {
       "index": 93,
