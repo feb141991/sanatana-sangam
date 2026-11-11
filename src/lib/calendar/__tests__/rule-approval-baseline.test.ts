@@ -25,6 +25,14 @@ import { calculateObservancesForYear } from '../engine';
  * mohini/indira/papankusha-ekadashi -- consistent with every pre-existing
  * ekadashi rule also lacking a citation; nothing here fabricates one).
  *
+ * Updated 2026-11-12: total_rules 124->127 (+3: the two Sikh Sahibzade
+ * identities and rangwali-holi, all implicit-default); included 80->86 (+6:
+ * guru-amar-das, guru-ram-das, guru-har-krishan and the two Sahibzade rules,
+ * promoted because SGPC Nanakshahi 558 prints them and the founder decided
+ * nothing is withheld; narasimha-jayanti, promoted with the founder-approved
+ * sayahna window); missing-citation 65->66 (+1: narasimha-jayanti, whose window
+ * source is recorded as unsourced; the five SGPC rules carry citations).
+ *
  * These numbers are expected to CHANGE as scholar/product work classifies
  * more rules and sources more citations -- a change here is real progress
  * or a real regression, not drift to silently absorb. When this test goes
@@ -43,7 +51,7 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
     }
     expect(counts).toEqual({
       explicit: 0,
-      implicitDefault: 123,
+      implicitDefault: 125,
       requiresTraditionProfile: 1,
       externallyCurated: 1,
     });
@@ -83,7 +91,7 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
   it('included rules missing a citation', () => {
     const included = CANONICAL_RULES.filter((r) => r.launch_status === 'included');
     const missing = included.filter((r) => !r.citation);
-    expect(included.length).toBe(80);
-    expect(missing.length).toBe(65);
+    expect(included.length).toBe(86);
+    expect(missing.length).toBe(66);
   });
 });

@@ -75,6 +75,8 @@ describe('calendar production-path inclusion and recurring vrat dates', () => {
       .sort((a, b) => a.slug.localeCompare(b.slug));
 
     expect(family).toEqual([
+      // SGPC 558 prints Bandi Chhor Divas (23 Katak) on 2026-11-08; restored by d600438 after the Sikh SGPC-only change.
+      { slug: 'bandhi-chhor-divas', date: '2026-11-08' },
       { slug: 'bhai-dooj', date: '2026-11-10' },
       { slug: 'dhanteras', date: '2026-11-06' },
       { slug: 'diwali', date: '2026-11-08' },
