@@ -49,7 +49,24 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but this rule declares amanta, aligning with the 7 of 13 profiles that declare their OWN convention as amanta (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) -- while the 2 purnimanta-declaring profiles (north_indian_purnimanta, nepali_bikram) are in tension with this amanta setting. Validated against the canonical/default reference materialisation only.",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Magha",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 14,
+        "period": "nishita",
+        "mode": "prevails"
+      }
+    ]
   },
   {
     "slug": "holi",
@@ -578,7 +595,24 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "RESOLVED 2026-08-17. Council ruled 2027-08-24 (Smarta); the raw sunrise-sampled engine gave 08-25 and Drik Panchang agreed with the raw engine, not the ruling -- exactly the sunrise-vs-nishitha sampling gap this rule's own EVALUATOR_RULES condition (tithi_presence tithi:8, period:'nishita', mode:'touches') exists to fix. Directly verified with USE_CONDITION_EVALUATOR's real logic (bypassing the disputed-year publish gate to let it run): the nishitha-touches condition qualifies exactly 2027-08-24, matching the council ruling precisely. 2027 removed from disputed_years. 2026 (09-04) remains council-confirmed and reproduces. The Vaishnava variant's own sunrise+rohini condition has NOT been separately re-verified and remains disputed for 2027 -- see that row.",
-    "disputed_years": []
+    "disputed_years": [],
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Shravana",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 8,
+        "period": "nishita",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "krishna-janmashtami",
@@ -603,6 +637,29 @@
     "ratification_note": "DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator. RE-VERIFIED 2026-08-18: directly ran this variant's own real evaluator condition (tithi 8 krishna-paksha AT sunrise, AND rohini nakshatra TOUCHES sunrise -- materialize.ts EVALUATOR_RULES 'vaishnava' variant) day-by-day across 2027-08-20 through 2027-08-28. Confirmed: Ashtami-at-sunrise occurs only on 08-25; Rohini does not touch sunrise until 08-26. The two conditions never coincide on the same day anywhere in that window -- this is not a sampling artifact like the Smarta row's nishitha gap was, it is the AND-condition as coded genuinely having zero qualifying days for 2027. Unlike Smarta (D39), there is no hidden fix the evaluator was already computing correctly; either the condition needs OR/nearest-day tie-breaking logic (which day 'wins' when tithi and nakshatra don't align, itself a real dharma-sastra question, not an engineering one) or 2027 genuinely has no clean Gaudiya date under this citation. disputed_years correctly left as-is -- confirmed disputed, not stale. CLOSED 2026-08-18 (founder decision): engineering has now directly verified there is nothing further to find here without a real dharma-sastra ruling on the tie-breaking question above. No further engineering action pending; revisit only if a new source or council ruling arrives.",
     "disputed_years": [
       2027
+    ],
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Shravana",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 8,
+        "period": "sunrise",
+        "mode": "at"
+      },
+      {
+        "type": "nakshatra_presence",
+        "nakshatra": "rohini",
+        "period": "sunrise",
+        "mode": "touches"
+      }
     ]
   },
   {
@@ -1048,7 +1105,24 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. 2028 RESOLVED 2026-08-17 (founder ratification, D39-adjacent): the prior council ruling of 6 Oct was reopened after direct tithi-at-moonrise verification. Chaturthi begins ~03:30-04:30 IST on 7 Oct 2028 (elongation-based computation), a full ~9 hours after 6 Oct's moonrise (~19:35 IST, still Tritiya) and well before 7 Oct's own moonrise (~20:19 IST, Chaturthi present) -- no boundary ambiguity either way. Drik Panchang's own published muhurat page independently corroborates almost exactly: Chaturthi begins 03:35 AM 7 Oct, moonrise 08:06 PM (Tier 5 QA signal only per source-governance.md, not a citation, but strong corroboration that three independent computations -- our raw engine, our real moonrise evaluator, and Drik -- all converge on 7 Oct with nothing computing 6 Oct). disputed_years cleared.",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 4,
+        "period": "moonrise",
+        "mode": "at"
+      }
+    ]
   },
   {
     "slug": "dhanteras",
@@ -1061,7 +1135,24 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": -2,
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 13,
+        "period": "pradosha",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "diwali",
@@ -1081,7 +1172,24 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55), p.81 (daily) -- Dipavali listed at 2026-11-08",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. D36 follow-up (2026-08-18): corrected_lunar_tithi_index now set explicitly to 30 (Amavasya) instead of relying on the unset-field fallback to the raw lunar_tithi_index (29, Chaturdashi-at-sunrise proxy). This is a clarity fix, not a behavior fix -- diwali is fully covered by materialize.ts's EVALUATOR_RULES (tithi 15 krishna-paksha, pradosha-touches) on the production calculateObservancesForYear path, which re-evaluates the real condition across a +/-35-day window seeded from (not dictated by) the baseline masa-engine date, so the baseline's tithi index was already never the final answer. Verified: diwali 2026 (11-08) and 2027 (10-29) unchanged after this edit."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. D36 follow-up (2026-08-18): corrected_lunar_tithi_index now set explicitly to 30 (Amavasya) instead of relying on the unset-field fallback to the raw lunar_tithi_index (29, Chaturdashi-at-sunrise proxy). This is a clarity fix, not a behavior fix -- diwali is fully covered by materialize.ts's EVALUATOR_RULES (tithi 15 krishna-paksha, pradosha-touches) on the production calculateObservancesForYear path, which re-evaluates the real condition across a +/-35-day window seeded from (not dictated by) the baseline masa-engine date, so the baseline's tithi index was already never the final answer. Verified: diwali 2026 (11-08) and 2027 (10-29) unchanged after this edit.",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "pradosha",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "naraka-chaturdashi",
@@ -1099,7 +1207,24 @@
     "corrected_prefer_last_match": false,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55) — 'Naraka Chaturdasi (Purvarunodaya)' listed at 2026-11-08",
-    "ratification_note": "Council ratified 2026-08-23 by Prince Sharma (founder/product owner). Naraka Chaturdashi is assigned to the local civil date on which Krishna Chaturdashi prevails throughout the full Purvarunodaya/Arunodaya window, modelled as local sunrise minus 96 minutes through sunrise. Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08 on the Ujjain/India reference basis; the evaluator reproduces that date. Location-qualified results may differ: under this ratified rule Bedford resolves to 2026-11-07. Month system is Kartika/purnimanta, corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. This approval covers the day-assignment rule; it does not make Ujjain a silent fallback for local users."
+    "ratification_note": "Council ratified 2026-08-23 by Prince Sharma (founder/product owner). Naraka Chaturdashi is assigned to the local civil date on which Krishna Chaturdashi prevails throughout the full Purvarunodaya/Arunodaya window, modelled as local sunrise minus 96 minutes through sunrise. Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08 on the Ujjain/India reference basis; the evaluator reproduces that date. Location-qualified results may differ: under this ratified rule Bedford resolves to 2026-11-07. Month system is Kartika/purnimanta, corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. This approval covers the day-assignment rule; it does not make Ujjain a silent fallback for local users.",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 14,
+        "period": "arunodaya",
+        "mode": "prevails"
+      }
+    ]
   },
   {
     "slug": "govardhan-puja",
@@ -2255,7 +2380,15 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "ekadashi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "tithi_presence",
+        "tithi": 11,
+        "period": "sunrise",
+        "mode": "at"
+      }
+    ]
   },
   {
     "slug": "pradosh-vrat",
@@ -2273,7 +2406,15 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "pradosh",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "tithi_presence",
+        "tithi": 13,
+        "period": "pradosha",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "purnima-vrat",
@@ -2290,7 +2431,19 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "purnima",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "madhyahna",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "amavasya-vrat",
@@ -2307,7 +2460,19 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "amavasya",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "sunrise",
+        "mode": "at"
+      }
+    ]
   },
   {
     "slug": "vinayaka-chaturthi",
@@ -2342,7 +2507,19 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "sankashti-chaturthi",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "evaluator_conditions": [
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 4,
+        "period": "moonrise",
+        "mode": "at"
+      }
+    ]
   },
   {
     "slug": "shravan-somvar",
