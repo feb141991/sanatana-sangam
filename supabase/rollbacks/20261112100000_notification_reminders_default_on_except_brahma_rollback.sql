@@ -1,4 +1,4 @@
--- Rollback for 20261112100000_notification_reminders_tiered_defaults.sql: restores the pre-tier defaults (true) on all 18 columns.
+-- Rollback for 20261112100000_notification_reminders_default_on_except_brahma.sql: restores the pre-tier defaults (true) on all 18 columns, including Brahma Muhurta.
 -- It changes no existing row. If 20261107100000 (all OFF) was applied first and you want that state instead, run its statements again.
 begin;
 set local lock_timeout = '5s';
