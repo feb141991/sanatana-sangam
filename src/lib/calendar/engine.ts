@@ -617,14 +617,19 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
+const CULTURAL_SIKH_SLUGS = new Set(['lohri', 'sahibzade-shaheedi-diwas']);
+
+function isSgpcOnlySikhRule(rule: ObservanceRule): boolean {
+  return rule.tradition === 'sikh' && !CULTURAL_SIKH_SLUGS.has(rule.slug);
+}
+
 export const NanakshahiHandler = {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[] {
-    if (!rule.nanakshahi_month || rule.nanakshahi_day === undefined) return [];
     for (const edition of SGPC_EDITIONS) {
       if (!findMappedSidebarRow(edition, rule.slug)) continue;
       const date = mappedDateForEdition(edition, rule.slug, year);
       if (!date || Number(date.slice(0, 4)) !== year || editionForDate(date)?.edition !== edition.edition) continue;
-      const provenance = regionalCalendarProvenanceFor(rule.slug, date).calendar_provenance;
+      const provenance = regionalCalendarProvenanceFor(rule.slug, date, [edition]).calendar_provenance;
       if (provenance?.provenance === 'sgpc_edition') return [{ date, calendarProvenance: provenance }];
     }
     return [];
@@ -874,6 +879,10 @@ function buildOccurrencesMap(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
+    if (isSgpcOnlySikhRule(rule)) {
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      continue;
+    }
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
@@ -1374,6 +1383,10 @@ function buildOccurrencesMapCorrected(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
+    if (isSgpcOnlySikhRule(rule)) {
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      continue;
+    }
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);

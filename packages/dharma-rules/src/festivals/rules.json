@@ -2151,8 +2151,9 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Vaisakh",
     "nanakshahi_day": 17,
-    "launch_status": "deferred",
-    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Jeth 9), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 17 Vaisakh row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints Guru Amar Das Gurpurab at 17 Vaisakh (2026-04-30)."
   },
   {
     "slug": "guru-arjan-dev-martyrdom",
@@ -2179,8 +2180,9 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Sawan",
     "nanakshahi_day": 23,
-    "launch_status": "deferred",
-    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Sawan 8), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 23 Sawan row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints Guru Har Krishan Gurpurab at 23 Sawan (2026-08-07)."
   },
   {
     "slug": "guru-ram-das-gurpurab",
@@ -2193,8 +2195,9 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Katak",
     "nanakshahi_day": 11,
-    "launch_status": "deferred",
-    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Assu 25), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 11 Katak row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints Guru Ram Das Gurpurab at 11 Katak (2026-10-27)."
   },
   {
     "slug": "bandhi-chhor-divas",
@@ -2274,7 +2277,9 @@
     "profile_scope": "descriptive",
     "nanakshahi_month": "Poh",
     "nanakshahi_day": 8,
-    "launch_status": "deferred"
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 08 Poh row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints the elder Sahibzade Shaheedi Diwas at 08 Poh (2026-12-23)."
   },
   {
     "slug": "sahibzade-younger-shaheedi-diwas",
@@ -2289,7 +2294,9 @@
     "profile_scope": "descriptive",
     "nanakshahi_month": "Poh",
     "nanakshahi_day": 13,
-    "launch_status": "deferred"
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 13 Poh row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints the younger Sahibzade Shaheedi Diwas at 13 Poh (2026-12-28)."
   },
   {
     "slug": "parinirvana-day",
