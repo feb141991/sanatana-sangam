@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { SGPC_EDITIONS, editionForDate, filterFinalCalendarOccurrences, findMappedSidebarRow, isFinalCalendarDate, mappedDateForEdition, parseCalendarProvenance, regionalCalendarProvenanceFor } from './regional-calendar-provenance';
+import { SGPC_EDITIONS, editionForDate, filterFinalCalendarOccurrences, findMappedSidebarRow, isFinalCalendarDate, isReviewedCalendarEligibility, mappedDateForEdition, parseCalendarProvenance, regionalCalendarProvenanceFor } from './regional-calendar-provenance';
 import { CALENDAR_FINAL_DATE_CONSUMERS } from './calendar-provenance-consumer-registry';
 
 const sikh = (overrides: Record<string, unknown> = {}) => ({
@@ -39,6 +39,7 @@ describe('regional calendar provenance', () => {
       to: '2028-03-13',
       monthStarts: { Chet: '2027-03-14' },
       rows: [{ index: 1, day: '1', month: 'Chet', name_gurmukhi: 'ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਨਾਨਕ ਦੇਵ' }],
+      readByHuman: true,
     };
     expect(editionForDate('2027-03-14', [futureEdition])?.edition).toBe(559);
     expect(regionalCalendarProvenanceFor('guru-nanak-gurpurab', '2027-03-14', [futureEdition]).calendar_provenance).toMatchObject({ provenance: 'sgpc_edition', edition: 559 });
@@ -79,6 +80,13 @@ describe('regional calendar provenance', () => {
     expect(rows).toHaveLength(2);
     expect(rows.some(row => (row as any).observance_definitions.slug === 'guru-gobind-singh-gurpurab' && (row as any).date === '2027-01-15')).toBe(true);
     expect(rows.some(row => (row as any).observance_definitions.slug === 'lohri')).toBe(true);
+  });
+
+  it('lets human-reviewed SGPC provenance satisfy eligibility when statuses are null', () => {
+    const row = { date: '2027-01-15', spiritual_tradition: null, calendar_profile: 'legacy-ujjain', final_date_source: 'manual_override', review_status: null, verification_status: null, audit_status: null, publication_status: 'published', source_provenance: { calendar_provenance: { provenance: 'sgpc_edition', edition: 558 } }, observance_definitions: { slug: 'guru-gobind-singh-gurpurab', tradition: 'sikh', kind: 'major' } };
+    expect(isReviewedCalendarEligibility(row)).toBe(true);
+    expect(isReviewedCalendarEligibility({ ...row, source_provenance: { source_kind: 'curated' } })).toBe(false);
+    expect(isReviewedCalendarEligibility({ ...row, observance_definitions: { ...row.observance_definitions, slug: 'lohri' }, source_provenance: { calendar_provenance: { provenance: 'cultural_convention', edition: null, reason: 'Punjabi cultural convention' } }, review_status: null })).toBe(false);
   });
 
   it('preserves existing non-Sikh behaviour', () => {

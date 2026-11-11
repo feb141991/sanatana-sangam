@@ -1,7 +1,8 @@
 # SGPC Production Stamp Plan (Not Executed)
 
-This is a reviewed preparation plan only. No SQL in this document or the
-companion script has been run.
+This is the close-out record and future cleanup plan. The Samvat 558 provenance
+stamp was applied to production on 2026-11-11 by Claude with Pt Prince's
+approval. No work in this checkout performed a production write.
 
 ## Pre-flight required by AGENTS section 4
 
@@ -14,12 +15,17 @@ companion script has been run.
 4. Confirm the exact applied migration state, lock/review exceptions, rollback
    file, and deployment order with Pt Prince. No `supabase db push`.
 
-## Additive stamp
+## Applied stamp
 
-`scripts/prepare-sgpc-558-stamp.mjs` accepts the operator's read-only extract
-and emits guarded SQL. A row is stampable only when
-`manual_date_override ?? date` equals the printed Samvat 558 date and falls in
-2026-03-14 through 2027-03-13. The update adds:
+The production stamp covered 131 published rows: Baisakhi, Guru Arjan Dev,
+Bandhi Chhor Divas, Guru Nanak Gurpurab and Guru Tegh Bahadur Martyrdom (26
+each), plus one Guru Gobind Singh row, including
+`3b934013-188d-4221-ab66-49a054cb265d` at 2027-01-15. The rollback removes only
+the `calendar_provenance` key. The production stamp was verified; this document
+does not re-run it.
+
+The applied predicate was: `manual_date_override ?? date` equals the printed
+Samvat 558 date and falls in 2026-03-14 through 2027-03-13. The value added was:
 
 ```json
 {"calendar_provenance":{"provenance":"sgpc_edition","edition":558}}
@@ -30,29 +36,29 @@ The manually corrected Guru Gobind Singh row
 2027-01-15. The predicate requires the pre-image date and existing provenance
 shape, so a changed row aborts rather than being overwritten.
 
-## Stale rows
+## Delete plan for stale rows
 
-Rows outside a covering edition or whose effective date differs from the
-printed date are listed by the generated plan. They are not stamped. After the
-code deploy, the approved follow-up is a guarded update to
-`publication_status = 'withheld_disputed'` for those exact ids, preserving the
-pre-image publication status/date/override predicate. Locked or reviewed rows
-must be listed separately and require Pt Prince's explicit approval; no delete
-is proposed.
+There are 193 unstamped Sikh rows outside a covering edition or whose effective
+date differs from the printed date: 113 published and 80 withheld, spanning
+2025-2031. This count excludes Lohri and the legacy
+`sahibzade-shaheedi-diwas` cultural convention. They must be deleted only after
+the SGPC-only code is deployed, using the RLS-locked backup table
+`observance_occurrences_sikh_removed_20261111` and a pre-image guard. This is a
+delete decision, not a withhold decision.
 
-Rollback for an additive stamp is another guarded update that removes only the
-exact `{provenance:'sgpc_edition', edition:558}` object from the rows whose
-pre-image stamp was recorded. The operator must retain the pre-image export and
-the generated plan as the rollback input. The stale-row hold rollback restores
-`publication_status` only where the current value is `withheld_disputed` and
-the pre-image hash matches.
+The earlier `prepare-sgpc-558-stamp.mjs` and its generated withhold SQL are
+superseded and removed from the working tree. The approved rollback is the
+production stamp rollback plus restoration from the locked backup table for any
+deleted rows. The backup must retain every deleted row's full pre-image.
 
 ## Deploy order
 
-1. Review the pre-image and generated stamp/hold counts.
-2. Apply the additive provenance stamp only after approval.
-3. Deploy the fail-closed route and consumer guards.
+1. Additive stamp first (already completed in production).
+2. Deploy the SGPC-only code and provenance-based eligibility guards.
+3. Materialize missing 558 rows: elder Sahibzade, younger Sahibzade, and Guru Ravidas 2027-02-20.
 4. Verify public responses and admin visibility.
-5. Withhold stale rows in a separate approved operation.
+5. Back up and delete the 193 stale rows in a separate approved operation.
 
-No production write, migration, or deployment was performed by this change.
+Any future delete or restoration requires Pt Prince's explicit approval and a
+reviewed pre-image/rollback run. No production write, migration, or deployment
+was performed by this checkout.

@@ -5,7 +5,7 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 import { CALENDAR_OCCURRENCE_SELECT, attachMaterialisationBatches } from './occurrence-reader';
 import { formatOccurrencesToResults, type ClientObservanceResult } from './observance-formatter';
 import { buildObservanceSeries } from './observance-series';
-import { isFinalCalendarDate } from './regional-calendar-provenance';
+import { isReviewedCalendarEligibility } from './regional-calendar-provenance';
 
 export type CalendarSubscriptionSettings = Pick<RequestProfile, 'calendarProfile' | 'tradition' | 'sampradaya' | 'timezone' | 'context'>;
 
@@ -47,9 +47,7 @@ export async function loadSubscriptionEvents(supabase: SupabaseClient, settings:
   const enriched = await attachMaterialisationBatches(rows, undefined, settings.calendarProfile, settings.context.effectiveCalculationLocation);
   const formatted = formatOccurrencesToResults(enriched, [], settings.tradition, settings.calendarProfile,
     settings.sampradaya, from, to, settings.context);
-  const eligibleIds = new Set(rows.filter(row => isFinalCalendarDate(row)
-    && row.review_status === 'reviewed'
-    && row.verification_status === 'verified' && row.audit_status === 'completed'
+  const eligibleIds = new Set(rows.filter(row => isReviewedCalendarEligibility(row)
     && row.publication_status === 'published').map(row => row.id));
   const incompleteIds = new Set<string>();
   for (const tradition of new Set(formatted.map(event => event.profile.tradition))) {

@@ -13,6 +13,7 @@ export type SgpcEdition = {
   edition: number;
   from: string;
   to: string;
+  readByHuman: boolean;
   monthStarts: Record<string, string>;
   rows: SgpcSidebarRow[];
 };
@@ -22,6 +23,7 @@ type EditionFile = {
   edition_range: { from: string; to: string };
   month_starts?: Record<string, string>;
   rows: SgpcSidebarRow[];
+  review?: { read_by_human?: boolean };
 };
 
 type SlugMapEntry = { slug: string; name_includes: string[] };
@@ -48,6 +50,7 @@ function loadEditionFiles(): SgpcEdition[] {
           edition: parsed.edition,
           from: parsed.edition_range.from,
           to: parsed.edition_range.to,
+          readByHuman: parsed.review?.read_by_human === true,
           monthStarts: parsed.month_starts,
           rows: parsed.rows,
         } satisfies SgpcEdition;

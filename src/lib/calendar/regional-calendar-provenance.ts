@@ -69,7 +69,20 @@ export function isFinalCalendarDate(row: any): boolean {
   const effectiveDate = row?.manual_date_override ?? row?.date;
   if (typeof effectiveDate !== 'string') return false;
   const edition = editionForDate(effectiveDate);
-  return Boolean(edition && parseCalendarProvenance(row?.source_provenance ?? row?.calendarProvenance ?? row?.calendar_provenance)?.provenance === 'sgpc_edition');
+  return Boolean(edition && edition.readByHuman && parseCalendarProvenance(row?.source_provenance ?? row?.calendarProvenance ?? row?.calendar_provenance)?.provenance === 'sgpc_edition');
+}
+
+export function isReviewedCalendarEligibility(row: any): boolean {
+  if (!isFinalCalendarDate(row) || row?.final_date_source === 'fallback') return false;
+  if (isRegionalCalendarOccurrence(row)) return true;
+  return row?.review_status === 'reviewed'
+    && row?.verification_status === 'verified'
+    && row?.audit_status === 'completed';
+}
+
+/** Marketing preserves its existing non-Sikh publication/provenance gate. */
+export function isPublishedCalendarEligibility(row: any): boolean {
+  return isFinalCalendarDate(row) && row?.final_date_source !== 'fallback';
 }
 
 /** Public calendar surfaces must fail closed for Sikh rows without SGPC proof. */

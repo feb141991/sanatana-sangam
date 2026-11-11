@@ -23,7 +23,7 @@ import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { filterFinalCalendarOccurrences } from '@/lib/calendar/regional-calendar-provenance';
+import { isReviewedCalendarEligibility } from '@/lib/calendar/regional-calendar-provenance';
 
 // ── Cached public/shared data — non-user-specific, served from the Next.js
 //    data cache so repeated home-page loads don't hammer the DB for these rows. ─
@@ -60,17 +60,15 @@ const getCachedObservances = unstable_cache(
     const admin = createAdminClient();
     const { data } = await admin
       .from('observance_occurrences')
-      .select('id, date, year, manual_date_override, source_provenance, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, final_date_source, locked_for_regeneration, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(display_name, emoji, description, kind, tradition, verification_type, route_kind, route_slug, slug)')
+      .select('id, date, year, manual_date_override, source_provenance, publication_status, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, final_date_source, locked_for_regeneration, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(display_name, emoji, description, kind, tradition, verification_type, route_kind, route_slug, slug)')
       .gte('date', fromDate)
       .lte('date', toDate)
-      .eq('review_status', 'reviewed')
-      .eq('verification_status', 'verified')
-      .eq('audit_status', 'completed')
+      .eq('publication_status', 'published')
       .order('date', { ascending: true })
       .limit(30);
-    return filterFinalCalendarOccurrences(data ?? []);
+    return (data ?? []).filter(isReviewedCalendarEligibility);
   },
-  ['observances_reviewed_home_v1'],
+  ['observances_reviewed_home_v2_sgpc_provenance'],
   { revalidate: 3600 }, // 60 min
 );
 
