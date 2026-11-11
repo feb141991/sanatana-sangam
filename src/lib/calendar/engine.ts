@@ -953,6 +953,7 @@ function buildOccurrencesMap(
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
       if (gate && !isPublishableForYear(rule, year)) continue;
+      if (rule.sikh_lunar_anchor) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
@@ -1457,6 +1458,7 @@ function buildOccurrencesMapCorrected(
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
       if (gate && !isPublishableForYear(rule, year)) continue;
+      if (rule.sikh_lunar_anchor) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
