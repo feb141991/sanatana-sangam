@@ -4,7 +4,8 @@ import { CANONICAL_RULES } from '../src/lib/calendar/rules';
 
 test('every relative rule has a declared relation category', () => {
   const relative = CANONICAL_RULES.filter((rule) => rule.rule_family === 'relative_to_other_observance');
-  assert.equal(relative.length, 35);
+  // 35 -> 33: govardhan-puja and bhai-dooj became udaya-tithi rules (2026-11-12, founder-approved dates 2026-11-10 / 2026-11-11).
+  assert.equal(relative.length, 33);
   for (const rule of relative) {
     assert.ok(rule.relation, `${rule.slug} has no relation declaration`);
     assert.equal(rule.relation?.parent_slug, rule.relative_base_slug, rule.slug);

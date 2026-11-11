@@ -50,7 +50,7 @@ test('Rangwali Holi is the deferred civil-day convention after Holika Dahan', ()
 
 test('independent relative rules are explicitly proposed and preserve legacy offsets', () => {
   const rules = CANONICAL_RULES.filter((rule) => rule.relation?.kind === 'independent_offset');
-  assert.equal(rules.length, 8);
+  assert.equal(rules.length, 6);
   for (const rule of rules) {
     assert.equal(rule.relation?.status, 'proposed', rule.slug);
     assert.equal(rule.relation?.parent_slug, rule.relative_base_slug, rule.slug);

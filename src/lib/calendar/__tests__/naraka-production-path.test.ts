@@ -77,10 +77,11 @@ describe('calendar production-path inclusion and recurring vrat dates', () => {
     expect(family).toEqual([
       // SGPC 558 prints Bandi Chhor Divas (23 Katak) on 2026-11-08; restored by d600438 after the Sikh SGPC-only change.
       { slug: 'bandhi-chhor-divas', date: '2026-11-08' },
-      { slug: 'bhai-dooj', date: '2026-11-10' },
+      // Govardhan Puja and Bhai Dooj are udaya-tithi rules (Kartika Shukla Pratipada / Dwitiya at sunrise), founder-approved 2026-11-11.
+      { slug: 'bhai-dooj', date: '2026-11-11' },
       { slug: 'dhanteras', date: '2026-11-06' },
       { slug: 'diwali', date: '2026-11-08' },
-      { slug: 'govardhan-puja', date: '2026-11-09' },
+      { slug: 'govardhan-puja', date: '2026-11-10' },
     ]);
   });
 
