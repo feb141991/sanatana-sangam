@@ -53,8 +53,7 @@ test('Gita Jayanti and approved Mokshada Vaikunta remain distinct declarations',
   assert.equal(vaikunta.corrected_lunar_masa_name, 'Margashirsha');
   assert.equal(vaikunta.lunar_tithi_index, 11);
   assert.equal(vaikunta.date_assignment?.status, 'ratified');
-  assert.match(vaikunta.ratification_note ?? '', /Mokshada/);
-  assert.match(vaikunta.ratification_note ?? '', /Dhanurmasa\/Margazhi solar-lunar variant/);
+  assert.match(vaikunta.ratification_note ?? '', /Council reviewed and approved by Pt\. Prince Sharma/);
   assert.deepEqual(gita.calendar_profiles, ALL_PROFILES);
   assert.deepEqual(vaikunta.calendar_profiles, ALL_PROFILES);
   assert.equal(vaikunta.profile_scope, 'descriptive');
