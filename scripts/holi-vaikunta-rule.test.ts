@@ -21,10 +21,10 @@ test('Holi is explicitly Holika Dahan and Rangwali Holi is a separate deferred r
 
   assert.equal(holika.display_name, 'Holika Dahan — Holi');
   assert.deepEqual(holika.date_assignment, {
-    status: 'proposed',
+    status: 'founder_approved',
     basis: 'lunar_tithi',
     tithi: 15,
-    paksha: 'krishna',
+    paksha: 'shukla',
     lunar_month: 'Phalguna',
     month_system: 'amanta',
     period: 'pradosha',
@@ -32,11 +32,17 @@ test('Holi is explicitly Holika Dahan and Rangwali Holi is a separate deferred r
     skipped_tithi: 'first_qualifying_date',
     tie_break: 'first_qualifying_date',
   });
+  // Approved 2026-11-11: Purnima at pradosha with no Bhadra, Bhadra-puccha fallback (puccha length proposed, 72 minutes).
+  assert.deepEqual(holika.evaluator_conditions, [
+    { type: 'lunar_month', value: 'Phalguna', monthSystem: 'amanta' },
+    { type: 'holika_dahan', pucchaMinutes: 72 },
+  ]);
   assert.equal(rangwali.display_name, 'Rangwali Holi');
   assert.equal(rangwali.launch_status, 'deferred');
-  assert.equal(rangwali.corrected_lunar_tithi_index, 16);
-  assert.equal(rangwali.date_assignment?.tithi, 1);
-  assert.equal(rangwali.date_assignment?.paksha, 'krishna');
+  // Rangwali Holi is the civil day after Holika Dahan (convention relation, ae394bb), not an independent tithi rule.
+  assert.equal(rangwali.rule_family, 'relative_to_other_observance');
+  assert.equal(rangwali.relative_base_slug, 'holi');
+  assert.equal(rangwali.relative_offset_days, 1);
   assert.deepEqual(holika.calendar_profiles, ALL_PROFILES);
   assert.equal(holika.profile_scope, 'descriptive');
   assert.deepEqual(rangwali.calendar_profiles, ALL_PROFILES);

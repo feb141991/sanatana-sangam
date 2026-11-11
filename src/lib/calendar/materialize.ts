@@ -381,6 +381,40 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
     ],
   },
   {
+    slug: 'narasimha-jayanti',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Vaishakha', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'shukla' },
+          { type: 'tithi_presence', tithi: 14, period: 'sayahna', mode: 'majority' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'holi',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Phalguna', monthSystem: 'amanta' },
+          // Holika Dahan (founder-approved 2026-11-11): Purnima at pradosha with no Bhadra; if Bhadra covers
+          // the pradosha, the Bhadra-puccha (last 72 minutes of Bhadra, PROPOSED length). The condition is
+          // satisfied only on the civil date the Dahan falls, which may be the pre-dawn after the Purnima evening.
+          { type: 'holika_dahan', pucchaMinutes: 72 },
+        ],
+      },
+    ],
+  },
+  {
     // Naraka Chaturdashi (Purvarunodaya) — COUNCIL RATIFIED 2026-08-23
     //
     // Sourced Fact:

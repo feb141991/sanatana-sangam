@@ -72,7 +72,8 @@
     "slug": "holi",
     "display_name": "Holika Dahan — Holi",
     "emoji": "🔥",
-    "description": "The Phalguna Purnima bonfire observance commemorating Prahlada's devotion and the defeat of Holika",
+    "description": "Holika Dahan — the Phalguna Purnima bonfire at Pradosha, avoiding Bhadra (with the Bhadra-puccha as fallback); Rangwali Holi follows the next day.",
+    "description_local": "होलिका दहन — फाल्गुन पूर्णिमा का प्रदोष-काल अग्नि-उत्सव, भद्रा से बचकर (भद्रा-पुच्छ विकल्प सहित); रंगवाली होली अगले दिन।",
     "kind": "major",
     "tradition": "hindu",
     "rule_family": "lunar_tithi",
@@ -84,10 +85,10 @@
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 15,
-      "paksha": "krishna",
+      "paksha": "shukla",
       "lunar_month": "Phalguna",
       "month_system": "amanta",
       "period": "pradosha",
@@ -96,7 +97,11 @@
       "tie_break": "first_qualifying_date"
     },
     "launch_status": "included",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). Whether this rule's user-facing date should represent Holika Dahan or the following Rangwali Holi day is an open content question, not settled by this citation. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2.",
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Phalguna", "monthSystem": "amanta" },
+      { "type": "holika_dahan", "pucchaMinutes": 72 }
+    ],
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified. Holika Dahan = Phalguna Purnima at pradosha with no Bhadra (Vishti). If Bhadra covers the pradosha, the Bhadra-puccha (tail) applies, or the time after Bhadra while Purnima still runs; the engine uses the puccha (the Dahan date is the local civil date of that instant, which can be the pre-dawn after the Purnima evening). The puccha LENGTH (72 minutes = 3 ghatikas) is a PROPOSED parameter until confirmed. Source provenance: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2.",
     "calendar_profiles": [
       "legacy-ujjain",
       "tamil_solar",
@@ -368,7 +373,8 @@
     "slug": "narasimha-jayanti",
     "display_name": "Narasimha Jayanti",
     "emoji": "🦁",
-    "description": "Celebration of Vishnu's Narasimha avatar",
+    "description": "Narasimha Jayanti — Lord Vishnu's man-lion avatar, observed on Vaishakha Shukla Chaturdashi when the tithi prevails at dusk (sayahna).",
+    "description_local": "नृसिंह जयंती — भगवान विष्णु के नृसिंह अवतार का पर्व, वैशाख शुक्ल चतुर्दशी जब चतुर्दशी सायाह्न (सूर्यास्त से पहले का समय) में रहे।",
     "kind": "regional",
     "tradition": "hindu",
     "rule_family": "lunar_tithi",
@@ -379,7 +385,32 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 14,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Vaishakha", "monthSystem": "amanta" },
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 14, "period": "sayahna", "mode": "majority" }
+    ],
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 14,
+      "paksha": "shukla",
+      "lunar_month": "Vaishakha",
+      "month_system": "amanta",
+      "period": "sayahna",
+      "mode": "majority",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified. Narasimha Jayanti is Shukla Chaturdashi prevailing during sayahna, where sayahna is the final fifth of daytime ending at sunset and the prevailing test means the tithi covers more than half of that window (majority); the strict whole-window reading left some locations without a date, and the touch reading produced two. Promoted from deferred to included at Pt Prince's direction on 2026-11-11.",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    },
+    "launch_status": "included"
   },
   {
     "slug": "shani-jayanti",

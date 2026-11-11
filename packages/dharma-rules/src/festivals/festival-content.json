@@ -1371,8 +1371,8 @@
       },
       "significance": {
         "value": {
-          "en": "Holi, celebrated on the full moon (Purnima) and the following Pratipada in the month of Phalguna, is the joyous festival of colors and springtime renewal. It commemorates young Prahlada's steadfast devotion surviving the fire while Holika perished, proving the triumph of unshakeable faith over tyranny. In Braj, it commemorates the divine, pure love of Radha and Krishna through playful floral and herbal colors.",
-          "hi": "फाल्गुन मास की पूर्णिमा को होलिका दहन और अगले दिन रंगोत्सव (धुलेंडी) मनाया जाता है। यह पर्व भक्त प्रह्लाद की अनन्य प्रभु भक्ति और अहंकार रूपी होलिका के भस्म होने की स्मृति है। ब्रज में यह भगवान श्री कृष्ण और श्री राधा रानी के पावन प्रेम और वसंत ऋतु के आगमन का दिव्य उल्लास है।"
+          "en": "Holika Dahan, the Phalguna Purnima bonfire on the eve of Holi, recalls young Prahlada’s steadfast devotion surviving the fire while Holika perished — the triumph of unshakeable faith over tyranny. It is observed when Phalguna Purnima touches the local Pradosha window with no Bhadra (Vishti) in it. If Bhadra covers the Pradosha, the fallback is the Bhadra-puccha (the tail of Bhadra) or the time after Bhadra while Purnima still holds, so the bonfire can fall in the early hours after the Purnima evening. Rangwali Holi, the festival of colours, is observed separately on the following civil day.",
+          "hi": "होलिका दहन फाल्गुन पूर्णिमा की रात का अग्नि-उत्सव है, जो भक्त प्रह्लाद की अनन्य प्रभु-भक्ति और अहंकार रूपी होलिका के भस्म होने की स्मृति है। यह तब किया जाता है जब फाल्गुन पूर्णिमा स्थानीय प्रदोष काल को स्पर्श करे और उसमें भद्रा (विष्टि) न हो। यदि भद्रा प्रदोष को ढक ले तो विकल्प भद्रा-पुच्छ, या भद्रा के बाद का वह समय है जब पूर्णिमा अभी रहती हो; इसलिए दहन पूर्णिमा की संध्या के बाद तड़के भी पड़ सकता है। रंगवाली होली (धुलेंडी) अगले नागरिक दिन अलग से मनाई जाती है।"
         },
         "status": "pending_source",
         "sourceRefs": [],
@@ -1383,13 +1383,13 @@
       "rituals": {
         "value": {
           "en": [
-            "Holika Dahan (Choti Holi): Lighting the sacred bonfire on Purnima night with coconut, wheat ears, and mantras",
+            "Holika Dahan (Choti Holi): Light the sacred bonfire during the local Pradosha window after confirming that Bhadra is absent or the fallback applies",
             "Dhulandi: Joyful playing with organic herbal colors (gulal), flower petals, and water",
             "Applying gentle tilak of gulal on elders' feet to seek their blessings",
             "Sharing traditional festive delicacies like Gujiya, Thandai, and Mathri"
           ],
           "hi": [
-            "होलिका दहन: पूर्णिमा की रात उपले, लकड़ी और नवान्न की बालियों के साथ पवित्र होलिका की परिक्रमा व दहन",
+            "होलिका दहन: स्थानीय प्रदोष काल में भद्रा रहित या भद्रा-पुच्छ/भद्रा-पश्चात समय पर पवित्र होलिका की परिक्रमा व दहन",
             "धुलेंडी: प्राकृतिक गुलाल, अबीर और टेसू के फूलों के रंगों से उल्लासपूर्वक होली खेलना",
             "बड़ों के चरणों में गुलाल का टीका लगाकर आशीर्वाद लेना",
             "गुझिया, ठंडाई और पारंपरिक पकवानों का आनंद लेना"
@@ -2580,8 +2580,8 @@
       },
       "significance": {
         "value": {
-          "en": "Narasimha Jayanti, celebrated on Vaishakha Shukla Chaturdashi, marks the twilight manifestation of Lord Narasimha — the half-lion, half-human avatar of Lord Vishnu. He burst forth from a pillar at dusk to slay the demon Hiranyakashipu, fulfilling impossible celestial boons while safeguarding His five-year-old devotee Prahlada. Lord Narasimha embodies supreme cosmic protection, destruction of ego, and unwavering defense of true surrender (Sharanagati).",
-          "hi": "वैशाख मास के शुक्ल पक्ष की चतुर्दशी तिथि को संध्या काल (प्रदोष वेला) में भगवान श्री नृसिंह का प्राकट्य हुआ था। अपने अनन्य भक्त प्रह्लाद के विश्वास की रक्षा करने और अहंकारी हिरण्यकश्यप का संहार करने हेतु भगवान खंभे को चीरकर प्रकट हुए थे। यह पर्व ईश्वर की सर्वव्यापकता, शरणागति और भक्तों की हर संकट से रक्षा का जीवंत प्रमाण है।"
+          "en": "Narasimha Jayanti, observed on Vaishakha Shukla Chaturdashi, marks the twilight manifestation of Lord Narasimha — the half-lion, half-human avatar of Lord Vishnu. He burst forth from a pillar at dusk to slay the demon Hiranyakashipu, fulfilling impossible celestial boons while safeguarding His five-year-old devotee Prahlada. The observance falls on the day the Chaturdashi tithi prevails during sayahna, the final fifth of daytime ending at sunset. Lord Narasimha embodies supreme cosmic protection, destruction of ego, and unwavering defense of true surrender (Sharanagati).",
+          "hi": "वैशाख मास के शुक्ल पक्ष की चतुर्दशी तिथि को संध्या काल में भगवान श्री नृसिंह का प्राकट्य हुआ था। अपने अनन्य भक्त प्रह्लाद के विश्वास की रक्षा करने और अहंकारी हिरण्यकश्यप का संहार करने हेतु भगवान खंभे को चीरकर प्रकट हुए थे। यह पर्व उस दिन मनाया जाता है जब चतुर्दशी सायाह्न, अर्थात सूर्यास्त पर समाप्त होने वाले दिन के अंतिम पंचम भाग, में प्रबल रहे। यह पर्व ईश्वर की सर्वव्यापकता, शरणागति और भक्तों की हर संकट से रक्षा का जीवंत प्रमाण है।"
         },
         "status": "pending_source",
         "sourceRefs": [],
@@ -2593,12 +2593,12 @@
         "value": {
           "en": [
             "Fast throughout the day until sunset/dusk (Narasimha manifestation timing)",
-            "Pradosh Kaal Abhishekam with milk, curd, honey, panchamrita, and cool scented waters",
+            "Sayahna Abhishekam near dusk with milk, curd, honey, panchamrita, and cool scented waters",
             "Offering red/yellow flowers, Tulsi leaves, and jaggery water (Panakam) as cooling prasad",
             "Chanting the Narasimha Kavacham and Sri Narasimha Maha-mantra"
           ],
           "hi": [
-            "दिनभर उपवास एवं संध्या समय (गोधूलि वेला) में विशेष पूजन",
+            "दिनभर उपवास एवं सायाह्न के अंतिम पंचम भाग में विशेष पूजन",
             "पंचामृत, शीतल जल और चंदन से भगवान नृसिंह का अभिषेक",
             "लाल पुष्प, तुलसी दल और शीतलता प्रदान करने वाले पनाकम (गुड़-सोंठ-इलायची जल) का भोग",
             "श्री नृसिंह कवच एवं नृसिंह महामंत्र का भावपूर्ण पाठ"
@@ -2613,12 +2613,12 @@
       "dos": {
         "value": {
           "en": [
-            "Perform the main puja during twilight (Sandhyakala / sunset)",
+            "Perform the main puja during sayahna, the final fifth of daytime ending at sunset",
             "Cultivate pure humility, unshakeable faith, and fearless surrender like Prahlada",
             "Offer cooling foods like Panakam, curd rice, and fruits"
           ],
           "hi": [
-            "सूर्यास्त के समय गोधूलि वेला में मुख्य आरती और पूजन करें",
+            "सूर्यास्त पर समाप्त होने वाले दिन के अंतिम पंचम भाग, सायाह्न, में मुख्य आरती और पूजन करें",
             "प्रह्लाद के समान निष्काम भक्ति और ईश्वर के प्रति अटूट विश्वास रखें",
             "पनाकम, पंचामृत और मौसमी फलों का नैवेद्य लगाएं"
           ]
@@ -14942,12 +14942,12 @@
       "pujaItems": {
         "value": {
           "en": [
-            "Optional North Indian offering: Tilkut made from roasted sesame seeds and jaggery",
+            "Optional North Indian offering: Tilkut made from roasted sesame seeds and jaggery (North Indian regional practice)",
             "Twenty-one Durva grass blades, red flowers, and orange sindoor",
             "Brass or silver Lota with water and raw milk for Chandra Arghya, Ganesha puja items, and a ghee lamp"
           ],
           "hi": [
-            "उत्तर भारत में प्रचलित वैकल्पिक प्रसाद: भुने हुए तिल और गुड़ से बना तिलकूट",
+            "उत्तर भारत की क्षेत्रीय परंपरा में वैकल्पिक प्रसाद: भुने हुए तिल और गुड़ से बना तिलकूट",
             "२१ दूर्वा दल, लाल पुष्प और नारंगी सिंदूर",
             "चंद्र अर्घ्य हेतु लोटा, कच्चा दूध, जल, गणेश पूजा सामग्री और शुद्ध घी का दीपक"
           ]
