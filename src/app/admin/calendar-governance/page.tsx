@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
+import SgpcEditionReminder from './SgpcEditionReminder';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -214,6 +215,7 @@ export default function CalendarGovernancePage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-10">
+        <SgpcEditionReminder />
         {tab === 'coverage' && <CoverageSection onSelectFilter={navigateToFixtures} />}
         {tab === 'fixtures' && <FixturesSection initialFilter={governanceFilter} initialCaseId={targetCaseId} onToast={addToast} />}
         {tab === 'review-queue' && <ReviewQueueSection onToast={addToast} />}

@@ -23,6 +23,7 @@ import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { filterFinalCalendarOccurrences } from '@/lib/calendar/regional-calendar-provenance';
 
 // ── Cached public/shared data — non-user-specific, served from the Next.js
 //    data cache so repeated home-page loads don't hammer the DB for these rows. ─
@@ -67,7 +68,7 @@ const getCachedObservances = unstable_cache(
       .eq('audit_status', 'completed')
       .order('date', { ascending: true })
       .limit(30);
-    return data ?? [];
+    return filterFinalCalendarOccurrences(data ?? []);
   },
   ['observances_reviewed_home_v1'],
   { revalidate: 3600 }, // 60 min

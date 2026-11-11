@@ -72,4 +72,9 @@ export function isFinalCalendarDate(row: any): boolean {
   return Boolean(edition && parseCalendarProvenance(row?.source_provenance ?? row?.calendarProvenance ?? row?.calendar_provenance)?.provenance === 'sgpc_edition');
 }
 
+/** Public calendar surfaces must fail closed for Sikh rows without SGPC proof. */
+export function filterFinalCalendarOccurrences<T>(rows: readonly T[]): T[] {
+  return rows.filter(row => isFinalCalendarDate(row));
+}
+
 export { SGPC_EDITIONS, editionForDate, findMappedSidebarRow, latestEdition, mappedDateForEdition };

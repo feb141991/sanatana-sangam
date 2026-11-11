@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { SGPC_EDITIONS, editionForDate, findMappedSidebarRow, isFinalCalendarDate, mappedDateForEdition, parseCalendarProvenance, regionalCalendarProvenanceFor } from './regional-calendar-provenance';
+import { SGPC_EDITIONS, editionForDate, filterFinalCalendarOccurrences, findMappedSidebarRow, isFinalCalendarDate, mappedDateForEdition, parseCalendarProvenance, regionalCalendarProvenanceFor } from './regional-calendar-provenance';
 import { CALENDAR_FINAL_DATE_CONSUMERS } from './calendar-provenance-consumer-registry';
 
 const sikh = (overrides: Record<string, unknown> = {}) => ({
@@ -67,6 +67,18 @@ describe('regional calendar provenance', () => {
     const productionShape = { date: '2027-01-05', spiritual_tradition: null, calendar_profile: 'legacy-ujjain', variant_key: 'legacy-default', source_provenance: { source_kind: 'curated', source_name: 'manual_engine_run_v2' }, observance_definitions: { slug: 'guru-gobind-singh-gurpurab', tradition: 'sikh', verification_type: 'historical_commemoration' } };
     expect(isFinalCalendarDate(productionShape)).toBe(false);
     expect(isFinalCalendarDate({ ...productionShape, date: '2027-01-15', source_provenance: { ...productionShape.source_provenance, calendar_provenance: { provenance: 'sgpc_edition', edition: 558 } } })).toBe(true);
+  });
+
+  it('filters public rows while retaining cultural conventions', () => {
+    const productionShape = { date: '2027-01-05', spiritual_tradition: null, calendar_profile: 'legacy-ujjain', variant_key: 'legacy-default', source_provenance: { source_kind: 'curated' }, observance_definitions: { slug: 'guru-gobind-singh-gurpurab', tradition: 'sikh', verification_type: 'historical_commemoration' } };
+    const rows = filterFinalCalendarOccurrences([
+      productionShape,
+      { ...productionShape, date: '2027-01-15', source_provenance: { calendar_provenance: { provenance: 'sgpc_edition', edition: 558 } } },
+      { ...productionShape, observance_definitions: { ...productionShape.observance_definitions, slug: 'lohri' } },
+    ]);
+    expect(rows).toHaveLength(2);
+    expect(rows.some(row => (row as any).observance_definitions.slug === 'guru-gobind-singh-gurpurab' && (row as any).date === '2027-01-15')).toBe(true);
+    expect(rows.some(row => (row as any).observance_definitions.slug === 'lohri')).toBe(true);
   });
 
   it('preserves existing non-Sikh behaviour', () => {

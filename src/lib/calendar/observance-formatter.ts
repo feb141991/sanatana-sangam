@@ -7,6 +7,7 @@ import { buildObservanceHref } from '@/lib/observance-route';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 import type { CalendarDateProvenance } from './regional-calendar-provenance';
+import { filterFinalCalendarOccurrences } from './regional-calendar-provenance';
 
 // Build a set of slugs that have an explicit citation in rules.json
 /**
@@ -257,7 +258,7 @@ export function formatOccurrencesToResults(
   // "not materialised" from "materialised just outside the window"; clipping
   // afterwards keeps the response honest to what was asked for.
   const occurrences = clipToRange(
-    resolveCalendarProfile(filterWithheldJoinedRows(occurrencesRaw), calendarProfile),
+    resolveCalendarProfile(filterFinalCalendarOccurrences(filterWithheldJoinedRows(occurrencesRaw)), calendarProfile),
     fromStr,
     toStr,
   );
