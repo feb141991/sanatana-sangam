@@ -1,9 +1,6 @@
 # Notification tap tracking
 
-**Status (2026-11-10): WRITTEN, NOT APPLIED, NOT DEPLOYED, NOT PUBLISHED.** The migration
-`20261111100000_notification_tap_tracking.sql`, the route, the push-payload change and the export entry are in the
-repository on branch `notif-tap-tracking`. The privacy wording in section 7 is a **draft for the founder's approval**; the live
-policy (`src/lib/privacy-content.ts`) has not been touched. **As written, this records nothing until accounts opt in** (section 3).
+**Status (2026-11-12): decisions recorded, still NOT APPLIED and NOT DEPLOYED.** Option A (section 3) was chosen: taps are recorded only for accounts that turned on "Share product usage data" (and "Tradition-aware personalization" for practice notifications). The report floor is 5 accounts (section 5), and the section 7A wording is now in `src/lib/privacy-content.ts` (it takes effect when the backend is deployed; not legal advice, confirm with counsel before release). The migration `20261111100000_notification_tap_tracking.sql` is unapplied. **As written this records nothing until accounts opt in**; on 2026-11-10 that was 0 of 32. Until then, `scripts/notification-routing/notification-follow-through-report.sql` measures follow-through from data we already hold, without taps.
 
 ## 1. What this is for
 
