@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { SGPC_EDITIONS, editionForDate, findMappedSidebarRow, isFinalCalendarDate, mappedDateForEdition, parseCalendarProvenance, regionalCalendarProvenanceFor } from './regional-calendar-provenance';
 import { CALENDAR_FINAL_DATE_CONSUMERS } from './calendar-provenance-consumer-registry';
@@ -62,9 +62,19 @@ describe('regional calendar provenance', () => {
   });
 
   it('does not hardcode a specific SGPC edition in implementation source', () => {
-    for (const path of ['src/lib/calendar/regional-calendar-provenance.ts', 'src/lib/calendar/sgpc-edition-registry.ts', 'src/lib/calendar/engine.ts']) {
-      const contents = readFileSync(resolve(process.cwd(), path), 'utf8');
-      expect(contents, path).not.toMatch(/\b558\b|2026-03-14|2027-03-13/);
+    const sourceFiles: string[] = [];
+    const visit = (directory: string): void => {
+      for (const name of readdirSync(directory)) {
+        const path = resolve(directory, name);
+        if (name === 'node_modules' || name === '.next') continue;
+        if (statSync(path).isDirectory()) visit(path);
+        else if (/\.(ts|tsx|mjs|mts)$/.test(name) && !/\.test\.|__tests__/.test(path)) sourceFiles.push(path);
+      }
+    };
+    visit(resolve(process.cwd(), 'src'));
+    for (const path of sourceFiles) {
+      const contents = readFileSync(path, 'utf8');
+      expect(contents, path).not.toMatch(/(?:SGPC|sgpc|Nanakshahi|NANAKSHAHI)[^\n]*(?:\b558\b|2026-03-14|2027-03-13)/i);
     }
   });
 
