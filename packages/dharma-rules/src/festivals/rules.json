@@ -1383,7 +1383,7 @@
       "status": "proposed"
     },
     "date_assignment": {
-      "status": "proposed",
+      "status": "ratified",
       "basis": "lunar_tithi",
       "tithi": 1,
       "paksha": "shukla",
@@ -1394,6 +1394,7 @@
       "skipped_tithi": "first_qualifying_date",
       "tie_break": "first_qualifying_date"
     },
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified",
     "window_source": {
       "tier": 6,
       "source_name": "UNSOURCED — authority record pending",
@@ -1421,7 +1422,7 @@
       "status": "proposed"
     },
     "date_assignment": {
-      "status": "proposed",
+      "status": "ratified",
       "basis": "lunar_tithi",
       "tithi": 2,
       "paksha": "shukla",
@@ -1432,6 +1433,7 @@
       "skipped_tithi": "first_qualifying_date",
       "tie_break": "first_qualifying_date"
     },
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified",
     "window_source": {
       "tier": 6,
       "source_name": "UNSOURCED — authority record pending",
@@ -2899,7 +2901,9 @@
     "slug": "sankashti-chaturthi",
     "display_name": "Sankashti Chaturthi",
     "emoji": "🐘",
-    "description": "Monthly Sankashti Chaturthi vrat to Lord Ganesha — the 4th tithi of the waning moon.",
+    "description": "Monthly Sankashti Chaturthi vrat to Lord Ganesha — Krishna Chaturthi observed at local moonrise; break the fast after moonrise darshan and Ganesha puja.",
+    "description_local": "मासिक संकष्टी चतुर्थी — स्थानीय चंद्रोदय पर दर्शन और गणेश पूजा के बाद व्रत का पारण करें।",
+    "description_pa": "ਮਾਸਿਕ ਸੰਕਸ਼ਟੀ ਚਤੁਰਥੀ — ਸਥਾਨਕ ਚੰਦ੍ਰੋਦੇ ਤੋਂ ਬਾਅਦ ਦਰਸ਼ਨ ਅਤੇ ਗਣੇਸ਼ ਪੂਜਾ ਕਰਕੇ ਵਰਤ ਖੋਲ੍ਹੋ।",
     "kind": "vrat",
     "tradition": "hindu",
     "rule_family": "lunar_tithi_recurring",
@@ -2912,6 +2916,7 @@
     "route_kind": "vrat",
     "route_slug": "sankashti-chaturthi",
     "launch_status": "deferred",
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified",
     "evaluator_conditions": [
       {
         "type": "paksha",
@@ -2923,7 +2928,26 @@
         "period": "moonrise",
         "mode": "at"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "ratified",
+      "basis": "lunar_tithi",
+      "tithi": 4,
+      "paksha": "krishna",
+      "lunar_month": "recurring",
+      "month_system": "amanta",
+      "period": "moonrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "shravan-somvar",
