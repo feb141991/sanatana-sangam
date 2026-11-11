@@ -717,7 +717,13 @@
     "relative_offset_days": 1,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 1,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-3",
@@ -732,7 +738,13 @@
     "relative_offset_days": 2,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 2,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-4",
@@ -747,7 +759,13 @@
     "relative_offset_days": 3,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 3,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-5",
@@ -762,7 +780,13 @@
     "relative_offset_days": 4,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 4,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-6",
@@ -777,7 +801,13 @@
     "relative_offset_days": 5,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 5,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-7",
@@ -792,7 +822,13 @@
     "relative_offset_days": 6,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 6,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-8",
@@ -807,7 +843,13 @@
     "relative_offset_days": 7,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 7,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-9",
@@ -822,7 +864,13 @@
     "relative_offset_days": 8,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 8,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-10",
@@ -837,7 +885,13 @@
     "relative_offset_days": 9,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 9,
+      "status": "declared"
+    }
   },
   {
     "slug": "anant-chaturdashi-ganesh-visarjan",
@@ -853,7 +907,13 @@
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
     "launch_status": "included",
-    "ratification_note": "Series endpoint anchored to the already source-backed Ganesh Chaturthi rule. The public app treats this as Ganeshotsav's concluding Visarjan card; a standalone Anant Chaturdashi vrata rule can be added later if separately sourced."
+    "ratification_note": "Series endpoint anchored to the already source-backed Ganesh Chaturthi rule. The public app treats this as Ganeshotsav's concluding Visarjan card; a standalone Anant Chaturdashi vrata rule can be added later if separately sourced.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 10,
+      "status": "declared"
+    }
   },
   {
     "slug": "onam",
@@ -904,7 +964,13 @@
     "relative_offset_days": -1,
     "route_kind": "vrat",
     "route_slug": "amavasya",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "navratri-begins",
+      "offset_days": -1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "navratri-begins",
@@ -1068,7 +1134,13 @@
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
     "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "chaitra-navratri-begins",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "chintpurni-mata-sharad-navratri",
@@ -1084,7 +1156,13 @@
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
     "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "navratri-begins",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "karva-chauth",
@@ -1152,7 +1230,13 @@
         "period": "pradosha",
         "mode": "touches"
       }
-    ]
+    ],
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": -2,
+      "status": "proposed"
+    }
   },
   {
     "slug": "diwali",
@@ -1237,7 +1321,13 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": 1,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "bhai-dooj",
@@ -1250,7 +1340,13 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": 2,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 2,
+      "status": "proposed"
+    }
   },
   {
     "slug": "chhath-puja",
@@ -1285,7 +1381,13 @@
     "relative_offset_days": -2,
     "route_kind": "festival",
     "route_slug": "chhath-puja",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "chhath-puja",
+      "offset_days": -2,
+      "status": "declared"
+    }
   },
   {
     "slug": "chhath-kharna",
@@ -1300,7 +1402,13 @@
     "relative_offset_days": -1,
     "route_kind": "festival",
     "route_slug": "chhath-puja",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "chhath-puja",
+      "offset_days": -1,
+      "status": "declared"
+    }
   },
   {
     "slug": "chhath-usha-arghya",
@@ -1315,7 +1423,13 @@
     "relative_offset_days": 1,
     "route_kind": "festival",
     "route_slug": "chhath-puja",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "chhath-puja",
+      "offset_days": 1,
+      "status": "declared"
+    }
   },
   {
     "slug": "kartik-purnima",
@@ -1330,7 +1444,13 @@
     "relative_offset_days": 16,
     "route_kind": "vrat",
     "route_slug": "purnima",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "vivah-panchami",
@@ -1793,7 +1913,13 @@
     "verification_type": "solar_fixed",
     "relative_base_slug": "makar-sankranti",
     "relative_offset_days": -1,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "makar-sankranti",
+      "offset_days": -1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "guru-ravidas-jayanti",
@@ -1828,7 +1954,13 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "holi",
     "relative_offset_days": 1,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "holi",
+      "offset_days": 1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "baisakhi",
@@ -1912,7 +2044,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 0,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "alias",
+      "parent_slug": "diwali",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "guru-nanak-gurpurab",
@@ -1925,7 +2063,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "guru-tegh-bahadur-martyrdom",
@@ -2120,7 +2264,13 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "bodhi-day",
@@ -2206,7 +2356,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 1,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-3",
@@ -2222,7 +2378,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 2,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-4",
@@ -2238,7 +2400,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 3,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-5",
@@ -2254,7 +2422,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 4,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-6",
@@ -2270,7 +2444,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 5,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-7",
@@ -2286,7 +2466,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 6,
+      "status": "declared"
+    }
   },
   {
     "slug": "samvatsari-paryushana-ends",
@@ -2335,7 +2521,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 1,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "jain-diwali-nirvana-ladnun",
@@ -2348,7 +2540,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 0,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "alias",
+      "parent_slug": "diwali",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "kartik-purnima-jain",
@@ -2361,7 +2559,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "alias",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "ekadashi",

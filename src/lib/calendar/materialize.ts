@@ -634,12 +634,12 @@ export function calculateOccurrencesWithEvaluator(
   for (const occ of finalOccurrences) {
     const rule = CANONICAL_RULES.find(r => r.slug === occ.slug);
     if (rule && rule.rule_family === 'relative_to_other_observance') {
-      const baseSlug = rule.relative_base_slug;
+      const baseSlug = rule.relation?.parent_slug ?? rule.relative_base_slug;
       if (baseSlug) {
         const baseOccs = finalOccurrences.filter(o => o.slug === baseSlug);
         for (const baseOcc of baseOccs) {
           const bd = new Date(baseOcc.date + 'T00:00:00Z');
-          const offset = rule.relative_offset_days || 0;
+        const offset = rule.relation?.offset_days ?? rule.relative_offset_days ?? 0;
           const rd = new Date(bd.getTime() + offset * 24 * 60 * 60 * 1000);
           const y = rd.getUTCFullYear();
           const m = String(rd.getUTCMonth() + 1).padStart(2, '0');

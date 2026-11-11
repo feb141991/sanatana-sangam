@@ -504,6 +504,21 @@
         },
         "description": "Canonical condition objects consumed by the condition evaluator."
       },
+      "relation": {
+        "type": "object",
+        "required": ["kind", "status"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["series_child", "independent_offset", "alias", "convention"]
+          },
+          "parent_slug": { "type": "string", "minLength": 1 },
+          "offset_days": { "type": "integer" },
+          "status": { "type": "string", "enum": ["declared", "proposed"] }
+        },
+        "additionalProperties": false,
+        "description": "Explicit relationship metadata for series, aliases, conventions, and legacy relative rules."
+      },
       "window_source": {
         "type": "object",
         "required": [
