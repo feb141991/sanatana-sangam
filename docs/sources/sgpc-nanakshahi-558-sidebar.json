@@ -17,285 +17,54 @@
     "scope": "558 sidebar as printed in the SGPC PDF",
     "status": "official-source-backed, pending council ratification"
   },
-  "conversion": {
-    "method": "legacy-glyph-sequence mapping derived from aligned 558 legacy/Unicode pairs; no external mapping table",
-    "holdout_rows": [
-      5,
-      10,
-      15,
-      20,
-      25,
-      30,
-      35,
-      40,
-      45,
-      50,
-      55,
-      60,
-      65,
-      70,
-      75,
-      80,
-      85,
-      90,
-      95,
-      100
-    ],
-    "training_rows": [
-      1,
-      2,
-      3,
-      4,
-      6,
-      7,
-      8,
-      9,
-      11,
-      12,
-      13,
-      14,
-      16,
-      17,
-      18,
-      19,
-      21,
-      22,
-      23,
-      24,
-      26,
-      27,
-      28,
-      29,
-      31,
-      32,
-      33,
-      34,
-      36,
-      37,
-      38,
-      39,
-      41,
-      42,
-      43,
-      44,
-      46,
-      47,
-      48,
-      49,
-      51,
-      52,
-      53,
-      54,
-      56,
-      57,
-      58,
-      59,
-      61,
-      62,
-      63,
-      64,
-      66,
-      67,
-      68,
-      69,
-      71,
-      72,
-      73,
-      74,
-      76,
-      77,
-      78,
-      79,
-      81,
-      82,
-      83,
-      84,
-      86,
-      87,
-      88,
-      89,
-      91,
-      92,
-      93,
-      94,
-      96,
-      97,
-      98,
-      99,
-      101,
-      102,
-      103,
-      104,
-      105,
-      106
-    ],
-    "ambiguous_glyph_sequences": [
-      "AMimRqsr)",
-      "sRI"
-    ],
-    "mapping": {
-      "&iqh": "ਫ਼ਤਿਹ",
-      "(1984)": "(੧੯੮੪)",
-      "(650": "(੬੫੦",
-      "(PrIdkot)": "(ਫਰੀਦਕੋਟ)",
-      "(gurU": "(ਗੁਰੂ",
-      "(gurdwspur)": "(ਗੁਰਦਾਸਪੁਰ)",
-      "(idvwlI)": "(ਦਿਵਾਲੀ)",
-      "(k`QUnMgl)": "(ਕੱਥੂਨੰਗਲ)",
-      "(rmdws)": "(ਰਮਦਾਸ)",
-      "(sMgrUr)": "(ਸੰਗਰੂਰ)",
-      "(sRI": "(ਸ੍ਰੀ",
-      "(vYswKI)": "(ਵੈਸਾਖੀ)",
-      "AMgd": "ਅੰਗਦ",
-      "AMimRqsr)": "ਅੰਮਿ੍‌ਤਸਰ)",
-      "AjIq": "ਅਜੀਤ",
-      "Akwl": "ਅਕਾਲ",
-      "AkwlI": "ਅਕਾਲੀ",
-      "AmrIk": "ਅਮਰੀਕ",
-      "Amrdws": "ਅਮਰਦਾਸ",
-      "AnMdgVH": "ਅਨੰਦਗੜ੍ਹ",
-      "Aqy": "ਅਤੇ",
-      "Arjn": "ਅਰਜਨ",
-      "AwhlUvwlIAw": "ਆਹਲੂਵਾਲੀਆ",
-      "AzwdI": "ਅਜ਼ਾਦੀ",
-      "Bgq": "ਭਗਤ",
-      "BweI": "ਭਾਈ",
-      "Bwrq": "ਭਾਰਤ",
-      "C`fxw": "ਛੱਡਣਾ",
-      "CoV": "ਛੋੜ",
-      "Cotw": "ਛੋਟਾ",
-      "Coty": "ਛੋਟੇ",
-      "CyvIN": "ਛੇਵੀਂ",
-      "DMnw": "ਧੰਨਾ",
-      "G`lUGwrw": "ਘੱਲੂਘਾਰਾ",
-      "PUlw": "ਫੂਲਾ",
-      "SRomxI": "ਸ਼੍ਰੋਮਣੀ",
-      "ShIdI": "ਸ਼ਹੀਦੀ",
-      "Swhbwz": "ਸ਼ਾਹਬਾਜ਼",
-      "^wlsw": "ਖ਼ਾਲਸਾ",
-      "bGyl": "ਬਘੇਲ",
-      "bMdI": "ਬੰਦੀ",
-      "bMdw": "ਬੰਦਾ",
-      "bhwdr": "ਬਹਾਦਰ",
-      "bkwlw": "ਬਕਾਲਾ",
-      "brsI": "ਬਰਸੀ",
-      "bsMq": "ਬਸੰਤ",
-      "bu`Fw": "ਬੁੱਢਾ",
-      "bwbw": "ਬਾਬਾ",
-      "bwg": "ਬਾਗ",
-      "byAMq": "ਬੇਅੰਤ",
-      "clwxw": "ਚਲਾਣਾ",
-      "cwbIAW": "ਚਾਬੀਆਂ",
-      "dIp": "ਦੀਪ",
-      "dl": "ਦਲ",
-      "dw": "ਦਾ",
-      "dyv": "ਦੇਵ",
-      "gRMQ": "ਗ੍ਰੰਥ",
-      "goibMd": "ਗੋਬਿੰਦ",
-      "guirAweI": "ਗੁਰਿਆਈ",
-      "gujrI": "ਗੁਜਰੀ",
-      "gurU": "ਗੁਰੂ",
-      "gurbKS": "ਗੁਰਬਖਸ਼",
-      "gurduAwrw": "ਗੁਰਦੁਆਰਾ",
-      "gurpurb": "ਗੁਰਪੁਰਬ",
-      "hirgoibMd": "ਹਰਿਗੋਬਿੰਦ",
-      "hirikRSn": "ਹਰਿਕ੍ਰਿਸ਼ਨ",
-      "hirmMdr": "ਹਰਿਮੰਦਰ",
-      "hirrwie": "ਹਰਿਰਾਇ",
-      "iBMfrWvwly": "ਭਿੰਡਰਾਂਵਾਲੇ",
-      "id`lI": "ਦਿੱਲੀ",
-      "idhwVw": "ਦਿਹਾੜਾ",
-      "idvs)": "ਦਿਵਸ)",
-      "idvs": "ਦਿਵਸ",
-      "igAwnI": "ਗਿਆਨੀ",
-      "iklHw": "ਕਿਲ੍ਹਾ",
-      "isMG": "ਸਿੰਘ",
-      "isrjxw": "ਸਿਰਜਣਾ",
-      "ivCoVw": "ਵਿਛੋੜਾ",
-      "jI": "ਜੀ",
-      "jQydwr": "ਜਥੇਦਾਰ",
-      "jYqo": "ਜੈਤੋ",
-      "j`sw": "ਜੱਸਾ",
-      "jnm": "ਜਨਮ",
-      "joV-mylw": "ਜੋੜ-ਮੇਲਾ",
-      "joqI-joiq": "ਜੋਤੀ-ਜੋਤਿ",
-      "jrnYl": "ਜਰਨੈਲ",
-      "juJwr": "ਜੁਝਾਰ",
-      "kbIr": "ਕਬੀਰ",
-      "krqwr": "ਕਰਤਾਰ",
-      "ku`p-rohIVw": "ਕੁੱਪ-ਰੋਹੀੜਾ",
-      "kw": "ਕਾ",
-      "kwhnUMvwn": "ਕਾਹਨੂੰਵਾਨ",
-      "kyhr": "ਕੇਹਰ",
-      "lihr": "ਲਹਿਰ",
-      "lwDo": "ਲਾਧੋ",
-      "mIrI-pIrI": "ਮੀਰੀ-ਪੀਰੀ",
-      "mhwrwjw": "ਮਹਾਰਾਜਾ",
-      "mnI": "ਮਨੀ",
-      "morcw": "ਮੋਰਚਾ",
-      "mrdwnw": "ਮਰਦਾਨਾ",
-      "mwqw": "ਮਾਤਾ",
-      "nINh": "ਨੀਂਹ",
-      "nMgl": "ਨੰਗਲ",
-      "nnkwxw": "ਨਨਕਾਣਾ",
-      "nwmdyv": "ਨਾਮਦੇਵ",
-      "nwnk": "ਨਾਨਕ",
-      "pMcmI": "ਪੰਚਮੀ",
-      "pMjwbI": "ਪੰਜਾਬੀ",
-      "pRkwS": "ਪ੍ਰਕਾਸ਼",
-      "p`Qr": "ਪੱਥਰ",
-      "pihlw": "ਪਹਿਲਾ",
-      "pirvwr": "ਪਰਿਵਾਰ",
-      "pwqSwhI": "ਪਾਤਸ਼ਾਹੀ",
-      "q^q": "ਤਖ਼ਤ",
-      "qwrU": "ਤਾਰੂ",
-      "qy": "ਤੇ",
-      "qyg": "ਤੇਗ",
-      "rITw": "ਰੀਠਾ",
-      "rivdws": "ਰਵਿਦਾਸ",
-      "rwmdws": "ਰਾਮਦਾਸ",
-      "rwmgVHIAw": "ਰਾਮਗੜ੍ਹੀਆ",
-      "rxjIq": "ਰਣਜੀਤ",
-      "ry": "ਰੇ",
-      "s.": "ਸ.",
-      "sBw": "ਸਭਾ",
-      "sIs": "ਸੀਸ",
-      "sMpUrnqw": "ਸੰਪੂਰਨਤਾ",
-      "sMq": "ਸੰਤ",
-      "sQwpnw": "ਸਥਾਪਨਾ",
-      "sRI": "ਸ੍ਰੀ",
-      "sUbw": "ਸੂਬਾ",
-      "s`cKMf": "ਸੱਚਖੰਡ",
-      "sqvMq": "ਸਤਵੰਤ",
-      "srihMd": "ਸਰਹਿੰਦ",
-      "srsw": "ਸਰਸਾ",
-      "srwBw": "ਸਰਾਭਾ",
-      "sskwr": "ਸਸਕਾਰ",
-      "subyg": "ਸੁਬੇਗ",
-      "swihb": "ਸਾਹਿਬ",
-      "swihbzwdw": "ਸਾਹਿਬਜ਼ਾਦਾ",
-      "swihbzwdy": "ਸਾਹਿਬਜ਼ਾਦੇ",
-      "swjxw": "ਸਾਜਣਾ",
-      "swkw": "ਸਾਕਾ",
-      "swlw)": "ਸਾਲਾ)",
-      "v`fw": "ਵੱਡਾ",
-      "v`loN": "ਵੱਲੋਂ"
+  "colour_method": {
+    "legend_rgb": {
+      "gurpurab": [
+        168,
+        60,
+        120
+      ],
+      "itihasik": [
+        36,
+        36,
+        120
+      ],
+      "bhagat_sahiban": [
+        216,
+        0,
+        12
+      ],
+      "sarkari_holiday": [
+        0,
+        156,
+        216
+      ]
     },
-    "corrections": [
+    "source_files": [
+      "sgpc-558/side1-1.png",
+      "sgpc-558/side2-2.png",
+      "sgpc-558/side3-3.png",
+      "sgpc-558/lines558.json",
+      "sgpc-558/tsv558-page1.tsv",
+      "sgpc-558/tsv558-page2.tsv",
+      "sgpc-558/tsv558-page3.tsv"
+    ],
+    "method": "Independent 300 dpi text-colour sampling against the four printed legend chips; no legacy-glyph converter is used."
+  },
+  "ocr_cross_check": {
+    "method": "Independent OCR alignment: rows558-aligned.json compared with lines558.json; disagreements are explicit per row.",
+    "disagreements": [
       {
-        "row": 9,
-        "change": "removed trailing ASCII 9 from OCR output",
-        "reason": "artwork noise; not part of the printed name"
+        "index": 22,
+        "reason": "558 line was absent from the aligned OCR artifact; name retained from the reviewed 557 decoded fallback"
       },
       {
-        "row": 22,
-        "change": "filled from identical decoded row in the 557 sidebar",
-        "reason": "558 OCR returned no text for this row"
+        "index": 28,
+        "reason": "Independent OCR line contained only the second line; first line restored from the printed crop"
       },
       {
-        "row": 60,
-        "change": "removed trailing OCR ੦6 from OCR output",
-        "reason": "artwork noise; not part of the printed name"
+        "index": 91,
+        "reason": "Independent OCR included a stray colon prefix; punctuation removed"
       }
     ]
   },
@@ -312,8 +81,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 1
     },
     {
       "index": 2,
@@ -327,8 +129,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 2
     },
     {
       "index": 3,
@@ -342,8 +177,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 3
     },
     {
       "index": 4,
@@ -357,8 +225,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 4
     },
     {
       "index": 5,
@@ -372,8 +273,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 5
     },
     {
       "index": 6,
@@ -387,8 +321,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 6
     },
     {
       "index": 7,
@@ -402,8 +369,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 7
     },
     {
       "index": 8,
@@ -417,8 +417,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          0,
+          158,
+          227
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 8
     },
     {
       "index": 9,
@@ -428,12 +461,45 @@
       "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਸੁਬੇਗ ਸਿੰਘ ਭਾਈ ਸ਼ਾਹਬਾਜ਼ ਸਿੰਘ ਜੀ",
       "name_source": "558_sidebar_ocr_corrected",
       "category": "itihasik",
-      "read_by_human": true,
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 9
     },
     {
       "index": 10,
@@ -447,8 +513,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 10
     },
     {
       "index": 11,
@@ -462,8 +561,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 11
     },
     {
       "index": 12,
@@ -477,8 +609,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 12
     },
     {
       "index": 13,
@@ -492,8 +657,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 13
     },
     {
       "index": 14,
@@ -507,8 +705,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 14
     },
     {
       "index": 15,
@@ -522,8 +753,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 15
     },
     {
       "index": 16,
@@ -537,8 +801,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 16
     },
     {
       "index": 17,
@@ -552,8 +849,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          67,
+          129
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 17
     },
     {
       "index": 18,
@@ -567,8 +897,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 18
     },
     {
       "index": 19,
@@ -582,8 +945,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          172,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 19
     },
     {
       "index": 20,
@@ -597,8 +993,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 20
     },
     {
       "index": 21,
@@ -612,8 +1041,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 21
     },
     {
       "index": 22,
@@ -627,8 +1089,42 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": false,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)",
+        "reason": "558 line was absent from the aligned OCR artifact; name retained from the reviewed 557 decoded fallback"
+      },
+      "print_order": 22
     },
     {
       "index": 23,
@@ -642,8 +1138,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 23
     },
     {
       "index": 24,
@@ -657,8 +1186,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 24
     },
     {
       "index": 25,
@@ -672,8 +1234,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 25
     },
     {
       "index": 26,
@@ -687,8 +1282,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 26
     },
     {
       "index": 27,
@@ -702,23 +1330,90 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 27
     },
     {
       "index": 28,
       "day": "23",
       "month": "Jeth",
       "name_legacy": "BweI AmrIk isMG jI",
-      "name_gurmukhi": "ਭਾਈ ਅਮਰੀਕ ਸਿੰਘ ਜੀ",
-      "name_source": "558_sidebar_ocr",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਸੰਤ ਜਰਨੈਲ ਸਿੰਘ ਜੀ ਖ਼ਾਲਸਾ ਭਿੰਡਰਾਂਵਾਲੇ ਤੇ ਭਾਈ ਅਮਰੀਕ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr_corrected",
       "category": "itihasik",
-      "read_by_human": true,
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": false,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)",
+        "reason": "Independent OCR line contained only the second line; first line restored from the printed crop"
+      },
+      "print_order": 28
     },
     {
       "index": 29,
@@ -727,13 +1422,46 @@
       "name_legacy": "guirAweI idvs sRI gurU hirgoibMd swihb jI",
       "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "itihasik",
-      "read_by_human": true,
+      "category": "gurpurab",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 29
     },
     {
       "index": 30,
@@ -742,13 +1470,46 @@
       "name_legacy": "ShIdI idvs sRI gurU Arjn dyv swihb jI",
       "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਸਾਹਿਬ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "itihasik",
-      "read_by_human": true,
+      "category": "gurpurab",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 30
     },
     {
       "index": 31,
@@ -757,13 +1518,46 @@
       "name_legacy": "ShIdI idhwVw bwbw bMdw isMG jI bhwdr",
       "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਬਾਬਾ ਬੰਦਾ ਸਿੰਘ ਜੀ ਬਹਾਦਰ",
       "name_source": "558_sidebar_ocr",
-      "category": "gurpurab",
-      "read_by_human": true,
+      "category": "itihasik",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 31
     },
     {
       "index": 32,
@@ -772,13 +1566,46 @@
       "name_legacy": "brsI mhwrwjw rxjIq isMG jI",
       "name_gurmukhi": "ਬਰਸੀ ਮਹਾਰਾਜਾ ਰਣਜੀਤ ਸਿੰਘ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "gurpurab",
-      "read_by_human": true,
+      "category": "itihasik",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 32
     },
     {
       "index": 33,
@@ -792,8 +1619,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 33
     },
     {
       "index": 34,
@@ -802,13 +1662,46 @@
       "name_legacy": "jnm idhwVw Bgq kbIr jI",
       "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਭਗਤ ਕਬੀਰ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "itihasik",
-      "read_by_human": true,
+      "category": "bhagat_sahiban",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 34
     },
     {
       "index": 35,
@@ -817,13 +1710,46 @@
       "name_legacy": "pRkwS gurpurb sRI gurU hirgoibMd swihb jI",
       "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "itihasik",
-      "read_by_human": true,
+      "category": "gurpurab",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 35
     },
     {
       "index": 36,
@@ -832,13 +1758,46 @@
       "name_legacy": "isrjxw idvs sRI Akwl q^q swihb",
       "name_gurmukhi": "ਸਿਰਜਣਾ ਦਿਵਸ ਸ੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ",
       "name_source": "558_sidebar_ocr",
-      "category": "bhagat_sahiban",
-      "read_by_human": true,
+      "category": "itihasik",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 36
     },
     {
       "index": 37,
@@ -847,13 +1806,46 @@
       "name_legacy": "ShIdI idhwVw BweI mnI isMG jI",
       "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਮਨੀ ਸਿੰਘ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "gurpurab",
-      "read_by_human": true,
+      "category": "itihasik",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 37
     },
     {
       "index": 38,
@@ -867,8 +1859,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          36,
+          36,
+          120
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 38
     },
     {
       "index": 39,
@@ -882,8 +1907,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 39
     },
     {
       "index": 40,
@@ -897,8 +1955,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          13,
+          151,
+          219
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 40
     },
     {
       "index": 41,
@@ -912,8 +2003,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          170,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 41
     },
     {
       "index": 42,
@@ -927,8 +2051,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 42
     },
     {
       "index": 43,
@@ -942,8 +2099,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          5,
+          147,
+          218
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 43
     },
     {
       "index": 44,
@@ -957,8 +2147,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 44
     },
     {
       "index": 45,
@@ -972,8 +2195,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 45
     },
     {
       "index": 46,
@@ -987,8 +2243,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 46
     },
     {
       "index": 47,
@@ -1002,8 +2291,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          171,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 47
     },
     {
       "index": 48,
@@ -1017,8 +2339,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 48
     },
     {
       "index": 49,
@@ -1032,8 +2387,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 49
     },
     {
       "index": 50,
@@ -1047,8 +2435,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 50
     },
     {
       "index": 51,
@@ -1062,8 +2483,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 51
     },
     {
       "index": 52,
@@ -1077,8 +2531,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          169,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 52
     },
     {
       "index": 53,
@@ -1092,8 +2579,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 53
     },
     {
       "index": 54,
@@ -1107,8 +2627,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 54
     },
     {
       "index": 55,
@@ -1122,8 +2675,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          66,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 55
     },
     {
       "index": 56,
@@ -1137,8 +2723,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 56
     },
     {
       "index": 57,
@@ -1152,11 +2771,44 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 57
     },
     {
-      "index": 58,
+    "index": 58,
       "day": "23",
       "month": "Assu",
       "name_legacy": "BweI hrijMdr isMG jI (ijMdw)",
@@ -1167,8 +2819,89 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+    "print_order": 59
+    },
+    {
+    "index": 107,
+      "day": "21-22",
+      "month": "Assu",
+      "name_legacy": null,
+      "name_gurmukhi": "ਜੋੜ-ਮੇਲਾ ਬੀੜ ਬਾਬਾ ਬੁੱਢਾ ਜੀ (ਠੱਠਾ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "colour_evidence": {
+        "sampled_rgb": [
+          36,
+          36,
+          120
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+    "print_order": 58
     },
     {
       "index": 59,
@@ -1182,8 +2915,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 60
     },
     {
       "index": 60,
@@ -1193,12 +2959,45 @@
       "name_gurmukhi": "ਦਰਬਾਰ ਖ਼ਾਲਸਾ (ਦੁਸਹਿਰਾ)",
       "name_source": "558_sidebar_ocr_corrected",
       "category": "itihasik",
-      "read_by_human": true,
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 61
     },
     {
       "index": 61,
@@ -1212,8 +3011,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 62
     },
     {
       "index": 62,
@@ -1227,8 +3059,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 63
     },
     {
       "index": 63,
@@ -1242,8 +3107,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 64
     },
     {
       "index": 64,
@@ -1252,13 +3150,46 @@
       "name_legacy": "pRkwS gurpurb sRI gurU rwmdws swihb jI",
       "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਰਾਮਦਾਸ ਸਾਹਿਬ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "itihasik",
-      "read_by_human": true,
+      "category": "gurpurab",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          168,
+          66,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 65
     },
     {
       "index": 65,
@@ -1267,13 +3198,46 @@
       "name_legacy": "swkw pMjw swihb (pwiksqwn)",
       "name_gurmukhi": "ਸਾਕਾ ਪੰਜਾ ਸਾਹਿਬ (ਪਾਕਿਸਤਾਨ)",
       "name_source": "558_sidebar_ocr",
-      "category": "gurpurab",
-      "read_by_human": true,
+      "category": "itihasik",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 66
     },
     {
       "index": 66,
@@ -1287,8 +3251,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 67
     },
     {
       "index": 67,
@@ -1297,13 +3294,46 @@
       "name_legacy": "pMjwbI sUbw idvs",
       "name_gurmukhi": "ਪੰਜਾਬੀ ਸੂਬਾ ਦਿਵਸ",
       "name_source": "558_sidebar_ocr",
-      "category": "itihasik",
-      "read_by_human": true,
+      "category": "sarkari_holiday",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          27,
+          143,
+          211
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 68
     },
     {
       "index": 68,
@@ -1312,28 +3342,94 @@
       "name_legacy": "guirAweI idvs sRI gurU hirikRSn swihb jI",
       "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "sarkari_holiday",
-      "read_by_human": true,
+      "category": "gurpurab",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          179,
+          98,
+          74
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 69
     },
     {
       "index": 69,
       "day": "18",
       "month": "Katak",
       "name_legacy": "joqI-joiq idvs sRI gurU hirrwie swihb jI",
-      "name_gurmukhi": "ਕਰ ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਰਾਇ ਸਾਹਿਬ ਜੀ",
-      "name_source": "558_sidebar_ocr",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਰਾਇ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr_corrected",
       "category": "gurpurab",
-      "read_by_human": true,
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          166,
+          66,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 70
     },
     {
       "index": 70,
@@ -1342,13 +3438,46 @@
       "name_legacy": "jnm idhwVw mwqw swihb kOr jI",
       "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਮਾਤਾ ਸਾਹਿਬ ਕੌਰ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "gurpurab",
-      "read_by_human": true,
+      "category": "itihasik",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 71
     },
     {
       "index": 71,
@@ -1362,8 +3491,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 72
     },
     {
       "index": 72,
@@ -1372,13 +3534,46 @@
       "name_legacy": "guirAweI idvs sRI gurU gRMQ swihb jI",
       "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "itihasik",
-      "read_by_human": true,
+      "category": "gurpurab",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 73
     },
     {
       "index": 73,
@@ -1392,8 +3587,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          169,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 74
     },
     {
       "index": 74,
@@ -1402,13 +3630,46 @@
       "name_legacy": "ShIdI idhwVw bwbw dIp isMG jI",
       "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਬਾਬਾ ਦੀਪ ਸਿੰਘ ਜੀ",
       "name_source": "558_sidebar_ocr",
-      "category": "gurpurab",
-      "read_by_human": true,
+      "category": "itihasik",
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 75
     },
     {
       "index": 75,
@@ -1422,8 +3683,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          48,
+          36,
+          128
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 76
     },
     {
       "index": 76,
@@ -1437,8 +3731,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 77
     },
     {
       "index": 77,
@@ -1452,8 +3779,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 78
     },
     {
       "index": 78,
@@ -1467,8 +3827,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 79
     },
     {
       "index": 79,
@@ -1482,8 +3875,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 80
     },
     {
       "index": 80,
@@ -1497,8 +3923,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 81
     },
     {
       "index": 81,
@@ -1512,8 +3971,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 82
     },
     {
       "index": 82,
@@ -1527,8 +4019,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 83
     },
     {
       "index": 83,
@@ -1542,8 +4067,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 84
     },
     {
       "index": 84,
@@ -1557,8 +4115,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 85
     },
     {
       "index": 85,
@@ -1572,8 +4163,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 86
     },
     {
       "index": 86,
@@ -1587,8 +4211,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 87
     },
     {
       "index": 87,
@@ -1602,8 +4259,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          172,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 88
     },
     {
       "index": 88,
@@ -1617,8 +4307,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 89
     },
     {
       "index": 89,
@@ -1632,8 +4355,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 90
     },
     {
       "index": 90,
@@ -1647,26 +4403,93 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 91
     },
     {
       "index": 91,
       "day": "9",
       "month": "Poh",
       "name_legacy": "ShIdI idhwVw BweI sMgq isMG jI",
-      "name_gurmukhi": ": ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਸੰਗਤ ਸਿੰਘ ਜੀ",
-      "name_source": "558_sidebar_ocr",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਸੰਗਤ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr_corrected",
       "category": "itihasik",
-      "read_by_human": true,
+      "read_by_human": false,
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": false,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)",
+        "reason": "Independent OCR included a stray colon prefix; punctuation removed"
+      },
+      "print_order": 92
     },
     {
-      "index": 92,
+    "index": 92,
       "day": "13",
       "month": "Poh",
       "name_legacy": "ShIdI idhwVw Coty swihbzwdy Aqy mwqw gujrI jI",
@@ -1677,8 +4500,89 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+    "print_order": 94
+    },
+    {
+    "index": 108,
+      "day": "8",
+      "month": "Poh",
+      "name_legacy": null,
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਵੱਡੇ ਸਾਹਿਬਜ਼ਾਦੇ ਅਤੇ ਚਮਕੌਰ ਸਾਹਿਬ ਦੇ ਹੋਰ ਸ਼ਹੀਦ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+    "print_order": 93
     },
     {
       "index": 93,
@@ -1692,8 +4596,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 95
     },
     {
       "index": 94,
@@ -1707,8 +4644,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 96
     },
     {
       "index": 95,
@@ -1722,8 +4692,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 97
     },
     {
       "index": 96,
@@ -1737,8 +4740,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 98
     },
     {
       "index": 97,
@@ -1752,8 +4788,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "training row failed exact reproduction because one or more glyph sequences were unseen or ambiguous"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 99
     },
     {
       "index": 98,
@@ -1767,8 +4836,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 100
     },
     {
       "index": 99,
@@ -1782,8 +4884,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 101
     },
     {
       "index": 100,
@@ -1797,8 +4932,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": false,
-      "conversion_test_reason": "holdout row failed exact reproduction from training-derived mapping"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 102
     },
     {
       "index": 101,
@@ -1812,8 +4980,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 103
     },
     {
       "index": 102,
@@ -1827,8 +5028,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 104
     },
     {
       "index": 103,
@@ -1842,8 +5076,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 105
     },
     {
       "index": 104,
@@ -1857,8 +5124,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 106
     },
     {
       "index": 105,
@@ -1872,8 +5172,41 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 107
     },
     {
       "index": 106,
@@ -1887,23 +5220,80 @@
       "reviewed_by": "Pt Prince Sharma",
       "reviewed_at": "2026-11-11",
       "review_scope": "558 sidebar as printed in the SGPC PDF",
-      "conversion_tested": true,
-      "conversion_test_reason": "derived mapping reproduced aligned Unicode name"
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 108
     }
   ],
   "summary": {
-    "total_rows": 106,
+    "total_rows": 108,
     "category_counts": {
-      "itihasik": 65,
+      "itihasik": 67,
       "gurpurab": 33,
       "bhagat_sahiban": 4,
       "sarkari_holiday": 4,
       "unknown": 0
     },
-    "conversion_tested_rows": 82,
-    "conversion_failed_rows": 24,
-    "holdout_passed": 7,
-    "holdout_failed": 13
+    "category_sampled_rows": 108,
+    "category_unknown_rows": 0,
+    "ocr_cross_check_agreements": 105,
+    "ocr_cross_check_disagreements": 3,
+    "rows_reset_for_review": [
+      9,
+      28,
+      29,
+      30,
+      31,
+      32,
+      34,
+      35,
+      36,
+      37,
+      107,
+      60,
+      64,
+      65,
+      67,
+      68,
+      69,
+      70,
+      72,
+      74,
+      91,
+      108
+    ]
   }
 }
 
