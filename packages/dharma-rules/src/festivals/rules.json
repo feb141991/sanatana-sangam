@@ -2062,6 +2062,12 @@
     "launch_status": "included",
     "nanakshahi_month": "Magh",
     "nanakshahi_day": 2,
+    "sikh_lunar_anchor": {
+      "lunar_masa_name": "Pausha",
+      "lunar_tithi_index": 7,
+      "month_system": "amanta",
+      "selection": "first_qualifying_date"
+    },
     "ratification_note": "D35 fix: nanakshahi_month Magh, nanakshahi_day 2 per SGPC Nanakshahi-558 sidebar Gurpurab entry (02 mwG). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },
   {
@@ -2225,6 +2231,12 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
+    "sikh_lunar_anchor": {
+      "lunar_masa_name": "Kartika",
+      "lunar_tithi_index": 15,
+      "month_system": "amanta",
+      "selection": "first_qualifying_date"
+    },
     "launch_status": "included",
     "relation": {
       "kind": "independent_offset",
@@ -2244,6 +2256,12 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Maghar",
     "nanakshahi_day": 29,
+    "sikh_lunar_anchor": {
+      "lunar_masa_name": "Margashirsha",
+      "lunar_tithi_index": 5,
+      "month_system": "amanta",
+      "selection": "first_qualifying_date"
+    },
     "launch_status": "included",
     "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Maghar 10), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },

@@ -617,8 +617,37 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
+export const SikhLunarAnchorHandler = {
+  evaluate(rule: ObservanceRule, year: number, location: LocationInput = DEFAULT_LOCATION): RegionalCalendarDateResult[] {
+    const anchor = rule.sikh_lunar_anchor;
+    if (!anchor) return [];
+    const days = precomputePanchangCorrectedForYear(year, location);
+    const anchorRule = {
+      ...rule,
+      rule_family: 'lunar_tithi' as const,
+      lunar_masa_name: anchor.lunar_masa_name,
+      lunar_tithi_index: anchor.lunar_tithi_index,
+      corrected_month_system: anchor.month_system,
+      corrected_allow_skipped_tithi: true,
+      allow_skipped_tithi: true,
+      prefer_last_match: false,
+    };
+    const date = LunarTithiHandler.evaluate(anchorRule, days)
+      .filter(candidate => Number(candidate.slice(0, 4)) === year)[0];
+    if (!date) return [];
+    const printed = regionalCalendarProvenanceFor(rule.slug, date).calendar_provenance;
+    if (printed?.provenance === 'sgpc_edition') return [{ date, calendarProvenance: printed }];
+    return [{ date, calendarProvenance: {
+      provenance: 'computed_expected',
+      edition: null,
+      reason: `Computed from the Sikh lunar anchor ${anchor.lunar_masa_name} Shukla ${anchor.lunar_tithi_index} at sunrise; no covering SGPC edition prints this date.`,
+    } }];
+  },
+};
+
 export const NanakshahiHandler = {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[] {
+    if (rule.sikh_lunar_anchor) return SikhLunarAnchorHandler.evaluate(rule, year);
     if (!rule.nanakshahi_month || rule.nanakshahi_day === undefined) return [];
     const edition = latestEdition();
     if (!edition || !findMappedSidebarRow(edition, rule.slug)) return [];
@@ -876,7 +905,9 @@ function buildOccurrencesMap(
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
-    if (rule.rule_family === 'solar_fixed') {
+    if (rule.sikh_lunar_anchor) {
+      occurrencesMap[rk] = SikhLunarAnchorHandler.evaluate(rule, year, location).map(result => result.date);
+    } else if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
       occurrencesMap[rk] = LunarTithiHandler.evaluate(rule, days);
@@ -1377,7 +1408,9 @@ function buildOccurrencesMapCorrected(
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
-    if (r.rule_family === 'solar_fixed') {
+    if (r.sikh_lunar_anchor) {
+      occurrencesMap[rk] = SikhLunarAnchorHandler.evaluate(r, year, location).map(result => result.date);
+    } else if (r.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(r, year);
     } else if (r.rule_family === 'lunar_tithi') {
       occurrencesMap[rk] = LunarTithiHandler.evaluate(r, d);

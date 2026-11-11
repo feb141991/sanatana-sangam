@@ -18,6 +18,13 @@ export interface WindowSource {
   status: 'proposed' | 'unsourced' | 'reviewed' | 'ratified' | 'disputed';
 }
 
+export interface SikhLunarAnchor {
+  lunar_masa_name: string;
+  lunar_tithi_index: number;
+  month_system: 'amanta' | 'purnimanta';
+  selection: 'first_qualifying_date';
+}
+
 export type SkippedTithiPolicy = 'previous_day' | 'following_day' | 'day_before' | 'day_after';
 
 export interface SubObservance {
@@ -119,6 +126,8 @@ export interface ObservanceRule {
     tie_break: 'first_qualifying_date' | 'last_qualifying_date' | 'human_review';
   };
   window_source?: WindowSource;
+  /** Traditional lunar anchor used when no covering SGPC edition is printed. */
+  sikh_lunar_anchor?: SikhLunarAnchor;
 
   // ── Variant identity ──────────────────────────────────────────────────────
   // These fields exist in rules.json for rules that have per-tradition variants
