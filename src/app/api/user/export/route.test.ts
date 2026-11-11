@@ -67,6 +67,32 @@ describe('GET /api/user/export', () => {
     expect(mocks.selects.native_startup_telemetry_summaries).not.toContain('user_id');
   });
 
+  it('includes the account\'s notification taps, and only that account\'s, with no message text', async () => {
+    mocks.rows.notification_taps = [
+      { notification_key: 'quiz:k1', notification_type: 'quiz', tapped_at: '2026-11-12T05:31:00Z', launch_state: 'cold_start', app_version: '1.4.0', platform: 'ios', recorded_at: '2026-11-12T05:31:02Z' },
+    ];
+    const response = await GET(request());
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.notification_taps).toHaveLength(1);
+    expect(body.notification_taps[0]).toMatchObject({ notification_key: 'quiz:k1', notification_type: 'quiz', launch_state: 'cold_start' });
+    expect(mocks.filters).toContainEqual({ table: 'notification_taps', column: 'user_id', value: 'user-1' });
+    // The export already carries the account id; rows do not repeat it, and nothing identifies another person.
+    expect(mocks.selects.notification_taps).not.toMatch(/user_id|client_event_id|title|body|url/);
+  });
+
+  it('exports an empty tap list, and everything else, before the tap table is migrated', async () => {
+    mocks.errors.notification_taps = { code: '42P01', message: 'relation does not exist' };
+    mocks.rows.quiz_responses = [{ id: 'q1' }];
+    const response = await GET(request());
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.notification_taps).toEqual([]);
+    expect(body.quiz_results).toEqual([{ id: 'q1' }]);
+  });
+
   it('still exports everything else when the analytics table is not migrated yet', async () => {
     mocks.errors.native_product_analytics_daily = { code: '42P01', message: 'relation does not exist' };
     mocks.rows.quiz_responses = [{ id: 'q1' }];

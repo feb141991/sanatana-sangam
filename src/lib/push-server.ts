@@ -245,7 +245,15 @@ async function sendViaExpo(
           title: message.title,
           body: message.body,
           sound: 'default', channelId: 'default',
-          data: { ...message.data, url: message.url ?? undefined },
+          data: {
+            ...message.data,
+            url: message.url ?? undefined,
+            // Lets the app say WHICH notification was tapped. It is the same key the delivery audit stores for this
+            // recipient (notification_deliveries.notification_key), and record_notification_tap re-checks it
+            // against that audit, so a made-up or another account's key records nothing. Ours always wins over a
+            // caller-supplied data.notificationKey.
+            notificationKey: options?.notificationKeysByUserId?.[userId] ?? options?.notificationKey ?? undefined,
+          },
         },
       });
     }

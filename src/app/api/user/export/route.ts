@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
     karmaLedgerResult,
     productAnalyticsResult,
     telemetryResult,
+    notificationTapsResult,
   ] = await Promise.all([
     admin.from('profiles').select('*').eq('id', user.id).single(),
     admin
@@ -84,6 +85,13 @@ export async function GET(request: NextRequest) {
       .select('schema_version, app_version, platform, total_events, summary, received_at')
       .eq('user_id', user.id)
       .order('received_at', { ascending: false }),
+    // Taps on notifications we sent this account (kept 90 days; recorded only with the account's consent). Every
+    // stored row is returned. The table holds no message text and no other personal fields.
+    admin
+      .from('notification_taps')
+      .select('notification_key, notification_type, tapped_at, launch_state, app_version, platform, recorded_at')
+      .eq('user_id', user.id)
+      .order('tapped_at', { ascending: false }),
   ]);
 
   const exportPayload = {
@@ -99,6 +107,8 @@ export async function GET(request: NextRequest) {
     // Empty when the user never opted in, or before the table's migration exists.
     product_analytics_events: productAnalyticsResult.error ? [] : (productAnalyticsResult.data ?? []),
     app_performance_diagnostics: telemetryResult.error ? [] : (telemetryResult.data ?? []),
+    // Empty when no consent was given, or before the table's migration exists.
+    notification_taps: notificationTapsResult.error ? [] : (notificationTapsResult.data ?? []),
   };
 
   const fileName = `shoonaya-export-${new Date().toISOString().slice(0, 10)}.json`;
