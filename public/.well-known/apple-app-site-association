@@ -44,7 +44,9 @@
           {"/": "/features", "comment": "Features marketing"},
           {"/": "/features/*", "comment": "Feature marketing pages"},
           {"/": "/about", "comment": "About page"},
-          {"/": "/guest", "comment": "Guest mode"}
+          {"/": "/guest", "comment": "Guest mode"},
+          {"/": "/stories", "comment": "Stories hub"},
+          {"/": "/stories/*", "comment": "Panchatantra stories"}
         ]
       }
     ]
