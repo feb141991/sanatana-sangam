@@ -20,6 +20,7 @@ import {
 import seriesContentJson from '@sangam/dharma-rules/src/festivals/series-content.json';
 import { isEditorialFieldDisplayable } from './calendar/series-card-helpers';
 import type { LocalizedEditorialField } from '../../contracts/observance-series-contract';
+import { isFinalCalendarDate } from './calendar/regional-calendar-provenance';
 
 type LocalizedField<T> = LocalizedEditorialField<{ en: T; hi?: T; pa?: T }>;
 
@@ -62,6 +63,7 @@ export interface ReviewedSeriesOccurrence {
   sourceRefs: Json[];
   calendarProfile: string | null;
   tradition: string | null;
+  calendarProvenance?: unknown;
 }
 
 // Map children by slug for O(1) canonical lookup
@@ -185,6 +187,17 @@ export function produceSeriesCandidates(
       !date
     ) {
       diagnostics.push(`child_${child.slug}_not_published_or_reviewed`);
+      continue;
+    }
+
+    if (!isFinalCalendarDate({
+      verification_type: child.tradition === 'sikh' ? 'regional_calendar' : undefined,
+      calendarProvenance: child.calendarProvenance,
+      date,
+      spiritual_tradition: child.tradition,
+      calendar_profile: child.calendarProfile,
+    })) {
+      diagnostics.push(`child_${child.slug}_non_final_calendar_date`);
       continue;
     }
 

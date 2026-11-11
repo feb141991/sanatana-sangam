@@ -1,6 +1,7 @@
 import { filterWithheldJoinedRows } from "@/lib/calendar/withheld";
 import { CANONICAL_RULES } from "@/lib/calendar/rules";
 import type { MarketingSourceSnapshot } from "../types";
+import { isFinalCalendarDate } from '@/lib/calendar/regional-calendar-provenance';
 
 /**
  * Set of slugs that have approved, verified astronomical rules in rules.json.
@@ -54,7 +55,7 @@ export function filterEligibleMarketingObservances(rows: ObservanceJoinedRow[]):
   return (ruleFiltered as ObservanceJoinedRow[]).filter((row: ObservanceJoinedRow) => {
     const def = extractDefinition(row);
     const slug = def?.slug;
-    return typeof slug === "string" && RULED_SLUGS.has(slug);
+    return typeof slug === "string" && RULED_SLUGS.has(slug) && isFinalCalendarDate(row);
   });
 }
 

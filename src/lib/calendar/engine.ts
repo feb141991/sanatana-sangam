@@ -3,6 +3,7 @@ import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
 import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, MONTH_NAMES, nextMonthIndex, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
 import { evaluateCondition } from '@sangam/dharma-rules';
+import { regionalCalendarProvenanceFor, type RegionalCalendarDateResult } from './regional-calendar-provenance';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
 export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
@@ -613,7 +614,7 @@ export const NakshatraBasedHandler = {
  * Handler for Regional Calendar rules (e.g. Nanakshahi, etc.) - Defined for future expansion
  */
 export interface RegionalCalendarRule {
-  evaluate(rule: ObservanceRule, year: number): string[];
+  evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
 // Source: docs/sources/sgpc-nanakshahi-558.manifest.md (SGPC Nanakshahi
@@ -644,7 +645,7 @@ const NANAKSHAHI_GREGORIAN_START: Record<string, { month: number; day: number }>
 };
 
 export const NanakshahiHandler = {
-  evaluate(rule: ObservanceRule, year: number): string[] {
+  evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[] {
     if (!rule.nanakshahi_month || rule.nanakshahi_day === undefined) return [];
     const start = NANAKSHAHI_GREGORIAN_START[rule.nanakshahi_month];
     if (!start) return [];
@@ -655,7 +656,12 @@ export const NanakshahiHandler = {
     // Only include if the resulting date falls in the target year
     if (observanceDate.getUTCFullYear() !== year) return [];
 
-    return [formatUtcDate(observanceDate)];
+    const date = formatUtcDate(observanceDate);
+    return [{ date, calendarProvenance: regionalCalendarProvenanceFor(rule.slug, date).calendar_provenance ?? {
+      provenance: 'computed_expected',
+      edition: null,
+      reason: 'Computed from the Nanakshahi month/day anchor; no matching SGPC 558 sidebar row is available.',
+    } }];
   }
 };
 
@@ -725,7 +731,7 @@ export const SolarMonthDayHandler = {
 };
 
 export interface RegionalCalendarRule {
-  evaluate(rule: ObservanceRule, year: number): string[];
+  evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
 export interface ResolvedSpan {
@@ -914,7 +920,7 @@ function buildOccurrencesMap(
     } else if (rule.rule_family === 'nakshatra_based') {
       occurrencesMap[rk] = NakshatraBasedHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'regional_calendar') {
-      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year);
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
     } else if (rule.rule_family === 'solar_sankranti') {
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'solar_month_day') {
@@ -1415,7 +1421,7 @@ function buildOccurrencesMapCorrected(
     } else if (r.rule_family === 'nakshatra_based') {
       occurrencesMap[rk] = NakshatraBasedHandler.evaluate(r, d);
     } else if (r.rule_family === 'regional_calendar') {
-      occurrencesMap[rk] = NanakshahiHandler.evaluate(r, year);
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(r, year).map(result => result.date);
     } else if (r.rule_family === 'solar_sankranti') {
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(r, year);
     } else if (r.rule_family === 'solar_month_day') {

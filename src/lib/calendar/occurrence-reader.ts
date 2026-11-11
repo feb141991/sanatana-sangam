@@ -63,6 +63,8 @@ export const CALENDAR_OCCURRENCE_SELECT = `
     tradition,
     route_kind,
     route_slug,
+    verification_type,
+    rule_family,
     active
   )
 `;

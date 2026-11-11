@@ -53,7 +53,7 @@ function buildOccurrencesMapCorrectedWithPolicy(year: number, policyOverride?: (
     } else if (r.rule_family === 'nakshatra_based') {
       occurrencesMap[r.slug] = NakshatraBasedHandler.evaluate(r, days);
     } else if (r.rule_family === 'regional_calendar') {
-      occurrencesMap[r.slug] = NanakshahiHandler.evaluate(r, year);
+      occurrencesMap[r.slug] = NanakshahiHandler.evaluate(r, year).map(result => result.date);
     } else {
       occurrencesMap[r.slug] = [];
     }

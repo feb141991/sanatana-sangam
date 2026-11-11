@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Json } from '@/types/database';
 import { filterWithheldJoinedRows } from './calendar/withheld';
 import { mapOccurrenceToFestival, type Festival } from '@/lib/festivals';
+import { isFinalCalendarDate } from '@/lib/calendar/regional-calendar-provenance';
 
 export type ReviewedObservanceKind = 'major' | 'regional' | 'vrat';
 
@@ -69,6 +70,7 @@ export function isReviewedNotificationObservance(row: any, allowedKinds: Set<Rev
     && row.verification_status === 'verified'
     && row.audit_status === 'completed'
     && row.final_date_source !== 'fallback'
+    && isFinalCalendarDate(row)
     && Boolean(row.date || row.manual_date_override);
 }
 

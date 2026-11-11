@@ -8,6 +8,7 @@ import {
 } from '@sangam/dharma-rules';
 import { type LocationInput } from '@sangam/panchang-engine';
 import { CANONICAL_RULES } from './rules';
+import { regionalCalendarProvenanceFor } from './regional-calendar-provenance';
 
 
 type MaterializeOccurrenceRow = {
@@ -1568,6 +1569,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'condition_evaluator',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1622,6 +1624,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'condition_evaluator',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1682,6 +1685,7 @@ export async function materializeOccurrencesForYears({
               source_provenance: {
                 source_name: 'condition_evaluator',
                 source_kind: 'curated',
+                ...regionalCalendarProvenanceFor(occ.slug, occ.date),
               },
             },
           });
@@ -1847,6 +1851,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'calculation_engine',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1898,6 +1903,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'calculation_engine',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1949,6 +1955,7 @@ export async function materializeOccurrencesForYears({
               source_provenance: {
                 source_name: 'calculation_engine',
                 source_kind: 'curated',
+                ...regionalCalendarProvenanceFor(occ.slug, occ.date),
               },
             },
           });

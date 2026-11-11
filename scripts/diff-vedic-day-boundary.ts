@@ -306,7 +306,7 @@ function evaluateRulesForLocalDays(
     } else if (rule.rule_family === 'nakshatra_based') {
       occurrencesMap[rule.slug] = NakshatraBasedHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'regional_calendar') {
-      occurrencesMap[rule.slug] = NanakshahiHandler.evaluate(rule, year);
+      occurrencesMap[rule.slug] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
     } else {
       occurrencesMap[rule.slug] = [];
     }
