@@ -1236,6 +1236,25 @@
       "parent_slug": "diwali",
       "offset_days": -2,
       "status": "proposed"
+    },
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 13,
+      "paksha": "krishna",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "pradosha",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
     }
   },
   {
@@ -1327,6 +1346,25 @@
       "parent_slug": "diwali",
       "offset_days": 1,
       "status": "proposed"
+    },
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 1,
+      "paksha": "shukla",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "aparahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
     }
   },
   {
@@ -1346,6 +1384,25 @@
       "parent_slug": "diwali",
       "offset_days": 2,
       "status": "proposed"
+    },
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 2,
+      "paksha": "shukla",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "aparahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
     }
   },
   {
@@ -1484,7 +1541,26 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 11,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Margashirsha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "vaikunta-ekadashi",
@@ -1504,7 +1580,26 @@
     "route_slug": "vaikunta-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "ratified",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Margashirsha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "kamada-ekadashi",
