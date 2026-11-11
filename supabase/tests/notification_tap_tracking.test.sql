@@ -26,10 +26,12 @@ insert into public.profiles (id, full_name, username) values
   ('00000000-0000-0000-0000-00000000bb05', 'S5', 's5'), ('00000000-0000-0000-0000-00000000bb06', 'S6', 's6'),
   ('00000000-0000-0000-0000-00000000bb07', 'S7', 's7');
 
--- aa01: analytics + religious consent. aa02: analytics only. aa03: no consent. aa04: analytics + religious (another account).
-update public.profiles set consent_product_analytics = true, consent_religious_data = true
-  where id in ('00000000-0000-0000-0000-00000000aa01', '00000000-0000-0000-0000-00000000aa04');
+-- aa01, aa02, aa04: opted in to "Help improve reminders" (aa02 also to product analytics, to prove the two purges are independent).
+-- aa03: no consent. Product-analytics or religious-data consent alone must never allow a tap.
+update public.profiles set consent_notification_taps = true
+  where id in ('00000000-0000-0000-0000-00000000aa01', '00000000-0000-0000-0000-00000000aa02', '00000000-0000-0000-0000-00000000aa04');
 update public.profiles set consent_product_analytics = true where id = '00000000-0000-0000-0000-00000000aa02';
+update public.profiles set consent_product_analytics = true, consent_religious_data = true where id = '00000000-0000-0000-0000-00000000aa03';
 
 -- The server's own send log.
 insert into public.notification_deliveries (user_id, notification_key, channel, provider, type, status, dry_run, created_at) values
@@ -236,67 +238,64 @@ begin
 end
 $t$;
 
--- 9. Religious-practice types need the religious-data consent too; social types do not.
+-- 9. One switch covers every type (practice and social alike); the other consents are not consent to this.
 select pg_temp.as_user('00000000-0000-0000-0000-00000000aa02');
 do $t$
 declare r jsonb;
 begin
   r := pg_temp.tap('61111111-1111-1111-1111-111111111111', 'quiz:k2');
-  assert r = '{"accepted":0,"consentRequired":false,"religiousConsentRequired":true,"unmatched":false}'::jsonb, 'a practice-revealing type needs religious consent too: ' || r::text;
+  assert (r ->> 'accepted')::integer = 1, 'a practice tap is recorded with the dedicated consent: ' || r::text;
   r := pg_temp.tap('61111111-1111-1111-1111-111111111112', 'post_reaction:p2:q2');
-  assert (r ->> 'accepted')::integer = 1, 'a social notification needs only the analytics consent';
-  assert (select count(*) from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa02') = 1, 'only the social tap was stored';
+  assert (r ->> 'accepted')::integer = 1, 'a social tap is recorded with the dedicated consent';
+  assert (select count(*) from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa02') = 2, 'both taps were stored';
 end
 $t$;
-
--- 10. Withdrawing consent deletes what it covered, and the existing analytics purge still works beside it.
-update public.profiles set consent_religious_data = true where id = '00000000-0000-0000-0000-00000000aa02';
-select pg_temp.as_user('00000000-0000-0000-0000-00000000aa02');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000aa03');
 do $t$
 declare r jsonb;
 begin
-  r := pg_temp.tap('71111111-1111-1111-1111-111111111111', 'quiz:k2');
-  assert (r ->> 'accepted')::integer = 1, 'with both consents a practice tap is recorded';
-  insert into public.native_product_analytics_daily (user_id, event_name, event_date) values ('00000000-0000-0000-0000-00000000aa02', 'app_opened', current_date);
+  r := pg_temp.tap('62111111-1111-1111-1111-111111111111', 'quiz:k3');
+  assert (r ->> 'consentRequired')::boolean and (r ->> 'accepted')::integer = 0,
+    'product-usage and religious-data consent together are NOT consent to tap recording: ' || r::text;
+  assert not exists (select 1 from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa03'), 'nothing was stored without the dedicated consent';
 end
 $t$;
+
+-- 10. Withdrawing the dedicated consent deletes every tap; withdrawing the OTHER consents does not, and the analytics purge still fires.
+insert into public.native_product_analytics_daily (user_id, event_name, event_date) values ('00000000-0000-0000-0000-00000000aa02', 'app_opened', current_date);
 update public.profiles set consent_religious_data = false where id = '00000000-0000-0000-0000-00000000aa02';
-do $t$
-begin
-  assert not exists (select 1 from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa02' and notification_type = 'quiz'),
-    'withdrawing religious consent deletes the practice taps';
-  assert exists (select 1 from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa02' and notification_type = 'post_reaction'),
-    'withdrawing religious consent keeps the social taps';
-end
-$t$;
 update public.profiles set consent_product_analytics = false where id = '00000000-0000-0000-0000-00000000aa02';
 do $t$
 begin
-  assert not exists (select 1 from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa02'),
-    'withdrawing analytics consent deletes every tap';
   assert not exists (select 1 from public.native_product_analytics_daily where user_id = '00000000-0000-0000-0000-00000000aa02'),
-    'the existing product-analytics purge still fires alongside this one';
+    'the existing product-analytics purge still fires on its own withdrawal';
+  assert (select count(*) from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa02') = 2,
+    'withdrawing product-usage or religious-data consent does not delete taps that have their own consent';
+end
+$t$;
+update public.profiles set consent_notification_taps = false where id = '00000000-0000-0000-0000-00000000aa02';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000aa02');
+do $t$
+begin
+  assert not exists (select 1 from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa02'),
+    'withdrawing the dedicated consent deletes every tap';
+  assert exists (select 1 from public.notification_taps where user_id = '00000000-0000-0000-0000-00000000aa01'), 'and only that account''s taps';
+  assert (pg_temp.tap('63111111-1111-1111-1111-111111111111', 'quiz:k2') ->> 'consentRequired')::boolean, 'after withdrawal the recorder asks for consent again';
 end
 $t$;
 
 -- 11. The consent rule, directly.
 do $t$
 begin
-  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa01', 'quiz') is true, 'both consents: practice tap allowed';
-  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa03', 'post_reaction') is false, 'no consent: nothing allowed';
-  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa01', 'something_new') is true, 'both consents: an unknown type is allowed (and treated as practice)';
-  update public.profiles set consent_religious_data = false where id = '00000000-0000-0000-0000-00000000aa01';
-  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa01', 'something_new') is false, 'an unknown type needs religious consent: it fails closed';
-  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa01', 'mandali_comment') is true, 'a social type needs only analytics consent';
-  update public.profiles set consent_religious_data = true where id = '00000000-0000-0000-0000-00000000aa01';
+  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa01', 'quiz') is true, 'consented: a practice tap is allowed';
+  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa01', 'post_reaction') is true, 'consented: a social tap is allowed';
+  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa01', 'something_new') is true, 'consented: an unknown type is allowed (the switch covers every type)';
+  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa03', 'post_reaction') is false, 'product-usage and religious consent alone allow nothing';
+  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa03', 'quiz') is false, 'product-usage and religious consent alone allow nothing';
   assert public.notification_tap_recording_allowed(gen_random_uuid(), 'quiz') is false, 'an unknown account is not allowed';
-  -- religious-data consent without product-analytics consent is not consent to tap tracking
-  update public.profiles set consent_religious_data = true where id = '00000000-0000-0000-0000-00000000aa03';
-  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa03', 'quiz') is false, 'religious consent alone does not allow a practice tap';
-  assert public.notification_tap_recording_allowed('00000000-0000-0000-0000-00000000aa03', 'post_reaction') is false, 'religious consent alone does not allow any tap';
-  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000aa03', true);
-  assert (pg_temp.tap('c1111111-1111-1111-1111-111111111111', 'quiz:k3') ->> 'consentRequired')::boolean, 'the recorder asks for the analytics consent first';
-  update public.profiles set consent_religious_data = false where id = '00000000-0000-0000-0000-00000000aa03';
+  assert public.notification_tap_recording_allowed(null, 'quiz') is false, 'a null account is not allowed';
+  assert (select data_type || '/' || is_nullable || '/' || column_default from information_schema.columns
+          where table_schema = 'public' and table_name = 'profiles' and column_name = 'consent_notification_taps') = 'boolean/NO/false', 'the column is NOT NULL DEFAULT false';
 end
 $t$;
 
@@ -326,7 +325,7 @@ end
 $t$;
 
 -- 14. The operator summary: counts only, small groups suppressed, and only accounts whose taps could be recorded.
-update public.profiles set consent_product_analytics = true, consent_religious_data = true
+update public.profiles set consent_notification_taps = true
   where id in ('00000000-0000-0000-0000-00000000bb01', '00000000-0000-0000-0000-00000000bb02', '00000000-0000-0000-0000-00000000bb03',
                '00000000-0000-0000-0000-00000000bb04', '00000000-0000-0000-0000-00000000bb05', '00000000-0000-0000-0000-00000000bb06');
 insert into public.notification_deliveries (user_id, notification_key, channel, provider, type, status, dry_run, created_at)

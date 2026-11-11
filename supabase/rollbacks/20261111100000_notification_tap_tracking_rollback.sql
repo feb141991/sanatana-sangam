@@ -1,7 +1,8 @@
 -- Rollback for 20261111100000_notification_tap_tracking.sql.
 -- Drops the daily purge, the consent-change trigger, every function and the table. THE TAP ROWS ARE DELETED with
 -- the table (there is nothing else to restore them from; they hold no content and are kept 90 days).
--- Nothing outside this migration is touched: product analytics, notification_deliveries and profiles are unchanged.
+-- It also drops profiles.consent_notification_taps (the people's opt-ins are lost with it; they are re-asked in Settings).
+-- Nothing else is touched: product analytics and notification_deliveries are unchanged.
 -- Deploy a backend without the /api/native/notification-taps route first (or leave it: it answers 503 once the
 -- function is gone, and the app keeps the tap until it ages out).
 
@@ -22,6 +23,7 @@ drop function if exists public.purge_notification_taps_on_consent_change();
 drop function if exists public.notification_tap_recording_allowed(uuid, text);
 drop function if exists public.notification_tap_type_reveals_practice(text);
 drop table if exists public.notification_taps;
+alter table public.profiles drop column if exists consent_notification_taps;
 
 do $check$
 begin
@@ -36,6 +38,9 @@ begin
   end if;
   if exists (select 1 from pg_trigger where tgname = 'purge_notification_taps_on_consent_change' and not tgisinternal) then
     raise exception 'rollback left the consent-change trigger behind';
+  end if;
+  if exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'profiles' and column_name = 'consent_notification_taps') then
+    raise exception 'rollback left profiles.consent_notification_taps behind';
   end if;
   -- The existing product analytics machinery must be untouched.
   if to_regclass('public.native_product_analytics_daily') is null then

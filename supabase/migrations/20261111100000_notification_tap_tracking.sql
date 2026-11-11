@@ -12,12 +12,13 @@
 --   nothing, so a key cannot be invented, replayed across accounts or attributed to the wrong person.
 --   Retained 90 days (daily purge), deleted with the account (ON DELETE CASCADE) and when consent is withdrawn.
 --
--- CONSENT (decision pending; this file fails closed)
---   notification_tap_recording_allowed() is the single place the rule lives. As written it follows the
---   existing product-analytics rule: the account must have opted in (profiles.consent_product_analytics, default
---   false) and, for any notification that could reveal religious practice, also consent_religious_data.
---   On 2026-11-10 NO account (0 of 32) had opted in to product analytics, so as written this records nothing
---   until people opt in. Changing the rule is a one-function change; see docs/notifications/NOTIFICATION_TAP_TRACKING.md.
+-- CONSENT (founder decision 2026-11-12: its own switch, option C)
+--   profiles.consent_notification_taps (default false) is the ONLY consent for tap recording. The app shows it as
+--   "Help improve reminders" in Settings, off until the person turns it on, and says plainly that it covers taps on every
+--   kind of reminder, including practice reminders. notification_tap_recording_allowed() is the single place the rule
+--   lives and fails closed (no profile, NULL or false = not allowed). It does not depend on the product-usage switch or on
+--   religious-data consent: this is a separate, specific choice. Turning it off deletes the person's taps.
+--   Not legal advice: have counsel confirm the wording before release.
 --
 -- ROC pre-flight (AGENTS.md section 4)
 --   1. Function overload trap (PGRST203): every function here is a NEW name; no existing signature is touched or
@@ -26,12 +27,21 @@
 --      /api/native/notification-taps. The push payload gains a notificationKey field in the same release; apps
 --      and backends of either age keep working (an app without the key sends nothing; a backend without the route
 --      answers 404 and the app keeps the tap until it ages out).
---   3. User data / opt-outs: creates a table; updates no existing row and changes no column default.
---   4. Locks: CREATE TABLE and CREATE TRIGGER on profiles (brief SHARE ROW EXCLUSIVE on a small table). No data scan.
+--   3. User data / opt-outs: creates a table and ADDs one boolean column, NOT NULL DEFAULT false (a constant default is metadata-only
+--      on PostgreSQL 11+, no table rewrite); updates no existing row and changes no existing default.
+--   4. Locks: ALTER TABLE ADD COLUMN and CREATE TRIGGER on profiles (brief ACCESS EXCLUSIVE / SHARE ROW EXCLUSIVE on a small table).
+--      No data scan. Run with lock_timeout so it fails fast rather than queueing behind a writer.
 --   5. Rollback: supabase/rollbacks/20261111100000_notification_tap_tracking_rollback.sql (drops the table and the
 --      data in it).
 --   RLS: enabled and forced, no policy; only the service role and SECURITY DEFINER functions can reach the table.
 --   Privileges: all functions revoked from public/anon; record_notification_tap alone is granted to authenticated.
+
+set local lock_timeout = '5s';
+
+alter table public.profiles
+  add column if not exists consent_notification_taps boolean not null default false;
+comment on column public.profiles.consent_notification_taps is
+  'Opt-in "Help improve reminders": record taps on our push notifications (all types). Default false. Turning it off deletes the account''s taps.';
 
 create table if not exists public.notification_taps (
   id uuid primary key default gen_random_uuid(),
@@ -60,22 +70,8 @@ alter table public.notification_taps force row level security;
 revoke all on table public.notification_taps from public, anon, authenticated;
 grant all on table public.notification_taps to service_role;
 
--- Types that cannot reveal religious practice: another person's action, or our own account/security notices.
--- Anything else, and any type we have never heard of, is treated as revealing practice.
-create or replace function public.notification_tap_type_reveals_practice(p_notification_type text)
-returns boolean
-language sql
-immutable
-set search_path = ''
-as $$
-  select not (coalesce(p_notification_type, '') = any(array[
-    'connection_request', 'connection_accepted', 'connection_rejected', 'connection_cancelled',
-    'post_reaction', 'comment_reaction', 'mandali_comment', 'user_blocked', 'content_reported',
-    'security', 'account'
-  ]::text[]));
-$$;
-
 -- THE consent rule for tap tracking. Fails closed: no profile row, a null, or a missing consent is "not allowed".
+-- p_notification_type is kept so callers and the summary keep their signature; consent no longer depends on the type.
 create or replace function public.notification_tap_recording_allowed(p_user_id uuid, p_notification_type text)
 returns boolean
 language sql
@@ -84,11 +80,7 @@ security definer
 set search_path = ''
 as $$
   select coalesce((
-    select profile.consent_product_analytics is true
-       and (
-         not public.notification_tap_type_reveals_practice(p_notification_type)
-         or profile.consent_religious_data is true
-       )
+    select profile.consent_notification_taps is true
     from public.profiles as profile
     where profile.id = p_user_id
   ), false);
@@ -132,7 +124,7 @@ begin
     raise exception 'Invalid notification tap app version' using errcode = '22023';
   end if;
 
-  select profile.consent_product_analytics into v_consent
+  select profile.consent_notification_taps into v_consent
   from public.profiles as profile where profile.id = v_user_id for update;
   if coalesce(v_consent, false) is not true then
     return jsonb_build_object('accepted', 0, 'consentRequired', true, 'religiousConsentRequired', false, 'unmatched', false);
@@ -154,7 +146,7 @@ begin
   end if;
 
   if not public.notification_tap_recording_allowed(v_user_id, v_type) then
-    return jsonb_build_object('accepted', 0, 'consentRequired', false, 'religiousConsentRequired', true, 'unmatched', false);
+    return jsonb_build_object('accepted', 0, 'consentRequired', true, 'religiousConsentRequired', false, 'unmatched', false);
   end if;
 
   -- A device clock is not trusted. A tap cannot be in the future (clamped to now: an upper bound is always safe).
@@ -178,8 +170,7 @@ begin
 end;
 $$;
 
--- Withdrawing consent deletes the history it covered. Mirrors purge_native_product_analytics_on_consent_change,
--- as a separate trigger so that function is left exactly as it is.
+-- Withdrawing consent deletes the history it covered. A separate trigger, so the product-analytics purge is left exactly as it is.
 create or replace function public.purge_notification_taps_on_consent_change()
 returns trigger
 language plpgsql
@@ -187,11 +178,8 @@ security definer
 set search_path = ''
 as $$
 begin
-  if old.consent_product_analytics is true and new.consent_product_analytics is false then
+  if old.consent_notification_taps is true and new.consent_notification_taps is not true then
     delete from public.notification_taps where user_id = new.id;
-  elsif old.consent_religious_data is true and new.consent_religious_data is false then
-    delete from public.notification_taps
-    where user_id = new.id and public.notification_tap_type_reveals_practice(notification_type);
   end if;
   return new;
 end;
@@ -199,7 +187,7 @@ $$;
 
 drop trigger if exists purge_notification_taps_on_consent_change on public.profiles;
 create trigger purge_notification_taps_on_consent_change
-  after update of consent_product_analytics, consent_religious_data on public.profiles
+  after update of consent_notification_taps on public.profiles
   for each row execute function public.purge_notification_taps_on_consent_change();
 
 -- Counts only, for the operator. A row appears only when at least p_min_recipients accounts were sent that
@@ -262,12 +250,10 @@ begin
 end;
 $$;
 
-revoke all on function public.notification_tap_type_reveals_practice(text) from public, anon, authenticated;
 revoke all on function public.notification_tap_recording_allowed(uuid, text) from public, anon, authenticated;
 revoke all on function public.record_notification_tap(uuid, text, timestamptz, text, text, text) from public, anon;
 revoke all on function public.purge_notification_taps_on_consent_change() from public, anon, authenticated;
 revoke all on function public.get_notification_tap_summary(integer, integer) from public, anon, authenticated;
-grant execute on function public.notification_tap_type_reveals_practice(text) to service_role;
 grant execute on function public.notification_tap_recording_allowed(uuid, text) to service_role;
 grant execute on function public.record_notification_tap(uuid, text, timestamptz, text, text, text) to authenticated;
 grant execute on function public.get_notification_tap_summary(integer, integer) to service_role;
@@ -297,7 +283,7 @@ declare
   v_count integer;
 begin
   foreach v_name in array array[
-    'notification_tap_type_reveals_practice', 'notification_tap_recording_allowed', 'record_notification_tap',
+    'notification_tap_recording_allowed', 'record_notification_tap',
     'purge_notification_taps_on_consent_change', 'get_notification_tap_summary'
   ] loop
     select count(*) into v_count
@@ -321,12 +307,6 @@ begin
   if public.notification_tap_recording_allowed('00000000-0000-0000-0000-000000000000', 'quiz') is not false
      or public.notification_tap_recording_allowed(null, 'quiz') is not false then
     raise exception 'tap tracking self-check: the consent rule must fail closed for an unknown account';
-  end if;
-  if public.notification_tap_type_reveals_practice('quiz') is not true
-     or public.notification_tap_type_reveals_practice('something_new') is not true
-     or public.notification_tap_type_reveals_practice(null) is not true
-     or public.notification_tap_type_reveals_practice('post_reaction') is not false then
-    raise exception 'tap tracking self-check: practice classification is wrong';
   end if;
 end
 $check$;

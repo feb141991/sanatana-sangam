@@ -170,6 +170,23 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(updatedPayload).toEqual({ wants_mood_reminders: false });
   });
 
+  it("accepts the notification-tap opt-in as its own setting, independent of product analytics", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-tap-consent" }, error: null, supabase: mockSupabase });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ consent_notification_taps: true }),
+    }));
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({ consent_notification_taps: true });
+
+    const bad = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ consent_notification_taps: "yes" }),
+    }));
+    expect(bad.status).toBe(400);
+  });
+
   it("accepts product analytics consent as a separate opt-in setting", async () => {
     getApiUser.mockResolvedValue({
       user: { id: "user-analytics-consent" },
