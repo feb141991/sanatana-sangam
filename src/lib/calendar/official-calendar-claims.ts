@@ -31,7 +31,7 @@ const sgpc = {
   authority: 'Shiromani Gurdwara Parbandhak Committee',
   edition: `Nanakshahi Samvat ${currentSgpcEdition?.edition ?? 'latest'}`,
   sourceUrl: 'https://sgpc.net/nanakshahi-calendar/',
-  manifest: currentSgpcEdition ? `docs/sources/sgpc-nanakshahi-${currentSgpcEdition.edition}-sidebar.json` : 'docs/sources/sgpc-nanakshahi-sidebar.json',
+  manifest: currentSgpcEdition ? `docs/sources/sgpc-nanakshahi-${currentSgpcEdition.edition}.manifest.md` : 'docs/sources/sgpc-nanakshahi.manifest.md',
 };
 
 export const OFFICIAL_CALENDAR_CLAIMS: readonly OfficialCalendarClaim[] = [
