@@ -138,10 +138,6 @@
       "schedule": "30 21 * * *"
     },
     {
-      "path": "/api/digest/generate",
-      "schedule": "0 23 * * *"
-    },
-    {
       "path": "/api/cron/journal-anniversary",
       "schedule": "0 8 * * *"
     },

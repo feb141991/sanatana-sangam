@@ -86,12 +86,25 @@ export type NotificationProfile = {
   quiz_reminder_enabled?: boolean | null;
 };
 
+/**
+ * Notification types that are no longer sent. A row of one of these types that is still in the queue (scheduled before
+ * the producer was removed) is refused at delivery, so retiring a type never depends on the queue being empty or on a
+ * data fix. The daily digest was retired on 2026-11-10: AI-written text no council had reviewed, sent to every account
+ * with no setting to turn it off. See docs/notifications/DAILY_DIGEST_RETIREMENT.md. Bringing a type back means
+ * removing it here AND having reviewed content and a preference for it.
+ */
+export const RETIRED_NOTIFICATION_TYPES: readonly string[] = ["daily_digest"];
+
 export function getNotificationPreferenceSkipReason(
   row: ScheduledNotificationRow,
   profile: NotificationProfile,
 ): string | null {
   if (profile.is_deleting === true) {
     return "account_deletion_pending";
+  }
+
+  if (row.notification_type != null && RETIRED_NOTIFICATION_TYPES.includes(row.notification_type)) {
+    return "notification_type_retired";
   }
 
   if (

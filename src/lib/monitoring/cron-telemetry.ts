@@ -313,16 +313,6 @@ export const CRON_CATALOGUE: CronDefinition[] = [
     description: 'Creates daily ethical dilemma scenarios and reflective choices.',
     method: 'GET',
   },
-  {
-    id: 'digest-generate',
-    name: 'Generate Daily Seeker Digest',
-    route: '/api/digest/generate',
-    schedule: '0 23 * * *',
-    scheduleHuman: 'Daily at 23:00 UTC',
-    category: 'ai',
-    description: 'Synthesizes tomorrow’s personalised morning reflection digest for active users.',
-    method: 'GET',
-  },
 
   // ── 4. System Maintenance & Cleanup ──
   {

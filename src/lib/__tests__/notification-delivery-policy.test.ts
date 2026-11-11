@@ -1,12 +1,39 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_QUIET_HOURS,
+  RETIRED_NOTIFICATION_TYPES,
   getNotificationPreferenceSkipReason,
   getPushPayloadType,
   getQuietHoursSkipReason,
   getScheduledNotificationActionPath,
   getScheduledNotificationPushData,
 } from "../notification-delivery-policy";
+
+describe("a retired notification type is refused at delivery", () => {
+  const digest = { notification_type: "daily_digest", notification_key: "daily-digest:user-1:2026-11-10" };
+
+  it("names the daily digest as retired", () => {
+    expect(RETIRED_NOTIFICATION_TYPES).toEqual(["daily_digest"]);
+  });
+
+  it("refuses a digest row that was queued before the producer was removed, whatever the person's settings", () => {
+    for (const profile of [{}, { wants_mood_reminders: true }, { wants_shloka_reminders: true, quiz_reminder_enabled: true }, { is_deleting: false }]) {
+      expect(getNotificationPreferenceSkipReason(digest, profile)).toBe("notification_type_retired");
+    }
+  });
+
+  it("still reports an account in deletion first, so that audit trail is unchanged", () => {
+    expect(getNotificationPreferenceSkipReason(digest, { is_deleting: true })).toBe("account_deletion_pending");
+  });
+
+  it("does not touch any other type, nor a row with no type", () => {
+    for (const type of ["mood", "shloka", "quiz", "dharm_veer", "weekly_summary", "general", "japa", "festival"]) {
+      expect(getNotificationPreferenceSkipReason({ notification_type: type, notification_key: `${type}:k` }, {})).not.toBe("notification_type_retired");
+    }
+    expect(getNotificationPreferenceSkipReason({ notification_type: null, notification_key: "k" }, {})).not.toBe("notification_type_retired");
+    expect(getNotificationPreferenceSkipReason({ notification_key: "k" }, {})).not.toBe("notification_type_retired");
+  });
+});
 
 describe("notification delivery policy", () => {
   const sanskarRow = {
