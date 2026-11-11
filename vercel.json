@@ -66,10 +66,6 @@
       "schedule": "0 7 * * *"
     },
     {
-      "path": "/api/cron/mood-reminder",
-      "schedule": "35 3 * * *"
-    },
-    {
       "path": "/api/cron/sync-live-darshans",
       "schedule": "0 5 * * *"
     },

@@ -210,16 +210,6 @@ export const CRON_CATALOGUE: CronDefinition[] = [
     method: 'GET',
   },
   {
-    id: 'mood-reminder-morning',
-    name: 'Morning Mood Reminder',
-    route: '/api/cron/mood-reminder',
-    schedule: '30 3 * * *',
-    scheduleHuman: 'Daily at 03:30 UTC',
-    category: 'reminders',
-    description: 'Morning emotional readiness and mindset check-in.',
-    method: 'GET',
-  },
-  {
     id: 'whatsapp-daily',
     name: 'WhatsApp Daily Panchang & Shloka',
     route: '/api/whatsapp/send-daily',
