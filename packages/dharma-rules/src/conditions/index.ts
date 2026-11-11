@@ -20,6 +20,7 @@ export {
   type TithiPresenceCondition,
   type NakshatraPresenceCondition,
   type KaranaPresenceCondition,
+  type HolikaDahanCondition,
   type ViddhaCondition,
   type EvaluationReason,
   type ConditionEvaluationResult,
