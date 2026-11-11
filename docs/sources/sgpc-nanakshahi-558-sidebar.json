@@ -4,6 +4,20 @@
     "from": "2026-03-14",
     "to": "2027-03-13"
   },
+  "month_starts": {
+    "Chet": "2026-03-14",
+    "Vaisakh": "2026-04-14",
+    "Jeth": "2026-05-15",
+    "Harh": "2026-06-15",
+    "Sawan": "2026-07-16",
+    "Bhadon": "2026-08-17",
+    "Assu": "2026-09-17",
+    "Katak": "2026-10-17",
+    "Maghar": "2026-11-16",
+    "Poh": "2026-12-16",
+    "Magh": "2027-01-14",
+    "Phagun": "2027-02-13"
+  },
   "source": {
     "publisher": "Shiromani Gurdwara Parbandhak Committee (SGPC)",
     "tier": 1,

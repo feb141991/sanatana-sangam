@@ -3,7 +3,7 @@ import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
 import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, MONTH_NAMES, nextMonthIndex, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
 import { evaluateCondition } from '@sangam/dharma-rules';
-import { regionalCalendarProvenanceFor, type RegionalCalendarDateResult } from './regional-calendar-provenance';
+import { findMappedSidebarRow, latestEdition, mappedDateForEdition, regionalCalendarProvenanceFor, type RegionalCalendarDateResult } from './regional-calendar-provenance';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
 export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
@@ -617,50 +617,17 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
-// Source: docs/sources/sgpc-nanakshahi-558.manifest.md (SGPC Nanakshahi
-// Calendar, Samvat 558, 2026-27 A.D., verified checksum ad9ff9ad...). This
-// table was wrong for 6 of 12 months (Bhadon through Phagan, drifting -1 to
-// -2 days) from whenever it was first written until 2026-08-17 -- it used
-// the naive "first 5 months = 31 days, rest = 30" pattern the manifest had
-// already documented as wrong for THIS cycle (Sawan is genuinely 32 days,
-// Bhadon 31, not 31/30), but that correction never made it from the
-// manifest into this constant. Found via a user report of specific festival
-// dates disagreeing with cited SGPC citations; re-derived directly from the
-// source PDF and verified against two independently-confirmed public dates
-// (Bandi Chhor Divas 2026-11-08, Guru Nanak Gurpurab 2026-11-24) already
-// recorded in the manifest.
-const NANAKSHAHI_GREGORIAN_START: Record<string, { month: number; day: number }> = {
-  'Chet':    { month: 3,  day: 14 },
-  'Vaisakh': { month: 4,  day: 14 },
-  'Jeth':    { month: 5,  day: 15 },
-  'Harh':    { month: 6,  day: 15 },
-  'Sawan':   { month: 7,  day: 16 },
-  'Bhadon':  { month: 8,  day: 17 },
-  'Assu':    { month: 9,  day: 17 },
-  'Katak':   { month: 10, day: 17 },
-  'Maghar':  { month: 11, day: 16 },
-  'Poh':     { month: 12, day: 16 },
-  'Magh':    { month: 1,  day: 14 },
-  'Phagan':  { month: 2,  day: 13 },
-};
-
 export const NanakshahiHandler = {
   evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[] {
     if (!rule.nanakshahi_month || rule.nanakshahi_day === undefined) return [];
-    const start = NANAKSHAHI_GREGORIAN_START[rule.nanakshahi_month];
-    if (!start) return [];
-
-    const startDate = new Date(Date.UTC(year, start.month - 1, start.day));
-    const observanceDate = new Date(startDate.getTime() + (rule.nanakshahi_day - 1) * 86400000);
-
-    // Only include if the resulting date falls in the target year
-    if (observanceDate.getUTCFullYear() !== year) return [];
-
-    const date = formatUtcDate(observanceDate);
+    const edition = latestEdition();
+    if (!edition || !findMappedSidebarRow(edition, rule.slug)) return [];
+    const date = mappedDateForEdition(edition, rule.slug, year);
+    if (!date || Number(date.slice(0, 4)) !== year) return [];
     return [{ date, calendarProvenance: regionalCalendarProvenanceFor(rule.slug, date).calendar_provenance ?? {
       provenance: 'computed_expected',
       edition: null,
-      reason: 'Computed from the Nanakshahi month/day anchor; no matching SGPC 558 sidebar row is available.',
+      reason: 'Computed from the latest available Nanakshahi edition pattern; no matching SGPC printed date is available.',
     } }];
   }
 };
