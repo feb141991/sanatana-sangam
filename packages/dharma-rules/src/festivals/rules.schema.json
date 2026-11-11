@@ -392,6 +392,146 @@
         ],
         "description": "D34: which instant of the civil day determines the prevailing tithi (corrected engine only). Undefined/sunrise is the default; madhyahna (solar noon) is a real dharma-sastra convention a handful of rules use instead."
       },
+      "date_assignment": {
+        "type": "object",
+        "required": [
+          "status",
+          "basis",
+          "tithi",
+          "paksha",
+          "lunar_month",
+          "month_system",
+          "period",
+          "mode",
+          "skipped_tithi",
+          "tie_break"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "ratified"
+            ]
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "lunar_tithi"
+            ]
+          },
+          "tithi": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          },
+          "paksha": {
+            "type": "string",
+            "enum": [
+              "shukla",
+              "krishna"
+            ]
+          },
+          "lunar_month": {
+            "type": "string",
+            "minLength": 1
+          },
+          "month_system": {
+            "type": "string",
+            "enum": [
+              "amanta",
+              "purnimanta"
+            ]
+          },
+          "period": {
+            "type": "string",
+            "enum": [
+              "sunrise",
+              "madhyahna",
+              "aparahna",
+              "pradosha",
+              "nishita",
+              "moonrise",
+              "arunodaya"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "at",
+              "touches",
+              "prevails",
+              "majority"
+            ]
+          },
+          "pradosha_minutes": {
+            "type": "integer",
+            "enum": [
+              48,
+              72,
+              144
+            ]
+          },
+          "skipped_tithi": {
+            "type": "string",
+            "enum": [
+              "previous_day",
+              "following_day",
+              "first_qualifying_date"
+            ]
+          },
+          "tie_break": {
+            "type": "string",
+            "enum": [
+              "first_qualifying_date",
+              "last_qualifying_date",
+              "human_review"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "description": "Future explicit ritual-window declaration. Every rule using this declaration must also provide window_source."
+      },
+      "window_source": {
+        "type": "object",
+        "required": [
+          "tier",
+          "source_name",
+          "location_in_source",
+          "read_by_human",
+          "status"
+        ],
+        "properties": {
+          "tier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "source_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location_in_source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "read_by_human": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "unsourced",
+              "reviewed",
+              "ratified",
+              "disputed"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "description": "Human-readable provenance for a ritual-window declaration. This is deliberately separate from the legacy citation field."
+      },
       "variant_id": {
         "type": "string",
         "description": "Identity of variant (e.g. smarta, vaishnava)"
@@ -508,6 +648,20 @@
         "description": "Structured metadata for recognised variant dates when a year is disputed."
       }
     },
+    "allOf": [
+      {
+        "if": {
+          "required": [
+            "date_assignment"
+          ]
+        },
+        "then": {
+          "required": [
+            "window_source"
+          ]
+        }
+      }
+    ],
     "additionalProperties": false
   }
 }
