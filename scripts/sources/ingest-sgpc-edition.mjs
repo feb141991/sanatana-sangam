@@ -9,13 +9,25 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, dirname, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export const PAN_MODEL_URL = 'https://github.com/tesseract-ocr/tessdata_best/raw/main/pan.traineddata';
 export const PAN_MODEL_NOTE = 'Download pan.traineddata from PAN_MODEL_URL, then record wc -c and sha256sum locally; never commit the model.';
 
 const MONTHS = ['Chet', 'Vaisakh', 'Jeth', 'Harh', 'Sawan', 'Bhadon', 'Assu', 'Katak', 'Maghar', 'Poh', 'Magh', 'Phagun'];
 const COLOUR_CLASSES = ['gurpurab', 'itihasik', 'bhagat_sahiban', 'sarkari_holiday'];
+const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+
+function loadSlugMap() {
+  return JSON.parse(readFileSync(resolve(repositoryRoot, 'docs/sources/sgpc-nanakshahi-slug-map.json'), 'utf8'));
+}
+
+export function mapRowToSlug(row, mappings = loadSlugMap()) {
+  if (row.slug) return row.slug;
+  const name = row.name_gurmukhi ?? '';
+  return mappings.find(mapping => mapping.name_includes.every(fragment => name.includes(fragment)))?.slug ?? null;
+}
 
 export function parseDayToken(value) {
   const match = String(value).trim().match(/^(\d{1,2})(?:[-–](\d{1,2}))?$/);
@@ -90,7 +102,7 @@ export function buildEdition({ edition, edition_range, month_starts, rows, sourc
   const starts = monthStartsFromFacts({ month_starts });
   const checked = crossCheckRows(rows, starts);
   const review = { read_by_human: false, reviewed_by: null, reviewed_at: null, scope: null, status: 'official-source-backed, pending council ratification' };
-  return { edition, edition_range, month_starts: starts, source, review, colour_method, rows: rows.map(row => ({ ...row, read_by_human: false, reviewed_by: null, reviewed_at: null })) , cross_check: checked };
+  return { edition, edition_range, month_starts: starts, source, review, colour_method, rows: rows.map(row => ({ ...row, slug: mapRowToSlug(row), read_by_human: false, reviewed_by: null, reviewed_at: null })) , cross_check: checked };
 }
 
 export function confirmEdition(path, reviewer, reviewedAt) {
