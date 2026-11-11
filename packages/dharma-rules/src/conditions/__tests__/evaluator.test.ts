@@ -13,6 +13,43 @@ describe('Observance Condition Evaluator (Tracker 3.2)', () => {
     expect(CONDITION_EVALUATOR_VERSION).toBe('1.0.0');
   });
 
+  it('defines sayahna as the final fifth of daytime ending at sunset', () => {
+    const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+    const window = getPeriodWindow('sayahna', '2026-03-03', location);
+    const sunset = getPeriodWindow('sunset', '2026-03-03', location);
+    const sunrise = getPeriodWindow('sunrise', '2026-03-03', location);
+
+    expect(window).toBeDefined();
+    expect(sunset).toBeDefined();
+    expect(sunrise).toBeDefined();
+    expect(window?.end.getTime()).toBe(sunset?.start.getTime());
+    const dayFifth = (sunset!.start.getTime() - sunrise!.start.getTime()) / 5;
+    expect(Math.abs(window!.start.getTime() - (sunrise!.start.getTime() + dayFifth * 4))).toBeLessThan(1);
+  });
+
+  it('evaluates Vishti presence and absence from canonical elongation boundaries', () => {
+    const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+    const present = evaluateCondition({
+      type: 'karana_presence',
+      karana: 'Vishti',
+      period: 'pradosha',
+      mode: 'touches',
+    }, '2026-03-03', location);
+    const absent = evaluateCondition({
+      type: 'karana_presence',
+      karana: 'Vishti',
+      period: 'pradosha',
+      mode: 'absent',
+    }, '2026-03-03', location);
+
+    expect(present.conditionType).toBe('karana_presence');
+    expect(absent.conditionType).toBe('karana_presence');
+    expect(present.satisfied).not.toBe('indeterminate');
+    expect(absent.satisfied).not.toBe('indeterminate');
+    expect(absent.satisfied).toBe(!present.satisfied);
+    expect(present.reasons[0].code).toBe('karana_presence_check');
+  });
+
   it('evaluates tithi_presence mode prevails at Nishita for Maha Shivaratri condition', () => {
     const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
     const cond = {

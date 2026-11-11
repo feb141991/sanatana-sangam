@@ -6,6 +6,8 @@ import {
   getTzOffsetHours,
   LocationInput,
   getLunarMonth as getLunarMonthUncached,
+  computeAstronomy,
+  getKaranaName,
 } from '../../../panchang-engine/src/index.js';
 import { getSunriseSunset } from '../../../panchang-engine/src/core/astronomy.js';
 import { getMoonRiseSet } from '../../../panchang-engine/src/core/moon-rise-set.js';
@@ -59,6 +61,7 @@ import {
   CONDITION_EVALUATOR_VERSION,
   TithiCondition,
   PakshaCondition,
+  KaranaPresenceCondition,
 } from './types.js';
 
 
@@ -218,6 +221,11 @@ function computePeriodWindow(
     case 'pradosha':
       start = sunset;
       end = new Date(sunset.getTime() + 72 * 60_000); // 3 ghatikas = 72 min
+      break;
+    case 'sayahna':
+      // Sayahna is the final fifth of the local daytime, ending at sunset.
+      start = new Date(sunrise.getTime() + 4 * dayFifth);
+      end = sunset;
       break;
     case 'madhyahna':
       start = new Date(sunrise.getTime() + 2 * dayFifth);
@@ -724,6 +732,51 @@ export function evaluateCondition(
       reasons,
       diagnostics: window.diagnostics,
       astronomy: { nakshatraName: startPanchang.nakshatra },
+    };
+  }
+
+  if (condition.type === 'karana_presence') {
+    const window = getPeriodWindow(condition.period, civilDateStr, location);
+    if (!window) {
+      return {
+        conditionType: condition.type,
+        satisfied: 'indeterminate',
+        reasons: [{ code: 'window_absent', text: `Period window '${condition.period}' absent on ${civilDateStr}.` }],
+        diagnostics: ['no_event_window'],
+      };
+    }
+
+    const target = condition.karana.toLowerCase();
+    const sampleCount = Math.max(1, Math.ceil((window.end.getTime() - window.start.getTime()) / 300_000));
+    let present = false;
+    for (let i = 0; i <= sampleCount; i += 1) {
+      const instant = new Date(window.start.getTime() + ((window.end.getTime() - window.start.getTime()) * i) / sampleCount);
+      const karanaIndex = Math.floor(computeAstronomy(instant).elongation / 6) + 1;
+      if (getKaranaName(karanaIndex).toLowerCase() === target) {
+        present = true;
+        break;
+      }
+    }
+
+    const mode = (condition as KaranaPresenceCondition).mode;
+    const satisfied = mode === 'absent' ? !present : present;
+    reasons.push({
+      code: 'karana_presence_check',
+      text: `Karana '${condition.karana}' ${mode} during '${condition.period}': ${satisfied ? 'MATCHED' : 'DID NOT MATCH'}.`,
+      details: { karana: condition.karana, period: condition.period, mode, present },
+    });
+    return {
+      conditionType: condition.type,
+      satisfied,
+      reasons,
+      diagnostics: window.diagnostics,
+      window: {
+        name: condition.period,
+        startUtc: window.start.toISOString(),
+        endUtc: window.end.toISOString(),
+        startLocal: formatInstantInTz(window.start, location.tz),
+        endLocal: formatInstantInTz(window.end, location.tz),
+      },
     };
   }
 
