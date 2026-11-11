@@ -70,9 +70,9 @@
   },
   {
     "slug": "holi",
-    "display_name": "Holi",
-    "emoji": "🎨",
-    "description": "Festival of colours celebrating victory of good over evil",
+    "display_name": "Holika Dahan — Holi",
+    "emoji": "🔥",
+    "description": "The Phalguna Purnima bonfire observance commemorating Prahlada's devotion and the defeat of Holika",
     "kind": "major",
     "tradition": "hindu",
     "rule_family": "lunar_tithi",
@@ -83,8 +83,43 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "krishna",
+      "lunar_month": "Phalguna",
+      "month_system": "amanta",
+      "period": "pradosha",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
     "launch_status": "included",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). Whether this rule's user-facing date should represent Holika Dahan or the following Rangwali Holi day is an open content question, not settled by this citation. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). Whether this rule's user-facing date should represent Holika Dahan or the following Rangwali Holi day is an open content question, not settled by this citation. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2.",
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "gudi-padwa",
@@ -3098,5 +3133,59 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+  },
+  {
+    "slug": "rangwali-holi",
+    "display_name": "Rangwali Holi",
+    "emoji": "🎨",
+    "description": "The Phalguna festival of colours observed on the civil day following Holika Dahan",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "corrected_lunar_masa_name": "Chaitra",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 16,
+    "allow_skipped_tithi": true,
+    "corrected_lunar_tithi_index": 16,
+    "corrected_allow_skipped_tithi": true,
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 1,
+      "paksha": "krishna",
+      "lunar_month": "Chaitra",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "following_day",
+      "tie_break": "first_qualifying_date"
+    },
+    "launch_status": "deferred",
+    "ratification_note": "Proposed split from the legacy holi slug. The existing holi row is the Holika Dahan/Phalguna Purnima rule; this row represents the following Rangwali Holi colour day. Window and cross-profile behaviour require human review before publication.",
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   }
 ]

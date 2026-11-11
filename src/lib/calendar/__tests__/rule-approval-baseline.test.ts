@@ -43,7 +43,7 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
     }
     expect(counts).toEqual({
       explicit: 0,
-      implicitDefault: 122,
+      implicitDefault: 123,
       requiresTraditionProfile: 1,
       externallyCurated: 1,
     });

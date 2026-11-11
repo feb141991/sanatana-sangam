@@ -12,9 +12,9 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
   const data = festivalContentJson;
   const rules = rulesJson;
 
-  it('1. covers 100% of the 124 rules in rules.json (122 unique slugs)', () => {
+  it('1. covers 100% of the 125 rules in rules.json (123 unique slugs)', () => {
     const contentSlugs = new Set(data.festivals.map(f => f.definitionKey));
-    expect(data.festivals.length).toBe(122);
+    expect(data.festivals.length).toBe(123);
 
     for (const rule of rules) {
       expect(contentSlugs.has(rule.slug), `Missing content entry for rule "${rule.slug}" (${rule.display_name})`).toBe(true);

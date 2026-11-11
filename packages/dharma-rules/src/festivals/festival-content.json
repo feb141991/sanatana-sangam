@@ -1349,8 +1349,8 @@
       "tradition": "hindu",
       "name": {
         "value": {
-          "en": "Holi",
-          "hi": "होली (धुलेंडी)"
+          "en": "Holika Dahan — Holi",
+          "hi": "होलिका दहन — होली"
         },
         "status": "pending_source",
         "sourceRefs": [],
@@ -1360,8 +1360,8 @@
       },
       "tagline": {
         "value": {
-          "en": "The festival of colors — celebrating devotion, springtime, and cosmic joy",
-          "hi": "रंगोत्सव — भक्त प्रह्लाद की विजय, वसंत ऋतु और दिव्य आनंद का पर्व"
+          "en": "The Phalguna Purnima bonfire on the eve of Holi; Rangwali Holi is observed separately.",
+          "hi": "फाल्गुन पूर्णिमा का होली की पूर्वसंध्या का अग्नि-उत्सव; रंगवाली होली अलग से मनाई जाती है।"
         },
         "status": "pending_source",
         "sourceRefs": [],
@@ -1429,6 +1429,139 @@
           "hi": [
             "हानिकारक रासायनिक रंगों, वार्निश या पक्के रंगों का प्रयोग न करें",
             "बेजुबान पशु-पक्षियों पर या किसी की अनिच्छा पर रंग न डालें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "pujaItems": {
+        "value": {
+          "en": [
+            "Organic herbal gulal & abir",
+            "Dry coconut & cow dung cakes (for Holika)",
+            "Ears of green wheat and gram",
+            "Gujiya and sweets",
+            "Ganga water and chandan"
+          ],
+          "hi": [
+            "हर्बल गुलाल व अबीर",
+            "सूखा नारियल व बड़कुले (उपले)",
+            "गेहूं और चने की हरी बालियां",
+            "गुझिया व मिष्ठान",
+            "गंगाजल व चंदन"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "mantra": {
+        "sanskrit": "वन्दितासि सुरेन्द्रेण ब्रह्मणा शङ्करेण च। अतस्त्वं पाहि नो देवि भूते भूतिप्रदा भव॥",
+        "transliteration": "vanditāsi surendreṇa brahmaṇā śaṅkareṇa ca, atastvaṃ pāhi no devi bhūte bhūtipradā bhava",
+        "translation": {
+          "value": {
+            "en": "O Holika deity, worshipped even by Indra, Brahma, and Shankara, protect us and bestow prosperity, vitality, and peace upon all beings.",
+            "hi": "हे देवी! ब्रह्मा, विष्णु और शंकर द्वारा पूजित, आप हम सबकी रक्षा करें और समस्त प्राणियों को सुख, शांति और ऐश्वर्य प्रदान करें।"
+          },
+          "status": "pending_source",
+          "sourceRefs": [],
+          "applicability": {
+            "universal": true
+          }
+        }
+      }
+    },
+    {
+      "definitionKey": "rangwali-holi",
+      "emoji": "🎨",
+      "tradition": "hindu",
+      "name": {
+        "value": {
+          "en": "Rangwali Holi",
+          "hi": "रंगवाली होली"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "tagline": {
+        "value": {
+          "en": "The colour festival following Holika Dahan.",
+          "hi": "होलिका दहन के अगले दिन मनाया जाने वाला रंगोत्सव।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "significance": {
+        "value": {
+          "en": "Rangwali Holi is the daylight colour celebration observed after Holika Dahan, expressing renewal, joy, forgiveness, and community through the play of natural colours.",
+          "hi": "रंगवाली होली होलिका दहन के बाद दिन में मनाया जाने वाला रंगोत्सव है, जो प्राकृतिक रंगों, आनंद, क्षमा और सामुदायिक उल्लास के माध्यम से नवजीवन का संदेश देता है।"
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Use natural colours respectfully and obtain consent before applying them.",
+            "Visit family and elders, exchange greetings, and share seasonal foods.",
+            "Keep the celebration safe, inclusive, and considerate of people who do not wish to play."
+          ],
+          "hi": [
+            "प्राकृतिक रंगों का उपयोग करें और रंग लगाने से पहले सहमति लें।",
+            "परिवार और बड़ों से मिलकर शुभकामनाएँ दें और मौसमी पकवान बाँटें।",
+            "उन लोगों की इच्छा का सम्मान करें जो रंग नहीं खेलना चाहते; उत्सव को सुरक्षित और समावेशी रखें।"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Use gentle, natural colours",
+            "Ask before applying colour",
+            "Share sweets and good wishes"
+          ],
+          "hi": [
+            "प्राकृतिक और हल्के रंगों का उपयोग करें",
+            "रंग लगाने से पहले पूछें",
+            "मिठाई और शुभकामनाएँ बाँटें"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": {
+          "universal": true
+        }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Do not force colour on anyone",
+            "Avoid unsafe chemical colours",
+            "Do not disturb people or animals"
+          ],
+          "hi": [
+            "किसी पर जबरन रंग न लगाएँ",
+            "हानिकारक रासायनिक रंगों से बचें",
+            "लोगों या पशुओं को परेशान न करें"
           ]
         },
         "status": "pending_source",
