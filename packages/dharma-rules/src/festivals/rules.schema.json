@@ -411,6 +411,7 @@
             "type": "string",
             "enum": [
               "proposed",
+                "founder_approved",
               "ratified"
             ]
           },

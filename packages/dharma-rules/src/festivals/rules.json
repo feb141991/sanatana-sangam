@@ -1383,7 +1383,7 @@
       "status": "proposed"
     },
     "date_assignment": {
-      "status": "ratified",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 1,
       "paksha": "shukla",
@@ -1422,7 +1422,7 @@
       "status": "proposed"
     },
     "date_assignment": {
-      "status": "ratified",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 2,
       "paksha": "shukla",
@@ -2930,7 +2930,7 @@
       }
     ],
     "date_assignment": {
-      "status": "ratified",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 4,
       "paksha": "krishna",

@@ -12,9 +12,9 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
   const data = festivalContentJson;
   const rules = rulesJson;
 
-  it('1. covers 100% of the 125 rules in rules.json (123 unique slugs)', () => {
+  it('1. covers 100% of the 127 rules in rules.json (125 unique slugs)', () => {
     const contentSlugs = new Set(data.festivals.map(f => f.definitionKey));
-    expect(data.festivals.length).toBe(123);
+    expect(data.festivals.length).toBe(125);
 
     for (const rule of rules) {
       expect(contentSlugs.has(rule.slug), `Missing content entry for rule "${rule.slug}" (${rule.display_name})`).toBe(true);
@@ -86,7 +86,7 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
 
   it('4. verifies tradition-specific Gurmukhi names for Sikh festivals', () => {
     const sikhFestivals = data.festivals.filter(f => f.tradition === 'sikh');
-    expect(sikhFestivals.length).toBe(13);
+    expect(sikhFestivals.length).toBe(15);
     for (const f of sikhFestivals) {
       expect(f.name?.value?.pa, `Missing Gurmukhi name for ${f.definitionKey}`).toBeDefined();
       expect(f.name.value.pa.length).toBeGreaterThan(0);

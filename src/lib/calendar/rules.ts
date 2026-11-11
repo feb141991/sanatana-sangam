@@ -107,7 +107,7 @@ export interface ObservanceRule {
     status: 'declared' | 'proposed';
   };
   date_assignment?: {
-    status: 'proposed' | 'ratified';
+    status: 'proposed' | 'founder_approved' | 'ratified';
     basis: 'lunar_tithi';
     tithi: number;
     paksha: 'shukla' | 'krishna';

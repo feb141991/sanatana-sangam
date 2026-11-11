@@ -54,4 +54,22 @@ describe('explicit ritual-window provenance', () => {
       },
     }])).toBe(true);
   });
+
+  it('accepts founder approval separately from council ratification', () => {
+    const validate = validator();
+    expect(validate([{ ...baseRule, date_assignment: { ...baseRule.date_assignment, status: 'founder_approved' }, window_source: {
+      tier: 6,
+      source_name: 'Founder decision record',
+      location_in_source: 'Decision 2026-11-11',
+      read_by_human: true,
+      status: 'reviewed',
+    } }])).toBe(true);
+    expect(validate([{ ...baseRule, date_assignment: { ...baseRule.date_assignment, status: 'ratified' }, window_source: {
+      tier: 1,
+      source_name: 'Council record',
+      location_in_source: 'Decision 2026-11-11',
+      read_by_human: true,
+      status: 'ratified',
+    } }])).toBe(true);
+  });
 });
