@@ -1560,7 +1560,23 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive"
   },
   {
     "slug": "vaikunta-ekadashi",
@@ -1599,7 +1615,23 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive"
   },
   {
     "slug": "kamada-ekadashi",

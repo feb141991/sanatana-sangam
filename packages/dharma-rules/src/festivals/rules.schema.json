@@ -519,6 +519,17 @@
         "additionalProperties": false,
         "description": "Explicit relationship metadata for series, aliases, conventions, and legacy relative rules."
       },
+      "calendar_profiles": {
+        "type": "array",
+        "items": { "type": "string", "minLength": 1 },
+        "uniqueItems": true,
+        "description": "Descriptive calendar-profile scope; does not change dates unless profile_scope is engine_enforced."
+      },
+      "profile_scope": {
+        "type": "string",
+        "enum": ["descriptive", "engine_enforced"],
+        "description": "Whether calendar_profiles are descriptive or consumed by the calculation path."
+      },
       "window_source": {
         "type": "object",
         "required": [
