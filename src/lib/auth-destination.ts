@@ -16,7 +16,6 @@ function isPublicAuthPath(path: string): boolean {
     path === '/' ||
     path === '/login' ||
     path === '/signup' ||
-    path === '/whatsapp-login' ||
     path === '/forgot-password' ||
     path === '/reset-password' ||
     path === '/confirm-email' ||

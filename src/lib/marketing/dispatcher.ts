@@ -2,7 +2,6 @@ import { evaluateMarketingConsent } from "./consent";
 import { computeContentHash } from "./campaign-service";
 import { sendShoonayaEmail } from "@/lib/email";
 import { APP } from "@/lib/config";
-import { createWhatsAppProvider } from "@/lib/whatsapp/provider";
 import { resolveRecipientEmails } from "@/lib/server/recipient-emails";
 import { resolveCampaignCtaUrl, trackLinksInText, withCampaignTracking, type LinkContext } from "./campaign-links";
 import type {
@@ -183,12 +182,9 @@ export async function dispatchMarketingBatch(
     dispatches: []
   };
 
-  const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
-  const whatsappProvider = createWhatsAppProvider();
-
-  // If in production and WhatsApp provider is mock, fail closed
-  if (!dryRun && variant.channel === "whatsapp" && isProduction && whatsappProvider.isMock) {
-    throw new Error("Cannot dispatch WhatsApp marketing campaign in production using mock provider (fail closed).");
+  // WhatsApp sending (Twilio and Meta) was retired on 2026-11-12: fail closed everywhere, not only in production.
+  if (!dryRun && variant.channel === "whatsapp") {
+    throw new Error("WhatsApp sending is retired: this variant can be previewed but not dispatched.");
   }
 
   if (dryRun) {
@@ -346,31 +342,8 @@ export async function dispatchMarketingBatch(
         };
       }
     } else {
-      try {
-        const sendRes = await whatsappProvider.sendText({
-          to: profile!.whatsapp_number!,
-          body: trackLinksInText(variant.body, linkContext, { bareDomain: true })
-        });
-        resolution = sendRes.messageId
-          ? {
-              status: "sent",
-              provider: whatsappProvider.name,
-              providerMessageId: sendRes.messageId,
-            }
-          : {
-              status: "outcome_unknown",
-              provider: whatsappProvider.name,
-              errorCode: "provider_success_missing_message_id",
-            };
-      } catch (sendErr) {
-        // This integration has no provider idempotency key. A timeout or network
-        // failure may happen after acceptance, so automatic retry could duplicate it.
-        resolution = {
-          status: "outcome_unknown",
-          provider: whatsappProvider.name,
-          errorCode: sanitizeErrorCode(sendErr),
-        };
-      }
+      // Unreachable for a real send (refused above); kept so a non-email row can never be reported as sent.
+      resolution = { status: "outcome_unknown", provider: "whatsapp_retired", errorCode: "whatsapp_sending_retired" };
     }
 
     // Record the durable result before reporting it to the caller. If this compare-

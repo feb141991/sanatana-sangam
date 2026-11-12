@@ -190,9 +190,6 @@ export default function OnboardingClient({
   const [name, setName] = useState<string>(initialName || '');
   const [saving, setSaving] = useState(false);
 
-  const [whatsappCountryCode, setWhatsappCountryCode] = useState('+91');
-  const [whatsappNumberOnly, setWhatsappNumberOnly] = useState('');
-  const [whatsappOptIn, setWhatsappOptIn] = useState(false);
 
   const [lifeStage, setLifeStage] = useState('');
   const [gender, setGender] = useState('');
@@ -295,126 +292,6 @@ export default function OnboardingClient({
   const [nameStory, setNameStory] = useState<OnboardingNameStory | null>(null);
   const [nameStoryLoading, setNameStoryLoading] = useState(false);
 
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [otpValue, setOtpValue] = useState('');
-  const [otpError, setOtpError] = useState('');
-  const [otpCooldown, setOtpCooldown] = useState(0);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setInterval> | undefined;
-    if (otpCooldown > 0) {
-      timer = setInterval(() => {
-        setOtpCooldown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [otpCooldown]);
-
-  const handleOtpChange = (val: string, index: number) => {
-    const cleaned = val.replace(/\D/g, '');
-    if (!cleaned && val !== '') return;
-    
-    const chars = otpValue.split('');
-    while (chars.length < 6) chars.push('');
-    chars[index] = cleaned;
-    const newOtpValue = chars.join('').slice(0, 6);
-    setOtpValue(newOtpValue);
-    setOtpError('');
-
-    if (cleaned && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      nextInput?.focus();
-    }
-  };
-
-  const handleOtpKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace') {
-      const chars = otpValue.split('');
-      while (chars.length < 6) chars.push('');
-      if (!chars[index] && index > 0) {
-        chars[index - 1] = '';
-        setOtpValue(chars.join('').slice(0, 6));
-        const prevInput = document.getElementById(`otp-${index - 1}`);
-        prevInput?.focus();
-      } else {
-        chars[index] = '';
-        setOtpValue(chars.join('').slice(0, 6));
-      }
-    }
-  };
-
-  const handleOtpPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    if (pasted.length === 6) {
-      setOtpValue(pasted);
-      document.getElementById('otp-5')?.focus();
-    }
-  };
-
-  const handleSendOtp = async () => {
-    if (!whatsappNumberOnly) {
-      toast.error("Please enter a phone number.");
-      return;
-    }
-    if (whatsappNumberOnly.length < 7 || whatsappNumberOnly.length > 15) {
-      toast.error("Please enter a valid phone number (7 to 15 digits).");
-      return;
-    }
-    
-    setOtpError('');
-    const phone = `${whatsappCountryCode}${whatsappNumberOnly}`;
-    const toastId = toast.loading('Sending verification code...');
-    
-    try {
-      const res = await fetch('/api/auth/whatsapp-otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || 'Failed to send OTP');
-      
-      setOtpSent(true);
-      setOtpCooldown(30);
-      toast.success('Verification code sent to WhatsApp!', { id: toastId });
-    } catch (err: unknown) {
-      const message = onboardingErrorMessage(err);
-      toast.error(message, { id: toastId });
-      setOtpError(message);
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    const code = otpValue;
-    if (code.length !== 6) {
-      setOtpError('Please enter a 6-digit code');
-      return;
-    }
-    
-    setOtpError('');
-    const phone = `${whatsappCountryCode}${whatsappNumberOnly}`;
-    const toastId = toast.loading('Verifying code...');
-    
-    try {
-      const res = await fetch('/api/auth/whatsapp-otp/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, code }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || 'Invalid or expired code');
-      
-      setOtpVerified(true);
-      setOtpSent(false);
-      toast.success('WhatsApp number verified successfully!', { id: toastId });
-    } catch (err: unknown) {
-      const message = onboardingErrorMessage(err);
-      toast.error(message, { id: toastId });
-      setOtpError(message);
-    }
-  };
-
   const [greetIdx, setGreetIdx] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setGreetIdx(i => (i + 1) % GREETINGS.length), 2200);
@@ -426,7 +303,7 @@ export default function OnboardingClient({
     if (tradition === 'hindu') {
       list.push(5, 6, 11, 12, 13, 14);
     }
-    list.push(7, 8, 9, 10);
+    list.push(7, 8, 10);
     return list;
   }, [tradition]);
 
@@ -467,6 +344,9 @@ export default function OnboardingClient({
       setStep(13);
     } else if (step === 6) {
       setStep(5);
+    } else if (step === 10) {
+      // Step 9 (WhatsApp reminders) was retired with the WhatsApp integration.
+      setStep(8);
     } else {
       setStep((current) => Math.max(1, current - 1));
     }
@@ -476,9 +356,6 @@ export default function OnboardingClient({
     if (saving) return;
     setSaving(true);
     try {
-      const fullWhatsAppNumber = (whatsappOptIn && otpVerified)
-        ? `${whatsappCountryCode}${whatsappNumberOnly}`
-        : null;
       const res = await fetch('/api/onboarding/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -491,8 +368,6 @@ export default function OnboardingClient({
           gender,
           nakshatra: nakshatra || null,
           rashi: rashi || null,
-          whatsapp_number: fullWhatsAppNumber,
-          whatsapp_opt_in: whatsappOptIn && otpVerified,
           // Observance location
           latitude: observanceLat,
           longitude: observanceLon,
@@ -1703,7 +1578,7 @@ export default function OnboardingClient({
                       </button>
                       <button
                         type="button"
-                        onClick={() => goNext(9)}
+                        onClick={() => goNext(10)}
                         className="w-full text-[var(--brand-muted)] text-sm underline py-2 text-center"
                       >
                         No, skip this
@@ -1757,200 +1632,13 @@ export default function OnboardingClient({
                     
                     <button
                       type="button"
-                      onClick={() => goNext(9)}
+                      onClick={() => goNext(10)}
                       className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 transition-all hover:opacity-90"
                     >
                       Continue →
                     </button>
                   </div>
                 ) : null}
-              </div>
-            )}
-
-            {/* Step 9: WhatsApp Reminders (Optional) */}
-            {step === 9 && (
-              <div>
-                {tradition && (
-                  <div className="flex justify-center mb-6">
-                    <div 
-                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
-                      style={{
-                        borderColor: 'rgba(200, 146, 74, 0.3)',
-                        padding: '12px'
-                      }}
-                    >
-                      <span className="text-xl">
-                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
-                      </span>
-                    </div>
-                  </div>
-                )}
-                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
-                  Daily Reminders
-                </h1>
-                <p className="text-[var(--brand-muted)] mb-6">
-                  Receive tradition-aware daily reminders, shlokas, and blessings directly on WhatsApp.
-                </p>
-
-                <div className="space-y-4">
-                  {/* Phone input row */}
-                  <div className="flex gap-2">
-                    <select
-                      value={whatsappCountryCode}
-                      onChange={(e) => setWhatsappCountryCode(e.target.value)}
-                      disabled={otpVerified}
-                      className="rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] p-4 outline-none text-[var(--brand-primary-strong)] shrink-0 max-w-[100px] disabled:opacity-50"
-                    >
-                      {COUNTRY_CODES.map((c) => (
-                        <option key={`${c.code}-${c.name}`} value={c.code} className="bg-white text-[var(--brand-primary-strong)]">
-                          {c.flag} {c.code}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="relative flex-1">
-                      <input
-                        type="tel"
-                        value={whatsappNumberOnly}
-                        disabled={otpVerified}
-                        onChange={(e) => {
-                          const cleaned = e.target.value.replace(/\D/g, '');
-                          setWhatsappNumberOnly(cleaned);
-                        }}
-                        placeholder="WhatsApp number"
-                        className="w-full rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] p-4 outline-none text-[var(--brand-primary-strong)] disabled:opacity-50 disabled:pr-10 placeholder-[var(--brand-muted)]/50"
-                      />
-                      {otpVerified && (
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-600 font-semibold text-sm">
-                          ✅
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Opt-in Checkbox */}
-                  <label className="flex items-start gap-3 cursor-pointer py-2">
-                    <input
-                      type="checkbox"
-                      checked={whatsappOptIn}
-                      disabled={otpVerified}
-                      onChange={(e) => {
-                        setWhatsappOptIn(e.target.checked);
-                        if (!e.target.checked) {
-                          setOtpSent(false);
-                          setOtpError('');
-                          setOtpValue('');
-                        }
-                      }}
-                      className="mt-1 w-4 h-4 rounded accent-[var(--premium-gold)] border-[var(--premium-border)] bg-white disabled:opacity-50"
-                    />
-                    <div className="text-left">
-                      <span className="text-sm font-medium text-[var(--brand-primary-strong)]">
-                        Opt-in to tradition-aware daily reminders on WhatsApp
-                      </span>
-                      <p className="text-xs text-[var(--brand-muted)] mt-0.5">
-                        We will never spam you. You can opt-out at any time.
-                      </p>
-                    </div>
-                  </label>
-
-                  {/* Verified state banner */}
-                  {otpVerified && (
-                    <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-700 font-medium">
-                      <span>✅ WhatsApp number verified successfully.</span>
-                    </div>
-                  )}
-
-                  {/* OTP 6-Digit Inputs (Smooth Slide Down) */}
-                  <AnimatePresence>
-                    {whatsappOptIn && otpSent && !otpVerified && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden space-y-4 pt-2"
-                      >
-                        <p className="text-xs text-[var(--brand-muted)] text-left">Enter the 6-digit code sent to your WhatsApp:</p>
-                        <div className="flex justify-between gap-2" onPaste={handleOtpPaste}>
-                          {Array.from({ length: 6 }).map((_, idx) => (
-                            <input
-                              key={idx}
-                              id={`otp-${idx}`}
-                              type="text"
-                              maxLength={1}
-                              value={otpValue[idx] || ''}
-                              onChange={(e) => handleOtpChange(e.target.value, idx)}
-                              onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                              className="w-12 h-12 rounded-xl text-center text-xl font-bold bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] text-[var(--brand-primary-strong)] outline-none"
-                            />
-                          ))}
-                        </div>
-                        
-                        {otpError && (
-                          <p className="text-xs text-rose-600 font-semibold text-left">{otpError}</p>
-                        )}
-                        
-                        <div className="flex justify-between items-center">
-                          {otpCooldown > 0 ? (
-                            <span className="text-xs text-[var(--brand-muted)]">Resend code in {otpCooldown}s</span>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={handleSendOtp}
-                              className="text-xs text-[var(--premium-gold)] underline hover:opacity-80 font-medium"
-                            >
-                              Resend Code
-                            </button>
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <div className="mt-8 space-y-3">
-                  {whatsappOptIn && !otpVerified ? (
-                    otpSent ? (
-                      <button
-                        type="button"
-                        onClick={handleVerifyOtp}
-                        className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 hover:opacity-90 transition-all"
-                      >
-                        Verify Code
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleSendOtp}
-                        className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 hover:opacity-90 transition-all"
-                      >
-                        Send verification code
-                      </button>
-                    )
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => goNext(10)}
-                      className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 hover:opacity-90 transition-all"
-                    >
-                      Continue →
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setWhatsappOptIn(false);
-                      setWhatsappNumberOnly('');
-                      setOtpSent(false);
-                      setOtpVerified(false);
-                      setOtpValue('');
-                      goNext(10);
-                    }}
-                    className="w-full text-[var(--brand-muted)] text-sm underline"
-                  >
-                    Skip for now
-                  </button>
-                </div>
               </div>
             )}
 

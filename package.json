@@ -120,7 +120,6 @@
     "react-leaflet": "^4.2.1",
     "tailwind-merge": "^2.4.0",
     "three": "^0.185.1",
-    "twilio": "^6.0.2",
     "workflow": "^4.7.0"
   },
   "devDependencies": {

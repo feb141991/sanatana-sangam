@@ -210,16 +210,6 @@ export const CRON_CATALOGUE: CronDefinition[] = [
     method: 'GET',
   },
   {
-    id: 'whatsapp-daily',
-    name: 'WhatsApp Daily Panchang & Shloka',
-    route: '/api/whatsapp/send-daily',
-    schedule: '0 6 * * *',
-    scheduleHuman: 'Daily at 06:00 UTC',
-    category: 'reminders',
-    description: 'Delivers daily spiritual digest to opted-in WhatsApp subscribers.',
-    method: 'GET',
-  },
-  {
     id: 'festival-email',
     name: 'Festival Email Digest',
     route: '/api/cron/festival-email',

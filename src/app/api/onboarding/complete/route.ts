@@ -17,8 +17,6 @@ export async function POST(req: NextRequest) {
       life_stage?: string;
       gender?: string;
       interests?: string[];
-      whatsapp_number?: string;
-      whatsapp_opt_in?: boolean;
       rashi?: string | null;
       nakshatra?: string | null;
       date_of_birth?: string | null;
@@ -37,8 +35,6 @@ export async function POST(req: NextRequest) {
     const tradition = body?.tradition?.trim();
     const goal = body?.goal?.trim();
     const name = body?.name?.trim() ?? '';
-    const whatsapp_number = body?.whatsapp_number?.trim();
-    const whatsapp_opt_in = !!body?.whatsapp_opt_in;
 
     const { data: existingProfile, error: existingError } = await supabase
       .from('profiles')
@@ -57,8 +53,6 @@ export async function POST(req: NextRequest) {
       life_stage?: string;
       gender_context?: string;
       seeking?: string[];
-      whatsapp_number?: string | null;
-      whatsapp_opt_in?: boolean;
       rashi?: string | null;
       nakshatra?: string | null;
       date_of_birth?: string | null;
@@ -105,19 +99,8 @@ export async function POST(req: NextRequest) {
     if (body?.calendar_scope !== undefined) updatePayload.calendar_scope = body.calendar_scope;
     if (body?.calendar_language !== undefined) updatePayload.calendar_language = body.calendar_language;
 
-    // Validate phone number format if provided
-    let cleanWhatsApp: string | null = null;
-    if (whatsapp_number) {
-      const cleaned = whatsapp_number.replace(/\s+/g, '');
-      const phoneRegex = /^\+[1-9]\d{6,14}$/; // E.164 format: + followed by 7-15 digits
-      if (!phoneRegex.test(cleaned)) {
-        return NextResponse.json({ error: 'Invalid WhatsApp number format. Must start with country code (e.g. +91...)' }, { status: 400 });
-      }
-      cleanWhatsApp = cleaned;
-    }
-
-    updatePayload.whatsapp_number = cleanWhatsApp;
-    updatePayload.whatsapp_opt_in = whatsapp_opt_in;
+    // WhatsApp sending and number verification were retired on 2026-11-12 (no number was ever stored). A number in the
+    // request is ignored: it could no longer be verified, and nothing would use it.
 
     const { error } = await supabase
       .from('profiles')

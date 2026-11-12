@@ -173,13 +173,6 @@ function LoginForm() {
       <AppleIcon size={18} className="text-white" />
       <span>Continue with Apple</span>
     </button>
-    <Link
-      href="/whatsapp-login"
-      className="flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-5 text-sm font-semibold text-[#25D366] transition hover:bg-[#25D366]/20 active:scale-[0.99]"
-    >
-      <span className="text-base">💬</span>
-      <span>Continue with WhatsApp</span>
-    </Link>
   </div>
   <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>

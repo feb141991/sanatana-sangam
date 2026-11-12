@@ -8,16 +8,6 @@ vi.mock("@/lib/email", () => ({
   sendShoonayaEmail: (...args: unknown[]) => sendShoonayaEmail(...args)
 }));
 
-const whatsappSendText = vi.fn();
-let whatsappIsMock = false;
-vi.mock("@/lib/whatsapp/provider", () => ({
-  createWhatsAppProvider: () => ({
-    name: "mock",
-    isMock: whatsappIsMock,
-    sendText: (...args: unknown[]) => whatsappSendText(...args)
-  })
-}));
-
 function baseCampaign(overrides: Partial<MarketingCampaign> = {}): MarketingCampaign {
   return {
     id: "c-1",
@@ -161,8 +151,6 @@ function createMockSupabase(config: MockConfig) {
 describe("Marketing Campaign Dispatcher", () => {
   beforeEach(() => {
     sendShoonayaEmail.mockClear();
-    whatsappSendText.mockClear();
-    whatsappIsMock = false;
     (process.env as any).NODE_ENV = "test";
     (process.env as any).VERCEL_ENV = "test";
   });
@@ -327,29 +315,6 @@ describe("Marketing Campaign Dispatcher", () => {
     expect(dispatchUpdates[0].status).toBe("failed");
   });
 
-  it("quarantines an uncertain WhatsApp outcome instead of making it retryable", async () => {
-    whatsappSendText.mockRejectedValue(new Error("Network timeout 504"));
-    const { supabase, dispatchUpdates } = createMockSupabase({
-      claimedRows: [
-        { id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "whatsapp", status: "claimed" } as any,
-      ],
-      profiles: {
-        "u-1": { id: "u-1", marketing_consent: true, whatsapp_opt_in: true, whatsapp_number: "+14155552671", is_banned: false },
-      },
-    });
-
-    const result = await dispatchMarketingBatch(supabase, {
-      campaign: baseCampaign(),
-      variant: approvedVariant({ channel: "whatsapp" }),
-      dryRun: false,
-    });
-
-    expect(result.outcomeUnknown).toBe(1);
-    expect(result.retryable).toBe(0);
-    expect(result.dispatches[0].status).toBe("outcome_unknown");
-    expect(dispatchUpdates[0]).toMatchObject({ status: "outcome_unknown", last_error_code: "timeout" });
-  });
-
   it("does not report provider success when the token-bound ledger finalization fails", async () => {
     sendShoonayaEmail.mockResolvedValue({ success: true, id: "resend_msg_1" });
     const { supabase } = createMockSupabase({
@@ -370,29 +335,24 @@ describe("Marketing Campaign Dispatcher", () => {
     })).rejects.toThrow(/ledger finalization failed/);
   });
 
-  it("fails closed: refuses to dispatch a live WhatsApp campaign in production against a mock provider", async () => {
-    whatsappIsMock = true;
-    (process.env as any).NODE_ENV = "production";
-
-    const { supabase } = createMockSupabase({ claimedRows: [] });
-
-    await expect(
-      dispatchMarketingBatch(supabase, {
-        campaign: baseCampaign(),
-        variant: approvedVariant({ channel: "whatsapp" }),
-        dryRun: false
-      })
-    ).rejects.toThrow(/mock provider/);
-
-    expect(whatsappSendText).not.toHaveBeenCalled();
+  it("WhatsApp sending is retired: a live dispatch is refused in every environment, and nothing is claimed", async () => {
+    for (const env of ["production", "development", "test"]) {
+      (process.env as any).NODE_ENV = env;
+      const { supabase, dispatchUpdates } = createMockSupabase({
+        claimedRows: [{ id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "whatsapp", status: "claimed" } as any],
+        profiles: { "u-1": { id: "u-1", marketing_consent: true, whatsapp_opt_in: true, whatsapp_number: "+14155552671", is_banned: false } },
+      });
+      await expect(
+        dispatchMarketingBatch(supabase, { campaign: baseCampaign(), variant: approvedVariant({ channel: "whatsapp" }), dryRun: false })
+      ).rejects.toThrow(/WhatsApp sending is retired/);
+      expect(dispatchUpdates).toEqual([]);
+    }
   });
 });
 
 describe("Marketing Campaign Dispatcher: tracked links", () => {
   beforeEach(() => {
     sendShoonayaEmail.mockReset();
-    whatsappSendText.mockReset();
-    whatsappIsMock = false;
     (process.env as any).NODE_ENV = "test";
     (process.env as any).VERCEL_ENV = "test";
   });
@@ -436,23 +396,6 @@ describe("Marketing Campaign Dispatcher: tracked links", () => {
   it("a third-party call to action is left exactly as approved", async () => {
     const sent = await sendEmail(approvedVariant({ cta_url: "https://example.com/offer" }));
     expect(sent.ctaUrl).toBe("https://example.com/offer");
-  });
-
-  it("WhatsApp: a plain 'shoonaya.com' mention is sent as the tagged smart link, with the messaging medium", async () => {
-    whatsappSendText.mockResolvedValue({ messageId: "wa-1" });
-    const { supabase } = createMockSupabase({
-      claimedRows: [{ id: "d-1", campaign_id: "c-1", variant_id: "v-1", recipient_user_id: "u-1", channel: "whatsapp", status: "claimed" } as any],
-      profiles: { "u-1": { id: "u-1", marketing_consent: true, whatsapp_opt_in: true, whatsapp_number: "+14155552671", is_banned: false } }
-    });
-    await dispatchMarketingBatch(supabase, {
-      campaign: baseCampaign({ campaign_key: "diwali-2026" }),
-      variant: approvedVariant({ channel: "whatsapp", body: "*Daily Dharma* Open Shoonaya: shoonaya.com or write to support@shoonaya.com" }),
-      dryRun: false
-    });
-    const body: string = whatsappSendText.mock.calls[0][0].body;
-    expect(body).toMatch(/Open Shoonaya: https:\/\/www\.shoonaya\.com\/get\?/);
-    expect(body).toContain("utm_medium=messaging");
-    expect(body).toContain("support@shoonaya.com");
   });
 
   it("tagging does not change the approved copy stored on the variant", async () => {

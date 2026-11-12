@@ -44,7 +44,6 @@ const ALWAYS_PUBLIC_EXACT = new Set([
   "/payment",
   "/login",
   "/signup",
-  "/whatsapp-login",
   "/forgot-password",
   "/reset-password",
   "/confirm-email",
