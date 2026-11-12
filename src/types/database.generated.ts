@@ -1416,7 +1416,17 @@ export type Database = {
           user_id: string
           wording_version?: string | null
         }
-        Update: never
+        Update: {
+          action?: string
+          category?: string
+          created_at?: string
+          id?: never
+          region?: string | null
+          region_source?: string | null
+          source?: string
+          user_id?: string
+          wording_version?: string | null
+        }
         Relationships: []
       }
       email_outbox: {
@@ -4187,6 +4197,27 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_brahma_reset_backup_20261112: {
+        Row: {
+          post_reset_xmin: string | null
+          taken_at: string
+          user_id: string
+          wants_brahma_muhurta_reminders: boolean | null
+        }
+        Insert: {
+          post_reset_xmin?: string | null
+          taken_at?: string
+          user_id: string
+          wants_brahma_muhurta_reminders?: boolean | null
+        }
+        Update: {
+          post_reset_xmin?: string | null
+          taken_at?: string
+          user_id?: string
+          wants_brahma_muhurta_reminders?: boolean | null
+        }
+        Relationships: []
+      }
       notification_cadence_events: {
         Row: {
           canonical_type: string
@@ -4542,6 +4573,45 @@ export type Database = {
           sent_at?: string | null
           status?: string
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_taps: {
+        Row: {
+          app_version: string | null
+          client_event_id: string
+          id: string
+          launch_state: string
+          notification_key: string
+          notification_type: string
+          platform: string | null
+          recorded_at: string
+          tapped_at: string
+          user_id: string
+        }
+        Insert: {
+          app_version?: string | null
+          client_event_id: string
+          id?: string
+          launch_state: string
+          notification_key: string
+          notification_type: string
+          platform?: string | null
+          recorded_at?: string
+          tapped_at: string
+          user_id: string
+        }
+        Update: {
+          app_version?: string | null
+          client_event_id?: string
+          id?: string
+          launch_state?: string
+          notification_key?: string
+          notification_type?: string
+          platform?: string | null
+          recorded_at?: string
+          tapped_at?: string
           user_id?: string
         }
         Relationships: []
@@ -6533,6 +6603,7 @@ export type Database = {
           city: string | null
           comm_prefs_set: boolean | null
           consent_activity_personalization: boolean
+          consent_notification_taps: boolean
           consent_product_analytics: boolean
           consent_religious_data: boolean
           consent_updated_at: string | null
@@ -6658,6 +6729,7 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_activity_personalization?: boolean
+          consent_notification_taps?: boolean
           consent_product_analytics?: boolean
           consent_religious_data?: boolean
           consent_updated_at?: string | null
@@ -6783,6 +6855,7 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_activity_personalization?: boolean
+          consent_notification_taps?: boolean
           consent_product_analytics?: boolean
           consent_religious_data?: boolean
           consent_updated_at?: string | null
@@ -11472,6 +11545,16 @@ export type Database = {
           opted_in_accounts: number
         }[]
       }
+      get_notification_tap_summary: {
+        Args: { p_days?: number; p_min_recipients?: number }
+        Returns: {
+          notification_type: string
+          notifications_sent: number
+          recipient_accounts: number
+          tapping_accounts: number
+          taps: number
+        }[]
+      }
       get_post_comment_previews: {
         Args: { p_post_ids: string[]; p_preview_count?: number }
         Returns: {
@@ -11668,12 +11751,22 @@ export type Database = {
       }
       no_plan: { Args: never; Returns: boolean[] }
       normalize_place_casing: { Args: { p_value: string }; Returns: string }
+      notification_cadence_class: {
+        Args: { p_event_type: string; p_notification_key?: string }
+        Returns: string
+      }
+      notification_cadence_limit: { Args: { p_scope: string }; Returns: number }
+      notification_cadence_policy_version: { Args: never; Returns: string }
       notification_cadence_safe_timezone: {
         Args: { p_timezone: string }
         Returns: string
       }
       notification_is_budget_exempt: {
         Args: { p_event_type: string; p_notification_key?: string }
+        Returns: boolean
+      }
+      notification_tap_recording_allowed: {
+        Args: { p_notification_type: string; p_user_id: string }
         Returns: boolean
       }
       num_failed: { Args: never; Returns: number }
@@ -11821,6 +11914,17 @@ export type Database = {
           p_app_version?: string
           p_events: string[]
           p_platform?: string
+        }
+        Returns: Json
+      }
+      record_notification_tap: {
+        Args: {
+          p_app_version?: string
+          p_client_event_id: string
+          p_launch_state: string
+          p_notification_key: string
+          p_platform?: string
+          p_tapped_at: string
         }
         Returns: Json
       }
@@ -12280,9 +12384,6 @@ export type Database = {
         Args: { p_kul: string; p_user: string }
         Returns: number
       }
-      skip:
-        | { Args: { "": string }; Returns: string }
-        | { Args: { how_many: number; why: string }; Returns: string }
       set_email_consent: {
         Args: {
           p_category: string
@@ -12295,6 +12396,9 @@ export type Database = {
         }
         Returns: Json
       }
+      skip:
+        | { Args: { "": string }; Returns: string }
+        | { Args: { how_many: number; why: string }; Returns: string }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
