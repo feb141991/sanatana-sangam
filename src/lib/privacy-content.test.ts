@@ -19,9 +19,20 @@ const section = (title: string) => {
 
 describe('privacy policy content', () => {
   it('names every outside service that receives personal data', () => {
-    for (const name of ['Supabase', 'Vercel', 'Expo', 'Firebase Cloud Messaging', 'Sarvam AI', 'Bhashini', 'Resend', 'Twilio', 'WhatsApp', 'Geoapify', 'OpenStreetMap Nominatim', 'Google Analytics', 'Google AdSense']) {
+    for (const name of ['Supabase', 'Vercel', 'Expo', 'Firebase Cloud Messaging', 'Sarvam AI', 'Bhashini', 'Resend', 'Geoapify', 'OpenStreetMap Nominatim', 'Overpass', 'Slack', 'Google Analytics', 'Google AdSense']) {
       expect(text, name).toContain(name);
     }
+  });
+
+  it('does not name services that were retired (WhatsApp sending and Twilio, removed 2026-11-12; OneSignal)', () => {
+    for (const name of ['Twilio', 'WhatsApp', 'OneSignal']) expect(text, name).not.toContain(name);
+  });
+
+  it('every outside host the place-search code can call belongs to a named service', async () => {
+    const { API } = await import("./config");
+    const mirrors: readonly string[] = API.OVERPASS.MIRRORS;
+    expect(mirrors.length).toBeGreaterThan(0);
+    for (const url of mirrors) expect(url, 'a map mirror outside the reviewed list').toMatch(/^https:\/\/(overpass\.openstreetmap\.fr|overpass\.kumi\.systems|overpass-api\.de)\//);
   });
 
   it('explains both cookie choices and says there is no advertising in the app', () => {

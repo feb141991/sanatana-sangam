@@ -108,13 +108,12 @@ export function generateHealthReport(events: MonitoringEvent[] = _eventSink): Ag
   }));
 
   const circuitStates = getAllCircuitStates();
-  const canonicalProviders = ["sarvam-hosted", "gemini", "self-hosted"];
+  const canonicalProviders = ["sarvam-hosted", "self-hosted"];
   const providerMap = new Map<string, ProviderHealth>();
 
   // Initialize canonical configured providers
   for (const name of canonicalProviders) {
-    const isConfigured = name === "sarvam-hosted" ? !!process.env.SARVAM_API_KEY :
-                         name === "gemini" ? !!process.env.GEMINI_API_KEY : true;
+    const isConfigured = name === "sarvam-hosted" ? !!process.env.SARVAM_API_KEY : true;
     providerMap.set(name, {
       provider: name,
       circuitState: circuitStates[name] || {

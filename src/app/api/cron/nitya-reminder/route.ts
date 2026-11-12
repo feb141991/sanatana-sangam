@@ -290,7 +290,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // ── Step 6: OneSignal push — grouped by tradition ────────────────────────
+    // ── Step 6: Push — grouped by tradition ────────────────────────
     const byTradition = new Map<string, { userIds: string[]; nudge: { title: string; body: string }; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
     for (const u of unstartedUsers) {
       if (!insertedUserIds.includes(u.id)) continue;
