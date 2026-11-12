@@ -38,6 +38,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-lion-and-the-ram',
   'panchatantra-farmers-wife',
   'panchatantra-dog-who-went-abroad',
+  'panchatantra-butter-blinded-brahman',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -91,10 +92,11 @@ interface ArtworkSet {
  * Scene descriptions for the illustration sets. Each list is in paragraph order. The Dharmabuddhi
  * descriptions follow docs/artwork/panchatantra-storybook/dharmabuddhi-papabuddhi.md in the Native
  * repository; the Crane and Crab ones were written from looking at the six images.
- * panchatantra-self-sacrificing-dove has no set in the Native app, so it has no entry.
+ * panchatantra-self-sacrificing-dove: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-lion-and-the-ram: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-farmers-wife: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-dog-who-went-abroad: six handcrafted 3D clay-animation scenes generated 2026-11-12.
+ * panchatantra-butter-blinded-brahman: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -201,6 +203,48 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'धूप में नहाई सड़कों पर, स्थानीय मिट्टी के कुत्तों के झुंड दाँत दिखाते हुए डरे हुए चित्रांगद को घेर लेते हैं और सिर्फ परदेसी होने के कारण उसे गलियों में खदेड़ते हैं।',
       'चित्रांगद एक अंधेरी गली में अकेला बैठकर खून से भरे घायल कान सहला रहा है, दार्शनिक भाव से सोच रहा है, जबकि परे सड़क पर आवारा कुत्ते धूप में गुर्रा रहे हैं।',
       'अपने सूखे और अकाल-पीड़ित गांव में वापस लौटे दुबले पर संतुष्ट चित्रांगद को उसके उत्सुक, पतले कुत्ते-बंधु चारों ओर से घेरकर बड़ी-बड़ी आँखों से उसकी कहानी सुन रहे हैं।',
+    ],
+  },
+  'panchatantra-self-sacrificing-dove': {
+    dir: 'self-sacrificing-dove',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A stern-faced clay fowler carrying nets, limed twigs and an iron-shod club stalks through a primeval forest while small birds flee in alarm.',
+      'In a violent twilight monsoon storm with lightning and torrential rain, the soaked, shivering fowler huddles beneath a towering banyan tree.',
+      'Perched on a sheltered banyan bough in the dark storm, a devoted male clay dove looks down anxiously, mourning his missing mate.',
+      'From inside a woven wicker cage hanging at the hunter\'s belt below, the captured female dove calls up, urging her mate to honor the freezing stranger as a guest.',
+      'The male dove gathers dry twigs and fans an ember into a warm roaring campfire beneath the banyan tree to shelter the shivering fowler.',
+      'With serene devotion, the male dove bows and flies into the flames to feed his guest; stunned with remorse, the hunter smashes his nets and frees the captive mate.',
+    ],
+    altHi: [
+      'जाल, लाठी और तीर लिए एक कठोर चेहरे वाला मिट्टी का बहेलिया घने प्राचीन वन में चल रहा है और छोटे पक्षी भय से उड़ रहे हैं।',
+      'बिजली और मूसलाधार वर्षा वाले भयंकर तूफान की संध्या में भीगा और कांपता हुआ बहेलिया एक विशाल वटवृक्ष के नीचे शरण लेता है।',
+      'तूफानी रात में वटवृक्ष की सुरक्षित शाखा पर बैठा एक निष्ठावान नर कपोत अपनी खोई संगिनी की प्रतीक्षा में व्याकुल होकर नीचे देख रहा है।',
+      'नीचे शिकारी की कमर से लटके बेंत के पिंजरे के भीतर से बंदी मादा कपोती ऊपर पुकार कर अपने पति से ठिठुरते अतिथि का सत्कार करने को कहती है।',
+      'नर कपोत सूखी टहनियां बटोरता है और कांपते बहेलिए को गर्माहट देने के लिए वटवृक्ष के नीचे एक धधकती आग जलाता है।',
+      'परम समर्पण से नर कपोत अतिथि के भोजन हेतु अग्नि में प्रवेश करता है; पश्चाताप से अभिभूत बहेलिया अपना जाल तोड़कर मादा कपोती को मुक्त कर देता है।',
+    ],
+  },
+  'panchatantra-butter-blinded-brahman': {
+    dir: 'butter-blinded-brahman',
+    width: 1376,
+    height: 768,
+    alt: [
+      'In a temple town kitchen, a scheming young wife prepares rich buttered cakes and sweets in a covered basket while her easygoing Brahman husband Theodore watches fondly.',
+      'Asked about the basket of sweets, the deceitful wife serenely tells Theodore she is taking secret offerings to the forest goddess temple for his long life.',
+      'Hidden behind the stone statue in the forest shrine, Theodore watches his wife offer the sweets and pray aloud for him to go blind so she can meet her lover freely.',
+      'Speaking in a deep resonant voice from behind the statue, Theodore tells his stunned wife to feed him rich butter, cream and ghee cakes daily for a month to blind him.',
+      'Overjoyed at home, the wife feeds Theodore lavish buttered sweets while he pretends to lose his sight, groping along the walls after two weeks.',
+      'Convinced he is blind, the wife invites her paramour to feast in daylight, until Theodore bolts the door and drives both out with a heavy wooden pestle.',
+    ],
+    altHi: [
+      'एक मंदिर नगर की रसोई में एक कपटी युवती ढकी टोकरी में घी-मक्खन के मालपुए और मिष्ठान्न सजा रही है, जबकि उसका सीधा-सादा ब्राह्मण पति देवदत्त स्नेह से देख रहा है।',
+      'मिष्ठान्न की टोकरी के बारे में पूछने पर, पत्नी शांत भाव से देवदत्त से कहती है कि वह उसकी दीर्घायु के लिए वनदेवी मंदिर में गुप्त नैवेद्य चढ़ाने जा रही है।',
+      'वनदेवी के मंदिर में पाषाण प्रतिमा के पीछे छिपा देवदत्त देखता है कि उसकी पत्नी नैवेद्य चढ़ाकर उसके अंधे होने की प्रार्थना कर रही है ताकि वह प्रेमी से मिल सके।',
+      'प्रतिमा के पीछे से गंभीर आवाज में देवदत्त कहता है कि एक महीने तक रोज़ मक्खन, मलाई और घी के मालपुए खिलाने से उसके पति की दृष्टि समाप्त हो जाएगी।',
+      'वरदान समझकर पत्नी घर में देवदत्त को भरपूर घी-मक्खन खिलाती है और वह अंधे होने का नाटक करते हुए दीवारें टटोलकर चलने लगता है।',
+      'पति को अंधा मानकर पत्नी दिनदहाड़े प्रेमी को भोजन पर बुलाती है, तभी देवदत्त द्वार बंद कर भारी मूसल से दोनों को पीटकर घर से बाहर खदेड़ देता है।',
     ],
   },
 };

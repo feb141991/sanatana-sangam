@@ -28,7 +28,7 @@ const devanagariShare = (text: string) => {
 };
 
 describe('public Panchatantra stories: what is listed', () => {
-  it('lists exactly the six approved stories, in order, each with a readable slug', () => {
+  it('lists exactly the seven approved stories, in order, each with a readable slug', () => {
     expect(listPublicPanchatantraStories().map((s) => s.id)).toEqual([...PUBLIC_PANCHATANTRA_IDS]);
     expect(listPublicPanchatantraStories().map((s) => s.slug)).toEqual([
       'crane-and-crab',
@@ -37,6 +37,7 @@ describe('public Panchatantra stories: what is listed', () => {
       'lion-and-the-ram',
       'farmers-wife',
       'dog-who-went-abroad',
+      'butter-blinded-brahman',
     ]);
   });
 
@@ -95,7 +96,15 @@ describe('public Panchatantra stories: what a reader sees', () => {
 
 describe('public Panchatantra stories: artwork', () => {
   const publicDir = resolve(root, 'public');
-  const withArt = ['crane-and-crab', 'dharmabuddhi-papabuddhi', 'lion-and-the-ram', 'farmers-wife', 'dog-who-went-abroad'];
+  const withArt = [
+    'crane-and-crab',
+    'dharmabuddhi-papabuddhi',
+    'self-sacrificing-dove',
+    'lion-and-the-ram',
+    'farmers-wife',
+    'dog-who-went-abroad',
+    'butter-blinded-brahman',
+  ];
 
   it('illustrates exactly the stories that have a full set, one scene per paragraph', () => {
     for (const story of listPublicPanchatantraStories()) {
@@ -105,9 +114,7 @@ describe('public Panchatantra stories: artwork', () => {
   });
 
   it('shows no artwork for a story that has no set, and never borrows another story\'s scenes', () => {
-    // The Native app has no illustration set for the self-sacrificing dove; the net and pigeon stories are different tales.
-    expect(findPublicPanchatantraStory('self-sacrificing-dove')?.scenes).toEqual([]);
-    expect(panchatantraScenesFor('panchatantra-self-sacrificing-dove', 6)).toEqual([]);
+    expect(panchatantraScenesFor('panchatantra-girl-who-married-a-snake', 6)).toEqual([]);
     expect(panchatantraScenesFor('panchatantra-dove-king-and-net', 6)).toEqual([]);
     expect(panchatantraScenesFor('panchatantra-hunter-and-pigeons', 6)).toEqual([]);
   });
@@ -164,7 +171,7 @@ describe('public Panchatantra stories: artwork', () => {
       alt: crane.scenes[0].alt,
     });
     expect(panchatantraCoverImage(crane, 'hi')?.alt).toBe(crane.scenes[0].altHi);
-    expect(panchatantraCoverImage(findPublicPanchatantraStory('self-sacrificing-dove')!, 'en')).toBeUndefined();
+    expect(panchatantraCoverImage({ ...crane, scenes: [] }, 'en')).toBeUndefined();
   });
 
   it('is reachable without signing in: the middleware matcher leaves .webp files alone', () => {
