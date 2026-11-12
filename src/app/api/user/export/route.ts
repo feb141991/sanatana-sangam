@@ -1,15 +1,12 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { describeExport, readAllRows, readExportSources, USER_EXPORT_SOURCES, type ExportIncomplete } from '@/lib/user-data-export';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-function isoDaysAgo(days: number) {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  return date.toISOString();
-}
+// About 80 tables are read, a page at a time, a few at a time. On a busy database that can take a while.
+export const maxDuration = 60;
 
 // Auth via getApiUser (cookie first, Bearer token fallback) — not the
 // previous cookie-only createServerSupabaseClient(), which always returned
@@ -24,91 +21,66 @@ export async function GET(request: NextRequest) {
   }
 
   const admin = createAdminClient();
-  const ninetyDaysAgoIso = isoDaysAgo(90);
-  const ninetyDaysAgoDate = ninetyDaysAgoIso.slice(0, 10);
+  const read = (table: string, orderBy: Array<string | { column: string; ascending: boolean }>, select?: string) =>
+    readAllRows(admin, { table, userColumns: ['user_id'], orderBy, select }, user.id);
 
   const [
     profileResult,
-    dailySadhanaResult,
-    moodCheckinsResult,
-    recommendationsResult,
-    malaSessionsResult,
-    quizResponsesResult,
-    karmaLedgerResult,
-    productAnalyticsResult,
-    telemetryResult,
-    notificationTapsResult,
-  ] = await Promise.all([
-    admin.from('profiles').select('*').eq('id', user.id).single(),
-    admin
-      .from('daily_sadhana')
-      .select('*')
-      .eq('user_id', user.id)
-      .gte('date', ninetyDaysAgoDate)
-      .order('date', { ascending: false }),
-    admin
-      .from('user_mood_checkins')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false }),
-    admin
-      .from('recommendations')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('date', { ascending: false }),
-    admin
-      .from('mala_sessions')
-      .select('*')
-      .eq('user_id', user.id)
-      .gte('created_at', ninetyDaysAgoIso)
-      .order('created_at', { ascending: false }),
-    admin
-      .from('quiz_responses')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false }),
-    admin
-      .from('karma_ledger')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false }),
+    dailySadhana,
+    moodCheckins,
+    recommendations,
+    malaSessions,
+    quizResponses,
+    karmaLedger,
     // Consent-gated product measurement (kept 90 days). Every stored row is
     // returned; the table holds no other personal fields.
-    admin
-      .from('native_product_analytics_daily')
-      .select('event_name, event_date, app_version, platform')
-      .eq('user_id', user.id)
-      .order('event_date', { ascending: false }),
+    productAnalytics,
     // App performance diagnostics linked to this account (kept 30 days).
-    admin
-      .from('native_startup_telemetry_summaries')
-      .select('schema_version, app_version, platform, total_events, summary, received_at')
-      .eq('user_id', user.id)
-      .order('received_at', { ascending: false }),
+    telemetry,
     // Taps on notifications we sent this account (kept 90 days; recorded only with the account's consent). Every
     // stored row is returned. The table holds no message text and no other personal fields.
-    admin
-      .from('notification_taps')
-      .select('notification_key, notification_type, tapped_at, launch_state, app_version, platform, recorded_at')
-      .eq('user_id', user.id)
-      .order('tapped_at', { ascending: false }),
+    notificationTaps,
+    more,
+  ] = await Promise.all([
+    admin.from('profiles').select('*').eq('id', user.id).single(),
+    read('daily_sadhana', [{ column: 'date', ascending: false }]),
+    read('user_mood_checkins', [{ column: 'created_at', ascending: false }, 'id']),
+    read('recommendations', [{ column: 'date', ascending: false }, 'id']),
+    read('mala_sessions', [{ column: 'created_at', ascending: false }, 'id']),
+    read('quiz_responses', [{ column: 'created_at', ascending: false }, 'id']),
+    read('karma_ledger', [{ column: 'created_at', ascending: false }, 'id']),
+    read('native_product_analytics_daily', [{ column: 'event_date', ascending: false }, 'event_name'], 'event_name, event_date, app_version, platform'),
+    read('native_startup_telemetry_summaries', [{ column: 'received_at', ascending: false }], 'schema_version, app_version, platform, total_events, summary, received_at'),
+    read('notification_taps', [{ column: 'tapped_at', ascending: false }, 'notification_key'], 'notification_key, notification_type, tapped_at, launch_state, app_version, platform, recorded_at'),
+    readExportSources(admin, user.id),
   ]);
+
+  const legacy = [dailySadhana, moodCheckins, recommendations, malaSessions, quizResponses, karmaLedger, productAnalytics, telemetry, notificationTaps];
+  const incomplete: ExportIncomplete[] = [
+    ...legacy.flatMap((result) => (result.incomplete ? [result.incomplete] : [])),
+    ...more.incomplete,
+  ];
+  const tablesWithData = legacy.filter((result) => result.rows.length > 0).length + Object.keys(more.data).length + (profileResult.data ? 1 : 0);
 
   const exportPayload = {
     exported_at: new Date().toISOString(),
     user_id: user.id,
+    // What this file is, what it leaves out and why, and any table that could not be read in full.
+    export_notes: describeExport(USER_EXPORT_SOURCES, incomplete, tablesWithData),
     profile: profileResult.data ?? null,
-    daily_sadhana_last_90_days: dailySadhanaResult.data ?? [],
-    mood_checkins: moodCheckinsResult.data ?? [],
-    recommendations: recommendationsResult.data ?? [],
-    karma_ledger: karmaLedgerResult.error ? [] : (karmaLedgerResult.data ?? []),
-    mala_sessions: malaSessionsResult.data ?? [],
-    quiz_results: quizResponsesResult.data ?? [],
+    daily_sadhana: dailySadhana.rows,
+    mood_checkins: moodCheckins.rows,
+    recommendations: recommendations.rows,
+    karma_ledger: karmaLedger.rows,
+    mala_sessions: malaSessions.rows,
+    quiz_results: quizResponses.rows,
     // Empty when the user never opted in, or before the table's migration exists.
-    product_analytics_events: productAnalyticsResult.error ? [] : (productAnalyticsResult.data ?? []),
-    app_performance_diagnostics: telemetryResult.error ? [] : (telemetryResult.data ?? []),
+    product_analytics_events: productAnalytics.rows,
+    app_performance_diagnostics: telemetry.rows,
     // Empty when no consent was given, or before the table's migration exists.
-    notification_taps: notificationTapsResult.error ? [] : (notificationTapsResult.data ?? []),
+    notification_taps: notificationTaps.rows,
+    // Everything else linked to the account, one entry per table that has rows.
+    other_data: more.data,
   };
 
   const fileName = `shoonaya-export-${new Date().toISOString().slice(0, 10)}.json`;
