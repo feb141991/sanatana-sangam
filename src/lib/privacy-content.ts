@@ -6,7 +6,7 @@ import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
  * PrivacyClient.tsx) whenever the policy content materially changes -- this
  * is what gets recorded on every acceptance receipt (src/lib/legal-acceptance.ts).
  */
-export const PRIVACY_VERSION = '2026-10-12';
+export const PRIVACY_VERSION = '2026-11-12';
 
 export type PrivacyRegion = 'global' | 'india' | 'uk' | 'usa';
 
@@ -58,6 +58,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
         'Turning product measurement off stops collection and deletes your stored entries straight away. Turning off "Tradition-aware personalization" deletes stored practice events. Deleting your account deletes both kinds of data.',
         'Our internal reports on product measurement show only daily totals, and hide any total from fewer than 20 accounts. A small number of authorised staff can access the underlying records to operate and secure the service.',
         'Website analytics: on shoonaya.com, Google Analytics and Vercel Analytics run only if you accept analytics cookies in the cookie banner. They are not used inside the app.',
+        'Advertising: on shoonaya.com only, and only if you accept advertising cookies in the cookie banner, Google AdSense may show advertising and set cookies to measure and personalise it. Advertising is off until you choose it, you can withdraw at any time from "Your privacy choices" on the site, and there is no advertising inside the app.',
       ]
     },
     {
@@ -75,7 +76,8 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       content: [
         'Shoonaya does not sell your personal data to third-party advertisers.',
         'We may share data with service providers solely to operate the platform, including hosting, database, authentication, storage, analytics, diagnostics, notifications, email delivery, maps or geocoding, media links, and AI processing providers.',
-        'Current service providers may include Supabase, Vercel, Expo, Firebase Cloud Messaging (Android push delivery), Google Analytics and Vercel Analytics (website only, with cookie consent), Google or Apple authentication services, YouTube for external live-darshan links, and AI infrastructure used by Shoonaya features.',
+        'Current service providers are, or may be: Supabase (database, sign-in and file storage, hosted in Ireland in the European Union); Vercel (website hosting and, only with your cookie consent, Vercel Analytics and Speed Insights); Expo (push-notification delivery and app updates); Firebase Cloud Messaging from Google (Android push delivery); Google and Apple (sign-in, only if you choose them); Sarvam AI (AI answers, translation and text-to-speech: it receives the text you send to those features); Bhashini (text-to-speech); Resend (delivery of e-mail, which receives your e-mail address and the message); Twilio and Meta\'s WhatsApp Business platform (phone-number verification and WhatsApp messages, only if you use them: they receive your phone number); Geoapify and OpenStreetMap Nominatim (place search and geocoding: they receive the place or coordinates being looked up); and YouTube (external live-darshan links, which open outside Shoonaya). On shoonaya.com only, and only with your consent, Google Analytics measures website use and Google AdSense may show advertising.',
+        'Our database and file storage are in Ireland (European Union), and some of the providers above process data in other countries, including outside India and the UK or EU.',
         'Community content you choose to post may be visible to other users according to the feature and privacy setting used. Profile photos, names, usernames, Mandali posts, comments, and public share links may be shown to others when you choose those surfaces.',
       ]
     },
@@ -117,7 +119,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           content: [
             'Shoonaya acts as a Data Fiduciary. You have the right to withdraw consent at any time.',
             'You may appoint a Consent Manager to manage your privacy settings on your behalf.',
-            'For any grievances, please contact our Grievance Officer at info@shoonaya.com.',
+            'For any grievances, please contact our Grievance Officer, Prince Sharma, at info@shoonaya.com.',
           ]
         }
       ]
@@ -138,7 +140,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           title: 'Data Protection Officer',
           summary: 'Direct contact for privacy concerns.',
           content: [
-            'You can reach our Data Protection Representative for UK/EU at info@shoonaya.com.',
+            'You can reach our data protection contact for the UK and EU, Prince Sharma, at info@shoonaya.com.',
           ]
         }
       ]
