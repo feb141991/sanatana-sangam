@@ -35,6 +35,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-crane-and-crab',
   'panchatantra-dharmabuddhi-papabuddhi',
   'panchatantra-self-sacrificing-dove',
+  'panchatantra-lion-and-the-ram',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -89,6 +90,7 @@ interface ArtworkSet {
  * descriptions follow docs/artwork/panchatantra-storybook/dharmabuddhi-papabuddhi.md in the Native
  * repository; the Crane and Crab ones were written from looking at the six images.
  * panchatantra-self-sacrificing-dove has no set in the Native app, so it has no entry.
+ * panchatantra-lion-and-the-ram: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -117,6 +119,7 @@ const ARTWORK: Record<string, ArtworkSet> = {
     width: 1376,
     height: 768,
     alt: [
+
       'Two merchant companions walk a dusty trade road beside an ox cart: Dharmabuddhi, smiling in a plain cream dhoti and holding a pot of gold coins, and Papabuddhi, sly in rust-maroon robes and a turban.',
       'Under the roots of a great banyan tree, Dharmabuddhi lowers the pot of gold into a pit while Papabuddhi points and persuades.',
       'At midnight under the banyan tree, Papabuddhi digs up the pit by lantern light and stuffs gold coins into a sack, glancing nervously over his shoulder.',
@@ -131,6 +134,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'पत्थर के खंभों वाली न्यायसभा में पापबुद्धि नाटकीय आरोप लगा रहा है, और धर्मबुद्धि हाथ जोड़े शांत खड़ा है।',
       'संध्या के समय पापबुद्धि अपने दुर्बल, श्वेत-दाढ़ी वाले पिता को बरगद के खोखले तने में बिठा रहा है और उन्हें वृक्ष-देवता की तरह बोलना सिखा रहा है।',
       'सुबह की रोशनी में बरगद के खोखले तने से धुआँ उठ रहा है और पास में सूखी झाड़ियों का ढेर है; खाँसते हुए बूढ़े पिता बाहर रेंग रहे हैं, सैनिकों ने एक घबराए आदमी को पकड़ रखा है और गाँव वाले देख रहे हैं।',
+    ],
+  },
+  'panchatantra-lion-and-the-ram': {
+    dir: 'lion-and-the-ram',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A colossal shaggy domestic ram with massive curled horns stands on a ridge in a lush jungle, his thick matted fleece bristling, surveying the valley below.',
+      'A formidable clay-modelled lion pauses on his forest patrol, startled and wide-eyed, staring up at the strange horned beast silhouetted on the ridge above.',
+      'The lion crouches behind dense undergrowth, peering through leaves with a nervous, uncertain expression at the enormous ram who gazes calmly ahead.',
+      'The lion shadows the ram through the dappled forest, hidden in the bushes, his predatory instincts warring with hesitation as he studies the massive creature.',
+      'In a sun-dappled clearing, the ram kneels and peacefully nibbles meadow grass, chewing with slow bovine placidity and bleating softly in mild satisfaction.',
+      'The lion leaps from the thicket with a thunderous roar, striking the ram down with one powerful paw, the jungle floor scattered with golden grass around them.',
+    ],
+    altHi: [
+      'एक विशालकाय घुमावदार सींगों वाला मेंढा हरे-भरे जंगल में ऊंचे टीले पर खड़ा है, उसका मोटा उलझा ऊन कांटों की तरह खड़ा है और वह घाटी की ओर देख रहा है।',
+      'एक बलशाली मिट्टी के मेंढे से बने सिंह अपनी वन-गश्त के दौरान रुकता है, चकित और चौड़ी आंखों से ऊपर टीले पर खड़े उस विचित्र सींग वाले प्राणी को देखता है।',
+      'सिंह घने झाड़ी के पीछे छिपकर, पत्तों के बीच से घबराई और असमंजस भरी नजरों से उस विशाल मेंढे को देखता है जो शांत भाव से आगे निहारता है।',
+      'सिंह झाड़ियों में छिपते हुए छाया की तरह मेंढे के पीछे-पीछे छाया-छनी हुई वन में चलता है, उसकी शिकारी प्रवृत्ति और हिचकिचाहट में द्वंद्व चल रहा है।',
+      'धूप से नहाई हुई एक खुली जगह में मेंढा घुटने टेककर शांति से घास चर रहा है, धीमी गाय जैसी शांति से चबाते हुए हल्की-सी "में-में" कर रहा है।',
+      'सिंह झाड़ी से जोरदार दहाड़ के साथ कूदता है और एक शक्तिशाली पंजे से मेंढे को धराशायी कर देता है, उनके आसपास जंगल की जमीन पर सुनहरी घास बिखरी हुई है।',
     ],
   },
 };
