@@ -36,6 +36,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-dharmabuddhi-papabuddhi',
   'panchatantra-self-sacrificing-dove',
   'panchatantra-lion-and-the-ram',
+  'panchatantra-farmers-wife',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -91,6 +92,7 @@ interface ArtworkSet {
  * repository; the Crane and Crab ones were written from looking at the six images.
  * panchatantra-self-sacrificing-dove has no set in the Native app, so it has no entry.
  * panchatantra-lion-and-the-ram: six handcrafted 3D clay-animation scenes generated 2026-11-12.
+ * panchatantra-farmers-wife: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -155,6 +157,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'सिंह झाड़ियों में छिपते हुए छाया की तरह मेंढे के पीछे-पीछे छाया-छनी हुई वन में चलता है, उसकी शिकारी प्रवृत्ति और हिचकिचाहट में द्वंद्व चल रहा है।',
       'धूप से नहाई हुई एक खुली जगह में मेंढा घुटने टेककर शांति से घास चर रहा है, धीमी गाय जैसी शांति से चबाते हुए हल्की-सी "में-में" कर रहा है।',
       'सिंह झाड़ी से जोरदार दहाड़ के साथ कूदता है और एक शक्तिशाली पंजे से मेंढे को धराशायी कर देता है, उनके आसपास जंगल की जमीन पर सुनहरी घास बिखरी हुई है।',
+    ],
+  },
+  'panchatantra-farmers-wife': {
+    dir: 'farmers-wife',
+    width: 1376,
+    height: 768,
+    alt: [
+      'An aged, kind-faced clay farmer toils in his sunlit field while inside the farmhouse his restless young wife gazes longingly out the window, her expression bored and dissatisfied.',
+      'A silver-tongued clay rogue leans over a village well whispering sweet promises to the young wife, whose eyes gleam with greedy excitement as she clutches a casket of gold coins.',
+      'Under a spreading banyan tree at crimson dawn, the wife and rogue set off in haste through backwaters and dense groves, the wife carrying a heavy casket of gold and jewels.',
+      'At the edge of a broad turbulent river the rogue gestures persuasively, convincing the trusting wife to hand over her heavy bundle of gold and garments before he swims across.',
+      'On the far bank the rogue turns and gives a mocking salute, then vanishes laughing into the jungle, leaving the shivering, stripped wife alone and destitute on the muddy bank.',
+      'A female jackal stands between dropped meat on the ground and a fish splashing back into the river, while the humiliated wife watches from the bank as a vulture swoops down on the meat.',
+    ],
+    altHi: [
+      'एक वृद्ध, भोले-भाले मिट्टी के किसान अपने धूप से नहाए खेत में कठिन परिश्रम कर रहे हैं, जबकि अंदर खेत के घर में उनकी चंचल युवती पत्नी उकताई हुई खिड़की से बाहर ताक रही है।',
+      'एक चिकनी-चुपड़ी बोलने वाला मिट्टी का ठग गांव के कुएं पर झुककर युवती से मीठे वादे फुसफुसा रहा है, जिसकी आंखें सोने के सिक्कों से भरे घड़े को पकड़े हुए लालच से चमक रही हैं।',
+      'लाल भोर में एक विशाल बरगद के नीचे, पत्नी और ठग सोने और गहनों की भारी पोटली लेकर तेज़ी से पिछवाड़े और घने झुरमुट से निकल रहे हैं।',
+      'एक चौड़ी उफनती नदी के किनारे ठग इशारे से समझा रहा है, और विश्वास करने वाली पत्नी तैरकर पार जाने से पहले अपनी सोने और कपड़ों की भारी पोटली सौंप रही है।',
+      'दूसरे किनारे पर ठग मुड़कर व्यंग्यपूर्ण सलाम करता है, फिर हंसते हुए जंगल में गायब हो जाता है, और कांपती, नग्न पत्नी कीचड़ भरे किनारे पर अकेली और लुटी-पिटी खड़ी रह जाती है।',
+      'एक सियारिन ज़मीन पर गिरे मांस और नदी में वापस उछलती मछली के बीच खड़ी है, जबकि अपमानित पत्नी किनारे से देख रही है और एक गिद्ध मांस पर झपट्टा मार रहा है।',
     ],
   },
 };

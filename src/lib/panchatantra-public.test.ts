@@ -28,13 +28,14 @@ const devanagariShare = (text: string) => {
 };
 
 describe('public Panchatantra stories: what is listed', () => {
-  it('lists exactly the four approved stories, in order, each with a readable slug', () => {
+  it('lists exactly the five approved stories, in order, each with a readable slug', () => {
     expect(listPublicPanchatantraStories().map((s) => s.id)).toEqual([...PUBLIC_PANCHATANTRA_IDS]);
     expect(listPublicPanchatantraStories().map((s) => s.slug)).toEqual([
       'crane-and-crab',
       'dharmabuddhi-papabuddhi',
       'self-sacrificing-dove',
       'lion-and-the-ram',
+      'farmers-wife',
     ]);
   });
 
@@ -93,7 +94,7 @@ describe('public Panchatantra stories: what a reader sees', () => {
 
 describe('public Panchatantra stories: artwork', () => {
   const publicDir = resolve(root, 'public');
-  const withArt = ['crane-and-crab', 'dharmabuddhi-papabuddhi', 'lion-and-the-ram'];
+  const withArt = ['crane-and-crab', 'dharmabuddhi-papabuddhi', 'lion-and-the-ram', 'farmers-wife'];
 
   it('illustrates exactly the stories that have a full set, one scene per paragraph', () => {
     for (const story of listPublicPanchatantraStories()) {
