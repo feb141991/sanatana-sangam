@@ -37,6 +37,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-self-sacrificing-dove',
   'panchatantra-lion-and-the-ram',
   'panchatantra-farmers-wife',
+  'panchatantra-dog-who-went-abroad',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -93,6 +94,7 @@ interface ArtworkSet {
  * panchatantra-self-sacrificing-dove has no set in the Native app, so it has no entry.
  * panchatantra-lion-and-the-ram: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-farmers-wife: six handcrafted 3D clay-animation scenes generated 2026-11-12.
+ * panchatantra-dog-who-went-abroad: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -178,6 +180,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'एक चौड़ी उफनती नदी के किनारे ठग इशारे से समझा रहा है, और विश्वास करने वाली पत्नी तैरकर पार जाने से पहले अपनी सोने और कपड़ों की भारी पोटली सौंप रही है।',
       'दूसरे किनारे पर ठग मुड़कर व्यंग्यपूर्ण सलाम करता है, फिर हंसते हुए जंगल में गायब हो जाता है, और कांपती, नग्न पत्नी कीचड़ भरे किनारे पर अकेली और लुटी-पिटी खड़ी रह जाती है।',
       'एक सियारिन ज़मीन पर गिरे मांस और नदी में वापस उछलती मछली के बीच खड़ी है, जबकि अपमानित पत्नी किनारे से देख रही है और एक गिद्ध मांस पर झपट्टा मार रहा है।',
+    ],
+  },
+  'panchatantra-dog-who-went-abroad': {
+    dir: 'dog-who-went-abroad',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A thin, dusty clay dog named Spot stands in a parched cracked-earth village, his ribs showing, surrounded by empty granaries and leafless trees under a blazing sun.',
+      'Spot the clay dog treks through mountain passes and dense woods, surviving on dry roots, until he spots the gleaming skyline of a prosperous coastal city ahead.',
+      'Inside a wealthy merchant\'s pantry, a plump glossy-coated Spot feasts joyfully on butter cakes, roasted venison and sweetmeats as golden lamplight fills the kitchen.',
+      'Outside in sunny thoroughfares, packs of snarling local clay dogs surround a frightened Spot with bared fangs, chasing him through the streets simply for being a stranger.',
+      'Spot sits alone in a shadowy alley, nursing bleeding ear wounds, reflecting with a philosophical expression while stray dogs howl in the sunlit street beyond.',
+      'Back in his native drought-stricken village, a lean but content Spot is surrounded by his eager, thin canine kin who listen to his tale with wide curious eyes.',
+    ],
+    altHi: [
+      'एक पतला, धूल भरा मिट्टी का कुत्ता चित्रांगद सूखी और फटी धरती वाले गांव में खड़ा है, उसकी पसलियाँ दिख रही हैं, चारों ओर खाली अन्नभंडार और तेज धूप में पत्तीहीन पेड़ हैं।',
+      'मिट्टी का चित्रांगद पहाड़ी दर्रों और घने जंगलों से होते हुए यात्रा कर रहा है, सूखी जड़ें खाकर जीवित है, और आगे एक समृद्ध तटीय नगर की चमकती रूपरेखा दिख रही है।',
+      'एक धनी व्यापारी के भंडारगृह में, हृष्ट-पुष्ट और चमकीले बालों वाला चित्रांगद सुनहरे दीपक की रोशनी में घी-रोटी, भुना मांस और मिठाइयाँ खुशी से खा रहा है।',
+      'धूप में नहाई सड़कों पर, स्थानीय मिट्टी के कुत्तों के झुंड दाँत दिखाते हुए डरे हुए चित्रांगद को घेर लेते हैं और सिर्फ परदेसी होने के कारण उसे गलियों में खदेड़ते हैं।',
+      'चित्रांगद एक अंधेरी गली में अकेला बैठकर खून से भरे घायल कान सहला रहा है, दार्शनिक भाव से सोच रहा है, जबकि परे सड़क पर आवारा कुत्ते धूप में गुर्रा रहे हैं।',
+      'अपने सूखे और अकाल-पीड़ित गांव में वापस लौटे दुबले पर संतुष्ट चित्रांगद को उसके उत्सुक, पतले कुत्ते-बंधु चारों ओर से घेरकर बड़ी-बड़ी आँखों से उसकी कहानी सुन रहे हैं।',
     ],
   },
 };
