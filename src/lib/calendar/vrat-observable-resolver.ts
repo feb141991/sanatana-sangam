@@ -8,6 +8,7 @@ import {
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from "@/lib/calendar/occurrence-reader";
 import { UUID_REGEX } from "@/lib/vrat-observation";
 import { isOccurrenceObservableInItsSeries } from "@/lib/calendar/observance-series-eligibility";
+import { isReviewedCalendarEligibility } from "@/lib/calendar/regional-calendar-provenance";
 
 export interface ObservableVratResultSuccess {
   success: true;
@@ -158,7 +159,7 @@ export async function resolveObservableVratOccurrence(
   }
 
   const occurrencesWithBatches = await attachMaterialisationBatches(
-    occurrencesData || [],
+    (occurrencesData || []).filter(isReviewedCalendarEligibility),
     undefined,
     calendarProfile,
     resolved.context.effectiveCalculationLocation,

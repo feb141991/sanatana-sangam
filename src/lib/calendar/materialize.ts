@@ -8,6 +8,7 @@ import {
 } from '@sangam/dharma-rules';
 import { type LocationInput } from '@sangam/panchang-engine';
 import { CANONICAL_RULES } from './rules';
+import { regionalCalendarProvenanceFor } from './regional-calendar-provenance';
 
 
 type MaterializeOccurrenceRow = {
@@ -120,6 +121,30 @@ export type EvaluatorRuleDefinition = {
   isRecurring?: boolean;
   variants: EvaluatorVariantDefinition[];
 };
+
+function resolveCanonicalEvaluatorVariant(
+  eRule: EvaluatorRuleDefinition,
+  variant: EvaluatorVariantDefinition,
+) {
+  const candidates = CANONICAL_RULES.filter((rule) => rule.slug === eRule.slug);
+  return candidates.find((rule) =>
+    (variant.spiritualTradition !== null && rule.sampradaya === variant.spiritualTradition) ||
+    rule.variant_key === variant.variantId,
+  ) ?? (variant.variantId === 'smarta'
+    ? candidates.find((rule) => rule.sampradaya?.startsWith('smarta'))
+    : undefined) ?? (candidates.length === 1 ? candidates[0] : undefined);
+}
+
+function resolveEvaluatorConditions(
+  eRule: EvaluatorRuleDefinition,
+  variant: EvaluatorVariantDefinition,
+): RuleCondition[] {
+  const conditions = resolveCanonicalEvaluatorVariant(eRule, variant)?.evaluator_conditions ?? variant.conditions;
+  if (!conditions) {
+    throw new Error(`Missing evaluator_conditions for ${eRule.slug}/${variant.variantId}`);
+  }
+  return conditions;
+}
 
 export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
   {
@@ -356,6 +381,40 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
     ],
   },
   {
+    slug: 'narasimha-jayanti',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Vaishakha', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'shukla' },
+          { type: 'tithi_presence', tithi: 14, period: 'sayahna', mode: 'majority' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'holi',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Phalguna', monthSystem: 'amanta' },
+          // Holika Dahan (founder-approved 2026-11-11): Purnima at pradosha with no Bhadra; if Bhadra covers
+          // the pradosha, the Bhadra-puccha (last 72 minutes of Bhadra, PROPOSED length). The condition is
+          // satisfied only on the civil date the Dahan falls, which may be the pre-dawn after the Purnima evening.
+          { type: 'holika_dahan', pucchaMinutes: 72 },
+        ],
+      },
+    ],
+  },
+  {
     // Naraka Chaturdashi (Purvarunodaya) — COUNCIL RATIFIED 2026-08-23
     //
     // Sourced Fact:
@@ -486,13 +545,21 @@ export function calculateOccurrencesWithEvaluator(
   }
 
   for (const eRule of EVALUATOR_RULES) {
-    const candidates = baseline.filter((occ: { slug: string }) => occ.slug === eRule.slug);
-    if (candidates.length === 0) continue;
+    for (const variant of eRule.variants) {
+      const canonicalVariant = resolveCanonicalEvaluatorVariant(eRule, variant);
+      const canonicalIdentity = canonicalVariant
+        ? (canonicalVariant.variant_key || canonicalVariant.sampradaya
+          ? `${canonicalVariant.slug}::${canonicalVariant.variant_key ?? canonicalVariant.sampradaya}`
+          : canonicalVariant.slug)
+        : null;
+      const candidates = baseline.filter((occ: { slug: string; ruleKey?: string }) =>
+        occ.slug === eRule.slug && (!canonicalIdentity || occ.ruleKey === canonicalIdentity),
+      );
+      if (candidates.length === 0) continue;
 
-    for (const candidate of candidates) {
-      const windowSize = eRule.windowDays;
-
-      for (const variant of eRule.variants) {
+      for (const candidate of candidates) {
+        const windowSize = eRule.windowDays;
+        const conditions = resolveEvaluatorConditions(eRule, variant);
         const qualified: Array<{ date: string; reasoning: EvaluationReason[]; diagnostics: string[] }> = [];
         const vrddhiDates: Array<{ date: string; reasoning: EvaluationReason[]; diagnostics: string[] }> = [];
         const allEvaluationResults: Array<{
@@ -509,7 +576,7 @@ export function calculateOccurrencesWithEvaluator(
               ruleId: variant.variantId,
               festivalId: eRule.slug,
               traditionProfile: variant.spiritualTradition ?? undefined,
-              conditions: variant.conditions,
+              conditions,
             },
             checkDate,
             location
@@ -602,12 +669,12 @@ export function calculateOccurrencesWithEvaluator(
   for (const occ of finalOccurrences) {
     const rule = CANONICAL_RULES.find(r => r.slug === occ.slug);
     if (rule && rule.rule_family === 'relative_to_other_observance') {
-      const baseSlug = rule.relative_base_slug;
+      const baseSlug = rule.relation?.parent_slug ?? rule.relative_base_slug;
       if (baseSlug) {
         const baseOccs = finalOccurrences.filter(o => o.slug === baseSlug);
         for (const baseOcc of baseOccs) {
           const bd = new Date(baseOcc.date + 'T00:00:00Z');
-          const offset = rule.relative_offset_days || 0;
+        const offset = rule.relation?.offset_days ?? rule.relative_offset_days ?? 0;
           const rd = new Date(bd.getTime() + offset * 24 * 60 * 60 * 1000);
           const y = rd.getUTCFullYear();
           const m = String(rd.getUTCMonth() + 1).padStart(2, '0');
@@ -1536,6 +1603,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'condition_evaluator',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1590,6 +1658,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'condition_evaluator',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1650,6 +1719,7 @@ export async function materializeOccurrencesForYears({
               source_provenance: {
                 source_name: 'condition_evaluator',
                 source_kind: 'curated',
+                ...regionalCalendarProvenanceFor(occ.slug, occ.date),
               },
             },
           });
@@ -1815,6 +1885,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'calculation_engine',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1866,6 +1937,7 @@ export async function materializeOccurrencesForYears({
             source_provenance: {
               source_name: 'calculation_engine',
               source_kind: 'curated',
+              ...regionalCalendarProvenanceFor(occ.slug, occ.date),
             },
           });
           continue;
@@ -1917,6 +1989,7 @@ export async function materializeOccurrencesForYears({
               source_provenance: {
                 source_name: 'calculation_engine',
                 source_kind: 'curated',
+                ...regionalCalendarProvenanceFor(occ.slug, occ.date),
               },
             },
           });

@@ -1,3 +1,5 @@
+import { latestEdition } from './sgpc-edition-registry';
+
 /**
  * Read-only spot-check claims transcribed from the cited, edition-checked
  * manifests in docs/sources. These are evidence candidates, not rules,
@@ -23,12 +25,13 @@ const rashtriya = {
   manifest: 'docs/sources/rashtriya-panchang-saka-1948.manifest.md',
 };
 
+const currentSgpcEdition = latestEdition();
 const sgpc = {
   tradition: 'sikh' as const,
   authority: 'Shiromani Gurdwara Parbandhak Committee',
-  edition: 'Nanakshahi Samvat 558 (2026–27)',
+  edition: `Nanakshahi Samvat ${currentSgpcEdition?.edition ?? 'latest'}`,
   sourceUrl: 'https://sgpc.net/nanakshahi-calendar/',
-  manifest: 'docs/sources/sgpc-nanakshahi-558.manifest.md',
+  manifest: currentSgpcEdition ? `docs/sources/sgpc-nanakshahi-${currentSgpcEdition.edition}.manifest.md` : 'docs/sources/sgpc-nanakshahi.manifest.md',
 };
 
 export const OFFICIAL_CALENDAR_CLAIMS: readonly OfficialCalendarClaim[] = [

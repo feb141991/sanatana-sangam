@@ -6,10 +6,6 @@ import type { MarketingCampaign, MarketingCampaignVariant } from "./types";
 
 // ── Doubles ────────────────────────────────────────────────────────────────────
 
-let whatsappIsMock = false;
-vi.mock("@/lib/whatsapp/provider", () => ({
-  createWhatsAppProvider: () => ({ name: "mock", isMock: whatsappIsMock, sendText: vi.fn() })
-}));
 vi.mock("@/lib/email", () => ({ sendShoonayaEmail: vi.fn() }));
 
 /** How many recipients the audience seeder "finds" this test, and what a preview reports. */
@@ -97,7 +93,6 @@ beforeEach(() => {
   eligibleToSeed = 0;
   seedCalls.length = 0;
   previewCalls.length = 0;
-  whatsappIsMock = false;
 });
 afterEach(() => vi.unstubAllEnvs());
 
@@ -196,9 +191,8 @@ describe("every failure is reported before the status changes", () => {
     expect(db.updates).toHaveLength(0);
   });
 
-  it("WhatsApp on the mock provider in production: 409 before anything is written", async () => {
+  it("WhatsApp sending is retired: a live dispatch is a 409 before anything is written, in any environment", async () => {
     vi.stubEnv("VERCEL_ENV", "production");
-    whatsappIsMock = true;
     eligibleToSeed = 3;
     const { res } = await start({ dryRun: false, channel: "whatsapp", v: variant({ channel: "whatsapp" }) });
     expect(res).toMatchObject({ ok: false, status: 409, code: "whatsapp_provider_not_configured" });
@@ -208,7 +202,6 @@ describe("every failure is reported before the status changes", () => {
 
   it("the same WhatsApp condition does not block a dry run", async () => {
     vi.stubEnv("VERCEL_ENV", "production");
-    whatsappIsMock = true;
     const { res } = await start({ dryRun: true, channel: "whatsapp", v: variant({ channel: "whatsapp" }) });
     expect(res.ok).toBe(true);
   });
@@ -292,7 +285,6 @@ describe("early checks agree with the guards inside dispatchMarketingBatch", () 
 
   it("WhatsApp mock in production: both refuse live sends, both allow dry runs", async () => {
     vi.stubEnv("VERCEL_ENV", "production");
-    whatsappIsMock = true;
     const v = variant({ channel: "whatsapp" });
     const early = checkDispatchPreconditions(v, false);
     expect(early?.code).toBe("whatsapp_provider_not_configured");

@@ -33,7 +33,7 @@ export interface DevoteeProfileForShloka {
 /**
  * Produces a validated daily Shloka candidate (morning, 08:00 local) for a devotee on a specific local civil date.
  * Enforces:
- * 1. Opted-in reminder preference (wants_shloka_reminders !== false).
+ * 1. Opted-in reminder preference (wants_shloka_reminders === true).
  * 2. Activity suppression (skips if devotee already read today's shloka, i.e. last_shloka_date === localDate).
  * 3. Dignified non-loss-pressure copy: avoids guilt or panic framing ("Don't break your streak! 🔥"),
  *    using serene devotional encouragement instead ("Continue your N-day sadhana journey 🙏").
@@ -52,7 +52,7 @@ export function produceShlokaCandidate(
   }
 
   // 1. Check opt-in: default is true unless explicitly false
-  if (devotee.wants_shloka_reminders === false) {
+  if (devotee.wants_shloka_reminders !== true) {
     return null;
   }
 

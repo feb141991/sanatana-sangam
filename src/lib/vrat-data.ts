@@ -1347,11 +1347,11 @@ Break your fast only after midnight puja is complete. Sing bhajans, kirtans, and
 
   'holi': {
     id: 'holi',
-    emoji: '🎨',
-    name: 'Holi',
-    nameLocal: 'होली',
-    tagline: 'Colour the world as God colours the dawn — with abandon and joy.',
-    taglineLocal: 'रंगों से जगत को रंगो जैसे ईश्वर भोर को — उमंग और आनंद के साथ।',
+    emoji: '🔥',
+    name: 'Holika Dahan — Holi',
+    nameLocal: 'होलिका दहन — होली',
+    tagline: 'The Phalguna Purnima bonfire on the eve of Holi; Rangwali Holi is observed separately.',
+    taglineLocal: 'फाल्गुन पूर्णिमा का होली की पूर्वसंध्या का अग्नि-उत्सव; रंगवाली होली अलग से मनाई जाती है।',
     significance: `Holi celebrates the triumph of devotion over tyranny. Prahlada, a young devotee of Vishnu, survived every attempt by his demon king father Hiranyakashipu to kill him — protected by divine grace. When Holika (Hiranyakashipu's sister, immune to fire) tried to burn Prahlada alive, she perished and he emerged unharmed. The bonfire of Holika Dahan the night before Holi commemorates this victory.
 
 The next day, in an explosion of colour, Holi expresses what Prahlada embodied: that divine love transcends all divisions. On this one day, all social barriers dissolve — colour touches everyone equally, and the boundary between self and other blurs in laughter and play.

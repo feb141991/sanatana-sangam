@@ -3,6 +3,7 @@ import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
 import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, MONTH_NAMES, nextMonthIndex, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
 import { evaluateCondition } from '@sangam/dharma-rules';
+import { editionForDate, findMappedSidebarRow, mappedDateForEdition, regionalCalendarProvenanceFor, SGPC_EDITIONS, type RegionalCalendarDateResult } from './regional-calendar-provenance';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
 export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
@@ -613,49 +614,25 @@ export const NakshatraBasedHandler = {
  * Handler for Regional Calendar rules (e.g. Nanakshahi, etc.) - Defined for future expansion
  */
 export interface RegionalCalendarRule {
-  evaluate(rule: ObservanceRule, year: number): string[];
+  evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
-// Source: docs/sources/sgpc-nanakshahi-558.manifest.md (SGPC Nanakshahi
-// Calendar, Samvat 558, 2026-27 A.D., verified checksum ad9ff9ad...). This
-// table was wrong for 6 of 12 months (Bhadon through Phagan, drifting -1 to
-// -2 days) from whenever it was first written until 2026-08-17 -- it used
-// the naive "first 5 months = 31 days, rest = 30" pattern the manifest had
-// already documented as wrong for THIS cycle (Sawan is genuinely 32 days,
-// Bhadon 31, not 31/30), but that correction never made it from the
-// manifest into this constant. Found via a user report of specific festival
-// dates disagreeing with cited SGPC citations; re-derived directly from the
-// source PDF and verified against two independently-confirmed public dates
-// (Bandi Chhor Divas 2026-11-08, Guru Nanak Gurpurab 2026-11-24) already
-// recorded in the manifest.
-const NANAKSHAHI_GREGORIAN_START: Record<string, { month: number; day: number }> = {
-  'Chet':    { month: 3,  day: 14 },
-  'Vaisakh': { month: 4,  day: 14 },
-  'Jeth':    { month: 5,  day: 15 },
-  'Harh':    { month: 6,  day: 15 },
-  'Sawan':   { month: 7,  day: 16 },
-  'Bhadon':  { month: 8,  day: 17 },
-  'Assu':    { month: 9,  day: 17 },
-  'Katak':   { month: 10, day: 17 },
-  'Maghar':  { month: 11, day: 16 },
-  'Poh':     { month: 12, day: 16 },
-  'Magh':    { month: 1,  day: 14 },
-  'Phagan':  { month: 2,  day: 13 },
-};
+const CULTURAL_SIKH_SLUGS = new Set(['lohri', 'sahibzade-shaheedi-diwas']);
+
+function isSgpcOnlySikhRule(rule: ObservanceRule): boolean {
+  return rule.tradition === 'sikh' && !CULTURAL_SIKH_SLUGS.has(rule.slug);
+}
 
 export const NanakshahiHandler = {
-  evaluate(rule: ObservanceRule, year: number): string[] {
-    if (!rule.nanakshahi_month || rule.nanakshahi_day === undefined) return [];
-    const start = NANAKSHAHI_GREGORIAN_START[rule.nanakshahi_month];
-    if (!start) return [];
-
-    const startDate = new Date(Date.UTC(year, start.month - 1, start.day));
-    const observanceDate = new Date(startDate.getTime() + (rule.nanakshahi_day - 1) * 86400000);
-
-    // Only include if the resulting date falls in the target year
-    if (observanceDate.getUTCFullYear() !== year) return [];
-
-    return [formatUtcDate(observanceDate)];
+  evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[] {
+    for (const edition of SGPC_EDITIONS) {
+      if (!findMappedSidebarRow(edition, rule.slug)) continue;
+      const date = mappedDateForEdition(edition, rule.slug, year);
+      if (!date || Number(date.slice(0, 4)) !== year || editionForDate(date)?.edition !== edition.edition) continue;
+      const provenance = regionalCalendarProvenanceFor(rule.slug, date, [edition]).calendar_provenance;
+      if (provenance?.provenance === 'sgpc_edition') return [{ date, calendarProvenance: provenance }];
+    }
+    return [];
   }
 };
 
@@ -725,7 +702,7 @@ export const SolarMonthDayHandler = {
 };
 
 export interface RegionalCalendarRule {
-  evaluate(rule: ObservanceRule, year: number): string[];
+  evaluate(rule: ObservanceRule, year: number): RegionalCalendarDateResult[];
 }
 
 export interface ResolvedSpan {
@@ -902,6 +879,10 @@ function buildOccurrencesMap(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
+    if (isSgpcOnlySikhRule(rule)) {
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      continue;
+    }
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
@@ -914,7 +895,7 @@ function buildOccurrencesMap(
     } else if (rule.rule_family === 'nakshatra_based') {
       occurrencesMap[rk] = NakshatraBasedHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'regional_calendar') {
-      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year);
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
     } else if (rule.rule_family === 'solar_sankranti') {
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'solar_month_day') {
@@ -949,6 +930,7 @@ function buildOccurrencesMap(
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
       if (gate && !isPublishableForYear(rule, year)) continue;
+      if (rule.tradition === 'sikh' && rule.slug !== 'lohri') continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
@@ -1401,6 +1383,10 @@ function buildOccurrencesMapCorrected(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
+    if (isSgpcOnlySikhRule(rule)) {
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      continue;
+    }
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
@@ -1415,7 +1401,7 @@ function buildOccurrencesMapCorrected(
     } else if (r.rule_family === 'nakshatra_based') {
       occurrencesMap[rk] = NakshatraBasedHandler.evaluate(r, d);
     } else if (r.rule_family === 'regional_calendar') {
-      occurrencesMap[rk] = NanakshahiHandler.evaluate(r, year);
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(r, year).map(result => result.date);
     } else if (r.rule_family === 'solar_sankranti') {
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(r, year);
     } else if (r.rule_family === 'solar_month_day') {
@@ -1451,6 +1437,7 @@ function buildOccurrencesMapCorrected(
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
       if (gate && !isPublishableForYear(rule, year)) continue;
+      if (rule.tradition === 'sikh' && rule.slug !== 'lohri') continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;

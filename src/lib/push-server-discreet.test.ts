@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   tokenRows: [] as Array<{ user_id: string; token: string; binding_version?: string }>,
-  discreetIds: [] as string[],
+  preferences: {} as Record<string, boolean>,
   discreetError: null as { code?: string; message: string } | null,
   discreetQueries: 0,
   discreetQueriedIds: [] as string[],
@@ -23,9 +23,13 @@ vi.mock('@/lib/admin', () => ({
       let discreetQuery = false;
       let queriedIds: string[] = [];
       const builder: Record<string, unknown> = {
-        select: () => builder,
-        in: (_column: string, ids: string[]) => { queriedIds = ids; return builder; },
-        eq: (column: string) => { if (column === 'notification_discreet_mode') { discreetQuery = true; mocks.discreetQueries += 1; mocks.discreetQueriedIds.push(...queriedIds); } return builder; },
+        select: (columns: string) => { discreetQuery = columns === 'id, notification_discreet_mode'; return builder; },
+        in: (_column: string, ids: string[]) => {
+          queriedIds = ids;
+          if (discreetQuery) { mocks.discreetQueries += 1; mocks.discreetQueriedIds.push(...ids); }
+          return builder;
+        },
+        eq: () => builder,
         delete: () => builder,
         insert: async () => ({ error: null }),
         then: (resolve: (value: unknown) => unknown) => {
@@ -33,7 +37,7 @@ vi.mock('@/lib/admin', () => ({
           if (table === 'profiles' && discreetQuery) {
             return Promise.resolve(mocks.discreetError
               ? { data: null, error: mocks.discreetError }
-              : { data: mocks.discreetIds.map((id) => ({ id })), error: null }).then(resolve);
+              : { data: queriedIds.filter((id) => id in mocks.preferences).map((id) => ({ id, notification_discreet_mode: mocks.preferences[id] })), error: null }).then(resolve);
           }
           return Promise.resolve({ data: [], error: null }).then(resolve);
         },
@@ -62,7 +66,7 @@ describe('lock-screen discretion in the push sender', () => {
       { user_id: 'asked', token: 'ExponentPushToken[asked]', binding_version: 'v1' },
       { user_id: 'normal', token: 'ExponentPushToken[normal]', binding_version: 'v1' },
     ];
-    mocks.discreetIds = ['asked'];
+    mocks.preferences = { asked: true, normal: false };
     mocks.discreetError = null;
     mocks.discreetQueries = 0;
     mocks.discreetQueriedIds = [];
@@ -97,6 +101,7 @@ describe('lock-screen discretion in the push sender', () => {
     // the destination is data, not displayed text: it must survive, or a tap would open the wrong screen
     expect(data.url).toBe('/vrat');
     expect(data.type).toBe('festival');
+    expect(data.notificationKey).toBe('festival:2026-11-12');
     expect(data.emoji).toBe('x');
   });
 
@@ -109,10 +114,16 @@ describe('lock-screen discretion in the push sender', () => {
     }
   });
 
-  it('sends full text to everyone before the migration exists (a missing column means nobody asked)', async () => {
+  it('keeps the generic message when the column is unreadable', async () => {
     mocks.discreetError = { code: '42703', message: 'column does not exist' };
     await send();
-    expect(forToken('ExponentPushToken[asked]').title).toBe('Ekadashi tomorrow');
+    expect(forToken('ExponentPushToken[asked]').title).toBe('Shoonaya');
+  });
+
+  it('redacts when a recipient profile is missing from the query', async () => {
+    delete mocks.preferences.normal;
+    await send();
+    expect(forToken('ExponentPushToken[normal]').title).toBe('Shoonaya');
   });
 
   it('never replaces a security notice', async () => {
@@ -126,6 +137,21 @@ describe('lock-screen discretion in the push sender', () => {
       await send(type);
       expect(forToken('ExponentPushToken[asked]').title, type).toBe('Shoonaya');
     }
+  });
+
+  it('uses a change in preference before submitting the next provider batch', async () => {
+    mocks.preferences.asked = false;
+    mocks.tokenRows = Array.from({ length: 101 }, (_, i) => ({
+      user_id: 'asked', token: `ExponentPushToken[${i}]`, binding_version: 'v1',
+    }));
+    fetchMock.mockImplementationOnce(async (url: string, init: { body: string }) => {
+      mocks.preferences.asked = true;
+      return expoOk(url, init);
+    });
+    await sendPushNotification({ userIds: ['asked'], title: 'Private title', body: 'Private body' }, { type: 'festival' });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)[0].title).toBe('Private title');
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)[0]).toMatchObject({ title: 'Shoonaya', body: 'You have a new notification.' });
   });
 
   it('looks up exactly the recipients that will be pushed to: one query, and nobody without a token', async () => {

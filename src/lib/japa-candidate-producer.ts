@@ -130,7 +130,7 @@ export function produceJapaCandidate(
   copy?: { title: string; body: string }
 ): NotificationCandidateInsert | null {
   // 1. Check opt-in (default on; explicit false suppresses)
-  if (devotee.japa_reminder_enabled === false) {
+  if (devotee.japa_reminder_enabled !== true) {
     return null;
   }
 

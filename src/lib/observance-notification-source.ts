@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Json } from '@/types/database';
 import { filterWithheldJoinedRows } from './calendar/withheld';
 import { mapOccurrenceToFestival, type Festival } from '@/lib/festivals';
+import { isReviewedCalendarEligibility } from '@/lib/calendar/regional-calendar-provenance';
 
 export type ReviewedObservanceKind = 'major' | 'regional' | 'vrat';
 
@@ -65,10 +66,7 @@ export function isReviewedNotificationObservance(row: any, allowedKinds: Set<Rev
   if (def.active === false) return false;
   if (!allowedKinds.has(def.kind)) return false;
 
-  return row.review_status === 'reviewed'
-    && row.verification_status === 'verified'
-    && row.audit_status === 'completed'
-    && row.final_date_source !== 'fallback'
+  return isReviewedCalendarEligibility(row)
     && Boolean(row.date || row.manual_date_override);
 }
 
@@ -83,9 +81,6 @@ export async function fetchReviewedObservancesForNotifications(
     let query = supabase
       .from('observance_occurrences')
       .select('*, observance_definitions(*)')
-      .eq('review_status', 'reviewed')
-      .eq('verification_status', 'verified')
-      .eq('audit_status', 'completed')
       .neq('final_date_source', 'fallback')
       // Fail closed: only published rows can produce notification candidates.
       .eq('publication_status', 'published');

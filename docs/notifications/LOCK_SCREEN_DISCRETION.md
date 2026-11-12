@@ -1,8 +1,6 @@
 # Lock-screen discretion
 
-**Status (2026-11-10): WRITTEN, NOT APPLIED, NOT DEPLOYED.** Migration `20261112090000_notification_discreet_mode.sql`, the push-sender
-change and the profile-route allow-list are on branch `notif-discreet-mode`. The Native switch is on a Native branch of the same name.
-Founder queue item 4, first half. The second half (per-category Android channels) is NOT built: see section 6.
+**Status (2026-11-12):** The preference column is present in production. The backend and Native implementation are prepared on their existing `notif-discreet-mode` branches. Verify the sender and profile endpoint in the deployed revision before offering the switch.
 
 ## 1. What it is
 
@@ -24,14 +22,13 @@ conversations (study plan question 4) should refine it.
   device settings and vary by phone; the app cannot force them. Replacing the text works the same on both and cannot be defeated by an
   OS setting being on.
 - **Security notices are never replaced** (`DISCREET_EXEMPT_TYPES`): they must say what happened and name nothing from the app.
-- **Fails closed.** If the lookup fails for any reason other than a missing column, every recipient of that send gets the neutral line.
-  A private message shown in full because a lookup failed is the worse mistake; the cost is a plainer notification during an outage.
-- **Before the migration** the column does not exist; the sender reads that (Postgres `42703`) as "nobody has asked" and sends full text.
-- The setting is written through the existing profile route's allow-list as a strict boolean.
+- **Fails closed.** The sender reads each Expo batch immediately before sending it. Only a confirmed `false` allows full text. A missing profile, missing column or failed lookup gives regular notifications the neutral line.
+- Native enables the switch only after authenticated `GET /api/native/notification-discretion` returns a boolean. This route ships with the sender implementation. A standalone database column does not signal readiness.
+- The authenticated profile PATCH accepts a strict boolean. Native shows the new value only when the response acknowledges that exact value. A failed or uncertain save requires a fresh read.
 
 ## 3. Limits to say plainly
 
-- It changes **new** pushes only. A notification already on the screen keeps its text.
+- A notification already sent or in flight can still show its original text. The new preference is read before the next Expo batch.
 - It hides the wording, not the fact that Shoonaya sent something, and not when.
 - In-app notification rows (the bell, the inbox) are unchanged: they are behind the app.
 - The neutral line is English only. A Hindi version would be an unreviewed draft (reviewers are deferred by the founder), so none ships.
@@ -42,15 +39,14 @@ conversations (study plan question 4) should refine it.
 
 - **Default off.** Nothing changes for anyone until they switch it on. A default-on setting, or an onboarding question, is a product
   decision (onboarding already asks about every reminder one by one; adding a question there is easy but not assumed).
-- **Wording** of the switch and its explanation (Native) is English plus an unreviewed Hindi draft.
+- **Wording** of the switch includes a Hindi label and an English privacy explanation.
 - Whether any other type should be exempt (only `security` is).
 
 ## 5. Rollout and risk (ROC, AGENTS section 4)
 
-No function is created or changed (no overload risk). `ADD COLUMN ... DEFAULT false` is metadata-only; `lock_timeout = 5s` makes it fail
-fast instead of queueing behind a long transaction. No row is updated. RLS is inherited and `authenticated` already holds table-level
-privileges. Rollback drops the column (preferences lost; the sender then sends full text again). Any order works: an app without the
-column disables the switch; a backend without it sends full text. After applying: regenerate `database.generated.ts`.
+The existing migration adds the boolean column. This rollout adds no migration or RPC. Deploy the backend first, then verify an authenticated read and acknowledged save. With an authorized test account, verify the next regular push on locked iOS and Android and confirm that tapping it still opens the intended destination. Then release Native.
+
+If reverting the Settings UI or API, keep redaction in the sender. Reverting to a sender that ignores the preference can expose details for people who enabled it.
 
 ## 6. Not built: per-category Android channels (the other half of item 4)
 

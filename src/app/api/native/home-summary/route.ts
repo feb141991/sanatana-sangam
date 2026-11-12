@@ -37,6 +37,7 @@ import type { HomeObservanceStoryCard } from '../../../../../contracts/observanc
 import { getHomeObservanceWindowEnd } from '@/lib/home-observance-window';
 import { settleOptionalSection } from '@/lib/optional-section';
 import { HOME_PROFILE_COLUMNS, readHomeProfile } from '@/lib/home-profile-read';
+import { filterFinalCalendarOccurrences } from '@/lib/calendar/regional-calendar-provenance';
 
 export const runtime = 'nodejs';
 
@@ -847,7 +848,9 @@ export async function GET(request: NextRequest) {
   const rawObservanceData: ObservanceRow[] = Array.isArray(observanceSection.value?.rows)
     ? observanceSection.value.rows
     : [];
-  const observanceRows: ObservanceRow[] = suppressGenericEkadashiWhenNamed(filterWithheldJoinedRows(rawObservanceData));
+  const observanceRows: ObservanceRow[] = suppressGenericEkadashiWhenNamed(
+    filterFinalCalendarOccurrences(filterWithheldJoinedRows(rawObservanceData)),
+  );
   // observanceRows is already guaranteed [] when skipCalendar (observancePromise
   // above never fetched anything), so attachMaterialisationBatches would have
   // nothing to decorate anyway -- skip the query and its own DB round-trip too.

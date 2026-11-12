@@ -250,7 +250,6 @@ export default function PushMonitoringSection() {
           >
             <option value="all">All Providers</option>
             <option value="expo">Expo (Native iOS & Android)</option>
-            <option value="onesignal">OneSignal (PWA Browser)</option>
           </select>
 
           <div className="relative flex-1 sm:w-48">

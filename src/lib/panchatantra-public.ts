@@ -35,6 +35,8 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-crane-and-crab',
   'panchatantra-dharmabuddhi-papabuddhi',
   'panchatantra-self-sacrificing-dove',
+  'panchatantra-lion-and-the-ram',
+  'panchatantra-farmers-wife',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -89,6 +91,8 @@ interface ArtworkSet {
  * descriptions follow docs/artwork/panchatantra-storybook/dharmabuddhi-papabuddhi.md in the Native
  * repository; the Crane and Crab ones were written from looking at the six images.
  * panchatantra-self-sacrificing-dove has no set in the Native app, so it has no entry.
+ * panchatantra-lion-and-the-ram: six handcrafted 3D clay-animation scenes generated 2026-11-12.
+ * panchatantra-farmers-wife: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -117,6 +121,7 @@ const ARTWORK: Record<string, ArtworkSet> = {
     width: 1376,
     height: 768,
     alt: [
+
       'Two merchant companions walk a dusty trade road beside an ox cart: Dharmabuddhi, smiling in a plain cream dhoti and holding a pot of gold coins, and Papabuddhi, sly in rust-maroon robes and a turban.',
       'Under the roots of a great banyan tree, Dharmabuddhi lowers the pot of gold into a pit while Papabuddhi points and persuades.',
       'At midnight under the banyan tree, Papabuddhi digs up the pit by lantern light and stuffs gold coins into a sack, glancing nervously over his shoulder.',
@@ -131,6 +136,48 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'पत्थर के खंभों वाली न्यायसभा में पापबुद्धि नाटकीय आरोप लगा रहा है, और धर्मबुद्धि हाथ जोड़े शांत खड़ा है।',
       'संध्या के समय पापबुद्धि अपने दुर्बल, श्वेत-दाढ़ी वाले पिता को बरगद के खोखले तने में बिठा रहा है और उन्हें वृक्ष-देवता की तरह बोलना सिखा रहा है।',
       'सुबह की रोशनी में बरगद के खोखले तने से धुआँ उठ रहा है और पास में सूखी झाड़ियों का ढेर है; खाँसते हुए बूढ़े पिता बाहर रेंग रहे हैं, सैनिकों ने एक घबराए आदमी को पकड़ रखा है और गाँव वाले देख रहे हैं।',
+    ],
+  },
+  'panchatantra-lion-and-the-ram': {
+    dir: 'lion-and-the-ram',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A colossal shaggy domestic ram with massive curled horns stands on a ridge in a lush jungle, his thick matted fleece bristling, surveying the valley below.',
+      'A formidable clay-modelled lion pauses on his forest patrol, startled and wide-eyed, staring up at the strange horned beast silhouetted on the ridge above.',
+      'The lion crouches behind dense undergrowth, peering through leaves with a nervous, uncertain expression at the enormous ram who gazes calmly ahead.',
+      'The lion shadows the ram through the dappled forest, hidden in the bushes, his predatory instincts warring with hesitation as he studies the massive creature.',
+      'In a sun-dappled clearing, the ram kneels and peacefully nibbles meadow grass, chewing with slow bovine placidity and bleating softly in mild satisfaction.',
+      'The lion leaps from the thicket with a thunderous roar, striking the ram down with one powerful paw, the jungle floor scattered with golden grass around them.',
+    ],
+    altHi: [
+      'एक विशालकाय घुमावदार सींगों वाला मेंढा हरे-भरे जंगल में ऊंचे टीले पर खड़ा है, उसका मोटा उलझा ऊन कांटों की तरह खड़ा है और वह घाटी की ओर देख रहा है।',
+      'एक बलशाली मिट्टी के मेंढे से बने सिंह अपनी वन-गश्त के दौरान रुकता है, चकित और चौड़ी आंखों से ऊपर टीले पर खड़े उस विचित्र सींग वाले प्राणी को देखता है।',
+      'सिंह घने झाड़ी के पीछे छिपकर, पत्तों के बीच से घबराई और असमंजस भरी नजरों से उस विशाल मेंढे को देखता है जो शांत भाव से आगे निहारता है।',
+      'सिंह झाड़ियों में छिपते हुए छाया की तरह मेंढे के पीछे-पीछे छाया-छनी हुई वन में चलता है, उसकी शिकारी प्रवृत्ति और हिचकिचाहट में द्वंद्व चल रहा है।',
+      'धूप से नहाई हुई एक खुली जगह में मेंढा घुटने टेककर शांति से घास चर रहा है, धीमी गाय जैसी शांति से चबाते हुए हल्की-सी "में-में" कर रहा है।',
+      'सिंह झाड़ी से जोरदार दहाड़ के साथ कूदता है और एक शक्तिशाली पंजे से मेंढे को धराशायी कर देता है, उनके आसपास जंगल की जमीन पर सुनहरी घास बिखरी हुई है।',
+    ],
+  },
+  'panchatantra-farmers-wife': {
+    dir: 'farmers-wife',
+    width: 1376,
+    height: 768,
+    alt: [
+      'An aged, kind-faced clay farmer toils in his sunlit field while inside the farmhouse his restless young wife gazes longingly out the window, her expression bored and dissatisfied.',
+      'A silver-tongued clay rogue leans over a village well whispering sweet promises to the young wife, whose eyes gleam with greedy excitement as she clutches a casket of gold coins.',
+      'Under a spreading banyan tree at crimson dawn, the wife and rogue set off in haste through backwaters and dense groves, the wife carrying a heavy casket of gold and jewels.',
+      'At the edge of a broad turbulent river the rogue gestures persuasively, convincing the trusting wife to hand over her heavy bundle of gold and garments before he swims across.',
+      'On the far bank the rogue turns and gives a mocking salute, then vanishes laughing into the jungle, leaving the shivering, stripped wife alone and destitute on the muddy bank.',
+      'A female jackal stands between dropped meat on the ground and a fish splashing back into the river, while the humiliated wife watches from the bank as a vulture swoops down on the meat.',
+    ],
+    altHi: [
+      'एक वृद्ध, भोले-भाले मिट्टी के किसान अपने धूप से नहाए खेत में कठिन परिश्रम कर रहे हैं, जबकि अंदर खेत के घर में उनकी चंचल युवती पत्नी उकताई हुई खिड़की से बाहर ताक रही है।',
+      'एक चिकनी-चुपड़ी बोलने वाला मिट्टी का ठग गांव के कुएं पर झुककर युवती से मीठे वादे फुसफुसा रहा है, जिसकी आंखें सोने के सिक्कों से भरे घड़े को पकड़े हुए लालच से चमक रही हैं।',
+      'लाल भोर में एक विशाल बरगद के नीचे, पत्नी और ठग सोने और गहनों की भारी पोटली लेकर तेज़ी से पिछवाड़े और घने झुरमुट से निकल रहे हैं।',
+      'एक चौड़ी उफनती नदी के किनारे ठग इशारे से समझा रहा है, और विश्वास करने वाली पत्नी तैरकर पार जाने से पहले अपनी सोने और कपड़ों की भारी पोटली सौंप रही है।',
+      'दूसरे किनारे पर ठग मुड़कर व्यंग्यपूर्ण सलाम करता है, फिर हंसते हुए जंगल में गायब हो जाता है, और कांपती, नग्न पत्नी कीचड़ भरे किनारे पर अकेली और लुटी-पिटी खड़ी रह जाती है।',
+      'एक सियारिन ज़मीन पर गिरे मांस और नदी में वापस उछलती मछली के बीच खड़ी है, जबकि अपमानित पत्नी किनारे से देख रही है और एक गिद्ध मांस पर झपट्टा मार रहा है।',
     ],
   },
 };

@@ -166,7 +166,7 @@ export async function GET(request: Request) {
 
     const eligibleUsers = users.filter((user) => {
       const timeZone = resolveTimeZone((user as any).timezone);
-      if ((user as any).wants_festival_reminders === false) return false;
+      if ((user as any).wants_festival_reminders !== true) return false;
       return canSendInLocalWindow(
         now,
         timeZone,

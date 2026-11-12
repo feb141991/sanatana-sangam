@@ -1,0 +1,5313 @@
+{
+  "edition": 558,
+  "edition_range": {
+    "from": "2026-03-14",
+    "to": "2027-03-13"
+  },
+  "month_starts": {
+    "Chet": "2026-03-14",
+    "Vaisakh": "2026-04-14",
+    "Jeth": "2026-05-15",
+    "Harh": "2026-06-15",
+    "Sawan": "2026-07-16",
+    "Bhadon": "2026-08-17",
+    "Assu": "2026-09-17",
+    "Katak": "2026-10-17",
+    "Maghar": "2026-11-16",
+    "Poh": "2026-12-16",
+    "Magh": "2027-01-14",
+    "Phagun": "2027-02-13"
+  },
+  "source": {
+    "publisher": "Shiromani Gurdwara Parbandhak Committee (SGPC)",
+    "tier": 1,
+    "url": "https://sgpc.net/storage/2026/03/Calender_2026-1.pdf",
+    "sha256": "ad9ff9ad7f558a585003095aa6ee383b8cf03374b53e2abde5cea7be7d7929d5"
+  },
+  "review": {
+    "read_by_human": true,
+    "reviewed_by": "Pt Prince Sharma",
+    "reviewed_at": "2026-11-11",
+    "scope": "558 sidebar as printed in the SGPC PDF",
+    "status": "official-source-backed, pending council ratification"
+  },
+  "colour_method": {
+    "legend_rgb": {
+      "gurpurab": [
+        168,
+        60,
+        120
+      ],
+      "itihasik": [
+        36,
+        36,
+        120
+      ],
+      "bhagat_sahiban": [
+        216,
+        0,
+        12
+      ],
+      "sarkari_holiday": [
+        0,
+        156,
+        216
+      ]
+    },
+    "source_files": [
+      "sgpc-558/side1-1.png",
+      "sgpc-558/side2-2.png",
+      "sgpc-558/side3-3.png",
+      "sgpc-558/lines558.json",
+      "sgpc-558/tsv558-page1.tsv",
+      "sgpc-558/tsv558-page2.tsv",
+      "sgpc-558/tsv558-page3.tsv"
+    ],
+    "method": "Independent 300 dpi text-colour sampling against the four printed legend chips; no legacy-glyph converter is used."
+  },
+  "ocr_cross_check": {
+    "method": "Independent OCR alignment: rows558-aligned.json compared with lines558.json; disagreements are explicit per row.",
+    "disagreements": [
+      {
+        "index": 22,
+        "reason": "558 line was absent from the aligned OCR artifact; name retained from the reviewed 557 decoded fallback"
+      },
+      {
+        "index": 28,
+        "reason": "Independent OCR line contained only the second line; first line restored from the printed crop"
+      },
+      {
+        "index": 91,
+        "reason": "Independent OCR included a stray colon prefix; punctuation removed"
+      }
+    ]
+  },
+  "rows": [
+    {
+      "index": 1,
+      "day": "1",
+      "month": "Chet",
+      "name_legacy": "ArMBqw sMmq nwnkSwhI 558",
+      "name_gurmukhi": "ਅਰੰਭਤਾ ਸੰਮਤ ਨਾਨਕਸ਼ਾਹੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 1
+    },
+    {
+      "index": 2,
+      "day": "1",
+      "month": "Chet",
+      "name_legacy": "ShIdI idhwVw jQydwr AkwlI bwbw PUlw isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਜਥੇਦਾਰ ਅਕਾਲੀ ਬਾਬਾ ਫੂਲਾ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 2
+    },
+    {
+      "index": 3,
+      "day": "2",
+      "month": "Chet",
+      "name_legacy": "s. bGyl isMG v`loN id`lI &iqh",
+      "name_gurmukhi": "ਸ. ਬਘੇਲ ਸਿੰਘ ਵੱਲੋਂ ਦਿੱਲੀ ਫ਼ਤਿਹ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 3
+    },
+    {
+      "index": 4,
+      "day": "4",
+      "month": "Chet",
+      "name_legacy": "guirAweI idvs sRI gurU hirrwie swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਰਾਇ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 4
+    },
+    {
+      "index": 5,
+      "day": "6",
+      "month": "Chet",
+      "name_legacy": "guirAweI idvs sRI gurU Amrdws swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਅਮਰਦਾਸ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 5
+    },
+    {
+      "index": 6,
+      "day": "9",
+      "month": "Chet",
+      "name_legacy": "joqI-joiq idvs sRI gurU AMgd dyv swihb jI",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 6
+    },
+    {
+      "index": 7,
+      "day": "10",
+      "month": "Chet",
+      "name_legacy": "joqI-joiq idvs sRI gurU hirgoibMd swihb jI",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 7
+    },
+    {
+      "index": 8,
+      "day": "10",
+      "month": "Chet",
+      "name_legacy": "ShIdI idhwVw s. Bgq isMG",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਸ. ਭਗਤ ਸਿੰਘ",
+      "name_source": "558_sidebar_ocr",
+      "category": "sarkari_holiday",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          0,
+          158,
+          227
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 8
+    },
+    {
+      "index": 9,
+      "day": "12",
+      "month": "Chet",
+      "name_legacy": "ShIdI idhwVw BweI subyg isMG BweI Swhbwz isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਸੁਬੇਗ ਸਿੰਘ ਭਾਈ ਸ਼ਾਹਬਾਜ਼ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr_corrected",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 9
+    },
+    {
+      "index": 10,
+      "day": "19",
+      "month": "Chet",
+      "name_legacy": "guirAweI idvs sRI gurU qyg bhwdr swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 10
+    },
+    {
+      "index": 11,
+      "day": "19",
+      "month": "Chet",
+      "name_legacy": "joqI-joiq idvs sRI gurU hirikRSn swihb jI",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 11
+    },
+    {
+      "index": 12,
+      "day": "25",
+      "month": "Chet",
+      "name_legacy": "pRkwS gurpurb sRI gurU qyg bhwdr swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 12
+    },
+    {
+      "index": 13,
+      "day": "27",
+      "month": "Chet",
+      "name_legacy": "pRkwS gurpurb sRI gurU Arjn dyv swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 13
+    },
+    {
+      "index": 14,
+      "day": "27",
+      "month": "Chet",
+      "name_legacy": "jnm idhwVw swihbzwdw bwbw juJwr isMG jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸਾਹਿਬਜ਼ਾਦਾ ਬਾਬਾ ਜੁਝਾਰ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 14
+    },
+    {
+      "index": 15,
+      "day": "31",
+      "month": "Chet",
+      "name_legacy": "is`K dsqwr idvs",
+      "name_gurmukhi": "ਸਿੱਖ ਦਸਤਾਰ ਦਿਵਸ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 15
+    },
+    {
+      "index": 16,
+      "day": "1",
+      "month": "Vaisakh",
+      "name_legacy": "^wlsw swjxw idvs (vYswKI)",
+      "name_gurmukhi": "ਖ਼ਾਲਸਾ ਸਾਜਣਾ ਦਿਵਸ (ਵੈਸਾਖੀ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 16
+    },
+    {
+      "index": 17,
+      "day": "5",
+      "month": "Vaisakh",
+      "name_legacy": "pRkwS gurpurb sRI gurU AMgd dyv swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          67,
+          129
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 17
+    },
+    {
+      "index": 18,
+      "day": "8",
+      "month": "Vaisakh",
+      "name_legacy": "jnm idhwVw Bgq DMnw jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਭਗਤ ਧੰਨਾ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "bhagat_sahiban",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 18
+    },
+    {
+      "index": 19,
+      "day": "17",
+      "month": "Vaisakh",
+      "name_legacy": "pRkwS gurpurb sRI gurU Amrdws swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸੀ੍‌ ਗੁਰੂ ਅਮਰਦਾਸ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          172,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 19
+    },
+    {
+      "index": 20,
+      "day": "21",
+      "month": "Vaisakh",
+      "name_legacy": "ShIdI joV-mylw sRI mukqsr swihb",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਜੋੜ-ਮੇਲਾ ਸ੍ਰੀ ਮੁਕਤਸਰ ਸਾਹਿਬ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 20
+    },
+    {
+      "index": 21,
+      "day": "22",
+      "month": "Vaisakh",
+      "name_legacy": "jnm idhwVw s. j`sw isMG jI rwmgVHIAw",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸ. ਜੱਸਾ ਸਿੰਘ ਜੀ ਰਾਮਗੜ੍ਹੀਆ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 21
+    },
+    {
+      "index": 22,
+      "day": "29",
+      "month": "Vaisakh",
+      "name_legacy": "bwbw bMdw isMG bhwdr v`loN srihMd &iqh idvs",
+      "name_gurmukhi": "ਬਾਬਾ ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ ਵੱਲੋਂ ਸਰਹਿੰਦ ਫ਼ਤਿਹ ਦਿਵਸ",
+      "name_source": "557_sidebar_decoded_fallback",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": false,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)",
+        "reason": "558 line was absent from the aligned OCR artifact; name retained from the reviewed 557 decoded fallback"
+      },
+      "print_order": 22
+    },
+    {
+      "index": 23,
+      "day": "3",
+      "month": "Jeth",
+      "name_legacy": "Cotw G`lUGwrw kwhnUMvwn (gurdwspur)",
+      "name_gurmukhi": "ਛੋਟਾ ਘੱਲੂਘਾਰਾ ਕਾਹਨੂੰਵਾਨ (ਗੁਰਦਾਸਪੁਰ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 23
+    },
+    {
+      "index": 24,
+      "day": "5",
+      "month": "Jeth",
+      "name_legacy": "jnm idhwVw s. j`sw isMG jI AwhlUvwlIAw",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸ. ਜੱਸਾ ਸਿੰਘ ਜੀ ਆਹਲੂਵਾਲੀਆ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 24
+    },
+    {
+      "index": 25,
+      "day": "8",
+      "month": "Jeth",
+      "name_legacy": "ShIdI swkw pwauNtw swihb",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਸਾਕਾ ਪਾਉਂਟਾ ਸਾਹਿਬ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 25
+    },
+    {
+      "index": 26,
+      "day": "19",
+      "month": "Jeth",
+      "name_legacy": "jnm idhwVw sMq jrnYl isMG jI ^wlsw iBMfrWvwly",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸੰਤ ਜਰਨੈਲ ਸਿੰਘ ਜੀ ਖ਼ਾਲਸਾ ਭਿੰਡਰਾਂਵਾਲੇ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 26
+    },
+    {
+      "index": 27,
+      "day": "21",
+      "month": "Jeth",
+      "name_legacy": "G`lUGwrw sRI Akwl q^q swihb (1984)",
+      "name_gurmukhi": "ਘੱਲੂਘਾਰਾ ਸ੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ (੧੯੮੪)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 27
+    },
+    {
+      "index": 28,
+      "day": "23",
+      "month": "Jeth",
+      "name_legacy": "BweI AmrIk isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਸੰਤ ਜਰਨੈਲ ਸਿੰਘ ਜੀ ਖ਼ਾਲਸਾ ਭਿੰਡਰਾਂਵਾਲੇ ਤੇ ਭਾਈ ਅਮਰੀਕ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr_corrected",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": false,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)",
+        "reason": "Independent OCR line contained only the second line; first line restored from the printed crop"
+      },
+      "print_order": 28
+    },
+    {
+      "index": 29,
+      "day": "25",
+      "month": "Jeth",
+      "name_legacy": "guirAweI idvs sRI gurU hirgoibMd swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 29
+    },
+    {
+      "index": 30,
+      "day": "4",
+      "month": "Harh",
+      "name_legacy": "ShIdI idvs sRI gurU Arjn dyv swihb jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 30
+    },
+    {
+      "index": 31,
+      "day": "11",
+      "month": "Harh",
+      "name_legacy": "ShIdI idhwVw bwbw bMdw isMG jI bhwdr",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਬਾਬਾ ਬੰਦਾ ਸਿੰਘ ਜੀ ਬਹਾਦਰ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 31
+    },
+    {
+      "index": 32,
+      "day": "15",
+      "month": "Harh",
+      "name_legacy": "brsI mhwrwjw rxjIq isMG jI",
+      "name_gurmukhi": "ਬਰਸੀ ਮਹਾਰਾਜਾ ਰਣਜੀਤ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 32
+    },
+    {
+      "index": 33,
+      "day": "15",
+      "month": "Harh",
+      "name_legacy": "joV-mylw gurduAwrw sRI rITw swihb",
+      "name_gurmukhi": "ਜੋੜ-ਮੇਲਾ ਗੁਰਦੁਆਰਾ ਸ੍ਰੀ ਰੀਠਾ ਸਾਹਿਬ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 33
+    },
+    {
+      "index": 34,
+      "day": "15",
+      "month": "Harh",
+      "name_legacy": "jnm idhwVw Bgq kbIr jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਭਗਤ ਕਬੀਰ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "bhagat_sahiban",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 34
+    },
+    {
+      "index": 35,
+      "day": "16",
+      "month": "Harh",
+      "name_legacy": "pRkwS gurpurb sRI gurU hirgoibMd swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 35
+    },
+    {
+      "index": 36,
+      "day": "21",
+      "month": "Harh",
+      "name_legacy": "isrjxw idvs sRI Akwl q^q swihb",
+      "name_gurmukhi": "ਸਿਰਜਣਾ ਦਿਵਸ ਸ੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 36
+    },
+    {
+      "index": 37,
+      "day": "25",
+      "month": "Harh",
+      "name_legacy": "ShIdI idhwVw BweI mnI isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਮਨੀ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 37
+    },
+    {
+      "index": 38,
+      "day": "1",
+      "month": "Sawan",
+      "name_legacy": "ShIdI idhwVw BweI qwrU isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਤਾਰੂ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          36,
+          36,
+          120
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 38
+    },
+    {
+      "index": 39,
+      "day": "9",
+      "month": "Sawan",
+      "name_legacy": "mIrI-pIrI idvs pwqSwhI CyvIN",
+      "name_gurmukhi": "ਮੀਰੀ-ਪੀਰੀ ਦਿਵਸ ਪਾਤਸ਼ਾਹੀ ਛੇਵੀਂ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 39
+    },
+    {
+      "index": 40,
+      "day": "16",
+      "month": "Sawan",
+      "name_legacy": "ShIdI idhwVw s. aUDm isMG",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਸ. ਊਧਮ ਸਿੰਘ",
+      "name_source": "558_sidebar_ocr",
+      "category": "sarkari_holiday",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          13,
+          151,
+          219
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 40
+    },
+    {
+      "index": 41,
+      "day": "23",
+      "month": "Sawan",
+      "name_legacy": "pRkwS gurpurb sRI gurU hirikRSn swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          170,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 41
+    },
+    {
+      "index": 42,
+      "day": "24",
+      "month": "Sawan",
+      "name_legacy": "morcw gurU kw bwg (sRI AMimRqsr)",
+      "name_gurmukhi": "ਮੋਰਚਾ ਗੁਰੂ ਕਾ ਬਾਗ (ਸ੍ਰੀ ਅੰਮਿ੍‌ਤਸਰ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 42
+    },
+    {
+      "index": 43,
+      "day": "31",
+      "month": "Sawan",
+      "name_legacy": "Bwrq dw AzwdI idvs",
+      "name_gurmukhi": "ਭਾਰਤ ਦਾ ਅਜ਼ਾਦੀ ਦਿਵਸ",
+      "name_source": "558_sidebar_ocr",
+      "category": "sarkari_holiday",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          5,
+          147,
+          218
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 43
+    },
+    {
+      "index": 44,
+      "day": "32",
+      "month": "Sawan",
+      "name_legacy": "mwry gey pMjwbIAW leI Ardws idhwVw",
+      "name_gurmukhi": "੧੯੪੭ ਵਿਚ ਪੰਜਾਬ ਦੀ ਵੰਡ ਸਮੇਂ ਹੋਏ ਕਤਲੇਆਮ ਵਿਚ ਮਾਰੇ ਗਏ ਪੰਜਾਬੀਆਂ ਲਈ ਅਰਦਾਸ ਦਿਹਾੜਾ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 44
+    },
+    {
+      "index": 45,
+      "day": "5",
+      "month": "Bhadon",
+      "name_legacy": "ShIdI idhwVw sMq hrcMd isMG jI lONgovwl",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਸੰਤ ਹਰਚੰਦ ਸਿੰਘ ਜੀ ਲੌਂਗੋਵਾਲ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 45
+    },
+    {
+      "index": 46,
+      "day": "12",
+      "month": "Bhadon",
+      "name_legacy": "joV-mylw bwbw bkwlw (gurU lwDo ry idvs)",
+      "name_gurmukhi": "ਜੋੜ-ਮੇਲਾ ਬਾਬਾ ਬਕਾਲਾ (ਗੁਰੂ ਲਾਧੋ ਰੇ ਦਿਵਸ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 46
+    },
+    {
+      "index": 47,
+      "day": "14",
+      "month": "Bhadon",
+      "name_legacy": "sMpUrnqw idvs sRI gurU gRMQ swihb jI",
+      "name_gurmukhi": "ਸੰਪੂਰਨਤਾ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          171,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 47
+    },
+    {
+      "index": 48,
+      "day": "27",
+      "month": "Bhadon",
+      "name_legacy": "pihlw pRkwS gurpurb sRI gurU gRMQ swihb jI",
+      "name_gurmukhi": "ਪਹਿਲਾ ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 48
+    },
+    {
+      "index": 49,
+      "day": "28",
+      "month": "Bhadon",
+      "name_legacy": "guirAweI idvs sRI gurU Arjn dyv swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 49
+    },
+    {
+      "index": 50,
+      "day": "29",
+      "month": "Bhadon",
+      "name_legacy": "joqI-joiq idvs sRI gurU rwmdws swihb jI",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਰਾਮਦਾਸ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 50
+    },
+    {
+      "index": 51,
+      "day": "2",
+      "month": "Assu",
+      "name_legacy": "ivAwh purb sRI gurU nwnk dyv swihb jI (btwlw)",
+      "name_gurmukhi": "ਜੋੜ-ਮੇਲਾ ਗੁਰਦੁਆਰਾ ਕੰਧ ਸਾਹਿਬ ਤੇ ਗੁ: ਡੇਹਰਾ ਸਾਹਿਬ ਵਿਆਹ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਸਾਹਿਬ ਜੀ (ਬਟਾਲਾ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 51
+    },
+    {
+      "index": 52,
+      "day": "8",
+      "month": "Assu",
+      "name_legacy": "guirAweI idvs sRI gurU rwmdws swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਰਾਮਦਾਸ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          169,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 52
+    },
+    {
+      "index": 53,
+      "day": "10",
+      "month": "Assu",
+      "name_legacy": "(joV-mylw goieMdvwl swihb)",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਅਮਰਦਾਸ ਸਾਹਿਬ ਜੀ (ਜੋੜ-ਮੇਲਾ ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 53
+    },
+    {
+      "index": 54,
+      "day": "14",
+      "month": "Assu",
+      "name_legacy": "joV-mylw bwbw bu`Fw jI (rmdws)",
+      "name_gurmukhi": "ਜੋੜ-ਮੇਲਾ ਬਾਬਾ ਬੁੱਢਾ ਜੀ (ਰਮਦਾਸ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 54
+    },
+    {
+      "index": 55,
+      "day": "15",
+      "month": "Assu",
+      "name_legacy": "guirAweI idvs sRI gurU AMgd dyv swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          66,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 55
+    },
+    {
+      "index": 56,
+      "day": "15",
+      "month": "Assu",
+      "name_legacy": "isMG sBw lihr dw sQwpnw idvs",
+      "name_gurmukhi": "ਸਿੰਘ ਸਭਾ ਲਹਿਰ ਦਾ ਸਥਾਪਨਾ ਦਿਵਸ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 56
+    },
+    {
+      "index": 57,
+      "day": "19",
+      "month": "Assu",
+      "name_legacy": "joqI-joiq idvs sRI gurU nwnk dyv swihb jI",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          167,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 57
+    },
+    {
+    "index": 58,
+      "day": "23",
+      "month": "Assu",
+      "name_legacy": "BweI hrijMdr isMG jI (ijMdw)",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਸੁਖਦੇਵ ਸਿੰਘ ਜੀ (ਸੁੱਖਾ) ਅਤੇ ਭਾਈ ਹਰਜਿੰਦਰ ਸਿੰਘ ਜੀ (ਜਿੰਦਾ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+    "print_order": 59
+    },
+    {
+    "index": 107,
+      "day": "21-22",
+      "month": "Assu",
+      "name_legacy": null,
+      "name_gurmukhi": "ਜੋੜ-ਮੇਲਾ ਬੀੜ ਬਾਬਾ ਬੁੱਢਾ ਜੀ (ਠੱਠਾ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "colour_evidence": {
+        "sampled_rgb": [
+          36,
+          36,
+          120
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+    "print_order": 58
+    },
+    {
+      "index": 59,
+      "day": "24",
+      "month": "Assu",
+      "name_legacy": "jnm idhwVw BweI qwrU isMG jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਭਾਈ ਤਾਰੂ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 60
+    },
+    {
+      "index": 60,
+      "day": "4",
+      "month": "Katak",
+      "name_legacy": "drbwr ^wlsw (dusihrw)",
+      "name_gurmukhi": "ਦਰਬਾਰ ਖ਼ਾਲਸਾ (ਦੁਸਹਿਰਾ)",
+      "name_source": "558_sidebar_ocr_corrected",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 61
+    },
+    {
+      "index": 61,
+      "day": "5",
+      "month": "Katak",
+      "name_legacy": "jnm idhwVw sMq igAwnI krqwr isMG jI iBMfrWvwly",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸੰਤ ਗਿਆਨੀ ਕਰਤਾਰ ਸਿੰਘ ਜੀ ਭਿੰਡਰਾਂਵਾਲੇ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 62
+    },
+    {
+      "index": 62,
+      "day": "7",
+      "month": "Katak",
+      "name_legacy": "jnm idhwVw bwbw bu`Fw jI (k`QUnMgl)",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਬਾਬਾ ਬੁੱਢਾ ਜੀ (ਕੱਥੂਨੰਗਲ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 63
+    },
+    {
+      "index": 63,
+      "day": "7",
+      "month": "Katak",
+      "name_legacy": "Akwl clwxw s. j`sw isMG jI AwhlUvwlIAw",
+      "name_gurmukhi": "ਅਕਾਲ ਚਲਾਣਾ ਸ. ਜੱਸਾ ਸਿੰਘ ਜੀ ਆਹਲੂਵਾਲੀਆ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 64
+    },
+    {
+      "index": 64,
+      "day": "11",
+      "month": "Katak",
+      "name_legacy": "pRkwS gurpurb sRI gurU rwmdws swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਰਾਮਦਾਸ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          168,
+          66,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 65
+    },
+    {
+      "index": 65,
+      "day": "14",
+      "month": "Katak",
+      "name_legacy": "swkw pMjw swihb (pwiksqwn)",
+      "name_gurmukhi": "ਸਾਕਾ ਪੰਜਾ ਸਾਹਿਬ (ਪਾਕਿਸਤਾਨ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 66
+    },
+    {
+      "index": 66,
+      "day": "15",
+      "month": "Katak",
+      "name_legacy": "ShIdI idhwVw BweI byAMq isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਬੇਅੰਤ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 67
+    },
+    {
+      "index": 67,
+      "day": "16",
+      "month": "Katak",
+      "name_legacy": "pMjwbI sUbw idvs",
+      "name_gurmukhi": "ਪੰਜਾਬੀ ਸੂਬਾ ਦਿਵਸ",
+      "name_source": "558_sidebar_ocr",
+      "category": "sarkari_holiday",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          27,
+          143,
+          211
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 68
+    },
+    {
+      "index": 68,
+      "day": "18",
+      "month": "Katak",
+      "name_legacy": "guirAweI idvs sRI gurU hirikRSn swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          179,
+          98,
+          74
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 69
+    },
+    {
+      "index": 69,
+      "day": "18",
+      "month": "Katak",
+      "name_legacy": "joqI-joiq idvs sRI gurU hirrwie swihb jI",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਰਾਇ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr_corrected",
+      "category": "gurpurab",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          166,
+          66,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 70
+    },
+    {
+      "index": 70,
+      "day": "18",
+      "month": "Katak",
+      "name_legacy": "jnm idhwVw mwqw swihb kOr jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਮਾਤਾ ਸਾਹਿਬ ਕੌਰ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 71
+    },
+    {
+      "index": 71,
+      "day": "23",
+      "month": "Katak",
+      "name_legacy": "bMdI CoV idvs (idvwlI)",
+      "name_gurmukhi": "ਬੰਦੀ ਛੋੜ ਦਿਵਸ (ਦਿਵਾਲੀ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 72
+    },
+    {
+      "index": 72,
+      "day": "26",
+      "month": "Katak",
+      "name_legacy": "guirAweI idvs sRI gurU gRMQ swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 73
+    },
+    {
+      "index": 73,
+      "day": "29",
+      "month": "Katak",
+      "name_legacy": "joqI-joiq idvs sRI gurU goibMd isMG swihb jI",
+      "name_gurmukhi": "ਜੋਤੀ-ਜੋਤਿ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          169,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 74
+    },
+    {
+      "index": 74,
+      "day": "30",
+      "month": "Katak",
+      "name_legacy": "ShIdI idhwVw bwbw dIp isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਬਾਬਾ ਦੀਪ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 75
+    },
+    {
+      "index": 75,
+      "day": "30",
+      "month": "Katak",
+      "name_legacy": "sQwpnw idvs SRomxI gurduAwrw pRbMDk kmytI",
+      "name_gurmukhi": "ਸਥਾਪਨਾ ਦਿਵਸ ਸ਼੍ਰੋਮਣੀ ਗੁਰਦੁਆਰਾ ਪ੍ਰਬੰਧਕ ਕਮੇਟੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          48,
+          36,
+          128
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 76
+    },
+    {
+      "index": 76,
+      "day": "1",
+      "month": "Maghar",
+      "name_legacy": "ShIdI idhwVw s. krqwr isMG jI srwBw",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਸ. ਕਰਤਾਰ ਸਿੰਘ ਜੀ ਸਰਾਭਾ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 77
+    },
+    {
+      "index": 77,
+      "day": "5",
+      "month": "Maghar",
+      "name_legacy": "jnm idhwVw Bgq nwmdyv jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਭਗਤ ਨਾਮਦੇਵ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "bhagat_sahiban",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 78
+    },
+    {
+      "index": 78,
+      "day": "9",
+      "month": "Maghar",
+      "name_legacy": "pRkwS gurpurb sRI gurU nwnk dyv jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 79
+    },
+    {
+      "index": 79,
+      "day": "13",
+      "month": "Maghar",
+      "name_legacy": "Akwl clwxw BweI mrdwnw jI",
+      "name_gurmukhi": "ਅਕਾਲ ਚਲਾਣਾ ਭਾਈ ਮਰਦਾਨਾ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 80
+    },
+    {
+      "index": 80,
+      "day": "15",
+      "month": "Maghar",
+      "name_legacy": "jnm idhwVw swihbzwdw bwbw jorwvr isMG jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸਾਹਿਬਜ਼ਾਦਾ ਬਾਬਾ ਜੋਰਾਵਰ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 81
+    },
+    {
+      "index": 81,
+      "day": "19",
+      "month": "Maghar",
+      "name_legacy": "ShIdI idhwVw bwbw gurbKS isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਬਾਬਾ ਗੁਰਬਖਸ਼ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 82
+    },
+    {
+      "index": 82,
+      "day": "27",
+      "month": "Maghar",
+      "name_legacy": "guirAweI idvs sRI gurU goibMd isMG swihb jI",
+      "name_gurmukhi": "ਗੁਰਿਆਈ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 83
+    },
+    {
+      "index": 83,
+      "day": "28",
+      "month": "Maghar",
+      "name_legacy": "BweI sqI dws jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਦਿਆਲਾ ਜੀ, ਭਾਈ ਮਤੀ ਦਾਸ ਜੀ ਤੇ ਭਾਈ ਸਤੀ ਦਾਸ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 84
+    },
+    {
+      "index": 84,
+      "day": "29",
+      "month": "Maghar",
+      "name_legacy": "ShIdI idvs sRI gurU qyg bhwdr swihb jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 85
+    },
+    {
+      "index": 85,
+      "day": "29",
+      "month": "Maghar",
+      "name_legacy": "jnm idhwVw swihbzwdw bwbw &iqh isMG jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸਾਹਿਬਜ਼ਾਦਾ ਬਾਬਾ ਫ਼ਤਿਹ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 86
+    },
+    {
+      "index": 86,
+      "day": "29",
+      "month": "Maghar",
+      "name_legacy": "sQwpnw idvs SRomxI AkwlI dl",
+      "name_gurmukhi": "ਸਥਾਪਨਾ ਦਿਵਸ ਸ਼੍ਰੋਮਣੀ ਅਕਾਲੀ ਦਲ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 87
+    },
+    {
+      "index": 87,
+      "day": "3",
+      "month": "Poh",
+      "name_legacy": "sIs sskwr idvs sRI gurU qyg bhwdr swihb jI",
+      "name_gurmukhi": "ਸੀਸ ਸਸਕਾਰ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          172,
+          67,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 88
+    },
+    {
+      "index": 88,
+      "day": "6",
+      "month": "Poh",
+      "name_legacy": "iklHw sRI AnMdgVH swihb C`fxw",
+      "name_gurmukhi": "ਕਿਲ੍ਹਾ ਸ੍ਰੀ ਅਨੰਦਗੜ੍ਹ ਸਾਹਿਬ ਛੱਡਣਾ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 89
+    },
+    {
+      "index": 89,
+      "day": "7",
+      "month": "Poh",
+      "name_legacy": "pirvwr ivCoVw srsw nMgl",
+      "name_gurmukhi": "ਪਰਿਵਾਰ ਵਿਛੋੜਾ ਸਰਸਾ ਨੰਗਲ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 90
+    },
+    {
+      "index": 90,
+      "day": "7",
+      "month": "Poh",
+      "name_legacy": "ShIdI idhwVw bwbw jIvn isMG jI (BweI jYqw jI)",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਬਾਬਾ ਜੀਵਨ ਸਿੰਘ ਜੀ (ਭਾਈ ਜੈਤਾ ਜੀ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 91
+    },
+    {
+      "index": 91,
+      "day": "9",
+      "month": "Poh",
+      "name_legacy": "ShIdI idhwVw BweI sMgq isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਸੰਗਤ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr_corrected",
+      "category": "itihasik",
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": false,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)",
+        "reason": "Independent OCR included a stray colon prefix; punctuation removed"
+      },
+      "print_order": 93
+    },
+    {
+      "index": 92,
+      "day": "13",
+      "month": "Poh",
+      "name_legacy": "ShIdI idhwVw Coty swihbzwdy Aqy mwqw gujrI jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦੇ ਅਤੇ ਮਾਤਾ ਗੁਜਰੀ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+    "print_order": 94
+    },
+    {
+    "index": 108,
+      "day": "8",
+      "month": "Poh",
+      "name_legacy": null,
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਵੱਡੇ ਸਾਹਿਬਜ਼ਾਦੇ ਅਤੇ ਚਮਕੌਰ ਸਾਹਿਬ ਦੇ ਹੋਰ ਸ਼ਹੀਦ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "read_by_human": false,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "print_order": 92
+    },
+    {
+      "index": 93,
+      "day": "22",
+      "month": "Poh",
+      "name_legacy": "ShIdI idhwVw BweI kyhr isMG qy BweI sqvMq isMG jI",
+      "name_gurmukhi": "ਸ਼ਹੀਦੀ ਦਿਹਾੜਾ ਭਾਈ ਕੇਹਰ ਸਿੰਘ ਤੇ ਭਾਈ ਸਤਵੰਤ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 95
+    },
+    {
+      "index": 94,
+      "day": "1",
+      "month": "Magh",
+      "name_legacy": "nINh p`Qr s`cKMf sRI hirmMdr swihb (sRI AMimRqsr)",
+      "name_gurmukhi": "ਨੀਂਹ ਪੱਥਰ ਸੱਚਖੰਡ ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ (ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 96
+    },
+    {
+      "index": 95,
+      "day": "1",
+      "month": "Magh",
+      "name_legacy": "joV-mylw sRI mukqsr swihb (mwGI)",
+      "name_gurmukhi": "ਜੋੜ-ਮੇਲਾ ਸ੍ਰੀ ਮੁਕਤਸਰ ਸਾਹਿਬ (ਮਾਘੀ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 97
+    },
+    {
+      "index": 96,
+      "day": "2",
+      "month": "Magh",
+      "name_legacy": "pRkwS gurpurb sRI gurU goibMd isMG swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 98
+    },
+    {
+      "index": 97,
+      "day": "7",
+      "month": "Magh",
+      "name_legacy": "cwbIAW dw morcw (sRI AMimRqsr)",
+      "name_gurmukhi": "ਚਾਬੀਆਂ ਦਾ ਮੋਰਚਾ (ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 99
+    },
+    {
+      "index": 98,
+      "day": "14",
+      "month": "Magh",
+      "name_legacy": "jnm idhwVw bwbw dIp isMG jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਬਾਬਾ ਦੀਪ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 100
+    },
+    {
+      "index": 99,
+      "day": "27",
+      "month": "Magh",
+      "name_legacy": "v`fw G`lUGwrw ku`p-rohIVw (sMgrUr)",
+      "name_gurmukhi": "ਵੱਡਾ ਘੱਲੂਘਾਰਾ ਕੁੱਪ-ਰੋਹੀੜਾ (ਸੰਗਰੂਰ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 101
+    },
+    {
+      "index": 100,
+      "day": "29",
+      "month": "Magh",
+      "name_legacy": "ivAwh purb sRI gurU goibMd isMG swihb jI (gurU kw lwhOr)",
+      "name_gurmukhi": "ਵਿਆਹ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ (ਗੁਰੂ ਕਾ ਲਾਹੌਰ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 102
+    },
+    {
+      "index": 101,
+      "day": "29",
+      "month": "Magh",
+      "name_legacy": "bsMq pMcmI",
+      "name_gurmukhi": "ਬਸੰਤ ਪੰਚਮੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 103
+    },
+    {
+      "index": 102,
+      "day": "30",
+      "month": "Magh",
+      "name_legacy": "jnm idhwVw swihbzwdw bwbw AjIq isMG jI",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਸਾਹਿਬਜ਼ਾਦਾ ਬਾਬਾ ਅਜੀਤ ਸਿੰਘ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 104
+    },
+    {
+      "index": 103,
+      "day": "7",
+      "month": "Phagun",
+      "name_legacy": "pRkwS gurpurb sRI gurU hirrwie swihb jI",
+      "name_gurmukhi": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਰਾਇ ਸਾਹਿਬ ਜੀ",
+      "name_source": "558_sidebar_ocr",
+      "category": "gurpurab",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          173,
+          68,
+          130
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 105
+    },
+    {
+      "index": 104,
+      "day": "8",
+      "month": "Phagun",
+      "name_legacy": "jnm idhwVw Bgq rivdws jI (650 swlw)",
+      "name_gurmukhi": "ਜਨਮ ਦਿਹਾੜਾ ਭਗਤ ਰਵਿਦਾਸ ਜੀ (੬੫੦ ਸਾਲਾ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "bhagat_sahiban",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          227,
+          0,
+          15
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 106
+    },
+    {
+      "index": 105,
+      "day": "9",
+      "month": "Phagun",
+      "name_legacy": "swkw nnkwxw swihb",
+      "name_gurmukhi": "ਸਾਕਾ ਨਨਕਾਣਾ ਸਾਹਿਬ",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 107
+    },
+    {
+      "index": 106,
+      "day": "9",
+      "month": "Phagun",
+      "name_legacy": "jYqo dw morcw (PrIdkot)",
+      "name_gurmukhi": "ਜੈਤੋ ਦਾ ਮੋਰਚਾ (ਫਰੀਦਕੋਟ)",
+      "name_source": "558_sidebar_ocr",
+      "category": "itihasik",
+      "read_by_human": true,
+      "reviewed_by": "Pt Prince Sharma",
+      "reviewed_at": "2026-11-11",
+      "review_scope": "558 sidebar as printed in the SGPC PDF",
+      "colour_evidence": {
+        "sampled_rgb": [
+          47,
+          36,
+          131
+        ],
+        "legend_rgb": {
+          "gurpurab": [
+            168,
+            60,
+            120
+          ],
+          "itihasik": [
+            36,
+            36,
+            120
+          ],
+          "bhagat_sahiban": [
+            216,
+            0,
+            12
+          ],
+          "sarkari_holiday": [
+            0,
+            156,
+            216
+          ]
+        },
+        "classification_method": "300dpi text-colour sample matched to SGPC legend chip"
+      },
+      "ocr_cross_check": {
+        "agreement": true,
+        "source": "rows558-aligned.json vs lines558.json (independent OCR/colour extraction)"
+      },
+      "print_order": 108
+    }
+  ],
+  "summary": {
+    "total_rows": 108,
+    "category_counts": {
+      "itihasik": 67,
+      "gurpurab": 33,
+      "bhagat_sahiban": 4,
+      "sarkari_holiday": 4,
+      "unknown": 0
+    },
+    "category_sampled_rows": 108,
+    "category_unknown_rows": 0,
+    "ocr_cross_check_agreements": 105,
+    "ocr_cross_check_disagreements": 3,
+    "rows_reset_for_review": [
+      9,
+      28,
+      29,
+      30,
+      31,
+      32,
+      34,
+      35,
+      36,
+      37,
+      107,
+      60,
+      64,
+      65,
+      67,
+      68,
+      69,
+      70,
+      72,
+      74,
+      91,
+      108
+    ]
+  }
+}
+

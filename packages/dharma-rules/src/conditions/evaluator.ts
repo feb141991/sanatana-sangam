@@ -6,6 +6,8 @@ import {
   getTzOffsetHours,
   LocationInput,
   getLunarMonth as getLunarMonthUncached,
+  computeAstronomy,
+  getKaranaName,
 } from '../../../panchang-engine/src/index.js';
 import { getSunriseSunset } from '../../../panchang-engine/src/core/astronomy.js';
 import { getMoonRiseSet } from '../../../panchang-engine/src/core/moon-rise-set.js';
@@ -59,6 +61,8 @@ import {
   CONDITION_EVALUATOR_VERSION,
   TithiCondition,
   PakshaCondition,
+  KaranaPresenceCondition,
+  HolikaDahanCondition,
 } from './types.js';
 
 
@@ -219,6 +223,11 @@ function computePeriodWindow(
       start = sunset;
       end = new Date(sunset.getTime() + 72 * 60_000); // 3 ghatikas = 72 min
       break;
+    case 'sayahna':
+      // Sayahna is the final fifth of the local daytime, ending at sunset.
+      start = new Date(sunrise.getTime() + 4 * dayFifth);
+      end = sunset;
+      break;
     case 'madhyahna':
       start = new Date(sunrise.getTime() + 2 * dayFifth);
       end = new Date(sunrise.getTime() + 3 * dayFifth);
@@ -363,6 +372,102 @@ function getUnderlyingTithiVrddhiInfo(
 }
 
 /** Evaluates a single rule condition on a given civil date and location */
+// ---------------------------------------------------------------------------
+// Holika Dahan (approved 2026-11-11, founder approval; puccha length PROPOSED)
+// ---------------------------------------------------------------------------
+
+function signedElongationDiff(elongation: number, target: number): number {
+  return ((elongation - target + 540) % 360) - 180;
+}
+
+/** First instant in [fromMs, toMs] at which the lunar elongation crosses `target` degrees upward. */
+function findElongationUpwardCrossing(target: number, fromMs: number, toMs: number): number | null {
+  const step = 6 * 3_600_000;
+  let prevT = fromMs;
+  let prevD = signedElongationDiff(computeAstronomy(new Date(prevT)).elongation, target);
+  for (let t = fromMs + step; t <= toMs + step; t += step) {
+    const d = signedElongationDiff(computeAstronomy(new Date(t)).elongation, target);
+    if (prevD < 0 && d >= 0) {
+      let lo = prevT;
+      let hi = t;
+      for (let i = 0; i < 24; i += 1) {
+        const mid = (lo + hi) / 2;
+        if (signedElongationDiff(computeAstronomy(new Date(mid)).elongation, target) < 0) lo = mid;
+        else hi = mid;
+      }
+      return hi;
+    }
+    prevT = t;
+    prevD = d;
+  }
+  return null;
+}
+
+export type HolikaDahanBranch = 'pradosha_no_bhadra' | 'bhadra_puccha' | 'unresolved';
+
+export interface HolikaDahanResolution {
+  dahanDate: string | null;
+  branch: HolikaDahanBranch;
+  purnimaStartUtc: string | null;
+  bhadraEndUtc: string | null;
+  purnimaEndUtc: string | null;
+}
+
+const holikaDahanCache = new Map<string, HolikaDahanResolution>();
+
+/**
+ * Resolves the Holika Dahan civil date for the Purnima near `civilDateStr`.
+ * Purnima = elongation 168-180 deg; Bhadra (Vishti) = its first half, 168-174 deg.
+ * Primary: the first civil day whose pradosha touches Purnima with no Bhadra in it.
+ * Fallback (Bhadra covers a pradosha that Purnima touches): the Bhadra-puccha, the last
+ * `pucchaMinutes` of Bhadra; the date is the local civil date of that instant.
+ * Otherwise unresolved (no date is invented).
+ */
+export function resolveHolikaDahan(civilDateStr: string, location: LocationInput, pucchaMinutes = 72): HolikaDahanResolution {
+  const cacheKey = `${civilDateStr}|${location.lat}|${location.lon}|${location.tz}|${pucchaMinutes}`;
+  return memoizeBounded(holikaDahanCache, cacheKey, () => {
+    const unresolved: HolikaDahanResolution = { dahanDate: null, branch: 'unresolved', purnimaStartUtc: null, bhadraEndUtc: null, purnimaEndUtc: null };
+    const base = parseCivilDateUtc(civilDateStr).getTime();
+    const from = base - 96 * 3_600_000;
+    const to = base + 120 * 3_600_000;
+    const t168 = findElongationUpwardCrossing(168, from, to);
+    if (t168 === null) return unresolved;
+    const t174 = findElongationUpwardCrossing(174, t168 - 6 * 3_600_000, t168 + 48 * 3_600_000);
+    const t180 = findElongationUpwardCrossing(180, t168 - 6 * 3_600_000, t168 + 72 * 3_600_000);
+    if (t174 === null || t180 === null) return unresolved;
+
+    const info = {
+      purnimaStartUtc: new Date(t168).toISOString(),
+      bhadraEndUtc: new Date(t174).toISOString(),
+      purnimaEndUtc: new Date(t180).toISOString(),
+    };
+
+    let day = offsetCivilDateStr(formatCivilDateInTz(new Date(t168), location.tz), -1);
+    const lastDay = offsetCivilDateStr(formatCivilDateInTz(new Date(t180), location.tz), 1);
+    let bhadraCoversPurnimaPradosha = false;
+    for (let guard = 0; guard < 6 && day <= lastDay; guard += 1) {
+      const pradosha = getPeriodWindow('pradosha', day, location);
+      if (pradosha) {
+        const touchesPurnima = pradosha.start.getTime() < t180 && pradosha.end.getTime() > t168;
+        const overlapsBhadra = pradosha.start.getTime() < t174 && pradosha.end.getTime() > t168;
+        if (touchesPurnima && !overlapsBhadra) {
+          return { ...info, dahanDate: day, branch: 'pradosha_no_bhadra' };
+        }
+        if (touchesPurnima && overlapsBhadra) bhadraCoversPurnimaPradosha = true;
+      }
+      day = offsetCivilDateStr(day, 1);
+    }
+
+    if (bhadraCoversPurnimaPradosha) {
+      const puccha = Math.max(t168, t174 - pucchaMinutes * 60_000);
+      if (puccha < t180) {
+        return { ...info, dahanDate: formatCivilDateInTz(new Date(puccha), location.tz), branch: 'bhadra_puccha' };
+      }
+    }
+    return { ...unresolved, ...info };
+  });
+}
+
 export function evaluateCondition(
   condition: RuleCondition,
   civilDateStr: string,
@@ -724,6 +829,69 @@ export function evaluateCondition(
       reasons,
       diagnostics: window.diagnostics,
       astronomy: { nakshatraName: startPanchang.nakshatra },
+    };
+  }
+
+  if (condition.type === 'holika_dahan') {
+    const resolution = resolveHolikaDahan(civilDateStr, location, (condition as HolikaDahanCondition).pucchaMinutes ?? 72);
+    const satisfied = resolution.dahanDate === civilDateStr;
+    reasons.push({
+      code: 'holika_dahan_check',
+      text: resolution.dahanDate
+        ? `Holika Dahan resolves to ${resolution.dahanDate} via '${resolution.branch}': ${satisfied ? 'MATCHED' : 'DID NOT MATCH'} on ${civilDateStr}.`
+        : `Holika Dahan unresolved near ${civilDateStr}: Purnima does not touch any pradosha.`,
+      details: { branch: resolution.branch, dahanDate: resolution.dahanDate, purnimaStartUtc: resolution.purnimaStartUtc, bhadraEndUtc: resolution.bhadraEndUtc, purnimaEndUtc: resolution.purnimaEndUtc },
+    });
+    return {
+      conditionType: condition.type,
+      satisfied,
+      reasons,
+      diagnostics: [`holika_dahan_${resolution.branch}`],
+    };
+  }
+
+  if (condition.type === 'karana_presence') {
+    const window = getPeriodWindow(condition.period, civilDateStr, location);
+    if (!window) {
+      return {
+        conditionType: condition.type,
+        satisfied: 'indeterminate',
+        reasons: [{ code: 'window_absent', text: `Period window '${condition.period}' absent on ${civilDateStr}.` }],
+        diagnostics: ['no_event_window'],
+      };
+    }
+
+    const target = condition.karana.toLowerCase();
+    const sampleCount = Math.max(1, Math.ceil((window.end.getTime() - window.start.getTime()) / 300_000));
+    let present = false;
+    for (let i = 0; i <= sampleCount; i += 1) {
+      const instant = new Date(window.start.getTime() + ((window.end.getTime() - window.start.getTime()) * i) / sampleCount);
+      const karanaIndex = Math.floor(computeAstronomy(instant).elongation / 6) + 1;
+      if (getKaranaName(karanaIndex).toLowerCase() === target) {
+        present = true;
+        break;
+      }
+    }
+
+    const mode = (condition as KaranaPresenceCondition).mode;
+    const satisfied = mode === 'absent' ? !present : present;
+    reasons.push({
+      code: 'karana_presence_check',
+      text: `Karana '${condition.karana}' ${mode} during '${condition.period}': ${satisfied ? 'MATCHED' : 'DID NOT MATCH'}.`,
+      details: { karana: condition.karana, period: condition.period, mode, present },
+    });
+    return {
+      conditionType: condition.type,
+      satisfied,
+      reasons,
+      diagnostics: window.diagnostics,
+      window: {
+        name: condition.period,
+        startUtc: window.start.toISOString(),
+        endUtc: window.end.toISOString(),
+        startLocal: formatInstantInTz(window.start, location.tz),
+        endLocal: formatInstantInTz(window.end, location.tz),
+      },
     };
   }
 

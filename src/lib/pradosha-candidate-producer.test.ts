@@ -20,6 +20,7 @@ describe('pradosha-candidate-producer', () => {
     const context: PradoshaCandidateContext = {
       userId: 'user-pradosha-1',
       userTimezone: 'Asia/Kolkata',
+      wantsVratReminders: true,
       latitude: 19.076,
       longitude: 72.877,
       window: {
@@ -41,6 +42,7 @@ describe('pradosha-candidate-producer', () => {
     const context: PradoshaCandidateContext = {
       userId: 'user-pradosha-legacy',
       userTimezone: 'Asia/Kolkata',
+      wantsVratReminders: true,
       latitude: 19.076,
       window: {
         observanceSlug: 'pradosh-vrat',
@@ -64,6 +66,7 @@ describe('pradosha-candidate-producer', () => {
     const context: PradoshaCandidateContext = {
       userId: 'user-pradosha-2',
       userTimezone: 'Asia/Kolkata',
+      wantsVratReminders: true,
       latitude: 28.6139,
       longitude: 77.2090,
       window: {
@@ -105,6 +108,7 @@ describe('pradosha-candidate-producer', () => {
     const context: PradoshaCandidateContext = {
       userId: 'user-pradosha-3',
       userTimezone: 'Asia/Kolkata',
+      wantsVratReminders: true,
       latitude: 13.0827,
       longitude: 80.2707,
       window: {
@@ -131,6 +135,7 @@ describe('pradosha-candidate-producer', () => {
     const context: PradoshaCandidateContext = {
       userId: 'user-pradosha-4',
       userTimezone: 'Asia/Kolkata',
+      wantsVratReminders: true,
       wantsPradoshaReminders: false,
       window: {
         observanceSlug: 'pradosh-vrat',
@@ -152,6 +157,7 @@ describe('pradosha-candidate-producer', () => {
     const context: PradoshaCandidateContext = {
       userId: 'user-pradosha-polar',
       userTimezone: 'Europe/Oslo',
+      wantsVratReminders: true,
       latitude: 69.6492, // Tromso, Norway
       longitude: 18.9553,
       window: {
@@ -173,6 +179,7 @@ describe('pradosha-candidate-producer', () => {
     const res = producePradoshaCandidate({
       userId: 'user-pradosha-no-lat',
       userTimezone: 'Asia/Kolkata',
+      wantsVratReminders: true,
       window: {
         observanceSlug: 'pradosh-vrat',
         observanceName: 'Pradosha Vrat',
@@ -194,6 +201,7 @@ describe('pradosha-candidate-producer', () => {
     const context: PradoshaCandidateContext = {
       userId: 'user-pradosha-inverted',
       userTimezone: 'Asia/Kolkata',
+      wantsVratReminders: true,
       latitude: 19.076,
       longitude: 72.877,
       window: {

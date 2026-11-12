@@ -15,7 +15,6 @@
  */
 import { previewMarketingAudience, seedMarketingDispatches, type AudiencePreview } from "./audience";
 import { variantMatchesApprovedManifest } from "./dispatcher";
-import { createWhatsAppProvider } from "@/lib/whatsapp/provider";
 import type { MarketingCampaign, MarketingCampaignVariant, MarketingChannel } from "./types";
 
 export type StartDispatchResult =
@@ -51,11 +50,12 @@ export function checkDispatchPreconditions(
       error: "Variant content no longer matches its approved manifest (edited since approval) -- re-approve before dispatching"
     };
   }
-  const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
-  if (!dryRun && variant.channel === "whatsapp" && isProduction && createWhatsAppProvider().isMock) {
+  // WhatsApp sending (Twilio and Meta) was retired on 2026-11-12. A WhatsApp variant can still be drafted, approved and
+  // previewed with a dry run, but it is never sent.
+  if (!dryRun && variant.channel === "whatsapp") {
     return {
       code: "whatsapp_provider_not_configured",
-      error: "Cannot dispatch WhatsApp marketing campaign in production using mock provider (fail closed)."
+      error: "WhatsApp sending is retired: this variant can be previewed but not dispatched."
     };
   }
   return null;

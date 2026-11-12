@@ -2,10 +2,12 @@
 -- Restores the three original function bodies (five shared budgeted rows per user per local day,
 -- policy version engagement-cadence-v2) and drops the four helpers. Run the original bodies FIRST:
 -- they do not reference the helpers, so nothing dangles. Rows already refused or admitted stay as they
--- are; notification_cadence_events rows written as v3 are kept (harmless history). Deploy the previous
--- TypeScript resolver (limit 5) before or with this rollback, or the resolver will accept fewer rows than
--- this database now allows (safe direction: it only suppresses more).
+-- are; notification_cadence_events rows written as v3 are kept. Pause and drain
+-- the resolver, roll back SQL, then deploy the matching v2 resolver before resuming.
 -- The Mandali types that v3 stopped counting are counted again after rollback, as before.
+
+BEGIN;
+SET LOCAL lock_timeout = '5s';
 
 CREATE OR REPLACE FUNCTION public.enforce_notification_schedule_cadence()
 RETURNS TRIGGER
@@ -690,3 +692,5 @@ BEGIN
   END IF;
 END
 $check$;
+
+COMMIT;

@@ -6,7 +6,7 @@ import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
  * PrivacyClient.tsx) whenever the policy content materially changes -- this
  * is what gets recorded on every acceptance receipt (src/lib/legal-acceptance.ts).
  */
-export const PRIVACY_VERSION = '2026-10-12';
+export const PRIVACY_VERSION = '2026-11-12';
 
 export type PrivacyRegion = 'global' | 'india' | 'uk' | 'usa';
 
@@ -54,9 +54,11 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       content: [
         'App performance diagnostics: to keep the app fast and working, the Shoonaya app sends a summary roughly once an hour of how long screens take to load, whether saved data was reused, and whether requests failed or were retried. Screens are identified by internal names (for example "home" or "mandali"). The summary includes your app version and platform, and is linked to your account when you are signed in; guest summaries carry no identifier. It contains no content you read or write, no mood, location, or profile details. We use it on the basis of our legitimate interest in running a reliable service, and keep it for 30 days.',
         'Optional product measurement in the app: off unless you turn on "Share product usage data" in Settings. When on, we record at most one entry per day for each of a small, fixed set of events, such as opening the app or completing a practice, together with your app version and platform, linked to your account. We do not record screen names, spiritual content, mood, location, or profile details. Practice events (for example completing a japa session) are recorded only if you have also turned on "Tradition-aware personalization", because they can reveal religious practice. Entries are kept for 90 days.',
+        'Notification taps: off unless you turn on "Help improve reminders" in Settings. When on, we record when you tap a notification we sent you, so we can tell whether our reminders are useful or unwelcome. This is separate from "Share product usage data" and covers every kind of reminder, including practice reminders such as japa, quiz or festival ones, which can reveal religious practice. Each entry holds which notification it was (its internal reference and its type, for example "quiz"), when you tapped it, whether the app was already open, your app version and platform, linked to your account. It never holds the text of the notification, the screen it opened, or anything you read or wrote. Entries are kept for 90 days. Turning the setting off deletes them straight away, and deleting your account deletes them all. Our internal reports show counts for each type of notification and hide any count based on fewer than 5 accounts.',
         'Turning product measurement off stops collection and deletes your stored entries straight away. Turning off "Tradition-aware personalization" deletes stored practice events. Deleting your account deletes both kinds of data.',
         'Our internal reports on product measurement show only daily totals, and hide any total from fewer than 20 accounts. A small number of authorised staff can access the underlying records to operate and secure the service.',
         'Website analytics: on shoonaya.com, Google Analytics and Vercel Analytics run only if you accept analytics cookies in the cookie banner. They are not used inside the app.',
+        'Advertising: on shoonaya.com only, and only if you accept advertising cookies in the cookie banner, Google AdSense may show advertising and set cookies to measure and personalise it. Advertising is off until you choose it, you can withdraw at any time from "Your privacy choices" on the site, and there is no advertising inside the app.',
       ]
     },
     {
@@ -74,7 +76,8 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       content: [
         'Shoonaya does not sell your personal data to third-party advertisers.',
         'We may share data with service providers solely to operate the platform, including hosting, database, authentication, storage, analytics, diagnostics, notifications, email delivery, maps or geocoding, media links, and AI processing providers.',
-        'Current service providers may include Supabase, Vercel, Expo, Firebase Cloud Messaging (Android push delivery), Google Analytics and Vercel Analytics (website only, with cookie consent), Google or Apple authentication services, YouTube for external live-darshan links, and AI infrastructure used by Shoonaya features.',
+        'Current service providers are, or may be: Supabase (database, sign-in and file storage, hosted in Ireland in the European Union); Vercel (website hosting and, only with your cookie consent, Vercel Analytics and Speed Insights); Expo (push-notification delivery and app updates); Firebase Cloud Messaging from Google (Android push delivery); Google and Apple (sign-in, only if you choose them); Sarvam AI (AI answers, translation and text-to-speech: it receives the text you send to those features); Bhashini (text-to-speech); Resend (delivery of e-mail, which receives your e-mail address and the message); Geoapify, OpenStreetMap Nominatim and public OpenStreetMap Overpass servers (place search and geocoding: they receive the place name or coordinates being looked up, not your account); Slack (our internal alerts: when you report a post, comment, profile or live stream, the kind of content, the reason category and a report reference are sent to our team\'s Slack workspace, never what you wrote in the report); and YouTube (external live-darshan links, which open outside Shoonaya). On shoonaya.com only, and only with your consent, Google Analytics measures website use and Google AdSense may show advertising.',
+        'Our database and file storage are in Ireland (European Union), and some of the providers above process data in other countries, including outside India and the UK or EU.',
         'Community content you choose to post may be visible to other users according to the feature and privacy setting used. Profile photos, names, usernames, Mandali posts, comments, and public share links may be shown to others when you choose those surfaces.',
       ]
     },
@@ -91,7 +94,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       summary: 'You can access, export, update, or delete your data.',
       content: [
         'You can update profile details, notification preferences, language preferences, theme settings, and profile photo choices from within the app.',
-        'You can download an export of your account data from Settings, including your stored product-measurement entries and app performance diagnostics. You can also request deletion of specific data types by contacting support.',
+        'You can download an export of your account data from Settings, including your stored product-measurement entries, notification taps and app performance diagnostics. You can also request deletion of specific data types by contacting support.',
         'Full account deletion uses a 30-day cancellable cool-off period. During that window, your account is marked for deletion and you may cancel the request. After the period ends, Shoonaya may permanently delete the account and associated data according to the deletion workflow.',
         'Some records may be retained where required for security, legal compliance, fraud prevention, abuse reporting, audit logs, or backup integrity, and then removed or anonymized when no longer needed.',
       ]
@@ -116,7 +119,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           content: [
             'Shoonaya acts as a Data Fiduciary. You have the right to withdraw consent at any time.',
             'You may appoint a Consent Manager to manage your privacy settings on your behalf.',
-            'For any grievances, please contact our Grievance Officer at info@shoonaya.com.',
+            'For any grievances, please contact our Grievance Officer, Prince Sharma, at info@shoonaya.com.',
           ]
         }
       ]
@@ -137,7 +140,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           title: 'Data Protection Officer',
           summary: 'Direct contact for privacy concerns.',
           content: [
-            'You can reach our Data Protection Representative for UK/EU at info@shoonaya.com.',
+            'You can reach our data protection contact for the UK and EU, Prince Sharma, at info@shoonaya.com.',
           ]
         }
       ]

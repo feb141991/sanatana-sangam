@@ -27,6 +27,7 @@ const EDITABLE_BOOLEAN_FIELDS = new Set([
   "consent_religious_data",
   "consent_activity_personalization",
   "consent_product_analytics",
+  "consent_notification_taps",
   "wants_sankalpa_midpoint_reminders",
   "wants_evening_reminder",
   "wants_madhyahn_reminder",
@@ -118,6 +119,39 @@ function sanitizeAvatarUrl(value: unknown) {
   }
 }
 
+const CONSENT_KEYS = ["religious_data", "activity_personalization", "product_analytics", "notification_taps"] as const;
+const CONSENT_COLUMNS = new Set(["consent_religious_data", "consent_activity_personalization", "consent_product_analytics", "consent_notification_taps"]);
+const CONSENT_SURFACES = new Set(["onboarding", "settings", "inbox_card"]);
+
+/**
+ * The screen and wording a person saw when they changed a consent, as the consent ledger records it (see the migration
+ * 20261112140000_consent_evidence_ledger). It travels in the same UPDATE as the consent so both land or neither does. The database looks the
+ * wording version up in its own registry, so a client cannot choose the checksum. Returns null when the shape is wrong.
+ */
+function parseConsentContext(value: unknown): Record<string, unknown> | null {
+  if (!isObject(value)) return null;
+  const surface = value.surface;
+  if (typeof surface !== "string" || !CONSENT_SURFACES.has(surface)) return null;
+  const versions: Record<string, string> = {};
+  if (value.wording_versions !== undefined) {
+    if (!isObject(value.wording_versions)) return null;
+    for (const key of CONSENT_KEYS) {
+      const version = value.wording_versions[key];
+      if (version === undefined) continue;
+      if (typeof version !== "string" || version.length === 0 || version.length > 40) return null;
+      versions[key] = version;
+    }
+  }
+  const context: Record<string, unknown> = { surface, wording_versions: versions };
+  for (const field of ["platform", "app_version"] as const) {
+    const text = value[field];
+    if (text === undefined) continue;
+    if (typeof text !== "string" || text.length > 32) return null;
+    context[field] = text;
+  }
+  return context;
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(req);
@@ -157,7 +191,7 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    const updates: Record<string, string | boolean | number[] | null> = {};
+    const updates: Record<string, string | boolean | number[] | Record<string, unknown> | null> = {};
 
     for (const field of EDITABLE_TEXT_FIELDS) {
       if (!(field in rawBody)) continue;
@@ -201,6 +235,13 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: field + " must be a boolean" }, { status: 400 });
       }
       updates[field] = value;
+    }
+
+    // Two columns have always described the one Nitya reminder: the dispatcher reads wants_nitya_reminders, and the older
+    // nitya_reminder_enabled is still shown by the account export and the admin views. Keep them equal on every write so the
+    // second one can never contradict what the person chose (the push preferences route already does the same).
+    if (typeof updates.wants_nitya_reminders === "boolean") {
+      updates.nitya_reminder_enabled = updates.wants_nitya_reminders;
     }
 
     if ("observance_reminder_lead_days" in rawBody) {
@@ -362,6 +403,17 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "No editable profile fields provided" }, { status: 400 });
     }
 
+    // Context for the consent ledger. Only meaningful, and only written, together with a consent change.
+    if ("consent_context" in rawBody) {
+      const context = parseConsentContext(rawBody.consent_context);
+      if (!context) {
+        return NextResponse.json({ error: "consent_context is not valid" }, { status: 400 });
+      }
+      if (Object.keys(updates).some((field) => CONSENT_COLUMNS.has(field))) {
+        updates.consent_context_in = context;
+      }
+    }
+
     if ("username" in updates && typeof updates.username === "string") {
       const admin = createAdminClient();
       const { data: existingUsername, error: usernameError } = await admin
@@ -389,7 +441,7 @@ export async function PATCH(req: NextRequest) {
     // client uses its generic select overload instead of trying to
     // statically parse this runtime-built column list and failing with a
     // ParserError.
-    const selectColumns: string = `${Object.keys(updates).join(", ")}, updated_at`;
+    const selectColumns: string = `${Object.keys(updates).filter((field) => field !== "consent_context_in").join(", ")}, updated_at`;
     const { data, error } = await supabase
       .from("profiles")
       .update(updates)
@@ -414,6 +466,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const { updated_at, ...persisted } = data as unknown as Record<string, unknown> & { updated_at: string };
+    delete persisted.consent_context_in; // write-only input for the ledger, never an answer
     return NextResponse.json({ success: true, persisted, updatedAt: updated_at });
   } catch (err: unknown) {
     console.error("[PATCH /api/native/profile] Server error:", err);

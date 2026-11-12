@@ -99,6 +99,7 @@ describe('series-candidate-producer', () => {
       targetDate: '2026-10-11',
       userId: 'usr-1',
       userTimezone: 'Asia/Kolkata',
+      wantsFestivalReminders: true,
       childOccurrences: [unsourcedChild],
     });
 
@@ -115,6 +116,7 @@ describe('series-candidate-producer', () => {
       targetDate: '2026-10-11',
       userId: 'usr-1',
       userTimezone: 'Asia/Kolkata',
+      wantsFestivalReminders: true,
       childOccurrences: [unreviewedChild],
     });
 

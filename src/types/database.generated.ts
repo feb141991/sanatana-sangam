@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.4"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       account_deletion_notices: {
@@ -626,6 +601,93 @@ export type Database = {
           },
         ]
       }
+      consent_events: {
+        Row: {
+          app_version: string | null
+          consent_key: string
+          evidence: string
+          granted: boolean
+          id: string
+          platform: string | null
+          prev_hash: string | null
+          previous_value: boolean | null
+          recorded_at: string
+          row_hash: string
+          seq: number
+          surface: string
+          user_id: string
+          wording_sha256: string | null
+          wording_status: string
+          wording_version: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          consent_key: string
+          evidence: string
+          granted: boolean
+          id?: string
+          platform?: string | null
+          prev_hash?: string | null
+          previous_value?: boolean | null
+          recorded_at?: string
+          row_hash: string
+          seq?: never
+          surface: string
+          user_id: string
+          wording_sha256?: string | null
+          wording_status: string
+          wording_version?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          consent_key?: string
+          evidence?: string
+          granted?: boolean
+          id?: string
+          platform?: string | null
+          prev_hash?: string | null
+          previous_value?: boolean | null
+          recorded_at?: string
+          row_hash?: string
+          seq?: never
+          surface?: string
+          user_id?: string
+          wording_sha256?: string | null
+          wording_status?: string
+          wording_version?: string | null
+        }
+        Relationships: []
+      }
+      consent_wording: {
+        Row: {
+          consent_key: string
+          language: string
+          published_at: string
+          surface: string
+          version: string
+          wording: string
+          wording_sha256: string
+        }
+        Insert: {
+          consent_key: string
+          language?: string
+          published_at?: string
+          surface: string
+          version: string
+          wording: string
+          wording_sha256: string
+        }
+        Update: {
+          consent_key?: string
+          language?: string
+          published_at?: string
+          surface?: string
+          version?: string
+          wording?: string
+          wording_sha256?: string
+        }
+        Relationships: []
+      }
       content_meanings: {
         Row: {
           created_at: string
@@ -936,36 +998,6 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
-      }
-      device_tokens: {
-        Row: {
-          id: string
-          is_active: boolean
-          platform: string
-          player_id: string
-          registered_at: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          is_active?: boolean
-          platform?: string
-          player_id: string
-          registered_at?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          is_active?: boolean
-          platform?: string
-          player_id?: string
-          registered_at?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
       }
       devotional_tracks: {
         Row: {
@@ -1416,7 +1448,17 @@ export type Database = {
           user_id: string
           wording_version?: string | null
         }
-        Update: never
+        Update: {
+          action?: string
+          category?: string
+          created_at?: string
+          id?: never
+          region?: string | null
+          region_source?: string | null
+          source?: string
+          user_id?: string
+          wording_version?: string | null
+        }
         Relationships: []
       }
       email_outbox: {
@@ -4187,6 +4229,27 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_brahma_reset_backup_20261112: {
+        Row: {
+          post_reset_xmin: string | null
+          taken_at: string
+          user_id: string
+          wants_brahma_muhurta_reminders: boolean | null
+        }
+        Insert: {
+          post_reset_xmin?: string | null
+          taken_at?: string
+          user_id: string
+          wants_brahma_muhurta_reminders?: boolean | null
+        }
+        Update: {
+          post_reset_xmin?: string | null
+          taken_at?: string
+          user_id?: string
+          wants_brahma_muhurta_reminders?: boolean | null
+        }
+        Relationships: []
+      }
       notification_cadence_events: {
         Row: {
           canonical_type: string
@@ -4542,6 +4605,45 @@ export type Database = {
           sent_at?: string | null
           status?: string
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notification_taps: {
+        Row: {
+          app_version: string | null
+          client_event_id: string
+          id: string
+          launch_state: string
+          notification_key: string
+          notification_type: string
+          platform: string | null
+          recorded_at: string
+          tapped_at: string
+          user_id: string
+        }
+        Insert: {
+          app_version?: string | null
+          client_event_id: string
+          id?: string
+          launch_state: string
+          notification_key: string
+          notification_type: string
+          platform?: string | null
+          recorded_at?: string
+          tapped_at: string
+          user_id: string
+        }
+        Update: {
+          app_version?: string | null
+          client_event_id?: string
+          id?: string
+          launch_state?: string
+          notification_key?: string
+          notification_type?: string
+          platform?: string | null
+          recorded_at?: string
+          tapped_at?: string
           user_id?: string
         }
         Relationships: []
@@ -5950,7 +6052,7 @@ export type Database = {
       pathshala_study_circles: {
         Row: {
           chunks_per_week: number
-          created_by: string
+          created_by: string | null
           description: string | null
           id: string
           is_active: boolean
@@ -5962,7 +6064,7 @@ export type Database = {
         }
         Insert: {
           chunks_per_week?: number
-          created_by: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -5974,7 +6076,7 @@ export type Database = {
         }
         Update: {
           chunks_per_week?: number
-          created_by?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
@@ -6533,6 +6635,8 @@ export type Database = {
           city: string | null
           comm_prefs_set: boolean | null
           consent_activity_personalization: boolean
+          consent_context_in: Json | null
+          consent_notification_taps: boolean
           consent_product_analytics: boolean
           consent_religious_data: boolean
           consent_updated_at: string | null
@@ -6602,9 +6706,9 @@ export type Database = {
           observance_reminder_time: string
           onboarding_completed: boolean | null
           onboarding_goal: string | null
-          onesignal_player_id: string | null
           pro_activated_at: string | null
           pro_note: string | null
+          notification_discreet_mode: boolean
           quiz_reminder_enabled: boolean | null
           quiz_reminder_time: string | null
           rashi: string | null
@@ -6658,6 +6762,8 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_activity_personalization?: boolean
+          consent_context_in?: Json | null
+          consent_notification_taps?: boolean
           consent_product_analytics?: boolean
           consent_religious_data?: boolean
           consent_updated_at?: string | null
@@ -6727,9 +6833,9 @@ export type Database = {
           observance_reminder_time?: string
           onboarding_completed?: boolean | null
           onboarding_goal?: string | null
-          onesignal_player_id?: string | null
           pro_activated_at?: string | null
           pro_note?: string | null
+          notification_discreet_mode?: boolean
           quiz_reminder_enabled?: boolean | null
           quiz_reminder_time?: string | null
           rashi?: string | null
@@ -6783,6 +6889,8 @@ export type Database = {
           city?: string | null
           comm_prefs_set?: boolean | null
           consent_activity_personalization?: boolean
+          consent_context_in?: Json | null
+          consent_notification_taps?: boolean
           consent_product_analytics?: boolean
           consent_religious_data?: boolean
           consent_updated_at?: string | null
@@ -6852,9 +6960,9 @@ export type Database = {
           observance_reminder_time?: string
           onboarding_completed?: boolean | null
           onboarding_goal?: string | null
-          onesignal_player_id?: string | null
           pro_activated_at?: string | null
           pro_note?: string | null
+          notification_discreet_mode?: boolean
           quiz_reminder_enabled?: boolean | null
           quiz_reminder_time?: string | null
           rashi?: string | null
@@ -11243,6 +11351,10 @@ export type Database = {
         Args: { p_date: string; p_user_id: string }
         Returns: undefined
       }
+      consent_event_hash: {
+        Args: { e: Database["public"]["Tables"]["consent_events"]["Row"] }
+        Returns: string
+      }
       count_distinct_native_telemetry_users: {
         Args: { p_since: string }
         Returns: number
@@ -11472,6 +11584,16 @@ export type Database = {
           opted_in_accounts: number
         }[]
       }
+      get_notification_tap_summary: {
+        Args: { p_days?: number; p_min_recipients?: number }
+        Returns: {
+          notification_type: string
+          notifications_sent: number
+          recipient_accounts: number
+          tapping_accounts: number
+          taps: number
+        }[]
+      }
       get_post_comment_previews: {
         Args: { p_post_ids: string[]; p_preview_count?: number }
         Returns: {
@@ -11668,12 +11790,22 @@ export type Database = {
       }
       no_plan: { Args: never; Returns: boolean[] }
       normalize_place_casing: { Args: { p_value: string }; Returns: string }
+      notification_cadence_class: {
+        Args: { p_event_type: string; p_notification_key?: string }
+        Returns: string
+      }
+      notification_cadence_limit: { Args: { p_scope: string }; Returns: number }
+      notification_cadence_policy_version: { Args: never; Returns: string }
       notification_cadence_safe_timezone: {
         Args: { p_timezone: string }
         Returns: string
       }
       notification_is_budget_exempt: {
         Args: { p_event_type: string; p_notification_key?: string }
+        Returns: boolean
+      }
+      notification_tap_recording_allowed: {
+        Args: { p_notification_type: string; p_user_id: string }
         Returns: boolean
       }
       num_failed: { Args: never; Returns: number }
@@ -11821,6 +11953,17 @@ export type Database = {
           p_app_version?: string
           p_events: string[]
           p_platform?: string
+        }
+        Returns: Json
+      }
+      record_notification_tap: {
+        Args: {
+          p_app_version?: string
+          p_client_event_id: string
+          p_launch_state: string
+          p_notification_key: string
+          p_platform?: string
+          p_tapped_at: string
         }
         Returns: Json
       }
@@ -12280,9 +12423,6 @@ export type Database = {
         Args: { p_kul: string; p_user: string }
         Returns: number
       }
-      skip:
-        | { Args: { "": string }; Returns: string }
-        | { Args: { how_many: number; why: string }; Returns: string }
       set_email_consent: {
         Args: {
           p_category: string
@@ -12295,6 +12435,9 @@ export type Database = {
         }
         Returns: Json
       }
+      skip:
+        | { Args: { "": string }; Returns: string }
+        | { Args: { how_many: number; why: string }; Returns: string }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
@@ -12950,14 +13093,11 @@ export type Database = {
         }
         Returns: string
       }
-      upsert_device_token: {
-        Args: { p_platform?: string; p_player_id: string; p_user_id: string }
-        Returns: undefined
-      }
       upsert_push_token: {
         Args: { p_platform?: string; p_token: string; p_user_id: string }
         Returns: undefined
       }
+      verify_consent_chain: { Args: { p_user_id: string }; Returns: boolean }
       withdraw_native_product_analytics: { Args: never; Returns: number }
     }
     Enums: {
@@ -13098,9 +13238,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

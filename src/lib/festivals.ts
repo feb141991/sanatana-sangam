@@ -1,4 +1,5 @@
 import { getGeneratedFallback } from './festival-fallback.generated';
+import type { CalendarDateProvenance } from './calendar/regional-calendar-provenance';
 /**
  * ─────────────────────────────────────────────────────────────────────────────
  * Shoonaya — 2026 Festival Calendar
@@ -44,6 +45,7 @@ export interface Festival {
   audit_failure_reason?: string | null;
   audit_retry_count?: number | null;
   last_audited_at?: string | null;
+  calendar_provenance?: CalendarDateProvenance | null;
 }
 
 export type FestivalSourceKind = 'curated' | 'official' | 'partner' | 'community_reviewed';
@@ -268,5 +270,6 @@ export function mapOccurrenceToFestival(row: any): Festival {
     audit_failure_reason: row.audit_failure_reason || null,
     audit_retry_count: row.audit_retry_count ?? null,
     last_audited_at: row.last_audited_at || null,
+    calendar_provenance: provenance.calendar_provenance ?? null,
   };
 }

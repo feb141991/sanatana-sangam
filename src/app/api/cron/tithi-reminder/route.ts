@@ -185,7 +185,7 @@ export async function GET(request: Request) {
       insertedRows_all.push(...(insertedRows ?? []));
     }
 
-    // ── OneSignal push — group by title/body so we batch identical messages ──
+    // ── Push — group by title/body so we batch identical messages ──
     const pushBuckets = new Map<string, { title: string; body: string; userIds: string[]; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
     for (const row of insertedRows_all) {
       const key = `${row.title}::${row.body}`;

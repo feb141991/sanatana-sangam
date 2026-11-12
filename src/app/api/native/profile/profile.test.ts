@@ -175,6 +175,89 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     }
   });
 
+  it("keeps nitya_reminder_enabled equal to wants_nitya_reminders on every write", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-nitya-mirror" }, error: null, supabase: mockSupabase });
+
+    for (const value of [false, true]) {
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ wants_nitya_reminders: value }),
+      }));
+      expect(res.status).toBe(200);
+      expect(updatedPayload).toEqual({ wants_nitya_reminders: value, nitya_reminder_enabled: value });
+    }
+
+    // A write that does not mention Nitya must not touch either column.
+    await PATCH(new NextRequest("http://localhost:3000/api/native/profile", { method: "PATCH", body: JSON.stringify({ wants_mood_reminders: false }) }));
+    expect(updatedPayload).toEqual({ wants_mood_reminders: false });
+  });
+
+  it("accepts the notification-tap opt-in as its own setting, independent of product analytics", async () => {
+    getApiUser.mockResolvedValue({ user: { id: "user-tap-consent" }, error: null, supabase: mockSupabase });
+
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ consent_notification_taps: true }),
+    }));
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({ consent_notification_taps: true });
+
+    const bad = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ consent_notification_taps: "yes" }),
+    }));
+    expect(bad.status).toBe(400);
+  });
+
+  describe("consent ledger context", () => {
+    const send = (body: Record<string, unknown>) => PATCH(new NextRequest("http://localhost:3000/api/native/profile", { method: "PATCH", body: JSON.stringify(body) }));
+    const signedIn = () => getApiUser.mockResolvedValue({ user: { id: "user-ledger" }, error: null, supabase: mockSupabase });
+
+    it("passes the screen and wording to the database in the same update as the consent, and keeps it out of the answer", async () => {
+      signedIn();
+      const res = await send({
+        consent_notification_taps: true,
+        consent_context: { surface: "settings", wording_versions: { notification_taps: "2026-11-12", ignored_key: "x" }, platform: "ios", app_version: "1.4.0" },
+      });
+      expect(res.status).toBe(200);
+      expect(updatedPayload).toEqual({
+        consent_notification_taps: true,
+        consent_context_in: { surface: "settings", wording_versions: { notification_taps: "2026-11-12" }, platform: "ios", app_version: "1.4.0" },
+      });
+      const body = await res.json();
+      expect(body.persisted).toEqual({ consent_notification_taps: true });
+      expect(JSON.stringify(body)).not.toContain("consent_context");
+    });
+
+    it("writes no context when no consent changes, so it cannot be used as a free-form field", async () => {
+      signedIn();
+      const res = await send({ wants_mood_reminders: false, consent_context: { surface: "settings", wording_versions: {} } });
+      expect(res.status).toBe(200);
+      expect(updatedPayload).toEqual({ wants_mood_reminders: false });
+    });
+
+    it("still saves a consent change that comes without context (older apps)", async () => {
+      signedIn();
+      const res = await send({ consent_product_analytics: true });
+      expect(res.status).toBe(200);
+      expect(updatedPayload).toEqual({ consent_product_analytics: true });
+    });
+
+    it.each([
+      ["a surface we do not have", { surface: "billboard", wording_versions: {} }],
+      ["no surface", { wording_versions: {} }],
+      ["versions that are not strings", { surface: "settings", wording_versions: { notification_taps: 5 } }],
+      ["a version that is too long", { surface: "settings", wording_versions: { notification_taps: "x".repeat(41) } }],
+      ["a platform that is too long", { surface: "settings", platform: "p".repeat(33) }],
+      ["something that is not an object", "settings"],
+    ])("rejects %s", async (_name, context) => {
+      signedIn();
+      const res = await send({ consent_notification_taps: true, consent_context: context });
+      expect(res.status).toBe(400);
+      expect(updatedPayload).toBeNull();
+    });
+  });
+
   it("accepts product analytics consent as a separate opt-in setting", async () => {
     getApiUser.mockResolvedValue({
       user: { id: "user-analytics-consent" },

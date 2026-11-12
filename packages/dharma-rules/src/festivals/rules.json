@@ -49,13 +49,31 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but this rule declares amanta, aligning with the 7 of 13 profiles that declare their OWN convention as amanta (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) -- while the 2 purnimanta-declaring profiles (north_indian_purnimanta, nepali_bikram) are in tension with this amanta setting. Validated against the canonical/default reference materialisation only.",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Magha",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 14,
+        "period": "nishita",
+        "mode": "prevails"
+      }
+    ]
   },
   {
     "slug": "holi",
-    "display_name": "Holi",
-    "emoji": "🎨",
-    "description": "Festival of colours celebrating victory of good over evil",
+    "display_name": "Holika Dahan — Holi",
+    "emoji": "🔥",
+    "description": "Holika Dahan — the Phalguna Purnima bonfire at Pradosha, avoiding Bhadra (with the Bhadra-puccha as fallback); Rangwali Holi follows the next day.",
+    "description_local": "होलिका दहन — फाल्गुन पूर्णिमा का प्रदोष-काल अग्नि-उत्सव, भद्रा से बचकर (भद्रा-पुच्छ विकल्प सहित); रंगवाली होली अगले दिन।",
     "kind": "major",
     "tradition": "hindu",
     "rule_family": "lunar_tithi",
@@ -66,8 +84,47 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "shukla",
+      "lunar_month": "Phalguna",
+      "month_system": "amanta",
+      "period": "pradosha",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
     "launch_status": "included",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). Whether this rule's user-facing date should represent Holika Dahan or the following Rangwali Holi day is an open content question, not settled by this citation. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2."
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Phalguna", "monthSystem": "amanta" },
+      { "type": "holika_dahan", "pucchaMinutes": 72 }
+    ],
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified. Holika Dahan = Phalguna Purnima at pradosha with no Bhadra (Vishti). If Bhadra covers the pradosha, the Bhadra-puccha (tail) applies, or the time after Bhadra while Purnima still runs; the engine uses the puccha (the Dahan date is the local civil date of that instant, which can be the pre-dawn after the Purnima evening). The puccha LENGTH (72 minutes = 3 ghatikas) is a PROPOSED parameter until confirmed. Source provenance: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2.",
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "gudi-padwa",
@@ -316,7 +373,8 @@
     "slug": "narasimha-jayanti",
     "display_name": "Narasimha Jayanti",
     "emoji": "🦁",
-    "description": "Celebration of Vishnu's Narasimha avatar",
+    "description": "Narasimha Jayanti — Lord Vishnu's man-lion avatar, observed on Vaishakha Shukla Chaturdashi when the tithi prevails at dusk (sayahna).",
+    "description_local": "नृसिंह जयंती — भगवान विष्णु के नृसिंह अवतार का पर्व, वैशाख शुक्ल चतुर्दशी जब चतुर्दशी सायाह्न (सूर्यास्त से पहले का समय) में रहे।",
     "kind": "regional",
     "tradition": "hindu",
     "rule_family": "lunar_tithi",
@@ -327,7 +385,32 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 14,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Vaishakha", "monthSystem": "amanta" },
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 14, "period": "sayahna", "mode": "majority" }
+    ],
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 14,
+      "paksha": "shukla",
+      "lunar_month": "Vaishakha",
+      "month_system": "amanta",
+      "period": "sayahna",
+      "mode": "majority",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified. Narasimha Jayanti is Shukla Chaturdashi prevailing during sayahna, where sayahna is the final fifth of daytime ending at sunset and the prevailing test means the tithi covers more than half of that window (majority); the strict whole-window reading left some locations without a date, and the touch reading produced two. Promoted from deferred to included at Pt Prince's direction on 2026-11-11.",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    },
+    "launch_status": "included"
   },
   {
     "slug": "shani-jayanti",
@@ -578,7 +661,24 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "RESOLVED 2026-08-17. Council ruled 2027-08-24 (Smarta); the raw sunrise-sampled engine gave 08-25 and Drik Panchang agreed with the raw engine, not the ruling -- exactly the sunrise-vs-nishitha sampling gap this rule's own EVALUATOR_RULES condition (tithi_presence tithi:8, period:'nishita', mode:'touches') exists to fix. Directly verified with USE_CONDITION_EVALUATOR's real logic (bypassing the disputed-year publish gate to let it run): the nishitha-touches condition qualifies exactly 2027-08-24, matching the council ruling precisely. 2027 removed from disputed_years. 2026 (09-04) remains council-confirmed and reproduces. The Vaishnava variant's own sunrise+rohini condition has NOT been separately re-verified and remains disputed for 2027 -- see that row.",
-    "disputed_years": []
+    "disputed_years": [],
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Shravana",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 8,
+        "period": "nishita",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "krishna-janmashtami",
@@ -603,6 +703,29 @@
     "ratification_note": "DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator. RE-VERIFIED 2026-08-18: directly ran this variant's own real evaluator condition (tithi 8 krishna-paksha AT sunrise, AND rohini nakshatra TOUCHES sunrise -- materialize.ts EVALUATOR_RULES 'vaishnava' variant) day-by-day across 2027-08-20 through 2027-08-28. Confirmed: Ashtami-at-sunrise occurs only on 08-25; Rohini does not touch sunrise until 08-26. The two conditions never coincide on the same day anywhere in that window -- this is not a sampling artifact like the Smarta row's nishitha gap was, it is the AND-condition as coded genuinely having zero qualifying days for 2027. Unlike Smarta (D39), there is no hidden fix the evaluator was already computing correctly; either the condition needs OR/nearest-day tie-breaking logic (which day 'wins' when tithi and nakshatra don't align, itself a real dharma-sastra question, not an engineering one) or 2027 genuinely has no clean Gaudiya date under this citation. disputed_years correctly left as-is -- confirmed disputed, not stale. CLOSED 2026-08-18 (founder decision): engineering has now directly verified there is nothing further to find here without a real dharma-sastra ruling on the tie-breaking question above. No further engineering action pending; revisit only if a new source or council ruling arrives.",
     "disputed_years": [
       2027
+    ],
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Shravana",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 8,
+        "period": "sunrise",
+        "mode": "at"
+      },
+      {
+        "type": "nakshatra_presence",
+        "nakshatra": "rohini",
+        "period": "sunrise",
+        "mode": "touches"
+      }
     ]
   },
   {
@@ -660,7 +783,13 @@
     "relative_offset_days": 1,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 1,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-3",
@@ -675,7 +804,13 @@
     "relative_offset_days": 2,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 2,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-4",
@@ -690,7 +825,13 @@
     "relative_offset_days": 3,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 3,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-5",
@@ -705,7 +846,13 @@
     "relative_offset_days": 4,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 4,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-6",
@@ -720,7 +867,13 @@
     "relative_offset_days": 5,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 5,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-7",
@@ -735,7 +888,13 @@
     "relative_offset_days": 6,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 6,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-8",
@@ -750,7 +909,13 @@
     "relative_offset_days": 7,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 7,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-9",
@@ -765,7 +930,13 @@
     "relative_offset_days": 8,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 8,
+      "status": "declared"
+    }
   },
   {
     "slug": "ganeshotsav-day-10",
@@ -780,7 +951,13 @@
     "relative_offset_days": 9,
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 9,
+      "status": "declared"
+    }
   },
   {
     "slug": "anant-chaturdashi-ganesh-visarjan",
@@ -796,7 +973,13 @@
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
     "launch_status": "included",
-    "ratification_note": "Series endpoint anchored to the already source-backed Ganesh Chaturthi rule. The public app treats this as Ganeshotsav's concluding Visarjan card; a standalone Anant Chaturdashi vrata rule can be added later if separately sourced."
+    "ratification_note": "Series endpoint anchored to the already source-backed Ganesh Chaturthi rule. The public app treats this as Ganeshotsav's concluding Visarjan card; a standalone Anant Chaturdashi vrata rule can be added later if separately sourced.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "ganesh-chaturthi",
+      "offset_days": 10,
+      "status": "declared"
+    }
   },
   {
     "slug": "onam",
@@ -847,7 +1030,13 @@
     "relative_offset_days": -1,
     "route_kind": "vrat",
     "route_slug": "amavasya",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "navratri-begins",
+      "offset_days": -1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "navratri-begins",
@@ -1011,7 +1200,13 @@
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
     "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "chaitra-navratri-begins",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "chintpurni-mata-sharad-navratri",
@@ -1027,7 +1222,13 @@
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
     "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "navratri-begins",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "karva-chauth",
@@ -1048,7 +1249,24 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. 2028 RESOLVED 2026-08-17 (founder ratification, D39-adjacent): the prior council ruling of 6 Oct was reopened after direct tithi-at-moonrise verification. Chaturthi begins ~03:30-04:30 IST on 7 Oct 2028 (elongation-based computation), a full ~9 hours after 6 Oct's moonrise (~19:35 IST, still Tritiya) and well before 7 Oct's own moonrise (~20:19 IST, Chaturthi present) -- no boundary ambiguity either way. Drik Panchang's own published muhurat page independently corroborates almost exactly: Chaturthi begins 03:35 AM 7 Oct, moonrise 08:06 PM (Tier 5 QA signal only per source-governance.md, not a citation, but strong corroboration that three independent computations -- our raw engine, our real moonrise evaluator, and Drik -- all converge on 7 Oct with nothing computing 6 Oct). disputed_years cleared.",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 4,
+        "period": "moonrise",
+        "mode": "at"
+      }
+    ]
   },
   {
     "slug": "dhanteras",
@@ -1061,7 +1279,49 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": -2,
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 13,
+        "period": "pradosha",
+        "mode": "touches"
+      }
+    ],
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": -2,
+      "status": "proposed"
+    },
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 13,
+      "paksha": "krishna",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "pradosha",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "diwali",
@@ -1081,7 +1341,24 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55), p.81 (daily) -- Dipavali listed at 2026-11-08",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. D36 follow-up (2026-08-18): corrected_lunar_tithi_index now set explicitly to 30 (Amavasya) instead of relying on the unset-field fallback to the raw lunar_tithi_index (29, Chaturdashi-at-sunrise proxy). This is a clarity fix, not a behavior fix -- diwali is fully covered by materialize.ts's EVALUATOR_RULES (tithi 15 krishna-paksha, pradosha-touches) on the production calculateObservancesForYear path, which re-evaluates the real condition across a +/-35-day window seeded from (not dictated by) the baseline masa-engine date, so the baseline's tithi index was already never the final answer. Verified: diwali 2026 (11-08) and 2027 (10-29) unchanged after this edit."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. D36 follow-up (2026-08-18): corrected_lunar_tithi_index now set explicitly to 30 (Amavasya) instead of relying on the unset-field fallback to the raw lunar_tithi_index (29, Chaturdashi-at-sunrise proxy). This is a clarity fix, not a behavior fix -- diwali is fully covered by materialize.ts's EVALUATOR_RULES (tithi 15 krishna-paksha, pradosha-touches) on the production calculateObservancesForYear path, which re-evaluates the real condition across a +/-35-day window seeded from (not dictated by) the baseline masa-engine date, so the baseline's tithi index was already never the final answer. Verified: diwali 2026 (11-08) and 2027 (10-29) unchanged after this edit.",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "pradosha",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "naraka-chaturdashi",
@@ -1099,7 +1376,24 @@
     "corrected_prefer_last_match": false,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55) — 'Naraka Chaturdasi (Purvarunodaya)' listed at 2026-11-08",
-    "ratification_note": "Council ratified 2026-08-23 by Prince Sharma (founder/product owner). Naraka Chaturdashi is assigned to the local civil date on which Krishna Chaturdashi prevails throughout the full Purvarunodaya/Arunodaya window, modelled as local sunrise minus 96 minutes through sunrise. Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08 on the Ujjain/India reference basis; the evaluator reproduces that date. Location-qualified results may differ: under this ratified rule Bedford resolves to 2026-11-07. Month system is Kartika/purnimanta, corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. This approval covers the day-assignment rule; it does not make Ujjain a silent fallback for local users."
+    "ratification_note": "Council ratified 2026-08-23 by Prince Sharma (founder/product owner). Naraka Chaturdashi is assigned to the local civil date on which Krishna Chaturdashi prevails throughout the full Purvarunodaya/Arunodaya window, modelled as local sunrise minus 96 minutes through sunrise. Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08 on the Ujjain/India reference basis; the evaluator reproduces that date. Location-qualified results may differ: under this ratified rule Bedford resolves to 2026-11-07. Month system is Kartika/purnimanta, corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. This approval covers the day-assignment rule; it does not make Ujjain a silent fallback for local users.",
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 14,
+        "period": "arunodaya",
+        "mode": "prevails"
+      }
+    ]
   },
   {
     "slug": "govardhan-puja",
@@ -1108,11 +1402,36 @@
     "description": "Worship of Govardhan Hill and Lord Krishna",
     "kind": "major",
     "tradition": "hindu",
-    "rule_family": "relative_to_other_observance",
+    "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
-    "relative_base_slug": "diwali",
-    "relative_offset_days": 1,
-    "launch_status": "included"
+    "lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Kartika",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 1,
+    "allow_skipped_tithi": true,
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 1,
+      "paksha": "shukla",
+      "lunar_month": "Kartika",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified. Govardhan Puja and Bhai Dooj follow the udaya (sunrise) tithi of Kartika Shukla Pratipada and Dwitiya (amanta). Engine check 2026-11-12: this reproduces the dates approved on 2026-11-11 (2026-11-10 and 2026-11-11) while Diwali stays 2026-11-08; the earlier Diwali + 1 / + 2 offsets gave 2026-11-09 / 2026-11-10, and the afternoon (aparahna) reading left Bhai Dooj with two qualifying dates in 2026.",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "bhai-dooj",
@@ -1121,11 +1440,36 @@
     "description": "Celebration of the bond between brothers and sisters",
     "kind": "major",
     "tradition": "hindu",
-    "rule_family": "relative_to_other_observance",
+    "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
-    "relative_base_slug": "diwali",
-    "relative_offset_days": 2,
-    "launch_status": "included"
+    "lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Kartika",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 2,
+    "allow_skipped_tithi": true,
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 2,
+      "paksha": "shukla",
+      "lunar_month": "Kartika",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified. Govardhan Puja and Bhai Dooj follow the udaya (sunrise) tithi of Kartika Shukla Pratipada and Dwitiya (amanta). Engine check 2026-11-12: this reproduces the dates approved on 2026-11-11 (2026-11-10 and 2026-11-11) while Diwali stays 2026-11-08; the earlier Diwali + 1 / + 2 offsets gave 2026-11-09 / 2026-11-10, and the afternoon (aparahna) reading left Bhai Dooj with two qualifying dates in 2026.",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "chhath-puja",
@@ -1160,7 +1504,13 @@
     "relative_offset_days": -2,
     "route_kind": "festival",
     "route_slug": "chhath-puja",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "chhath-puja",
+      "offset_days": -2,
+      "status": "declared"
+    }
   },
   {
     "slug": "chhath-kharna",
@@ -1175,7 +1525,13 @@
     "relative_offset_days": -1,
     "route_kind": "festival",
     "route_slug": "chhath-puja",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "chhath-puja",
+      "offset_days": -1,
+      "status": "declared"
+    }
   },
   {
     "slug": "chhath-usha-arghya",
@@ -1190,7 +1546,13 @@
     "relative_offset_days": 1,
     "route_kind": "festival",
     "route_slug": "chhath-puja",
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "chhath-puja",
+      "offset_days": 1,
+      "status": "declared"
+    }
   },
   {
     "slug": "kartik-purnima",
@@ -1205,7 +1567,13 @@
     "relative_offset_days": 16,
     "route_kind": "vrat",
     "route_slug": "purnima",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "vivah-panchami",
@@ -1239,7 +1607,42 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 11,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Margashirsha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    },
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive"
   },
   {
     "slug": "vaikunta-ekadashi",
@@ -1259,7 +1662,42 @@
     "route_slug": "vaikunta-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "ratified",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Margashirsha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    },
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive"
   },
   {
     "slug": "kamada-ekadashi",
@@ -1668,7 +2106,13 @@
     "verification_type": "solar_fixed",
     "relative_base_slug": "makar-sankranti",
     "relative_offset_days": -1,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "makar-sankranti",
+      "offset_days": -1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "guru-ravidas-jayanti",
@@ -1703,7 +2147,13 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "holi",
     "relative_offset_days": 1,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "holi",
+      "offset_days": 1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "baisakhi",
@@ -1712,13 +2162,14 @@
     "description": "Harvest festival and founding of the Khalsa Panth by Guru Gobind Singh Ji in 1699 — one of the most joyous Sikh celebrations",
     "kind": "major",
     "tradition": "sikh",
-    "rule_family": "solar_sankranti",
-    "verification_type": "solar_sankranti",
-    "solar_month": 4,
-    "solar_day": 14,
+    "rule_family": "regional_calendar",
+    "verification_type": "historical_commemoration",
+    "calendar_profiles": ["nanakshahi"],
+    "profile_scope": "descriptive",
+    "nanakshahi_month": "Vaisakh",
+    "nanakshahi_day": 1,
     "launch_status": "included",
-    "sankranti_rashi_index": 0,
-    "ratification_note": "D37 fix, 2026-08-17: was solar_fixed with a hand-maintained Gregorian date (solar_fixed 4/14), a stand-in for a real solar-transit computation that drifts by precession over centuries. Migrated to solar_sankranti (target rashi: Mesha (Aries)), which computes the actual sun-transit instant via findSankrantisBetween and takes its IST civil date. Verified byte-identical to the prior hardcoded date for 2024-2035 except where the prior hardcoded value was itself already known-stale for a shift year (see docs/CALENDAR_ENGINE_ASSESSMENT.md D37)."
+    "ratification_note": "SGPC Nanakshahi 558 mapping: Khalsa Sajna Divas / Baisakhi is printed at 01 Vaisakh in the reviewed sidebar data. The date is available only when a covering SGPC edition contains the mapped row; no solar or fixed-table fallback is used."
   },
   {
     "slug": "guru-amar-das-gurpurab",
@@ -1731,8 +2182,9 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Vaisakh",
     "nanakshahi_day": 17,
-    "launch_status": "deferred",
-    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Jeth 9), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 17 Vaisakh row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints Guru Amar Das Gurpurab at 17 Vaisakh (2026-04-30)."
   },
   {
     "slug": "guru-arjan-dev-martyrdom",
@@ -1759,8 +2211,9 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Sawan",
     "nanakshahi_day": 23,
-    "launch_status": "deferred",
-    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Sawan 8), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 23 Sawan row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints Guru Har Krishan Gurpurab at 23 Sawan (2026-08-07)."
   },
   {
     "slug": "guru-ram-das-gurpurab",
@@ -1773,8 +2226,9 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Katak",
     "nanakshahi_day": 11,
-    "launch_status": "deferred",
-    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Assu 25), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 11 Katak row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints Guru Ram Das Gurpurab at 11 Katak (2026-10-27)."
   },
   {
     "slug": "bandhi-chhor-divas",
@@ -1787,7 +2241,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 0,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "alias",
+      "parent_slug": "diwali",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "guru-nanak-gurpurab",
@@ -1800,7 +2260,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "included"
+    "launch_status": "included",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "guru-tegh-bahadur-martyrdom",
@@ -1828,6 +2294,40 @@
     "solar_month": 12,
     "solar_day": 26,
     "launch_status": "included"
+  },
+  {
+    "slug": "sahibzade-elder-shaheedi-diwas",
+    "display_name": "Elder Sahibzade Shaheedi Diwas",
+    "emoji": "☬",
+    "description": "SGPC Nanakshahi remembrance of the elder Sahibzade and the other martyrs of Chamkaur Sahib",
+    "kind": "major",
+    "tradition": "sikh",
+    "rule_family": "regional_calendar",
+    "verification_type": "historical_commemoration",
+    "calendar_profiles": ["nanakshahi"],
+    "profile_scope": "descriptive",
+    "nanakshahi_month": "Poh",
+    "nanakshahi_day": 8,
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 08 Poh row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints the elder Sahibzade Shaheedi Diwas at 08 Poh (2026-12-23)."
+  },
+  {
+    "slug": "sahibzade-younger-shaheedi-diwas",
+    "display_name": "Younger Sahibzade Shaheedi Diwas",
+    "emoji": "☬",
+    "description": "SGPC Nanakshahi remembrance of the younger Sahibzade and Mata Gujri Ji",
+    "kind": "major",
+    "tradition": "sikh",
+    "rule_family": "regional_calendar",
+    "verification_type": "historical_commemoration",
+    "calendar_profiles": ["nanakshahi"],
+    "profile_scope": "descriptive",
+    "nanakshahi_month": "Poh",
+    "nanakshahi_day": 13,
+    "launch_status": "included",
+    "citation": "SGPC Nanakshahi 558 sidebar, 13 Poh row; docs/sources/sgpc-nanakshahi-558.manifest.md",
+    "ratification_note": "Official-source-backed, pending council ratification. SGPC Nanakshahi 558 sidebar prints the younger Sahibzade Shaheedi Diwas at 13 Poh (2026-12-28)."
   },
   {
     "slug": "parinirvana-day",
@@ -1995,7 +2495,13 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "bodhi-day",
@@ -2081,7 +2587,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 1,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-3",
@@ -2097,7 +2609,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 2,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-4",
@@ -2113,7 +2631,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 3,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-5",
@@ -2129,7 +2653,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 4,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-6",
@@ -2145,7 +2675,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 5,
+      "status": "declared"
+    }
   },
   {
     "slug": "paryushana-day-7",
@@ -2161,7 +2697,13 @@
     "route_kind": "festival",
     "route_slug": "paryushana-parva",
     "launch_status": "included",
-    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date."
+    "ratification_note": "2026 span ratified as 2026-09-08 through 2026-09-15 from Jain calendar sources and the existing reviewed Samvatsari endpoint. Relative day keeps this child tied to the approved Paryushana start date.",
+    "relation": {
+      "kind": "series_child",
+      "parent_slug": "paryushana-parva-begins",
+      "offset_days": 6,
+      "status": "declared"
+    }
   },
   {
     "slug": "samvatsari-paryushana-ends",
@@ -2210,7 +2752,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 1,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "independent_offset",
+      "parent_slug": "diwali",
+      "offset_days": 1,
+      "status": "proposed"
+    }
   },
   {
     "slug": "jain-diwali-nirvana-ladnun",
@@ -2223,7 +2771,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 0,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "alias",
+      "parent_slug": "diwali",
+      "offset_days": 0,
+      "status": "proposed"
+    }
   },
   {
     "slug": "kartik-purnima-jain",
@@ -2236,7 +2790,13 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "alias",
+      "parent_slug": "diwali",
+      "offset_days": 16,
+      "status": "proposed"
+    }
   },
   {
     "slug": "ekadashi",
@@ -2255,7 +2815,15 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "ekadashi",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "tithi_presence",
+        "tithi": 11,
+        "period": "sunrise",
+        "mode": "at"
+      }
+    ]
   },
   {
     "slug": "pradosh-vrat",
@@ -2273,7 +2841,15 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "pradosh",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "tithi_presence",
+        "tithi": 13,
+        "period": "pradosha",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "purnima-vrat",
@@ -2290,7 +2866,19 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "purnima",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "madhyahna",
+        "mode": "touches"
+      }
+    ]
   },
   {
     "slug": "amavasya-vrat",
@@ -2307,7 +2895,19 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "amavasya",
-    "launch_status": "included"
+    "launch_status": "included",
+    "evaluator_conditions": [
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "sunrise",
+        "mode": "at"
+      }
+    ]
   },
   {
     "slug": "vinayaka-chaturthi",
@@ -2330,7 +2930,9 @@
     "slug": "sankashti-chaturthi",
     "display_name": "Sankashti Chaturthi",
     "emoji": "🐘",
-    "description": "Monthly Sankashti Chaturthi vrat to Lord Ganesha — the 4th tithi of the waning moon.",
+    "description": "Monthly Sankashti Chaturthi vrat to Lord Ganesha — Krishna Chaturthi observed at local moonrise; break the fast after moonrise darshan and Ganesha puja.",
+    "description_local": "मासिक संकष्टी चतुर्थी — स्थानीय चंद्रोदय पर दर्शन और गणेश पूजा के बाद व्रत का पारण करें।",
+    "description_pa": "ਮਾਸਿਕ ਸੰਕਸ਼ਟੀ ਚਤੁਰਥੀ — ਸਥਾਨਕ ਚੰਦ੍ਰੋਦੇ ਤੋਂ ਬਾਅਦ ਦਰਸ਼ਨ ਅਤੇ ਗਣੇਸ਼ ਪੂਜਾ ਕਰਕੇ ਵਰਤ ਖੋਲ੍ਹੋ।",
     "kind": "vrat",
     "tradition": "hindu",
     "rule_family": "lunar_tithi_recurring",
@@ -2342,7 +2944,39 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "sankashti-chaturthi",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified",
+    "evaluator_conditions": [
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 4,
+        "period": "moonrise",
+        "mode": "at"
+      }
+    ],
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 4,
+      "paksha": "krishna",
+      "lunar_month": "recurring",
+      "month_system": "amanta",
+      "period": "moonrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "shravan-somvar",
@@ -2590,5 +3224,48 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+  },
+  {
+    "slug": "rangwali-holi",
+    "display_name": "Rangwali Holi",
+    "emoji": "🎨",
+    "description": "The Phalguna festival of colours observed on the civil day following Holika Dahan",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "relative_to_other_observance",
+    "verification_type": "lunar_tithi",
+    "relative_base_slug": "holi",
+    "relative_offset_days": 1,
+    "launch_status": "deferred",
+    "relation": {
+      "kind": "convention",
+      "parent_slug": "holi",
+      "offset_days": 1,
+      "status": "proposed"
+    },
+    "ratification_note": "Proposed split from the legacy holi slug. The existing holi row is the Holika Dahan/Phalguna Purnima rule; this row represents the following Rangwali Holi colour day. Window and cross-profile behaviour require human review before publication.",
+    "calendar_profiles": [
+      "legacy-ujjain",
+      "tamil_solar",
+      "malayalam_solar",
+      "bengali_solar",
+      "north_indian_purnimanta",
+      "gujarati_amanta",
+      "marathi_amanta",
+      "kannada_telugu_amanta",
+      "kannada_amanta",
+      "telugu_amanta",
+      "odia",
+      "nepali_bikram",
+      "global_sanatan"
+    ],
+    "profile_scope": "descriptive",
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   }
 ]

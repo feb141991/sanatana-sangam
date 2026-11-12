@@ -102,7 +102,7 @@ export function getDueQuizReminderStage(
   now: Date,
   options: QuizStageOptions = {},
 ): QuizReminderStage | null {
-  if (devotee.quiz_reminder_enabled === false) return null;
+  if (devotee.quiz_reminder_enabled !== true) return null;
   const eveningNudge = options.eveningNudge ?? QUIZ_EVENING_NUDGE_ENABLED;
 
   const timezone = resolveTimeZone(devotee.timezone);
@@ -140,7 +140,7 @@ export function produceQuizCandidate(
   stage: QuizReminderStage = 'available',
   options: QuizStageOptions = {},
 ): NotificationCandidateInsert | null {
-  if (devotee.quiz_reminder_enabled === false) return null;
+  if (devotee.quiz_reminder_enabled !== true) return null;
   if (stage === 'evening_nudge' && !(options.eveningNudge ?? QUIZ_EVENING_NUDGE_ENABLED)) return null;
 
   const timezone = resolveTimeZone(devotee.timezone);

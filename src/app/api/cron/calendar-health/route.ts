@@ -251,7 +251,7 @@ export async function GET(request: Request) {
     });
   }
 
-  // Send push to admin via OneSignal (best-effort)
+  // Send push to admin (best-effort)
   try {
     if (adminId) {
       await sendPushNotification({

@@ -24,6 +24,7 @@ import {
   isHourInQuietWindow,
   resolveTimeZone,
 } from "./sacred-time";
+import { isReviewedCalendarEligibility } from './calendar/regional-calendar-provenance';
 
 export type ObservanceProfile = {
   id: string;
@@ -162,6 +163,10 @@ export function generateObservanceScheduleCandidates(input: {
     const reminderTime = user.observance_reminder_time || "08:00";
 
     for (const observance of deduplicatedObservances) {
+      if (!isReviewedCalendarEligibility(observance)) {
+        recordSuppression('non_final_calendar_date');
+        continue;
+      }
       if (observance.id && incompleteSeriesIds.has(observance.id)) {
         recordSuppression("incomplete_series");
         continue;

@@ -54,12 +54,10 @@ describe('shloka-candidate-producer', () => {
     )).toBeNull();
   });
 
-  it('defaults to eligible when wants_shloka_reminders is null/undefined', () => {
-    const cand = produceShlokaCandidate(
-      { ...devotee, wants_shloka_reminders: null },
-      '2026-11-08'
-    );
-    expect(cand).not.toBeNull();
+  it.each([null, undefined])('suppresses reminders without an explicit choice (%s)', (preference) => {
+    expect(produceShlokaCandidate(
+      { ...devotee, wants_shloka_reminders: preference }, '2026-11-08',
+    )).toBeNull();
   });
 
   it('adapts vocabulary for non-Hindu traditions with zero loss pressure', () => {

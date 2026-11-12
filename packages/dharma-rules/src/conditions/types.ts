@@ -18,11 +18,13 @@ export type PeriodType =
   | 'pradosha'
   | 'madhyahna'
   | 'aparahna'
+  | 'sayahna'
   | 'brahma_muhurta'
   | 'abhijit'
   | 'arunodaya';
 
 export type PresenceMode = 'at' | 'prevails' | 'touches' | 'majority';
+export type KaranaPresenceMode = PresenceMode | 'absent';
 
 export interface BaseCondition {
   type: string;
@@ -64,6 +66,24 @@ export interface NakshatraPresenceCondition extends BaseCondition {
   mode: PresenceMode;
 }
 
+export interface KaranaPresenceCondition extends BaseCondition {
+  type: 'karana_presence';
+  karana: string;
+  period: PeriodType;
+  mode: KaranaPresenceMode;
+}
+
+/**
+ * Holika Dahan date (approved by Pt Prince Sharma 2026-11-11; founder approval, not council ratified):
+ * Purnima prevailing at pradosha with no Bhadra (Vishti karana) in it. If Bhadra covers the pradosha,
+ * use the Bhadra-puccha (tail) part. The puccha length is a PROPOSED parameter (default 72 minutes,
+ * 3 ghatikas) until confirmed. Satisfied only on the civil date on which the Dahan falls.
+ */
+export interface HolikaDahanCondition extends BaseCondition {
+  type: 'holika_dahan';
+  pucchaMinutes?: number;
+}
+
 export interface ViddhaCondition extends BaseCondition {
   type: 'viddha';
   piercedBy: number; // e.g. 10
@@ -83,6 +103,8 @@ export type RuleCondition =
   | NakshatraCondition
   | TithiPresenceCondition
   | NakshatraPresenceCondition
+  | KaranaPresenceCondition
+  | HolikaDahanCondition
   | ViddhaCondition
   | GenericCondition;
 

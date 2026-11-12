@@ -741,7 +741,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
                 <h3 className="font-bold text-sm text-gray-900">Push Notification Gateway Health</h3>
                 <button onClick={() => setInfoModal(SECTION_INFO.push)} className="text-gray-400 hover:text-amber-700"><Info size={14} /></button>
               </div>
-              <p className="text-xs text-gray-500">Live Expo & OneSignal provider response receipts and token pruning telemetry.</p>
+              <p className="text-xs text-gray-500">Live Expo provider response receipts and token pruning telemetry.</p>
             </div>
             <div className="flex items-center gap-2">
               <Link

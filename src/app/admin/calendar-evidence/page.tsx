@@ -68,7 +68,7 @@ export default function CalendarEvidencePage() {
         </div>
 
         <section aria-label="Evidence scope" className="rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-4 text-sm leading-relaxed text-[var(--brand-muted)]">
-          <p>Sources in this pass: Rashtriya Panchang Saka 1948 and SGPC Nanakshahi 558. Jain and Buddhist calendars are not in this comparison until an edition-specific, tradition-qualified claim is verified. Drik Panchang is excluded pending permitted access.</p>
+          <p>Sources in this pass: Rashtriya Panchang Saka 1948 and the current SGPC Nanakshahi edition. Jain and Buddhist calendars are not in this comparison until an edition-specific, tradition-qualified claim is verified. Drik Panchang is excluded pending permitted access.</p>
           {data?.notice && <p className="mt-2">{data.notice}</p>}
         </section>
 

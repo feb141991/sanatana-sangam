@@ -107,6 +107,7 @@ export async function GET(request: Request) {
         sourceRefs: occurrence.sourceRefs ?? [],
         calendarProfile: occurrence.calendar_profile ?? null,
         tradition: occurrence.tradition,
+        calendarProvenance: occurrence.calendar_provenance ?? null,
       }));
 
     let skippedForPastLocalSlot = 0;

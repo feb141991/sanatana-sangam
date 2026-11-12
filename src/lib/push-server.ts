@@ -2,7 +2,7 @@ import { getNotificationSafetyState } from '@/lib/notification-safety';
 import { recordNotificationDeliveryBatch, type AuditRecordPayload } from '@/lib/notification-delivery-audit';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { findDeletingUserIds } from '@/lib/deleting-recipients';
-import { DISCREET_PUSH_COPY, findDiscreetUserIds, shouldShowDiscreetCopy } from '@/lib/discreet-recipients';
+import { DISCREET_PUSH_COPY, findFullTextPushRecipients, shouldShowDiscreetCopy } from '@/lib/discreet-recipients';
 import { hashPushToken } from '@/lib/push-token-audit';
 import { prunePushBindings, type PushBindingSnapshot } from '@/lib/push-binding';
 
@@ -234,11 +234,6 @@ async function sendViaExpo(
   const usersWithTokens = targetUserIds.filter((id) => tokensByUser.has(id));
   if (usersWithTokens.length === 0) return { sentUserIds, skippedUserIds, failedUserIds };
 
-  // A person who asked for discretion sees only a neutral line on their lock screen. If we cannot tell who asked, every
-  // recipient gets the neutral line: a private message shown in full because a lookup failed is the worse mistake.
-  const discreet = await findDiscreetUserIds(supabase, usersWithTokens);
-  if (discreet.lookupFailed) console.error('discreet-mode lookup failed; sending neutral text to all recipients:', discreet.error?.message);
-
   const outbox: Array<{ userId: string; token: string; bindingVersion: string; message: Record<string, unknown> }> = [];
   for (const userId of usersWithTokens) {
     for (const binding of tokensByUser.get(userId)!) {
@@ -248,11 +243,16 @@ async function sendViaExpo(
         token, bindingVersion: binding.binding_version,
         message: {
           to: token,
-          ...(shouldShowDiscreetCopy(messageType, userId, discreet)
-            ? { title: DISCREET_PUSH_COPY.title, body: DISCREET_PUSH_COPY.body }
-            : { title: message.title, body: message.body }),
           sound: 'default', channelId: 'default',
-          data: { ...message.data, url: message.url ?? undefined },
+          data: {
+            ...message.data,
+            url: message.url ?? undefined,
+            // Lets the app say WHICH notification was tapped. It is the same key the delivery audit stores for this
+            // recipient (notification_deliveries.notification_key), and record_notification_tap re-checks it
+            // against that audit, so a made-up or another account's key records nothing. Ours always wins over a
+            // caller-supplied data.notificationKey.
+            notificationKey: options?.notificationKeysByUserId?.[userId] ?? options?.notificationKey ?? undefined,
+          },
         },
       });
     }
@@ -273,10 +273,18 @@ async function sendViaExpo(
 
   for (const batch of chunk(outbox, EXPO_MESSAGE_BATCH_SIZE)) {
     try {
+      // Earlier provider batches may take time. Read again before sending this one.
+      const discretion = await findFullTextPushRecipients(supabase, batch.map(({ userId }) => userId));
+      if (discretion.lookupFailed) console.error('discreet-mode lookup failed; sending neutral text for regular notifications');
+      const messages = batch.map(({ userId, message: payload }) => ({
+        ...payload,
+        ...(shouldShowDiscreetCopy(messageType, userId, discretion)
+          ? DISCREET_PUSH_COPY : { title: message.title, body: message.body }),
+      }));
       const response = await fetch(EXPO_PUSH_API_URL, {
         method: 'POST',
         headers,
-        body: JSON.stringify(batch.map((item) => item.message)),
+        body: JSON.stringify(messages),
         signal: AbortSignal.timeout(10_000),
       });
 

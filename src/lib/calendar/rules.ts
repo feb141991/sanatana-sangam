@@ -1,5 +1,6 @@
 export * from './variant-qualifier';
 import rulesJson from '../../../packages/dharma-rules/src/festivals/rules.json';
+import type { RuleCondition } from '@sangam/dharma-rules';
 
 export interface DisputedVariant {
   variant_key: string;
@@ -7,6 +8,14 @@ export interface DisputedVariant {
   civil_date: string;
   source_ref: string;
   review_status: string;
+}
+
+export interface WindowSource {
+  tier: 1 | 2 | 3 | 4 | 5 | 6;
+  source_name: string;
+  location_in_source: string;
+  read_by_human: boolean;
+  status: 'proposed' | 'unsourced' | 'reviewed' | 'ratified' | 'disputed';
 }
 
 export type SkippedTithiPolicy = 'previous_day' | 'following_day' | 'day_before' | 'day_after';
@@ -86,6 +95,30 @@ export interface ObservanceRule {
   route_kind?: 'vrat' | 'festival' | null;
   route_slug?: string | null;
   region?: string | null;
+  /** Explicit profile applicability metadata; descriptive unless profile_scope is engine_enforced. */
+  calendar_profiles?: string[];
+  profile_scope?: 'descriptive' | 'engine_enforced';
+  /** Canonical conditions consumed by the condition-based evaluator. */
+  evaluator_conditions?: RuleCondition[];
+  relation?: {
+    kind: 'series_child' | 'independent_offset' | 'alias' | 'convention';
+    parent_slug?: string;
+    offset_days?: number;
+    status: 'declared' | 'proposed';
+  };
+  date_assignment?: {
+    status: 'proposed' | 'founder_approved' | 'ratified';
+    basis: 'lunar_tithi';
+    tithi: number;
+    paksha: 'shukla' | 'krishna';
+    lunar_month: string;
+    month_system: 'amanta' | 'purnimanta';
+    period: 'sunrise' | 'madhyahna' | 'aparahna' | 'pradosha' | 'nishita' | 'arunodaya' | 'moonrise';
+    mode: 'at' | 'touches' | 'prevails' | 'majority';
+    skipped_tithi: 'previous_day' | 'following_day' | 'first_qualifying_date';
+    tie_break: 'first_qualifying_date' | 'last_qualifying_date' | 'human_review';
+  };
+  window_source?: WindowSource;
 
   // ── Variant identity ──────────────────────────────────────────────────────
   // These fields exist in rules.json for rules that have per-tradition variants

@@ -157,6 +157,14 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
   not see them. Both were closed in the same change and are pinned by the parity
   test. This applies equally to human and AI-agent contributors.
 
+- **A reset must not confuse unchanged values with unchanged choices.** The
+  November 2026 reminder reset uses a preflight cohort count, one backup, and
+  exact post-update row versions. Restore only columns touched by the reset,
+  and skip any profile subsequently updated, including a same-value opt-out.
+  Before cadence SQL changes, pause and drain the resolver; the v3 cron route
+  verifies the database policy before claiming. Guards: the notification
+  scratch migration harness and the resolver route compatibility tests.
+
 ### 7. Platform and Build Precision
 - Keep these states distinct: committed, pushed, deployed, built, installed,
   launched and smoke-tested.
@@ -448,12 +456,26 @@ Rules:
 - Key formats are read from the writing trigger, not assumed. `trg_notify_mandali_comment` (AFTER INSERT on `post_comments`) writes type `mandali_comment`, key `mandali_comment:<comment_id>`; there is no `mandali_mention` type. The definition of `notify_mandali_comment` exists only in production, not in `supabase/migrations`: a drift to close separately. A connection-request view describes the other person (`counterparty`), never the requester.
 - Origin: the 2026-10-29 notification review found weekly summaries still opening Home, dated Pitru notifications losing their event date, and all Mandali targets opening the hub. The implementation review also found `getUserSafetyState` discarded query errors, which could bypass block/mute/hidden exclusions when resolving a notification. Guards live in `mandali-notification-target.test.ts`, the producer tests, and `scripts/notification-routing/verify-migration.sh`. Device delivery remains a separate release gate.
 
+## Notification Tap Records (2026-11-10)
+- A tap row (`notification_taps`) holds the account, the notification key, its type, when, whether the app was already open, app version and platform. It never holds a title, body, URL, route or any client-chosen text, and the route refuses a body that carries a user id or a type. The account comes from the session; the **type and the send time come from our own send log** (`notification_deliveries`), and a key that does not match a push actually sent to that account records nothing. Do not add a field the client can fill with free text, and do not take the type from the request.
+- Whether a tap may be recorded is decided in one function, `notification_tap_recording_allowed`, and fails closed. It follows the product-measurement consent (`consent_product_analytics`, plus `consent_religious_data` for anything that could reveal practice, and any type nobody has classified). Changing that rule is a policy decision for the founder and needs the privacy wording changed with it; never widen it in the route or the app.
+- The push payload carries each recipient's `notificationKey`, built with the same expression as the delivery audit, and a caller's own `data.notificationKey` never wins. If the audit key and the payload key ever differ, every tap silently becomes "unmatched".
+- Rows are kept 90 days (purge at 21:45 UTC), cascade with the account, are purged when consent is withdrawn, and are in the data export. The operator summary returns counts only and never a smaller group than 5 accounts. The live policy promises 20 for product measurement; do not quote a number from the summary without saying which floor applied.
+- Why this rule exists: on 2026-11-07 the notification audit found nothing recorded that any notification was tapped, so no change to cadence or wording could be judged. Building the recorder found the first draft clamped an impossible timestamp (a tap stamped before its own send) up to the send time, which would have invented zero-latency taps; the SQL test now refuses it. Guards: `supabase/tests/notification_tap_tracking.test.sql`, `src/app/api/native/notification-taps/route.test.ts`, `src/lib/push-server-tap-key.test.ts`.
+- Not verified: a Supabase branch, concurrency between a tap and a consent withdrawal (the row lock is checked in the source only), and any device.
+
 ## A Deleted Account Is Not an Outage (2026-10-30)
 - Bearer tokens are verified locally against the pinned JWKS, so a deleted account's token stays valid until it expires. A native route that must have a profile row (`home-summary`, `progress-summary`, `profile/bootstrap`, `shloka/today`) repairs a missing one through `resolveAuthProfile` (`src/lib/auth-profile.ts`). When that insert fails with SQLSTATE `23503` naming `profiles_id_fkey`, the database has said the `auth.users` row is gone: answer **401 `AUTH_REQUIRED`** through `getDeletedAccountResponse()` so the client refreshes, is refused, and signs out. Every other failure -- a stalled read, a timeout, a missing client, any other constraint or code -- stays a retryable **503 `PROFILE_UNAVAILABLE`**. A slow database must never sign anybody out; match the constraint name, never the code alone, and never infer "deleted" from "the profile read failed".
 - `ensureAuthProfile` stays as a wrapper returning `null` for every non-ready outcome. The web sign-in callbacks (`auth/callback`, `auth/destination`) keep it: they handle freshly authenticated users, who cannot be deleted accounts. A new route that repairs a profile for an existing session uses `resolveAuthProfile`, not the wrapper.
 - A screen that needs one slice of Home (today's shloka, a streak) calls a route that computes only that slice. It must not call `home-summary` and discard the rest: a slow calendar, observance or Dharm Veer query then holds an unrelated screen open. `shloka/today` returns the same `sacredText` that `home-summary` builds, from the same `buildDailySacredText(profile, getDayOfYear())` call, with no calendar work.
 - Origin: on 2026-10-30 (23:30-23:34 UTC) a Supabase stall made `home-summary` answer 503 for every user, and at 23:36:04 UTC a separate session for a deleted account (profile insert failing `profiles_id_fkey`) was answered with the same retryable 503, so the app retried it forever. The Shloka screen, which read only `sacredText` from `home-summary`, hung with it. Guards: `src/lib/auth-profile.test.ts`, the deleted-account cases in `home-summary.test.ts`, `progress-summary.test.ts`, `api-auth-routes.test.ts` and `shloka/today/today.test.ts` (each mutation-checked: matching any `23503`, never reporting `user_deleted`, or answering 401 for a stall makes one fail).
 - Not verified: a deleted account's device actually reaching the sign-in screen. Reading `@supabase/auth-js` 2.110.0 shows a non-retryable refresh failure removes the session and emits `SIGNED_OUT`; that has not been observed on a device.
+
+## Retired Notification Types (2026-11-10)
+- A notification type that is retired is refused at delivery (`RETIRED_NOTIFICATION_TYPES` in `src/lib/notification-delivery-policy.ts`, reason `notification_type_retired`), not only stopped at its producer. Removing a producer leaves rows already queued, and a retirement that waits for the queue to empty, or for a data fix, is not a retirement.
+- The daily digest (`daily_digest`) is retired. It sent AI-written "facts" about deities and tithis, which no council had reviewed and which carried no source, to every account with no setting to turn it off. It must not return without sourced, reviewed content and a preference that is off by default. `src/lib/content-generation-invariants.test.ts` fails if a digest cron, route, catalogue entry or any source naming the type reappears.
+- Removing a cron means removing its `CRON_CATALOGUE` entry in the same change, or the admin view reports a missed run.
+- Origin: the 2026-11-07 notification audit found the digest was the largest counted sender (331 queued in 30 days) with no switch; on 2026-11-10 it was retired and its 713 stored digests and 362 variants purged with the founder's approval. Not verified: a deploy, and that the production cron stops (see `docs/notifications/DAILY_DIGEST_RETIREMENT.md`).
 
 ## Sanskara Public Error Reasons (2026-10-31)
 - Map Sanskara refusals by both SQLSTATE and the exact reason. SK409 includes version conflicts, reused request IDs and duplicates; SK422 includes limits and other rule refusals. An unknown reason gets generic text for its SQLSTATE, never raw database text.
@@ -475,7 +497,7 @@ Rules:
 
 ## Lock-Screen Discretion (2026-11-12)
 - A person who switched on `profiles.notification_discreet_mode` is sent only the neutral line ("Shoonaya" / "You have a new notification.") in place of a push's title and body. It is applied in `src/lib/push-server.ts`, the only code that talks to Expo, so no producer can bypass it. Never rely on the phone's own preview or lock-screen settings for this: the app cannot force them.
-- It fails closed: if the lookup of who asked fails (anything but a missing column), every recipient of that send gets the neutral line. Never "send the real text if we are not sure". Security notices are the one exempt type.
+- Read the preference immediately before each Expo batch. For regular notifications, full text requires an explicit false. A missing profile, missing column or failed read uses the neutral line. Security notices are the one exempt type. The authenticated readiness endpoint must ship with this sender; the column alone cannot enable the Native switch.
 - Only `title` and `body` are replaced. The tap destination and type travel in `data`, are not displayed, and must survive, or a tap opens the wrong screen. Do not put wording in `data` that you would not show on a lock screen if a platform ever displays it.
 - A new notification type is covered automatically. Adding a type to `DISCREET_EXEMPT_TYPES` shows its text to people who asked for discretion and needs the founder's decision.
 - Never send a new Android `channelId` to an app that has not created it: Expo does not display the notification at all. See `docs/notifications/LOCK_SCREEN_DISCRETION.md`, section 6.

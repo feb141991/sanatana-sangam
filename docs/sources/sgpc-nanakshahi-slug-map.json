@@ -1,0 +1,14 @@
+[
+  { "slug": "baisakhi", "name_includes": ["ਖ਼ਾਲਸਾ ਸਾਜਣਾ ਦਿਵਸ"] },
+  { "slug": "guru-nanak-gurpurab", "name_includes": ["ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ", "ਗੁਰੂ ਨਾਨਕ ਦੇਵ"] },
+  { "slug": "bandhi-chhor-divas", "name_includes": ["ਬੰਦੀ ਛੋੜ ਦਿਵਸ"] },
+  { "slug": "guru-tegh-bahadur-martyrdom", "name_includes": ["ਸ਼ਹੀਦੀ ਦਿਵਸ", "ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ"] },
+  { "slug": "guru-gobind-singh-gurpurab", "name_includes": ["ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ", "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ"] },
+  { "slug": "guru-ravidas-jayanti", "name_includes": ["ਜਨਮ ਦਿਹਾੜਾ", "ਰਵਿਦਾਸ"] },
+  { "slug": "guru-arjan-dev-martyrdom", "name_includes": ["ਸ਼ਹੀਦੀ ਦਿਵਸ", "ਗੁਰੂ ਅਰਜਨ ਦੇਵ"] },
+  { "slug": "guru-amar-das-gurpurab", "name_includes": ["ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ", "ਅਮਰਦਾਸ"] },
+  { "slug": "guru-ram-das-gurpurab", "name_includes": ["ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ", "ਰਾਮਦਾਸ"] },
+  { "slug": "guru-har-krishan-gurpurab", "name_includes": ["ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ", "ਹਰਿਕ੍ਰਿਸ਼ਨ"] },
+  { "slug": "sahibzade-elder-shaheedi-diwas", "name_includes": ["ਵੱਡੇ ਸਾਹਿਬਜ਼ਾਦੇ"] },
+  { "slug": "sahibzade-younger-shaheedi-diwas", "name_includes": ["ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦੇ"] }
+]

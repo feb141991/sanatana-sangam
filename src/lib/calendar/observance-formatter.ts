@@ -6,6 +6,8 @@ import { resolveMonthLabelForProfile, resolveMonthLabelForSlug, type MonthLabelR
 import { buildObservanceHref } from '@/lib/observance-route';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
+import type { CalendarDateProvenance } from './regional-calendar-provenance';
+import { filterFinalCalendarOccurrences } from './regional-calendar-provenance';
 
 // Build a set of slugs that have an explicit citation in rules.json
 /**
@@ -138,6 +140,7 @@ export interface ClientObservanceResult {
   auditStatus?: string | null;
   finalDateSource?: string | null;
   isPrimary: boolean;
+  calendarProvenance?: CalendarDateProvenance | null;
 }
 
 /** The profile every pre-contract row carries; it is the fallback itself. */
@@ -255,7 +258,7 @@ export function formatOccurrencesToResults(
   // "not materialised" from "materialised just outside the window"; clipping
   // afterwards keeps the response honest to what was asked for.
   const occurrences = clipToRange(
-    resolveCalendarProfile(filterWithheldJoinedRows(occurrencesRaw), calendarProfile),
+    resolveCalendarProfile(filterFinalCalendarOccurrences(filterWithheldJoinedRows(occurrencesRaw)), calendarProfile),
     fromStr,
     toStr,
   );
@@ -364,6 +367,7 @@ export function formatOccurrencesToResults(
       auditStatus: row.audit_status ?? null,
       finalDateSource: row.final_date_source ?? null,
       isPrimary: false, // will resolve below
+      calendarProvenance: row.source_provenance?.calendar_provenance ?? null,
     }, row.year ?? String(row.date ?? "").slice(0, 4), row.series_instance_key);
   }
 

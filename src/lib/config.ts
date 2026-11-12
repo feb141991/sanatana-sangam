@@ -24,7 +24,6 @@ export const API = {
     MIRRORS: [
       'https://overpass.openstreetmap.fr/api/interpreter',   // fastest — 0.4s
       'https://overpass.kumi.systems/api/interpreter',
-      'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
       'https://overpass-api.de/api/interpreter',
       // private.coffee excluded — consistently 504
     ] as const,
