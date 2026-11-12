@@ -6,8 +6,19 @@ import {
 import type { ReviewedObservance } from './observance-notification-source';
 
 describe('observance scheduler', () => {
+  // The scheduler only accepts a non-regional occurrence that is reviewed, verified and audited to
+  // completion (`isReviewedCalendarEligibility`, since 13478ee). Without these three statuses it
+  // suppresses the row as `non_final_calendar_date` before any timing logic runs, so a fixture that
+  // omits them tests nothing. Production rows carry them through `mapOccurrenceToFestival`.
+  const REVIEWED_STATUS = {
+    review_status: 'reviewed',
+    verification_status: 'verified',
+    audit_status: 'completed',
+  } as const;
+
   const mockFestivals: ReviewedObservance[] = [
     {
+      ...REVIEWED_STATUS,
       id: 'occ-diwali-2026',
       name: 'Diwali',
       emoji: '🪔',
@@ -21,6 +32,7 @@ describe('observance scheduler', () => {
       route_slug: 'diwali',
     },
     {
+      ...REVIEWED_STATUS,
       id: 'occ-ekadashi-2026',
       name: 'Maha Nirjala Ekadashi',
       emoji: '🌾',
@@ -34,6 +46,7 @@ describe('observance scheduler', () => {
       route_slug: 'ekadashi',
     },
     {
+      ...REVIEWED_STATUS,
       id: 'occ-karva-chauth-2026',
       name: 'Karva Chauth',
       emoji: '🌙',
@@ -47,6 +60,7 @@ describe('observance scheduler', () => {
       route_slug: 'karva-chauth',
     },
     {
+      ...REVIEWED_STATUS,
       id: 'occ-somvar-vrat-2026',
       name: 'Shravan Somvar Vrat',
       emoji: '🔱',
@@ -262,6 +276,8 @@ describe('observance scheduler', () => {
       categoryFilter: 'festival',
     });
 
+    // `every` is true for an empty list, so assert the filter kept something.
+    expect(festivalOnlyResult.candidates.length).toBeGreaterThan(0);
     expect(
       festivalOnlyResult.candidates.every((c) => c.notification_type === 'festival')
     ).toBe(true);
@@ -273,9 +289,26 @@ describe('observance scheduler', () => {
       categoryFilter: 'vrat',
     });
 
+    expect(vratOnlyResult.candidates.length).toBeGreaterThan(0);
     expect(
       vratOnlyResult.candidates.every((c) => c.notification_type === 'vrat')
     ).toBe(true);
+  });
+
+  it.each([
+    ['review_status', { review_status: 'pending' }],
+    ['verification_status', { verification_status: 'unverified' }],
+    ['audit_status', { audit_status: 'pending' }],
+    ['all three statuses', { review_status: null, verification_status: null, audit_status: null }],
+  ])('suppresses an occurrence that is not reviewed, verified and audited (%s)', (_label, override) => {
+    const result = generateObservanceScheduleCandidates({
+      users: [defaultUser],
+      observances: [{ ...mockFestivals[0], ...override } as ReviewedObservance],
+      now: new Date('2026-11-01T00:00:00.000Z'),
+    });
+    expect(result.candidates).toHaveLength(0);
+    expect(result.stats.evaluatedCount).toBe(0);
+    expect(result.stats.suppressedReasons.non_final_calendar_date).toBe(1);
   });
 
   it('uses canonical occurrence scope instead of treating missing scope as universal', () => {

@@ -273,7 +273,20 @@ export const REPRESENTATIVE_PROFILES: ObservanceProfile[] = [
   },
 ];
 
-export const REPRESENTATIVE_60DAY_OBSERVANCES: ReviewedObservance[] = [
+/**
+ * The scheduler only accepts a non-regional occurrence that is reviewed, verified and audited to completion
+ * (`isReviewedCalendarEligibility`, since 13478ee); otherwise it suppresses the row as `non_final_calendar_date`
+ * before any timing logic runs and the audit measures nothing. These synthetic audit rows stand for reviewed
+ * observances, as their `ReviewedObservance` type says. This is audit fixture data only: no stored occurrence,
+ * masaName, council decision or lock is touched, and a Sikh row still needs SGPC provenance regardless.
+ */
+const REVIEWED_OCCURRENCE_STATUS = {
+  review_status: 'reviewed',
+  verification_status: 'verified',
+  audit_status: 'completed',
+} as const;
+
+const REPRESENTATIVE_60DAY_OBSERVANCE_ROWS: ReviewedObservance[] = [
   // Major & Regional Festivals
   {
     id: 'occ-karva-chauth-2026',
@@ -459,6 +472,9 @@ export const REPRESENTATIVE_60DAY_OBSERVANCES: ReviewedObservance[] = [
     route_slug: 'navratri-day-incomplete',
   },
 ];
+
+export const REPRESENTATIVE_60DAY_OBSERVANCES: ReviewedObservance[] =
+  REPRESENTATIVE_60DAY_OBSERVANCE_ROWS.map((row) => ({ ...REVIEWED_OCCURRENCE_STATUS, ...row }));
 
 export const INCOMPLETE_SERIES_IDS = new Set<string>(['occ-disputed-series-day-2026']);
 

@@ -79,9 +79,15 @@ describe('learning-pilot-scheduler', () => {
       expect(cand!.priority).toBe(50);
     });
 
-    it('creates a candidate by default and suppresses when explicitly opted out', () => {
-      expect(produceQuizCandidate({ id: 'active', timezone: 'Asia/Kolkata' }, '2026-11-08')).not.toBeNull();
-      expect(produceQuizCandidate({ id: 'opt-out', timezone: 'Asia/Kolkata', quiz_reminder_enabled: false }, '2026-11-08')).toBeNull();
+    // The quiz reminder is opt-in since 3ebe7d1 (2026-11-11): a missing value is "never chose", not consent,
+    // the same rule the Shloka producer's test already states. Whether a new profile starts opted in is the
+    // database default's job, not the producer's.
+    it('creates a candidate only for an explicit opt-in', () => {
+      expect(produceQuizCandidate({ id: 'opted-in', timezone: 'Asia/Kolkata', quiz_reminder_enabled: true }, '2026-11-08')).not.toBeNull();
+    });
+
+    it.each([undefined, null, false])('suppresses the reminder without an explicit opt-in (%s)', (choice) => {
+      expect(produceQuizCandidate({ id: 'no-opt-in', timezone: 'Asia/Kolkata', quiz_reminder_enabled: choice }, '2026-11-08')).toBeNull();
     });
 
     it('does NOT create the 6 PM follow-up by default: the 10:00 learning slot already carries the quiz', () => {
