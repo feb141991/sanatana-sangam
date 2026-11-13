@@ -228,6 +228,11 @@ function computePeriodWindow(
       start = new Date(sunrise.getTime() + 4 * dayFifth);
       end = sunset;
       break;
+    case 'purvahna':
+      // Purvahna is the first two fifths of daytime: pratah + sangava.
+      start = sunrise;
+      end = new Date(sunrise.getTime() + 2 * dayFifth);
+      break;
     case 'madhyahna':
       start = new Date(sunrise.getTime() + 2 * dayFifth);
       end = new Date(sunrise.getTime() + 3 * dayFifth);

@@ -113,7 +113,7 @@ export interface ObservanceRule {
     paksha: 'shukla' | 'krishna';
     lunar_month: string;
     month_system: 'amanta' | 'purnimanta';
-    period: 'sunrise' | 'madhyahna' | 'aparahna' | 'pradosha' | 'nishita' | 'arunodaya' | 'moonrise';
+    period: 'sunrise' | 'purvahna' | 'madhyahna' | 'aparahna' | 'pradosha' | 'nishita' | 'arunodaya' | 'moonrise';
     mode: 'at' | 'touches' | 'prevails' | 'majority';
     skipped_tithi: 'previous_day' | 'following_day' | 'first_qualifying_date';
     tie_break: 'first_qualifying_date' | 'last_qualifying_date' | 'human_review';

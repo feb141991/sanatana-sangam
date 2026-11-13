@@ -30,7 +30,26 @@
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-02-11, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #76) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-02-11, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #76) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 5,
+      "paksha": "shukla",
+      "lunar_month": "Magha",
+      "month_system": "amanta",
+      "period": "purvahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "maha-shivaratri",
@@ -142,7 +161,26 @@
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
     "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Chaitra Sukladi/Gudi Padava) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Chaitra Sukladi/Gudi Padava) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 1,
+      "paksha": "shukla",
+      "lunar_month": "Chaitra",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "chaitra-navratri-begins",
@@ -296,7 +334,26 @@
         "launch_status": "included",
         "citation": "Rashtriya Panchang Saka 1948, Index #98 (Rama Navami); Devi Mahatmya, Devi Kavacham Verse 5; Valmiki Ramayana, Bala Kanda 18.8-12; Devi Bhagavata Purana Book 3, Chapter 26"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 1,
+      "paksha": "shukla",
+      "lunar_month": "Chaitra",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "ugadi",
@@ -313,7 +370,26 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 1,
+      "paksha": "shukla",
+      "lunar_month": "Chaitra",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "ram-navami",
@@ -349,7 +425,26 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "shukla",
+      "lunar_month": "Chaitra",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "akshaya-tritiya",
@@ -367,7 +462,26 @@
     "lunar_tithi_index": 3,
     "allow_skipped_tithi": true,
     "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-04-20, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #13) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-04-20, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #13) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 3,
+      "paksha": "shukla",
+      "lunar_month": "Vaishakha",
+      "month_system": "amanta",
+      "period": "purvahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "narasimha-jayanti",
@@ -1015,7 +1129,26 @@
     "route_kind": "vrat",
     "route_slug": "hartalika-teej",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 3,
+      "paksha": "shukla",
+      "lunar_month": "Bhadrapada",
+      "month_system": "amanta",
+      "period": "purvahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "mahalaya-amavasya",
@@ -1184,7 +1317,26 @@
     "route_kind": "vrat",
     "route_slug": "sharad-navratri",
     "launch_status": "included",
-    "ratification_note": "Founder-approved 2026 mainstream date 2026-10-20 (2026-10-19), based on Drik Panchang Ujjain (Vijayadashami/Vijaya Muhurat Oct 20; Bengal Vijayadashami separately Oct 21) and Rashtriya Panchang Saka 1948 Index #50. The tithi-at-sunrise assignment produced Oct 21 and conflated the regional day with the mainstream observance. The Dussehra sub-observance now uses the date-selection condition Dashami must prevail throughout local Aparahna. This separates the mainstream date from Bengal-specific observance rather than treating differing regional calendars as duplicates."
+    "ratification_note": "Founder-approved 2026 mainstream date 2026-10-20 (2026-10-19), based on Drik Panchang Ujjain (Vijayadashami/Vijaya Muhurat Oct 20; Bengal Vijayadashami separately Oct 21) and Rashtriya Panchang Saka 1948 Index #50. The tithi-at-sunrise assignment produced Oct 21 and conflated the regional day with the mainstream observance. The Dussehra sub-observance now uses the date-selection condition Dashami must prevail throughout local Aparahna. This separates the mainstream date from Bengal-specific observance rather than treating differing regional calendars as duplicates.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 1,
+      "paksha": "shukla",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "chintpurni-mata-chaitra-navratri",
@@ -1489,7 +1641,26 @@
     "route_kind": "festival",
     "route_slug": "chhath-puja",
     "launch_status": "included",
-    "ratification_note": "Official-source-backed for the canonical Surya Shashthi / Chhat Bihar date. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-11-15, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #59, Surya Shashthi/Chhat Bihar) exactly. Promoted 2026-09-08 as the anchor day for the four-day Chhath cluster; adjoining preparation and Usha Arghya days are relative app-facing series children, not independent lunar claims."
+    "ratification_note": "Official-source-backed for the canonical Surya Shashthi / Chhat Bihar date. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-11-15, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #59, Surya Shashthi/Chhat Bihar) exactly. Promoted 2026-09-08 as the anchor day for the four-day Chhath cluster; adjoining preparation and Usha Arghya days are relative app-facing series children, not independent lunar claims.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 6,
+      "paksha": "shukla",
+      "lunar_month": "Kartika",
+      "month_system": "amanta",
+      "period": "sayahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "chhath-nahay-khay",
@@ -1715,7 +1886,26 @@
     "route_kind": "vrat",
     "route_slug": "kamada-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Chaitra",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "nirjala-ekadashi",
@@ -1733,7 +1923,26 @@
     "route_kind": "vrat",
     "route_slug": "nirjala-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Jyeshtha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "devshayani-ekadashi",
@@ -1751,7 +1960,26 @@
     "route_kind": "vrat",
     "route_slug": "devshayani-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Ashadha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "shravana-putrada-ekadashi",
@@ -1769,7 +1997,26 @@
     "route_kind": "vrat",
     "route_slug": "shravana-putrada-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Shravana",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "parivartini-ekadashi",
@@ -1787,7 +2034,26 @@
     "route_kind": "vrat",
     "route_slug": "parivartini-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Bhadrapada",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "devutthana-ekadashi",
@@ -1805,7 +2071,26 @@
     "route_kind": "vrat",
     "route_slug": "devutthana-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Kartika",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "amalaki-ekadashi",
@@ -1823,7 +2108,26 @@
     "route_kind": "vrat",
     "route_slug": "amalaki-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Phalguna",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "papmochani-ekadashi",
@@ -1861,7 +2165,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.34 -- Apara Ekadasi listed at 2026-05-13",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Jyeshtha",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "kamika-ekadashi",
@@ -1881,7 +2204,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.57 -- Kamika Ekadasi listed at 2026-08-09",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Shravana",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "aja-ekadashi",
@@ -1901,7 +2243,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.65 -- Aja Ekadasi listed at 2026-09-07",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Bhadrapada",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "rama-ekadashi",
@@ -1921,7 +2282,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.80 -- Rama Ekadasi listed at 2026-11-05",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Kartika",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "utpanna-ekadashi",
@@ -1941,7 +2321,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.88 -- Utpanna Ekadasi listed at 2026-12-04",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Margashirsha",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "saphala-ekadashi",
@@ -1961,7 +2360,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.96 -- Saphala Ekadasi listed at 2027-01-03",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Pausha",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "vijaya-ekadashi",
@@ -1982,7 +2400,26 @@
     "launch_status": "included",
     "corrected_prefer_last_match": true,
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.92 (PDF file page 112) -- Vijaya Ekadasi listed at 2027-03-04, one day after tithi 26 first touches sunrise (source shows 'Ekadasi ahoratra' the prior day) -- a genuine vrddhi tithi. corrected_prefer_last_match selects the later of the two candidate days; verified a no-op in 2026 and 2028, which have no vrddhi tithi at this position.",
-    "ratification_note": "Council decision batch 0 approved only the 2027-03-04 Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Other years, locations, and profiles remain governed by their own evidence and publication gates."
+    "ratification_note": "Council decision batch 0 approved only the 2027-03-04 Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Other years, locations, and profiles remain governed by their own evidence and publication gates.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Phalguna",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "last_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "gupt-navratri-magha-begins",
@@ -2924,7 +3361,26 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "chaturthi",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 4,
+      "paksha": "shukla",
+      "lunar_month": "recurring",
+      "month_system": "amanta",
+      "period": "madhyahna",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "sankashti-chaturthi",
@@ -3051,7 +3507,26 @@
         "source_ref": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
         "review_status": "disputed"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Ashadha",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "previous_day",
+      "tie_break": "last_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "yogini-ekadashi",
@@ -3109,7 +3584,26 @@
     "route_slug": "pausha-putrada-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Pausha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "shattila-ekadashi",
@@ -3128,7 +3622,26 @@
     "route_slug": "shattila-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Magha",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "jaya-ekadashi",
@@ -3147,7 +3660,26 @@
     "route_slug": "jaya-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Magha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "varuthini-ekadashi",
@@ -3166,7 +3698,26 @@
     "route_slug": "varuthini-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Vaishakha",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "mohini-ekadashi",
@@ -3185,7 +3736,26 @@
     "route_slug": "mohini-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Vaishakha",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "indira-ekadashi",
@@ -3204,7 +3774,26 @@
     "route_slug": "indira-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "krishna",
+      "lunar_month": "Ashwin",
+      "month_system": "purnimanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "papankusha-ekadashi",
@@ -3223,7 +3812,26 @@
     "route_slug": "papankusha-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor."
+    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "shukla",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "rangwali-holi",

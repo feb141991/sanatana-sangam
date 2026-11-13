@@ -16,6 +16,7 @@ export type PeriodType =
   | 'moonset'
   | 'nishita'
   | 'pradosha'
+  | 'purvahna'
   | 'madhyahna'
   | 'aparahna'
   | 'sayahna'

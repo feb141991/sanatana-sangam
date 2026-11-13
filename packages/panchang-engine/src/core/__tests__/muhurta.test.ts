@@ -54,6 +54,9 @@ describe('Variable Muhurta Windows Engine (Tracker 2.5)', () => {
       if (!res.ok) return;
 
       const { pratah, sangava, madhyahna, aparahna, sayahna } = res.windows;
+      const purvahna = res.windows.purvahna;
+      expect(purvahna.start.getTime()).toBe(pratah.start.getTime());
+      expect(purvahna.end.getTime()).toBe(sangava.end.getTime());
       expect(pratah.start.getTime()).toBe(res.sunrise.getTime());
       expect(sangava.start.getTime()).toBe(pratah.end.getTime());
       expect(madhyahna.start.getTime()).toBe(sangava.end.getTime());

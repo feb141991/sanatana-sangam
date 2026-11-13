@@ -114,6 +114,11 @@ export function getMuhurtaWindows(
       start: new Date(sunrise.getTime() + dayFifth),
       end: new Date(sunrise.getTime() + 2 * dayFifth),
     },
+    purvahna: {
+      name: 'Purvahna',
+      start: new Date(sunrise.getTime()),
+      end: new Date(sunrise.getTime() + 2 * dayFifth),
+    },
     madhyahna: {
       name: 'Madhyahna',
       start: new Date(sunrise.getTime() + 2 * dayFifth),

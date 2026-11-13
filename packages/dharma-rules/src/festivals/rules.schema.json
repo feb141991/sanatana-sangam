@@ -187,7 +187,7 @@
               "type": "object",
               "required": ["period", "mode"],
               "properties": {
-                "period": { "type": "string", "enum": ["aparahna", "madhyahna", "pradosha", "nishita", "arunodaya", "sunrise"] },
+                "period": { "type": "string", "enum": ["aparahna", "madhyahna", "pradosha", "nishita", "arunodaya", "sunrise", "purvahna"] },
                 "mode": { "type": "string", "enum": ["at", "prevails", "touches", "majority"] }
               },
               "additionalProperties": false,
@@ -448,6 +448,7 @@
             "type": "string",
             "enum": [
               "sunrise",
+              "purvahna",
               "madhyahna",
               "aparahna",
               "pradosha",

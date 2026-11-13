@@ -27,6 +27,19 @@ describe('Observance Condition Evaluator (Tracker 3.2)', () => {
     expect(Math.abs(window!.start.getTime() - (sunrise!.start.getTime() + dayFifth * 4))).toBeLessThan(1);
   });
 
+  it('defines purvahna as the first two fifths of daytime', () => {
+    const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+    const purvahna = getPeriodWindow('purvahna', '2026-03-03', location);
+    const sunrise = getPeriodWindow('sunrise', '2026-03-03', location);
+    const madhyahna = getPeriodWindow('madhyahna', '2026-03-03', location);
+    expect(purvahna).not.toBeNull();
+    expect(sunrise).not.toBeNull();
+    expect(madhyahna).not.toBeNull();
+    if (!purvahna || !sunrise || !madhyahna) return;
+    expect(purvahna.start.getTime()).toBe(sunrise.start.getTime());
+    expect(purvahna.end.getTime()).toBe(madhyahna.start.getTime());
+  });
+
   it('evaluates Vishti presence and absence from canonical elongation boundaries', () => {
     const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
     const present = evaluateCondition({
