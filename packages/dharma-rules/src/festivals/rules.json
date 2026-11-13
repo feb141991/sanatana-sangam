@@ -541,7 +541,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 30,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "vat-savitri-amavasya",
@@ -560,7 +562,9 @@
     "route_kind": "vrat",
     "route_slug": "vat-savitri",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "vat-savitri-purnima",
@@ -579,7 +583,9 @@
     "route_kind": "vrat",
     "route_slug": "vat-savitri-purnima",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "jagannath-rath-yatra",
@@ -596,7 +602,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 2,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "gupt-navratri-ashadha-begins",
@@ -693,7 +701,9 @@
         "launch_status": "deferred"
       }
     ],
-    "ratification_note": "[2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances (structural scaffolding only). devi_form / Mahavidya assignment per day is DELIBERATELY LEFT UNSET here -- unlike Sharad/Chaitra Navratri (a single, universally-agreed Navadurga sequence), Gupt Navratri association with the 10 Mahavidyas over 9 days is genuinely disputed/sampradaya-dependent (some traditions merge two Mahavidyas on one day, others read the sequence differently) -- assigning one reading here without a sourced ratification would violate the no-unaudited-tradition-claims rule. Each sub_observance kept launch_status=deferred pending a sourcing pass. The base date anchor itself (tithi 1) also has no citation/ratification_note yet -- unlike chaitra-navratri-begins, this is unsourced at the day-1 level too, not just the sub-day level."
+    "ratification_note": "[2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances (structural scaffolding only). devi_form / Mahavidya assignment per day is DELIBERATELY LEFT UNSET here -- unlike Sharad/Chaitra Navratri (a single, universally-agreed Navadurga sequence), Gupt Navratri association with the 10 Mahavidyas over 9 days is genuinely disputed/sampradaya-dependent (some traditions merge two Mahavidyas on one day, others read the sequence differently) -- assigning one reading here without a sourced ratification would violate the no-unaudited-tradition-claims rule. Each sub_observance kept launch_status=deferred pending a sourcing pass. The base date anchor itself (tithi 1) also has no citation/ratification_note yet -- unlike chaitra-navratri-begins, this is unsourced at the day-1 level too, not just the sub-day level.",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "guru-purnima",
@@ -713,7 +723,9 @@
     "route_slug": "purnima",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council ratified 2026-08-10. Ashadha Purnima. CONFIRMED and reproduced for all three years: 2026-07-29, 2027-07-18, 2028-07-06. The 2028 ruling independently confirms the Ashadha correction -- had the month still been Shravana, 2028 would have fallen in August."
+    "ratification_note": "Council ratified 2026-08-10. Ashadha Purnima. CONFIRMED and reproduced for all three years: 2026-07-29, 2027-07-18, 2028-07-06. The 2028 ruling independently confirms the Ashadha correction -- had the month still been Shravana, 2028 would have fallen in August.",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "nag-panchami",
@@ -732,7 +744,9 @@
     "lunar_tithi_index": 5,
     "prefer_last_match": true,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "raksha-bandhan",
@@ -1761,7 +1775,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "gita-jayanti",
@@ -2516,7 +2532,9 @@
         "launch_status": "deferred"
       }
     ],
-    "ratification_note": "[2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances (structural scaffolding only). devi_form / Mahavidya assignment per day is DELIBERATELY LEFT UNSET here -- unlike Sharad/Chaitra Navratri (a single, universally-agreed Navadurga sequence), Gupt Navratri association with the 10 Mahavidyas over 9 days is genuinely disputed/sampradaya-dependent (some traditions merge two Mahavidyas on one day, others read the sequence differently) -- assigning one reading here without a sourced ratification would violate the no-unaudited-tradition-claims rule. Each sub_observance kept launch_status=deferred pending a sourcing pass. The base date anchor itself (tithi 1) also has no citation/ratification_note yet -- unlike chaitra-navratri-begins, this is unsourced at the day-1 level too, not just the sub-day level."
+    "ratification_note": "[2026-09-08] Converted from a single-day lunar_tithi anchor to a lunar_tithi_span with 9 daily sub_observances (structural scaffolding only). devi_form / Mahavidya assignment per day is DELIBERATELY LEFT UNSET here -- unlike Sharad/Chaitra Navratri (a single, universally-agreed Navadurga sequence), Gupt Navratri association with the 10 Mahavidyas over 9 days is genuinely disputed/sampradaya-dependent (some traditions merge two Mahavidyas on one day, others read the sequence differently) -- assigning one reading here without a sourced ratification would violate the no-unaudited-tradition-claims rule. Each sub_observance kept launch_status=deferred pending a sourcing pass. The base date anchor itself (tithi 1) also has no citation/ratification_note yet -- unlike chaitra-navratri-begins, this is unsourced at the day-1 level too, not just the sub-day level.",
+    "derivability": "externally_curated",
+    "derivability_note": "Annual date must be entered by an authority in the admin calendar workflow; the astronomical engine must not compute or publish a date."
   },
   {
     "slug": "guru-gobind-singh-gurpurab",

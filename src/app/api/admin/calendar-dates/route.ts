@@ -8,6 +8,12 @@ import { fixtureCaseId } from '@/lib/calendar/admin-date-register';
 import { validateDateCandidate } from '@/lib/calendar/fixture-correction';
 import type { Database } from '@/types/database.generated';
 import { invalidatePublicCalendarSnapshot } from '@/lib/calendar/public-calendar-snapshot';
+import {
+  allExternallyCuratedReadiness,
+  EXTERNALLY_CURATED_SLUGS,
+  isExternallyCuratedSlug,
+  UJJAIN_REFERENCE,
+} from '@/lib/calendar/external-curation';
 
 const PAGE_SIZE = 25;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -23,6 +29,30 @@ function readYear(value: string | null): number | null {
   if (!value || !/^\d{4}$/.test(value)) return null;
   const year = Number(value);
   return year >= 2000 && year <= 2100 ? year : null;
+}
+
+function readDate(value: unknown): string | null {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value ? null : value;
+}
+
+function readTier(value: unknown): number | null {
+  return Number.isInteger(value) && Number(value) >= 1 && Number(value) <= 6 ? Number(value) : null;
+}
+
+function readNonEmpty(value: unknown, max: number): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 && trimmed.length <= max ? trimmed : null;
+}
+
+function auditTrail(provenance: unknown, event: Record<string, unknown>): Record<string, unknown> {
+  const current = provenance && typeof provenance === 'object' && !Array.isArray(provenance)
+    ? provenance as Record<string, unknown>
+    : {};
+  const audit = Array.isArray(current.audit) ? current.audit : [];
+  return { ...current, audit: [...audit, event] };
 }
 
 export async function GET(request: NextRequest) {
@@ -55,6 +85,12 @@ export async function GET(request: NextRequest) {
 
   const { data, count, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const authorityRowsQuery = client.from('observance_occurrences')
+    .select(DATE_REGISTER_SELECT)
+    .eq('year', year)
+    .in('observance_definitions.slug', [...EXTERNALLY_CURATED_SLUGS]);
+  const { data: authorityRows, error: authorityRowsError } = await authorityRowsQuery;
+  if (authorityRowsError) return NextResponse.json({ error: authorityRowsError.message }, { status: 500 });
   try {
     const enriched = await attachMaterialisationBatches((data ?? []) as AdminDateRow[]);
     return NextResponse.json({
@@ -65,6 +101,8 @@ export async function GET(request: NextRequest) {
       page,
       pageSize: PAGE_SIZE,
       total: count ?? 0,
+      authorityRows: (authorityRows ?? []).map((row) => assessAdminDate(row as AdminDateRow)),
+      externallyCurated: allExternallyCuratedReadiness(),
       notice: 'This is the canonical stored-date register. Core publication gates are shown, but exact Native visibility also depends on the user’s calendar profile, tradition and location. A Hold affects future backend reads; cached or offline Native views may remain stale until refreshed, and already-sent notifications cannot be recalled.',
     });
   } catch (cause) {
@@ -82,6 +120,125 @@ export async function POST(request: NextRequest) {
   const cookie = request.cookies.get(ADMIN_COOKIE)?.value ?? '';
   const token = await verifyAdminToken(cookie);
   if (!token?.username) return NextResponse.json({ error: 'Named admin reviewer required' }, { status: 403 });
+
+  if (body?.action === 'create_externally_curated') {
+    const slug = readNonEmpty(body?.observance, 100);
+    const year = typeof body?.year === 'number' ? body.year : Number(body?.year);
+    const date = readDate(body?.date);
+    const authorityName = readNonEmpty(body?.authorityName, 300);
+    const source = readNonEmpty(body?.sourceUrlOrCitation, 2048);
+    const tier = readTier(body?.tier);
+    if (!slug || !isExternallyCuratedSlug(slug) || !Number.isInteger(year) || year < 2000 || year > 2100 || !date || !authorityName || !source || tier === null) {
+      return NextResponse.json({ error: 'Externally curated entry requires an allowed observance, year 2000–2100, valid date, authority name, source URL/citation and tier 1–6.' }, { status: 400 });
+    }
+    const { data: definition, error: definitionError } = await client.from('observance_definitions')
+      .select('id, slug, display_name, tradition, kind, active')
+      .eq('slug', slug)
+      .maybeSingle();
+    if (definitionError) return NextResponse.json({ error: definitionError.message }, { status: 500 });
+    if (!definition) return NextResponse.json({ error: 'Observance definition not found.' }, { status: 404 });
+
+    const { data: existingRows, error: existingError } = await client.from('observance_occurrences')
+      .select('id, date, occurrence_date, publication_status, source_provenance')
+      .eq('definition_id', definition.id)
+      .eq('year', year)
+      .eq('calendar_profile', UJJAIN_REFERENCE.calendar_profile)
+      .eq('variant_key', UJJAIN_REFERENCE.variant_key);
+    if (existingError) return NextResponse.json({ error: existingError.message }, { status: 500 });
+    const existing = (existingRows ?? []) as Array<{ id: string; date: string; occurrence_date: string; publication_status: string; source_provenance: unknown }>;
+    const sameDate = existing.find((row) => row.date === date || row.occurrence_date === date);
+    if (sameDate) return NextResponse.json({ ok: true, alreadyExists: true, id: sameDate.id, requiresApproval: sameDate.publication_status !== 'published' });
+
+    const now = new Date().toISOString();
+    const provenance = {
+      source_kind: 'external_authority',
+      source_name: authorityName,
+      source_url_or_citation: source,
+      tier,
+      workflow: 'externally_curated_yearly_date',
+      status: 'pending_approval',
+      entered_by: token.username,
+      entered_at: now,
+      authority_date: date,
+      audit: [{ action: 'entered', actor: token.username, at: now }],
+    };
+    const { data: inserted, error: insertError } = await client.from('observance_occurrences')
+      .insert({
+        definition_id: definition.id,
+        year,
+        date,
+        occurrence_date: date,
+        ...UJJAIN_REFERENCE,
+        calculated_by: 'admin-external-curation',
+        final_date_source: 'manual_override',
+        manual_date_override: date,
+        manual_override_reason: `Externally curated annual date entered by ${token.username}; pending approval.`,
+        source_provenance: provenance as unknown as Database['public']['Tables']['observance_occurrences']['Update']['source_provenance'],
+        source_refs: [{ tier, sourceName: authorityName, ref: source }],
+        locked_for_regeneration: true,
+        publication_status: 'withheld_disputed',
+        review_status: 'needs_review',
+        verification_status: 'manual_review',
+        verification_confidence: 'high',
+        audit_status: 'skipped',
+        review_notes: `Authority date entered by ${token.username}; approval required before publication.`,
+      })
+      .select('id, date, publication_status, locked_for_regeneration')
+      .maybeSingle();
+    if (insertError) return NextResponse.json({ error: insertError.message }, { status: insertError.code === '23505' ? 409 : 500 });
+    if (!inserted) return NextResponse.json({ error: 'Authority date insert returned no row.' }, { status: 500 });
+    return NextResponse.json({ ok: true, alreadyExists: false, requiresApproval: true, row: inserted, enteredBy: token.username });
+  }
+
+  if (body?.action === 'approve_externally_curated') {
+    const id = body?.id;
+    if (typeof id !== 'string' || !UUID.test(id)) return NextResponse.json({ error: 'Approval requires an occurrence UUID.' }, { status: 400 });
+    const { data: row, error: rowError } = await client.from('observance_occurrences')
+      .select('id, definition_id, year, date, occurrence_date, calendar_profile, variant_key, publication_status, locked_for_regeneration, source_provenance, observance_definitions!inner(slug)')
+      .eq('id', id)
+      .maybeSingle();
+    if (rowError) return NextResponse.json({ error: rowError.message }, { status: 500 });
+    const definition = row?.observance_definitions;
+    const rowSlug = Array.isArray(definition) ? definition[0]?.slug : definition?.slug;
+    if (!row || !rowSlug || !isExternallyCuratedSlug(rowSlug)) return NextResponse.json({ error: 'Only an externally curated occurrence can be approved here.' }, { status: 409 });
+    if (row.publication_status === 'published') return NextResponse.json({ ok: true, alreadyApproved: true, id });
+    if (row.publication_status !== 'withheld_disputed' || row.locked_for_regeneration !== true) return NextResponse.json({ error: 'Entry must remain withheld and locked until approval.' }, { status: 409 });
+    const { data: publishedRows, error: publishedError } = await client.from('observance_occurrences')
+      .select('id, date')
+      .eq('definition_id', row.definition_id)
+      .eq('year', row.year)
+      .eq('calendar_profile', UJJAIN_REFERENCE.calendar_profile)
+      .eq('variant_key', UJJAIN_REFERENCE.variant_key)
+      .eq('publication_status', 'published');
+    if (publishedError) return NextResponse.json({ error: publishedError.message }, { status: 500 });
+    if ((publishedRows ?? []).length > 0) return NextResponse.json({ error: 'A published date already exists for this observance and year. Withdraw it before approving another.' }, { status: 409 });
+    const now = new Date().toISOString();
+    const provenance = auditTrail(row.source_provenance, { action: 'approved', actor: token.username, at: now });
+    provenance.status = 'approved';
+    provenance.approved_by = token.username;
+    provenance.approved_at = now;
+    const { data: approved, error: updateError } = await client.from('observance_occurrences')
+      .update({
+        publication_status: 'published',
+        review_status: 'reviewed',
+        verification_status: 'verified',
+        verification_confidence: 'high',
+        audit_status: 'completed',
+        reviewed_at: now,
+        last_audited_at: now,
+        verification_run_at: now,
+        source_provenance: provenance as unknown as Database['public']['Tables']['observance_occurrences']['Update']['source_provenance'],
+        review_notes: `Authority date approved by ${token.username} at ${now}.`,
+      })
+      .eq('id', id)
+      .eq('publication_status', 'withheld_disputed')
+      .select('id, date, publication_status, locked_for_regeneration, source_provenance')
+      .maybeSingle();
+    if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+    if (!approved) return NextResponse.json({ error: 'Entry changed during approval; refresh the register.' }, { status: 409 });
+    invalidatePublicCalendarSnapshot();
+    return NextResponse.json({ ok: true, approved, reviewer: token.username });
+  }
 
   if (body?.action === 'create_candidate') {
     const occurrenceId = body?.occurrenceId;

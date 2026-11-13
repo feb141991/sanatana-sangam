@@ -178,6 +178,73 @@ describe('admin date register route', () => {
     expect(inserted.location).toEqual({ label: 'Coordinates 31.634000, 74.872000', lat: 31.634, lon: 74.872, tz: 'Asia/Kolkata' });
   });
 
+  it('creates an authority date as one locked, withheld manual override', async () => {
+    const id = '22222222-2222-4222-8222-222222222222';
+    state.results.push(
+      { data: { id: 'definition-guru-purnima', slug: 'guru-purnima', display_name: 'Guru Purnima', tradition: 'hindu', kind: 'major', active: true }, error: null },
+      { data: [], error: null },
+      { data: { id, date: '2027-07-19', publication_status: 'withheld_disputed', locked_for_regeneration: true }, error: null },
+    );
+    const response = await POST(request('http://localhost/api/admin/calendar-dates', {
+      action: 'create_externally_curated', observance: 'guru-purnima', year: 2027,
+      date: '2027-07-19', authorityName: 'Pt Prince Sharma', tier: 6,
+      sourceUrlOrCitation: 'Annual authority confirmation',
+    }));
+    expect(response.status).toBe(200);
+    const inserted = state.calls.find((call) => call.kind === 'insert')?.value as Record<string, any>;
+    expect(inserted.publication_status).toBe('withheld_disputed');
+    expect(inserted.locked_for_regeneration).toBe(true);
+    expect(inserted.final_date_source).toBe('manual_override');
+    expect(inserted.manual_date_override).toBe('2027-07-19');
+    expect(inserted.calendar_profile).toBe('legacy-ujjain');
+    expect(inserted.computed_latitude).toBe(23.1765);
+    expect(inserted.source_provenance.status).toBe('pending_approval');
+    expect(inserted.source_provenance.entered_by).toBe('calendar-reviewer');
+  });
+
+  it('makes a same-date entry idempotent without inserting a second row', async () => {
+    const id = '22222222-2222-4222-8222-222222222222';
+    state.results.push(
+      { data: { id: 'definition-guru-purnima', slug: 'guru-purnima', display_name: 'Guru Purnima', tradition: 'hindu', kind: 'major', active: true }, error: null },
+      { data: [{ id, date: '2027-07-19', occurrence_date: '2027-07-19', publication_status: 'withheld_disputed', source_provenance: {} }], error: null },
+    );
+    const response = await POST(request('http://localhost/api/admin/calendar-dates', {
+      action: 'create_externally_curated', observance: 'guru-purnima', year: 2027,
+      date: '2027-07-19', authorityName: 'Pt Prince Sharma', tier: 6,
+      sourceUrlOrCitation: 'Annual authority confirmation',
+    }));
+    expect(response.status).toBe(200);
+    expect((await response.json()).alreadyExists).toBe(true);
+    expect(state.calls.some((call) => call.kind === 'insert')).toBe(false);
+  });
+
+  it('refuses approval when another date is already published', async () => {
+    const id = '22222222-2222-4222-8222-222222222222';
+    state.results.push(
+      { data: { id, definition_id: 'definition-guru-purnima', year: 2027, date: '2027-07-19', occurrence_date: '2027-07-19', calendar_profile: 'legacy-ujjain', variant_key: 'legacy-default', publication_status: 'withheld_disputed', locked_for_regeneration: true, source_provenance: {}, observance_definitions: { slug: 'guru-purnima', derivability: 'externally_curated' } }, error: null },
+      { data: [{ id: 'existing-published', date: '2027-07-18' }], error: null },
+    );
+    const response = await POST(request('http://localhost/api/admin/calendar-dates', { action: 'approve_externally_curated', id }));
+    expect(response.status).toBe(409);
+    expect(state.calls.some((call) => call.kind === 'update')).toBe(false);
+  });
+
+  it('approves a withheld entry only after the published-date conflict check', async () => {
+    const id = '22222222-2222-4222-8222-222222222222';
+    state.results.push(
+      { data: { id, definition_id: 'definition-guru-purnima', year: 2027, date: '2027-07-19', occurrence_date: '2027-07-19', calendar_profile: 'legacy-ujjain', variant_key: 'legacy-default', publication_status: 'withheld_disputed', locked_for_regeneration: true, source_provenance: { status: 'pending_approval', audit: [] }, observance_definitions: { slug: 'guru-purnima', derivability: 'externally_curated' } }, error: null },
+      { data: [], error: null },
+      { data: { id, date: '2027-07-19', publication_status: 'published', locked_for_regeneration: true, source_provenance: { status: 'approved', audit: [{ action: 'approved' }] } }, error: null },
+    );
+    const response = await POST(request('http://localhost/api/admin/calendar-dates', { action: 'approve_externally_curated', id }));
+    expect(response.status).toBe(200);
+    const update = state.calls.find((call) => call.kind === 'update')?.value as Record<string, any>;
+    expect(update.publication_status).toBe('published');
+    expect(update.review_status).toBe('reviewed');
+    expect(update.source_provenance.status).toBe('approved');
+    expect(update.source_provenance.audit).toHaveLength(1);
+  });
+
   it('rejects a second candidate when the occurrence already has linked fixture evidence', async () => {
     const id = '11111111-1111-4111-8111-111111111111';
     state.results.push({ data: { id, source_provenance: { caseId: 'approved-case' } }, error: null });
