@@ -2,6 +2,7 @@ import { getNotificationSafetyState } from '@/lib/notification-safety';
 import { recordNotificationDeliveryBatch, type AuditRecordPayload } from '@/lib/notification-delivery-audit';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { findDeletingUserIds } from '@/lib/deleting-recipients';
+import { DISCREET_PUSH_COPY, findFullTextPushRecipients, shouldShowDiscreetCopy } from '@/lib/discreet-recipients';
 import { hashPushToken } from '@/lib/push-token-audit';
 import { prunePushBindings, type PushBindingSnapshot } from '@/lib/push-binding';
 
@@ -242,8 +243,6 @@ async function sendViaExpo(
         token, bindingVersion: binding.binding_version,
         message: {
           to: token,
-          title: message.title,
-          body: message.body,
           sound: 'default', channelId: 'default',
           data: {
             ...message.data,
@@ -274,10 +273,18 @@ async function sendViaExpo(
 
   for (const batch of chunk(outbox, EXPO_MESSAGE_BATCH_SIZE)) {
     try {
+      // Earlier provider batches may take time. Read again before sending this one.
+      const discretion = await findFullTextPushRecipients(supabase, batch.map(({ userId }) => userId));
+      if (discretion.lookupFailed) console.error('discreet-mode lookup failed; sending neutral text for regular notifications');
+      const messages = batch.map(({ userId, message: payload }) => ({
+        ...payload,
+        ...(shouldShowDiscreetCopy(messageType, userId, discretion)
+          ? DISCREET_PUSH_COPY : { title: message.title, body: message.body }),
+      }));
       const response = await fetch(EXPO_PUSH_API_URL, {
         method: 'POST',
         headers,
-        body: JSON.stringify(batch.map((item) => item.message)),
+        body: JSON.stringify(messages),
         signal: AbortSignal.timeout(10_000),
       });
 

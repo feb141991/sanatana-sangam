@@ -34,6 +34,8 @@ const EDITABLE_BOOLEAN_FIELDS = new Set([
   "dharm_veer_reminder_enabled",
   "wants_mood_reminders",
   "wants_sattvic_reminders",
+  // Lock-screen discretion (migration 20261112090000): push text is replaced by a neutral line.
+  "notification_discreet_mode",
 ]);
 
 const RASHIS = new Set([

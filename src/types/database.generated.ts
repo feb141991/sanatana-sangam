@@ -6708,6 +6708,7 @@ export type Database = {
           onboarding_goal: string | null
           pro_activated_at: string | null
           pro_note: string | null
+          notification_discreet_mode: boolean
           quiz_reminder_enabled: boolean | null
           quiz_reminder_time: string | null
           rashi: string | null
@@ -6834,6 +6835,7 @@ export type Database = {
           onboarding_goal?: string | null
           pro_activated_at?: string | null
           pro_note?: string | null
+          notification_discreet_mode?: boolean
           quiz_reminder_enabled?: boolean | null
           quiz_reminder_time?: string | null
           rashi?: string | null
@@ -6960,6 +6962,7 @@ export type Database = {
           onboarding_goal?: string | null
           pro_activated_at?: string | null
           pro_note?: string | null
+          notification_discreet_mode?: boolean
           quiz_reminder_enabled?: boolean | null
           quiz_reminder_time?: string | null
           rashi?: string | null

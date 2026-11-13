@@ -1,4 +1,5 @@
 import type { createAdminClient } from '@/lib/supabase-admin';
+import type { Database } from '@/types/database';
 
 /**
  * What "download your data" contains (privacy policy, "Your Choices and Controls").
@@ -168,8 +169,7 @@ type ReadSpec = {
 export async function readAllRows(admin: Admin, spec: ReadSpec, userId: string): Promise<TableRead> {
   const rows: Record<string, unknown>[] = [];
   for (let from = 0; from < EXPORT_MAX_ROWS_PER_TABLE; from += EXPORT_PAGE_SIZE) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query: any = admin.from(spec.table as never).select(spec.select ?? '*');
+    let query = admin.from(spec.table as keyof Database['public']['Tables']).select(spec.select ?? '*');
     query = spec.userColumns.length > 1
       ? query.or(spec.userColumns.map((column) => `${column}.eq.${userId}`).join(','))
       : query.eq(spec.userColumns[0], userId);

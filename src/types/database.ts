@@ -314,6 +314,7 @@ export interface Database {
           japa_reminder_enabled?: boolean;
           japa_reminder_time?: string;
           quiz_reminder_enabled?: boolean;
+          notification_discreet_mode?: boolean;
           quiz_reminder_time?: string;
           nitya_reminder_enabled?: boolean;
           nitya_reminder_time?: string;
