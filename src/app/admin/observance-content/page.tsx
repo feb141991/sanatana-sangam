@@ -9,6 +9,7 @@ import {
   Layers, Eye, History, RotateCcw, CheckSquare, Edit3, Send, Users, Shield,
   Copy, ExternalLink, ChevronRight, ChevronLeft
 } from "lucide-react";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 type TabId = "coverage" | "queue" | "review" | "artwork" | "published" | "share";
 
@@ -433,36 +434,22 @@ export default function ObservanceContentStudioPage() {
       </header>
 
       {/* 6 Studio Navigation Tabs */}
-      <nav className="mb-8 flex items-center gap-2 overflow-x-auto border-b border-black/10 pb-1">
-        {[
-          { id: "coverage", label: "1. Coverage Matrix", icon: Layers, count: rows.length },
-          { id: "queue", label: "2. Generation Queue", icon: Zap, count: rows.filter((r) => r.sourceCount > 0 && !r.current).length },
-          { id: "review", label: "3. Review Desk", icon: Eye, count: counts.review },
-          { id: "artwork", label: "4. Artwork Canvas", icon: ImageIcon, count: selectedRow?.approvedArtworkCount ?? 0 },
-          { id: "published", label: "5. Published & Rollback", icon: History, count: counts.published },
-          { id: "share", label: "6. Share Templates", icon: Share2, count: selectedRow?.approvedShareCount ?? 0 },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as TabId)}
-              className={"flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-xs font-bold whitespace-nowrap transition-all border-b-2 " + (
-                isActive
-                  ? "border-amber-700 bg-white text-amber-900 shadow-2xs"
-                  : "border-transparent text-gray-500 hover:text-gray-900 hover:bg-black/5"
-              )}
-            >
-              <Icon size={15} className={isActive ? "text-amber-700" : "text-gray-400"} />
-              <span>{tab.label}</span>
-              <span className={"px-2 py-0.5 rounded-full text-[10px] " + (isActive ? "bg-amber-100 text-amber-800" : "bg-black/5 text-gray-500")}>
-                {tab.count}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
+      <div className="mb-8">
+        <AdminTabs<TabId>
+          label="Observance content steps"
+          idPrefix="observance-step"
+          activeId={activeTab}
+          onChange={setActiveTab}
+          tabs={[
+            { id: "coverage", label: "1. Coverage Matrix", icon: Layers, badge: rows.length },
+            { id: "queue", label: "2. Generation Queue", icon: Zap, badge: rows.filter((r) => r.sourceCount > 0 && !r.current).length },
+            { id: "review", label: "3. Review Desk", icon: Eye, badge: counts.review },
+            { id: "artwork", label: "4. Artwork Canvas", icon: ImageIcon, badge: selectedRow?.approvedArtworkCount ?? 0 },
+            { id: "published", label: "5. Published & Rollback", icon: History, badge: counts.published },
+            { id: "share", label: "6. Share Templates", icon: Share2, badge: selectedRow?.approvedShareCount ?? 0 },
+          ]}
+        />
+      </div>
 
       {error && <p className="mb-6 rounded-xl border border-rose-500/30 bg-rose-50 p-4 text-xs font-semibold text-rose-800">{error}</p>}
       {actionSuccess && <p className="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-50 p-4 text-xs font-semibold text-emerald-800">{actionSuccess}</p>}

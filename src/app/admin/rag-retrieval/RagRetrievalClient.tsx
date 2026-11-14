@@ -30,6 +30,7 @@ import {
   ShieldCheck,
   TrendingUp,
 } from "lucide-react";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 export interface RetrievalEvent {
   timestamp: string;
@@ -407,53 +408,20 @@ export default function RagRetrievalClient({ events, gitaReport, upanishadsRepor
           </p>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800 text-xs font-medium self-start md:self-auto overflow-x-auto shadow-inner">
-          <button
-            onClick={() => setActiveTab("telemetry")}
-            className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "telemetry"
-                ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-semibold"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <Activity className="w-3.5 h-3.5 text-blue-500" />
-            Telemetry &amp; Health
-          </button>
-          <button
-            onClick={() => setActiveTab("simulator")}
-            className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "simulator"
-                ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-semibold"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <Terminal className="w-3.5 h-3.5 text-amber-500" />
-            Query Playground
-          </button>
-          <button
-            onClick={() => setActiveTab("benchmarks")}
-            className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "benchmarks"
-                ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-semibold"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <BarChart3 className="w-3.5 h-3.5 text-purple-500" />
-            Benchmark Matrix
-          </button>
-          <button
-            onClick={() => setActiveTab("pipeline")}
-            className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "pipeline"
-                ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm font-semibold"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <GitBranch className="w-3.5 h-3.5 text-emerald-500" />
-            Pipeline Architecture
-          </button>
-        </div>
+        {/* Tabs */}
+        <AdminTabs<typeof activeTab>
+          label="RAG retrieval sections"
+          idPrefix="rag-tab"
+          activeId={activeTab}
+          onChange={setActiveTab}
+          className="self-start md:self-auto"
+          tabs={[
+            { id: "telemetry", label: "Telemetry & health", icon: Activity },
+            { id: "simulator", label: "Query playground", icon: Terminal },
+            { id: "benchmarks", label: "Benchmark matrix", icon: BarChart3 },
+            { id: "pipeline", label: "Pipeline architecture", icon: GitBranch },
+          ]}
+        />
       </div>
 
       {/* Hero KPI Stat Cards */}

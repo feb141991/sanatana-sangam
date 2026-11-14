@@ -8,6 +8,7 @@ import {
   Edit3, Save, RotateCcw, Sparkles, Instagram, Twitter, Linkedin, Copy, ExternalLink, Share2, Hash
 } from "lucide-react";
 import type { MarketingChannel } from "@/lib/marketing/types";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 interface TraditionOption {
   key: string;
@@ -896,78 +897,20 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
             </div>
           )}
 
-          {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 border-b border-[var(--border-subtle)] overflow-x-auto pb-1">
-            <button
-              onClick={() => setActiveTab("email")}
-              className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
-                activeTab === "email" ? "border-amber-600 text-amber-700" : "border-transparent text-[var(--text-muted)] hover:text-slate-700"
-              }`}
-            >
-              <Mail size={15} />
-              <span>Email</span>
-              <span className={`w-2 h-2 rounded-full ${emailVariant ? "bg-emerald-500" : "bg-slate-300"}`} />
-              <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${emailVariant ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>
-                {emailVariant ? "Drafted" : "Empty"}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("whatsapp")}
-              className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
-                activeTab === "whatsapp" ? "border-amber-600 text-amber-700" : "border-transparent text-[var(--text-muted)] hover:text-slate-700"
-              }`}
-            >
-              <MessageSquare size={15} />
-              <span>WhatsApp</span>
-              <span className={`w-2 h-2 rounded-full ${whatsappVariant ? "bg-emerald-500" : "bg-slate-300"}`} />
-              <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${whatsappVariant ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>
-                {whatsappVariant ? "Drafted" : "Empty"}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("instagram")}
-              className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
-                activeTab === "instagram" ? "border-pink-600 text-pink-700" : "border-transparent text-[var(--text-muted)] hover:text-slate-700"
-              }`}
-            >
-              <Instagram size={15} />
-              <span>Instagram</span>
-              <span className={`w-2 h-2 rounded-full ${instagramVariant ? "bg-emerald-500" : "bg-slate-300"}`} />
-              <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${instagramVariant ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>
-                {instagramVariant ? "Drafted" : "Empty"}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("twitter")}
-              className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
-                activeTab === "twitter" ? "border-sky-600 text-sky-700" : "border-transparent text-[var(--text-muted)] hover:text-slate-700"
-              }`}
-            >
-              <Twitter size={15} />
-              <span>Twitter / X</span>
-              <span className={`w-2 h-2 rounded-full ${twitterVariant ? "bg-emerald-500" : "bg-slate-300"}`} />
-              <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${twitterVariant ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>
-                {twitterVariant ? "Drafted" : "Empty"}
-              </span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("linkedin")}
-              className={`px-3.5 py-2 text-xs font-bold flex items-center gap-2 border-b-2 transition-all shrink-0 ${
-                activeTab === "linkedin" ? "border-blue-700 text-blue-800" : "border-transparent text-[var(--text-muted)] hover:text-slate-700"
-              }`}
-            >
-              <Linkedin size={15} />
-              <span>LinkedIn</span>
-              <span className={`w-2 h-2 rounded-full ${linkedinVariant ? "bg-emerald-500" : "bg-slate-300"}`} />
-              <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${linkedinVariant ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>
-                {linkedinVariant ? "Drafted" : "Empty"}
-              </span>
-            </button>
-          </div>
+          {/* Channel tabs: the badge is whether that channel has a draft */}
+          <AdminTabs<MarketingChannel>
+            label="Campaign channels"
+            idPrefix="campaign-channel"
+            activeId={activeTab}
+            onChange={setActiveTab}
+            tabs={[
+            { id: "email", label: "Email", icon: Mail, badge: emailVariant ? "Drafted" : "Empty", tone: emailVariant ? "ok" : "neutral" },
+            { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, badge: whatsappVariant ? "Drafted" : "Empty", tone: whatsappVariant ? "ok" : "neutral" },
+            { id: "instagram", label: "Instagram", icon: Instagram, badge: instagramVariant ? "Drafted" : "Empty", tone: instagramVariant ? "ok" : "neutral" },
+            { id: "twitter", label: "Twitter / X", icon: Twitter, badge: twitterVariant ? "Drafted" : "Empty", tone: twitterVariant ? "ok" : "neutral" },
+            { id: "linkedin", label: "LinkedIn", icon: Linkedin, badge: linkedinVariant ? "Drafted" : "Empty", tone: linkedinVariant ? "ok" : "neutral" },
+            ]}
+          />
 
           {/* AI Regeneration Drawer (Global for any selected channel) */}
           {showAiRegenPanel && (

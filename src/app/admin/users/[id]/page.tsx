@@ -11,6 +11,7 @@ import {
   Check, Copy, Play, ArrowUpDown, ArrowUp, ArrowDown, Ban, UserCheck
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 interface UserProfile {
   id: string;
@@ -360,67 +361,19 @@ export default function UserDetailPage() {
         </div>
 
         {/* ─── TAB NAVIGATION ──────────────────────────────────────────────── */}
-        <div className="flex items-center gap-2 border-b border-black/10 overflow-x-auto pb-px">
-          <button
-            onClick={() => setActiveTab("timeline")}
-            className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-              activeTab === "timeline"
-                ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-                : "border-transparent text-gray-500 hover:text-gray-900"
-            )}
-          >
-            <Layers size={14} />
-            <span>Devotional Activity Timeline ({dossier.timeline.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("notifications")}
-            className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-              activeTab === "notifications"
-                ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-                : "border-transparent text-gray-500 hover:text-gray-900"
-            )}
-          >
-            <Bell size={14} />
-            <span>Notification & Push Ledger ({dossier.notifications.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("karma")}
-            className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-              activeTab === "karma"
-                ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-                : "border-transparent text-gray-500 hover:text-gray-900"
-            )}
-          >
-            <Award size={14} />
-            <span>Karma & Rewards Reconciler</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("moderation")}
-            className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-              activeTab === "moderation"
-                ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-                : "border-transparent text-gray-500 hover:text-gray-900"
-            )}
-          >
-            <Shield size={14} />
-            <span>Social & Moderation</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("compliance")}
-            className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-              activeTab === "compliance"
-                ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-                : "border-transparent text-gray-500 hover:text-gray-900"
-            )}
-          >
-            <Smartphone size={14} />
-            <span>Devices & Legal ToS</span>
-          </button>
-        </div>
+        <AdminTabs<typeof activeTab>
+          label="Seeker record sections"
+          idPrefix="user-record"
+          activeId={activeTab}
+          onChange={setActiveTab}
+          tabs={[
+            { id: "timeline", label: "Activity timeline", icon: Layers, badge: dossier.timeline.length },
+            { id: "notifications", label: "Notification ledger", icon: Bell, badge: dossier.notifications.length },
+            { id: "karma", label: "Karma & rewards", icon: Award },
+            { id: "moderation", label: "Social & moderation", icon: Shield },
+            { id: "compliance", label: "Devices & legal", icon: Smartphone },
+          ]}
+        />
 
         {/* ─── TAB 1: UNIFIED DEVOTIONAL ACTIVITY TIMELINE ─────────────────── */}
         {activeTab === "timeline" && (

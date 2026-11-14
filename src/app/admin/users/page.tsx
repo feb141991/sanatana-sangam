@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import toast from 'react-hot-toast';
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 interface UserProfile {
   id: string;
@@ -286,29 +287,21 @@ export default function UserManagement() {
               />
             </form>
 
-            {/* Lifecycle Segment Tabs */}
-            <div className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
-              {[
+            {/* Lifecycle segments */}
+            <AdminTabs
+              label="Seeker lifecycle segments"
+              idPrefix="users-segment"
+              activeId={segment}
+              onChange={handleSegmentChange}
+              tabs={[
                 { id: 'all', label: 'All Seekers' },
                 { id: 'new_signups', label: '✨ New' },
                 { id: 'active_sadhaks', label: '🔥 Active' },
                 { id: 'stale_users', label: '💤 Dormant' },
                 { id: 'banned', label: '🚫 Banned' },
                 { id: 'deletion_pending', label: '🗑️ Deletion' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => handleSegmentChange(tab.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                    segment === tab.id
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-black/5 text-gray-700 hover:bg-black/10'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+              ]}
+            />
 
             {/* Sort Selector */}
             <div className="flex items-center gap-2 shrink-0">

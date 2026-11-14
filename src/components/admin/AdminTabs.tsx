@@ -10,7 +10,7 @@ export interface AdminTabItem<Id extends string = string> {
   icon?: LucideIcon;
   /** A count or short word shown after the label. Only pass data that is real. */
   badge?: string | number;
-  tone?: "neutral" | "warn" | "danger";
+  tone?: "neutral" | "ok" | "warn" | "danger";
 }
 
 interface Props<Id extends string> {
@@ -26,6 +26,7 @@ interface Props<Id extends string> {
 
 const BADGE_TONE: Record<NonNullable<AdminTabItem["tone"]>, string> = {
   neutral: "bg-black/5 text-stone-700",
+  ok: "bg-emerald-100 text-emerald-900",
   warn: "bg-amber-100 text-amber-900",
   danger: "bg-rose-100 text-rose-800",
 };

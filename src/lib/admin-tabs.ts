@@ -34,12 +34,15 @@ export function resolveActiveTabId<Id extends string>(
   return (match ?? tabs[0]).id;
 }
 
-/** A tab badge as text: counts above 99 collapse, empty values disappear. */
+/**
+ * A tab badge as text. Counts are shown exactly: an admin reading "412 rows" or "128 events" must
+ * not see "99+". Empty, missing and invalid values disappear instead of printing "NaN" or "-1".
+ */
 export function formatTabBadge(badge: string | number | undefined | null): string | null {
   if (badge === undefined || badge === null || badge === "") return null;
   if (typeof badge === "number") {
     if (!Number.isFinite(badge) || badge < 0) return null;
-    return badge > 99 ? "99+" : String(Math.trunc(badge));
+    return String(Math.trunc(badge));
   }
   return badge;
 }

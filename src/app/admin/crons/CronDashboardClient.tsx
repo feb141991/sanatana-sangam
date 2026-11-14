@@ -12,6 +12,7 @@ import {
   Layers, Filter, Copy, Code, HelpCircle, ExternalLink, Square
 } from "lucide-react";
 import { CronStatusSummary, CronCategory } from "@/lib/monitoring/cron-telemetry";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 interface ExecutionLog {
   id?: string;
@@ -898,30 +899,19 @@ export default function CronDashboardClient() {
         {/* Controls, Filters & Search */}
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
-            {/* Category Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-              {Object.entries(CATEGORY_META).map(([key, meta]) => {
-                const Icon = meta.icon;
-                const active = selectedCategory === key;
-                return (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedCategory(key)}
-                    className={"flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all " + (
-                      active
-                        ? "bg-[var(--premium-gold,#C5A059)] text-white shadow-md shadow-amber-500/20"
-                        : "bg-white border border-black/5 text-[var(--brand-muted)] hover:bg-black/5"
-                    )}
-                  >
-                    <Icon size={14} />
-                    <span>{meta.label}</span>
-                    <span className={"px-1.5 py-0.5 rounded-full text-[10px] " + (active ? "bg-white/20 text-white" : "bg-black/5 text-gray-500")}>
-                      {categoryCounts[key] || 0}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            {/* Category tabs */}
+            <AdminTabs
+              label="Cron categories"
+              idPrefix="cron-category"
+              activeId={selectedCategory}
+              onChange={setSelectedCategory}
+              tabs={Object.entries(CATEGORY_META).map(([key, meta]) => ({
+                id: key,
+                label: meta.label,
+                icon: meta.icon,
+                badge: categoryCounts[key] || 0,
+              }))}
+            />
 
             {/* Search and Status Dropdown */}
             <div className="flex items-center gap-3">

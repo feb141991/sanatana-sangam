@@ -48,11 +48,16 @@ describe("resolveActiveTabId", () => {
 });
 
 describe("formatTabBadge", () => {
-  it("shows small counts and collapses large ones", () => {
+  it("shows every count exactly, large ones included (an admin must never read '99+' for 412 rows)", () => {
     expect(formatTabBadge(0)).toBe("0");
     expect(formatTabBadge(7)).toBe("7");
-    expect(formatTabBadge(99)).toBe("99");
-    expect(formatTabBadge(100)).toBe("99+");
+    expect(formatTabBadge(100)).toBe("100");
+    expect(formatTabBadge(412)).toBe("412");
+    expect(formatTabBadge(12345)).toBe("12345");
+  });
+
+  it("drops a fractional part rather than showing it", () => {
+    expect(formatTabBadge(3.9)).toBe("3");
   });
 
   it("hides empty, missing and invalid values", () => {
