@@ -28,7 +28,7 @@ const devanagariShare = (text: string) => {
 };
 
 describe('public Panchatantra stories: what is listed', () => {
-  it('lists exactly the ten approved stories, in order, each with a readable slug', () => {
+  it('lists exactly the eleven approved stories, in order, each with a readable slug', () => {
     expect(listPublicPanchatantraStories().map((s) => s.id)).toEqual([...PUBLIC_PANCHATANTRA_IDS]);
     expect(listPublicPanchatantraStories().map((s) => s.slug)).toEqual([
       'crane-and-crab',
@@ -41,6 +41,7 @@ describe('public Panchatantra stories: what is listed', () => {
       'monk-who-left-his-body-behind',
       'girl-who-married-a-snake',
       'credulous-fiend',
+      'snake-in-princes-belly',
     ]);
   });
 
@@ -110,6 +111,7 @@ describe('public Panchatantra stories: artwork', () => {
     'monk-who-left-his-body-behind',
     'girl-who-married-a-snake',
     'credulous-fiend',
+    'snake-in-princes-belly',
   ];
 
   it('illustrates exactly the stories that have a full set, one scene per paragraph', () => {

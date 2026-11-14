@@ -42,6 +42,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-monk-who-left-his-body-behind',
   'panchatantra-girl-who-married-a-snake',
   'panchatantra-credulous-fiend',
+  'panchatantra-snake-in-princes-belly',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -103,6 +104,7 @@ interface ArtworkSet {
  * panchatantra-monk-who-left-his-body-behind: six handcrafted 3D clay-animation scenes generated 2026-11-12/14.
  * panchatantra-girl-who-married-a-snake: six handcrafted 3D clay-animation scenes generated 2026-11-14.
  * panchatantra-credulous-fiend: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-snake-in-princes-belly: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -314,6 +316,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'अस्तबल में घुसा चतुर अश्व-चोर राक्षस-रूपी घोड़े के मुंह में लोहे की लगाम डालकर उस पर सवार हो रहा है।',
       'राक्षस-रूपी घोड़ा आंधी की गति से जंगल में भाग रहा है, और ऊपर लटकती बरगद की जटा पकड़कर चोर पेड़ पर चढ़ रहा है।',
       'बरगद की डाल पर बैठा चोर बंदर की पूंछ को दांतों से काट रहा है, और भयभीत मूर्ख राक्षस उल्टे पांव दूर भाग रहा है।',
+    ],
+  },
+  'panchatantra-snake-in-princes-belly': {
+    dir: 'snake-in-princes-belly',
+    width: 1376,
+    height: 768,
+    alt: [
+      'An emaciated, sickly clay prince rests weakly on a royal couch, withered by a black venomous serpent hidden inside his body.',
+      'Disguised as a weary beggar outside a foreign temple, the ailing prince sits upon stone steps while citizens and royalty pass by.',
+      'In the royal courtyard, an enraged king angrily weds his calm, dignified younger daughter to the frail beggar prince.',
+      'The noble princess lovingly supports her feverish husband on a dusty forest road under a sweeping banyan tree.',
+      'Hidden behind thickets, the princess watches two hooded black snakes arguing: one emerging from the sleeping prince\'s mouth, the other from an anthill.',
+      'The restored, radiant prince embraces his clever wife beside the unburdened anthill and two uncovered clay pots overflowing with golden coins.',
+    ],
+    altHi: [
+      'राजमहल में दुर्बल और पीला पड़ा बीमार राजकुमार खाट पर लेटा है, और उसके पेट में छिपा काला विषैला सर्प उसे सुखा रहा है।',
+      'परदेसी राज्य के मंदिर की सीढ़ियों पर भिखारी बना बीमार राजकुमार बैठा है, जबकि दूर राजा अपनी दो पुत्रियों के साथ दिख रहा है।',
+      'राजदरबार में क्रोधित राजा अपनी सत्यवादी छोटी राजकुमारी का विवाह नगर द्वार पर बैठे दुर्बल भिखारी राजकुमार से करा रहा है।',
+      'धूल भरी पगडंडी पर राजकुमारी अपने बीमार पति को सहारा देकर दक्षिण की ओर ले जा रही है और बरगद की छांव में उसकी सेवा कर रही है।',
+      'झाड़ियों के पीछे छिपी राजकुमारी देखती है कि सोते राजकुमार के मुंह से निकला सांप और बांबी का नाग आपस में विवाद कर रहे हैं।',
+      'स्वस्थ और तेजस्वी बना राजकुमार अपनी बुद्धिमती पत्नी के साथ बांबी से निकले सोने के दो कलशों के पास मुस्कुराता हुआ खड़ा है।',
     ],
   },
 };
