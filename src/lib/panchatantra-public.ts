@@ -43,6 +43,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-girl-who-married-a-snake',
   'panchatantra-credulous-fiend',
   'panchatantra-snake-in-princes-belly',
+  'panchatantra-pert-hen-sparrow',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -105,6 +106,7 @@ interface ArtworkSet {
  * panchatantra-girl-who-married-a-snake: six handcrafted 3D clay-animation scenes generated 2026-11-14.
  * panchatantra-credulous-fiend: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  * panchatantra-snake-in-princes-belly: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-pert-hen-sparrow: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -337,6 +339,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'धूल भरी पगडंडी पर राजकुमारी अपने बीमार पति को सहारा देकर दक्षिण की ओर ले जा रही है और बरगद की छांव में उसकी सेवा कर रही है।',
       'झाड़ियों के पीछे छिपी राजकुमारी देखती है कि सोते राजकुमार के मुंह से निकला सांप और बांबी का नाग आपस में विवाद कर रहे हैं।',
       'स्वस्थ और तेजस्वी बना राजकुमार अपनी बुद्धिमती पत्नी के साथ बांबी से निकले सोने के दो कलशों के पास मुस्कुराता हुआ खड़ा है।',
+    ],
+  },
+  'panchatantra-pert-hen-sparrow': {
+    dir: 'pert-hen-sparrow',
+    width: 1376,
+    height: 768,
+    alt: [
+      'Two industrious clay sparrows weave dried grass and moss into a cozy spherical nest on a sturdy fig tree branch.',
+      'Under a purple winter storm with pouring rain, a shivering clay monkey perches beneath the sparrows\' warm nest.',
+      'Drenched in cold rain, the miserable monkey huddles in a ball with chattering teeth on the wet tree limb.',
+      'Peering from her warm woven nest, the smug hen-sparrow pokes her beak out to lecture the soaked monkey below.',
+      'Narrowing his reddened eyes in fury, the shivering ape bares his teeth and growls up at the chattering bird.',
+      'The enraged monkey rips the delicate sparrow nest into ragged shreds with his claws, scattering twigs as the birds flutter away in grief.',
+    ],
+    altHi: [
+      'हिमालय के वटवृक्ष की डाल पर गौरैया का जोड़ा तिनकों और रुई से सुंदर गोल घोंसला बुन रहा है।',
+      'मूसलाधार वर्षा और बर्फीले तूफान में गौरैया के सुरक्षित घोंसले के नीचे डाल पर भीगता बंदर बैठा है।',
+      'ठंड से ठिठुरता, भीगा हुआ दयनीय बंदर दांत कटकटाते हुए डाल पर घुटने समेटे बैठा है।',
+      'गर्म घोंसले से बाहर चोंच निकालकर घमंडी मादा गौरैया नीचे बैठे भीगते बंदर को उपदेश दे रही है।',
+      'क्रोध से लाल आंखें किए भीगा बंदर दांत पीसकर ऊपर गौरैया को चुप रहने की चेतावनी दे रहा है।',
+      'क्रोधित बंदर ने एक ही झपट्टे में सुंदर घोंसले को नोचकर तार-तार कर दिया और गौरैया रोती हुई उड़ गई।',
     ],
   },
 };
