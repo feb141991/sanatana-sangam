@@ -40,7 +40,7 @@ export default function AdminShell({ children }: Props) {
 
   return (
     <div
-      className="admin-portal min-h-screen bg-[var(--divine-bg,#FAF6EF)] font-outfit text-gray-900 flex"
+      className="admin-portal admin-scene admin-dark min-h-screen font-outfit flex"
       data-admin-portal="true"
       data-admin-shell="true"
       data-theme="light"
@@ -56,7 +56,8 @@ export default function AdminShell({ children }: Props) {
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
           onOpenCommandPalette={() => setCommandPaletteOpen(true)}
         />
-        <main className="flex-1 w-full">{children}</main>
+        {/* The overview is drawn in glass directly on the scene; every older page keeps its light design on a light sheet. */}
+        <main className="flex-1 w-full">{pathname === "/admin" ? children : <div className="admin-sheet">{children}</div>}</main>
       </div>
 
       {/* 3. Mobile Navigation Drawer */}

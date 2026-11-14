@@ -72,7 +72,7 @@ export function AdminCommandPalette({ isOpen, onClose }: Props) {
       role="dialog"
       aria-modal="true"
       aria-label="Admin Command Palette"
-      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/50 font-outfit animate-in fade-in duration-150 motion-reduce:animate-none"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/50 backdrop-blur-xs font-outfit animate-in fade-in duration-150 motion-reduce:animate-none"
       onClick={onClose}
     >
       {/* Screen Reader Announcement for Results Count */}

@@ -72,39 +72,39 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-30 h-14 bg-[var(--divine-bg,#FAF6EF)] border-b border-[var(--border-medium)] px-4 sm:px-6 flex items-center justify-between font-outfit">
+    <header className="glass-bar sticky top-0 z-30 h-14 px-4 sm:px-6 flex items-center justify-between font-outfit">
       {/* Left: Mobile Menu Toggle & Dynamic Breadcrumb */}
       <div className="flex items-center gap-3 min-w-0">
         <button
           onClick={onOpenMobileMenu}
-          className="lg:hidden p-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+          className="lg:hidden p-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
           aria-label="Open mobile navigation menu"
         >
           <Menu size={18} />
         </button>
 
         {/* Breadcrumb trail */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-gray-500 truncate">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] truncate">
           <Link
             href="/admin"
-            className="hover:text-amber-900 transition-colors focus-visible:outline-none focus-visible:underline shrink-0"
+            className="hover:text-white transition-colors focus-visible:outline-none focus-visible:underline shrink-0"
           >
             Admin
           </Link>
 
           {routeMatch && routeMatch.route.id !== "overview" && (
             <>
-              <ChevronRight size={12} className="text-gray-400 shrink-0" />
-              <span className="text-gray-500 hidden sm:inline shrink-0">{routeMatch.groupLabel}</span>
-              <ChevronRight size={12} className="text-gray-400 hidden sm:inline shrink-0" />
-              <span className="font-bold theme-ink truncate">{routeMatch.route.shortTitle}</span>
+              <ChevronRight size={12} className="text-white/40 shrink-0" />
+              <span className="hidden sm:inline shrink-0">{routeMatch.groupLabel}</span>
+              <ChevronRight size={12} className="text-white/40 hidden sm:inline shrink-0" />
+              <span className="font-bold text-[var(--text-primary)] truncate">{routeMatch.route.shortTitle}</span>
             </>
           )}
 
           {(!routeMatch || routeMatch.route.id === "overview") && (
             <>
-              <ChevronRight size={12} className="text-gray-400 shrink-0" />
-              <span className="font-bold theme-ink">Overview</span>
+              <ChevronRight size={12} className="text-white/40 shrink-0" />
+              <span className="font-bold text-[var(--text-primary)]">Overview</span>
             </>
           )}
         </nav>
@@ -115,13 +115,13 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
         {/* Global Command Palette Trigger Button */}
         <button
           onClick={onOpenCommandPalette}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[var(--border-medium)] hover:border-amber-500/50 text-xs text-gray-600 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+          className="glass-tool flex items-center gap-2 px-3 py-1.5 border border-white/20 text-xs text-white/80 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
           title="Search administrative routes (Cmd+K / Ctrl+K)"
           aria-label="Search administrative routes (Cmd+K)"
         >
-          <Search size={13} className="text-gray-400" />
+          <Search size={13} className="text-white/60" />
           <span className="hidden md:inline text-[11px]">Search routes...</span>
-          <kbd className="hidden sm:inline-block px-1.5 py-0.2 text-[9px] font-mono font-bold text-gray-400 bg-gray-100 rounded border border-gray-200">
+          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-mono font-bold text-white/70 bg-white/10 rounded border border-white/20">
             ⌘K
           </kbd>
         </button>
@@ -129,24 +129,24 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
         {/* Live Active Alert Badge (Resilient 3-state: loading | healthy | alerts | degraded) */}
         {systemStatus.status === "loading" ? (
           <div
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/5 text-gray-500 border border-black/10 text-[10px] font-medium"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-white/70 border border-white/20 text-[10px] font-medium"
             title="Checking operational system health..."
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-white/50" />
             <span>Checking...</span>
           </div>
         ) : systemStatus.status === "alerts" ? (
           <Link
             href="/admin"
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-900 border border-rose-500/30 text-[10px] font-bold hover:bg-rose-500/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-400/20 text-rose-100 border border-rose-300/40 text-[10px] font-bold hover:bg-rose-400/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
             title={`${systemStatus.count} active operational alert${systemStatus.count === 1 ? "" : "s"} need attention`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
             <span>{systemStatus.count} Alert{systemStatus.count === 1 ? "" : "s"}</span>
           </Link>
         ) : systemStatus.status === "healthy" ? (
           <div
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-800 border border-emerald-500/20 text-[10px] font-bold"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-400/15 text-emerald-100 border border-emerald-300/30 text-[10px] font-bold"
             title="All background systems operational"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -155,10 +155,10 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
         ) : (
           <Link
             href="/admin/monitoring"
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-900 border border-amber-500/30 text-[10px] font-bold hover:bg-amber-500/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/20 text-amber-100 border border-amber-300/40 text-[10px] font-bold hover:bg-amber-400/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             title="Operational status check degraded or unavailable"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
             <span>Status Degraded</span>
           </Link>
         )}
@@ -166,7 +166,7 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
         {/* Settings Link */}
         <Link
           href="/admin/settings"
-          className="p-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+          className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
           title="Platform Settings"
           aria-label="Platform Settings"
         >
@@ -176,7 +176,7 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
         {/* Sign Out Button */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-500/10 text-rose-700 text-xs font-bold hover:bg-rose-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-400/15 text-rose-100 text-xs font-bold hover:bg-rose-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
           title="Sign out of Admin Session"
         >
           <LogOut size={13} />

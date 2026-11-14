@@ -294,7 +294,7 @@ export default function PostReviewPage() {
       </main>
 
       {showPublishModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl border border-black/10">
             <h3 className="text-sm font-bold text-rose-700">Publish now -- irreversible</h3>
             <p className="text-xs text-[var(--text-muted)]">

@@ -422,7 +422,7 @@ export default function CronDashboardClient() {
   return (
     <div className="min-h-screen bg-[var(--divine-bg,#FAF6EF)] font-outfit pb-24">
       {/* Top Navigation Bar with Back Button */}
-      <div className="sticky top-0 z-40 bg-[var(--divine-bg,#FAF6EF)] border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-40 bg-[var(--divine-bg,#FAF6EF)]/90 backdrop-blur-xl border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
@@ -739,7 +739,7 @@ export default function CronDashboardClient() {
 
           {/* Queue Item Detail Modal */}
           {inspectQueueItem && (
-            <div role="dialog" aria-modal="true" aria-label="Scheduled Notification Details" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 animate-in fade-in duration-150 motion-reduce:animate-none">
+            <div role="dialog" aria-modal="true" aria-label="Scheduled Notification Details" className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150 motion-reduce:animate-none">
               <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border space-y-4 max-h-[85vh] overflow-y-auto">
                 <div className="flex items-center justify-between border-b pb-3">
                   <div className="flex items-center gap-2">
@@ -1197,7 +1197,7 @@ export default function CronDashboardClient() {
 
       {/* ─── DETAILED EXECUTION DIAGNOSTIC INSPECTOR MODAL ──────────────────── */}
       {inspectExecution && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 max-h-[90vh] overflow-y-auto space-y-5 font-sans">
             <div className="flex items-center justify-between border-b pb-4">
               <div className="flex items-center gap-2.5">

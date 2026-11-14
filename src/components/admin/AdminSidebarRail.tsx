@@ -10,6 +10,9 @@ interface Props {
   className?: string;
 }
 
+const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300";
+
+/** The admin navigation, as a frosted dark rail: brand, then the groups of the route registry. */
 export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
   const pathname = usePathname();
 
@@ -24,37 +27,27 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
   return (
     <aside
       aria-label="Admin Navigation Sidebar"
-      className={`w-64 bg-[var(--divine-bg,#FAF6EF)] border-r border-[var(--border-medium)] flex flex-col h-full font-outfit select-none ${className}`}
+      className={`glass-rail admin-dark w-64 flex flex-col h-full font-outfit select-none ${className}`}
     >
       {/* Brand Header */}
-      <div className="h-14 px-5 border-b border-[var(--border-medium)] flex items-center justify-between shrink-0">
-        <Link
-          href="/admin"
-          onClick={onItemClick}
-          className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-lg"
-        >
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-800 to-stone-900 text-amber-200 flex items-center justify-center font-serif text-xs shadow-xs font-bold">
+      <div className="h-14 px-5 border-b border-white/10 flex items-center justify-between shrink-0">
+        <Link href="/admin" onClick={onItemClick} className={`flex items-center gap-2.5 rounded-lg ${FOCUS_RING}`}>
+          <div className="w-7 h-7 rounded-lg bg-white/90 text-stone-900 flex items-center justify-center font-serif text-xs font-bold shadow-sm" aria-hidden="true">
             ☸
           </div>
           <div>
-            <span className="text-xs font-serif font-bold text-gray-900 tracking-wide block leading-none">
-              Shoonaya Admin
-            </span>
-            <span className="text-[9px] uppercase tracking-widest text-stone-700 font-extrabold block mt-0.5">
-              Operations Console
-            </span>
+            <span className="text-base font-serif font-bold text-[var(--text-primary)] tracking-wide block leading-none">Shoonaya</span>
+            <span className="glass-mono text-[9px] text-[var(--text-secondary)] block mt-1">Operations Console</span>
           </div>
         </Link>
       </div>
 
       {/* Navigation Groups List */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         {ADMIN_NAV_GROUPS.map((group) => (
           <div key={group.id} className="space-y-1">
             {group.id !== "overview" && (
-              <div className="px-3 pb-1 text-[10px] uppercase font-bold text-stone-700 tracking-wider">
-                {group.label}
-              </div>
+              <div className="glass-mono px-3 pb-1 text-[10px] text-[var(--text-secondary)]">{group.label}</div>
             )}
 
             <div className="space-y-0.5">
@@ -65,25 +58,22 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
                     key={item.id}
                     href={item.path}
                     onClick={onItemClick}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                    aria-current={active ? "page" : undefined}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors ${FOCUS_RING} ${
                       active
-                        ? "bg-black/[0.07] text-stone-950 font-bold"
-                        : "text-gray-700 hover:text-gray-950 hover:bg-black/5"
+                        ? "bg-white/[0.16] text-white font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+                        : "text-white/75 hover:text-white hover:bg-white/10"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div
-                        className={`p-1.5 rounded-lg shrink-0 transition-colors ${
-                          active ? "bg-amber-500/20 text-amber-900" : "text-gray-400 group-hover:text-gray-600"
-                        }`}
-                      >
+                      <div className={`p-1.5 rounded-lg shrink-0 ${active ? "text-white" : "text-white/60"}`}>
                         <AdminIcon name={item.iconName} size={15} />
                       </div>
                       <span className="truncate">{item.shortTitle}</span>
                     </div>
 
                     {item.badge && (
-                      <span className="px-1.5 py-0.2 rounded text-[8px] font-bold uppercase bg-purple-100 text-purple-800 shrink-0">
+                      <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-white/15 text-white shrink-0">
                         {item.badge}
                       </span>
                     )}

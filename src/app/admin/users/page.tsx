@@ -158,7 +158,7 @@ export default function UserManagement() {
     <div className="min-h-screen bg-[var(--divine-bg,#FAF6EF)] font-outfit pb-24 text-stone-900">
       
       {/* Top Banner */}
-      <div className="border-b border-[rgba(197,160,89,0.2)] bg-white px-6 py-5">
+      <div className="border-b border-[rgba(197,160,89,0.2)] bg-white/40 backdrop-blur-md px-6 py-5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link 

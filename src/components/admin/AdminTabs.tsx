@@ -24,15 +24,8 @@ interface Props<Id extends string> {
   idPrefix?: string;
 }
 
-const BADGE_TONE: Record<NonNullable<AdminTabItem["tone"]>, string> = {
-  neutral: "bg-black/5 text-stone-700",
-  ok: "bg-emerald-100 text-emerald-900",
-  warn: "bg-amber-100 text-amber-900",
-  danger: "bg-rose-100 text-rose-800",
-};
-
 /**
- * The one tab rail for the admin: flat underline tabs, solid colours only (styles in globals.css).
+ * The one tab rail for the admin: frosted pills (light on the light sheet, dark glass on the scene; styles in globals.css).
  * Arrow keys, Home and End move between tabs (automatic activation); only the selected tab is
  * a tab stop. A status dot is deliberately not part of it: a tab shows a badge only when the
  * page has a real number to put there.
@@ -80,9 +73,7 @@ export function AdminTabs<Id extends string>({
             {Icon ? <Icon size={14} aria-hidden="true" /> : null}
             <span>{tab.label}</span>
             {badge ? (
-              <span
-                className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${BADGE_TONE[tab.tone ?? "neutral"]}`}
-              >
+              <span className="admin-tab-badge" data-tone={tab.tone ?? "neutral"}>
                 {badge}
               </span>
             ) : null}

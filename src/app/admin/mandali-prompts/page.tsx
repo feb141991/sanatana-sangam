@@ -157,7 +157,7 @@ export default function MandaliPromptsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)] border-b border-[var(--card-border)] px-6 py-4">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[var(--card-border)] px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link href="/admin" aria-label="Back to admin" className="p-2 rounded-xl hover:bg-[var(--surface-soft)] text-[var(--brand-muted)] transition-colors">

@@ -10,6 +10,7 @@ import {
   getOverviewSystemStatus,
   sortAlertsByUrgency,
 } from "@/lib/admin-overview-helpers";
+import type { SeekerTrend } from "@/lib/admin-seeker-trend";
 import {
   splitOverviewAlerts,
   type OperatorActivityItem,
@@ -30,6 +31,10 @@ export default function AdminOverviewPage() {
   const [isDegraded, setIsDegraded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  // New seekers per month. A failed refresh keeps the last good trend; one that never loaded stays unknown.
+  const [trend, setTrend] = useState<SeekerTrend | null>(null);
+  const [trendLoading, setTrendLoading] = useState(true);
+  const [trendFailed, setTrendFailed] = useState(false);
   const [activityLogs, setActivityLogs] = useState<OperatorActivityItem[]>([]);
   const [activityLoading, setActivityLoading] = useState(true);
   const [activityFailed, setActivityFailed] = useState(false);
@@ -82,6 +87,29 @@ export default function AdminOverviewPage() {
     }
   }, []);
 
+  const fetchTrend = useCallback(async () => {
+    setTrendLoading(true);
+    try {
+      const res = await fetch("/api/admin/seeker-trend");
+      if (!res.ok) {
+        setTrendFailed(true);
+        return;
+      }
+      const data = (await res.json()) as Partial<SeekerTrend> | null;
+      if (data && Array.isArray(data.months) && data.months.length > 0) {
+        setTrend(data as SeekerTrend);
+        setTrendFailed(false);
+      } else {
+        setTrendFailed(true);
+      }
+    } catch (err) {
+      console.error("[AdminOverview] Failed to fetch seeker trend:", err);
+      setTrendFailed(true);
+    } finally {
+      setTrendLoading(false);
+    }
+  }, []);
+
   const fetchActivityLogs = useCallback(async () => {
     setActivityLoading(true);
     try {
@@ -107,11 +135,13 @@ export default function AdminOverviewPage() {
 
   useEffect(() => {
     fetchOverviewData();
+    fetchTrend();
     fetchActivityLogs();
-  }, [fetchOverviewData, fetchActivityLogs]);
+  }, [fetchOverviewData, fetchTrend, fetchActivityLogs]);
 
   const handleRefresh = () => {
     fetchOverviewData();
+    fetchTrend();
     fetchActivityLogs();
   };
 
@@ -163,6 +193,9 @@ export default function AdminOverviewPage() {
         systemStatus={systemStatus}
         calendarFindingsCount={alertsLoaded ? calendarFindingsCount : null}
         alertsFailed={!alertsLoaded && !isLoading}
+        trend={trend}
+        trendLoading={trendLoading && !trend}
+        trendFailed={trendFailed && !trend}
         updatedAt={updatedAt}
         activity={activityLogs}
         activityLoading={activityLoading}
@@ -185,6 +218,7 @@ export default function AdminOverviewPage() {
         }}
         onActionComplete={() => {
           fetchOverviewData();
+          fetchTrend();
           fetchActivityLogs();
         }}
       />

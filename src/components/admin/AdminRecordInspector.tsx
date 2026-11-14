@@ -157,7 +157,7 @@ export function AdminRecordInspector({
       role="dialog"
       aria-modal="true"
       aria-label="Admin Record Inspector"
-      className="fixed inset-0 z-50 flex justify-end bg-black/40 font-outfit animate-in fade-in duration-150 motion-reduce:animate-none"
+      className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs font-outfit animate-in fade-in duration-150 motion-reduce:animate-none"
       onClick={onClose}
     >
       {/* Screen Reader Live Region for Mutation Feedback */}

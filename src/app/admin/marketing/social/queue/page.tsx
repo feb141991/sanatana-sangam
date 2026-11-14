@@ -253,7 +253,7 @@ export default function QueuePage() {
       </main>
 
       {showCreate && (
-        <div className="fixed inset-0 z-50 bg-[var(--divine-bg)] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[var(--divine-bg)] backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[var(--surface-card)] rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl border border-[var(--border-subtle)]">
             <h3 className="text-sm font-bold">Reserve a post manually</h3>
             <p className="text-xs text-[var(--text-muted)]">Goes through the same idempotent reservation path as the daily tick.</p>

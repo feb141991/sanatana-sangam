@@ -59,7 +59,7 @@ export default function OperationalBroadcast() {
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)] border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
@@ -195,7 +195,7 @@ export default function OperationalBroadcast() {
       {/* Confirmation Modal */}
       <AnimatePresence>
         {showConfirm && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

@@ -633,7 +633,7 @@ export function LogExplorerClient() {
           role="dialog"
           aria-modal="true"
           aria-label="Log Event Inspector"
-          className="fixed inset-0 z-50 flex justify-end bg-black/40 font-outfit animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs font-outfit animate-in fade-in duration-150"
           onClick={() => setSelectedEvent(null)}
         >
           <div
