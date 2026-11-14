@@ -45,6 +45,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-snake-in-princes-belly',
   'panchatantra-pert-hen-sparrow',
   'panchatantra-jackal-who-killed-no-elephants',
+  'panchatantra-remedy-worse-than-disease',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -109,6 +110,7 @@ interface ArtworkSet {
  * panchatantra-snake-in-princes-belly: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  * panchatantra-pert-hen-sparrow: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  * panchatantra-jackal-who-killed-no-elephants: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-remedy-worse-than-disease: six handcrafted 3D clay-animation scenes generated 2026-11-14.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -383,6 +385,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'जंगल में चिंघाड़ते विशाल हाथी को देखकर दो सिंह-शावक झपटने को तैयार हैं, जबकि भयभीत सियार पूंछ दबाकर भाग रहा है।',
       'गुफा में दोनों सिंह-शावक हंसकर सियार का उपहास उड़ा रहे हैं, और अपमानित सियार क्रोध से दांत किटकिटा रहा है।',
       'एकांत में बैठी सिंहनी सियार के सिर पर कोमल पंजा रखकर उसे उसके असली कुल का सत्य समझा रही है, और वह सिर झुकाए सुन रहा है।',
+    ],
+  },
+  'panchatantra-remedy-worse-than-disease': {
+    dir: 'remedy-worse-than-disease',
+    width: 1376,
+    height: 768,
+    alt: [
+      'White clay herons nest in the sweeping branches of an ancient banyan tree by a lotus pool, unaware of a black cobra glaring from a trunk hollow.',
+      'Beside broken eggshells at the muddy pond edge, an elder heron droops in tears as a shrewd red crab scuttles up to question him.',
+      'Hidden among water lilies and reeds, the sly red crab raises his claws with a sinister smirk, plotting the extermination of the herons.',
+      'By the water\'s edge, the crafty crab gestures toward a distant hill burrow, persuading the foolish heron to lay a trail of fish to the tree.',
+      'Following a trail of fresh fish morsels to the banyan roots, a fierce brown mongoose attacks and destroys the coiled black cobra.',
+      'Having devoured the snake, the predatory mongoose creeps along tree branches into the canopy, terrorizing the screeching heron colony.',
+    ],
+    altHi: [
+      'कमल-सरोवर के किनारे विशाल वटवृक्ष की डालों पर बगुले घोंसलों में बैठे हैं, और नीचे तने के कोटर से काला नाग निकल रहा है।',
+      'टूटे अंडों के छिलकों के पास सरोवर के किनारे वृद्ध बगुला रो रहा है, और कीचड़ से निकलकर चतुर लाल केकड़ा उससे बात कर रहा है।',
+      'कमल की पत्तियों और नरकट के बीच छिपा लाल केकड़ा चोंच वाले बगुलों के कुल का विनाश करने की कुटिल योजना बना रहा है।',
+      'सरोवर के तट पर केकड़ा पहाड़ी की ओर इशारा कर सीधे-सादे बगुले को नेवले के बिल से पेड़ तक मछली की पंक्ति बिछाने का उपाय बता रहा है।',
+      'मछलियों के टुकड़ों का पीछा करते हुए पेड़ की जड़ तक पहुंचा फुर्तीला भूरा नेवला फन फैलाए काले नाग को चीरकर मार रहा है।',
+      'नाग को खाने के बाद भूरा नेवला वटवृक्ष की डालों पर चढ़कर घोंसलों में बैठे बगुलों और उनके बच्चों पर झपट रहा है।',
     ],
   },
 };
