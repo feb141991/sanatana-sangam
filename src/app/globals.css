@@ -282,6 +282,116 @@ html[data-practice-immersive='true'] body {
   --premium-border:       rgba(120, 53, 15, 0.22);
   --saffron:              #78350F;
   --sacred-gold:          #78350F;
+
+  /* Frosted-glass surfaces (admin only). Translucent white over the warm ambient layer, so
+   * text always sits on a near-white fill: contrast is set by the ink tokens above. */
+  --glass-bg:             rgba(255, 255, 255, 0.58);
+  --glass-bg-strong:      rgba(255, 255, 255, 0.80);
+  --glass-border:         rgba(120, 53, 15, 0.14);
+  --glass-highlight:      rgba(255, 255, 255, 0.80);
+  --glass-shadow:         0 14px 32px -18px rgba(60, 40, 10, 0.30);
+  --glass-filter:         blur(18px) saturate(1.2);
+}
+
+/* ─── Admin frosted-glass layer ────────────────────────────────────────────
+ * One vocabulary for every admin surface: .admin-glass (cards), .admin-glass-strong
+ * (sticky bars, tab rails), .admin-ambient (the soft colour field the glass sits on).
+ * Visual properties only (no padding or layout), so Tailwind utilities keep control of spacing.
+ * Falls back to opaque white when the browser has no backdrop-filter or the person asks for
+ * reduced transparency.
+ */
+.admin-ambient {
+  position: relative;
+  isolation: isolate;
+}
+.admin-ambient::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 38rem at 88% -8%, rgba(216, 138, 28, 0.22), transparent 62%),
+    radial-gradient(52rem 36rem at -8% 108%, rgba(112, 148, 120, 0.20), transparent 58%);
+}
+
+.admin-glass,
+.admin-glass-strong {
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+}
+.admin-glass { background: var(--glass-bg); }
+.admin-glass-strong { background: var(--glass-bg-strong); }
+/* Placed after the two rules above on purpose: same specificity, so the pill radius wins. */
+.admin-glass-pill { border-radius: 9999px; }
+
+.admin-glass-interactive {
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.admin-glass-interactive:hover {
+  border-color: rgba(120, 53, 15, 0.30);
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-glass-interactive { transition: none; }
+  .admin-glass-interactive:hover { transform: none; }
+}
+
+/* Frosted segmented tab rail (see components/admin/AdminTabs.tsx) */
+.admin-tabs {
+  display: inline-flex;
+  max-width: 100%;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border: 1px solid var(--glass-border);
+  border-radius: 9999px;
+  background: var(--glass-bg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 8px 22px -16px rgba(60, 40, 10, 0.35);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+}
+.admin-tabs::-webkit-scrollbar { display: none; }
+.admin-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+.admin-tab:hover { background: rgba(255, 255, 255, 0.55); color: var(--text-primary); }
+.admin-tab[aria-selected="true"] {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 6px 16px -8px rgba(60, 40, 10, 0.45);
+}
+.admin-tab:focus-visible { outline: 2px solid #b45309; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .admin-tab { transition: none; } }
+
+@media (prefers-reduced-transparency: reduce) {
+  .admin-glass,
+  .admin-glass-strong,
+  .admin-tabs {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .admin-ambient::before { display: none; }
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .admin-glass,
+  .admin-glass-strong,
+  .admin-tabs { background: #ffffff; }
 }
 
 /* Ensure any amber/orange text utilities inside the admin portal meet WCAG AA contrast (>= 4.5:1) */

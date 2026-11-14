@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { generateHealthReport } from "@/lib/monitoring/aggregation";
 import type { MonitoringEvent } from "@/lib/monitoring/events";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 import PushMonitoringSection from "./PushMonitoringSection";
 import NotificationResolverSection from "./NotificationResolverSection";
 import EmailMonitoringSection from "./EmailMonitoringSection";
@@ -493,125 +494,34 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
       </div>
 
       {/* ─── TABBED WORKSTATIONS NAVIGATION ────────────────────────────────── */}
-      <div className="flex items-center gap-2 border-b border-black/10 overflow-x-auto pb-px">
-                <button
-          onClick={() => handleTabChange("apis")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "apis"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Globe size={14} />
-          <span>API Endpoints & Health Probe ({API_CATALOG.length})</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-        </button>
-
-        <button
-          onClick={() => handleTabChange("telemetry")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "telemetry"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Activity size={14} />
-          <span>Server Telemetry & Logs ({filteredEvents.length})</span>
-          {p1TelemetryCount > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200 animate-pulse">
-              {p1TelemetryCount} P1
-            </span>
-          )}
-          <span className={`w-2 h-2 rounded-full shrink-0 ${
-            p1TelemetryCount > 0 ? "bg-rose-500 animate-pulse ring-2 ring-rose-200" : "bg-emerald-500"
-          }`} />
-        </button>
-
-        <button
-          onClick={() => handleTabChange("emails")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "emails"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Mail size={14} />
-          <span>Email & Auth Deliverability</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-        </button>
-
-        <button
-          onClick={() => handleTabChange("resolver")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "resolver"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Layers size={14} />
-          <span>Candidate Resolver & Gate</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-        </button>
-
-        <button
-          onClick={() => handleTabChange("push")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "push"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Bell size={14} />
-          <span>Push Delivery Gateway</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-        </button>
-
-        <button
-          onClick={() => handleTabChange("errors")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "errors"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Smartphone size={14} />
-          <span>Client App Crashes & Sentry</span>
-          <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-        </button>
-
-        <button
-          onClick={() => handleTabChange("native_perf")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "native_perf"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Cpu size={14} />
-          <span>Native Startup Performance</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-        </button>
-
-        <button
-          onClick={() => handleTabChange("ai_reports")}
-          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
-            activeTab === "ai_reports"
-              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
-              : "border-transparent text-gray-500 hover:text-gray-900"
-          )}
-        >
-          <Sparkles size={14} />
-          <span>AI Chat & Content Reports ({aiReports.length})</span>
-          {pendingAiCount > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full text-[8px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
-              {pendingAiCount} Pending
-            </span>
-          )}
-          <span className={`w-2 h-2 rounded-full shrink-0 ${
-            pendingAiCount > 0 ? "bg-amber-500 ring-2 ring-amber-200" : "bg-emerald-500"
-          }`} />
-        </button>
-      </div>
+      <AdminTabs<MonitoringTab>
+        label="Monitoring sections"
+        idPrefix="monitoring-tab"
+        activeId={activeTab}
+        onChange={handleTabChange}
+        tabs={[
+          { id: "apis", label: "API endpoints", icon: Globe, badge: API_CATALOG.length },
+          {
+            id: "telemetry",
+            label: "Server telemetry",
+            icon: Activity,
+            badge: p1TelemetryCount > 0 ? `${p1TelemetryCount} P1` : filteredEvents.length,
+            tone: p1TelemetryCount > 0 ? "danger" : "neutral",
+          },
+          { id: "emails", label: "Email & auth", icon: Mail },
+          { id: "resolver", label: "Candidate resolver", icon: Layers },
+          { id: "push", label: "Push delivery", icon: Bell },
+          { id: "errors", label: "Client crashes", icon: Smartphone },
+          { id: "native_perf", label: "Startup performance", icon: Cpu },
+          {
+            id: "ai_reports",
+            label: "AI reports",
+            icon: Sparkles,
+            badge: pendingAiCount > 0 ? `${pendingAiCount} pending` : aiReports.length,
+            tone: pendingAiCount > 0 ? "warn" : "neutral",
+          },
+        ]}
+      />
 
             {/* ─── TAB 0: API HEALTH & LIVE PROBE MATRIX ────────────────────────── */}
       {activeTab === "apis" && (

@@ -24,10 +24,10 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
   return (
     <aside
       aria-label="Admin Navigation Sidebar"
-      className={`w-64 bg-[var(--divine-bg,#FAF6EF)] border-r border-[rgba(197,160,89,0.2)] flex flex-col h-full font-outfit select-none ${className}`}
+      className={`w-64 bg-[var(--glass-bg)] backdrop-blur-xl backdrop-saturate-150 border-r border-[var(--glass-border)] flex flex-col h-full font-outfit select-none ${className}`}
     >
       {/* Brand Header */}
-      <div className="h-14 px-5 border-b border-[rgba(197,160,89,0.2)] flex items-center justify-between shrink-0 bg-white/40">
+      <div className="h-14 px-5 border-b border-[var(--glass-border)] flex items-center justify-between shrink-0">
         <Link
           href="/admin"
           onClick={onItemClick}
@@ -67,7 +67,7 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
                     onClick={onItemClick}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                       active
-                        ? "bg-amber-500/15 text-amber-950 font-bold shadow-xs border border-amber-500/30"
+                        ? "bg-white/85 text-stone-950 font-bold shadow-sm border border-[var(--glass-border)]"
                         : "text-gray-700 hover:text-gray-950 hover:bg-black/5"
                     }`}
                   >
@@ -93,17 +93,6 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Sidebar Footer */}
-      <div className="p-3 border-t border-[rgba(197,160,89,0.2)] text-[10px] text-gray-500 bg-white/20 shrink-0">
-        <div className="flex items-center justify-between px-2">
-          <span>Engine v2.4</span>
-          <span className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Operational</span>
-          </span>
-        </div>
       </div>
     </aside>
   );

@@ -40,7 +40,7 @@ export default function AdminShell({ children }: Props) {
 
   return (
     <div
-      className="admin-portal min-h-screen bg-[var(--divine-bg,#FAF6EF)] font-outfit text-gray-900 flex"
+      className="admin-portal admin-ambient min-h-screen bg-[var(--divine-bg,#FAF6EF)] font-outfit text-gray-900 flex"
       data-admin-portal="true"
       data-admin-shell="true"
       data-theme="light"

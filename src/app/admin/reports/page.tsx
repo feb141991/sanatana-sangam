@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { AdminTabs } from "@/components/admin/AdminTabs";
+
 function ReportCenterContent() {
   const searchParams = useSearchParams();
   const [timeframe, setTimeframe] = useState("7d");
@@ -63,21 +65,19 @@ function ReportCenterContent() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center bg-black/5 p-1 rounded-xl">
-              {["overview", "governance", "content", "lifecycle", "export"].map((tab) => (
-                <button 
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
-                    activeTab === tab 
-                      ? "bg-white text-[var(--premium-gold)] shadow-sm" 
-                      : "text-[var(--brand-muted)] hover:text-black"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+            <AdminTabs
+              label="Report sections"
+              idPrefix="reports-tab"
+              activeId={activeTab}
+              onChange={setActiveTab}
+              tabs={[
+                { id: "overview", label: "Overview" },
+                { id: "governance", label: "Governance" },
+                { id: "content", label: "Content" },
+                { id: "lifecycle", label: "Lifecycle" },
+                { id: "export", label: "Export" },
+              ]}
+            />
             <button 
               onClick={() => triggerExport("seekers")}
               className="bg-[var(--premium-gold)] text-white px-5 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-[var(--premium-gold)]/20 hover:opacity-90 transition-all"
