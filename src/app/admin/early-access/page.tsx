@@ -195,7 +195,7 @@ export default function EarlyAccessAdminPage() {
       {/* 2. Key Metrics Cards */}
       {stats && (
         <div className="grid grid-cols-2 xl:grid-cols-5 gap-3 sm:gap-4">
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
+          <div className="bg-white rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">Total Requests</span>
               <Users className="w-4 h-4 text-amber-800" />
@@ -207,7 +207,7 @@ export default function EarlyAccessAdminPage() {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
+          <div className="bg-white rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">This Week</span>
               <TrendingUp className="w-4 h-4 text-emerald-700" />
@@ -218,7 +218,7 @@ export default function EarlyAccessAdminPage() {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
+          <div className="bg-white rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">Android Interest</span>
               <Smartphone className="w-4 h-4 text-emerald-600" />
@@ -229,7 +229,7 @@ export default function EarlyAccessAdminPage() {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
+          <div className="bg-white rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">iOS Interest</span>
               <Smartphone className="w-4 h-4 text-stone-600" />
@@ -240,7 +240,7 @@ export default function EarlyAccessAdminPage() {
             </div>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
+          <div className="bg-white rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs">
             <div className="flex items-center justify-between text-gray-500 mb-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700">Web Interest</span>
               <Smartphone className="w-4 h-4 text-indigo-600" />
@@ -254,7 +254,7 @@ export default function EarlyAccessAdminPage() {
       )}
 
       {/* 3. Search and Filters */}
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs space-y-3">
+      <div className="bg-white rounded-2xl p-4 border border-[rgba(197,160,89,0.2)] shadow-xs space-y-3">
         <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -323,7 +323,7 @@ export default function EarlyAccessAdminPage() {
       </div>
 
       {/* 4. Registrations Table */}
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-[rgba(197,160,89,0.2)] shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[rgba(197,160,89,0.2)] shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-amber-50/50 border-b border-[rgba(197,160,89,0.2)] text-stone-800 uppercase text-[10px] font-extrabold tracking-wider">

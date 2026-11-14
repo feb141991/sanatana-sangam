@@ -72,7 +72,7 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-30 h-14 bg-[var(--glass-bg-strong)] backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--glass-border)] px-4 sm:px-6 flex items-center justify-between font-outfit">
+    <header className="sticky top-0 z-30 h-14 bg-[var(--divine-bg,#FAF6EF)] border-b border-[var(--border-medium)] px-4 sm:px-6 flex items-center justify-between font-outfit">
       {/* Left: Mobile Menu Toggle & Dynamic Breadcrumb */}
       <div className="flex items-center gap-3 min-w-0">
         <button
@@ -115,7 +115,7 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
         {/* Global Command Palette Trigger Button */}
         <button
           onClick={onOpenCommandPalette}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/70 border border-[var(--glass-border)] hover:border-amber-500/50 text-xs text-gray-600 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-[var(--border-medium)] hover:border-amber-500/50 text-xs text-gray-600 hover:text-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           title="Search administrative routes (Cmd+K / Ctrl+K)"
           aria-label="Search administrative routes (Cmd+K)"
         >

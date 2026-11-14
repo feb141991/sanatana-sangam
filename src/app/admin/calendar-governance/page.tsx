@@ -165,7 +165,7 @@ export default function CalendarGovernancePage() {
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
       {/* Top Sticky Header */}
-      <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-black/5 px-6 py-4">
+      <div className="sticky top-0 z-50 bg-[var(--divine-bg)] border-b border-black/5 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
             <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
@@ -200,7 +200,7 @@ export default function CalendarGovernancePage() {
         {toasts.map(t => (
           <div
             key={t.id}
-            className={`pointer-events-auto p-4 rounded-2xl shadow-xl border backdrop-blur-xl transition-all animate-in slide-in-from-bottom-5 duration-300 ${
+            className={`pointer-events-auto p-4 rounded-2xl shadow-xl border transition-all animate-in slide-in-from-bottom-5 duration-300 ${
               t.tone === 'ok' ? 'bg-emerald-950/90 text-emerald-100 border-emerald-500/30'
               : t.tone === 'warn' ? 'bg-amber-950/90 text-amber-100 border-amber-500/30'
               : t.tone === 'danger' ? 'bg-rose-950/90 text-rose-100 border-rose-500/30'
@@ -1083,7 +1083,7 @@ function BulkApproveModal({
   const alreadyApprovedCount = allFilteredCount - eligibleRows.length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60">
       <div className="fixed inset-0" onClick={processing ? undefined : onClose} />
 
       <div className="relative w-full max-w-3xl max-h-[85vh] rounded-3xl bg-[var(--divine-bg)] border border-black/10 shadow-2xl flex flex-col overflow-hidden z-10">

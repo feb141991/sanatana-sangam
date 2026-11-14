@@ -802,7 +802,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: POSTGRES DATABASE CONNECTION POOL ────────────────────── */}
       {showDbModal && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -846,7 +846,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: ASTRONOMICAL EPHEMERIS CALIBRATION ───────────────────── */}
       {showEphemerisModal && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -889,7 +889,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: OFFLINE SADHANA SYNC QUEUE ───────────────────────────── */}
       {showOfflineModal && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -933,7 +933,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: AI PROVIDERS & SARVAM WALLET ─────────────────────────── */}
       {showProvidersModal && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -1027,7 +1027,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── (i) INFORMATION METADATA MODAL ────────────────────────────────── */}
       {infoModal && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -1071,7 +1071,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── EVENT INSPECT MODAL ────────────────────────────────────────────── */}
       {inspectEvent && (
-        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-bold text-sm text-gray-900">Telemetry Event Inspector</h3>

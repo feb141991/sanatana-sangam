@@ -146,7 +146,7 @@ export default function ModerationClient({ initialReports }: { initialReports: R
   return (
     <div className="min-h-screen bg-[var(--divine-bg,#FAF6EF)] pb-24 font-outfit">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-[var(--divine-bg,#FAF6EF)]/90 backdrop-blur-xl border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-40 bg-[var(--divine-bg,#FAF6EF)] border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500">

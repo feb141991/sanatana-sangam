@@ -720,7 +720,7 @@ export default function RagRetrievalClient({ events, gitaReport, upanishadsRepor
             {/* Table */}
             <div className="max-h-[500px] overflow-y-auto">
               <table className="w-full text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider sticky top-0 backdrop-blur-xs">
+                <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider sticky top-0">
                   <tr>
                     <th className="text-left px-4 py-2.5">Time</th>
                     <th className="text-left px-4 py-2.5">Corpus</th>
@@ -1078,7 +1078,7 @@ export default function RagRetrievalClient({ events, gitaReport, upanishadsRepor
 
       {/* Slide-over Detail Drawer for Event Inspection */}
       {selectedEvent && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex justify-end">
+        <div className="fixed inset-0 z-50 bg-black/40 flex justify-end">
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 h-full shadow-2xl p-6 flex flex-col justify-between overflow-y-auto border-l border-slate-200 dark:border-slate-800">
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">

@@ -253,7 +253,7 @@ export default function UserDetailPage() {
   return (
     <div className="min-h-screen bg-[var(--divine-bg,#FAF6EF)] font-outfit pb-24">
       {/* Top Header Bar */}
-      <div className="sticky top-0 z-40 bg-[var(--divine-bg,#FAF6EF)]/90 backdrop-blur-xl border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
+      <div className="sticky top-0 z-40 bg-[var(--divine-bg,#FAF6EF)] border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
@@ -712,7 +712,7 @@ export default function UserDetailPage() {
 
       {/* ─── KARMA ADJUSTMENT MODAL ────────────────────────────────────────── */}
       {showKarmaModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 font-sans text-xs">
             <h3 className="text-base font-bold font-serif text-gray-900">Adjust Seeker Karma Points</h3>
             <p className="text-gray-600">
@@ -763,7 +763,7 @@ export default function UserDetailPage() {
 
       {/* ─── JSON PAYLOAD INSPECTOR MODAL ──────────────────────────────────── */}
       {inspectItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 font-sans text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-bold text-sm text-gray-900">{inspectItem.title}</h3>

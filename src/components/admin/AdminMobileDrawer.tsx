@@ -27,7 +27,7 @@ export function AdminMobileDrawer({ isOpen, onClose }: Props) {
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150 motion-reduce:animate-none"
+        className="fixed inset-0 bg-black/60 transition-opacity animate-in fade-in duration-150 motion-reduce:animate-none"
         onClick={onClose}
       />
 

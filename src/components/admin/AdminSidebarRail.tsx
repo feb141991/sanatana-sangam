@@ -24,10 +24,10 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
   return (
     <aside
       aria-label="Admin Navigation Sidebar"
-      className={`w-64 bg-[var(--glass-bg)] backdrop-blur-xl backdrop-saturate-150 border-r border-[var(--glass-border)] flex flex-col h-full font-outfit select-none ${className}`}
+      className={`w-64 bg-[var(--divine-bg,#FAF6EF)] border-r border-[var(--border-medium)] flex flex-col h-full font-outfit select-none ${className}`}
     >
       {/* Brand Header */}
-      <div className="h-14 px-5 border-b border-[var(--glass-border)] flex items-center justify-between shrink-0">
+      <div className="h-14 px-5 border-b border-[var(--border-medium)] flex items-center justify-between shrink-0">
         <Link
           href="/admin"
           onClick={onItemClick}
@@ -67,7 +67,7 @@ export function AdminSidebarRail({ onItemClick, className = "" }: Props) {
                     onClick={onItemClick}
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                       active
-                        ? "bg-white/85 text-stone-950 font-bold shadow-sm border border-[var(--glass-border)]"
+                        ? "bg-black/[0.07] text-stone-950 font-bold"
                         : "text-gray-700 hover:text-gray-950 hover:bg-black/5"
                     }`}
                   >

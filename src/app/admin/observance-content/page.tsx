@@ -1541,7 +1541,7 @@ export default function ObservanceContentStudioPage() {
       )}
       {/* ─── AI Regeneration / Enrichment Modal ────────────────────────────── */}
       {showRegenerateModal && selectedRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-black/10">
             <div className="flex items-center justify-between border-b border-black/10 pb-3">
               <div className="flex items-center gap-2">

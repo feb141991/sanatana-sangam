@@ -1,21 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  AlertTriangle,
-  Bell,
-  Check,
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  ExternalLink,
-  Layers,
-  Radio,
-  RefreshCw,
-  ScrollText,
-  Timer,
-} from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, ChevronDown, ChevronRight, Copy, ExternalLink, RefreshCw } from "lucide-react";
 import type { UrgentAlertItem } from "@/app/api/admin/alerts/route";
 import type { SystemStatusSummary } from "@/lib/admin-overview-helpers";
 import {
@@ -29,6 +15,10 @@ import {
   type ReviewQueueTone,
 } from "@/lib/admin-overview-view-model";
 
+/**
+ * The admin overview as one flat column: a summary, what needs attention, a few links, and a
+ * collapsed history. Solid colours and hairlines only: no tiles, no charts, no transparency.
+ */
 export interface AdminOverviewViewProps {
   isLoading: boolean;
   /** A telemetry source failed: figures may be incomplete. */
@@ -56,13 +46,16 @@ export interface AdminOverviewViewProps {
 }
 
 const QUICK_LINKS = [
-  { href: "/admin/logs", label: "Logs", icon: ScrollText },
-  { href: "/admin/crons", label: "Crons", icon: Timer },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
-  { href: "/admin/broadcast", label: "Broadcast", icon: Radio },
+  { href: "/admin/logs", label: "Logs" },
+  { href: "/admin/crons", label: "Crons" },
+  { href: "/admin/notifications", label: "Notifications" },
+  { href: "/admin/broadcast", label: "Broadcast" },
 ] as const;
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700";
+const ROW = "border-b border-[var(--border-medium)]";
+const ROW_HOVER = "transition-colors hover:bg-black/[0.04]";
+const ACTION_BUTTON = `min-h-9 rounded-md border border-[var(--border-strong)] bg-white px-3 text-xs font-bold text-stone-900 transition-colors hover:bg-black/[0.05] ${FOCUS_RING}`;
 
 function severityStyle(severity: UrgentAlertItem["severity"]) {
   if (severity === "critical" || severity === "P0" || severity === "P1") {
@@ -82,7 +75,7 @@ const SYSTEM_VALUE: Record<SystemStatusSummary["status"], string> = {
   degraded: "Degraded",
 };
 
-/** One line under the status word. Says something the word does not, never the same count twice. */
+/** One line after the status word. Says something the word does not, never the same count twice. */
 function describeSystem(status: SystemStatusSummary): string {
   const plural = (n: number) => (n === 1 ? "" : "s");
   switch (status.status) {
@@ -111,11 +104,6 @@ function formatWhen(value: string): string {
   return date.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-function formatCount(value: number | null | undefined, loading: boolean): string {
-  if (value === null || value === undefined) return loading ? "…" : "—";
-  return value.toLocaleString();
-}
-
 export function AdminOverviewView({
   isLoading,
   isDegraded,
@@ -137,6 +125,7 @@ export function AdminOverviewView({
   onCopyAlert,
 }: AdminOverviewViewProps) {
   const statsLoading = isLoading && !stats;
+  const statsFailed = !isLoading && !stats;
   const queues = buildReviewQueues({
     pendingReports: stats ? stats.pendingReports : null,
     calendarFindings: calendarFindingsCount,
@@ -155,7 +144,7 @@ export function AdminOverviewView({
         : openReviews > 0
           ? `${openReviews.toLocaleString()}+`
           : "—";
-  const reviewSub = queuesComplete
+  const reviewDetail = queuesComplete
     ? openReviews === 0
       ? "All queues clear"
       : "Across reports, calendar and reviews"
@@ -163,7 +152,6 @@ export function AdminOverviewView({
       ? "Loading…"
       : "Some counts did not load";
   const onboardingRate = stats ? formatOnboardingRate(stats.onboardedSeekers, stats.totalSeekers) : null;
-  const statsFailed = !isLoading && !stats;
 
   const systemDot =
     systemStatus.status === "healthy"
@@ -171,11 +159,9 @@ export function AdminOverviewView({
       : systemStatus.status === "warning"
         ? "bg-amber-500"
         : "bg-rose-600";
-  const systemValue = SYSTEM_VALUE[systemStatus.status];
-  const systemSub = describeSystem(systemStatus);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 font-outfit text-[var(--text-primary)] sm:px-6">
+    <div className="mx-auto max-w-3xl px-4 py-8 font-outfit text-[var(--text-primary)] sm:px-6">
       {/* ── Header ───────────────────────────────────────────────────────── */}
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -184,23 +170,14 @@ export function AdminOverviewView({
             {formatUpdatedLabel(updatedAt) ?? (isLoading ? "Loading…" : "Not loaded yet")}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onRefresh}
-          disabled={isLoading}
-          aria-label="Refresh overview"
-          className={`admin-glass admin-glass-pill admin-glass-interactive inline-flex min-h-10 items-center gap-2 px-4 text-xs font-bold text-stone-800 disabled:opacity-60 ${FOCUS_RING}`}
-        >
+        <button type="button" onClick={onRefresh} disabled={isLoading} aria-label="Refresh overview" className={`${ACTION_BUTTON} inline-flex items-center gap-2 disabled:opacity-60`}>
           <RefreshCw size={14} className={isLoading ? "animate-spin motion-reduce:animate-none" : ""} aria-hidden="true" />
           Refresh
         </button>
       </header>
 
       {isDegraded ? (
-        <div
-          role="alert"
-          className="flex items-start gap-3 rounded-2xl border border-rose-300/70 bg-rose-50/80 p-4 text-xs text-rose-950 backdrop-blur-md"
-        >
+        <div role="alert" className="mt-5 flex items-start gap-3 border-l-4 border-rose-600 bg-rose-50 p-3 text-xs text-rose-950">
           <AlertTriangle size={16} className="mt-0.5 shrink-0 text-rose-700" aria-hidden="true" />
           <p className="leading-relaxed">
             <b>A data source did not respond.</b> Figures below may be incomplete; open Monitoring for details.
@@ -208,99 +185,75 @@ export function AdminOverviewView({
         </div>
       ) : null}
 
-      {/* ── Key figures ──────────────────────────────────────────────────── */}
-      <section aria-label="Key figures" className="grid gap-3 sm:grid-cols-3">
-        <KpiCard href="/admin/monitoring" label="System">
-          <div className="flex items-center gap-2">
+      {/* ── Summary ──────────────────────────────────────────────────────── */}
+      <section aria-labelledby="summary-title" className="mt-8">
+        <SectionTitle id="summary-title">Summary</SectionTitle>
+        <SummaryRow href="/admin/monitoring" label="System">
+          <span className="flex items-center gap-2">
             <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${systemDot}`} aria-hidden="true" />
-            <span className="font-serif text-2xl font-bold leading-tight">{systemValue}</span>
-          </div>
-          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">{systemSub}</p>
-        </KpiCard>
-
-        <KpiCard href="#needs-attention" label="Waiting for review">
-          <span className="font-serif text-3xl font-bold leading-tight">{reviewValue}</span>
-          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">{reviewSub}</p>
-        </KpiCard>
-
-        <KpiCard href="/admin/users" label="Seekers">
-          <span className="font-serif text-3xl font-bold leading-tight">
-            {formatCount(stats?.totalSeekers, statsLoading)}
+            <b className="text-base">{SYSTEM_VALUE[systemStatus.status]}</b>
           </span>
-          <p className="mt-1 text-xs font-medium text-[var(--text-secondary)]">
+          <span className="text-sm text-[var(--text-secondary)]">{describeSystem(systemStatus)}</span>
+        </SummaryRow>
+        <SummaryRow href="#needs-attention" label="Waiting for review">
+          <b className="text-base">{reviewValue}</b>
+          <span className="text-sm text-[var(--text-secondary)]">{reviewDetail}</span>
+        </SummaryRow>
+        <SummaryRow href="/admin/users" label="Seekers">
+          <b className="text-base">{stats ? stats.totalSeekers.toLocaleString() : statsLoading ? "…" : "—"}</b>
+          <span className="text-sm text-[var(--text-secondary)]">
             {stats
-              ? `${stats.onboardedSeekers.toLocaleString()} onboarded${onboardingRate ? ` · ${onboardingRate}` : ""}`
+              ? `${stats.onboardedSeekers.toLocaleString()} onboarded${onboardingRate ? ` (${onboardingRate})` : ""}`
               : statsFailed
                 ? "Could not load"
                 : "Loading…"}
-          </p>
-        </KpiCard>
+          </span>
+        </SummaryRow>
       </section>
 
       {/* ── Needs attention ──────────────────────────────────────────────── */}
-      <section
-        id="needs-attention"
-        aria-labelledby="needs-attention-title"
-        className="admin-glass-strong scroll-mt-20 p-4 sm:p-5"
-      >
-        <h2 id="needs-attention-title" className="font-serif text-lg font-bold">
-          Needs attention
-        </h2>
+      <section id="needs-attention" aria-labelledby="needs-attention-title" className="mt-10 scroll-mt-20">
+        <SectionTitle id="needs-attention-title">Needs attention</SectionTitle>
 
-        <h3 className="mb-1 mt-4 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-          Review queues
-        </h3>
-        <ul className="divide-y divide-black/5">
+        <h3 className="mb-1 mt-4 text-xs font-bold text-[var(--text-secondary)]">Review queues</h3>
+        <ul>
           {queues.map((queue) => (
             <li key={queue.id}>
-              <Link
-                href={queue.href}
-                className={`group flex min-h-11 items-center justify-between gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-white/70 ${FOCUS_RING}`}
-              >
+              <Link href={queue.href} className={`flex min-h-12 items-center justify-between gap-3 px-1 py-2.5 ${ROW} ${ROW_HOVER} ${FOCUS_RING}`}>
                 <span className="flex min-w-0 items-center gap-2.5">
                   <span className={`h-2 w-2 shrink-0 rounded-full ${QUEUE_DOT[queue.tone]}`} aria-hidden="true" />
                   <span className="truncate text-sm font-semibold">{queue.label}</span>
                 </span>
-                <span className="flex shrink-0 items-center gap-1.5">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                      queue.count && queue.count > 0 ? "bg-amber-500/15 text-amber-950" : "bg-black/5 text-stone-700"
-                    }`}
-                  >
+                <span className="flex shrink-0 items-center gap-2">
+                  <b className={`text-sm ${queue.count ? "" : "font-medium text-[var(--text-secondary)]"}`}>
                     {queue.count === null ? (statsLoading ? "…" : "—") : queue.count === 0 ? "Clear" : queue.count.toLocaleString()}
-                  </span>
-                  <ChevronRight size={14} className="text-stone-500 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  </b>
+                  <ChevronRight size={14} className="text-stone-500" aria-hidden="true" />
                 </span>
               </Link>
             </li>
           ))}
         </ul>
 
-        <h3 className="mb-1 mt-5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-          Platform alerts
-        </h3>
+        <h3 className="mb-1 mt-6 text-xs font-bold text-[var(--text-secondary)]">Platform alerts</h3>
         {isLoading && systemAlerts.length === 0 ? (
-          <div className="space-y-2 py-2" aria-hidden="true">
-            {[0, 1].map((n) => (
-              <div key={n} className="h-14 animate-pulse rounded-xl bg-black/5 motion-reduce:animate-none" />
-            ))}
-          </div>
+          <p className={`px-1 py-3 text-sm text-[var(--text-secondary)] ${ROW}`}>Loading…</p>
         ) : systemAlerts.length === 0 && alertsFailed ? (
-          <p className="flex items-center gap-2 px-2 py-3 text-sm font-medium text-[var(--text-secondary)]">
+          <p className={`flex items-center gap-2 px-1 py-3 text-sm font-medium text-[var(--text-secondary)] ${ROW}`}>
             <AlertTriangle size={16} className="text-amber-700" aria-hidden="true" />
             Alerts did not load. Refresh to try again.
           </p>
         ) : systemAlerts.length === 0 ? (
-          <p className="flex items-center gap-2 px-2 py-3 text-sm font-medium text-[var(--text-secondary)]">
+          <p className={`flex items-center gap-2 px-1 py-3 text-sm font-medium text-[var(--text-secondary)] ${ROW}`}>
             <CheckCircle2 size={16} className="text-emerald-600" aria-hidden="true" />
             No open platform alerts
           </p>
         ) : (
-          <ul className="divide-y divide-black/5">
+          <ul>
             {systemAlerts.map((item) => {
               const style = severityStyle(item.severity);
               return (
-                <li key={item.id} className="flex flex-col gap-3 px-2 py-3 sm:flex-row sm:items-start sm:justify-between">
+                <li key={item.id} className={`flex flex-col gap-3 px-1 py-3 sm:flex-row sm:items-start sm:justify-between ${ROW}`}>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] font-bold">
                       <span className={`h-2 w-2 shrink-0 rounded-full ${style.dot}`} aria-hidden="true" />
@@ -310,30 +263,22 @@ export function AdminOverviewView({
                     <p className="mt-1 text-sm font-semibold">{item.title}</p>
                     <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-[var(--text-secondary)]">{item.desc}</p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-1.5 self-end sm:self-start">
-                    <button
-                      type="button"
-                      onClick={() => onInspectAlert(item)}
-                      className={`min-h-9 rounded-full bg-amber-500/15 px-4 text-xs font-bold text-amber-950 transition-colors hover:bg-amber-500/25 ${FOCUS_RING}`}
-                    >
+                  <div className="flex shrink-0 items-center gap-1 self-end sm:self-start">
+                    <button type="button" onClick={() => onInspectAlert(item)} className={ACTION_BUTTON}>
                       Inspect
                     </button>
                     <button
                       type="button"
                       onClick={() => onCopyAlert(item)}
                       aria-label={copiedAlertId === item.id ? "Alert copied" : `Copy alert: ${item.title}`}
-                      className={`grid h-9 w-9 place-items-center rounded-full text-stone-600 transition-colors hover:bg-black/5 ${FOCUS_RING}`}
+                      className={`grid h-9 w-9 place-items-center rounded-md text-stone-700 transition-colors hover:bg-black/[0.06] ${FOCUS_RING}`}
                     >
-                      {copiedAlertId === item.id ? (
-                        <Check size={15} className="text-emerald-700" aria-hidden="true" />
-                      ) : (
-                        <Copy size={15} aria-hidden="true" />
-                      )}
+                      {copiedAlertId === item.id ? <Check size={15} className="text-emerald-700" aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}
                     </button>
                     <Link
                       href={item.href}
                       aria-label={`Open workspace for ${item.title}`}
-                      className={`grid h-9 w-9 place-items-center rounded-full text-stone-600 transition-colors hover:bg-black/5 ${FOCUS_RING}`}
+                      className={`grid h-9 w-9 place-items-center rounded-md text-stone-700 transition-colors hover:bg-black/[0.06] ${FOCUS_RING}`}
                     >
                       <ExternalLink size={15} aria-hidden="true" />
                     </Link>
@@ -346,61 +291,50 @@ export function AdminOverviewView({
       </section>
 
       {/* ── Quick actions ────────────────────────────────────────────────── */}
-      <nav aria-label="Quick actions" className="flex flex-wrap items-center gap-2">
-        {QUICK_LINKS.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`admin-glass admin-glass-pill admin-glass-interactive inline-flex min-h-10 items-center gap-2 px-4 text-xs font-bold text-stone-800 ${FOCUS_RING}`}
+      <nav aria-label="Quick actions" className="mt-10">
+        <SectionTitle>Quick actions</SectionTitle>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-1 py-2">
+          {QUICK_LINKS.map(({ href, label }) => (
+            <Link key={href} href={href} className={`inline-flex min-h-11 items-center text-sm font-semibold text-[var(--brand-primary)] underline-offset-4 hover:underline ${FOCUS_RING}`}>
+              {label}
+            </Link>
+          ))}
+          <button
+            type="button"
+            onClick={onFlushCache}
+            disabled={isFlushing}
+            className={`inline-flex min-h-11 items-center text-sm font-semibold text-[var(--brand-primary)] underline-offset-4 hover:underline disabled:opacity-60 ${FOCUS_RING}`}
           >
-            <Icon size={14} aria-hidden="true" />
-            {label}
-          </Link>
-        ))}
-        <button
-          type="button"
-          onClick={onFlushCache}
-          disabled={isFlushing}
-          className={`inline-flex min-h-10 items-center gap-2 rounded-full border border-amber-800/25 bg-amber-500/10 px-4 text-xs font-bold text-amber-950 backdrop-blur-md transition-colors hover:bg-amber-500/20 disabled:opacity-60 ${FOCUS_RING}`}
-        >
-          <Layers size={14} aria-hidden="true" />
-          {isFlushing ? "Flushing…" : "Flush cache"}
-        </button>
-        {flushMessage ? (
-          <p role="status" className="text-xs font-medium text-[var(--text-secondary)]">
-            {flushMessage}
-          </p>
-        ) : null}
+            {isFlushing ? "Flushing…" : "Flush cache"}
+          </button>
+          {flushMessage ? (
+            <p role="status" className="text-xs font-medium text-[var(--text-secondary)]">
+              {flushMessage}
+            </p>
+          ) : null}
+        </div>
       </nav>
 
       {/* ── Calendar changes (collapsed) ─────────────────────────────────── */}
-      <details className="admin-glass group">
-        <summary
-          className={`flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-[inherit] px-4 py-3 sm:px-5 ${FOCUS_RING} [&::-webkit-details-marker]:hidden`}
-        >
+      <details className="group mt-10 border-y border-[var(--border-medium)]">
+        <summary className={`flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-1 py-3 ${FOCUS_RING} [&::-webkit-details-marker]:hidden`}>
           <span className="flex items-baseline gap-2">
-            <span className="font-serif text-base font-bold">Calendar changes</span>
+            <span className="text-sm font-bold">Calendar changes</span>
             <span className="text-xs font-medium text-[var(--text-secondary)]">
               {activityLoading ? "Loading…" : activityFailed ? "Could not load" : `Latest ${activity.length}`}
             </span>
           </span>
           <ChevronDown size={16} className="text-stone-600 transition-transform group-open:rotate-180" aria-hidden="true" />
         </summary>
-        <div className="border-t border-black/5 px-4 py-3 sm:px-5">
+        <div className="px-1 pb-3">
           {activityLoading ? (
-            <div className="space-y-2 py-1" aria-hidden="true">
-              {[0, 1, 2].map((n) => (
-                <div key={n} className="h-8 animate-pulse rounded-lg bg-black/5 motion-reduce:animate-none" />
-              ))}
-            </div>
+            <p className="py-3 text-xs font-medium text-[var(--text-secondary)]">Loading…</p>
           ) : activityFailed ? (
-            <p className="py-3 text-xs font-medium text-[var(--text-secondary)]">
-              The audit trail did not load. Open the audit log to see it.
-            </p>
+            <p className="py-3 text-xs font-medium text-[var(--text-secondary)]">The audit trail did not load. Open the audit log to see it.</p>
           ) : activity.length === 0 ? (
             <p className="py-3 text-xs font-medium text-[var(--text-secondary)]">No recent calendar changes.</p>
           ) : (
-            <ul className="divide-y divide-black/5">
+            <ul className="divide-y divide-[var(--border-subtle)]">
               {activity.map((log) => (
                 <li key={log.id} className="flex items-start gap-3 py-2.5 text-xs">
                   <span className="text-base leading-none" aria-hidden="true">
@@ -417,10 +351,7 @@ export function AdminOverviewView({
               ))}
             </ul>
           )}
-          <Link
-            href="/admin/calendar-governance?tab=activity"
-            className={`mt-1 inline-flex min-h-9 items-center gap-1 rounded-lg text-xs font-bold text-[var(--brand-primary)] hover:underline ${FOCUS_RING}`}
-          >
+          <Link href="/admin/calendar-governance?tab=activity" className={`mt-1 inline-flex min-h-9 items-center gap-1 text-xs font-bold text-[var(--brand-primary)] hover:underline ${FOCUS_RING}`}>
             Open audit log <ChevronRight size={13} aria-hidden="true" />
           </Link>
         </div>
@@ -429,14 +360,23 @@ export function AdminOverviewView({
   );
 }
 
-function KpiCard({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+function SectionTitle({ id, children }: { id?: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className={`admin-glass admin-glass-interactive group block p-4 sm:p-5 ${FOCUS_RING}`}>
-      <div className="mb-2 flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">{label}</span>
-        <ChevronRight size={14} className="text-stone-500 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-      </div>
+    <h2 id={id} className="border-b border-[var(--border-strong)] pb-2 text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
       {children}
+    </h2>
+  );
+}
+
+/** A labelled line of the summary: label, then the value and its detail, then an arrow. One link per fact. */
+function SummaryRow({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className={`flex min-h-14 items-center justify-between gap-3 px-1 py-3 ${ROW} ${ROW_HOVER} ${FOCUS_RING}`}>
+      <span className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-6">
+        <span className="w-40 shrink-0 text-sm font-semibold text-[var(--text-secondary)]">{label}</span>
+        <span className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-3">{children}</span>
+      </span>
+      <ChevronRight size={14} className="shrink-0 text-stone-500" aria-hidden="true" />
     </Link>
   );
 }
