@@ -28,7 +28,7 @@ const devanagariShare = (text: string) => {
 };
 
 describe('public Panchatantra stories: what is listed', () => {
-  it('lists exactly the twelve approved stories, in order, each with a readable slug', () => {
+  it('lists exactly the thirteen approved stories, in order, each with a readable slug', () => {
     expect(listPublicPanchatantraStories().map((s) => s.id)).toEqual([...PUBLIC_PANCHATANTRA_IDS]);
     expect(listPublicPanchatantraStories().map((s) => s.slug)).toEqual([
       'crane-and-crab',
@@ -43,6 +43,7 @@ describe('public Panchatantra stories: what is listed', () => {
       'credulous-fiend',
       'snake-in-princes-belly',
       'pert-hen-sparrow',
+      'jackal-who-killed-no-elephants',
     ]);
   });
 
@@ -114,6 +115,7 @@ describe('public Panchatantra stories: artwork', () => {
     'credulous-fiend',
     'snake-in-princes-belly',
     'pert-hen-sparrow',
+    'jackal-who-killed-no-elephants',
   ];
 
   it('illustrates exactly the stories that have a full set, one scene per paragraph', () => {
@@ -124,7 +126,7 @@ describe('public Panchatantra stories: artwork', () => {
   });
 
   it('shows no artwork for a story that has no set, and never borrows another story\'s scenes', () => {
-    expect(panchatantraScenesFor('panchatantra-jackal-who-killed-no-elephants', 6)).toEqual([]);
+    expect(panchatantraScenesFor('panchatantra-remedy-worse-than-disease', 6)).toEqual([]);
     expect(panchatantraScenesFor('panchatantra-dove-king-and-net', 6)).toEqual([]);
     expect(panchatantraScenesFor('panchatantra-hunter-and-pigeons', 6)).toEqual([]);
   });

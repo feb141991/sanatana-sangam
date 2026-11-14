@@ -44,6 +44,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-credulous-fiend',
   'panchatantra-snake-in-princes-belly',
   'panchatantra-pert-hen-sparrow',
+  'panchatantra-jackal-who-killed-no-elephants',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -107,6 +108,7 @@ interface ArtworkSet {
  * panchatantra-credulous-fiend: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  * panchatantra-snake-in-princes-belly: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  * panchatantra-pert-hen-sparrow: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-jackal-who-killed-no-elephants: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -360,6 +362,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'गर्म घोंसले से बाहर चोंच निकालकर घमंडी मादा गौरैया नीचे बैठे भीगते बंदर को उपदेश दे रही है।',
       'क्रोध से लाल आंखें किए भीगा बंदर दांत पीसकर ऊपर गौरैया को चुप रहने की चेतावनी दे रहा है।',
       'क्रोधित बंदर ने एक ही झपट्टे में सुंदर घोंसले को नोचकर तार-तार कर दिया और गौरैया रोती हुई उड़ गई।',
+    ],
+  },
+  'panchatantra-jackal-who-killed-no-elephants': {
+    dir: 'jackal-who-killed-no-elephants',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A noble clay lion gently carries an orphaned baby jackal in his jaws through a rocky mountain wilderness toward his cave.',
+      'Inside a warm rocky cavern, a mother lioness lovingly nurses the tiny gray jackal cub alongside her own two golden lion cubs.',
+      'Three growing cubs tumble and play happily on the cave floor: two broad-shouldered young lions and one slender gray jackal.',
+      'A giant wild elephant trumpets in the forest; two brave young lions crouch to attack while the terrified jackal turns and flees.',
+      'Back at the cave, the two young lions laugh mockingly while the wounded jackal bristles his fur and bares his teeth in rage.',
+      'In a quiet cave alcove, the affectionate lioness rests her paw on the jackal\'s head, gently revealing his true lineage before he walks into the sunset.',
+    ],
+    altHi: [
+      'पर्वत की कंदरा के पास दयालु सिंह एक नन्हे अनाथ सियार-शिशु को अपने जबड़ों में कोमलता से दबाए गुफा की ओर ला रहा है।',
+      'गुफा के भीतर ममतामयी सिंहनी अपने दो सिंह-शावकों के साथ नन्हे सियार के बच्चे को भी वात्सल्य से दूध पिला रही है।',
+      'गुफा के फर्श पर दो बलिष्ठ सिंह-शावक और एक दुबला-पतला सियार का बच्चा सगे भाइयों की तरह खेलते हुए बड़े हो रहे हैं।',
+      'जंगल में चिंघाड़ते विशाल हाथी को देखकर दो सिंह-शावक झपटने को तैयार हैं, जबकि भयभीत सियार पूंछ दबाकर भाग रहा है।',
+      'गुफा में दोनों सिंह-शावक हंसकर सियार का उपहास उड़ा रहे हैं, और अपमानित सियार क्रोध से दांत किटकिटा रहा है।',
+      'एकांत में बैठी सिंहनी सियार के सिर पर कोमल पंजा रखकर उसे उसके असली कुल का सत्य समझा रही है, और वह सिर झुकाए सुन रहा है।',
     ],
   },
 };
