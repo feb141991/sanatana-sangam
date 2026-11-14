@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import AdminShell from "@/components/admin/AdminShell";
+import "./admin-pages.css";
+import "./admin-pages.generated.css";
 
 export const metadata: Metadata = {
   title: "Shoonaya Admin Console",

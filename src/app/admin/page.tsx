@@ -209,6 +209,8 @@ export default function AdminOverviewPage() {
         onCopyAlert={copyAlertText}
       />
 
+      {/* The inspector is the same component the older pages show; the scope makes it dark here too. */}
+      <div className="admin-pages contents">
       <AdminRecordInspector
         record={selectedRecord}
         isOpen={isInspectorOpen}
@@ -222,6 +224,7 @@ export default function AdminOverviewPage() {
           fetchActivityLogs();
         }}
       />
+      </div>
     </>
   );
 }

@@ -6,6 +6,7 @@ import { AdminSidebarRail } from "./AdminSidebarRail";
 import { AdminTopBar } from "./AdminTopBar";
 import { AdminMobileDrawer } from "./AdminMobileDrawer";
 import { AdminCommandPalette } from "./AdminCommandPalette";
+import { resolveAdminSurface } from "@/lib/admin-surface";
 
 interface Props {
   children: React.ReactNode;
@@ -33,6 +34,8 @@ export default function AdminShell({ children }: Props) {
     setMobileMenuOpen(false);
   }, [pathname]);
 
+  const surface = resolveAdminSurface(pathname);
+
   // Exclude login screen from administrative shell
   if (pathname === "/admin/login") {
     return <>{children}</>;
@@ -56,8 +59,11 @@ export default function AdminShell({ children }: Props) {
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
           onOpenCommandPalette={() => setCommandPaletteOpen(true)}
         />
-        {/* The overview is drawn in glass directly on the scene; every older page keeps its light design on a light sheet. */}
-        <main className="flex-1 w-full">{pathname === "/admin" ? children : <div className="admin-sheet">{children}</div>}</main>
+        {/* The overview is drawn in glass directly on the scene. Every older page is restyled dark by the
+            `.admin-pages` scope (admin-pages.css); a route can be kept on the light sheet in lib/admin-surface.ts. */}
+        <main className="flex-1 w-full">
+          {surface === "overview" ? children : surface === "sheet" ? <div className="admin-sheet">{children}</div> : <div className="admin-pages">{children}</div>}
+        </main>
       </div>
 
       {/* 3. Mobile Navigation Drawer */}

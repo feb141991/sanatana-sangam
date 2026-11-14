@@ -1,0 +1,124 @@
+/*
+ * The older admin pages on the dark glass scene.
+ *
+ * Wrapped in `.admin-pages` by components/admin/AdminShell.tsx (see lib/admin-surface.ts). Three layers:
+ *   1. tokens (this file): the same variables the light admin theme sets in globals.css, with dark values;
+ *   2. the site's own card classes (this file): globals.css forces them light inside the admin portal, so
+ *      they are put back to dark here, with the same !important weight;
+ *   3. every hard-coded palette colour class (admin-pages.generated.css, built from lib/admin-dark-pages.ts).
+ * Nothing here applies outside `.admin-pages`. To put one route back on the light sheet, list it in
+ * lib/admin-surface.ts.
+ */
+.admin-pages {
+  color-scheme: dark;
+  color: var(--text-primary);
+
+  --divine-bg: transparent;
+  --background: transparent;
+  --foreground: #f8f4ee;
+  --brand-dark: #f8f4ee;
+  --surface-base: rgba(20, 18, 24, 0.45);
+  --surface-soft: rgba(255, 255, 255, 0.05);
+  --surface-raised: #2a2730;
+  --surface-card: rgba(36, 33, 42, 0.66);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.12);
+
+  --card-bg: rgba(36, 33, 42, 0.66);
+  --card-bg-soft: rgba(36, 33, 42, 0.45);
+  --card-border: rgba(255, 255, 255, 0.14);
+  --card-border-soft: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-medium: rgba(255, 255, 255, 0.16);
+  --border-strong: rgba(255, 255, 255, 0.26);
+
+  --text-primary: #f8f4ee;
+  --text-secondary: rgba(248, 244, 238, 0.72);
+  --text-muted: rgba(248, 244, 238, 0.62);
+  --text-dim: rgba(248, 244, 238, 0.55);
+  --text-cream: #f8f4ee;
+  --text-muted-warm: rgba(248, 244, 238, 0.72);
+  --text-saffron-soft: rgba(248, 244, 238, 0.72);
+  --text-saffron-strong: #f4bd64;
+
+  --brand-muted: rgba(248, 244, 238, 0.68);
+  --brand-primary: #f4bd64;
+  --brand-primary-strong: #f7cf8a;
+  --brand-primary-soft: rgba(244, 189, 100, 0.14);
+  --brand-secondary: rgba(248, 244, 238, 0.6);
+  --brand-accent: #f8f4ee;
+  --brand-accent-soft: rgba(248, 244, 238, 0.1);
+  --brand-earth: #e8c48a;
+  --brand-ink: #f8f4ee;
+  --premium-gold: #f4bd64;
+  --premium-gold-soft: rgba(244, 189, 100, 0.12);
+  --premium-border: rgba(244, 189, 100, 0.28);
+  --saffron: #f4bd64;
+  --sacred-gold: #f4bd64;
+}
+
+/* The site's card classes. globals.css makes them light inside the portal (some with !important), and the
+   site's own light theme paints .glass-panel cream even when a bg-[var(--card-bg)] class is also present. */
+.admin-pages.admin-pages.admin-pages .glass-panel,
+.admin-pages.admin-pages.admin-pages .glass-panel-strong,
+.admin-pages.admin-pages.admin-pages .surface-panel,
+.admin-pages.admin-pages.admin-pages .surface-card,
+.admin-pages.admin-pages.admin-pages .surface-soft-card,
+.admin-pages.admin-pages.admin-pages .glass-input,
+.admin-pages.admin-pages.admin-pages .glass-chip,
+.admin-pages.admin-pages.admin-pages .glass-nav,
+.admin-pages.admin-pages.admin-pages .card,
+.admin-pages.admin-pages.admin-pages .card-soft {
+  background-color: rgba(24, 21, 26, 0.34);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02)) !important;
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+}
+
+/* Cards that were promoted to solid white or tinted for alerts: dark equivalents, same weight. */
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-white/"],
+.admin-pages.admin-pages.admin-pages .surface-panel[class*="bg-white/"],
+.admin-pages.admin-pages.admin-pages .surface-card[class*="bg-white/"] {
+  background-color: rgba(24, 21, 26, 0.34) !important;
+}
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-black/"],
+.admin-pages.admin-pages.admin-pages .surface-panel[class*="bg-black/"] {
+  background-color: rgba(24, 21, 26, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-rose-"] {
+  background-color: rgba(244, 63, 94, 0.14) !important;
+  border-color: rgba(251, 113, 133, 0.32) !important;
+}
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-amber-"] {
+  background-color: rgba(245, 158, 11, 0.13) !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-blue-"] {
+  background-color: rgba(59, 130, 246, 0.14) !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
+}
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-green-"],
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-emerald-"] {
+  background-color: rgba(16, 185, 129, 0.13) !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+.admin-pages.admin-pages.admin-pages .glass-panel[class*="bg-orange-"] {
+  background-color: rgba(249, 115, 22, 0.13) !important;
+  border-color: rgba(251, 146, 60, 0.3) !important;
+}
+
+/* The light theme darkens muted text for contrast on white; here muted text is a light grey again. */
+.admin-pages.admin-pages.admin-pages .text-muted,
+.admin-pages.admin-pages.admin-pages .text-muted-foreground {
+  color: var(--text-muted) !important;
+}
+
+/* A solid fill taken from a brand token carries white text: use a deep amber that holds it (the token itself is a light amber, for text). */
+.admin-pages.admin-pages.admin-pages .bg-\[var\(--brand-primary\)\],
+.admin-pages.admin-pages.admin-pages .bg-\[var\(--premium-gold\)\],
+.admin-pages.admin-pages.admin-pages .bg-\[var\(--premium-gold\,\#C5A059\)\],
+.admin-pages.admin-pages.admin-pages .hover\:bg-\[var\(--premium-gold\)\]:hover {
+  background-color: #b45309;
+}
