@@ -39,6 +39,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-farmers-wife',
   'panchatantra-dog-who-went-abroad',
   'panchatantra-butter-blinded-brahman',
+  'panchatantra-monk-who-left-his-body-behind',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -97,6 +98,7 @@ interface ArtworkSet {
  * panchatantra-farmers-wife: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-dog-who-went-abroad: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-butter-blinded-brahman: six handcrafted 3D clay-animation scenes generated 2026-11-12.
+ * panchatantra-monk-who-left-his-body-behind: six handcrafted 3D clay-animation scenes generated 2026-11-12/14.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -245,6 +247,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'प्रतिमा के पीछे से गंभीर आवाज में देवदत्त कहता है कि एक महीने तक रोज़ मक्खन, मलाई और घी के मालपुए खिलाने से उसके पति की दृष्टि समाप्त हो जाएगी।',
       'वरदान समझकर पत्नी घर में देवदत्त को भरपूर घी-मक्खन खिलाती है और वह अंधे होने का नाटक करते हुए दीवारें टटोलकर चलने लगता है।',
       'पति को अंधा मानकर पत्नी दिनदहाड़े प्रेमी को भोजन पर बुलाती है, तभी देवदत्त द्वार बंद कर भारी मूसल से दोनों को पीटकर घर से बाहर खदेड़ देता है।',
+    ],
+  },
+  'panchatantra-monk-who-left-his-body-behind': {
+    dir: 'monk-who-left-his-body-behind',
+    width: 1376,
+    height: 768,
+    alt: [
+      'An enigmatic clay ascetic with matted hair and beads makes dramatic mystical gestures in the royal court, captivating King Fine-Chariot and the gathered citizens.',
+      'The cunning ascetic leans in to whisper into the ear of the enthralled king, boasting that his soul ascends nightly to Indra\'s heavenly court.',
+      'King Fine-Chariot sits in reverence at the ascetic\'s feet in the palace hall, completely neglecting his royal duties while ministers look on in distress.',
+      'The sharp-minded prime minister, Counsellor Strong, returns from the borderlands in travel robes, observing the court\'s infatuation with quiet resolve.',
+      'Counsellor Strong bows respectfully before King Fine-Chariot, calmly proposing a decisive test to verify the holy man\'s miraculous claims.',
+      'Flames and orange embers engulf the locked wooden cell at night as royal soldiers pile straw at its base, while Counsellor Strong and the humbled king watch from the courtyard.',
+    ],
+    altHi: [
+      'राजदरबार में जटाधारी संन्यासी रहस्यमयी मुद्रा में हाथ उठाकर ढोंग रच रहा है, और राजा सुमित्र व दरबारी मुग्ध होकर उसे देख रहे हैं।',
+      'धूर्त संन्यासी राजा के कान में झुककर फुसफुसा रहा है और दावा कर रहा है कि उसकी आत्मा आधी रात को स्वर्ग में इंद्र की सभा में जाती है।',
+      'राजा सुमित्र राजकाज भूलकर महल के कक्ष में संन्यासी के चरणों में हाथ जोड़े बैठा है, जबकि दरबारी चिंतित खड़े हैं।',
+      'बुद्धिमान महामात्य दृढ़बुद्धि सीमांत से राजधानी लौटकर दरबार में ढोंगी का प्रभाव देखकर चुपचाप योजना बना रहा है।',
+      'महामात्य दृढ़बुद्धि राजा सुमित्र के सामने हाथ जोड़कर संन्यासी की दैवीय शक्ति की परीक्षा लेने का शांत प्रस्ताव रख रहा है।',
+      'रात के अंधेरे में बंद लकड़ी की कोठरी धू-धू कर जल रही है, सैनिक सूखी घास डाल रहे हैं, और महामात्य दृढ़बुद्धि व चकित राजा आंगन से देख रहे हैं।',
     ],
   },
 };

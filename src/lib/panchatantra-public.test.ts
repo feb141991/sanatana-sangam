@@ -28,7 +28,7 @@ const devanagariShare = (text: string) => {
 };
 
 describe('public Panchatantra stories: what is listed', () => {
-  it('lists exactly the seven approved stories, in order, each with a readable slug', () => {
+  it('lists exactly the eight approved stories, in order, each with a readable slug', () => {
     expect(listPublicPanchatantraStories().map((s) => s.id)).toEqual([...PUBLIC_PANCHATANTRA_IDS]);
     expect(listPublicPanchatantraStories().map((s) => s.slug)).toEqual([
       'crane-and-crab',
@@ -38,6 +38,7 @@ describe('public Panchatantra stories: what is listed', () => {
       'farmers-wife',
       'dog-who-went-abroad',
       'butter-blinded-brahman',
+      'monk-who-left-his-body-behind',
     ]);
   });
 
@@ -104,6 +105,7 @@ describe('public Panchatantra stories: artwork', () => {
     'farmers-wife',
     'dog-who-went-abroad',
     'butter-blinded-brahman',
+    'monk-who-left-his-body-behind',
   ];
 
   it('illustrates exactly the stories that have a full set, one scene per paragraph', () => {
