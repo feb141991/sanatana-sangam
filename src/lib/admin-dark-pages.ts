@@ -226,12 +226,20 @@ export const SCOPE = ".admin-pages.admin-pages.admin-pages";
 
 const escapeClass = (token: string) => token.replace(/([^a-zA-Z0-9_-])/g, "\\$1");
 
+/**
+ * A preview that imitates a screen the recipient sees (an email, a social post, a chat bubble) is meant to
+ * look light whatever the admin around it looks like. Mark its container `admin-light-island`: none of
+ * these rules reach into it, and admin-pages.css gives it the light tokens back.
+ */
+export const LIGHT_ISLAND = ":not(.admin-light-island, .admin-light-island *)";
+
 function selectorFor(parsed: ParsedColourClass, suffix = ""): string {
   const cls = `.${escapeClass(parsed.token)}`;
-  const pseudo = parsed.variants
-    .filter((v) => v !== "group-hover" && v !== "placeholder")
-    .map((v) => `:${v}`)
-    .join("");
+  const pseudo =
+    parsed.variants
+      .filter((v) => v !== "group-hover" && v !== "placeholder")
+      .map((v) => `:${v}`)
+      .join("") + LIGHT_ISLAND;
   const placeholder = parsed.variants.includes("placeholder") ? "::placeholder" : "";
   const group = parsed.variants.includes("group-hover") ? `${SCOPE} .group:hover ${cls}` : `${SCOPE} ${cls}`;
   return `${group}${pseudo}${placeholder}${suffix}`;
@@ -398,7 +406,7 @@ export function buildAdminDarkCss(sources: ReadonlyArray<{ path: string; source:
     for (const token of collectColourClasses(source)) classes.add(token);
     for (const pair of brokenPairs(source)) {
       const original = resolveLight(pair.text);
-      const selector = `${SCOPE} .${escapeClass(pair.bg.token)}.${escapeClass(pair.text.token)}`;
+      const selector = `${SCOPE} .${escapeClass(pair.bg.token)}.${escapeClass(pair.text.token)}${LIGHT_ISLAND}`;
       pairRules.set(selector, `${selector} { color: ${original.alpha === 1 ? hex(original.rgb) : rgba(original.rgb, original.alpha)} !important; }`);
     }
   }

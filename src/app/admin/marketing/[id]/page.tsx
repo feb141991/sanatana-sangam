@@ -1010,7 +1010,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                     </button>
                   )}
                 </div>
-                <div className="p-6 rounded-2xl bg-white border border-slate-200 text-slate-800 space-y-4 shadow-sm">
+                <div className="admin-light-island p-6 rounded-2xl bg-white border border-slate-200 text-slate-800 space-y-4 shadow-sm">
                   <div className="text-center border-b pb-4">
                     <p className="font-serif font-bold text-lg text-[#1A140E]">Shoonaya</p>
                     <p className="text-[9px] uppercase tracking-widest text-[#854F0B]">Find your infinite.</p>
@@ -1086,7 +1086,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                     </button>
                   )}
                 </div>
-                <div className="p-4 rounded-2xl bg-[#ECE5DD] border border-slate-300">
+                <div className="admin-light-island p-4 rounded-2xl bg-[#ECE5DD] border border-slate-300">
                   <div className="p-4 rounded-2xl bg-white shadow-sm max-w-sm space-y-2 text-xs leading-relaxed text-slate-800 whitespace-pre-wrap">
                     {whatsappBody || "*Shoonaya Weekly Reflection* 🪔\n\nPreview text..."}
                   </div>
@@ -1165,7 +1165,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                     </button>
                   )}
                 </div>
-                <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 max-w-sm mx-auto">
+                <div className="admin-light-island p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 max-w-sm mx-auto">
                   <div className="flex items-center gap-2.5 border-b pb-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 p-0.5">
                       <div className="w-full h-full bg-white rounded-full flex items-center justify-center font-bold text-[10px] text-amber-700">
@@ -1281,7 +1281,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                     </button>
                   )}
                 </div>
-                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 max-w-sm mx-auto">
+                <div className="admin-light-island p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 max-w-sm mx-auto">
                   <div className="flex items-center gap-2.5">
                     <div className="w-9 h-9 rounded-full bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-xs">
                       शू
@@ -1377,7 +1377,7 @@ export default function MarketingCampaignDetailPage({ params }: { params: Promis
                     </button>
                   )}
                 </div>
-                <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 max-w-sm mx-auto">
+                <div className="admin-light-island p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3 max-w-sm mx-auto">
                   <div className="flex items-center gap-2.5 border-b pb-2">
                     <div className="w-9 h-9 rounded-md bg-[#0077B5] text-white flex items-center justify-center font-bold text-sm">
                       in

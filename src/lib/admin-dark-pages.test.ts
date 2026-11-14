@@ -130,6 +130,23 @@ describe("readability on the dark scene", () => {
   });
 });
 
+describe("light islands (previews that imitate a recipient's screen)", () => {
+  it("every generated rule skips a .admin-light-island subtree, and the island gets the light tokens back", () => {
+    const css = readFileSync(join(ROOT, "src/app/admin/admin-pages.generated.css"), "utf8");
+    const rules = css.split("\n").filter((line) => line.startsWith(SCOPE));
+    expect(rules.length).toBeGreaterThan(200);
+    for (const line of rules) expect(line, line).toContain(".admin-light-island *)");
+    const base = readFileSync(join(ROOT, "src/app/admin/admin-pages.css"), "utf8");
+    expect(base).toContain(".admin-pages .admin-light-island {");
+    expect(base).toContain("--text-primary: #1c1917;");
+  });
+
+  it("the five marketing previews (email, WhatsApp, Instagram, X, LinkedIn) are marked as islands", () => {
+    const page = readFileSync(join(ROOT, "src/app/admin/marketing/[id]/page.tsx"), "utf8");
+    expect((page.match(/admin-light-island/g) ?? []).length).toBeGreaterThanOrEqual(5);
+  });
+});
+
 describe("the generated stylesheet", () => {
   it("is up to date: run `npx tsx scripts/generate-admin-dark-pages.ts` after adding or changing a colour class on an admin page", () => {
     const expected = buildAdminDarkCss(readAdminSources(ROOT));

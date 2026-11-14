@@ -122,3 +122,53 @@
 .admin-pages.admin-pages.admin-pages .hover\:bg-\[var\(--premium-gold\)\]:hover {
   background-color: #b45309;
 }
+
+/*
+ * Light islands: a preview that imitates what a recipient sees (email, social post, chat bubble) stays light.
+ * The colour rules skip it (lib/admin-dark-pages.ts, LIGHT_ISLAND); this puts the light admin tokens back for
+ * anything inside that reads a variable. Keep in sync with the `.admin-portal` block in globals.css.
+ */
+.admin-pages .admin-light-island {
+  color-scheme: light;
+  color: #1c1917;
+
+  --divine-bg: #faf6ef;
+  --background: #faf6ef;
+  --foreground: #1c1917;
+  --brand-dark: #1c1917;
+  --surface-base: #faf6ef;
+  --surface-soft: #f5efe6;
+  --surface-raised: #ffffff;
+  --surface-card: #ffffff;
+  --surface-hover: rgba(49, 35, 20, 0.04);
+  --surface-active: rgba(49, 35, 20, 0.08);
+  --card-bg: #ffffff;
+  --card-bg-soft: #faf7f2;
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-border-soft: rgba(0, 0, 0, 0.04);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-medium: rgba(0, 0, 0, 0.14);
+  --border-strong: rgba(0, 0, 0, 0.22);
+  --text-primary: #1c1917;
+  --text-secondary: #574a3d;
+  --text-muted: #6b5e50;
+  --text-dim: #786c5e;
+  --text-cream: #1c1917;
+  --text-muted-warm: #574a3d;
+  --text-saffron-soft: #574a3d;
+  --text-saffron-strong: #78350f;
+  --brand-muted: #574a3d;
+  --brand-primary: #78350f;
+  --brand-primary-strong: #5b2406;
+  --brand-primary-soft: rgba(120, 53, 15, 0.1);
+  --brand-secondary: #574c3e;
+  --brand-accent: #1c1917;
+  --brand-accent-soft: rgba(87, 74, 61, 0.1);
+  --brand-earth: #52361b;
+  --brand-ink: #1c1917;
+  --premium-gold: #78350f;
+  --premium-gold-soft: rgba(120, 53, 15, 0.1);
+  --premium-border: rgba(120, 53, 15, 0.22);
+  --saffron: #78350f;
+  --sacred-gold: #78350f;
+}
