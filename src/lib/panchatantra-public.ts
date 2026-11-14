@@ -40,6 +40,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-dog-who-went-abroad',
   'panchatantra-butter-blinded-brahman',
   'panchatantra-monk-who-left-his-body-behind',
+  'panchatantra-girl-who-married-a-snake',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -99,6 +100,7 @@ interface ArtworkSet {
  * panchatantra-dog-who-went-abroad: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-butter-blinded-brahman: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-monk-who-left-his-body-behind: six handcrafted 3D clay-animation scenes generated 2026-11-12/14.
+ * panchatantra-girl-who-married-a-snake: six handcrafted 3D clay-animation scenes generated 2026-11-14.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -268,6 +270,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'बुद्धिमान महामात्य दृढ़बुद्धि सीमांत से राजधानी लौटकर दरबार में ढोंगी का प्रभाव देखकर चुपचाप योजना बना रहा है।',
       'महामात्य दृढ़बुद्धि राजा सुमित्र के सामने हाथ जोड़कर संन्यासी की दैवीय शक्ति की परीक्षा लेने का शांत प्रस्ताव रख रहा है।',
       'रात के अंधेरे में बंद लकड़ी की कोठरी धू-धू कर जल रही है, सैनिक सूखी घास डाल रहे हैं, और महामात्य दृढ़बुद्धि व चकित राजा आंगन से देख रहे हैं।',
+    ],
+  },
+  'panchatantra-girl-who-married-a-snake': {
+    dir: 'girl-who-married-a-snake',
+    width: 1376,
+    height: 768,
+    alt: [
+      'Inside a candlelit havan chamber, a noble Brahman couple in white gaze in astonishment at a midwife holding a newborn baby black cobra swaddled in silk.',
+      'A devoted Indian mother cradles a glistening black hooded cobra in an ornate wooden box, gently bathing it with sandalwood milk while the father watches.',
+      'An elderly Brahman with a staff and bullock cart arrives at a friend\'s country estate, exchanging sacred water in a clay pot to seal his son\'s betrothal.',
+      'A brave young bride in red and gold bridal attire stands resolute before a sacred fire beside an ornate wedding chest containing a giant black cobra, as guests gasp in shock.',
+      'In a moonlit bedchamber filled with flowers, a glowing, handsome young prince stands beside the bed near a shriveled snakeskin, as the bride gazes in wonder.',
+      'At dawn beside a blazing hearth, the overjoyed father casts the discarded snakeskin into golden flames, while the radiant prince and bride hold hands in celebration.',
+    ],
+    altHi: [
+      'हवन कुंड के सामने बैठे ब्राह्मण दंपति आश्चर्यचकित होकर दाई के हाथों में रेशमी कपड़े में लिपटे नन्हे काले नाग-शिशु को देख रहे हैं।',
+      'ममतामयी माता रेशमी संदूक में बैठे काले फनधारी नागदेव को चंदन मिश्रित दूध पिला रही है, जबकि पिता पास खड़े देख रहे हैं।',
+      'यात्रा करते हुए वृद्ध ब्राह्मण अपने पुराने मित्र के द्वार पर पहुंचकर हाथ में जलपात्र लेकर विवाह का संकल्प पूरा कर रहे हैं।',
+      'विवाह मंडप में पवित्र अग्नि के पास लाल जोड़े में सजी साहसी वधू विशाल फनधारी नाग के संदूक के पास दृढ़ता से खड़ी है, और बाराती चकित हैं।',
+      'चांदनी से सजे शयनकक्ष में सुंदर दिव्य राजकुमार केंचुल के पास खड़ा है, और सेज पर बैठी वधू विस्मय से उसे देख रही है।',
+      'प्रातःकाल हवन कुंड की प्रज्वलित लपटों में पिता सर्प की केंचुल डाल रहे हैं, और दिव्य राजकुमार व वधू हाथ थामे प्रसन्न खड़े हैं।',
     ],
   },
 };
