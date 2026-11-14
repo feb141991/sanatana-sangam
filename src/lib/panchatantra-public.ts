@@ -41,6 +41,7 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-butter-blinded-brahman',
   'panchatantra-monk-who-left-his-body-behind',
   'panchatantra-girl-who-married-a-snake',
+  'panchatantra-credulous-fiend',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -101,6 +102,7 @@ interface ArtworkSet {
  * panchatantra-butter-blinded-brahman: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-monk-who-left-his-body-behind: six handcrafted 3D clay-animation scenes generated 2026-11-12/14.
  * panchatantra-girl-who-married-a-snake: six handcrafted 3D clay-animation scenes generated 2026-11-14.
+ * panchatantra-credulous-fiend: six handcrafted 3D clay-animation scenes from mobile storybook assets.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -291,6 +293,27 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'विवाह मंडप में पवित्र अग्नि के पास लाल जोड़े में सजी साहसी वधू विशाल फनधारी नाग के संदूक के पास दृढ़ता से खड़ी है, और बाराती चकित हैं।',
       'चांदनी से सजे शयनकक्ष में सुंदर दिव्य राजकुमार केंचुल के पास खड़ा है, और सेज पर बैठी वधू विस्मय से उसे देख रही है।',
       'प्रातःकाल हवन कुंड की प्रज्वलित लपटों में पिता सर्प की केंचुल डाल रहे हैं, और दिव्य राजकुमार व वधू हाथ थामे प्रसन्न खड़े हैं।',
+    ],
+  },
+  'panchatantra-credulous-fiend': {
+    dir: 'credulous-fiend',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A fearsome clay demon perches in a gloomy cemetery tree near palace walls, glaring at a radiant princess protected inside a glowing magic mandala.',
+      'Hovering outside a carved palace lattice window at dusk, the horned fiend grinds his teeth as he overhears the weeping princess speaking of Twilight.',
+      'Inside dark royal stables, the fiend transforms into a sleek, muscular black stallion standing quietly in a hay stall.',
+      'A cunning clay horse-thief in the shadows slips an iron bit into the disguised demon-stallion\'s mouth and mounts him with spurs.',
+      'The disguised demon gallops at hurricane speed through moonlit wilderness in panic, while the terrified thief reaches up to grab an overhanging banyan root.',
+      'Perched on a banyan branch, the quick-witted thief bites down hard on the monkey\'s tail as the gullible fiend flees in terror into the horizon.',
+    ],
+    altHi: [
+      'श्मशान के अंधेरे वृक्ष पर बैठा भयानक राक्षस महल की ओर देख रहा है, जहां सुरक्षा-चक्र के भीतर राजकुमारी बैठी है।',
+      'संध्या के समय महल की नक्काशीदार खिड़की के बाहर राक्षस कान लगाकर राजकुमारी की सांध्य-काल संबंधी बातें सुन रहा है।',
+      'राजमहल के अंधेरे अस्तबल में राक्षस एक बलिष्ठ और चमकदार काले घोड़े का रूप धारण कर चुपचाप खड़ा है।',
+      'अस्तबल में घुसा चतुर अश्व-चोर राक्षस-रूपी घोड़े के मुंह में लोहे की लगाम डालकर उस पर सवार हो रहा है।',
+      'राक्षस-रूपी घोड़ा आंधी की गति से जंगल में भाग रहा है, और ऊपर लटकती बरगद की जटा पकड़कर चोर पेड़ पर चढ़ रहा है।',
+      'बरगद की डाल पर बैठा चोर बंदर की पूंछ को दांतों से काट रहा है, और भयभीत मूर्ख राक्षस उल्टे पांव दूर भाग रहा है।',
     ],
   },
 };
