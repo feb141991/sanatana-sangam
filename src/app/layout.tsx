@@ -119,6 +119,7 @@ export default function RootLayout({
 }) {
   const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+  const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "ze149uv6yf";
 
   return (
     <html lang="en" className={fontVars}>
@@ -193,6 +194,7 @@ export default function RootLayout({
         <WebConsentManager
           gaMeasurementId={gaMeasurementId}
           adsenseClient={adsenseClient}
+          clarityProjectId={clarityProjectId}
         />
       </body>
     </html>

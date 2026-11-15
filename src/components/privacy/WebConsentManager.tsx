@@ -15,13 +15,13 @@ import {
   type WebConsentPreferences,
 } from '@/lib/web-consent';
 
-type Props = { gaMeasurementId?: string; adsenseClient?: string };
+type Props = { gaMeasurementId?: string; adsenseClient?: string; clarityProjectId?: string };
 type Choice = Pick<WebConsentPreferences, 'analytics' | 'advertising'>;
 
 // One style for every first-layer button, on purpose: refusing must be as easy to see and press as accepting.
 const choiceButton = 'min-h-11 rounded-xl border border-current/30 bg-white/60 px-3 font-semibold hover:bg-white dark:bg-white/5 dark:hover:bg-white/10';
 
-export default function WebConsentManager({ gaMeasurementId, adsenseClient }: Props) {
+export default function WebConsentManager({ gaMeasurementId, adsenseClient, clarityProjectId = 'ze149uv6yf' }: Props) {
   // `saved` is what the visitor has confirmed. It alone decides whether any vendor script loads.
   // `draft` is what the boxes show while they are still being ticked; nothing reads it except the boxes.
   const [saved, setSaved] = useState<WebConsentPreferences>(defaultWebConsent);
@@ -71,6 +71,15 @@ export default function WebConsentManager({ gaMeasurementId, adsenseClient }: Pr
           <Script id="ga4-consented-init" strategy="afterInteractive">
             {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaMeasurementId}',{send_page_view:true,allow_google_signals:false,allow_ad_personalization_signals:false});`}
           </Script>
+        </>
+      ) : null}
+      {saved.analytics && !onAdmin ? (
+        <>
+          {clarityProjectId ? (
+            <Script id="microsoft-clarity-init" strategy="afterInteractive">
+              {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i+"?ref=bwt";y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${clarityProjectId}");`}
+            </Script>
+          ) : null}
           <Analytics />
           <SpeedInsights />
         </>
