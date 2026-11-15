@@ -932,8 +932,8 @@ function buildOccurrencesMap(
       if (gate && !isPublishableForYear(rule, year)) continue;
       if (rule.tradition === 'sikh' && rule.slug !== 'lohri') continue;
       if (rule.rule_family === 'relative_to_other_observance') {
-        const baseSlug = rule.relative_base_slug;
-        const offset = rule.relative_offset_days || 0;
+        const baseSlug = rule.relation?.parent_slug ?? rule.relative_base_slug;
+        const offset = rule.relation?.offset_days ?? rule.relative_offset_days ?? 0;
         if (!baseSlug) continue;
 
         // Collect dates from ALL identities that carry the base slug.
@@ -1439,8 +1439,8 @@ function buildOccurrencesMapCorrected(
       if (gate && !isPublishableForYear(rule, year)) continue;
       if (rule.tradition === 'sikh' && rule.slug !== 'lohri') continue;
       if (rule.rule_family === 'relative_to_other_observance') {
-        const baseSlug = rule.relative_base_slug;
-        const offset = rule.relative_offset_days || 0;
+        const baseSlug = rule.relation?.parent_slug ?? rule.relative_base_slug;
+        const offset = rule.relation?.offset_days ?? rule.relative_offset_days ?? 0;
         if (!baseSlug) continue;
 
         const baseKeys = slugIndex.get(baseSlug) ?? [];
