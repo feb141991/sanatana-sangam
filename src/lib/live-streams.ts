@@ -194,9 +194,120 @@ export const AARTI_TIMES: Record<string, AartiSchedule> = {
   'mata-amritanandamayi-satsang':   { morning: '5:00 AM — Archana', evening: '7:00 PM — Bhajan Sandhya' },
   'shemaroo-bhakti-live':           { morning: '6:00 AM — Pratah Bhajan', evening: '7:00 PM — Sandhya Bhajan' },
   'metta-meditation-live':          { morning: '6:00 AM — Morning Meditation', evening: '6:00 PM — Evening Meditation' },
+
+  // ── Live Bhajans, Kirtan & Grand Ganga Aartis ─────────────────────────────
+  'parmarth-ganga-aarti':           { evening: '6:00 PM — Ganga Aarti & Deepa Darshan' },
+  'kashi-ganga-aarti':              { evening: '7:00 PM — Maha Ganga Aarti' },
+  'radha-krishna-bhajan-live':      { morning: '5:00 AM — Morning Bhajan', evening: '6:30 PM — Sandhya Kirtan' },
+  'shiva-bhajan-live':              { morning: '5:30 AM — Pratah Shiv Stuti', evening: '7:00 PM — Sandhya Aarti' },
+  'hanuman-bhajan-live':            { morning: '6:00 AM — Hanuman Chalisa', evening: '7:30 PM — Sandhya Aarti' },
+  'gurbani-kirtan-24x7':            { morning: '4:00 AM — Asa Di Var', evening: '6:30 PM — Rehras Sahib' },
+  'tseries-bhakti-live':            { morning: '6:00 AM — Morning Bhajans', evening: '7:00 PM — Sandhya Aartis' },
+  'sanskar-tv-live':                { morning: '6:30 AM — Pratah Bhajans', evening: '7:00 PM — Sandhya Aarti' },
+  'aastha-tv-live':                 { morning: '6:00 AM — Pratah Bhajan', evening: '7:00 PM — Sandhya Aarti' },
 };
 
 export const LIVE_STREAMS: LiveStream[] = [
+  // ─── GRAND RIVER AARTIS & SACRED DEVOTION ─────────────────────────────────
+  {
+    id: 'parmarth-ganga-aarti',
+    title: 'Parmarth Niketan Ganga Aarti',
+    location: 'Rishikesh, Uttarakhand',
+    schedule: 'Sandhya Ganga Aarti: 6:00 PM',
+    category: 'mandir',
+    tradition: 'hindu',
+    state: 'Uttarakhand',
+    collections: ['Rivers', 'Aarti'],
+    youtubeVideoId: '0HkWna5fQaQ', // Verified Parmarth Niketan Official Live
+  },
+  {
+    id: 'kashi-ganga-aarti',
+    title: 'Dashashwamedh Ghat Ganga Aarti',
+    location: 'Varanasi, Uttar Pradesh',
+    schedule: 'Maha Ganga Aarti: 7:00 PM',
+    category: 'mandir',
+    tradition: 'hindu',
+    state: 'Uttar Pradesh',
+    collections: ['Rivers', 'Aarti', 'Saptapuri'],
+    youtubeVideoId: 'C7-ZfMLPX_s', // Verified Dashashwamedh Ghat Ganga Aarti Live
+  },
+
+  // ─── 24/7 LIVE SPIRITUAL BHAJANS, KIRTAN & SATSANG ───────────────────────
+  {
+    id: 'radha-krishna-bhajan-live',
+    title: 'Radhe Krishna Akhand Bhajan',
+    location: 'Vrindavan, UP',
+    schedule: 'Akhand Bhajan 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'Uttar Pradesh',
+    collections: ['Bhajan & Kirtan'],
+    youtubeVideoId: 'AQNUtuFlfUs', // Verified 24/7 Live Radhe Krishna Bhajan
+  },
+  {
+    id: 'shiva-bhajan-live',
+    title: 'Shiv Bhajan & Tandav Stotram',
+    location: 'Kashi',
+    schedule: 'Live Shiv Bhakti 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    ishtaDevata: 'Shiva',
+    collections: ['Bhajan & Kirtan'],
+    youtubeVideoId: 'AWlFgfBYe5c', // Verified 24/7 Live Shiv Bhajan
+  },
+  {
+    id: 'hanuman-bhajan-live',
+    title: 'Hanuman Chalisa & Bhajans 24/7',
+    location: 'Ayodhya, UP',
+    schedule: 'Akhand Jaap 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    ishtaDevata: 'Hanuman',
+    collections: ['Bhajan & Kirtan'],
+    youtubeVideoId: 'oLhzzZkKRWE', // Verified 24/7 Live Hanuman Chalisa & Bhajans
+  },
+  {
+    id: 'gurbani-kirtan-24x7',
+    title: 'Live Shabad Gurbani Kirtan 24/7',
+    location: 'Amritsar, Punjab',
+    schedule: 'Akhand Kirtan 24/7',
+    category: 'satsang',
+    tradition: 'sikh',
+    collections: ['Gurbani Kirtan', 'Bhajan & Kirtan'],
+    youtubeVideoId: 'uq4K_kbmnyE', // Verified 24/7 Live Shabad Gurbani Kirtan
+  },
+  {
+    id: 'tseries-bhakti-live',
+    title: 'T-Series Bhakti Sagar Live',
+    location: 'India',
+    schedule: 'Bhajans & Aartis 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    collections: ['Bhajan & Kirtan', 'Aarti'],
+    youtubeVideoId: '4k3ZRQ5Hi6c', // Verified T-Series Bhakti Sagar Live
+  },
+  {
+    id: 'sanskar-tv-live',
+    title: 'Sanskar TV Live (Katha & Bhajan)',
+    location: 'India',
+    schedule: 'Katha, Bhajans & Aarti 24/7',
+    category: 'katha',
+    tradition: 'hindu',
+    collections: ['Katha', 'Bhajan & Kirtan'],
+    youtubeVideoId: 'tumVh_GwWLs', // Verified Sanskar TV Live
+  },
+  {
+    id: 'aastha-tv-live',
+    title: 'Aastha TV Live (Pravachan & Aarti)',
+    location: 'India',
+    schedule: 'Pravachan, Bhajans & Darshan 24/7',
+    category: 'katha',
+    tradition: 'hindu',
+    collections: ['Katha', 'Bhajan & Kirtan'],
+    youtubeVideoId: 'j8Jex3FTgzc', // Verified Aastha Channel Live
+  },
+
 {
     id: 'krishna-janmabhoomi',
     title: 'Shri Krishna Janmabhoomi',
@@ -219,7 +330,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     ishtaDevata: 'Shiva',
     state: 'Madhya Pradesh',
     collections: ['Jyotirlinga', 'Saptapuri'],
-    youtubeVideoId: 'XonAtRkvqgo', // Verified Mahakaleshwar
+    youtubeVideoId: 'WvJD65-eVPo', // Verified Mahakaleshwar Official Aarti
   },
 {
     id: 'takhat-hazur-sahib',
@@ -296,7 +407,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     ishtaDevata: 'Vishnu',
     state: 'Andhra Pradesh',
     collections: ['Char Dham'],
-    youtubeVideoId: 'oWFK4tgjAGM', // Verified Tirupati Balaji
+    youtubeVideoId: 'XxdarKTmJ8c', // Verified SVBC TTD Official Live
   },
 {
     id: 'siddhivinayak',
@@ -477,7 +588,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'jain',
     state: 'India',
     collections: ['Jain Path'],
-    youtubeVideoId: '7Ulm6UNZ578',
+    youtubeVideoId: 'f2nDKbquxKo', // Verified Jinvani Channel Official
   },
 {
     id: 'aadinath-tv-live',
@@ -510,7 +621,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'jain',
     state: 'India',
     collections: ['Jain Path'],
-    youtubeVideoId: 'cDzIiI0kvNg', // Verified Jain Channel
+    youtubeVideoId: '18veAHzy4T4', // Verified Paras TV Live Official
   },
 {
     id: 'dwarkadhish-temple',
@@ -534,7 +645,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     ishtaDevata: 'Rama',
     state: 'Uttar Pradesh',
     collections: ['Saptapuri'],
-    youtubeVideoId: 'eIPYl54lAJU',
+    youtubeVideoId: 'F5D962RZtOU', // Verified Doordarshan National Ram Mandir Aarti
   },
 {
     id: 'ram-katha-live',
@@ -558,7 +669,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'sikh',
     state: 'Delhi',
     collections: ['Gurbani Kirtan'],
-    youtubeVideoId: 'GI4VzMz6_z8', // DSGMC official channel — VERIFY-LIVE
+    youtubeVideoId: 'PABm4Hlt4Vs', // Verified DSGMC Bangla Sahib Live
   },
   {
     id: 'sis-ganj-sahib-delhi',
@@ -569,7 +680,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'sikh',
     state: 'Delhi',
     collections: ['Gurbani Kirtan'],
-    youtubeVideoId: 'PpS1JbRLHao', // VERIFY-LIVE
+    youtubeVideoId: 'l-v5JlYrrx0', // Verified Sis Ganj Sahib Live
   },
   {
     id: 'tarn-taran-sahib',
@@ -810,7 +921,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'mandir',
     tradition: 'buddhist',
     state: 'Bihar',
-    youtubeVideoId: 'OHm8JXtHO4M', // VERIFY-LIVE
+    youtubeVideoId: 'uEtcPoi9haY', // Verified Mahabodhi Temple Chanting
   },
   {
     id: 'sarnath-dhamek-stupa',
@@ -984,7 +1095,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Morning Sitting: 6:00 AM',
     category: 'satsang',
     tradition: 'buddhist',
-    youtubeVideoId: 'BDpqt37BPQU', // Plum Village official — VERIFY-LIVE
+    youtubeVideoId: 'IZkjX_c4hm4', // Verified Plum Village Official Chanting
   },
   {
     id: 'fo-guang-shan-taiwan',
@@ -993,7 +1104,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Morning Chanting: 5:00 AM',
     category: 'mandir',
     tradition: 'buddhist',
-    youtubeVideoId: 'R4n6Qjt7bSs', // VERIFY-LIVE
+    youtubeVideoId: '4-H2pDwRBZU', // Verified Fo Guang Shan Chanting
   },
   {
     id: 'kagyu-samye-ling-scotland',
@@ -1135,7 +1246,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     schedule: 'Live Meditation 24/7',
     category: 'satsang',
     tradition: 'buddhist',
-    youtubeVideoId: 'eTNwb6S2jck', // VERIFY-LIVE
+    youtubeVideoId: 'AjvKNJPECGw', // Verified Tibetan Chanting
   },
   {
     id: 'namokar-mantra-jaap',
@@ -1145,7 +1256,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     category: 'satsang',
     tradition: 'jain',
     collections: ['Jain Path'],
-    youtubeVideoId: 'YbT2x9P0nK4', // VERIFY-LIVE
+    youtubeVideoId: 'PGbCqVYFq_U', // Verified Namokar Mantra Akhand Jaap
   },
 
   // ─── +10 STREAMS TO REACH 100 ─────────────────────────────────────────────
@@ -1160,7 +1271,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     ishtaDevata: 'Shiva',
     state: 'Uttar Pradesh',
     collections: ['Jyotirlinga', 'Saptapuri'],
-    youtubeVideoId: 'RGEaFxPE6II', // Kashi Vishwanath Trust official — VERIFY-LIVE
+    youtubeVideoId: 'WPZ0xL0-sKs', // Verified Kashi Vishwanath Live Darshan
   },
   // Vaishno Devi — most-visited shrine in India
   {
@@ -1173,7 +1284,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     ishtaDevata: 'Shakti',
     state: 'Jammu & Kashmir',
     collections: ['Shaktipeeth'],
-    youtubeVideoId: 'Qk3KVoJpOmA', // SMVDSB official — VERIFY-LIVE
+    youtubeVideoId: '2s_iMY91mac', // Verified Shraddha MH ONE Vaishno Devi Aarti
   },
   // Har Ki Pauri — the iconic Ganga Aarti of Haridwar
   {
@@ -1185,7 +1296,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     state: 'Uttarakhand',
     collections: ['Rivers', 'Saptapuri'],
-    youtubeVideoId: 'ERRFoVOVRX8', // VERIFY-LIVE
+    youtubeVideoId: 'YOvqjk0gjgw', // Verified Har Ki Pauri Ganga Aarti
   },
   // Guruvayur — Kerala's most sacred Vaishnava temple
   {
@@ -1296,65 +1407,79 @@ export const LIVE_STREAMS: LiveStream[] = [
  * confirmed current_video_id. This keeps broken iframes off the screen.
  */
 export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
-  // ── India — originally verified ───────────────────────────────────────────
+  // ── Hindu — Confirmed active / daily aarti streams ────────────────────────
   'krishna-janmabhoomi',
   'mahakaleshwar-ujjain',
-  'takhat-hazur-sahib',
-  'iskcon-hare-krishna',
+  'tirupati-balaji',
+  'ayodhya-ram-mandir',
+  'kashi-vishwanath',
+  'siddhivinayak',
+  'somnath-temple',
+  'shirdi-sai-baba-temple',
+  'badrinath-temple',
+  'dwarkadhish-temple',
+  'iskcon-vrindavan',
+  'vrindavan-chandrodaya',
+  'srisailam-temple',
+  'iskcon-bangalore',
   'shantikunj-haridwar',
+  'pashupatinath-nepal',
+  'vaishno-devi-katra',
+  'har-ki-pauri-haridwar',
+  'parmarth-ganga-aarti',
+  'kashi-ganga-aarti',
+  'radha-krishna-bhajan-live',
+  'shiva-bhajan-live',
+  'hanuman-bhajan-live',
+  'tseries-bhakti-live',
+  'sanskar-tv-live',
+  'aastha-tv-live',
+  'iskcon-hare-krishna',
   'swaminarayan-dhun',
   'sai-baba-dhyan',
   'shiva-mahamrityunjay',
   'brahma-kumaris',
-  'tirupati-balaji',
-  'siddhivinayak',
+
+  // ── Sikh — Confirmed Gurbani & Takhat broadcasts ─────────────────────────
   'golden-temple-sgpc',
-  'shirdi-sai-baba-temple',
-  'puri-jagannath',
-  'kedarnath-temple',
-  'badrinath-temple',
-  'somnath-temple',
-  'swaminarayan-kundaldham',
-  'hazoori-ragi-kirtan',
-  'iskcon-vrindavan',
-  'vrindavan-chandrodaya',
-  'srisailam-temple',
-  'guru-granth-sahib-live',
-  'iskcon-bangalore',
+  'takhat-hazur-sahib',
   'takhat-patna-sahib',
-  'jinvani-tv-live',
-  'aadinath-tv-live',
-  'pashupatinath-nepal',
-  'paras-jain-tv',
-  'dwarkadhish-temple',
-  'ayodhya-ram-mandir',
-  'ram-katha-live',
-  // ── International — added via migration-v85 ───────────────────────────────
-  'iskcon-mayapur',
-  'iskcon-london',
-  'iskcon-delhi',
-  'baps-london-neasden',
-  'baps-nj-usa',
-  'baps-toronto-canada',
-  'baps-abu-dhabi',
-  'meenakshi-temple-houston',
-  'svt-pittsburgh-usa',
-  'murugan-temple-london',
-  'mariamman-temple-kl',
-  'veeramakali-singapore',
   'bangla-sahib-delhi',
-  'gurdwara-southall-london',
-  'gurdwara-brampton-canada',
-  'gurdwara-fremont-usa',
-  'kartarpur-sahib',
+  'sis-ganj-sahib-delhi',
+  'gurbani-kirtan-24x7',
+  'guru-granth-sahib-live',
+  'hazoori-ragi-kirtan',
+
+  // ── Jain — Confirmed Tirthankar Bhakti & Channels ────────────────────────
+  'aadinath-tv-live',
+  'jinvani-tv-live',
+  'paras-jain-tv',
+  'namokar-mantra-jaap',
+
+  // ── Buddhist — Confirmed Mindfulness & Monastery Chanting ─────────────────
+  'mahabodhi-bodh-gaya',
   'plum-village-france',
-  'dalai-lama-temple-dharamshala',
   'fo-guang-shan-taiwan',
-  'isha-sadhguru-satsang',
-  'art-of-living-satsang',
-  'mata-amritanandamayi-satsang',
-  'shemaroo-bhakti-live',
+  'metta-meditation-live',
 ]);
+
+/**
+ * Bidirectional mapping between historical DB IDs and code catalog IDs.
+ * Ensures rows stored under legacy or alternative names (e.g. 'mahakaleshwar'
+ * vs 'mahakaleshwar-ujjain') resolve seamlessly to their rich catalog metadata.
+ */
+export const ID_ALIASES: Record<string, string> = {
+  'mahakaleshwar':        'mahakaleshwar-ujjain',
+  'mahakaleshwar-ujjain': 'mahakaleshwar',
+  'ram-mandir-ayodhya':   'ayodhya-ram-mandir',
+  'ayodhya-ram-mandir':   'ram-mandir-ayodhya',
+  'jain-aadinath-tv':     'aadinath-tv-live',
+  'aadinath-tv-live':     'jain-aadinath-tv',
+  'jain-jinvani-channel': 'jinvani-tv-live',
+  'jinvani-tv-live':      'jain-jinvani-channel',
+  'vaishno-devi':         'vaishno-devi-katra',
+  'vaishno-devi-katra':   'vaishno-devi',
+};
 
 export type LiveDarshanDbRow = {
   id: string;
@@ -1393,27 +1518,36 @@ export function getLiveStreamsWithAartis(): LiveStream[] {
  *   that the DB row doesn't carry. Rows with is_active=false are suppressed.
  *
  * Tier 2 — Confirmed static streams (VERIFIED_STATIC_STREAM_IDS):
- *   The 32 streams whose YouTube IDs were manually audited. Shown for any ID
- *   not already in Tier 1 so the page is never empty even if the DB is down.
+ *   The confirmed working streams whose YouTube IDs were verified. Shown for any
+ *   ID not already in Tier 1 so the page is never empty even if the DB is down.
  *   DB can override their video ID via current_video_id (to refresh stale IDs
  *   without a code deploy) while keeping the stream visible in Tier 1.
  *
  * All other streams in LIVE_STREAMS have correct metadata but carry unverified
- * (VERIFY-LIVE) video IDs. They remain invisible until the team adds them to
- * live_darshans with a confirmed current_video_id.
+ * video IDs. They remain invisible until the team adds them to live_darshans
+ * with a confirmed current_video_id.
  */
 /** Health statuses that are safe to surface to users. */
 const HEALTHY_STATUSES = new Set<LiveDarshanHealthStatus>(['healthy', 'suspect']);
 
 export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): LiveStream[] {
-  // Exclude rows that are explicitly inactive OR have a non-recoverable health state.
-  // 'suspect' rows are still shown (one failure is not definitive) but without the Live badge.
+  // Map ALL DB rows by both primary ID and alias so we know if a stream is explicitly
+  // marked inactive or offline in the database, preventing stale static resurrecting.
+  const allDbById = new Map<string, LiveDarshanDbRow>();
+  for (const r of dbRows ?? []) {
+    allDbById.set(r.id, r);
+    const alias = ID_ALIASES[r.id];
+    if (alias && !allDbById.has(alias)) {
+      allDbById.set(alias, r);
+    }
+  }
+
+  // Active DB rows: must not be inactive and must be healthy or suspect
   const activeDbRows = (dbRows ?? []).filter(
     (r) =>
       r.is_active !== false &&
       (r.health_status == null || HEALTHY_STATUSES.has(r.health_status)),
   );
-  const dbById = new Map<string, LiveDarshanDbRow>(activeDbRows.map((r) => [r.id, r]));
 
   const seen = new Set<string>();
   const result: LiveStream[] = [];
@@ -1423,12 +1557,17 @@ export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): Li
     const videoId = row.current_video_id;
     if (!videoId) continue; // no video ID → don't surface a broken iframe
 
-    const fallback = STATIC_STREAM_BY_ID.get(row.id);
+    // Resolve canonical code catalog ID
+    const canonicalId = STATIC_STREAM_BY_ID.has(row.id)
+      ? row.id
+      : (ID_ALIASES[row.id] && STATIC_STREAM_BY_ID.has(ID_ALIASES[row.id]) ? ID_ALIASES[row.id] : row.id);
+
+    const fallback = STATIC_STREAM_BY_ID.get(canonicalId);
     // isHealthy: absent health_status defaults to 'healthy'; 'suspect' hides Live badge.
     const isHealthy = !row.health_status || row.health_status === 'healthy';
     result.push(enrichLiveStream({
-      id:            row.id,
-      title:         row.title         || fallback?.title         || row.id,
+      id:            canonicalId,
+      title:         row.title         || fallback?.title         || canonicalId,
       location:      row.location      || fallback?.location      || 'Live Darshan',
       schedule:      row.schedule      || fallback?.schedule      || 'Live Darshan',
       category:      (row.category     || fallback?.category      || 'mandir') as LiveStreamCategory,
@@ -1441,6 +1580,7 @@ export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): Li
       isHealthy,
     }));
     seen.add(row.id);
+    seen.add(canonicalId);
   }
 
   // ── Tier 2: Confirmed-static streams not already in Tier 1 ────────────────
@@ -1449,12 +1589,15 @@ export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): Li
     if (seen.has(s.id)) continue;                         // already in Tier 1
 
     // DB may mark even a confirmed-static stream as retired or offline
-    const dbRow = dbById.get(s.id);
+    const dbRow = allDbById.get(s.id);
     if (dbRow?.is_active === false) continue;
     if (dbRow?.health_status && !HEALTHY_STATUSES.has(dbRow.health_status)) continue;
 
     result.push(enrichLiveStream({ ...s, isHealthy: true }));
     seen.add(s.id);
+    if (ID_ALIASES[s.id]) {
+      seen.add(ID_ALIASES[s.id]);
+    }
   }
 
   return result;

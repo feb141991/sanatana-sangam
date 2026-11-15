@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LiveStream, LiveStreamCategory } from '@/lib/live-streams';
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 import InteractiveAarti from '@/components/darshan/InteractiveAarti';
+import LiveDarshanHeroCarousel from '@/components/darshan/LiveDarshanHeroCarousel';
 import toast from 'react-hot-toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -44,6 +45,8 @@ const TRADITION_LABELS: Record<TraditionFilter, { label: string; icon: SacredIco
 };
 
 const ALL_COLLECTIONS = [
+  { id: 'Aarti',          label: 'Holy Aartis',  icon: 'sparkles' as SacredIconName,  color: '#FF6B4A', desc: 'Temple & river aartis' },
+  { id: 'Bhajan & Kirtan',label: 'Live Bhajans', icon: 'music'    as SacredIconName,  color: '#9933CC', desc: '24/7 Akhand Bhakti'   },
   { id: 'Char Dham',      label: 'Char Dham',    icon: 'mountain' as SacredIconName,  color: '#FF9933', desc: '4 holy abodes'         },
   { id: 'Jyotirlinga',    label: 'Jyotirlinga',  icon: 'sparkles' as SacredIconName,  color: '#8B0000', desc: '12 radiant Lingas'      },
   { id: 'Shaktipeeth',    label: 'Shaktipeeth',  icon: 'sparkles' as SacredIconName,  color: '#CC3300', desc: 'Seats of the Goddess'   },
@@ -652,10 +655,10 @@ export default function LiveDarshanClient({
 
   // ── Collections sorted by user's tradition ────────────────────────────────
   const TRAD_COLLECTION_MAP: Record<string, string[]> = {
-    hindu:    ['Char Dham', 'Jyotirlinga', 'Shaktipeeth', 'Saptapuri', 'Rivers'],
-    sikh:     ['Panj Takht', 'Gurbani Kirtan'],
-    jain:     ['Jain Path'],
-    buddhist: [],
+    hindu:    ['Aarti', 'Bhajan & Kirtan', 'Char Dham', 'Jyotirlinga', 'Shaktipeeth', 'Saptapuri', 'Rivers'],
+    sikh:     ['Panj Takht', 'Gurbani Kirtan', 'Bhajan & Kirtan'],
+    jain:     ['Jain Path', 'Aarti'],
+    buddhist: ['Bhajan & Kirtan'],
   };
   const myCollections = TRAD_COLLECTION_MAP[tradition] ?? [];
   const sortedCollections = [...ALL_COLLECTIONS].sort((a, b) => {
@@ -884,6 +887,19 @@ export default function LiveDarshanClient({
           </div>
         </div>
       </div>
+
+      {/* ── Highlight of the Day & Aarti Hero Carousel ────────────────────── */}
+      {!search && activeCollection === null && (
+        <LiveDarshanHeroCarousel
+          streams={streams}
+          onPlay={setActivePlayer}
+          onOfferAarti={setAartiTarget}
+          onOpenNotif={setNotifTarget}
+          favouriteIds={favouriteIds}
+          onToggleFav={toggleFav}
+          userTradition={tradition}
+        />
+      )}
 
       {/* ── Favourites strip ───────────────────────────────────────────────── */}
       {favouriteIds.length > 0 && (

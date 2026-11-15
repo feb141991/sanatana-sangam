@@ -36,7 +36,6 @@ export async function GET(req: NextRequest) {
     const { data: dbStreams, error: streamsError } = await supabase
       .from('live_darshans')
       .select('id, title, location, schedule, category, tradition, current_video_id, is_active, health_status')
-      .eq('is_active', true)
       .order('created_at', { ascending: true });
 
     // Same resilience as page.tsx: a DB read error falls back to the

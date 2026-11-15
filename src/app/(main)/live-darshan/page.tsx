@@ -19,7 +19,6 @@ export default async function LiveDarshanPage() {
     supabase
       .from('live_darshans')
       .select('id, title, location, schedule, category, tradition, current_video_id, is_active, health_status')
-      .eq('is_active', true)
       .order('created_at', { ascending: true }),
   ]);
 

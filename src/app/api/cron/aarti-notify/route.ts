@@ -61,8 +61,7 @@ export async function GET(request: Request) {
   // ── Resolve the effective stream registry ─────────────────────────────────
   const { data: dbStreams } = await supabase
     .from('live_darshans')
-    .select('id, title, location, schedule, category, tradition, current_video_id, is_active, health_status')
-    .eq('is_active', true);
+    .select('id, title, location, schedule, category, tradition, current_video_id, is_active, health_status');
 
   const effectiveStreams = resolveActiveLiveStreams(dbStreams ?? null);
   const streamMap = Object.fromEntries(effectiveStreams.map((stream) => [stream.id, stream]));
