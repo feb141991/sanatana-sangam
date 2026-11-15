@@ -1,0 +1,112 @@
+# Relative Relation Audit
+
+Computed locally at the Ujjain reference location. This is not independent verification and authorizes no date changes.
+
+Rules: **34** · Years: **2026–2028**
+Status counts: `match` 65 · `child_no_date` 25 · `parent_no_date` 12
+
+| Year | Rule | Kind | Parent dates | Expected dates | Actual dates | Status |
+|---:|---|---|---|---|---|---|
+| 2026 | `ganeshotsav-day-2` | series_child | 2026-09-14 | 2026-09-15 | 2026-09-15 | **match** |
+| 2026 | `ganeshotsav-day-3` | series_child | 2026-09-14 | 2026-09-16 | 2026-09-16 | **match** |
+| 2026 | `ganeshotsav-day-4` | series_child | 2026-09-14 | 2026-09-17 | 2026-09-17 | **match** |
+| 2026 | `ganeshotsav-day-5` | series_child | 2026-09-14 | 2026-09-18 | 2026-09-18 | **match** |
+| 2026 | `ganeshotsav-day-6` | series_child | 2026-09-14 | 2026-09-19 | 2026-09-19 | **match** |
+| 2026 | `ganeshotsav-day-7` | series_child | 2026-09-14 | 2026-09-20 | 2026-09-20 | **match** |
+| 2026 | `ganeshotsav-day-8` | series_child | 2026-09-14 | 2026-09-21 | 2026-09-21 | **match** |
+| 2026 | `ganeshotsav-day-9` | series_child | 2026-09-14 | 2026-09-22 | 2026-09-22 | **match** |
+| 2026 | `ganeshotsav-day-10` | series_child | 2026-09-14 | 2026-09-23 | 2026-09-23 | **match** |
+| 2026 | `anant-chaturdashi-ganesh-visarjan` | series_child | 2026-09-14 | 2026-09-24 | 2026-09-24 | **match** |
+| 2026 | `mahalaya-amavasya` | independent_offset | 2026-10-11 | 2026-10-10 | — | **child_no_date** |
+| 2026 | `chintpurni-mata-chaitra-navratri` | convention | 2026-03-20 | 2026-03-20 | — | **child_no_date** |
+| 2026 | `chintpurni-mata-sharad-navratri` | convention | 2026-10-11 | 2026-10-11 | — | **child_no_date** |
+| 2026 | `dhanteras` | independent_offset | 2026-11-08 | 2026-11-06 | 2026-11-06 | **match** |
+| 2026 | `govardhan-puja` | independent_offset | 2026-11-08 | 2026-11-09 | 2026-11-09 | **match** |
+| 2026 | `bhai-dooj` | independent_offset | 2026-11-08 | 2026-11-10 | 2026-11-10 | **match** |
+| 2026 | `chhath-nahay-khay` | series_child | 2026-11-15 | 2026-11-13 | 2026-11-13 | **match** |
+| 2026 | `chhath-kharna` | series_child | 2026-11-15 | 2026-11-14 | 2026-11-14 | **match** |
+| 2026 | `chhath-usha-arghya` | series_child | 2026-11-15 | 2026-11-16 | 2026-11-16 | **match** |
+| 2026 | `kartik-purnima` | independent_offset | 2026-11-08 | 2026-11-24 | — | **child_no_date** |
+| 2026 | `lohri` | convention | 2026-01-14 | 2026-01-13 | 2026-01-13 | **match** |
+| 2026 | `holla-mohalla` | convention | 2026-03-03 | 2026-03-04 | 2026-03-04 | **match** |
+| 2026 | `bandhi-chhor-divas` | alias | 2026-11-08 | 2026-11-08 | 2026-11-08 | **match** |
+| 2026 | `guru-nanak-gurpurab` | independent_offset | 2026-11-08 | 2026-11-24 | 2026-11-24 | **match** |
+| 2026 | `sangha-day-loy-krathong` | independent_offset | 2026-11-08 | 2026-11-24 | — | **child_no_date** |
+| 2026 | `paryushana-day-2` | series_child | 2026-09-08 | 2026-09-09 | 2026-09-09 | **match** |
+| 2026 | `paryushana-day-3` | series_child | 2026-09-08 | 2026-09-10 | 2026-09-10 | **match** |
+| 2026 | `paryushana-day-4` | series_child | 2026-09-08 | 2026-09-11 | 2026-09-11 | **match** |
+| 2026 | `paryushana-day-5` | series_child | 2026-09-08 | 2026-09-12 | 2026-09-12 | **match** |
+| 2026 | `paryushana-day-6` | series_child | 2026-09-08 | 2026-09-13 | 2026-09-13 | **match** |
+| 2026 | `paryushana-day-7` | series_child | 2026-09-08 | 2026-09-14 | 2026-09-14 | **match** |
+| 2026 | `jain-new-year-pratipada` | independent_offset | 2026-11-08 | 2026-11-09 | — | **child_no_date** |
+| 2026 | `jain-diwali-nirvana-ladnun` | alias | 2026-11-08 | 2026-11-08 | — | **child_no_date** |
+| 2026 | `kartik-purnima-jain` | alias | 2026-11-08 | 2026-11-24 | — | **child_no_date** |
+| 2027 | `ganeshotsav-day-2` | series_child | 2027-09-04 | 2027-09-05 | 2027-09-05 | **match** |
+| 2027 | `ganeshotsav-day-3` | series_child | 2027-09-04 | 2027-09-06 | 2027-09-06 | **match** |
+| 2027 | `ganeshotsav-day-4` | series_child | 2027-09-04 | 2027-09-07 | 2027-09-07 | **match** |
+| 2027 | `ganeshotsav-day-5` | series_child | 2027-09-04 | 2027-09-08 | 2027-09-08 | **match** |
+| 2027 | `ganeshotsav-day-6` | series_child | 2027-09-04 | 2027-09-09 | 2027-09-09 | **match** |
+| 2027 | `ganeshotsav-day-7` | series_child | 2027-09-04 | 2027-09-10 | 2027-09-10 | **match** |
+| 2027 | `ganeshotsav-day-8` | series_child | 2027-09-04 | 2027-09-11 | 2027-09-11 | **match** |
+| 2027 | `ganeshotsav-day-9` | series_child | 2027-09-04 | 2027-09-12 | 2027-09-12 | **match** |
+| 2027 | `ganeshotsav-day-10` | series_child | 2027-09-04 | 2027-09-13 | 2027-09-13 | **match** |
+| 2027 | `anant-chaturdashi-ganesh-visarjan` | series_child | 2027-09-04 | 2027-09-14 | 2027-09-14 | **match** |
+| 2027 | `mahalaya-amavasya` | independent_offset | 2027-10-01 | 2027-09-30 | — | **child_no_date** |
+| 2027 | `chintpurni-mata-chaitra-navratri` | convention | 2027-04-07 | 2027-04-07 | — | **child_no_date** |
+| 2027 | `chintpurni-mata-sharad-navratri` | convention | 2027-10-01 | 2027-10-01 | — | **child_no_date** |
+| 2027 | `dhanteras` | independent_offset | 2027-10-29 | 2027-10-27 | 2027-10-27 | **match** |
+| 2027 | `govardhan-puja` | independent_offset | 2027-10-29 | 2027-10-30 | 2027-10-30 | **match** |
+| 2027 | `bhai-dooj` | independent_offset | 2027-10-29 | 2027-10-31 | 2027-10-31 | **match** |
+| 2027 | `chhath-nahay-khay` | series_child | 2027-11-04 | 2027-11-02 | 2027-11-02 | **match** |
+| 2027 | `chhath-kharna` | series_child | 2027-11-04 | 2027-11-03 | 2027-11-03 | **match** |
+| 2027 | `chhath-usha-arghya` | series_child | 2027-11-04 | 2027-11-05 | 2027-11-05 | **match** |
+| 2027 | `kartik-purnima` | independent_offset | 2027-10-29 | 2027-11-14 | — | **child_no_date** |
+| 2027 | `lohri` | convention | 2027-01-14 | 2027-01-13 | 2027-01-13 | **match** |
+| 2027 | `holla-mohalla` | convention | 2027-03-22 | 2027-03-23 | 2027-03-23 | **match** |
+| 2027 | `bandhi-chhor-divas` | alias | 2027-10-29 | 2027-10-29 | 2027-10-29 | **match** |
+| 2027 | `guru-nanak-gurpurab` | independent_offset | 2027-10-29 | 2027-11-14 | 2027-11-14 | **match** |
+| 2027 | `sangha-day-loy-krathong` | independent_offset | 2027-10-29 | 2027-11-14 | — | **child_no_date** |
+| 2027 | `paryushana-day-2` | series_child | — | — | — | **parent_no_date** |
+| 2027 | `paryushana-day-3` | series_child | — | — | — | **parent_no_date** |
+| 2027 | `paryushana-day-4` | series_child | — | — | — | **parent_no_date** |
+| 2027 | `paryushana-day-5` | series_child | — | — | — | **parent_no_date** |
+| 2027 | `paryushana-day-6` | series_child | — | — | — | **parent_no_date** |
+| 2027 | `paryushana-day-7` | series_child | — | — | — | **parent_no_date** |
+| 2027 | `jain-new-year-pratipada` | independent_offset | 2027-10-29 | 2027-10-30 | — | **child_no_date** |
+| 2027 | `jain-diwali-nirvana-ladnun` | alias | 2027-10-29 | 2027-10-29 | — | **child_no_date** |
+| 2027 | `kartik-purnima-jain` | alias | 2027-10-29 | 2027-11-14 | — | **child_no_date** |
+| 2028 | `ganeshotsav-day-2` | series_child | 2028-08-23 | 2028-08-24 | 2028-08-24 | **match** |
+| 2028 | `ganeshotsav-day-3` | series_child | 2028-08-23 | 2028-08-25 | 2028-08-25 | **match** |
+| 2028 | `ganeshotsav-day-4` | series_child | 2028-08-23 | 2028-08-26 | 2028-08-26 | **match** |
+| 2028 | `ganeshotsav-day-5` | series_child | 2028-08-23 | 2028-08-27 | 2028-08-27 | **match** |
+| 2028 | `ganeshotsav-day-6` | series_child | 2028-08-23 | 2028-08-28 | 2028-08-28 | **match** |
+| 2028 | `ganeshotsav-day-7` | series_child | 2028-08-23 | 2028-08-29 | 2028-08-29 | **match** |
+| 2028 | `ganeshotsav-day-8` | series_child | 2028-08-23 | 2028-08-30 | 2028-08-30 | **match** |
+| 2028 | `ganeshotsav-day-9` | series_child | 2028-08-23 | 2028-08-31 | 2028-08-31 | **match** |
+| 2028 | `ganeshotsav-day-10` | series_child | 2028-08-23 | 2028-09-01 | 2028-09-01 | **match** |
+| 2028 | `anant-chaturdashi-ganesh-visarjan` | series_child | 2028-08-23 | 2028-09-02 | 2028-09-02 | **match** |
+| 2028 | `mahalaya-amavasya` | independent_offset | 2028-09-19 | 2028-09-18 | — | **child_no_date** |
+| 2028 | `chintpurni-mata-chaitra-navratri` | convention | 2028-03-27 | 2028-03-27 | — | **child_no_date** |
+| 2028 | `chintpurni-mata-sharad-navratri` | convention | 2028-09-19 | 2028-09-19 | — | **child_no_date** |
+| 2028 | `dhanteras` | independent_offset | 2028-10-17 | 2028-10-15 | — | **child_no_date** |
+| 2028 | `govardhan-puja` | independent_offset | 2028-10-17 | 2028-10-18 | 2028-10-18 | **match** |
+| 2028 | `bhai-dooj` | independent_offset | 2028-10-17 | 2028-10-19 | 2028-10-19 | **match** |
+| 2028 | `chhath-nahay-khay` | series_child | 2028-10-23 | 2028-10-21 | 2028-10-21 | **match** |
+| 2028 | `chhath-kharna` | series_child | 2028-10-23 | 2028-10-22 | 2028-10-22 | **match** |
+| 2028 | `chhath-usha-arghya` | series_child | 2028-10-23 | 2028-10-24 | 2028-10-24 | **match** |
+| 2028 | `kartik-purnima` | independent_offset | 2028-10-17 | 2028-11-02 | — | **child_no_date** |
+| 2028 | `lohri` | convention | 2028-01-15 | 2028-01-14 | 2028-01-14 | **match** |
+| 2028 | `holla-mohalla` | convention | 2028-03-11 | 2028-03-12 | 2028-03-12 | **match** |
+| 2028 | `bandhi-chhor-divas` | alias | 2028-10-17 | 2028-10-17 | 2028-10-17 | **match** |
+| 2028 | `guru-nanak-gurpurab` | independent_offset | 2028-10-17 | 2028-11-02 | 2028-11-02 | **match** |
+| 2028 | `sangha-day-loy-krathong` | independent_offset | 2028-10-17 | 2028-11-02 | — | **child_no_date** |
+| 2028 | `paryushana-day-2` | series_child | — | — | — | **parent_no_date** |
+| 2028 | `paryushana-day-3` | series_child | — | — | — | **parent_no_date** |
+| 2028 | `paryushana-day-4` | series_child | — | — | — | **parent_no_date** |
+| 2028 | `paryushana-day-5` | series_child | — | — | — | **parent_no_date** |
+| 2028 | `paryushana-day-6` | series_child | — | — | — | **parent_no_date** |
+| 2028 | `paryushana-day-7` | series_child | — | — | — | **parent_no_date** |
+| 2028 | `jain-new-year-pratipada` | independent_offset | 2028-10-17 | 2028-10-18 | — | **child_no_date** |
+| 2028 | `jain-diwali-nirvana-ladnun` | alias | 2028-10-17 | 2028-10-17 | — | **child_no_date** |
+| 2028 | `kartik-purnima-jain` | alias | 2028-10-17 | 2028-11-02 | — | **child_no_date** |
+

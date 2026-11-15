@@ -39,6 +39,13 @@ export const PUBLIC_PANCHATANTRA_IDS = [
   'panchatantra-farmers-wife',
   'panchatantra-dog-who-went-abroad',
   'panchatantra-butter-blinded-brahman',
+  'panchatantra-monk-who-left-his-body-behind',
+  'panchatantra-girl-who-married-a-snake',
+  'panchatantra-credulous-fiend',
+  'panchatantra-snake-in-princes-belly',
+  'panchatantra-pert-hen-sparrow',
+  'panchatantra-jackal-who-killed-no-elephants',
+  'panchatantra-remedy-worse-than-disease',
 ] as const;
 
 export type PanchatantraLang = 'en' | 'hi';
@@ -97,6 +104,13 @@ interface ArtworkSet {
  * panchatantra-farmers-wife: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-dog-who-went-abroad: six handcrafted 3D clay-animation scenes generated 2026-11-12.
  * panchatantra-butter-blinded-brahman: six handcrafted 3D clay-animation scenes generated 2026-11-12.
+ * panchatantra-monk-who-left-his-body-behind: six handcrafted 3D clay-animation scenes generated 2026-11-12/14.
+ * panchatantra-girl-who-married-a-snake: six handcrafted 3D clay-animation scenes generated 2026-11-14.
+ * panchatantra-credulous-fiend: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-snake-in-princes-belly: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-pert-hen-sparrow: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-jackal-who-killed-no-elephants: six handcrafted 3D clay-animation scenes from mobile storybook assets.
+ * panchatantra-remedy-worse-than-disease: six handcrafted 3D clay-animation scenes generated 2026-11-14.
  */
 const ARTWORK: Record<string, ArtworkSet> = {
   'panchatantra-crane-and-crab': {
@@ -245,6 +259,153 @@ const ARTWORK: Record<string, ArtworkSet> = {
       'प्रतिमा के पीछे से गंभीर आवाज में देवदत्त कहता है कि एक महीने तक रोज़ मक्खन, मलाई और घी के मालपुए खिलाने से उसके पति की दृष्टि समाप्त हो जाएगी।',
       'वरदान समझकर पत्नी घर में देवदत्त को भरपूर घी-मक्खन खिलाती है और वह अंधे होने का नाटक करते हुए दीवारें टटोलकर चलने लगता है।',
       'पति को अंधा मानकर पत्नी दिनदहाड़े प्रेमी को भोजन पर बुलाती है, तभी देवदत्त द्वार बंद कर भारी मूसल से दोनों को पीटकर घर से बाहर खदेड़ देता है।',
+    ],
+  },
+  'panchatantra-monk-who-left-his-body-behind': {
+    dir: 'monk-who-left-his-body-behind',
+    width: 1376,
+    height: 768,
+    alt: [
+      'An enigmatic clay ascetic with matted hair and beads makes dramatic mystical gestures in the royal court, captivating King Fine-Chariot and the gathered citizens.',
+      'The cunning ascetic leans in to whisper into the ear of the enthralled king, boasting that his soul ascends nightly to Indra\'s heavenly court.',
+      'King Fine-Chariot sits in reverence at the ascetic\'s feet in the palace hall, completely neglecting his royal duties while ministers look on in distress.',
+      'The sharp-minded prime minister, Counsellor Strong, returns from the borderlands in travel robes, observing the court\'s infatuation with quiet resolve.',
+      'Counsellor Strong bows respectfully before King Fine-Chariot, calmly proposing a decisive test to verify the holy man\'s miraculous claims.',
+      'Flames and orange embers engulf the locked wooden cell at night as royal soldiers pile straw at its base, while Counsellor Strong and the humbled king watch from the courtyard.',
+    ],
+    altHi: [
+      'राजदरबार में जटाधारी संन्यासी रहस्यमयी मुद्रा में हाथ उठाकर ढोंग रच रहा है, और राजा सुमित्र व दरबारी मुग्ध होकर उसे देख रहे हैं।',
+      'धूर्त संन्यासी राजा के कान में झुककर फुसफुसा रहा है और दावा कर रहा है कि उसकी आत्मा आधी रात को स्वर्ग में इंद्र की सभा में जाती है।',
+      'राजा सुमित्र राजकाज भूलकर महल के कक्ष में संन्यासी के चरणों में हाथ जोड़े बैठा है, जबकि दरबारी चिंतित खड़े हैं।',
+      'बुद्धिमान महामात्य दृढ़बुद्धि सीमांत से राजधानी लौटकर दरबार में ढोंगी का प्रभाव देखकर चुपचाप योजना बना रहा है।',
+      'महामात्य दृढ़बुद्धि राजा सुमित्र के सामने हाथ जोड़कर संन्यासी की दैवीय शक्ति की परीक्षा लेने का शांत प्रस्ताव रख रहा है।',
+      'रात के अंधेरे में बंद लकड़ी की कोठरी धू-धू कर जल रही है, सैनिक सूखी घास डाल रहे हैं, और महामात्य दृढ़बुद्धि व चकित राजा आंगन से देख रहे हैं।',
+    ],
+  },
+  'panchatantra-girl-who-married-a-snake': {
+    dir: 'girl-who-married-a-snake',
+    width: 1376,
+    height: 768,
+    alt: [
+      'Inside a candlelit havan chamber, a noble Brahman couple in white gaze in astonishment at a midwife holding a newborn baby black cobra swaddled in silk.',
+      'A devoted Indian mother cradles a glistening black hooded cobra in an ornate wooden box, gently bathing it with sandalwood milk while the father watches.',
+      'An elderly Brahman with a staff and bullock cart arrives at a friend\'s country estate, exchanging sacred water in a clay pot to seal his son\'s betrothal.',
+      'A brave young bride in red and gold bridal attire stands resolute before a sacred fire beside an ornate wedding chest containing a giant black cobra, as guests gasp in shock.',
+      'In a moonlit bedchamber filled with flowers, a glowing, handsome young prince stands beside the bed near a shriveled snakeskin, as the bride gazes in wonder.',
+      'At dawn beside a blazing hearth, the overjoyed father casts the discarded snakeskin into golden flames, while the radiant prince and bride hold hands in celebration.',
+    ],
+    altHi: [
+      'हवन कुंड के सामने बैठे ब्राह्मण दंपति आश्चर्यचकित होकर दाई के हाथों में रेशमी कपड़े में लिपटे नन्हे काले नाग-शिशु को देख रहे हैं।',
+      'ममतामयी माता रेशमी संदूक में बैठे काले फनधारी नागदेव को चंदन मिश्रित दूध पिला रही है, जबकि पिता पास खड़े देख रहे हैं।',
+      'यात्रा करते हुए वृद्ध ब्राह्मण अपने पुराने मित्र के द्वार पर पहुंचकर हाथ में जलपात्र लेकर विवाह का संकल्प पूरा कर रहे हैं।',
+      'विवाह मंडप में पवित्र अग्नि के पास लाल जोड़े में सजी साहसी वधू विशाल फनधारी नाग के संदूक के पास दृढ़ता से खड़ी है, और बाराती चकित हैं।',
+      'चांदनी से सजे शयनकक्ष में सुंदर दिव्य राजकुमार केंचुल के पास खड़ा है, और सेज पर बैठी वधू विस्मय से उसे देख रही है।',
+      'प्रातःकाल हवन कुंड की प्रज्वलित लपटों में पिता सर्प की केंचुल डाल रहे हैं, और दिव्य राजकुमार व वधू हाथ थामे प्रसन्न खड़े हैं।',
+    ],
+  },
+  'panchatantra-credulous-fiend': {
+    dir: 'credulous-fiend',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A fearsome clay demon perches in a gloomy cemetery tree near palace walls, glaring at a radiant princess protected inside a glowing magic mandala.',
+      'Hovering outside a carved palace lattice window at dusk, the horned fiend grinds his teeth as he overhears the weeping princess speaking of Twilight.',
+      'Inside dark royal stables, the fiend transforms into a sleek, muscular black stallion standing quietly in a hay stall.',
+      'A cunning clay horse-thief in the shadows slips an iron bit into the disguised demon-stallion\'s mouth and mounts him with spurs.',
+      'The disguised demon gallops at hurricane speed through moonlit wilderness in panic, while the terrified thief reaches up to grab an overhanging banyan root.',
+      'Perched on a banyan branch, the quick-witted thief bites down hard on the monkey\'s tail as the gullible fiend flees in terror into the horizon.',
+    ],
+    altHi: [
+      'श्मशान के अंधेरे वृक्ष पर बैठा भयानक राक्षस महल की ओर देख रहा है, जहां सुरक्षा-चक्र के भीतर राजकुमारी बैठी है।',
+      'संध्या के समय महल की नक्काशीदार खिड़की के बाहर राक्षस कान लगाकर राजकुमारी की सांध्य-काल संबंधी बातें सुन रहा है।',
+      'राजमहल के अंधेरे अस्तबल में राक्षस एक बलिष्ठ और चमकदार काले घोड़े का रूप धारण कर चुपचाप खड़ा है।',
+      'अस्तबल में घुसा चतुर अश्व-चोर राक्षस-रूपी घोड़े के मुंह में लोहे की लगाम डालकर उस पर सवार हो रहा है।',
+      'राक्षस-रूपी घोड़ा आंधी की गति से जंगल में भाग रहा है, और ऊपर लटकती बरगद की जटा पकड़कर चोर पेड़ पर चढ़ रहा है।',
+      'बरगद की डाल पर बैठा चोर बंदर की पूंछ को दांतों से काट रहा है, और भयभीत मूर्ख राक्षस उल्टे पांव दूर भाग रहा है।',
+    ],
+  },
+  'panchatantra-snake-in-princes-belly': {
+    dir: 'snake-in-princes-belly',
+    width: 1376,
+    height: 768,
+    alt: [
+      'An emaciated, sickly clay prince rests weakly on a royal couch, withered by a black venomous serpent hidden inside his body.',
+      'Disguised as a weary beggar outside a foreign temple, the ailing prince sits upon stone steps while citizens and royalty pass by.',
+      'In the royal courtyard, an enraged king angrily weds his calm, dignified younger daughter to the frail beggar prince.',
+      'The noble princess lovingly supports her feverish husband on a dusty forest road under a sweeping banyan tree.',
+      'Hidden behind thickets, the princess watches two hooded black snakes arguing: one emerging from the sleeping prince\'s mouth, the other from an anthill.',
+      'The restored, radiant prince embraces his clever wife beside the unburdened anthill and two uncovered clay pots overflowing with golden coins.',
+    ],
+    altHi: [
+      'राजमहल में दुर्बल और पीला पड़ा बीमार राजकुमार खाट पर लेटा है, और उसके पेट में छिपा काला विषैला सर्प उसे सुखा रहा है।',
+      'परदेसी राज्य के मंदिर की सीढ़ियों पर भिखारी बना बीमार राजकुमार बैठा है, जबकि दूर राजा अपनी दो पुत्रियों के साथ दिख रहा है।',
+      'राजदरबार में क्रोधित राजा अपनी सत्यवादी छोटी राजकुमारी का विवाह नगर द्वार पर बैठे दुर्बल भिखारी राजकुमार से करा रहा है।',
+      'धूल भरी पगडंडी पर राजकुमारी अपने बीमार पति को सहारा देकर दक्षिण की ओर ले जा रही है और बरगद की छांव में उसकी सेवा कर रही है।',
+      'झाड़ियों के पीछे छिपी राजकुमारी देखती है कि सोते राजकुमार के मुंह से निकला सांप और बांबी का नाग आपस में विवाद कर रहे हैं।',
+      'स्वस्थ और तेजस्वी बना राजकुमार अपनी बुद्धिमती पत्नी के साथ बांबी से निकले सोने के दो कलशों के पास मुस्कुराता हुआ खड़ा है।',
+    ],
+  },
+  'panchatantra-pert-hen-sparrow': {
+    dir: 'pert-hen-sparrow',
+    width: 1376,
+    height: 768,
+    alt: [
+      'Two industrious clay sparrows weave dried grass and moss into a cozy spherical nest on a sturdy fig tree branch.',
+      'Under a purple winter storm with pouring rain, a shivering clay monkey perches beneath the sparrows\' warm nest.',
+      'Drenched in cold rain, the miserable monkey huddles in a ball with chattering teeth on the wet tree limb.',
+      'Peering from her warm woven nest, the smug hen-sparrow pokes her beak out to lecture the soaked monkey below.',
+      'Narrowing his reddened eyes in fury, the shivering ape bares his teeth and growls up at the chattering bird.',
+      'The enraged monkey rips the delicate sparrow nest into ragged shreds with his claws, scattering twigs as the birds flutter away in grief.',
+    ],
+    altHi: [
+      'हिमालय के वटवृक्ष की डाल पर गौरैया का जोड़ा तिनकों और रुई से सुंदर गोल घोंसला बुन रहा है।',
+      'मूसलाधार वर्षा और बर्फीले तूफान में गौरैया के सुरक्षित घोंसले के नीचे डाल पर भीगता बंदर बैठा है।',
+      'ठंड से ठिठुरता, भीगा हुआ दयनीय बंदर दांत कटकटाते हुए डाल पर घुटने समेटे बैठा है।',
+      'गर्म घोंसले से बाहर चोंच निकालकर घमंडी मादा गौरैया नीचे बैठे भीगते बंदर को उपदेश दे रही है।',
+      'क्रोध से लाल आंखें किए भीगा बंदर दांत पीसकर ऊपर गौरैया को चुप रहने की चेतावनी दे रहा है।',
+      'क्रोधित बंदर ने एक ही झपट्टे में सुंदर घोंसले को नोचकर तार-तार कर दिया और गौरैया रोती हुई उड़ गई।',
+    ],
+  },
+  'panchatantra-jackal-who-killed-no-elephants': {
+    dir: 'jackal-who-killed-no-elephants',
+    width: 1376,
+    height: 768,
+    alt: [
+      'A noble clay lion gently carries an orphaned baby jackal in his jaws through a rocky mountain wilderness toward his cave.',
+      'Inside a warm rocky cavern, a mother lioness lovingly nurses the tiny gray jackal cub alongside her own two golden lion cubs.',
+      'Three growing cubs tumble and play happily on the cave floor: two broad-shouldered young lions and one slender gray jackal.',
+      'A giant wild elephant trumpets in the forest; two brave young lions crouch to attack while the terrified jackal turns and flees.',
+      'Back at the cave, the two young lions laugh mockingly while the wounded jackal bristles his fur and bares his teeth in rage.',
+      'In a quiet cave alcove, the affectionate lioness rests her paw on the jackal\'s head, gently revealing his true lineage before he walks into the sunset.',
+    ],
+    altHi: [
+      'पर्वत की कंदरा के पास दयालु सिंह एक नन्हे अनाथ सियार-शिशु को अपने जबड़ों में कोमलता से दबाए गुफा की ओर ला रहा है।',
+      'गुफा के भीतर ममतामयी सिंहनी अपने दो सिंह-शावकों के साथ नन्हे सियार के बच्चे को भी वात्सल्य से दूध पिला रही है।',
+      'गुफा के फर्श पर दो बलिष्ठ सिंह-शावक और एक दुबला-पतला सियार का बच्चा सगे भाइयों की तरह खेलते हुए बड़े हो रहे हैं।',
+      'जंगल में चिंघाड़ते विशाल हाथी को देखकर दो सिंह-शावक झपटने को तैयार हैं, जबकि भयभीत सियार पूंछ दबाकर भाग रहा है।',
+      'गुफा में दोनों सिंह-शावक हंसकर सियार का उपहास उड़ा रहे हैं, और अपमानित सियार क्रोध से दांत किटकिटा रहा है।',
+      'एकांत में बैठी सिंहनी सियार के सिर पर कोमल पंजा रखकर उसे उसके असली कुल का सत्य समझा रही है, और वह सिर झुकाए सुन रहा है।',
+    ],
+  },
+  'panchatantra-remedy-worse-than-disease': {
+    dir: 'remedy-worse-than-disease',
+    width: 1376,
+    height: 768,
+    alt: [
+      'White clay herons nest in the sweeping branches of an ancient banyan tree by a lotus pool, unaware of a black cobra glaring from a trunk hollow.',
+      'Beside broken eggshells at the muddy pond edge, an elder heron droops in tears as a shrewd red crab scuttles up to question him.',
+      'Hidden among water lilies and reeds, the sly red crab raises his claws with a sinister smirk, plotting the extermination of the herons.',
+      'By the water\'s edge, the crafty crab gestures toward a distant hill burrow, persuading the foolish heron to lay a trail of fish to the tree.',
+      'Following a trail of fresh fish morsels to the banyan roots, a fierce brown mongoose attacks and destroys the coiled black cobra.',
+      'Having devoured the snake, the predatory mongoose creeps along tree branches into the canopy, terrorizing the screeching heron colony.',
+    ],
+    altHi: [
+      'कमल-सरोवर के किनारे विशाल वटवृक्ष की डालों पर बगुले घोंसलों में बैठे हैं, और नीचे तने के कोटर से काला नाग निकल रहा है।',
+      'टूटे अंडों के छिलकों के पास सरोवर के किनारे वृद्ध बगुला रो रहा है, और कीचड़ से निकलकर चतुर लाल केकड़ा उससे बात कर रहा है।',
+      'कमल की पत्तियों और नरकट के बीच छिपा लाल केकड़ा चोंच वाले बगुलों के कुल का विनाश करने की कुटिल योजना बना रहा है।',
+      'सरोवर के तट पर केकड़ा पहाड़ी की ओर इशारा कर सीधे-सादे बगुले को नेवले के बिल से पेड़ तक मछली की पंक्ति बिछाने का उपाय बता रहा है।',
+      'मछलियों के टुकड़ों का पीछा करते हुए पेड़ की जड़ तक पहुंचा फुर्तीला भूरा नेवला फन फैलाए काले नाग को चीरकर मार रहा है।',
+      'नाग को खाने के बाद भूरा नेवला वटवृक्ष की डालों पर चढ़कर घोंसलों में बैठे बगुलों और उनके बच्चों पर झपट रहा है।',
     ],
   },
 };

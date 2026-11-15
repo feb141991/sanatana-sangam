@@ -19,6 +19,9 @@ describe('observance scheduler', () => {
       sourceEligible: true,
       route_kind: 'festival',
       route_slug: 'diwali',
+      review_status: 'reviewed',
+      verification_status: 'verified',
+      audit_status: 'completed',
     },
     {
       id: 'occ-ekadashi-2026',
@@ -32,6 +35,9 @@ describe('observance scheduler', () => {
       sourceEligible: true,
       route_kind: 'vrat',
       route_slug: 'ekadashi',
+      review_status: 'reviewed',
+      verification_status: 'verified',
+      audit_status: 'completed',
     },
     {
       id: 'occ-karva-chauth-2026',
@@ -45,6 +51,9 @@ describe('observance scheduler', () => {
       sourceEligible: true,
       route_kind: 'vrat',
       route_slug: 'karva-chauth',
+      review_status: 'reviewed',
+      verification_status: 'verified',
+      audit_status: 'completed',
     },
     {
       id: 'occ-somvar-vrat-2026',
@@ -58,6 +67,9 @@ describe('observance scheduler', () => {
       sourceEligible: true,
       route_kind: 'vrat',
       route_slug: 'somvar-vrat',
+      review_status: 'reviewed',
+      verification_status: 'verified',
+      audit_status: 'completed',
     },
   ];
 

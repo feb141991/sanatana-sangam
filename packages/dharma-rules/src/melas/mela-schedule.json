@@ -1,0 +1,302 @@
+{
+  "version": "1.0.0",
+  "accessedOn": "2026-11-14",
+  "melas": [
+    {
+      "slug": "haridwar-kumbh-2027",
+      "tradition": "hindu",
+      "emoji": "🌊",
+      "timezone": "Asia/Kolkata",
+      "periodStart": null,
+      "periodEnd": null,
+      "officialUrl": "https://haridwarkumbh.uk.gov.in",
+      "name": {
+        "value": { "en": "Haridwar Kumbh 2027" },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "uk-haridwar-kumbh-home",
+            "sourceName": "Haridwar Kumbh 2027, official website",
+            "publisher": "Government of Uttarakhand",
+            "pageOrSection": "Home page",
+            "tier": 4,
+            "region": "Uttarakhand",
+            "url": "https://haridwarkumbh.uk.gov.in"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "tagline": {
+        "value": { "en": "Bathing days on the Ganga at Har Ki Pauri, 14 January to 20 April 2027." },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "uk-haridwar-kumbh-snan",
+            "sourceName": "Haridwar Kumbh 2027, official website",
+            "publisher": "Government of Uttarakhand",
+            "pageOrSection": "Important Snan Dates",
+            "tier": 4,
+            "region": "Uttarakhand",
+            "url": "https://haridwarkumbh.uk.gov.in/snan-and-events"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "significance": {
+        "value": {
+          "en": "Hindu tradition traces the Kumbh to the Samudra Manthan, the churning of the ocean by the devas and asuras in search of amrit. When the kalash of amrit emerged, four places became joined to its story: Haridwar, Prayagraj, Nashik and Ujjain. The timing of each Kumbh follows the Sun, the Moon and Jupiter; at Haridwar it is held when Jupiter is in Aquarius (Kumbha) and the Sun in Aries. Haridwar is where the Ganga leaves the Himalaya and enters the plains. Its previous Kumbh was held in 2021. The official website names this gathering Haridwar Kumbh 2027; the Maharashtra Kumbh authority lists Haridwar's mela as a Kumbh or Ardh Kumbh."
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "uk-haridwar-kumbh-significance",
+            "sourceName": "Haridwar Kumbh 2027, official website",
+            "publisher": "Government of Uttarakhand",
+            "pageOrSection": "Significance of the Kumbh; About Kumbh (timeline)",
+            "tier": 4,
+            "region": "Uttarakhand",
+            "url": "https://haridwarkumbh.uk.gov.in/significance-of-kumbh"
+          },
+          {
+            "id": "mh-simhastha-what-is-kumbh",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "What is the Simhastha Kumbh Mela (table of the four Kumbh sites)",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/what-is-the-kumbh-mela"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "places": {
+        "value": {
+          "en": [
+            "Har Ki Pauri, Haridwar, on the Ganga: the official schedule lists every bathing day here."
+          ]
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "uk-haridwar-kumbh-snan",
+            "sourceName": "Haridwar Kumbh 2027, official website",
+            "publisher": "Government of Uttarakhand",
+            "pageOrSection": "Important Snan Dates",
+            "tier": 4,
+            "region": "Uttarakhand",
+            "url": "https://haridwarkumbh.uk.gov.in/snan-and-events"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "On the Amrit Snan days the thirteen akharas go to the ghats in procession, with saints, Naga sadhus and Mahamandaleshwars, for the ceremonial bath. The official website describes it as the holiest bathing ritual of the Mela.",
+            "On every day of the Mela, pilgrims bathe at the ghats, offer prayers, perform rituals and seek the blessings of the Ganga.",
+            "A Kumbh bath is traditionally taken with a sankalp: saying who you are, where and when you are bathing, and with what intention.",
+            "After the bath, the usual sequence is daan (charity), japa, meditation and darshan of sadhus and saints.",
+            "Through the Mela there are satsangs and discourses, processions, and aarti and prayers by the Ganga."
+          ]
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "uk-haridwar-kumbh-snan",
+            "sourceName": "Haridwar Kumbh 2027, official website",
+            "publisher": "Government of Uttarakhand",
+            "pageOrSection": "Three Ways to Experience the Snan; Explore Kumbh in many ways",
+            "tier": 4,
+            "region": "Uttarakhand",
+            "url": "https://haridwarkumbh.uk.gov.in/snan-and-events"
+          },
+          {
+            "id": "mh-simhastha-snan-significance",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "Spiritual Significance of the Snan (sankalp; the sequence after the bath)",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/spiritual-significance-of-the-snan"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "days": [
+        { "date": "2027-01-14", "title": "Makar Sankranti", "kind": "snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-02-06", "title": "Mauni Amavasya", "kind": "snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-02-11", "title": "Vasant Panchami", "kind": "snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-02-20", "title": "Magh Purnima", "kind": "snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-03-06", "title": "Maha Shivaratri", "kind": "amrit_snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-03-08", "title": "Phalguna Amavasya", "kind": "amrit_snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        {
+          "date": "2027-03-15",
+          "title": "Dev Doli",
+          "kind": "amrit_snan",
+          "place": "Har Ki Pauri, Haridwar",
+          "status": "unconfirmed",
+          "note": "Listed as an Amrit Snan on the official website (read 2026-11-14) but absent from the Mela Officer's announcement of 2026-04-14 (10 baths, 3 Amrit Snans) and the Chief Minister's of 2025-11-28. Withheld until a dated notice confirms it."
+        },
+        { "date": "2027-04-07", "title": "Nav Samvatsar", "kind": "snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-04-14", "title": "Mesha Sankranti", "kind": "principal_amrit_snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-04-15", "title": "Shri Ram Navami", "kind": "snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" },
+        { "date": "2027-04-20", "title": "Chaitra Purnima", "kind": "snan", "place": "Har Ki Pauri, Haridwar", "status": "confirmed" }
+      ]
+    },
+    {
+      "slug": "nashik-trimbakeshwar-simhastha-2027",
+      "tradition": "hindu",
+      "emoji": "🌊",
+      "timezone": "Asia/Kolkata",
+      "periodStart": "2026-10-31",
+      "periodEnd": "2028-07-24",
+      "officialUrl": "https://simhasthamahakumbh.maharashtra.gov.in",
+      "name": {
+        "value": { "en": "Nashik–Trimbakeshwar Simhastha Kumbh 2027" },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "mh-simhastha-home",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "Home page",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "tagline": {
+        "value": { "en": "Amrit Snan on the Godavari at Nashik and Trimbakeshwar: 2 August, 31 August and 11–12 September 2027." },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "mh-simhastha-snan-calendar",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "Snan Calendar; Amrut Snan Calendar 2027",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/snan-calendar"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "significance": {
+        "value": {
+          "en": "Kumbh means a pitcher or kalash, and the mela recalls the kalash of amrit from the churning of the ocean. The Kumbh comes to each of its four places, Haridwar, Prayagraj, Ujjain and Nashik–Trimbakeshwar, roughly once every twelve years, close to the time Jupiter takes to pass through all twelve signs. At Nashik and Trimbakeshwar it is held when Jupiter and the Sun are in Leo (Simha), which is why it is called the Simhastha. It falls in the monsoon months of Shravan and Bhadrapad, on the Godavari, which rises on Brahmagiri above Trimbakeshwar. In 2017 UNESCO inscribed the Kumbh Mela on its Representative List of the Intangible Cultural Heritage of Humanity."
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "mh-simhastha-what-is-kumbh",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "What is the Simhastha Kumbh Mela",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/what-is-the-kumbh-mela"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "places": {
+        "value": {
+          "en": [
+            "Ramtirth, in the Panchavati area of Nashik: by tradition Shri Ram, Sita and Lakshman stayed at Panchavati on the Godavari during the forest exile. Vaishnava sadhus bathe here.",
+            "Kushavarta Tirth, Trimbakeshwar, about 30 km away: Trimbakeshwar is one of the twelve jyotirlingas, near the source of the Godavari on Brahmagiri. Shaiva sadhus bathe here."
+          ]
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "mh-simhastha-why-nashik",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "Why Nashik and Trimbakeshwar",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/why-nashik-and-trimbakeshwar"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Dhwajarohan, the hoisting of the flag on 31 October 2026, opens the Simhastha; Dhwajavatarana, the lowering of the flag on 24 July 2028, closes it.",
+            "Nagar Pradakshina, the traditional procession around Nashik, is held before the Amrit Snans.",
+            "On the third Amrit Snan the akharas bathe by tradition: Vaishnava sadhus at Ramtirth on 11 September, Shaiva sadhus at Kushavarta on 12 September.",
+            "A Kumbh bath is traditionally taken with a sankalp: saying who you are, where and when you are bathing, and with what intention.",
+            "After the bath, the usual sequence is daan (charity), japa, meditation and darshan of sadhus and saints.",
+            "Beyond the Amrit Snan days, the authority lists many other auspicious bathing days at Ramtirth and Kushavarta through the Simhastha."
+          ]
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "mh-simhastha-snan-calendar",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "Snan Calendar (events, Amrut Snan days, parvakal muhurat lists)",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/snan-calendar"
+          },
+          {
+            "id": "mh-simhastha-snan-significance",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "Spiritual Significance of the Snan",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/spiritual-significance-of-the-snan"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "guidance": {
+        "value": {
+          "en": [
+            "Amrit Snan days have the heaviest crowds and fall in the peak monsoon. The authority advises elderly people, people with disabilities, anyone unwell or pregnant, and families with small children to avoid them and choose a quieter day."
+          ]
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "id": "mh-simhastha-amrut-calendar",
+            "sourceName": "Simhastha Kumbh Mela 2027, official website",
+            "publisher": "Nashik Trimbakeshwar Kumbh Mela Authority, Government of Maharashtra",
+            "pageOrSection": "Amrut Snan Calendar 2027, Plan Your Visit",
+            "tier": 4,
+            "region": "Maharashtra",
+            "url": "https://simhasthamahakumbh.maharashtra.gov.in/amrut-snan-calendar-2027"
+          }
+        ],
+        "applicability": { "universal": false, "traditions": ["hindu"] },
+        "translationStatus": { "en": "source", "hi": "pending" }
+      },
+      "days": [
+        { "date": "2026-10-31", "title": "Dhwajarohan (flag hoisting), start of the Simhastha", "kind": "event", "place": "Nashik and Trimbakeshwar", "status": "confirmed" },
+        { "date": "2027-06-15", "title": "Main Mela period begins", "kind": "event", "place": "Nashik and Trimbakeshwar", "status": "confirmed" },
+        { "date": "2027-07-29", "title": "Nagar Pradakshina (procession; time to be notified)", "kind": "event", "place": "Nashik", "status": "confirmed" },
+        { "date": "2027-08-02", "title": "First Amrit Snan (Ashadh Somvati Amavasya)", "kind": "amrit_snan", "place": "Nashik", "status": "confirmed" },
+        { "date": "2027-08-31", "title": "Second Amrit Snan, Mahakumbh Snan (Shravan Amavasya)", "kind": "principal_amrit_snan", "place": "Nashik", "status": "confirmed" },
+        { "date": "2027-09-11", "title": "Third Amrit Snan (Vaishnava akharas)", "kind": "amrit_snan", "place": "Ramtirth, Nashik", "status": "confirmed" },
+        { "date": "2027-09-12", "title": "Third Amrit Snan (Shaiva akharas)", "kind": "amrit_snan", "place": "Kushavarta Tirth, Trimbakeshwar", "status": "confirmed" },
+        { "date": "2028-07-24", "title": "Dhwajavatarana (flag lowering), end of the Simhastha", "kind": "event", "place": "Nashik and Trimbakeshwar", "status": "confirmed" }
+      ]
+    }
+  ]
+}

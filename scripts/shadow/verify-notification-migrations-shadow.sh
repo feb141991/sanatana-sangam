@@ -423,21 +423,21 @@ fi
 echo "PASS: Cadence limits verified: shloka=1, learning=1, other=1, ceiling=7."
 
 # Test Cadence trigger enforcement:
-# Choose a future UTC day rather than depending on the test runner's clock.
+# Use tomorrow in UTC so the cadence clock cannot truncate the daytime window.
+TEST_USER="e0000000-0000-0000-0000-000000000001"
 TEST_DATE=$(${PSQL} -d postgres -t -A -c "SELECT (now() AT TIME ZONE 'UTC')::date + 1;")
-# 1st Shloka succeeds
+
+# 1. Shloka slot test
 ${PSQL} -d postgres -c "
   INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
-  VALUES ('e0000000-0000-0000-0000-000000000001', 'shloka', 'shloka:${TEST_DATE}:1', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+  VALUES ('${TEST_USER}', 'shloka', 'shloka:${TEST_DATE}:1', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
 "
 echo "PASS: 1st Shloka scheduled successfully."
 
-# 2nd Shloka on same day is suppressed by BEFORE INSERT trigger
 ${PSQL} -d postgres -c "
   INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
-  VALUES ('e0000000-0000-0000-0000-000000000001', 'shloka', 'shloka:${TEST_DATE}:2', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+  VALUES ('${TEST_USER}', 'shloka', 'shloka:${TEST_DATE}:2', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
 "
-
 SECOND_SHLOKA_SCHEDULED=$(${PSQL} -d postgres -t -A -c "
   SELECT count(*) FROM public.notification_schedule WHERE notification_key = 'shloka:${TEST_DATE}:2';
 ")
@@ -455,10 +455,78 @@ if [ "${SUPPRESSION_REASON}" != "shloka_slot_reached" ]; then
 fi
 echo "PASS: 2nd Shloka correctly suppressed by database cadence trigger with reason 'shloka_slot_reached'."
 
-# Mandali exempt item MUST SUCCEED even if other slots are full
+# 2. Learning slot test (quiz + dharm_veer share 1 slot)
 ${PSQL} -d postgres -c "
   INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
-  VALUES ('e0000000-0000-0000-0000-000000000001', 'mandali_comment', 'comment:1', '${TEST_DATE} 08:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+  VALUES ('${TEST_USER}', 'quiz', 'quiz:${TEST_DATE}:1', '${TEST_DATE} 11:30:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+"
+echo "PASS: 1st Learning slot (quiz) scheduled successfully."
+
+${PSQL} -d postgres -c "
+  INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
+  VALUES ('${TEST_USER}', 'dharm_veer', 'dharm_veer:${TEST_DATE}:1', '${TEST_DATE} 11:30:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+"
+LEARNING_SUPPRESSED=$(${PSQL} -d postgres -t -A -c "
+  SELECT count(*) FROM public.notification_schedule WHERE notification_key = 'dharm_veer:${TEST_DATE}:1';
+")
+if [ "${LEARNING_SUPPRESSED}" -ne 0 ]; then
+  echo "FAIL: 2nd Learning slot was scheduled but should have been suppressed!"
+  exit 1
+fi
+LEARNING_REASON=$(${PSQL} -d postgres -t -A -c "
+  SELECT reason FROM public.notification_cadence_events WHERE notification_key = 'dharm_veer:${TEST_DATE}:1' AND decision = 'suppressed';
+")
+if [ "${LEARNING_REASON}" != "learning_slot_reached" ]; then
+  echo "FAIL: Expected suppression reason 'learning_slot_reached', got '${LEARNING_REASON}'!"
+  exit 1
+fi
+echo "PASS: 2nd Learning item correctly suppressed with 'learning_slot_reached'."
+
+# 3. Other slot test (sattvic + mood share 1 other slot)
+${PSQL} -d postgres -c "
+  INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
+  VALUES ('${TEST_USER}', 'sattvic', 'sattvic:${TEST_DATE}:1', '${TEST_DATE} 15:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+"
+echo "PASS: 1st Other slot (sattvic) scheduled successfully."
+
+${PSQL} -d postgres -c "
+  INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
+  VALUES ('${TEST_USER}', 'mood', 'mood:${TEST_DATE}:1', '${TEST_DATE} 15:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+"
+OTHER_SUPPRESSED=$(${PSQL} -d postgres -t -A -c "
+  SELECT count(*) FROM public.notification_schedule WHERE notification_key = 'mood:${TEST_DATE}:1';
+")
+if [ "${OTHER_SUPPRESSED}" -ne 0 ]; then
+  echo "FAIL: 2nd Other slot was scheduled but should have been suppressed!"
+  exit 1
+fi
+OTHER_REASON=$(${PSQL} -d postgres -t -A -c "
+  SELECT reason FROM public.notification_cadence_events WHERE notification_key = 'mood:${TEST_DATE}:1' AND decision = 'suppressed';
+")
+if [ "${OTHER_REASON}" != "other_nudge_reached" ]; then
+  echo "FAIL: Expected suppression reason 'other_nudge_reached', got '${OTHER_REASON}'!"
+  exit 1
+fi
+echo "PASS: 2nd Other item correctly suppressed with 'other_nudge_reached'."
+
+# 4. Idempotency test: duplicate schedule key is suppressed as duplicate
+${PSQL} -d postgres -c "
+  INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
+  VALUES ('${TEST_USER}', 'sattvic', 'sattvic:${TEST_DATE}:1', '${TEST_DATE} 15:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
+"
+DUPLICATE_REASON=$(${PSQL} -d postgres -t -A -c "
+  SELECT reason FROM public.notification_cadence_events WHERE notification_key = 'sattvic:${TEST_DATE}:1' AND decision = 'duplicate';
+")
+if [ "${DUPLICATE_REASON}" != "idempotency_key_already_admitted" ]; then
+  echo "FAIL: Expected duplicate reason 'idempotency_key_already_admitted', got '${DUPLICATE_REASON}'!"
+  exit 1
+fi
+echo "PASS: Duplicate schedule key suppressed as 'idempotency_key_already_admitted'."
+
+# 5. Mandali exempt item MUST SUCCEED even when all slots are full
+${PSQL} -d postgres -c "
+  INSERT INTO public.notification_schedule (user_id, notification_type, notification_key, send_at, metadata)
+  VALUES ('${TEST_USER}', 'mandali_comment', 'comment:1', '${TEST_DATE} 18:00:00+00', '{\"local_date\": \"${TEST_DATE}\"}'::jsonb);
 "
 echo "PASS: Person-initiated Mandali event exempted from daily cadence limits."
 

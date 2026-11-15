@@ -1,0 +1,1629 @@
+{
+  "status": "computed_not_verified",
+  "readOnly": true,
+  "location": {
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata"
+  },
+  "years": [
+    2026,
+    2027,
+    2028
+  ],
+  "relationCount": 34,
+  "rows": [
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-2",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-15"
+      ],
+      "actualDates": [
+        "2026-09-15"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-3",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-16"
+      ],
+      "actualDates": [
+        "2026-09-16"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-4",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-17"
+      ],
+      "actualDates": [
+        "2026-09-17"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-5",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-18"
+      ],
+      "actualDates": [
+        "2026-09-18"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-6",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-19"
+      ],
+      "actualDates": [
+        "2026-09-19"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-7",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-20"
+      ],
+      "actualDates": [
+        "2026-09-20"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-8",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-21"
+      ],
+      "actualDates": [
+        "2026-09-21"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-9",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-22"
+      ],
+      "actualDates": [
+        "2026-09-22"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "ganeshotsav-day-10",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-23"
+      ],
+      "actualDates": [
+        "2026-09-23"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "anant-chaturdashi-ganesh-visarjan",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2026-09-14"
+      ],
+      "expectedDates": [
+        "2026-09-24"
+      ],
+      "actualDates": [
+        "2026-09-24"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "mahalaya-amavasya",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "navratri-begins",
+      "parentDates": [
+        "2026-10-11"
+      ],
+      "expectedDates": [
+        "2026-10-10"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2026,
+      "slug": "chintpurni-mata-chaitra-navratri",
+      "relationKind": "convention",
+      "status": "child_no_date",
+      "parentSlug": "chaitra-navratri-begins",
+      "parentDates": [
+        "2026-03-20"
+      ],
+      "expectedDates": [
+        "2026-03-20"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2026,
+      "slug": "chintpurni-mata-sharad-navratri",
+      "relationKind": "convention",
+      "status": "child_no_date",
+      "parentSlug": "navratri-begins",
+      "parentDates": [
+        "2026-10-11"
+      ],
+      "expectedDates": [
+        "2026-10-11"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2026,
+      "slug": "dhanteras",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-06"
+      ],
+      "actualDates": [
+        "2026-11-06"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "govardhan-puja",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-09"
+      ],
+      "actualDates": [
+        "2026-11-09"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "bhai-dooj",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-10"
+      ],
+      "actualDates": [
+        "2026-11-10"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "chhath-nahay-khay",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2026-11-15"
+      ],
+      "expectedDates": [
+        "2026-11-13"
+      ],
+      "actualDates": [
+        "2026-11-13"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "chhath-kharna",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2026-11-15"
+      ],
+      "expectedDates": [
+        "2026-11-14"
+      ],
+      "actualDates": [
+        "2026-11-14"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "chhath-usha-arghya",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2026-11-15"
+      ],
+      "expectedDates": [
+        "2026-11-16"
+      ],
+      "actualDates": [
+        "2026-11-16"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "kartik-purnima",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-24"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2026,
+      "slug": "lohri",
+      "relationKind": "convention",
+      "status": "match",
+      "parentSlug": "makar-sankranti",
+      "parentDates": [
+        "2026-01-14"
+      ],
+      "expectedDates": [
+        "2026-01-13"
+      ],
+      "actualDates": [
+        "2026-01-13"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "holla-mohalla",
+      "relationKind": "convention",
+      "status": "match",
+      "parentSlug": "holi",
+      "parentDates": [
+        "2026-03-03"
+      ],
+      "expectedDates": [
+        "2026-03-04"
+      ],
+      "actualDates": [
+        "2026-03-04"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "bandhi-chhor-divas",
+      "relationKind": "alias",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-08"
+      ],
+      "actualDates": [
+        "2026-11-08"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "guru-nanak-gurpurab",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-24"
+      ],
+      "actualDates": [
+        "2026-11-24"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "sangha-day-loy-krathong",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-24"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2026,
+      "slug": "paryushana-day-2",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [
+        "2026-09-08"
+      ],
+      "expectedDates": [
+        "2026-09-09"
+      ],
+      "actualDates": [
+        "2026-09-09"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "paryushana-day-3",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [
+        "2026-09-08"
+      ],
+      "expectedDates": [
+        "2026-09-10"
+      ],
+      "actualDates": [
+        "2026-09-10"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "paryushana-day-4",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [
+        "2026-09-08"
+      ],
+      "expectedDates": [
+        "2026-09-11"
+      ],
+      "actualDates": [
+        "2026-09-11"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "paryushana-day-5",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [
+        "2026-09-08"
+      ],
+      "expectedDates": [
+        "2026-09-12"
+      ],
+      "actualDates": [
+        "2026-09-12"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "paryushana-day-6",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [
+        "2026-09-08"
+      ],
+      "expectedDates": [
+        "2026-09-13"
+      ],
+      "actualDates": [
+        "2026-09-13"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "paryushana-day-7",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [
+        "2026-09-08"
+      ],
+      "expectedDates": [
+        "2026-09-14"
+      ],
+      "actualDates": [
+        "2026-09-14"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2026,
+      "slug": "jain-new-year-pratipada",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-09"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2026,
+      "slug": "jain-diwali-nirvana-ladnun",
+      "relationKind": "alias",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-08"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2026,
+      "slug": "kartik-purnima-jain",
+      "relationKind": "alias",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2026-11-08"
+      ],
+      "expectedDates": [
+        "2026-11-24"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-2",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-05"
+      ],
+      "actualDates": [
+        "2027-09-05"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-3",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-06"
+      ],
+      "actualDates": [
+        "2027-09-06"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-4",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-07"
+      ],
+      "actualDates": [
+        "2027-09-07"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-5",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-08"
+      ],
+      "actualDates": [
+        "2027-09-08"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-6",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-09"
+      ],
+      "actualDates": [
+        "2027-09-09"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-7",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-10"
+      ],
+      "actualDates": [
+        "2027-09-10"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-8",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-11"
+      ],
+      "actualDates": [
+        "2027-09-11"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-9",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-12"
+      ],
+      "actualDates": [
+        "2027-09-12"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "ganeshotsav-day-10",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-13"
+      ],
+      "actualDates": [
+        "2027-09-13"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "anant-chaturdashi-ganesh-visarjan",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2027-09-04"
+      ],
+      "expectedDates": [
+        "2027-09-14"
+      ],
+      "actualDates": [
+        "2027-09-14"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "mahalaya-amavasya",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "navratri-begins",
+      "parentDates": [
+        "2027-10-01"
+      ],
+      "expectedDates": [
+        "2027-09-30"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "chintpurni-mata-chaitra-navratri",
+      "relationKind": "convention",
+      "status": "child_no_date",
+      "parentSlug": "chaitra-navratri-begins",
+      "parentDates": [
+        "2027-04-07"
+      ],
+      "expectedDates": [
+        "2027-04-07"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "chintpurni-mata-sharad-navratri",
+      "relationKind": "convention",
+      "status": "child_no_date",
+      "parentSlug": "navratri-begins",
+      "parentDates": [
+        "2027-10-01"
+      ],
+      "expectedDates": [
+        "2027-10-01"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "dhanteras",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-10-27"
+      ],
+      "actualDates": [
+        "2027-10-27"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "govardhan-puja",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-10-30"
+      ],
+      "actualDates": [
+        "2027-10-30"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "bhai-dooj",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-10-31"
+      ],
+      "actualDates": [
+        "2027-10-31"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "chhath-nahay-khay",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2027-11-04"
+      ],
+      "expectedDates": [
+        "2027-11-02"
+      ],
+      "actualDates": [
+        "2027-11-02"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "chhath-kharna",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2027-11-04"
+      ],
+      "expectedDates": [
+        "2027-11-03"
+      ],
+      "actualDates": [
+        "2027-11-03"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "chhath-usha-arghya",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2027-11-04"
+      ],
+      "expectedDates": [
+        "2027-11-05"
+      ],
+      "actualDates": [
+        "2027-11-05"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "kartik-purnima",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-11-14"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "lohri",
+      "relationKind": "convention",
+      "status": "match",
+      "parentSlug": "makar-sankranti",
+      "parentDates": [
+        "2027-01-14"
+      ],
+      "expectedDates": [
+        "2027-01-13"
+      ],
+      "actualDates": [
+        "2027-01-13"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "holla-mohalla",
+      "relationKind": "convention",
+      "status": "match",
+      "parentSlug": "holi",
+      "parentDates": [
+        "2027-03-22"
+      ],
+      "expectedDates": [
+        "2027-03-23"
+      ],
+      "actualDates": [
+        "2027-03-23"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "bandhi-chhor-divas",
+      "relationKind": "alias",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-10-29"
+      ],
+      "actualDates": [
+        "2027-10-29"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "guru-nanak-gurpurab",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-11-14"
+      ],
+      "actualDates": [
+        "2027-11-14"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "sangha-day-loy-krathong",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-11-14"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "paryushana-day-2",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "paryushana-day-3",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "paryushana-day-4",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "paryushana-day-5",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "paryushana-day-6",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "paryushana-day-7",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2027,
+      "slug": "jain-new-year-pratipada",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-10-30"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "jain-diwali-nirvana-ladnun",
+      "relationKind": "alias",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-10-29"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2027,
+      "slug": "kartik-purnima-jain",
+      "relationKind": "alias",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2027-10-29"
+      ],
+      "expectedDates": [
+        "2027-11-14"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-2",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-24"
+      ],
+      "actualDates": [
+        "2028-08-24"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-3",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-25"
+      ],
+      "actualDates": [
+        "2028-08-25"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-4",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-26"
+      ],
+      "actualDates": [
+        "2028-08-26"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-5",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-27"
+      ],
+      "actualDates": [
+        "2028-08-27"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-6",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-28"
+      ],
+      "actualDates": [
+        "2028-08-28"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-7",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-29"
+      ],
+      "actualDates": [
+        "2028-08-29"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-8",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-30"
+      ],
+      "actualDates": [
+        "2028-08-30"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-9",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-08-31"
+      ],
+      "actualDates": [
+        "2028-08-31"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "ganeshotsav-day-10",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-09-01"
+      ],
+      "actualDates": [
+        "2028-09-01"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "anant-chaturdashi-ganesh-visarjan",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "ganesh-chaturthi",
+      "parentDates": [
+        "2028-08-23"
+      ],
+      "expectedDates": [
+        "2028-09-02"
+      ],
+      "actualDates": [
+        "2028-09-02"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "mahalaya-amavasya",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "navratri-begins",
+      "parentDates": [
+        "2028-09-19"
+      ],
+      "expectedDates": [
+        "2028-09-18"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "chintpurni-mata-chaitra-navratri",
+      "relationKind": "convention",
+      "status": "child_no_date",
+      "parentSlug": "chaitra-navratri-begins",
+      "parentDates": [
+        "2028-03-27"
+      ],
+      "expectedDates": [
+        "2028-03-27"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "chintpurni-mata-sharad-navratri",
+      "relationKind": "convention",
+      "status": "child_no_date",
+      "parentSlug": "navratri-begins",
+      "parentDates": [
+        "2028-09-19"
+      ],
+      "expectedDates": [
+        "2028-09-19"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "dhanteras",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-10-15"
+      ],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "govardhan-puja",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-10-18"
+      ],
+      "actualDates": [
+        "2028-10-18"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "bhai-dooj",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-10-19"
+      ],
+      "actualDates": [
+        "2028-10-19"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "chhath-nahay-khay",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2028-10-23"
+      ],
+      "expectedDates": [
+        "2028-10-21"
+      ],
+      "actualDates": [
+        "2028-10-21"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "chhath-kharna",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2028-10-23"
+      ],
+      "expectedDates": [
+        "2028-10-22"
+      ],
+      "actualDates": [
+        "2028-10-22"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "chhath-usha-arghya",
+      "relationKind": "series_child",
+      "status": "match",
+      "parentSlug": "chhath-puja",
+      "parentDates": [
+        "2028-10-23"
+      ],
+      "expectedDates": [
+        "2028-10-24"
+      ],
+      "actualDates": [
+        "2028-10-24"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "kartik-purnima",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-11-02"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "lohri",
+      "relationKind": "convention",
+      "status": "match",
+      "parentSlug": "makar-sankranti",
+      "parentDates": [
+        "2028-01-15"
+      ],
+      "expectedDates": [
+        "2028-01-14"
+      ],
+      "actualDates": [
+        "2028-01-14"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "holla-mohalla",
+      "relationKind": "convention",
+      "status": "match",
+      "parentSlug": "holi",
+      "parentDates": [
+        "2028-03-11"
+      ],
+      "expectedDates": [
+        "2028-03-12"
+      ],
+      "actualDates": [
+        "2028-03-12"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "bandhi-chhor-divas",
+      "relationKind": "alias",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-10-17"
+      ],
+      "actualDates": [
+        "2028-10-17"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "guru-nanak-gurpurab",
+      "relationKind": "independent_offset",
+      "status": "match",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-11-02"
+      ],
+      "actualDates": [
+        "2028-11-02"
+      ],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "sangha-day-loy-krathong",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-11-02"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "paryushana-day-2",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "paryushana-day-3",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "paryushana-day-4",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "paryushana-day-5",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "paryushana-day-6",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "paryushana-day-7",
+      "relationKind": "series_child",
+      "status": "parent_no_date",
+      "parentSlug": "paryushana-parva-begins",
+      "parentDates": [],
+      "expectedDates": [],
+      "actualDates": [],
+      "launchStatus": "included"
+    },
+    {
+      "year": 2028,
+      "slug": "jain-new-year-pratipada",
+      "relationKind": "independent_offset",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-10-18"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "jain-diwali-nirvana-ladnun",
+      "relationKind": "alias",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-10-17"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    },
+    {
+      "year": 2028,
+      "slug": "kartik-purnima-jain",
+      "relationKind": "alias",
+      "status": "child_no_date",
+      "parentSlug": "diwali",
+      "parentDates": [
+        "2028-10-17"
+      ],
+      "expectedDates": [
+        "2028-11-02"
+      ],
+      "actualDates": [],
+      "launchStatus": "deferred"
+    }
+  ]
+}

@@ -533,7 +533,12 @@ export function run60DayObservanceParityAudit(
   daysCount: number = 60
 ): ParityMatrixResult {
   const users = REPRESENTATIVE_PROFILES;
-  const observances = REPRESENTATIVE_60DAY_OBSERVANCES;
+  const observances: ReviewedObservance[] = REPRESENTATIVE_60DAY_OBSERVANCES.map((obs) => ({
+    review_status: 'reviewed',
+    verification_status: 'verified',
+    audit_status: 'completed',
+    ...obs,
+  }));
 
   const allScheduledCandidates: ScheduledObservanceRow[] = [];
   const allLegacyNotifications: LegacyNotification[] = [];

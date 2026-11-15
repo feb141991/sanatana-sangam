@@ -45,14 +45,14 @@ const nextConfig = {
       // Canonical apex redirect: shoonaya.com -> www.shoonaya.com for all routes
       // except /.well-known/* so Digital Asset Links & AASA verify with HTTP 200 (no redirects).
       {
-        source: '/((?!\\.well-known/).*)',
+        source: '/:path((?!\\.well-known/).*)',
         has: [
           {
             type: 'host',
             value: 'shoonaya.com',
           },
         ],
-        destination: 'https://www.shoonaya.com/:path*',
+        destination: 'https://www.shoonaya.com/:path',
         permanent: true,
       },
       {

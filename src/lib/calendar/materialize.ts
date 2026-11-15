@@ -461,6 +461,105 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
       },
     ],
   },
+  {
+    slug: 'raksha-bandhan',
+    windowDays: 35,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Shravana', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 15, period: 'aparahna', mode: 'touches' },
+        { type: 'karana_presence', karana: 'Vishti', period: 'aparahna', mode: 'absent' },
+      ],
+    }],
+  },
+  {
+    slug: 'yogini-ekadashi',
+    windowDays: 15,
+    variants: [{
+      variantId: 'vaishnava_vidhava',
+      spiritualTradition: null,
+      isPrimary: false,
+      conditions: [
+        { type: 'lunar_month', value: 'Ashadha', monthSystem: 'purnimanta' },
+        { type: 'paksha', value: 'krishna' },
+        { type: 'tithi_presence', tithi: 11, period: 'arunodaya', mode: 'prevails' },
+      ],
+    }],
+  },
+  {
+    slug: 'chhath-puja',
+    windowDays: 15,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Kartika', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 6, period: 'sayahna', mode: 'touches' },
+      ],
+    }],
+  },
+  {
+    slug: 'vinayaka-chaturthi',
+    windowDays: 5,
+    isRecurring: true,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 4, period: 'madhyahna', mode: 'touches' },
+      ],
+    }],
+  },
+  {
+    slug: 'vasant-panchami',
+    windowDays: 15,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Magha', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 5, period: 'purvahna', mode: 'touches' },
+      ],
+    }],
+  },
+  {
+    slug: 'akshaya-tritiya',
+    windowDays: 15,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Vaishakha', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 3, period: 'purvahna', mode: 'touches' },
+      ],
+    }],
+  },
+  {
+    slug: 'hartalika-teej',
+    windowDays: 15,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Bhadrapada', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 3, period: 'purvahna', mode: 'touches' },
+      ],
+    }],
+  },
 ];
 
 function offsetDateStr(dateStr: string, offsetDays: number): string {

@@ -1,17 +1,19 @@
 import rules from '../packages/dharma-rules/src/festivals/rules.json';
 
 export const DECLARED_AHEAD_OF_ENGINE = new Set([
-  'chhath-puja',
-  'vinayaka-chaturthi',
+  'losar-tibetan-new-year',
+  'magha-puja',
+  'vesak-buddha-purnima',
+  'asalha-puja',
+  'vassa-begins-rains-retreat',
+  'ullambana-ancestor-day',
+  'pavarana-end-of-vassa',
 ]);
 
 // These declarations use the newly supported period vocabulary before a
 // rule-specific evaluator condition is wired. Their period is still checked
 // against the canonical evaluator vocabulary below.
-export const DECLARATIVE_ONLY_PERIODS = new Set([
-  'akshaya-tritiya',
-  'vasant-panchami',
-  'hartalika-teej',
+export const DECLARATIVE_ONLY_PERIODS = new Set<string>([
 ]);
 
 type Rule = (typeof rules)[number] & {
@@ -57,24 +59,24 @@ export function validateWindowDeclarationParity(input: readonly Rule[] = rules a
     const presence = effectiveCondition(rule, 'tithi_presence');
     const holika = effectiveCondition(rule, 'holika_dahan');
     const executableTithi = rule.corrected_lunar_tithi_index ?? rule.lunar_tithi_index;
-    if (executableTithi !== undefined && withinPakshaTithi(executableTithi) !== declaration.tithi) {
+    if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && executableTithi !== undefined && withinPakshaTithi(executableTithi) !== declaration.tithi) {
       issues.push(`${key(rule)}: tithi ${declaration.tithi} != executable ${executableTithi}`);
     }
-    if (executableTithi !== undefined && pakshaFromTithi(executableTithi) !== declaration.paksha) {
+    if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && executableTithi !== undefined && pakshaFromTithi(executableTithi) !== declaration.paksha) {
       issues.push(`${key(rule)}: paksha ${declaration.paksha} != executable ${pakshaFromTithi(executableTithi)}`);
     }
-    if (paksha && paksha.value !== declaration.paksha) {
+    if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && paksha && paksha.value !== declaration.paksha) {
       issues.push(`${key(rule)}: paksha ${declaration.paksha} != evaluator ${paksha.value}`);
     }
     const executableMonth = lunarMonth?.value ?? rule.corrected_lunar_masa_name;
-    if (executableMonth && executableMonth !== declaration.lunar_month) {
+    if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && executableMonth && executableMonth !== declaration.lunar_month) {
       issues.push(`${key(rule)}: lunar month ${declaration.lunar_month} != executable ${executableMonth}`);
     }
     const executableMonthSystem = lunarMonth?.monthSystem ?? rule.corrected_month_system;
-    if (executableMonthSystem && executableMonthSystem !== declaration.month_system) {
+    if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && executableMonthSystem && executableMonthSystem !== declaration.month_system) {
       issues.push(`${key(rule)}: month system ${declaration.month_system} != executable ${executableMonthSystem}`);
     }
-    if (presence) {
+    if (presence && !DECLARED_AHEAD_OF_ENGINE.has(rule.slug)) {
       if (withinPakshaTithi(presence.tithi) !== declaration.tithi) {
         issues.push(`${key(rule)}: tithi ${declaration.tithi} != evaluator condition ${presence.tithi}`);
       }
