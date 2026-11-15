@@ -115,6 +115,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/kumbh-2027`,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
     { url: `${BASE_URL}/rashiphala`, changeFrequency: "daily", priority: 0.9 },
     { url: `${BASE_URL}/kundali`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE_URL}/tirtha-map`, changeFrequency: "weekly", priority: 0.8 },
@@ -219,6 +224,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })),
     { url: `${BASE_URL}${PANCHATANTRA_HUB_PATH}`, changeFrequency: "monthly" as const, priority: 0.8 },
+    { url: `${BASE_URL}${PANCHATANTRA_HUB_PATH}/embed`, changeFrequency: "weekly" as const, priority: 0.8 },
     ...listPublicPanchatantraStories().flatMap((story) => {
       const en = panchatantraStoryUrl(story.slug, "en");
       const hi = panchatantraStoryUrl(story.slug, "hi");

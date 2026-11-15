@@ -8,6 +8,7 @@ import {
   PUBLIC_PANCHATANTRA_IDS,
   RETELLING_NOTICE,
   findPublicPanchatantraStory,
+  getStoryOfTheDay,
   listPublicPanchatantraStories,
   panchatantraCoverImage,
   panchatantraScenesFor,
@@ -254,6 +255,7 @@ describe('public Panchatantra pages: sitemap', () => {
 
     const expected = [
       'https://www.shoonaya.com/stories/panchatantra',
+      'https://www.shoonaya.com/stories/panchatantra/embed',
       ...listPublicPanchatantraStories().flatMap((s) => [
         panchatantraStoryUrl(s.slug, 'en'),
         panchatantraStoryUrl(s.slug, 'hi'),
@@ -284,6 +286,7 @@ describe('public Panchatantra pages: reachable without signing in', () => {
     process.env.APP_OPEN = 'false';
     const paths = [
       PANCHATANTRA_HUB_PATH,
+      `${PANCHATANTRA_HUB_PATH}/embed`,
       ...listPublicPanchatantraStories().flatMap((s) => [
         panchatantraStoryPath(s.slug, 'en'),
         panchatantraStoryPath(s.slug, 'hi'),
@@ -300,5 +303,14 @@ describe('public Panchatantra pages: reachable without signing in', () => {
     process.env.APP_OPEN = 'false';
     const response = await middleware(new NextRequest('https://www.shoonaya.com/stories/private-draft'));
     expect(response.headers.get('location')).toBe('https://www.shoonaya.com/');
+  });
+
+  it('deterministically resolves a story of the day with full 6 scenes', () => {
+    const story = getStoryOfTheDay(new Date('2026-11-15T00:00:00Z'));
+    expect(story).toBeDefined();
+    expect(story.scenes.length).toBe(6);
+    expect(story.title).toBeTruthy();
+    expect(story.titleHi).toBeTruthy();
+    expect(story.moral).toBeTruthy();
   });
 });

@@ -58,6 +58,23 @@ export default function PanchatantraHubPage() {
           to Vishnu Sharma. Each tale teaches a lesson about wisdom, friendship, trust or foolishness, which is why it
           has been told to children and kings alike for centuries.
         </p>
+
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[var(--brand-primary)]/30 bg-[var(--brand-primary-soft)] p-5">
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--brand-primary-strong)]">
+              For Schools, Homeschoolers & Educational Blogs
+            </span>
+            <p className="mt-1 text-sm font-medium text-[var(--text-cream)]">
+              Embed a free daily rotating Panchatantra story widget on your website with 1 line of HTML.
+            </p>
+          </div>
+          <Link
+            href="/stories/panchatantra/embed"
+            className="inline-flex min-h-10 items-center rounded-full bg-[var(--brand-primary-strong)] px-4 text-xs font-semibold text-[var(--text-cream)] hover:opacity-90 transition-opacity"
+          >
+            Get Free Embed Code →
+          </Link>
+        </div>
         <p className="mt-4 text-sm leading-relaxed text-[var(--text-dim)]">{RETELLING_NOTICE.en}</p>
       </section>
 

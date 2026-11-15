@@ -481,3 +481,15 @@ export function listPublicPanchatantraStories(): PublicPanchatantraStory[] {
 export function findPublicPanchatantraStory(slug: string): PublicPanchatantraStory | undefined {
   return listPublicPanchatantraStories().find((story) => story.slug === slug);
 }
+
+/** Resolves a deterministic daily story rotating across all published public stories. */
+export function getStoryOfTheDay(date: Date = new Date()): PublicPanchatantraStory {
+  const stories = listPublicPanchatantraStories();
+  const dayOfYear = Math.floor(
+    (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) -
+      Date.UTC(date.getFullYear(), 0, 0)) /
+      (24 * 60 * 60 * 1000),
+  );
+  const index = Math.abs(dayOfYear) % (stories.length || 1);
+  return stories[index] || stories[0];
+}
