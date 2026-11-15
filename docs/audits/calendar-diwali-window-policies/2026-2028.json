@@ -1,0 +1,169 @@
+{
+  "status": "computed_not_verified",
+  "readOnly": true,
+  "location": {
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata"
+  },
+  "years": [
+    2026,
+    2027,
+    2028
+  ],
+  "rows": [
+    {
+      "year": 2026,
+      "slug": "dhanteras",
+      "status": "proposed",
+      "anchor": "2026-11-08",
+      "proposedDates": [
+        "2026-11-06"
+      ],
+      "selectedDates": [
+        "2026-11-06"
+      ],
+      "actualDates": [
+        "2026-11-06"
+      ],
+      "basisConstrainedDates": [
+        "2026-11-06"
+      ],
+      "comparison": "match"
+    },
+    {
+      "year": 2026,
+      "slug": "govardhan-puja",
+      "status": "proposed",
+      "anchor": "2026-11-08",
+      "proposedDates": [
+        "2026-11-09",
+        "2026-11-10"
+      ],
+      "selectedDates": [
+        "2026-11-09"
+      ],
+      "actualDates": [
+        "2026-11-09"
+      ],
+      "basisConstrainedDates": [],
+      "comparison": "window_match_basis_boundary_unresolved"
+    },
+    {
+      "year": 2026,
+      "slug": "bhai-dooj",
+      "status": "proposed",
+      "anchor": "2026-11-08",
+      "proposedDates": [
+        "2026-11-10",
+        "2026-11-11"
+      ],
+      "selectedDates": [
+        "2026-11-10"
+      ],
+      "actualDates": [
+        "2026-11-10"
+      ],
+      "basisConstrainedDates": [],
+      "comparison": "window_match_basis_boundary_unresolved"
+    },
+    {
+      "year": 2027,
+      "slug": "dhanteras",
+      "status": "proposed",
+      "anchor": "2027-10-29",
+      "proposedDates": [
+        "2027-10-27"
+      ],
+      "selectedDates": [
+        "2027-10-27"
+      ],
+      "actualDates": [
+        "2027-10-27"
+      ],
+      "basisConstrainedDates": [
+        "2027-10-27"
+      ],
+      "comparison": "match"
+    },
+    {
+      "year": 2027,
+      "slug": "govardhan-puja",
+      "status": "proposed",
+      "anchor": "2027-10-29",
+      "proposedDates": [
+        "2027-10-30"
+      ],
+      "selectedDates": [
+        "2027-10-30"
+      ],
+      "actualDates": [
+        "2027-10-30"
+      ],
+      "basisConstrainedDates": [],
+      "comparison": "window_match_basis_boundary_unresolved"
+    },
+    {
+      "year": 2027,
+      "slug": "bhai-dooj",
+      "status": "proposed",
+      "anchor": "2027-10-29",
+      "proposedDates": [
+        "2027-10-31"
+      ],
+      "selectedDates": [
+        "2027-10-31"
+      ],
+      "actualDates": [
+        "2027-10-31"
+      ],
+      "basisConstrainedDates": [],
+      "comparison": "window_match_basis_boundary_unresolved"
+    },
+    {
+      "year": 2028,
+      "slug": "dhanteras",
+      "status": "proposed",
+      "anchor": "2028-10-17",
+      "proposedDates": [],
+      "selectedDates": [],
+      "actualDates": [],
+      "basisConstrainedDates": [],
+      "comparison": "match"
+    },
+    {
+      "year": 2028,
+      "slug": "govardhan-puja",
+      "status": "proposed",
+      "anchor": "2028-10-17",
+      "proposedDates": [
+        "2028-10-18"
+      ],
+      "selectedDates": [
+        "2028-10-18"
+      ],
+      "actualDates": [
+        "2028-10-18"
+      ],
+      "basisConstrainedDates": [],
+      "comparison": "window_match_basis_boundary_unresolved"
+    },
+    {
+      "year": 2028,
+      "slug": "bhai-dooj",
+      "status": "proposed",
+      "anchor": "2028-10-17",
+      "proposedDates": [
+        "2028-10-19"
+      ],
+      "selectedDates": [
+        "2028-10-19"
+      ],
+      "actualDates": [
+        "2028-10-19"
+      ],
+      "basisConstrainedDates": [],
+      "comparison": "window_match_basis_boundary_unresolved"
+    }
+  ]
+}
