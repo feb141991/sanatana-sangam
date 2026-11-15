@@ -2,20 +2,20 @@
 
 > Computed, read-only output. No rule, source, date, database, publication, or production data was changed.
 
-This run used the isolated HEAD worktree at d39edb9: **124 rules** and **5 reference-time fields**. The dirty working tree’s claimed 125/16 state was not imported because the phase explicitly requires measurement from a separate HEAD worktree.
+This run used the isolated HEAD worktree at d39edb9: **127 rules** and **5 reference-time fields**. The dirty working tree’s claimed 125/16 state was not imported because the phase explicitly requires measurement from a separate HEAD worktree.
 
 | Window measurement / provenance result | Rule count |
 |---|---:|
-| window-insensitive | 48 |
-| sensitive-ratified-convention | 5 |
+| window-insensitive | 46 |
+| sensitive-ratified-convention | 9 |
 | needs-authority-decision | 23 |
-| not-applicable | 17 |
+| not-applicable | 15 |
 
 | Window sensitivity only | Rule count |
 |---|---:|
-| insensitive | 48 |
-| sensitive | 28 |
-| not-applicable | 17 |
+| insensitive | 46 |
+| sensitive | 32 |
+| not-applicable | 15 |
 
 The JSONL contains **1395** incremental rows: one per selected rule/year/location. Candidate periods were sunrise, madhyahna, aparahna, pradosha (engine default 72 minutes), nishita, moonrise, and arunodaya.
 
@@ -33,8 +33,6 @@ The report keeps two independent dimensions. `windowSensitivity` answers whether
 Raksha Bandhan includes computed Vishti/Bhadra spans and overlap minutes by candidate period. No Bhadra policy or fallback was selected.
 
 For each rule, `all-batches.json` reports the number of disagreeing years and locations, applicable candidate periods, candidate pairs, and maximum civil-day difference. Those fields separate within-location window differences from location-driven differences.
-
-The astronomy scan found the skipped-tithi, repeated-tithi, Adhika-month, and midnight-straddling cases in 2026; those edge checks were included for all measured rows. No additional distinct year was selected because the first qualifying event for each category occurred in 2026.
 
 ## Not verified
 
