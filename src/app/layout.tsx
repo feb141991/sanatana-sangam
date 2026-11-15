@@ -119,7 +119,7 @@ export default function RootLayout({
 }) {
   const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
-  const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "ze149uv6yf";
+  const clarityProjectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "ze1obrqvfw";
 
   return (
     <html lang="en" className={fontVars}>
