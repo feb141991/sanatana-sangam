@@ -1,11 +1,6 @@
 import rules from '../packages/dharma-rules/src/festivals/rules.json';
 
 export const DECLARED_AHEAD_OF_ENGINE = new Set([
-  'chhath-puja',
-  'vinayaka-chaturthi',
-  'raksha-bandhan',
-  'papmochani-ekadashi',
-  'yogini-ekadashi',
   'losar-tibetan-new-year',
   'magha-puja',
   'vesak-buddha-purnima',
@@ -18,10 +13,7 @@ export const DECLARED_AHEAD_OF_ENGINE = new Set([
 // These declarations use the newly supported period vocabulary before a
 // rule-specific evaluator condition is wired. Their period is still checked
 // against the canonical evaluator vocabulary below.
-export const DECLARATIVE_ONLY_PERIODS = new Set([
-  'akshaya-tritiya',
-  'vasant-panchami',
-  'hartalika-teej',
+export const DECLARATIVE_ONLY_PERIODS = new Set<string>([
 ]);
 
 type Rule = (typeof rules)[number] & {

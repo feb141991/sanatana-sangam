@@ -29,6 +29,11 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Magha", "monthSystem": "amanta" },
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 5, "period": "purvahna", "mode": "touches" }
+    ],
     "launch_status": "deferred",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-02-11, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #76) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
     "date_assignment": {
@@ -468,6 +473,11 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 3,
     "allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Vaishakha", "monthSystem": "amanta" },
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 3, "period": "purvahna", "mode": "touches" }
+    ],
     "launch_status": "deferred",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-04-20, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #13) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
     "date_assignment": {
@@ -784,6 +794,12 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Shravana", "monthSystem": "amanta" },
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 15, "period": "aparahna", "mode": "touches" },
+      { "type": "karana_presence", "karana": "Vishti", "period": "aparahna", "mode": "absent" }
+    ],
     "launch_status": "included",
     "date_assignment": {
       "status": "proposed",
@@ -1181,6 +1197,11 @@
     "route_kind": "vrat",
     "route_slug": "hartalika-teej",
     "corrected_allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Bhadrapada", "monthSystem": "amanta" },
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 3, "period": "purvahna", "mode": "touches" }
+    ],
     "launch_status": "deferred",
     "date_assignment": {
       "status": "proposed",
@@ -1690,6 +1711,11 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 6,
     "corrected_allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Kartika", "monthSystem": "amanta" },
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 6, "period": "sayahna", "mode": "touches" }
+    ],
     "route_kind": "festival",
     "route_slug": "chhath-puja",
     "launch_status": "included",
@@ -2193,7 +2219,7 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "corrected_lunar_masa_name": "Chaitra",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
@@ -3572,6 +3598,10 @@
     "recurring_tithi_indices": [
       4
     ],
+    "evaluator_conditions": [
+      { "type": "paksha", "value": "shukla" },
+      { "type": "tithi_presence", "tithi": 4, "period": "madhyahna", "mode": "touches" }
+    ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "chaturthi",
@@ -3584,7 +3614,7 @@
       "lunar_month": "recurring",
       "month_system": "amanta",
       "period": "madhyahna",
-      "mode": "at",
+      "mode": "touches",
       "skipped_tithi": "first_qualifying_date",
       "tie_break": "first_qualifying_date"
     },
@@ -3760,6 +3790,11 @@
     "route_slug": "yogini-ekadashi",
     "corrected_skipped_tithi_policy": "following_day",
     "corrected_prefer_last_match": true,
+    "evaluator_conditions": [
+      { "type": "lunar_month", "value": "Ashadha", "monthSystem": "purnimanta" },
+      { "type": "paksha", "value": "krishna" },
+      { "type": "tithi_presence", "tithi": 11, "period": "arunodaya", "mode": "prevails" }
+    ],
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.30 (PDF file page 50) -- lists 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
     "ratification_note": "Council decision batch 0 approved only the 2026-07-11 Vaishnava/Vidhava Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Promoted to launch_status: included by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). 2026 remains disputed and guarded by disputed_years [2026].",
