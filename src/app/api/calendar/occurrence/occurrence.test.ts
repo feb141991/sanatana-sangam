@@ -265,9 +265,9 @@ describe('GET /api/calendar/occurrence (Narrow Calendar Read Contract)', () => {
       const smarthaRow = {
         id: '33333333-3333-4333-8333-333333333333',
         definition_id: 102,
-        date: '2026-11-14',
-        occurrence_date: '2026-11-14',
-        year: 2026,
+        date: '2027-11-14',
+        occurrence_date: '2027-11-14',
+        year: 2027,
         review_status: 'reviewed',
         verification_status: 'verified',
         audit_status: 'completed',
@@ -301,8 +301,8 @@ describe('GET /api/calendar/occurrence (Narrow Calendar Read Contract)', () => {
       const vaishnavaRow = {
         ...smarthaRow,
         id: '44444444-4444-4444-8444-444444444444',
-        date: '2026-11-15',
-        occurrence_date: '2026-11-15',
+        date: '2027-11-15',
+        occurrence_date: '2027-11-15',
         spiritual_tradition: 'vaishnava',
         variant_key: 'vaishnava',
         is_primary_variant: false,

@@ -51,18 +51,30 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
     }
     expect(counts).toEqual({
       explicit: 0,
-      implicitDefault: 125,
+      implicitDefault: 116,
       requiresTraditionProfile: 1,
-      externallyCurated: 1,
+      externallyCurated: 10,
     });
   });
 
-  it('the two blocked rules are exactly pavarana-end-of-vassa and kathina', () => {
+  it('the blocked rules are exactly kathina, pavarana-end-of-vassa, and the 9 externally curated annual authority observances', () => {
     const blocked = CANONICAL_RULES
       .filter((r) => r.derivability === 'requires_tradition_profile' || r.derivability === 'externally_curated')
       .map((r) => r.slug)
       .sort();
-    expect(blocked).toEqual(['kathina', 'pavarana-end-of-vassa']);
+    expect(blocked).toEqual([
+      'gupt-navratri-ashadha-begins',
+      'gupt-navratri-magha-begins',
+      'guru-purnima',
+      'jagannath-rath-yatra',
+      'kathina',
+      'nag-panchami',
+      'pavarana-end-of-vassa',
+      'shani-jayanti',
+      'vat-savitri-amavasya',
+      'vat-savitri-purnima',
+      'vivah-panchami',
+    ]);
   });
 
   // Behavioral proof, not just a data check: the derivability gate
@@ -75,11 +87,23 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
   // load. One year is already non-vacuous (see the both-directions check
   // below) and is the same scope materialize-commit.test.ts's own
   // full-year integration test uses.
-  it('the two blocked rules never appear in calculateObservancesForYear output (fail-closed, both directions)', () => {
+  it('the blocked rules never appear in calculateObservancesForYear output (fail-closed, both directions)', () => {
     const occurrences2026 = calculateObservancesForYear(2026);
+    const blockedSlugs = new Set([
+      'gupt-navratri-ashadha-begins',
+      'gupt-navratri-magha-begins',
+      'guru-purnima',
+      'jagannath-rath-yatra',
+      'kathina',
+      'nag-panchami',
+      'pavarana-end-of-vassa',
+      'shani-jayanti',
+      'vat-savitri-amavasya',
+      'vat-savitri-purnima',
+      'vivah-panchami',
+    ]);
     for (const occ of occurrences2026) {
-      expect(occ.slug).not.toBe('pavarana-end-of-vassa');
-      expect(occ.slug).not.toBe('kathina');
+      expect(blockedSlugs.has(occ.slug)).toBe(false);
     }
     // "Both directions" (#3.3): confirm the assertion above could actually
     // fail -- a rule that's ALLOWED through (derivability 'computed'/
