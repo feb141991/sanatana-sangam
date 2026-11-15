@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { reportClientError } from '@/lib/client-error-reporter';
+import { isChunkLoadError, recoverFromChunkLoadError } from '@/lib/chunk-load-recovery';
 
 export default function HomeError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const [incidentId, setIncidentId] = useState<string | null>(null);
 
+  const staleBuild = isChunkLoadError(error);
+
   useEffect(() => {
+    if (recoverFromChunkLoadError(error)) return;
     void reportClientError({ source: 'react_home', error }).then(setIncidentId);
   }, [error]);
 
@@ -18,10 +22,10 @@ export default function HomeError({ error, reset }: { error: Error & { digest?: 
       {incidentId && <p className="text-xs text-[var(--text-muted-warm)]">Incident {incidentId}</p>}
       <button
         type="button"
-        onClick={reset}
+        onClick={staleBuild ? () => window.location.reload() : reset}
         className="min-h-11 rounded-full bg-[var(--brand-primary)] px-6 font-semibold text-white"
       >
-        Try Home again
+        {staleBuild ? 'Reload page' : 'Try Home again'}
       </button>
     </section>
   );

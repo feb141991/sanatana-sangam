@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { reportClientError } from '@/lib/client-error-reporter';
+import { isChunkLoadError, recoverFromChunkLoadError } from '@/lib/chunk-load-recovery';
 
 export default function GlobalError({
   error,
@@ -12,7 +13,11 @@ export default function GlobalError({
 }) {
   const [incidentId, setIncidentId] = useState<string | null>(null);
 
+  const staleBuild = isChunkLoadError(error);
+
   useEffect(() => {
+    // A chunk-load failure after a deploy is cured by one reload; only a repeat is reported as a crash.
+    if (recoverFromChunkLoadError(error)) return;
     void reportClientError({ source: 'react_root', error }).then(setIncidentId);
   }, [error]);
 
@@ -26,10 +31,10 @@ export default function GlobalError({
           {incidentId && <p className="text-xs text-[var(--text-muted-warm)]">Incident {incidentId}</p>}
           <button
             type="button"
-            onClick={reset}
+            onClick={staleBuild ? () => window.location.reload() : reset}
             className="min-h-11 rounded-full bg-[var(--brand-primary)] px-6 font-semibold text-white"
           >
-            Try again
+            {staleBuild ? 'Reload page' : 'Try again'}
           </button>
         </main>
       </body>
