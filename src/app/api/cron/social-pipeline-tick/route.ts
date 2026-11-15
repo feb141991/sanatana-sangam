@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { reserveSocialPost } from "@/lib/marketing/social/reservation";
-import { advancePostCaptions, publishApprovedPost } from "@/lib/marketing/social/pipeline";
+import { advancePostCaptions, generateCardForPost, publishApprovedPost } from "@/lib/marketing/social/pipeline";
 import { localDateInZone } from "@/lib/marketing/social/schedule-time";
 
 // ─── Social Publishing Pipeline Tick ────────────────────────────────────────
@@ -60,6 +60,13 @@ export async function GET(request: Request) {
         objective: contentType === "festival" ? "awareness" : "app_discovery",
         createdBy: "system:social-pipeline-tick"
       });
+      if (outcome.reserved && outcome.post) {
+        try {
+          await generateCardForPost(supabase, outcome.post.id);
+        } catch (cardErr) {
+          console.error(`[tick] Auto card generation failed for ${outcome.post.id}:`, cardErr);
+        }
+      }
       reservations.push({ contentType, ...outcome });
     } catch (err: any) {
       reservations.push({ contentType, reserved: false, reason: `error: ${err.message}` });

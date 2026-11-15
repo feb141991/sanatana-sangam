@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Upload, CheckCircle2, Send, AlertTriangle, RefreshCw, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Upload, CheckCircle2, Send, AlertTriangle, RefreshCw, Image as ImageIcon, Sparkles } from "lucide-react";
 
 interface Variant {
   id: string;
@@ -88,6 +88,23 @@ export default function PostReviewPage() {
       const formData = new FormData();
       formData.append("file", file);
       const res = await fetch(`/api/admin/marketing/social/posts/${postId}/image`, { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      await load();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const generateCard = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/marketing/social/posts/${postId}/generate-card`, {
+        method: "POST"
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       await load();
@@ -195,22 +212,46 @@ export default function PostReviewPage() {
 
         {/* Image */}
         <section className="p-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] space-y-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2"><ImageIcon size={14} /> Artwork</h2>
-          {imagePreviewUrl ? (
-            <img src={imagePreviewUrl} alt="Draft artwork" className="max-h-96 rounded-xl border border-[var(--border-subtle)]" />
-          ) : (
-            <p className="text-xs text-[var(--text-muted)]">No artwork attached yet.</p>
-          )}
-          <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)] text-xs font-bold cursor-pointer">
-            <Upload size={14} /> Upload artwork
-            <input
-              type="file"
-              accept="image/webp,image/jpeg,image/png"
-              className="hidden"
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+              <ImageIcon size={14} /> Artwork (Instagram, Facebook & LinkedIn Portrait 4:5)
+            </h2>
+            <button
+              onClick={generateCard}
               disabled={busy}
-              onChange={e => e.target.files?.[0] && uploadImage(e.target.files[0])}
-            />
-          </label>
+              className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 disabled:opacity-50 transition-all"
+            >
+              <Sparkles size={13} className={busy ? "animate-spin" : ""} />
+              {busy ? "Rendering Card..." : imagePreviewUrl ? "Regenerate Image Card" : "Generate Image Card"}
+            </button>
+          </div>
+          {imagePreviewUrl ? (
+            <img src={imagePreviewUrl} alt="Draft artwork" className="max-h-96 rounded-xl border border-[var(--border-subtle)] shadow-sm" />
+          ) : (
+            <div className="p-8 rounded-xl border border-dashed border-[var(--border-subtle)] text-center space-y-2">
+              <p className="text-xs text-[var(--text-muted)]">No artwork attached yet. Click &ldquo;Generate Image Card&rdquo; to create a ceremonial Shoonaya card, or upload custom artwork.</p>
+            </div>
+          )}
+          <div className="flex items-center gap-3 pt-1 flex-wrap">
+            <button
+              onClick={generateCard}
+              disabled={busy}
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold flex items-center gap-2 disabled:opacity-50 shadow-xs"
+            >
+              <Sparkles size={14} className={busy ? "animate-spin" : ""} />
+              {busy ? "Rendering..." : imagePreviewUrl ? "Regenerate Card" : "Generate Image Card"}
+            </button>
+            <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-subtle)] hover:bg-[var(--surface-hover)] text-xs font-bold cursor-pointer">
+              <Upload size={14} /> Upload custom artwork
+              <input
+                type="file"
+                accept="image/webp,image/jpeg,image/png"
+                className="hidden"
+                disabled={busy}
+                onChange={e => e.target.files?.[0] && uploadImage(e.target.files[0])}
+              />
+            </label>
+          </div>
         </section>
 
         {/* Per-platform captions */}

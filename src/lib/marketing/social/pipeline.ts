@@ -19,6 +19,7 @@ import { publishToFacebookPage, publishToInstagram } from "./publishers/meta";
 import { publishToLinkedIn } from "./publishers/linkedin";
 import { uploadDraftSocialImage, getSignedDraftImageUrl, getDraftImageContentHash, releaseApprovedSocialImage } from "./image-storage";
 import { computeSocialVariantContentHash } from "./content-hash";
+import { renderSocialPostCard } from "./post-card-renderer";
 import type {
   SocialPost,
   SocialPostVariant,
@@ -73,12 +74,12 @@ export async function attachImageToPost(
     .from("social_posts")
     .update({ image_asset_url: draftPath, image_generation_provenance: { source: "admin_upload", content_hash: contentHash } })
     .eq("id", postId)
-    .eq("pipeline_stage", "reserved")
+    .in("pipeline_stage", ["reserved", "image_ready", "captions_drafted", "review"])
     .select("*")
     .single();
 
   if (error || !data) {
-    throw new Error(`Cannot attach image: post is not in 'reserved' stage or does not exist (${error?.message ?? "no matching row"})`);
+    throw new Error(`Cannot attach image: post is not in an editable stage or does not exist (${error?.message ?? "no matching row"})`);
   }
 
   const { error: stageError } = await supabase
@@ -89,12 +90,85 @@ export async function attachImageToPost(
 
   if (stageError) throw new Error(`Failed to advance post to image_ready: ${stageError.message}`);
 
-  return { ...(data as SocialPost), pipeline_stage: "image_ready" };
+  return { ...(data as SocialPost), pipeline_stage: data.pipeline_stage === "reserved" ? "image_ready" : data.pipeline_stage };
 }
 
 export async function getDraftImagePreviewUrl(supabase: any, post: SocialPost): Promise<string | null> {
   if (!post.image_asset_url) return null;
   return getSignedDraftImageUrl(supabase, post.image_asset_url);
+}
+
+/**
+ * Generates an authentic branded social media card (PNG, 1080x1350, 4:5 portrait)
+ * directly from the post's source snapshot, uploads it to the draft bucket, and
+ * advances the post to 'image_ready'. Automatically kicks off caption drafting
+ * across all destination platforms.
+ */
+export async function generateCardForPost(
+  supabase: any,
+  postId: string
+): Promise<{ post: SocialPost; imagePreviewUrl: string | null }> {
+  const { data: post, error } = await supabase
+    .from("social_posts")
+    .select("*")
+    .eq("id", postId)
+    .single();
+
+  if (error || !post) {
+    throw new Error(`Cannot generate card: post not found (${error?.message ?? postId})`);
+  }
+
+  const allowedStages = ["reserved", "image_ready", "captions_drafted", "review"];
+  if (!allowedStages.includes(post.pipeline_stage)) {
+    throw new Error(`Cannot generate card for post in stage '${post.pipeline_stage}'`);
+  }
+
+  const snapshot = (post.source_snapshot ?? {}) as Record<string, any>;
+  const rawTitle = snapshot.theme_title || snapshot.display_name || post.internal_label;
+  const title = String(rawTitle).replace(/^Festival — |^General — /, "").replace(/ — \d{4}-\d{2}-\d{2}$/, "").trim() || "Daily Dharma";
+  const quoteOrInsight = String(snapshot.grounding_material || snapshot.description || title).trim();
+  const citation = snapshot.verified_source ? String(snapshot.verified_source) : post.theme_type === "festival" ? "Sacred Calendar Observance" : null;
+  const tradition = post.target_tradition || snapshot.tradition || "hindu";
+  const categoryLabel = post.theme_type === "festival" ? "SACRED FESTIVAL OBSERVANCE" : "DAILY DHARMA CONTEMPLATION";
+
+  const { png } = await renderSocialPostCard({
+    title,
+    categoryLabel,
+    tradition,
+    quoteOrInsight,
+    citation
+  });
+
+  const bytes = png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength) as ArrayBuffer;
+  const { draftPath, contentHash } = await uploadDraftSocialImage(supabase, `posts/${post.id}`, bytes, "image/png");
+
+  const { data: updated, error: updateError } = await supabase
+    .from("social_posts")
+    .update({
+      image_asset_url: draftPath,
+      image_generation_provenance: { source: "card_renderer", content_hash: contentHash, generated_at: new Date().toISOString() },
+      pipeline_stage: "image_ready"
+    })
+    .eq("id", postId)
+    .select("*")
+    .single();
+
+  if (updateError || !updated) {
+    throw new Error(`Failed to update post after card generation: ${updateError?.message}`);
+  }
+
+  // Advance captions for all platform variants
+  try {
+    await advancePostCaptions(supabase, postId);
+  } catch (captionErr) {
+    console.error(`[pipeline] Caption drafting after image generation failed for ${postId}:`, captionErr);
+  }
+
+  const { data: finalPost } = await supabase.from("social_posts").select("*").eq("id", postId).single();
+  const activePost = (finalPost || updated) as SocialPost;
+  const imagePreviewUrl = await getDraftImagePreviewUrl(supabase, activePost);
+
+  return { post: activePost, imagePreviewUrl };
 }
 
 // ─── Automated: draft captions for every variant of an image_ready post ────

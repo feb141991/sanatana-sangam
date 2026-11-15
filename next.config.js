@@ -187,10 +187,13 @@ const nextConfig = {
     ];
   },
   outputFileTracingRoot: __dirname,
-  // The morning-card renderer reads its font files from disk at run time, so they must ship with those routes.
+  // The social card renderer reads its font files from disk at run time, so they must ship with those routes.
   outputFileTracingIncludes: {
     '/api/admin/marketing/social/morning-cards': ['./src/assets/social-fonts/**/*'],
     '/api/admin/marketing/social/morning-cards/**': ['./src/assets/social-fonts/**/*'],
+    '/api/admin/marketing/social/posts': ['./src/assets/social-fonts/**/*'],
+    '/api/admin/marketing/social/posts/**': ['./src/assets/social-fonts/**/*'],
+    '/api/cron/social-pipeline-tick': ['./src/assets/social-fonts/**/*'],
   },
   images: {
     remotePatterns: [

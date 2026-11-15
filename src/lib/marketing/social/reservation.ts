@@ -211,13 +211,11 @@ export async function reserveSocialPost(
     return { reserved: false, reason: "no_connected_destination_accounts" };
   }
 
-  if (!config.publish_time_local) {
-    return { reserved: false, reason: "no_publish_time_configured" };
-  }
+  const publishTimeLocal = config.publish_time_local || "09:00";
 
   const frozenScheduledPublishAt = zonedTimeToUtcIso(
     params.targetDate,
-    config.publish_time_local,
+    publishTimeLocal,
     params.targetTimezone
   );
 

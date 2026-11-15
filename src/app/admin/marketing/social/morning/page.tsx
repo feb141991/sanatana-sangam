@@ -306,6 +306,9 @@ export default function MorningCardsPage() {
             const dirty = edit.caption !== card.caption || parseTags(edit.tags).join(" ") !== card.hashtags.join(" ");
             const working = busy[card.id];
             const full = `${edit.caption}${parseTags(edit.tags).length ? `\n\n${parseTags(edit.tags).map((t) => `#${t}`).join(" ")}` : ""}`;
+            const targetAccount = accounts.find((a) => a.id === selectedAccountId);
+            const targetPlatform = targetAccount?.platform || "facebook";
+            const targetName = targetAccount?.name || (targetPlatform === "instagram" ? "Instagram" : targetPlatform === "linkedin" ? "LinkedIn" : "Facebook");
             return (
               <section key={card.id} className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-card)] p-5 space-y-4" aria-label={`${NAMES[tradition]} card`}>
                 <div className="flex items-center justify-between gap-3">
@@ -399,7 +402,7 @@ export default function MorningCardsPage() {
                           className={`${button} bg-blue-600 hover:bg-blue-700 text-white`}
                         >
                           <Send size={14} className={working === "publish" ? "animate-spin" : ""} />
-                          {working === "publish" ? "Publishing…" : card.publish_record ? "Publish again" : "Publish to Facebook"}
+                          {working === "publish" ? "Publishing…" : card.publish_record ? "Publish again" : `Publish to ${targetName}`}
                         </button>
                       )}
                       <button onClick={() => void act(card, "reject")} disabled={(card.status !== "draft" && card.status !== "approved") || !!working} className={`${button} border border-rose-500/40 text-rose-700 hover:bg-rose-500/10`}>

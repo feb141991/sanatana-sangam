@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { requireAdminAccess } from "@/lib/admin";
 import { reserveSocialPost } from "@/lib/marketing/social/reservation";
+import { generateCardForPost } from "@/lib/marketing/social/pipeline";
 
 const DEFAULT_TIMEZONE = "Asia/Kolkata";
 
@@ -95,6 +96,14 @@ export async function POST(request: NextRequest) {
       themeId: optionalString(body.theme_id),
       customTheme
     });
+    if (outcome.reserved && outcome.post) {
+      try {
+        await generateCardForPost(admin.supabase, outcome.post.id);
+      } catch (cardErr) {
+        console.error(`[social.posts] Automatic card generation failed for ${outcome.post.id}:`, cardErr);
+      }
+    }
+
     return NextResponse.json(outcome);
   } catch {
     return NextResponse.json({ error: "social_post_reservation_failed", retryable: true }, { status: 500 });
