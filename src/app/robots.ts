@@ -1,6 +1,10 @@
 import type { MetadataRoute } from 'next';
 
 export const AI_CRAWLER_USER_AGENTS = [
+  'Googlebot',
+  'Bingbot',
+  'BingPreview',
+  'AdsBot-Google',
   'GPTBot',
   'OAI-SearchBot',
   'ChatGPT-User',
