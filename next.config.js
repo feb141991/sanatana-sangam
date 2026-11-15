@@ -184,6 +184,23 @@ const nextConfig = {
           }
         ],
       },
+      // ── Embeddable widgets (allow iframe embedding on any external domain) ──
+      {
+        source: '/embed/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline'",
+              "font-src 'self' data:",
+              "img-src 'self' data: blob:",
+              "frame-ancestors *",
+            ].join('; '),
+          },
+        ],
+      },
     ];
   },
   outputFileTracingRoot: __dirname,

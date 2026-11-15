@@ -266,6 +266,27 @@ export default function PanchangHub({ panchang }: Props) {
           <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
         </Link>
 
+        {/* Card D: Embed Widget Generator */}
+        <Link href="/panchang/embed" className="group flex items-center gap-4 p-4 rounded-2xl bg-white/80 border transition-all hover:bg-white shadow-sm"
+          style={{ borderColor: 'var(--premium-border)' }}>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl flex-shrink-0"
+            style={{ background: 'var(--premium-gold-soft)', color: 'var(--premium-gold)' }}>
+            🌐
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-serif text-[18px] font-bold leading-tight" style={{ color: 'var(--brand-primary-strong)' }}>
+              Embed Panchang Widget
+            </h2>
+            <p className="text-xs mt-1" style={{ color: 'var(--brand-muted)' }}>
+              Free 1-line widget for temple and community sites
+            </p>
+            <span className="inline-block text-[10px] font-bold uppercase tracking-wider mt-2" style={{ color: 'var(--premium-gold)' }}>
+              40+ Global Cities · Ad-Free · Daily Auto-Update
+            </span>
+          </div>
+          <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+        </Link>
+
         {/* Quick Facts Strip */}
         <div className="pt-2">
           <p className="text-[10px] uppercase font-bold tracking-wider mb-2" style={{ color: 'var(--brand-muted)' }}>

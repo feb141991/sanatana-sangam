@@ -4,6 +4,7 @@
 // ============================================================================
 
 import { kumbh2027Essay } from "./journal-kumbh-2027";
+import { tithiDiscrepancyEssay } from "./journal-tithi-discrepancy";
 
 export type JournalSection = {
   heading: string;
@@ -809,7 +810,9 @@ const journalEssays: JournalEssay[] = [
     ]
   },
   // Built from the shared Kumbh schedule (./journal-kumbh-2027); hidden until a named reviewer verifies it.
-  kumbh2027Essay
+  kumbh2027Essay,
+  // The Global Tithi Discrepancy & Timezones: Canonical Astrometric and Shastric Study
+  tithiDiscrepancyEssay
 ];
 
 function isPublishableJournalEssay(essay: JournalEssay): boolean {
