@@ -7,6 +7,11 @@ import { kumbh2027Essay } from "./journal-kumbh-2027";
 import { tithiDiscrepancyEssay } from "./journal-tithi-discrepancy";
 import { brahmaMuhurtaEssay } from "./journal-brahma-muhurta";
 import { ekadashiParanaEssay } from "./journal-ekadashi-parana";
+import { karwaChauthEssay } from "./journal-karwa-chauth";
+import { makarSankrantiEssay } from "./journal-makar-sankranti";
+import { mahaShivratriEssay } from "./journal-maha-shivratri";
+import { pradoshVratEssay } from "./journal-pradosh-vrat";
+import { rahuKaalEssay } from "./journal-rahu-kaal";
 
 export type JournalSection = {
   heading: string;
@@ -818,7 +823,17 @@ const journalEssays: JournalEssay[] = [
   // The Sacred Science of Brahma Muhurta
   brahmaMuhurtaEssay,
   // The Complete Ekadashi Parana Guide
-  ekadashiParanaEssay
+  ekadashiParanaEssay,
+  // Karwa Chauth Moonrise Across Global Cities
+  karwaChauthEssay,
+  // Makar Sankranti & Uttarayana
+  makarSankrantiEssay,
+  // Maha Shivratri & Nishita Kaal
+  mahaShivratriEssay,
+  // Pradosh Vrat & Sandhya Kaal
+  pradoshVratEssay,
+  // Rahu Kaal & Choghadiya
+  rahuKaalEssay
 ];
 
 function isPublishableJournalEssay(essay: JournalEssay): boolean {

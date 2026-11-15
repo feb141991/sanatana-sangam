@@ -9,7 +9,7 @@ import {
 describe("journal publication gate", () => {
   it("exposes verified, published essays through public readers", () => {
     const essays = getAllJournalEssays();
-    expect(essays.length).toBe(12);
+    expect(essays.length).toBe(17);
 
     const mandirEssay = findJournalEssay("architecture-of-silence-ancient-mandirs");
     expect(mandirEssay).toBeDefined();
@@ -30,6 +30,31 @@ describe("journal publication gate", () => {
     expect(ekadashiEssay).toBeDefined();
     expect(ekadashiEssay?.publicationStatus).toBe("published");
     expect(ekadashiEssay?.editorialReview?.sourcesVerified).toBe(true);
+
+    const karwaEssay = findJournalEssay("karwa-chauth-moonrise-astronomy-and-global-cities");
+    expect(karwaEssay).toBeDefined();
+    expect(karwaEssay?.publicationStatus).toBe("published");
+    expect(karwaEssay?.editorialReview?.sourcesVerified).toBe(true);
+
+    const makarEssay = findJournalEssay("makar-sankranti-astronomy-punya-kaal-and-uttarayana");
+    expect(makarEssay).toBeDefined();
+    expect(makarEssay?.publicationStatus).toBe("published");
+    expect(makarEssay?.editorialReview?.sourcesVerified).toBe(true);
+
+    const shivratriEssay = findJournalEssay("maha-shivratri-nishita-kaal-and-four-pahar-puja");
+    expect(shivratriEssay).toBeDefined();
+    expect(shivratriEssay?.publicationStatus).toBe("published");
+    expect(shivratriEssay?.editorialReview?.sourcesVerified).toBe(true);
+
+    const pradoshEssay = findJournalEssay("pradosh-vrat-twilight-window-and-shani-pradosham");
+    expect(pradoshEssay).toBeDefined();
+    expect(pradoshEssay?.publicationStatus).toBe("published");
+    expect(pradoshEssay?.editorialReview?.sourcesVerified).toBe(true);
+
+    const rahuEssay = findJournalEssay("rahu-kaal-and-choghadiya-astronomy-and-muhurta-science");
+    expect(rahuEssay).toBeDefined();
+    expect(rahuEssay?.publicationStatus).toBe("published");
+    expect(rahuEssay?.editorialReview?.sourcesVerified).toBe(true);
 
     const featured = getFeaturedJournalEssay();
     expect(featured).toBeDefined();
