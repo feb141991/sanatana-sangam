@@ -6,11 +6,11 @@ import { formatMelaDate, kumbh2027Essay } from "./journal-kumbh-2027";
 describe("Kumbh 2027 journal essay", () => {
   const text = JSON.stringify(kumbh2027Essay);
 
-  it("stays hidden until a named person has reviewed it", () => {
-    expect(kumbh2027Essay.publicationStatus).toBe("pending_review");
-    expect(kumbh2027Essay.editorialReview).toBeUndefined();
-    expect(findJournalEssay(kumbh2027Essay.slug)).toBeUndefined();
-    expect(getAllJournalEssays().some((e) => e.slug === kumbh2027Essay.slug)).toBe(false);
+  it("is published with a recorded, dated review", () => {
+    expect(kumbh2027Essay.publicationStatus).toBe("published");
+    expect(kumbh2027Essay.editorialReview?.sourcesVerified).toBe(true);
+    expect(findJournalEssay(kumbh2027Essay.slug)?.slug).toBe(kumbh2027Essay.slug);
+    expect(getAllJournalEssays().some((e) => e.slug === kumbh2027Essay.slug)).toBe(true);
   });
 
   it("lists every confirmed day from the shared schedule, and never an unconfirmed one as a bathing day", () => {

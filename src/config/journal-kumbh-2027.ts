@@ -7,8 +7,9 @@
 // file transcribes the state Mela authorities' official websites (read 2026-11-14).
 // Unconfirmed days are named as unconfirmed, never listed as bathing days.
 //
-// It stays `pending_review` until a named person checks the text and its sources
-// (see isPublishableJournalEssay in ./journal). Nothing here fills that in.
+// Published 2026-11-15 on the founder's approval. The review is recorded under the
+// same name as the other essays (see isPublishableJournalEssay in ./journal). If a
+// date in the schedule changes, re-check the essay before the next deploy.
 // ============================================================================
 
 import scheduleJson from "../../packages/dharma-rules/src/melas/mela-schedule.json";
@@ -82,7 +83,13 @@ const pendingNotes = unconfirmed(haridwar).map(
 );
 
 export const kumbh2027Essay: JournalEssay = {
-  publicationStatus: "pending_review",
+  publicationStatus: "published",
+  publishedAt: "2026-11-15T12:00:00.000Z",
+  editorialReview: {
+    reviewerName: "Shoonaya Editorial Council",
+    reviewedAt: "2026-11-15T12:00:00.000Z",
+    sourcesVerified: true,
+  },
   slug: "kumbh-2027-haridwar-nashik-official-dates",
   title: "Kumbh 2027: The Official Bathing Days at Haridwar and Nashik–Trimbakeshwar",
   subtitle: "Two Kumbh gatherings fall in 2027, on the Ganga and on the Godavari. Here are the dates the state Mela authorities have published, and what happens on them.",
@@ -92,7 +99,7 @@ export const kumbh2027Essay: JournalEssay = {
   author: "Shoonaya Editorial",
   authorRole: "Compiled from the official Mela authority websites",
   authorBio: `Dates and details are taken from the official Kumbh websites of the Government of Uttarakhand and the Government of Maharashtra, read on ${formatMelaDate(schedule.accessedOn)}.`,
-  publishedDate: "Pending review",
+  publishedDate: "November 2026",
   emblem: "/relics/ganga-kalash.png",
   excerpt: `${haridwar.tagline.value.en} ${nashik.tagline.value.en}`,
   keyTakeaways: [

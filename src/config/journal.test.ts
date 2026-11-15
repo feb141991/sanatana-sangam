@@ -9,7 +9,7 @@ import {
 describe("journal publication gate", () => {
   it("exposes verified, published essays through public readers", () => {
     const essays = getAllJournalEssays();
-    expect(essays.length).toBe(8);
+    expect(essays.length).toBe(9);
 
     const mandirEssay = findJournalEssay("architecture-of-silence-ancient-mandirs");
     expect(mandirEssay).toBeDefined();
