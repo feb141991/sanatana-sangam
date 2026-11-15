@@ -3,6 +3,8 @@
 // High-authority, in-depth long-form reflections across Dharmic traditions.
 // ============================================================================
 
+import { kumbh2027Essay } from "./journal-kumbh-2027";
+
 export type JournalSection = {
   heading: string;
   paragraphs: string[];
@@ -805,7 +807,9 @@ const journalEssays: JournalEssay[] = [
       "alchemy-of-the-name-japa",
       "rhythm-of-sacred-time-panchang"
     ]
-  }
+  },
+  // Built from the shared Kumbh schedule (./journal-kumbh-2027); hidden until a named reviewer verifies it.
+  kumbh2027Essay
 ];
 
 function isPublishableJournalEssay(essay: JournalEssay): boolean {
