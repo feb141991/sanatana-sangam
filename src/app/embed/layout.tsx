@@ -33,3 +33,4 @@ export default function EmbedLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
+

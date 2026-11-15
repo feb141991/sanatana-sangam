@@ -134,3 +134,4 @@ export const tithiDiscrepancyEssay: JournalEssay = {
     "kumbh-mela-2027-sacred-astronomy"
   ]
 };
+

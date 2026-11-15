@@ -46,3 +46,4 @@ describe('embed city resolution', () => {
     expect(fallback.name).toBe(DEFAULT_EMBED_CITY.name);
   });
 });
+

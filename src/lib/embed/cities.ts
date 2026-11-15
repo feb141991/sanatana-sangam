@@ -336,3 +336,4 @@ export function resolveEmbedCity(params: {
   // Fallback to default Ujjain
   return DEFAULT_EMBED_CITY;
 }
+

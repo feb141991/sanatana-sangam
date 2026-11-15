@@ -209,3 +209,4 @@ export default async function EmbedPanchangPage({ searchParams }: EmbedPanchangP
     </div>
   );
 }
+
