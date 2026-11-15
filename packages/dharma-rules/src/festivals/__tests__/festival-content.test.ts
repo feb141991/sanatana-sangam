@@ -65,7 +65,10 @@ describe('Single-Day Festival Content — Sourced Provenance & Zero Fabrication'
 
   it('3. retains structurally complete mantra drafts, verified for Ekadashis and gated for others', () => {
     for (const f of data.festivals) {
-      expect(f.mantra, `Expected mantra for ${f.definitionKey}`).toBeDefined();
+      if (!f.mantra) {
+        expect(f.definitionKey, 'Only the explicitly teacher-guided Gupt Navratri card may omit a mantra').toBe('gupt-navratri-ashadha-begins');
+        continue;
+      }
       expect(f.mantra.sanskrit.length, `Mantra text too short for ${f.definitionKey}`).toBeGreaterThan(5);
       expect(f.mantra.transliteration.length, `Transliteration too short for ${f.definitionKey}`).toBeGreaterThan(5);
       expect(f.mantra.translation?.value?.en?.length, `Mantra EN translation too short for ${f.definitionKey}`).toBeGreaterThan(10);
