@@ -12,6 +12,11 @@ import { makarSankrantiEssay } from "./journal-makar-sankranti";
 import { mahaShivratriEssay } from "./journal-maha-shivratri";
 import { pradoshVratEssay } from "./journal-pradosh-vrat";
 import { rahuKaalEssay } from "./journal-rahu-kaal";
+import { navratriEssay } from "./journal-navratri";
+import { diwaliLakshmiPujaEssay } from "./journal-diwali-lakshmi-puja";
+import { janmashtamiEssay } from "./journal-janmashtami";
+import { ganeshChaturthiEssay } from "./journal-ganesh-chaturthi";
+import { pitruPakshaEssay } from "./journal-pitru-paksha";
 
 export type JournalSection = {
   heading: string;
@@ -833,7 +838,17 @@ const journalEssays: JournalEssay[] = [
   // Pradosh Vrat & Sandhya Kaal
   pradoshVratEssay,
   // Rahu Kaal & Choghadiya
-  rahuKaalEssay
+  rahuKaalEssay,
+  // Chaitra & Sharad Navratri Ghatasthapana
+  navratriEssay,
+  // Diwali & Dhanteras Lakshmi Puja
+  diwaliLakshmiPujaEssay,
+  // Sri Krishna Janmashtami
+  janmashtamiEssay,
+  // Ganesh Chaturthi Madhyahna Sthapana
+  ganeshChaturthiEssay,
+  // Pitru Paksha & Mahalaya Tarpan
+  pitruPakshaEssay
 ];
 
 function isPublishableJournalEssay(essay: JournalEssay): boolean {

@@ -9,7 +9,7 @@ import {
 describe("journal publication gate", () => {
   it("exposes verified, published essays through public readers", () => {
     const essays = getAllJournalEssays();
-    expect(essays.length).toBe(17);
+    expect(essays.length).toBe(22);
 
     const mandirEssay = findJournalEssay("architecture-of-silence-ancient-mandirs");
     expect(mandirEssay).toBeDefined();
@@ -55,6 +55,31 @@ describe("journal publication gate", () => {
     expect(rahuEssay).toBeDefined();
     expect(rahuEssay?.publicationStatus).toBe("published");
     expect(rahuEssay?.editorialReview?.sourcesVerified).toBe(true);
+
+    const navratriE = findJournalEssay("navratri-ghatasthapana-muhurta-and-nine-devi-forms");
+    expect(navratriE).toBeDefined();
+    expect(navratriE?.publicationStatus).toBe("published");
+    expect(navratriE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const diwaliE = findJournalEssay("diwali-lakshmi-puja-sthira-lagna-and-dhanteras-astronomy");
+    expect(diwaliE).toBeDefined();
+    expect(diwaliE?.publicationStatus).toBe("published");
+    expect(diwaliE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const janmashtamiE = findJournalEssay("sri-krishna-janmashtami-ashtami-vs-rohini-nakshatra");
+    expect(janmashtamiE).toBeDefined();
+    expect(janmashtamiE?.publicationStatus).toBe("published");
+    expect(janmashtamiE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const ganeshE = findJournalEssay("ganesh-chaturthi-madhyahna-sthapana-and-chandra-darshan-dosha");
+    expect(ganeshE).toBeDefined();
+    expect(ganeshE?.publicationStatus).toBe("published");
+    expect(ganeshE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const pitruE = findJournalEssay("pitru-paksha-and-mahalaya-ancestral-tarpan-science");
+    expect(pitruE).toBeDefined();
+    expect(pitruE?.publicationStatus).toBe("published");
+    expect(pitruE?.editorialReview?.sourcesVerified).toBe(true);
 
     const featured = getFeaturedJournalEssay();
     expect(featured).toBeDefined();
