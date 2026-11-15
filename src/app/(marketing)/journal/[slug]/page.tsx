@@ -12,6 +12,8 @@ import {
   Sparkles,
   CheckCircle2,
   Compass,
+  Smartphone,
+  ShieldCheck,
 } from "lucide-react";
 
 import {
@@ -238,6 +240,60 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* ── Shoonaya Mobile App Companion Conversion Card ───────────────── */}
+        <div className="mt-14 overflow-hidden rounded-3xl border border-[var(--brand-primary)]/40 bg-gradient-to-br from-[var(--surface-soft)] via-[var(--card-bg)] to-[var(--brand-primary-soft)]/20 p-8 sm:p-10 shadow-[var(--shadow-soft)]">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-primary)]/40 bg-[var(--brand-primary-soft)] px-3 py-1 text-xs font-semibold text-[var(--brand-primary-strong)]">
+                <Sparkles className="size-3.5" />
+                <span>The Sacred Companion on iOS & Android</span>
+              </div>
+
+              <h3 className="mt-3 font-display text-2xl font-bold tracking-tight text-[var(--text-cream)] sm:text-3xl">
+                Experience Sacred Time with Astronomical Precision
+              </h3>
+
+              <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted-warm)] max-w-2xl">
+                Never miss an auspicious moment or calculate complex panchang trigonometry manually. The Shoonaya App synchronizes with your city&apos;s exact astronomical coordinates, providing automated dawn alarms, Ekadashi Parana windows, and verified Dharmic guidance right in your pocket.
+              </p>
+
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-[var(--text-cream)]">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[var(--brand-primary-strong)] shrink-0" />
+                  <span>Dynamic City Brahma Muhurta Alarms</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[var(--brand-primary-strong)] shrink-0" />
+                  <span>Exact Ekadashi & Parana Fasting Windows</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[var(--brand-primary-strong)] shrink-0" />
+                  <span>98 Illustrated Panchatantra Storybooks</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-[var(--brand-primary-strong)] shrink-0" />
+                  <span>100% Ad-Free, Private & Battery-Efficient</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row lg:flex-col items-center gap-3 w-full lg:w-auto shrink-0">
+              <Link
+                href={`/get?utm_source=journal&utm_medium=companion-card&utm_campaign=${essay.slug}`}
+                className="w-full sm:w-auto lg:w-full min-h-[48px] px-6 py-3.5 rounded-full bg-[var(--brand-primary-strong)] text-[var(--text-cream)] font-semibold text-sm flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity text-center"
+              >
+                <Smartphone className="size-4" />
+                <span>Get Free Shoonaya App</span>
+                <ArrowRight className="size-4" />
+              </Link>
+              <span className="text-[11px] text-[var(--text-dim)] flex items-center gap-1.5">
+                <ShieldCheck className="size-3.5 text-[var(--brand-primary-strong)]" />
+                <span>Available on App Store & Google Play</span>
+              </span>
+            </div>
           </div>
         </div>
 

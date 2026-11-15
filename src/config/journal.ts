@@ -5,6 +5,8 @@
 
 import { kumbh2027Essay } from "./journal-kumbh-2027";
 import { tithiDiscrepancyEssay } from "./journal-tithi-discrepancy";
+import { brahmaMuhurtaEssay } from "./journal-brahma-muhurta";
+import { ekadashiParanaEssay } from "./journal-ekadashi-parana";
 
 export type JournalSection = {
   heading: string;
@@ -812,7 +814,11 @@ const journalEssays: JournalEssay[] = [
   // Built from the shared Kumbh schedule (./journal-kumbh-2027); hidden until a named reviewer verifies it.
   kumbh2027Essay,
   // The Global Tithi Discrepancy & Timezones: Canonical Astrometric and Shastric Study
-  tithiDiscrepancyEssay
+  tithiDiscrepancyEssay,
+  // The Sacred Science of Brahma Muhurta
+  brahmaMuhurtaEssay,
+  // The Complete Ekadashi Parana Guide
+  ekadashiParanaEssay
 ];
 
 function isPublishableJournalEssay(essay: JournalEssay): boolean {
