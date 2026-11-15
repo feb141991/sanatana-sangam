@@ -67,8 +67,9 @@ export function extractKathaGeo(katha: Katha): GeoModel {
 
   const qa: GeoQA[] = [];
   if (katha.phal) {
+    const formattedTitle = katha.title.startsWith('The ') ? katha.title : `the ${katha.title}`;
     qa.push({
-      question: `What is the spiritual benefit (Phal) of reading the ${katha.title}?`,
+      question: `What is the spiritual benefit (Phal) of reading ${formattedTitle}?`,
       answer: katha.phal
     });
   }
