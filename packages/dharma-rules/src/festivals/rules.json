@@ -1224,19 +1224,52 @@
     "description": "Concluding Ganeshotsav day, traditionally associated with Ganesh Visarjan and Anant Chaturdashi.",
     "kind": "major",
     "tradition": "hindu",
-    "rule_family": "relative_to_other_observance",
+    "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
-    "relative_base_slug": "ganesh-chaturthi",
-    "relative_offset_days": 10,
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 14,
+    "corrected_allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Bhadrapada",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 14,
+        "period": "purvahna",
+        "mode": "touches"
+      }
+    ],
     "route_kind": "festival",
     "route_slug": "ganesh-chaturthi",
     "launch_status": "included",
-    "ratification_note": "Series endpoint anchored to the already source-backed Ganesh Chaturthi rule. The public app treats this as Ganeshotsav's concluding Visarjan card; a standalone Anant Chaturdashi vrata rule can be added later if separately sourced.",
-    "relation": {
-      "kind": "series_child",
-      "parent_slug": "ganesh-chaturthi",
-      "offset_days": 10,
-      "status": "declared"
+    "ratification_note": "Converted from a fixed +10 day offset from ganesh-chaturthi to its own Bhadrapada Shukla 14 window (purvahna/touches). The offset matched the tithi in 11 of 20 years 2026-2045; the real gap from Ganesh Chaturthi is 9, 10 or 11 days. Founder decision 2026-11-16 (window); window is unsourced (tier 6). Two consecutive days can qualify (2043, 2045): the engine default, first qualifying date, applies until the tie-break is decided.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 14,
+      "paksha": "shukla",
+      "lunar_month": "Bhadrapada",
+      "month_system": "amanta",
+      "period": "purvahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
     }
   },
   {
@@ -1306,18 +1339,52 @@
     "description": "Day to offer prayers to ancestors (Pitru Paksha ends)",
     "kind": "vrat",
     "tradition": "hindu",
-    "rule_family": "relative_to_other_observance",
+    "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
-    "relative_base_slug": "navratri-begins",
-    "relative_offset_days": -1,
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 30,
+    "corrected_allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Bhadrapada",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "aparahna",
+        "mode": "touches"
+      }
+    ],
     "route_kind": "vrat",
     "route_slug": "amavasya",
     "launch_status": "deferred",
-    "relation": {
-      "kind": "independent_offset",
-      "parent_slug": "navratri-begins",
-      "offset_days": -1,
-      "status": "proposed"
+    "ratification_note": "Converted from a -1 day offset from navratri-begins to its own Bhadrapada Amavasya window (aparahna/touches, the Shraddha window). The offset matched Amavasya at sunrise in 20 of 20 years but Aparahna in 13 of 20, and is a month early in adhika-Ashwin years (2039: 17 Oct against 17/18 Sep). Founder decision 2026-11-16 (window); window is unsourced (tier 6). Two consecutive days can qualify (2031, 2039, 2041): the engine default, first qualifying date, applies until the tie-break is decided. Remains deferred.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "krishna",
+      "lunar_month": "Bhadrapada",
+      "month_system": "amanta",
+      "period": "aparahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
     }
   },
   {
@@ -1943,18 +2010,52 @@
     "description": "Full moon of Kartik month — extremely auspicious for bathing",
     "kind": "vrat",
     "tradition": "hindu",
-    "rule_family": "relative_to_other_observance",
+    "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
-    "relative_base_slug": "diwali",
-    "relative_offset_days": 16,
+    "corrected_lunar_masa_name": "Kartika",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true,
+    "evaluator_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Kartika",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "pradosha",
+        "mode": "touches"
+      }
+    ],
     "route_kind": "vrat",
     "route_slug": "purnima",
     "launch_status": "deferred",
-    "relation": {
-      "kind": "independent_offset",
-      "parent_slug": "diwali",
-      "offset_days": 16,
-      "status": "proposed"
+    "ratification_note": "Converted from a +16 day offset from diwali to its own Kartika Shukla 15 window (pradosha/touches, the Dev Deepawali evening). The offset matched Purnima at sunrise in 7 of 16 years and Purnima at pradosha in 3 of 16; the real gap from Diwali is 14, 15 or 16 days. Founder decision 2026-11-16 (window); window is unsourced (tier 6). Remains deferred.",
+    "date_assignment": {
+      "status": "founder_approved",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "shukla",
+      "lunar_month": "Kartika",
+      "month_system": "amanta",
+      "period": "pradosha",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
     }
   },
   {

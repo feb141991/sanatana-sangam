@@ -560,6 +560,48 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
       ],
     }],
   },
+  {
+    slug: 'anant-chaturdashi-ganesh-visarjan',
+    windowDays: 15,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Bhadrapada', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 14, period: 'purvahna', mode: 'touches' },
+      ],
+    }],
+  },
+  {
+    slug: 'kartik-purnima',
+    windowDays: 15,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Kartika', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'shukla' },
+        { type: 'tithi_presence', tithi: 15, period: 'pradosha', mode: 'touches' },
+      ],
+    }],
+  },
+  {
+    slug: 'mahalaya-amavasya',
+    windowDays: 15,
+    variants: [{
+      variantId: 'standard',
+      spiritualTradition: null,
+      isPrimary: true,
+      conditions: [
+        { type: 'lunar_month', value: 'Bhadrapada', monthSystem: 'amanta' },
+        { type: 'paksha', value: 'krishna' },
+        { type: 'tithi_presence', tithi: 15, period: 'aparahna', mode: 'touches' },
+      ],
+    }],
+  },
 ];
 
 function offsetDateStr(dateStr: string, offsetDays: number): string {
