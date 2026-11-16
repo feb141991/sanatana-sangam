@@ -10,6 +10,13 @@ export const DECLARED_AHEAD_OF_ENGINE = new Set([
   'pavarana-end-of-vassa',
 ]);
 
+// A night window (nishita) has no sunrise tithi. These rules keep a legacy SUNRISE index that is the tithi BEFORE the
+// declared one, because the sunrise before the night holds the previous tithi. maha-shivaratri: Chaturdashi (Krishna 14)
+// prevails at nishita, the legacy index 28 is Krishna 13 at sunrise. Measured on the engine (Ujjain 2026-2045), neither
+// index 28 nor 29 reproduces the nishita date in every year, so the index is NOT "fixed" to 29: that gives the day after
+// in most years. The proxy is allowed only for a nishita declaration, one tithi before.
+export const LEGACY_INDEX_IS_NIGHT_PROXY = new Set(['maha-shivaratri']);
+
 // These declarations use the newly supported period vocabulary before a
 // rule-specific evaluator condition is wired. Their period is still checked
 // against the canonical evaluator vocabulary below.
@@ -21,7 +28,7 @@ type Rule = (typeof rules)[number] & {
   date_assignment?: {
     status: string;
     tithi: number;
-    paksha: 'shukla' | 'krishna';
+    paksha: 'shukla' | 'krishna' | 'both';
     lunar_month: string;
     month_system: 'amanta' | 'purnimanta';
     period: string;
@@ -59,7 +66,10 @@ export function validateWindowDeclarationParity(input: readonly Rule[] = rules a
     const presence = effectiveCondition(rule, 'tithi_presence');
     const holika = effectiveCondition(rule, 'holika_dahan');
     const executableTithi = rule.corrected_lunar_tithi_index ?? rule.lunar_tithi_index;
-    if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && executableTithi !== undefined && withinPakshaTithi(executableTithi) !== declaration.tithi) {
+    const nightProxy = LEGACY_INDEX_IS_NIGHT_PROXY.has(rule.slug);
+    if (nightProxy && declaration.period !== 'nishita') issues.push(`${key(rule)}: night-proxy rule must declare a nishita period`);
+    const expectedLegacyTithi = nightProxy ? declaration.tithi - 1 : declaration.tithi;
+    if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && executableTithi !== undefined && withinPakshaTithi(executableTithi) !== expectedLegacyTithi) {
       issues.push(`${key(rule)}: tithi ${declaration.tithi} != executable ${executableTithi}`);
     }
     if (!DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && executableTithi !== undefined && pakshaFromTithi(executableTithi) !== declaration.paksha) {
@@ -97,6 +107,16 @@ export function validateWindowDeclarationParity(input: readonly Rule[] = rules a
       }
     } else if (presence && presence.mode !== declaration.mode) {
       issues.push(`${key(rule)}: mode mismatch`);
+    }
+
+    // A recurring observance that runs in both pakshas must say so, and only such a rule may.
+    const recurringIndices = (rule as any).recurring_tithi_indices as number[] | undefined;
+    const runsInBothPakshas = !!recurringIndices && recurringIndices.some((t) => t <= 15 && recurringIndices.includes(t + 15) && t === declaration.tithi);
+    if (declaration.paksha === 'both') {
+      if (!runsInBothPakshas) issues.push(`${key(rule)}: paksha both needs recurring_tithi_indices holding ${declaration.tithi} and ${declaration.tithi + 15}`);
+      if (paksha) issues.push(`${key(rule)}: paksha both but an evaluator paksha condition exists`);
+    } else if (runsInBothPakshas && !paksha) {
+      issues.push(`${key(rule)}: runs in both pakshas but declares ${declaration.paksha}`);
     }
 
     const executableSkip = (rule as any).corrected_skipped_tithi_policy ?? (rule as any).skipped_tithi_policy;

@@ -90,7 +90,26 @@
         "period": "nishita",
         "mode": "prevails"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 14,
+      "paksha": "krishna",
+      "lunar_month": "Magha",
+      "month_system": "amanta",
+      "period": "nishita",
+      "mode": "prevails",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "holi",
@@ -3831,7 +3850,26 @@
         "period": "sunrise",
         "mode": "at"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 11,
+      "paksha": "both",
+      "lunar_month": "recurring",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "pradosh-vrat",
@@ -3857,7 +3895,26 @@
         "period": "pradosha",
         "mode": "touches"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 13,
+      "paksha": "both",
+      "lunar_month": "recurring",
+      "month_system": "amanta",
+      "period": "pradosha",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "purnima-vrat",
@@ -3886,7 +3943,26 @@
         "period": "madhyahna",
         "mode": "touches"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "shukla",
+      "lunar_month": "recurring",
+      "month_system": "amanta",
+      "period": "madhyahna",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "amavasya-vrat",
@@ -3915,7 +3991,26 @@
         "period": "sunrise",
         "mode": "at"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "krishna",
+      "lunar_month": "recurring",
+      "month_system": "amanta",
+      "period": "sunrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "vinayaka-chaturthi",

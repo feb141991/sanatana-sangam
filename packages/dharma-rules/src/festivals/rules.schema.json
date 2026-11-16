@@ -430,7 +430,8 @@
             "type": "string",
             "enum": [
               "shukla",
-              "krishna"
+              "krishna",
+              "both"
             ]
           },
           "lunar_month": {
