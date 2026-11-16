@@ -7,8 +7,8 @@
 // file transcribes the state Mela authorities' official websites (read 2026-11-14).
 // Unconfirmed days are named as unconfirmed, never listed as bathing days.
 //
-// Published 2026-11-15 on the founder's approval. The review is recorded under the
-// same name as the other essays (see isPublishableJournalEssay in ./journal). If a
+// Published 2026-11-15, reviewed and approved by Pt. Prince Sharma (see
+// isPublishableJournalEssay in ./journal). If a
 // date in the schedule changes, re-check the essay before the next deploy.
 // ============================================================================
 
@@ -86,7 +86,7 @@ export const kumbh2027Essay: JournalEssay = {
   publicationStatus: "published",
   publishedAt: "2026-11-15T12:00:00.000Z",
   editorialReview: {
-    reviewerName: "Shoonaya Editorial Council",
+    reviewerName: "Pt. Prince Sharma",
     reviewedAt: "2026-11-15T12:00:00.000Z",
     sourcesVerified: true,
   },
