@@ -2385,7 +2385,9 @@
     "route_kind": "vrat",
     "route_slug": "devutthana-ekadashi",
     "corrected_allow_skipped_tithi": true,
+    "corrected_skipped_tithi_policy": "previous_day",
     "launch_status": "included",
+    "ratification_note": "Skipped-tithi policy changed 2026-11-17 from the default (following day) to previous_day, the Smarta convention that yogini-ekadashi's Smarta variant uses, on the founder's instruction (\"Add Smarta variant\"). Ekadashi 2026 ran 20 Nov 07:17 to 21 Nov 06:32 IST and is at no sunrise in Ujjain or Delhi: the following-day policy gave Saturday 21 Nov (the Vaishnava day); this gives Friday 20 Nov. Unspecified and Smarta profiles use Smarta behaviour. A Smarta/Vaishnava pair as for Yogini is NOT built: the reader resolves a pair only for rules that cite a printed source, and no printed Devutthana entry has been read. The policy changes the date only in years where Ekadashi is at no sunrise.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2395,7 +2397,7 @@
       "month_system": "amanta",
       "period": "sunrise",
       "mode": "at",
-      "skipped_tithi": "first_qualifying_date",
+      "skipped_tithi": "previous_day",
       "tie_break": "first_qualifying_date"
     },
     "window_source": {
