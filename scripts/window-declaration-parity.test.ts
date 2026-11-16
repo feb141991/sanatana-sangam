@@ -34,3 +34,31 @@ test('window source status and tier are recorded for every declaration', () => {
     assert.equal(rule.window_source?.status, 'unsourced', rule.slug);
   }
 });
+
+// Founder approved these three Jain windows (sunrise / at, the udaya-tithi convention) in chat on 2026-11-13.
+// The approval was never recorded in rules.json; mahavir-jayanti was published with no window at all.
+// This test fails if any of them loses its record.
+test('the three founder-approved Jain windows are recorded', () => {
+  const expected: Array<[string, number, string]> = [
+    ['mahavir-jayanti', 13, 'Chaitra'],
+    ['akshaya-tritiya-jain', 3, 'Vaishakha'],
+    ['das-lakshana-dharma-begins', 5, 'Bhadrapada'],
+  ];
+  for (const [slug, tithi, month] of expected) {
+    const rule = (rules as any[]).find((candidate) => candidate.slug === slug);
+    assert.ok(rule, slug);
+    assert.deepEqual(
+      {
+        status: rule.date_assignment?.status,
+        tithi: rule.date_assignment?.tithi,
+        paksha: rule.date_assignment?.paksha,
+        lunar_month: rule.date_assignment?.lunar_month,
+        month_system: rule.date_assignment?.month_system,
+        period: rule.date_assignment?.period,
+        mode: rule.date_assignment?.mode,
+      },
+      { status: 'founder_approved', tithi, paksha: 'shukla', lunar_month: month, month_system: 'amanta', period: 'sunrise', mode: 'at' },
+      slug,
+    );
+  }
+});
