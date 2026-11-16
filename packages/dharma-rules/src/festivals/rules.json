@@ -420,7 +420,26 @@
     "allow_skipped_tithi": true,
     "launch_status": "included",
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. CONFIRMED for both 2026 and 2027. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Navami begins ~11:30-12:00 IST on 2026-03-26, absent at that day's sunrise). Corrected engine independently computes 2026-03-26 and 2027-04-15, matching Rashtriya Panchang 1948 SE entries #3 and #95 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34/D33 in docs/CALENDAR_ENGINE_ASSESSMENT.md.",
-    "corrected_tithi_reference_time": "madhyahna"
+    "corrected_tithi_reference_time": "madhyahna",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 9,
+      "paksha": "shukla",
+      "lunar_month": "Chaitra",
+      "month_system": "amanta",
+      "period": "madhyahna",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "hanuman-jayanti",
@@ -860,7 +879,26 @@
         "period": "nishita",
         "mode": "touches"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 8,
+      "paksha": "krishna",
+      "lunar_month": "Shravana",
+      "month_system": "amanta",
+      "period": "nishita",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "krishna-janmashtami",
@@ -927,7 +965,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "corrected_tithi_reference_time": "madhyahna",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Chaturthi begins ~07:00-07:30 IST on 2026-09-14, absent at that day's sunrise). Corrected engine independently computes 2026-09-14, matching Rashtriya Panchang 1948 SE entry #41 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Chaturthi begins ~07:00-07:30 IST on 2026-09-14, absent at that day's sunrise). Corrected engine independently computes 2026-09-14, matching Rashtriya Panchang 1948 SE entry #41 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md.",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 4,
+      "paksha": "shukla",
+      "lunar_month": "Bhadrapada",
+      "month_system": "amanta",
+      "period": "madhyahna",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "radha-ashtami",
@@ -950,7 +1007,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "corrected_tithi_reference_time": "madhyahna",
-    "ratification_note": "Radha Ashtami is celebrated at Madhyahna (noon) on Bhadrapada Shukla Ashtami across Braj, Gaudiya, Nimbarka, and Vaishnava traditions."
+    "ratification_note": "Radha Ashtami is celebrated at Madhyahna (noon) on Bhadrapada Shukla Ashtami across Braj, Gaudiya, Nimbarka, and Vaishnava traditions.",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 8,
+      "paksha": "shukla",
+      "lunar_month": "Bhadrapada",
+      "month_system": "amanta",
+      "period": "madhyahna",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "ganeshotsav-day-2",
@@ -1491,7 +1567,26 @@
         "period": "moonrise",
         "mode": "at"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 4,
+      "paksha": "krishna",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "moonrise",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "dhanteras",
@@ -1583,7 +1678,26 @@
         "period": "pradosha",
         "mode": "touches"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "krishna",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "pradosha",
+      "mode": "touches",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "naraka-chaturdashi",
@@ -1618,7 +1732,26 @@
         "period": "arunodaya",
         "mode": "prevails"
       }
-    ]
+    ],
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 14,
+      "paksha": "krishna",
+      "lunar_month": "Ashwin",
+      "month_system": "amanta",
+      "period": "arunodaya",
+      "mode": "prevails",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "govardhan-puja",
@@ -2672,7 +2805,26 @@
     "disputed_years": [
       2027
     ],
-    "corrected_tithi_reference_time": "madhyahna"
+    "corrected_tithi_reference_time": "madhyahna",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 15,
+      "paksha": "shukla",
+      "lunar_month": "Magha",
+      "month_system": "amanta",
+      "period": "madhyahna",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "holla-mohalla",
@@ -3437,7 +3589,26 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "corrected_tithi_reference_time": "madhyahna",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Panchami begins ~07:30-08:00 IST on 2026-09-15, absent at that day's sunrise). Corrected engine independently computes 2026-09-15, matching Rashtriya Panchang 1948 SE entry #42 exactly -- though that source entry itself lists two paksha variants (Chaturthi-paksha, Panchami-paksha) at the same printed date, an unresolved source-internal ambiguity separate from this engine fix. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Panchami begins ~07:30-08:00 IST on 2026-09-15, absent at that day's sunrise). Corrected engine independently computes 2026-09-15, matching Rashtriya Panchang 1948 SE entry #42 exactly -- though that source entry itself lists two paksha variants (Chaturthi-paksha, Panchami-paksha) at the same printed date, an unresolved source-internal ambiguity separate from this engine fix. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md.",
+    "date_assignment": {
+      "status": "proposed",
+      "basis": "lunar_tithi",
+      "tithi": 5,
+      "paksha": "shukla",
+      "lunar_month": "Bhadrapada",
+      "month_system": "amanta",
+      "period": "madhyahna",
+      "mode": "at",
+      "skipped_tithi": "first_qualifying_date",
+      "tie_break": "first_qualifying_date"
+    },
+    "window_source": {
+      "tier": 6,
+      "source_name": "UNSOURCED — authority record pending",
+      "location_in_source": "not yet identified",
+      "read_by_human": false,
+      "status": "unsourced"
+    }
   },
   {
     "slug": "das-lakshana-dharma-begins",

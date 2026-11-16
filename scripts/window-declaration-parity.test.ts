@@ -62,3 +62,51 @@ test('the three founder-approved Jain windows are recorded', () => {
     );
   }
 });
+
+// Windows that exist only in code were mirrored into rules.json as `proposed` (never approved) on 2026-11-16.
+// A record here describes what the engine already does; it does not make the date correct or sourced.
+test('the nine mirrored code-only windows are recorded as proposed, not approved', () => {
+  const mirrored: Array<[string, string | undefined]> = [
+    ['ram-navami', undefined],
+    ['ganesh-chaturthi', undefined],
+    ['radha-ashtami', undefined],
+    ['guru-ravidas-jayanti', undefined],
+    ['samvatsari-paryushana-ends', undefined],
+    ['karva-chauth', undefined],
+    ['diwali', undefined],
+    ['naraka-chaturdashi', undefined],
+    ['krishna-janmashtami', 'smarta_nishita'],
+  ];
+  for (const [slug, sampradaya] of mirrored) {
+    const rule = (rules as any[]).find((candidate) => candidate.slug === slug && (candidate.sampradaya ?? undefined) === sampradaya);
+    assert.ok(rule, slug);
+    assert.equal(rule.date_assignment?.status, 'proposed', slug);
+  }
+});
+
+// SHRINK-ONLY. Lunar-tithi rules that still publish with no recorded window, each with the reason it cannot be
+// recorded faithfully yet. A new lunar rule must arrive with a window; remove an entry here when its window is recorded.
+const KNOWN_WITHOUT_WINDOW: Record<string, string> = {
+  'maha-shivaratri::': 'legacy tithi index 28 (Krishna 13) disagrees with its code window, Krishna 14 at nishita; a record fails parity',
+  'krishna-janmashtami::gaudiya_iskcon': 'adds a Rohini nakshatra condition the record format cannot express',
+  'paryushana-parva-begins::': 'no founder-approved window; council ruled 2027-08-28 and 2028-08-16; disputed',
+  'ekadashi::': 'runs in both pakshas; the record format has no way to say so',
+  'pradosh-vrat::': 'runs in both pakshas; the record format has no way to say so',
+  'purnima-vrat::': 'held on the legacy path (LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR); the code window may not be what runs',
+  'amavasya-vrat::': 'held on the legacy path (LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR); the code window may not be what runs',
+};
+
+test('every lunar-tithi rule has a recorded window or is on the shrink-only list', () => {
+  const families = new Set(['lunar_tithi', 'lunar_tithi_span', 'lunar_tithi_recurring']);
+  const without = (rules as any[]).filter(
+    (rule) =>
+      families.has(rule.rule_family) &&
+      !rule.date_assignment &&
+      !rule.relation &&
+      !rule.relative_base_slug &&
+      rule.derivability !== 'externally_curated',
+  );
+  const keys = without.map((rule) => `${rule.slug}::${rule.variant_key ?? rule.sampradaya ?? ''}`);
+  for (const k of keys) assert.ok(k in KNOWN_WITHOUT_WINDOW, `${k} has no recorded window and is not on the known list`);
+  for (const k of Object.keys(KNOWN_WITHOUT_WINDOW)) assert.ok(keys.includes(k), `${k} now has a window: remove it from KNOWN_WITHOUT_WINDOW`);
+});
