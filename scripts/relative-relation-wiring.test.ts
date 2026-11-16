@@ -54,7 +54,7 @@ test('independent relative rules are explicitly proposed and preserve legacy off
   // each became its own window rule (see offset-to-window-conversions.test.ts). What is left are known offsets.
   assert.deepEqual(
     rules.map((rule) => rule.slug).sort(),
-    ['dhanteras', 'guru-nanak-gurpurab', 'jain-new-year-pratipada', 'sangha-day-loy-krathong'],
+    ['dhanteras', 'guru-nanak-gurpurab', 'sangha-day-loy-krathong'],
   );
   for (const rule of rules) {
     assert.equal(rule.relation?.status, 'proposed', rule.slug);

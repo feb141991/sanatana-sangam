@@ -85,3 +85,22 @@ test('through the production entry point, Anant Chaturdashi 2026 is 25 Sep and t
   assert.deepEqual(on('ganeshotsav-day-10'), ['2026-09-23']); // still Ganesh Chaturthi + 9
   assert.deepEqual(on('anant-chaturdashi-ganesh-visarjan'), ['2026-09-25']); // was 2026-09-24 (Ganesh Chaturthi + 10)
 });
+
+// Two deferred Jain observances were Diwali offsets. Each now follows the rule whose window is the same tithi:
+// Kartik Purnima (Jain) is the same day as Kartik Purnima; Jain New Year (Pratipada) is Kartika Shukla 1, the day
+// of Govardhan Puja's founder-approved sunrise window. Diwali + 1 matched that window in only 3 of 8 years (2026-2033).
+// These are proposed re-anchors, not approvals, and both stay deferred.
+test('the two Jain aliases follow the tithi rule they share a day with, not a Diwali offset', () => {
+  const alias = (slug: string) => CANONICAL_RULES.find((rule) => rule.slug === slug) as any;
+  for (const [slug, parent] of [['kartik-purnima-jain', 'kartik-purnima'], ['jain-new-year-pratipada', 'govardhan-puja']] as const) {
+    const rule = alias(slug);
+    assert.ok(rule, slug);
+    assert.deepEqual(rule.relation, { kind: 'alias', parent_slug: parent, offset_days: 0, status: 'proposed' }, slug);
+    assert.equal(rule.relative_base_slug, parent, slug);
+    assert.equal(rule.relative_offset_days, 0, slug);
+    assert.equal(rule.launch_status, 'deferred', slug);
+    assert.ok(CANONICAL_RULES.some((candidate) => candidate.slug === parent), `${parent} must exist`);
+  }
+  assert.equal((alias('govardhan-puja').date_assignment as any).tithi, 1);
+  assert.equal((alias('govardhan-puja').date_assignment as any).period, 'sunrise');
+});

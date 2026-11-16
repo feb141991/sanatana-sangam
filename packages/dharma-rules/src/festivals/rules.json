@@ -3756,13 +3756,13 @@
     "tradition": "jain",
     "rule_family": "relative_to_other_observance",
     "verification_type": "historical_commemoration",
-    "relative_base_slug": "diwali",
-    "relative_offset_days": 1,
+    "relative_base_slug": "govardhan-puja",
+    "relative_offset_days": 0,
     "launch_status": "deferred",
     "relation": {
-      "kind": "independent_offset",
-      "parent_slug": "diwali",
-      "offset_days": 1,
+      "kind": "alias",
+      "parent_slug": "govardhan-puja",
+      "offset_days": 0,
       "status": "proposed"
     }
   },
@@ -3794,13 +3794,13 @@
     "tradition": "jain",
     "rule_family": "relative_to_other_observance",
     "verification_type": "historical_commemoration",
-    "relative_base_slug": "diwali",
-    "relative_offset_days": 16,
+    "relative_base_slug": "kartik-purnima",
+    "relative_offset_days": 0,
     "launch_status": "deferred",
     "relation": {
       "kind": "alias",
-      "parent_slug": "diwali",
-      "offset_days": 16,
+      "parent_slug": "kartik-purnima",
+      "offset_days": 0,
       "status": "proposed"
     }
   },
