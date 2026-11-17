@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Clock } from "lucide-react";
 
+import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
 import {
   PANCHATANTRA_HUB_PATH,
   RETELLING_NOTICE,
@@ -46,9 +47,9 @@ export function PanchatantraStoryView({ story, lang, others }: PanchatantraStory
   const otherLang: PanchatantraLang = isHindi ? "en" : "hi";
 
   return (
-    <main className="w-full overflow-hidden" lang={isHindi ? "hi" : undefined}>
-      <section className="relative w-full border-b border-[var(--card-border)] bg-gradient-to-b from-[var(--surface-soft)] via-[var(--surface-base)] to-[var(--surface-base)] px-6 pb-14 pt-32 sm:px-10 lg:px-14 lg:pb-20 lg:pt-40">
-        <div className="mx-auto max-w-3xl">
+    <main className="w-full overflow-x-clip" lang={isHindi ? "hi" : undefined}>
+      <section className="relative w-full overflow-hidden border-b border-[var(--card-border)] bg-gradient-to-b from-[var(--surface-soft)] via-[var(--surface-base)] to-[var(--surface-base)] px-6 pb-14 pt-32 sm:px-10 lg:px-14 xl:px-20 lg:pb-20 lg:pt-40">
+        <div className="mx-auto max-w-[1440px]">
           <Link
             href={PANCHATANTRA_HUB_PATH}
             className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] px-4 py-2 text-xs font-semibold text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)]"
@@ -72,76 +73,77 @@ export function PanchatantraStoryView({ story, lang, others }: PanchatantraStory
             </Link>
           </div>
 
-          <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.15] tracking-tight text-[var(--text-cream)] sm:text-5xl">
+          <h1 className="mt-6 max-w-4xl font-display text-4xl font-semibold leading-[1.15] tracking-tight text-[var(--text-cream)] [text-wrap:balance] sm:text-5xl">
             <span aria-hidden="true" className="mr-3">
               {story.portrait}
             </span>
             {title}
           </h1>
 
-          <p className="mt-6 text-sm leading-relaxed text-[var(--text-dim)]">{RETELLING_NOTICE[lang]}</p>
+          <p className="mt-6 max-w-3xl text-sm leading-relaxed text-[var(--text-dim)]">{RETELLING_NOTICE[lang]}</p>
         </div>
       </section>
 
-      <article className="mx-auto max-w-3xl px-6 py-14 sm:px-10 lg:py-20">
-        <div className="space-y-6 text-lg leading-9 text-[var(--text-muted-warm)]">
-          {paragraphs.map((paragraph, index) => {
-            const scene = story.scenes[index];
-            return (
-              <div key={index} className="space-y-6">
-                {scene ? (
-                  <figure>
-                    <Image
-                      src={scene.src}
-                      alt={isHindi ? scene.altHi : scene.alt}
-                      width={scene.width}
-                      height={scene.height}
-                      sizes="(min-width: 768px) 768px, 100vw"
-                      priority={index === 0}
-                      className="h-auto w-full rounded-3xl border border-[var(--card-border)]"
-                    />
-                  </figure>
-                ) : null}
-                <p>{paragraph}</p>
+      <section className="px-6 py-14 sm:px-10 lg:px-14 xl:px-20 lg:py-20">
+        <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-16 lg:items-start">
+          <article className="min-w-0">
+            <div className="space-y-8 text-lg leading-9 text-[var(--text-muted-warm)]">
+              {paragraphs.map((paragraph, index) => {
+                const scene = story.scenes[index];
+                return (
+                  <div key={index} className="space-y-6">
+                    {scene ? (
+                      <figure>
+                        <Image
+                          src={scene.src}
+                          alt={isHindi ? scene.altHi : scene.alt}
+                          width={scene.width}
+                          height={scene.height}
+                          sizes="(min-width: 1024px) 840px, 100vw"
+                          priority={index === 0}
+                          className="h-auto w-full rounded-3xl border border-[var(--card-border)]"
+                        />
+                      </figure>
+                    ) : null}
+                    <p className="max-w-[72ch] [text-wrap:pretty]">{paragraph}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </article>
+
+          <aside className="min-w-0 space-y-6 lg:sticky lg:top-28">
+            <section className="rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] p-6 sm:p-8 shadow-sm">
+              <h2 className="font-display text-xl font-semibold text-[var(--text-cream)]">{copy.moral}</h2>
+              <p className="mt-3 text-base leading-8 text-[var(--text-muted-warm)] [text-wrap:pretty]">{moral}</p>
+            </section>
+
+            <section className="rounded-3xl border border-[var(--card-border)] bg-[var(--surface-soft)] p-6">
+              <p className="text-sm leading-7 text-[var(--text-muted-warm)]">{copy.app}</p>
+              <div className="mt-4">
+                <AppStoreBadges size="sm" />
               </div>
-            );
-          })}
-        </div>
+            </section>
 
-        <aside className="mt-12 rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] p-6 sm:p-8">
-          <h2 className="font-display text-xl font-semibold text-[var(--text-cream)]">{copy.moral}</h2>
-          <p className="mt-3 text-lg leading-8 text-[var(--text-muted-warm)]">{moral}</p>
-        </aside>
-      </article>
-
-      {others.length > 0 ? (
-        <section className="mx-auto max-w-3xl border-t border-[var(--card-border)] px-6 py-12 sm:px-10">
-          <h2 className="font-display text-xl font-semibold text-[var(--text-cream)]">{copy.more}</h2>
-          <ul className="mt-5 space-y-3">
-            {others.map((other) => (
-              <li key={other.id}>
-                <Link
-                  href={panchatantraStoryPath(other.slug, lang)}
-                  className="flex min-h-11 items-center gap-3 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] px-4 py-3 text-[var(--text-cream)] transition-colors hover:border-[var(--brand-primary-strong)]"
-                >
-                  <span aria-hidden="true">{other.portrait}</span>
-                  <span className="flex-1">{isHindi ? other.titleHi : other.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      <section className="mx-auto max-w-3xl px-6 pb-20 sm:px-10">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-[var(--card-border)] bg-[var(--surface-soft)] p-6">
-          <p className="flex-1 text-base leading-7 text-[var(--text-muted-warm)]">{copy.app}</p>
-          <Link
-            href="/get"
-            className="inline-flex min-h-11 items-center rounded-full bg-[var(--brand-primary-strong)] px-5 text-sm font-semibold text-[var(--text-cream)]"
-          >
-            {copy.appCta}
-          </Link>
+            {others.length > 0 ? (
+              <section className="rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] p-6">
+                <h2 className="font-display text-lg font-semibold text-[var(--text-cream)]">{copy.more}</h2>
+                <ul className="mt-4 space-y-2.5">
+                  {others.map((other) => (
+                    <li key={other.id}>
+                      <Link
+                        href={panchatantraStoryPath(other.slug, lang)}
+                        className="flex min-h-11 items-center gap-3 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-soft)] px-4 py-2.5 text-sm text-[var(--text-cream)] transition-colors hover:border-[var(--brand-primary-strong)]"
+                      >
+                        <span aria-hidden="true">{other.portrait}</span>
+                        <span className="flex-1">{isHindi ? other.titleHi : other.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </aside>
         </div>
       </section>
     </main>

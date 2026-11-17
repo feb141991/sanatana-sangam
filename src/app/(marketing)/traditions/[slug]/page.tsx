@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
+import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
 import {
   findMarketingTradition,
   marketingTraditions,
@@ -87,13 +88,15 @@ export default async function TraditionPage({ params }: TraditionPageProps) {
             <ArrowLeft className="size-4" aria-hidden="true" />
             All traditions
           </Link>
-          <Link
-            href="/early-access"
+          <a
+            href={OFFICIAL_STORE_LINKS.googlePlay}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center gap-2 font-semibold text-[var(--brand-primary-strong)]"
           >
-            Join the Android beta
+            Download on Google Play
             <ArrowRight className="size-4" aria-hidden="true" />
-          </Link>
+          </a>
         </div>
       </section>
     </main>

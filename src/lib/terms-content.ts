@@ -6,7 +6,7 @@ import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
  * whenever the Terms content materially changes -- this is what gets
  * recorded on every acceptance receipt (src/lib/legal-acceptance.ts).
  */
-export const TERMS_VERSION = '2026-07-20';
+export const TERMS_VERSION = '2026-11-18';
 
 export type TermsRegion = 'global' | 'india' | 'uk' | 'usa';
 
@@ -104,9 +104,9 @@ export const TERMS_DATA: { global: TermsSection[]; appendices: RegionalAppendix[
           title: 'Grievance Redressal',
           summary: 'Mandatory contact point for Indian users.',
           content: [
-            'In accordance with the Information Technology Rules, we have appointed a Grievance Officer.',
-            'Name: Nitya Sharma',
-            'Email: info@shoonaya.com',
+            'In accordance with the Information Technology Rules, The RDS Ventures (operator of Shoonaya) has appointed a Grievance Officer.',
+            'Officer: Grievance Officer, The RDS Ventures',
+            'Email: privacy@shoonaya.com',
             'Timeline: We acknowledge complaints within 24 hours and resolve them within 15 days (or 36 hours for urgent content takedown requests).',
           ]
         },

@@ -6,7 +6,7 @@ import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
  * PrivacyClient.tsx) whenever the policy content materially changes -- this
  * is what gets recorded on every acceptance receipt (src/lib/legal-acceptance.ts).
  */
-export const PRIVACY_VERSION = '2026-11-17';
+export const PRIVACY_VERSION = '2026-11-18';
 
 export type PrivacyRegion = 'global' | 'india' | 'uk' | 'usa';
 
@@ -28,7 +28,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       title: 'Data Collection',
       summary: 'We collect only what we need for your spiritual journey.',
       content: [
-        'Shoonaya collects account information such as your email address, authentication identifier, display name, username, profile photo, and language preferences.',
+        'Shoonaya is operated by The RDS Ventures. Shoonaya collects account information such as your email address, authentication identifier, display name, username, profile photo, and language preferences.',
         'Your profile may include sensitive spiritual or personal context you choose to provide, including tradition, sampradaya or path preferences, date of birth, gender context, life stage, rashi, nakshatra, onboarding goals, notification preferences, city, country, and timezone.',
         'We store practice and progress data needed to run the product, such as japa sessions, mala counts, shloka reads, quiz responses, nitya karma steps, vrat or panchang observations, sankalpa progress, Pathshala lessons, Dharm Veer responses, mood check-ins, karma, seva, streaks, relics, and saved verses.',
         'Community features may store posts, comments, replies, reactions, RSVPs, reports, blocks, Mandali membership, invite links, and public profile visibility settings.',
@@ -117,9 +117,9 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           title: 'DPDP Act Compliance',
           summary: 'Your rights under the new Digital Personal Data Protection Act.',
           content: [
-            'Shoonaya acts as a Data Fiduciary. You have the right to withdraw consent at any time.',
+            'Shoonaya (operated by The RDS Ventures) acts as a Data Fiduciary. You have the right to withdraw consent at any time.',
             'You may appoint a Consent Manager to manage your privacy settings on your behalf.',
-            'For any grievances, please contact our Grievance Officer, Prince Sharma, at info@shoonaya.com.',
+            'For any grievances, please contact the Grievance Officer at The RDS Ventures via privacy@shoonaya.com.',
           ]
         }
       ]
@@ -140,7 +140,7 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
           title: 'Data Protection Officer',
           summary: 'Direct contact for privacy concerns.',
           content: [
-            'You can reach our data protection contact for the UK and EU, Prince Sharma, at info@shoonaya.com.',
+            'You can reach The RDS Ventures Data Protection Desk for the UK and EU at privacy@shoonaya.com.',
           ]
         }
       ]

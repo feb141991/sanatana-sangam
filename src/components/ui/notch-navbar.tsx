@@ -101,13 +101,25 @@ export function NotchNavbar({
 
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             {showThemeToggle && <ThemeToggle />}
-            <Link
-              href={cta.href}
-              className="hidden min-h-11 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-5 text-sm font-semibold text-white shadow-sm transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2 sm:flex"
-            >
-              {cta.label}
-              <ArrowUpRight className="size-4" aria-hidden="true" />
-            </Link>
+            {cta.href.startsWith("http") ? (
+              <a
+                href={cta.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden min-h-11 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-5 text-sm font-semibold text-white shadow-sm transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2 sm:flex"
+              >
+                {cta.label}
+                <ArrowUpRight className="size-4" aria-hidden="true" />
+              </a>
+            ) : (
+              <Link
+                href={cta.href}
+                className="hidden min-h-11 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-5 text-sm font-semibold text-white shadow-sm transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2 sm:flex"
+              >
+                {cta.label}
+                <ArrowUpRight className="size-4" aria-hidden="true" />
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
@@ -147,14 +159,27 @@ export function NotchNavbar({
                   {item.label}
                 </Link>
               ))}
-              <Link
-                href={cta.href}
-                className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--brand-primary)] px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {cta.label}
-                <ArrowUpRight className="size-4" aria-hidden="true" />
-              </Link>
+              {cta.href.startsWith("http") ? (
+                <a
+                  href={cta.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--brand-primary)] px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {cta.label}
+                  <ArrowUpRight className="size-4" aria-hidden="true" />
+                </a>
+              ) : (
+                <Link
+                  href={cta.href}
+                  className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--brand-primary)] px-4 font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {cta.label}
+                  <ArrowUpRight className="size-4" aria-hidden="true" />
+                </Link>
+              )}
             </nav>
           </motion.div>
         )}

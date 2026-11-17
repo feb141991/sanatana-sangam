@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { notFound } from "next/navigation";
 
+import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 import { findMarketingFeature, marketingFeatures } from "@/config/marketing";
 
@@ -62,12 +63,7 @@ export default async function FeaturePage({ params }: FeaturePageProps) {
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           )}
-          <Link
-            href="/early-access"
-            className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] px-7 font-semibold text-[var(--text-cream)] hover:border-[var(--brand-primary)]/40 transition"
-          >
-            Request Early Access
-          </Link>
+          <AppStoreBadges size="sm" />
         </div>
       </MarketingPageHero>
 
@@ -131,7 +127,7 @@ export default async function FeaturePage({ params }: FeaturePageProps) {
             )}
 
             <p className="mt-8 border-t border-[var(--card-border)] pt-6 text-sm leading-7 text-[var(--text-dim)]">
-              Product availability and depth may evolve during the Android beta. Public claims follow verified release status.
+              Available now on Android via Google Play and on the web. iOS app coming soon. Public claims follow verified release status.
             </p>
           </div>
         </div>

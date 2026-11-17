@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
 import {
   Search,
   ChevronDown,
@@ -221,13 +222,13 @@ const FAQ_ITEMS: FaqItem[] = [
     categoryLabel: "Platform & Access",
     question: "Which platforms and devices can I use Shoonaya on?",
     answer:
-      "Shoonaya is available on the web. Current mobile access options are listed on the website and may vary by platform.",
+      "Shoonaya is live now on Google Play for Android and on the web at shoonaya.com. The iOS app for iPhone and iPad is coming soon.",
     bullets: [
-      "Open shoonaya.com in a supported web browser.",
-      "See the Android beta page for current enrollment details.",
-      "Follow the store links on the site for current app availability.",
+      "Download Shoonaya free on Google Play for Android devices.",
+      "iOS (Apple App Store) is coming soon.",
+      "Open shoonaya.com in any modern web browser.",
     ],
-    links: [{ label: "Android Beta Access", href: "/early-access" }],
+    links: [{ label: "Download on Google Play", href: OFFICIAL_STORE_LINKS.googlePlay }],
   },
   {
     id: "kids-zone",
@@ -425,16 +426,29 @@ export function FaqClient() {
 
                     {item.links && item.links.length > 0 && (
                       <div className="mt-6 flex flex-wrap gap-3 pt-3 border-t border-[var(--card-border)]/50">
-                        {item.links.map((link, idx) => (
-                          <Link
-                            key={idx}
-                            href={link.href}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--card-bg-subtle)] px-4 py-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] transition-colors"
-                          >
-                            <span>{link.label}</span>
-                            <ArrowRight className="h-3 w-3" />
-                          </Link>
-                        ))}
+                        {item.links.map((link, idx) =>
+                          link.href.startsWith("http") ? (
+                            <a
+                              key={idx}
+                              href={link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--card-bg-subtle)] px-4 py-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] transition-colors"
+                            >
+                              <span>{link.label}</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          ) : (
+                            <Link
+                              key={idx}
+                              href={link.href}
+                              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--card-bg-subtle)] px-4 py-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] transition-colors"
+                            >
+                              <span>{link.label}</span>
+                              <ArrowRight className="h-3 w-3" />
+                            </Link>
+                          ),
+                        )}
                       </div>
                     )}
                   </div>
@@ -458,10 +472,10 @@ export function FaqClient() {
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
           <a
-            href="mailto:info@shoonaya.com"
+            href="mailto:support@shoonaya.com"
             className="inline-flex items-center gap-2 rounded-full bg-[var(--brand-primary)] px-6 py-3 text-xs font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
           >
-            <span>Email info@shoonaya.com</span>
+            <span>Email support@shoonaya.com</span>
             <ExternalLink className="h-3.5 w-3.5" />
           </a>
           <Link

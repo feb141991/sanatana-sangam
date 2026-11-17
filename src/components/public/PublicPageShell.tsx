@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 
 type PublicPageShellProps = {
@@ -59,12 +60,7 @@ export default function PublicPageShell({
                   Continue
                 </p>
                 <div className="mt-5 flex flex-col gap-3">
-                  <Link
-                    href="/early-access"
-                    className="flex min-h-12 items-center justify-center rounded-2xl bg-[var(--brand-primary)] px-4 text-sm font-semibold text-[var(--surface-base)]"
-                  >
-                    Join the Android beta
-                  </Link>
+                  <AppStoreBadges size="sm" />
                   <Link
                     href="/contact"
                     className="flex min-h-12 items-center justify-center rounded-2xl border border-[var(--card-border)] px-4 text-sm font-semibold text-[var(--text-cream)]"

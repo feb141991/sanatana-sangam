@@ -12,9 +12,11 @@ import {
 } from "lucide-react";
 
 import BrandMark from "@/components/BrandMark";
+import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
 import {
-  OFFICIAL_EMAIL,
+  OFFICIAL_EMAILS,
   OFFICIAL_SOCIAL_LINKS,
+  OFFICIAL_STORE_LINKS,
 } from "@/config/official-links";
 
 const TRADITION_SEALS = [
@@ -91,7 +93,7 @@ const FOOTER_COLUMNS = [
       { href: "/sources", label: "Scriptural Sources & Lineage" },
       { href: "/faq", label: "Frequently Asked Questions" },
       { href: "/contact", label: "Contact & Dialogue" },
-      { href: "/early-access", label: "Request Early Access" },
+      { href: OFFICIAL_STORE_LINKS.googlePlay, label: "Download Android App" },
     ],
   },
   {
@@ -109,30 +111,24 @@ const FOOTER_COLUMNS = [
 export function MarketingFooter() {
   return (
     <footer className="w-full border-t border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-cream)] overflow-hidden">
-      {/* ── 1. Early Access Callout Banner ──────────────────────────────────── */}
+      {/* ── 1. Download App Callout Banner ─────────────────────────────────── */}
       <div className="border-b border-[var(--card-border)]/60 bg-gradient-to-r from-[var(--surface-soft)] via-[var(--card-bg)] to-[var(--surface-soft)] px-6 py-12 sm:px-10 lg:px-14 xl:px-20">
         <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-primary)]/30 bg-[var(--brand-primary-soft)] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[var(--brand-primary-strong)] mb-3">
               <Sparkles className="size-3.5" />
-              Private Testing Cohort
+              Now Live on Google Play
             </div>
             <h3 className="font-display text-2xl font-semibold tracking-tight text-[var(--text-cream)] sm:text-3xl">
               Step into sacred time with Shoonaya.
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base">
-              Register your email for private early access. Our engineering team provisions applicant accounts in the background and delivers direct installation links to your inbox.
+              Download Shoonaya free on Android for local Panchang timings, sacred observances, Japa mala, and Pathshala study. iOS app coming soon.
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-3">
-            <Link
-              href="/early-access"
-              className="card-lift shimmer-trigger inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-7 text-xs font-semibold uppercase tracking-wider text-white shadow-sm hover:opacity-90 transition active:scale-95"
-            >
-              Request Early Access
-              <ArrowRight className="size-3.5" />
-            </Link>
+          <div className="flex shrink-0 items-center">
+            <AppStoreBadges />
           </div>
         </div>
       </div>
@@ -241,8 +237,8 @@ export function MarketingFooter() {
                 <Linkedin className="size-4" aria-hidden="true" />
               </a>
               <a
-                href={`mailto:${OFFICIAL_EMAIL}`}
-                aria-label={`Email Shoonaya at ${OFFICIAL_EMAIL}`}
+                href={`mailto:${OFFICIAL_EMAILS.namaste}`}
+                aria-label={`Email Shoonaya at ${OFFICIAL_EMAILS.namaste}`}
                 className="flex size-10 items-center justify-center rounded-xl border border-[var(--card-border)] text-[var(--text-muted-warm)] transition-all hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] hover:scale-105"
               >
                 <Mail className="size-4" aria-hidden="true" />
@@ -260,12 +256,23 @@ export function MarketingFooter() {
             <ul className="mt-4 space-y-2.5">
               {col.links.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="inline-flex min-h-7 items-center text-xs leading-relaxed text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)] hover:translate-x-0.5 duration-200"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.href.startsWith("http") ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-7 items-center text-xs leading-relaxed text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)] hover:translate-x-0.5 duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className="inline-flex min-h-7 items-center text-xs leading-relaxed text-[var(--text-muted-warm)] transition-colors hover:text-[var(--text-cream)] hover:translate-x-0.5 duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -277,7 +284,7 @@ export function MarketingFooter() {
       <div className="border-t border-[var(--card-border)] bg-[var(--surface-base)] px-6 py-6 sm:px-10 lg:px-14 xl:px-20">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 text-xs text-[var(--text-dim)] md:flex-row">
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-center md:text-left">
-            <span>© {new Date().getFullYear()} Shoonaya. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} Shoonaya by The RDS Ventures. All rights reserved.</span>
             <span>•</span>
             <span>Ancient foundation, modern doorway.</span>
           </div>

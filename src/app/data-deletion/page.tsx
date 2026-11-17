@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { OFFICIAL_EMAIL } from '@/config/official-links';
+import { OFFICIAL_EMAILS } from '@/config/official-links';
 
 export const metadata: Metadata = {
   title: 'Data Deletion Request | Shoonaya',
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function DataDeletionPage() {
-  const supportEmail = OFFICIAL_EMAIL;
+  const supportEmail = OFFICIAL_EMAILS.privacy;
 
   return (
     <main className="min-h-screen bg-[#FDF6E3] text-[#1A0F00] flex flex-col justify-between py-12 px-6 md:px-12 font-sans">
@@ -118,7 +118,7 @@ export default function DataDeletionPage() {
         {/* Section 5: Link back to Privacy Policy */}
         <footer className="border-t border-[#1A0F00]/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#1A0F00]/50 font-medium">
           <div>
-            © {new Date().getFullYear()} Shoonaya. All rights reserved.
+            © {new Date().getFullYear()} Shoonaya by The RDS Ventures. All rights reserved.
           </div>
           <div className="flex gap-4">
             <Link href="/privacy" className="hover:text-[#7B1A1A] transition-colors underline decoration-[#1A0F00]/20 underline-offset-4">

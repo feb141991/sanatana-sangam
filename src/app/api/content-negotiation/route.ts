@@ -26,8 +26,13 @@ Life gets busy, and meaningful days can pass without notice. Shoonaya helps you 
 - **Kul Family Spaces**: Preserve lineage, gotra, meaningful ancestral remembrance, and family milestones.
 - **Mandali Community**: Interfaith dialogue and local seeker circles.
 
-## Official Contact
-- Email: info@shoonaya.com
+## Official Contact (The RDS Ventures)
+- Support: support@shoonaya.com
+- Privacy & Data Rights: privacy@shoonaya.com
+- Suggestions: suggestions@shoonaya.com
+- Partnerships: partners@shoonaya.com
+- Community Hello: namaste@shoonaya.com
+- General & Official: info@shoonaya.com
 - Website: https://www.shoonaya.com
 `;
 
@@ -59,10 +64,13 @@ const CONTACT_MD = `# Contact Shoonaya
 
 Canonical URL: https://www.shoonaya.com/contact
 
-## Official Inquiries
-- **General Support**: info@shoonaya.com (Account help, access issues, or general questions)
-- **Safety & Moderation**: Dedicated escalation for user safety and content integrity.
-- **Partnerships**: Temple organizers, satsang leaders, and educators can reach the foundation team directly.
+## Official Inquiries (The RDS Ventures)
+- **Account & App Support**: support@shoonaya.com (Account help, app issues, safety, and moderation)
+- **Privacy & Data Rights**: privacy@shoonaya.com (Data deletion requests, DPDP/GDPR rights, and grievances)
+- **Suggestions & Feedback**: suggestions@shoonaya.com (Feature ideas, calendar improvements, and feedback)
+- **Partnerships**: partners@shoonaya.com (Temple organizers, satsang leaders, schools, and educators)
+- **Community Hello**: namaste@shoonaya.com (General seeker welcome and sanctuary dialogue)
+- **General & Press**: info@shoonaya.com (Official The RDS Ventures correspondence)
 - **Official Website**: https://www.shoonaya.com
 - **LinkedIn**: https://www.linkedin.com/company/shoonaya
 - **Instagram**: https://www.instagram.com/shoonayaapp

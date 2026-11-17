@@ -52,12 +52,11 @@ describe('/community page copy matches what exists', () => {
     expect(page).not.toContain('Sutta Contemplation');
   });
 
-  it('makes no promise the signup does not keep: it records interest only', () => {
-    for (const promise of ['whitelist your access', 'invitation link', 'Private Testing Queue', 'onboarding early seekers']) {
+  it('makes no private-testing or waitlist promises now that Android is live on Google Play', () => {
+    for (const promise of ['whitelist your access', 'invitation link', 'Private Testing Queue', 'onboarding early seekers', 'Request Early Access']) {
       expect(page, promise).not.toContain(promise);
     }
-    // Same disclosure the waitlist form, API response and welcome email give.
-    expect(page).toContain('does not create an account, issue an invitation, or guarantee access or timing');
+    expect(page).toContain('AppStoreBadges');
   });
 
   it('derives the journal essay count from the real list instead of a hard-coded number', () => {

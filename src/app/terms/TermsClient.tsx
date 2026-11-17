@@ -104,7 +104,7 @@ export default function TermsClient() {
         data-terms-version={TERMS_VERSION}
         className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold"
       >
-        Last Updated: July 20, 2026 • Shoonaya Global Governance
+        Last Updated: November 18, 2026 • Shoonaya by The RDS Ventures
       </div>
     </div>
   );

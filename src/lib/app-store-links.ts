@@ -3,13 +3,13 @@
  * understands. Used by the /get redirect so one link in an email, WhatsApp message or social post works on
  * every device.
  *
- * Android has no public listing yet: until NATIVE_APP_STORE_URL_ANDROID holds a valid Play URL, Android
- * visitors go to the beta page instead of a store link that would not exist.
+ * Android is live on Google Play. UTM values ride along as install referrer parameters.
  */
 import { parseStoreUrl } from "@/lib/native-app-version-policy";
 
 export const SITE_ORIGIN = "https://www.shoonaya.com";
 export const IOS_APP_STORE_URL = "https://apps.apple.com/app/shoonaya/id6793055966";
+export const ANDROID_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.shoonaya.app";
 export const ANDROID_BETA_PATH = "/beta/android";
 
 export type MobilePlatform = "ios" | "android" | "other";
@@ -55,10 +55,10 @@ export function detectMobilePlatform(userAgent: string | null | undefined): Mobi
   return "other";
 }
 
-export function resolveStoreUrls(env: Record<string, string | undefined>): { ios: string; android: string | null } {
+export function resolveStoreUrls(env: Record<string, string | undefined>): { ios: string; android: string } {
   return {
     ios: parseStoreUrl(env.NATIVE_APP_STORE_URL_IOS, "ios") ?? IOS_APP_STORE_URL,
-    android: parseStoreUrl(env.NATIVE_APP_STORE_URL_ANDROID, "android")
+    android: parseStoreUrl(env.NATIVE_APP_STORE_URL_ANDROID, "android") ?? ANDROID_PLAY_STORE_URL
   };
 }
 

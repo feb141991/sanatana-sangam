@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
 import {
   Compass,
   Sparkles,
@@ -108,8 +109,8 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
     summary: "Carry ancient wisdom with you on mobile and tablet devices.",
     icon: Smartphone,
     links: [
-      { label: "Shoonaya for iOS", href: "https://apps.apple.com/app/shoonaya/id6793055966", isExternal: true, badge: "App Store", description: "Download on the official Apple App Store for iPhone & iPad." },
-      { label: "Shoonaya for Android Beta", href: "/early-access", badge: "Beta", description: "Join the verified Google Play / Android early access program." },
+      { label: "Shoonaya for Android", href: OFFICIAL_STORE_LINKS.googlePlay, isExternal: true, badge: "Google Play", description: "Download free on the official Google Play Store for Android." },
+      { label: "Shoonaya for iOS", href: "/early-access", badge: "Coming Soon", description: "iPhone & iPad app coming soon to the Apple App Store." },
       { label: "Shoonaya Web Companion", href: "/", description: "Fast, responsive gateway experience accessible in any browser." },
     ],
   },
@@ -300,8 +301,8 @@ export function SitemapClient() {
         </p>
         <p className="mt-2">
           Need immediate support? Contact us at{" "}
-          <a href="mailto:info@shoonaya.com" className="underline hover:text-[var(--text-cream)]">
-            info@shoonaya.com
+          <a href="mailto:suggestions@shoonaya.com" className="underline hover:text-[var(--text-cream)]">
+            suggestions@shoonaya.com
           </a>
         </p>
       </div>

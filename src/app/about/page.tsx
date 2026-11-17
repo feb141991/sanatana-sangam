@@ -12,6 +12,7 @@ import {
   HeartHandshake,
 } from "lucide-react";
 
+import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 
@@ -257,17 +258,11 @@ export default function AboutPage() {
                 Begin with sacred time today.
               </h3>
               <p className="mt-2 text-sm text-[var(--text-muted-warm)] sm:text-base">
-                Join our Android beta release or discover living features in your browser.
+                Download Shoonaya on Android via Google Play (iOS coming soon) or discover living features in your browser.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/early-access"
-                className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-7 text-xs font-semibold uppercase tracking-wider text-[var(--surface-base)] shadow-sm hover:opacity-90 transition active:scale-95"
-              >
-                Request Early Access
-                <ArrowRight className="size-3.5" />
-              </Link>
+              <AppStoreBadges size="sm" />
               <Link
                 href="/features"
                 className="inline-flex min-h-12 items-center gap-2 rounded-full border border-[var(--card-border)] bg-[var(--card-bg)] px-7 text-xs font-semibold uppercase tracking-wider text-[var(--text-cream)] hover:border-[var(--brand-primary)]/40 transition active:scale-95"

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 54" width="180" height="54" role="img" aria-label="Get it on Google Play">
+  <rect x="0.75" y="0.75" width="178.5" height="52.5" rx="7.25" fill="#000000" stroke="#A6A6A6" stroke-width="1.2"/>
+  <!-- Official 4-color Google Play triangle prism -->
+  <g transform="translate(13, 10.5)">
+    <!-- Blue left facet -->
+    <path d="M1.1 1.4C0.7 1.8 0.5 2.5 0.5 3.3V29.7C0.5 30.5 0.7 31.2 1.1 31.6L1.3 31.8L16.1 17V16.6V16.2L1.3 1.2L1.1 1.4Z" fill="#4285F4"/>
+    <!-- Green top facet -->
+    <path d="M21 21.9L16.1 17V16.6V16.2L21 11.3L21.2 11.4L27 14.7C28.7 15.6 28.7 17.2 27 18.2L21.2 21.5L21 21.9Z" fill="#FBBC04"/>
+    <!-- Red bottom facet -->
+    <path d="M21.2 21.5L16.1 16.5L1.1 31.6C1.7 32.2 2.6 32.3 3.7 31.7L21.2 21.5Z" fill="#EA4335"/>
+    <!-- Green top-left facet -->
+    <path d="M21.2 11.4L3.7 1.3C2.6 0.7 1.7 0.8 1.1 1.4L16.1 16.5L21.2 11.4Z" fill="#34A853"/>
+  </g>
+  <text x="53" y="20.5" fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="9.2" font-weight="500" letter-spacing="0.7">GET IT ON</text>
+  <text x="52.5" y="40" fill="#FFFFFF" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="19" font-weight="600" letter-spacing="-0.2">Google Play</text>
+</svg>

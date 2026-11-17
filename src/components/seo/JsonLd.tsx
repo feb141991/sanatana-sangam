@@ -1,4 +1,8 @@
-import { OFFICIAL_EMAIL, OFFICIAL_SOCIAL_LINKS } from "@/config/official-links";
+import {
+  OFFICIAL_EMAILS,
+  OFFICIAL_ENTITY_NAME,
+  OFFICIAL_SOCIAL_LINKS,
+} from "@/config/official-links";
 import React from 'react';
 import type { GeoModel } from '@/lib/seo/geo-model';
 
@@ -141,6 +145,7 @@ export function OrganizationJsonLd() {
         "@type": "Organization",
         "@id": "https://www.shoonaya.com/#organization",
         "name": "Shoonaya",
+        "legalName": OFFICIAL_ENTITY_NAME,
         "alternateName": [
           "Shoonaya Dharma Companion",
           "Sanatan Sangam Shoonaya",
@@ -148,7 +153,7 @@ export function OrganizationJsonLd() {
         "url": "https://www.shoonaya.com",
         "logo": "https://www.shoonaya.com/icons/icon-512x512.png",
         "description": "Shoonaya: Find your infinite. A daily spiritual sanctuary for sacred time, practice, and connection.",
-        "email": OFFICIAL_EMAIL,
+        "email": OFFICIAL_EMAILS.info,
         "sameAs": [
           OFFICIAL_SOCIAL_LINKS.linkedin,
           OFFICIAL_SOCIAL_LINKS.instagram,
@@ -156,12 +161,26 @@ export function OrganizationJsonLd() {
           "https://apps.apple.com/app/id6793055966",
           "https://play.google.com/store/apps/details?id=com.shoonaya.app",
         ],
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "contactType": "Customer Support",
-          "email": OFFICIAL_EMAIL,
-          "url": "https://www.shoonaya.com/contact",
-        },
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "contactType": "Customer Support",
+            "email": OFFICIAL_EMAILS.support,
+            "url": "https://www.shoonaya.com/contact",
+          },
+          {
+            "@type": "ContactPoint",
+            "contactType": "Privacy & Data Protection",
+            "email": OFFICIAL_EMAILS.privacy,
+            "url": "https://www.shoonaya.com/privacy",
+          },
+          {
+            "@type": "ContactPoint",
+            "contactType": "Partnerships",
+            "email": OFFICIAL_EMAILS.partners,
+            "url": "https://www.shoonaya.com/contact",
+          },
+        ],
       },
       {
         "@type": "WebSite",

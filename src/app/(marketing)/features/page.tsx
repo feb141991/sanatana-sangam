@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
+import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
 import { marketingFeatures, upcomingMarketingFeatures } from "@/config/marketing";
 
 export const metadata: Metadata = {
@@ -190,7 +191,7 @@ export default function FeaturesPage() {
               On the Horizon: Upcoming Features
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base">
-              We are actively developing next-generation tools to deepen personal practice and global community connection. These experiences will roll out progressively to Android beta and web users.
+              We are actively developing next-generation tools to deepen personal practice and global community connection. These experiences will roll out progressively across the Shoonaya Android app, upcoming iOS app, and web.
             </p>
           </div>
 
@@ -249,15 +250,17 @@ export default function FeaturesPage() {
 
                   <div className="mt-5 border-t border-[var(--card-border)] pt-3 flex items-center justify-between">
                     <span className="text-[11px] text-[var(--text-dim)]">
-                      Early Access
+                      Android Live · iOS Soon
                     </span>
-                    <Link
-                      href="/early-access"
+                    <a
+                      href={OFFICIAL_STORE_LINKS.googlePlay}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--brand-primary-strong)] hover:underline"
                     >
-                      Request Access
+                      Download App
                       <ArrowRight className="size-3" />
-                    </Link>
+                    </a>
                   </div>
                 </article>
               );

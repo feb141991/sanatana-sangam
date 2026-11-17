@@ -5,6 +5,7 @@ import { useEffect, type ReactNode } from "react";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
 import { marketingNavItems } from "@/config/marketing";
+import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
 
 export function MarketingShell({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -27,7 +28,7 @@ export function MarketingShell({ children }: { children: ReactNode }) {
     >
       <NotchNavbar
         items={marketingNavItems}
-        cta={{ href: "/early-access", label: "Request Early Access" }}
+        cta={{ href: OFFICIAL_STORE_LINKS.googlePlay, label: "Download App" }}
       />
       {children}
       <MarketingFooter />

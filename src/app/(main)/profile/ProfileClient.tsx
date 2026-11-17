@@ -1557,13 +1557,13 @@ export default function ProfileClient({
 
             <div className="pt-4 border-t border-[var(--card-border)] flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium theme-muted mb-1">Official communication</p>
-                <a href="mailto:info@shoonaya.com" className="text-sm font-medium text-[var(--brand-primary)] hover:underline">
-                  info@shoonaya.com
+                <p className="text-xs font-medium theme-muted mb-1">Official support</p>
+                <a href="mailto:support@shoonaya.com" className="text-sm font-medium text-[var(--brand-primary)] hover:underline">
+                  support@shoonaya.com
                 </a>
               </div>
               <a
-                href="mailto:info@shoonaya.com"
+                href="mailto:support@shoonaya.com"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--card-bg-soft)] border border-[var(--card-border)] text-xs font-medium theme-ink hover:border-[var(--brand-primary)]"
               >
                 <Mail size={14} className="text-[#C5A059]" />

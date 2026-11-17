@@ -288,7 +288,7 @@ function buildEmailHtml(opts: {
   <tr><td align="center" style="border-top:1px solid ${accentBdr};opacity:0.5;padding-top:24px;">
     <div style="font-size:11px;color:rgba(250,246,239,0.28);line-height:1.7;">
       Shoonaya · Early-access request received<br>
-      Questions? Reply to this email or write to <a href="mailto:info@shoonaya.com" style="color:${accent};text-decoration:none;opacity:0.7;">info@shoonaya.com</a><br>
+      Questions? Reply to this email or write to <a href="mailto:support@shoonaya.com" style="color:${accent};text-decoration:none;opacity:0.7;">support@shoonaya.com</a><br>
       This is a one-time confirmation for your early-access request. It does not create an account or promise a release date.
     </div>
   </td></tr>

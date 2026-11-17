@@ -52,16 +52,16 @@ describe("detectMobilePlatform", () => {
 });
 
 describe("resolveStoreUrls", () => {
-  it("uses the App Store listing by default and has no Android store link until one is configured", () => {
-    expect(resolveStoreUrls({})).toEqual({ ios: IOS_APP_STORE_URL, android: null });
+  it("uses the official Google Play and App Store listings by default", () => {
+    expect(resolveStoreUrls({})).toEqual({ ios: IOS_APP_STORE_URL, android: PLAY_URL });
   });
 
   it("accepts a valid Play URL from config", () => {
     expect(resolveStoreUrls({ NATIVE_APP_STORE_URL_ANDROID: PLAY_URL }).android).toBe(PLAY_URL);
   });
 
-  it("rejects a store URL for some other app or host", () => {
-    expect(resolveStoreUrls({ NATIVE_APP_STORE_URL_ANDROID: "https://play.google.com/store/apps/details?id=evil.app" }).android).toBeNull();
+  it("rejects a store URL for some other app or host and falls back to the official listing", () => {
+    expect(resolveStoreUrls({ NATIVE_APP_STORE_URL_ANDROID: "https://play.google.com/store/apps/details?id=evil.app" }).android).toBe(PLAY_URL);
     expect(resolveStoreUrls({ NATIVE_APP_STORE_URL_IOS: "https://evil.example/app/shoonaya/id6793055966" }).ios).toBe(IOS_APP_STORE_URL);
   });
 });
@@ -92,13 +92,14 @@ describe("resolveGetDestination", () => {
     expect(dest.searchParams.get("ct")).toBe("diwali-2026");
   });
 
-  it("Android goes to the beta page, with the UTM kept, while there is no Play listing", () => {
+  it("Android goes to Google Play by default, with the UTM values kept as the install referrer", () => {
     const dest = new URL(resolveGetDestination({ userAgent: ANDROID, tracking, env }));
-    expect(dest.origin + dest.pathname).toBe("https://www.shoonaya.com/beta/android");
-    expect(dest.searchParams.get("utm_campaign")).toBe("diwali-2026");
+    expect(dest.hostname).toBe("play.google.com");
+    expect(dest.searchParams.get("id")).toBe("com.shoonaya.app");
+    expect(dest.searchParams.get("referrer")).toContain("utm_campaign=diwali-2026");
   });
 
-  it("Android goes to Google Play once a Play URL is configured", () => {
+  it("Android honors a valid Play URL override from config", () => {
     const dest = new URL(resolveGetDestination({ userAgent: ANDROID, tracking, env: { NATIVE_APP_STORE_URL_ANDROID: PLAY_URL } }));
     expect(dest.hostname).toBe("play.google.com");
     expect(dest.searchParams.get("id")).toBe("com.shoonaya.app");
@@ -116,7 +117,7 @@ describe("resolveGetDestination", () => {
     const hostile = readTrackingParams(new URLSearchParams("utm_source=https://evil.example&utm_campaign=//evil.example/x&next=https://evil.example"));
     for (const userAgent of [IPHONE, ANDROID, DESKTOP]) {
       const dest = new URL(resolveGetDestination({ userAgent, tracking: hostile, env }));
-      expect(["apps.apple.com", "www.shoonaya.com"]).toContain(dest.hostname);
+      expect(["apps.apple.com", "play.google.com", "www.shoonaya.com"]).toContain(dest.hostname);
       expect(dest.toString()).not.toContain("evil.example/x");
     }
   });

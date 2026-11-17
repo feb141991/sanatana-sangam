@@ -13,8 +13,8 @@ import {
   Users,
 } from "lucide-react";
 
+import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
-import { EarlyAccessForm } from "@/components/marketing/EarlyAccessForm";
 
 export const metadata: Metadata = {
   title: "Shoonaya Community | Belonging Without Noise",
@@ -100,13 +100,7 @@ export default function CommunityPage() {
         intro="Shoonaya Mandali is designed to connect conscious seekers through local circles, shared practice, scripture inquiry, and family continuity — free from performative social feeds."
       >
         <div className="flex flex-wrap items-center gap-3 pt-2">
-          <a
-            href="#join-community"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--brand-primary)] px-6 text-xs font-semibold uppercase tracking-wider text-[var(--surface-base)] shadow-sm hover:opacity-90 transition active:scale-95"
-          >
-            Request Early Access
-            <ArrowRight className="size-3.5" />
-          </a>
+          <AppStoreBadges size="sm" />
           <Link
             href="/journal"
             className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] px-6 text-xs font-semibold uppercase tracking-wider text-[var(--text-cream)] hover:border-[var(--brand-primary)]/40 transition active:scale-95"
@@ -315,7 +309,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      {/* ── 5. Request Early Access Embedded Section ────────────────────────── */}
+      {/* ── 5. Download Shoonaya App Section ───────────────────────────────── */}
       <section
         id="join-community"
         className="relative w-full border-t border-[var(--card-border)] px-6 py-16 sm:px-10 lg:px-14 xl:px-20 lg:py-24"
@@ -323,18 +317,18 @@ export default function CommunityPage() {
         <div className="mx-auto max-w-3xl">
           <div className="rounded-3xl border border-[var(--brand-primary)]/30 bg-[var(--card-bg)] p-8 sm:p-12 shadow-[var(--shadow-glow)] card-lift text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-primary)]/30 bg-[var(--brand-primary-soft)] px-3.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--brand-primary-strong)] mb-4">
-              <span className="size-1.5 rounded-full bg-[var(--brand-primary-strong)] animate-pulse" />
-              Early-Access List
+              <span className="size-1.5 rounded-full bg-[#4ade80]" />
+              Now Live on Google Play
             </div>
             <h2 className="font-display text-3xl font-semibold tracking-tight text-[var(--text-cream)] sm:text-4xl">
-              Register Your Interest
+              Step into Shoonaya Mandali
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted-warm)] max-w-xl mx-auto">
-              Leave your email to join the early-access list. Registering records your interest only; it does not create an account, issue an invitation, or guarantee access or timing.
+              Download Shoonaya free on Google Play for Android to join your city Mandali, follow sacred time, and build daily practice. iOS app coming soon.
             </p>
 
-            <div className="mt-8 max-w-md mx-auto text-left">
-              <EarlyAccessForm defaultSource="community-sanctuary" />
+            <div className="mt-8 flex justify-center">
+              <AppStoreBadges className="justify-center" />
             </div>
           </div>
         </div>

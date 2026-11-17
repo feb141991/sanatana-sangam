@@ -46,9 +46,10 @@ describe('privacy policy content', () => {
     expect(section('Data Sharing')).toMatch(/Ireland/);
   });
 
-  it('names a person for the grievance and data-protection contacts', () => {
-    expect(section('DPDP Act Compliance')).toMatch(/Grievance Officer, Prince Sharma, at info@shoonaya\.com/);
-    expect(section('Data Protection Officer')).toMatch(/Prince Sharma, at info@shoonaya\.com/);
+  it('names The RDS Ventures for the grievance and data-protection contacts with no personal info', () => {
+    expect(section('DPDP Act Compliance')).toMatch(/Grievance Officer at The RDS Ventures via privacy@shoonaya\.com/);
+    expect(section('Data Protection Officer')).toMatch(/The RDS Ventures Data Protection Desk.*privacy@shoonaya\.com/);
+    expect(text).not.toContain('Prince Sharma');
   });
 
   it('shows a "Last Updated" date that matches the version recorded on every acceptance', () => {
