@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  assessWebTrackerConsent,
   buildCategories,
   classifyAccessProbe,
   classifyTableProbe,
@@ -111,4 +112,32 @@ test("buildCategories generates 14 structured categories with valid audit proper
     assert.ok(category.deletionPath.length > 0);
     assert.ok(category.retentionRule.length > 0);
   }
+});
+
+const manager = (body: string): SourceFile => ({ repository: "backend", relativePath: "src/components/privacy/WebConsentManager.tsx", content: body } as SourceFile);
+const policy = (body: string): SourceFile => ({ repository: "backend", relativePath: "src/lib/privacy-content.ts", content: body } as SourceFile);
+const GATED = [
+  "{saved.analytics && id ? (<Script src={`https://www.googletagmanager.com/gtag/js?id=${id}`} />) : null}",
+  "{saved.analytics ? (<Script>{`t.src=\"https://www.clarity.ms/tag/\"+i`}</Script>) : null}",
+  "{saved.advertising && c ? (<Script src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js`} />) : null}",
+].join("\n");
+const NAMED = "Google Analytics, Microsoft Clarity and Vercel Analytics ... Google AdSense";
+
+test("a second tracker behind an existing consent gate is not drift", () => {
+  const result = assessWebTrackerConsent([manager(GATED), policy(NAMED)]);
+  assert.deepEqual(result.problems, []);
+  assert.equal(result.status, "VERIFIED");
+});
+
+test("a tracker the privacy policy does not name is drift", () => {
+  const result = assessWebTrackerConsent([manager(GATED), policy("Google Analytics ... Google AdSense")]);
+  assert.equal(result.status, "DRIFT");
+  assert.deepEqual(result.problems, ["Microsoft Clarity is loaded but the privacy policy does not name it"]);
+});
+
+test("a tracker whose consent category has no gate is drift", () => {
+  const ungated = GATED.replace("{saved.advertising && c ?", "{c ?");
+  const result = assessWebTrackerConsent([manager(ungated), policy(NAMED)]);
+  assert.equal(result.status, "DRIFT");
+  assert.deepEqual(result.problems, ["Google AdSense is loaded but no advertising consent gate was found"]);
 });

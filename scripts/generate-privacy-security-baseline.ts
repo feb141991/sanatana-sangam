@@ -604,19 +604,44 @@ export function buildCategories(files: SourceFile[]): CategoryAudit[] {
   ];
 }
 
+// Every tracker the web consent manager can load, the consent category that must gate it, and the name the privacy
+// policy must give it. A new tracker is added here in the same change that adds it to WebConsentManager.tsx.
+export const WEB_TRACKERS = [
+  { name: "Google Analytics", script: /googletagmanager\.com\/gtag/, gate: "analytics" },
+  { name: "Microsoft Clarity", script: /clarity\.ms\/tag/, gate: "analytics" },
+  { name: "Google AdSense", script: /pagead2\.googlesyndication\.com/, gate: "advertising" },
+] as const;
+
+const WEB_CONSENT_MANAGER = "src/components/privacy/WebConsentManager.tsx";
+const PRIVACY_POLICY_SOURCE = "src/lib/privacy-content.ts";
+
+/**
+ * Checks each tracker by what it is, not by counting lines: the consent manager must hold the tracker behind its
+ * category's gate (`{saved.<category> && ...}`), and the privacy policy must name it. Counting gate lines broke when
+ * Microsoft Clarity was added behind a second analytics gate (3cb305e), and it could never notice a tracker that the
+ * policy does not name.
+ */
+export function assessWebTrackerConsent(files: SourceFile[]): { status: FindingStatus; problems: string[]; evidence: Evidence[] } {
+  const manager = files.find((file) => file.relativePath === WEB_CONSENT_MANAGER);
+  if (!manager) return { status: "VERIFIED", problems: [], evidence: [] };
+  const policy = files.find((file) => file.relativePath === PRIVACY_POLICY_SOURCE)?.content ?? "";
+  const problems: string[] = [];
+  const evidence: Evidence[] = [];
+  for (const tracker of WEB_TRACKERS) {
+    const found = evidenceFor([manager], [tracker.script]);
+    if (found.length === 0) continue;
+    evidence.push(...found);
+    const gate = evidenceFor([manager], [new RegExp(`\\{saved\\.${tracker.gate}\\s*&&`)]);
+    if (gate.length === 0) problems.push(`${tracker.name} is loaded but no ${tracker.gate} consent gate was found`);
+    else evidence.push(...gate);
+    if (!policy.includes(tracker.name)) problems.push(`${tracker.name} is loaded but the privacy policy does not name it`);
+  }
+  return { status: problems.length === 0 ? "VERIFIED" : "DRIFT", problems, evidence: [...new Map(evidence.map((e) => [`${e.file}:${e.line}`, e])).values()] };
+}
+
 function buildInventory(input: { files: SourceFile[]; profilesState: AccessProbeState; discoveries: BaselineReport["discoveries"] }): InventoryItem[] {
-  const webTrackerEvidence = evidenceFor(input.files, [/googletagmanager\.com\/gtag/, /pagead2\.googlesyndication\.com/, /OneSignalSDK/]);
-  // Only 2 gates as of WEB_CONSENT_VERSION 2026-08-28.v2 (web-consent.ts) --
-  // the `push` category (OneSignal PWA web push) was deliberately removed
-  // there, with the version bump documented in that file's own header
-  // comment. This checker still expected 3 and had been reporting a false
-  // DRIFT ever since; keep this count in sync with WebConsentPreferences'
-  // actual fields, not the other way around.
-  const webConsentGateEvidence = evidenceFor(
-    input.files.filter((file) => file.relativePath === "src/components/privacy/WebConsentManager.tsx"),
-    [/\{saved\.analytics\s*&&/, /\{saved\.advertising\s*&&/],
-  );
-  const WEB_CONSENT_GATE_COUNT = 2;
+  const webTrackerEvidence = evidenceFor(input.files, [/googletagmanager\.com\/gtag/, /pagead2\.googlesyndication\.com/, /clarity\.ms\/tag/, /OneSignalSDK/]);
+  const webTrackerConsent = assessWebTrackerConsent(input.files);
   const analyticsConsentEvidence = evidenceFor(input.files, [/setAnalyticsCollectionEnabled/, /analytics.*consent|consent.*analytics/i]);
   const nativeAnalyticsSdkEvidence = evidenceFor(
     input.files.filter((file) => file.repository === "native"),
@@ -641,9 +666,9 @@ function buildInventory(input: { files: SourceFile[]; profilesState: AccessProbe
     },
     {
       id: "INV-SDK-01", category: "Third-party SDKs and trackers", name: "Web tracker initialization",
-      status: webTrackerEvidence.length === 0 || webConsentGateEvidence.length === WEB_CONSENT_GATE_COUNT ? "VERIFIED" : "DRIFT", canonicalOwnership: "backend",
-      description: `${webTrackerEvidence.length} shipped-source tracker references were found; ${webConsentGateEvidence.length} of ${WEB_CONSENT_GATE_COUNT} optional consent gates were verified.`,
-      evidence: [...webTrackerEvidence, ...webConsentGateEvidence].slice(0, 30),
+      status: webTrackerConsent.status, canonicalOwnership: "backend",
+      description: `${webTrackerEvidence.length} shipped-source tracker references were found; ${webTrackerConsent.problems.length === 0 ? "every tracker the consent manager loads is behind its consent gate and named in the privacy policy" : webTrackerConsent.problems.join("; ")}.`,
+      evidence: [...webTrackerEvidence, ...webTrackerConsent.evidence].slice(0, 30),
     },
     {
       id: "INV-SDK-02", category: "Third-party SDKs and trackers", name: "Native analytics consent control",

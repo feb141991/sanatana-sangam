@@ -63,8 +63,8 @@ function expiredCookies(previous: WebConsentPreferences, next: WebConsentPrefere
   return [...new Set(writes.filter((w) => /Max-Age=0/.test(w)).map((w) => w.split('=')[0]))];
 }
 
-test('withdrawing analytics expires the Google Analytics cookies', () => {
-  assert.deepEqual(expiredCookies(prefs(true, false), prefs(false, false)).sort(), ['_ga', '_gat', '_gid']);
+test('withdrawing analytics expires the Google Analytics and Microsoft Clarity cookies', () => {
+  assert.deepEqual(expiredCookies(prefs(true, false), prefs(false, false)).sort(), ['_clck', '_clsk', '_ga', '_gat', '_gid']);
 });
 
 test('withdrawing advertising expires the advertising cookies', () => {
@@ -75,7 +75,7 @@ test('withdrawing analytics also expires the GA4 measurement cookie, whose name 
   const jar = '_ga=GA1.1.1; _ga_ABC123XYZ=GS2.1.s1; _gat_gtag_G_ABC123XYZ=1; sb-session=keep; theme=dark';
   assert.deepEqual(
     expiredCookies(prefs(true, false), prefs(false, false), jar).sort(),
-    ['_ga', '_ga_ABC123XYZ', '_gat', '_gat_gtag_G_ABC123XYZ', '_gid'].sort(),
+    ['_clck', '_clsk', '_ga', '_ga_ABC123XYZ', '_gat', '_gat_gtag_G_ABC123XYZ', '_gid'].sort(),
   );
 });
 
@@ -134,4 +134,30 @@ test('it does not claim to be modal when it is not', () => {
 test('it neither shows nor loads anything on the admin console', () => {
   assert.match(banner, /usePathname\(\)/);
   assert.match(banner, /startsWith\('\/admin'\)/);
+});
+
+// ── Withdrawing analytics also stops a Clarity recording already running on the page ─────────────
+
+function clarityCalls(previous: WebConsentPreferences, next: WebConsentPreferences, clarity?: (...args: unknown[]) => void): unknown[][] {
+  const calls: unknown[][] = [];
+  const g = globalThis as unknown as { window?: unknown; document?: unknown };
+  const saved = { window: g.window, document: g.document };
+  g.window = { location: { hostname: 'www.shoonaya.com' }, clarity: clarity ?? ((...args: unknown[]) => { calls.push(args); }) };
+  g.document = { set cookie(_value: string) {}, get cookie() { return ''; } };
+  try {
+    clearVendorState(previous, next);
+  } finally {
+    g.window = saved.window;
+    g.document = saved.document;
+  }
+  return calls;
+}
+
+test('withdrawing analytics revokes Clarity consent; withdrawing only advertising does not', () => {
+  assert.deepEqual(clarityCalls(prefs(true, false), prefs(false, false)), [['consent', false]]);
+  assert.deepEqual(clarityCalls(prefs(true, true), prefs(true, false)), []);
+});
+
+test('a Clarity script that throws does not stop the withdrawal', () => {
+  assert.doesNotThrow(() => clarityCalls(prefs(true, false), prefs(false, false), () => { throw new Error('clarity failed'); }));
 });
