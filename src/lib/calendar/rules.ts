@@ -110,7 +110,9 @@ export interface ObservanceRule {
     status: 'proposed' | 'founder_approved' | 'ratified';
     basis: 'lunar_tithi';
     tithi: number;
-    paksha: 'shukla' | 'krishna';
+    // 'both' = a recurring observance that runs in both pakshas (ekadashi, pradosh-vrat): the tithi is the
+    // within-paksha number and recurring_tithi_indices holds it twice (t and t + 15).
+    paksha: 'shukla' | 'krishna' | 'both';
     lunar_month: string;
     month_system: 'amanta' | 'purnimanta';
     period: 'sunrise' | 'purvahna' | 'madhyahna' | 'aparahna' | 'pradosha' | 'nishita' | 'arunodaya' | 'moonrise';

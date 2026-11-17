@@ -50,7 +50,12 @@ test('Rangwali Holi is the deferred civil-day convention after Holika Dahan', ()
 
 test('independent relative rules are explicitly proposed and preserve legacy offsets', () => {
   const rules = CANONICAL_RULES.filter((rule) => rule.relation?.kind === 'independent_offset');
-  assert.equal(rules.length, 6);
+  // kartik-purnima and mahalaya-amavasya left this group on 2026-11-16: their offsets drifted from the real tithi, so
+  // each became its own window rule (see offset-to-window-conversions.test.ts). What is left are known offsets.
+  assert.deepEqual(
+    rules.map((rule) => rule.slug).sort(),
+    ['dhanteras', 'guru-nanak-gurpurab', 'sangha-day-loy-krathong'],
+  );
   for (const rule of rules) {
     assert.equal(rule.relation?.status, 'proposed', rule.slug);
     assert.equal(rule.relation?.parent_slug, rule.relative_base_slug, rule.slug);

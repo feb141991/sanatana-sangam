@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       reporterId = fallbackId;
     } else {
       const { data: firstProfile } = await admin.from('profiles').select('id').limit(1).maybeSingle();
-      reporterId = firstProfile?.id;
+      reporterId = (firstProfile as { id: string } | null)?.id;
     }
   }
 

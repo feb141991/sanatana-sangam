@@ -61,6 +61,13 @@ export function clearVendorState(previous: WebConsentPreferences, next: WebConse
   if (typeof window === 'undefined') return;
   if (previous.analytics && !next.analytics) {
     clearKeys(['_ga', '_gid', '_gat', ...presentCookieNames().filter((name) => GA_COOKIE_PREFIXES.test(name))]);
+    // Microsoft Clarity's first-party cookies, then its consent API, which stops a recording already running on this page.
+    clearKeys(['_clck', '_clsk']);
+    try {
+      (window as unknown as { clarity?: (...args: unknown[]) => void }).clarity?.('consent', false);
+    } catch {
+      /* a missing or failing Clarity script must not stop the withdrawal */
+    }
   }
   if (previous.advertising && !next.advertising) clearKeys(['__gads', '__gpi', '__eoi', 'google_ama_config']);
 }

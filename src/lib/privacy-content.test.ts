@@ -19,7 +19,7 @@ const section = (title: string) => {
 
 describe('privacy policy content', () => {
   it('names every outside service that receives personal data', () => {
-    for (const name of ['Supabase', 'Vercel', 'Expo', 'Firebase Cloud Messaging', 'Sarvam AI', 'Bhashini', 'Resend', 'Geoapify', 'OpenStreetMap Nominatim', 'Overpass', 'Slack', 'Google Analytics', 'Google AdSense']) {
+    for (const name of ['Supabase', 'Vercel', 'Expo', 'Firebase Cloud Messaging', 'Sarvam AI', 'Bhashini', 'Resend', 'Geoapify', 'OpenStreetMap Nominatim', 'Overpass', 'Slack', 'Google Analytics', 'Microsoft Clarity', 'Google AdSense']) {
       expect(text, name).toContain(name);
     }
   });
