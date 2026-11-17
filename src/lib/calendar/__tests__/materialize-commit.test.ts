@@ -254,6 +254,7 @@ const DEFS = [
   // occurrence. The commit fixture must therefore model the definition catalog,
   // not only definitions that happen to insert rows in this launch year.
   { id: 'def-yogini', slug: 'yogini-ekadashi' },
+  { id: 'def-raksha-bandhan', slug: 'raksha-bandhan' },
   { id: 'def-ekadashi', slug: 'ekadashi' },
   { id: 'def-pradosh', slug: 'pradosh-vrat' },
   { id: 'def-purnima', slug: 'purnima-vrat' },
