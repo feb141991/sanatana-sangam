@@ -9,7 +9,7 @@ import {
 describe("journal publication gate", () => {
   it("exposes verified, published essays through public readers", () => {
     const essays = getAllJournalEssays();
-    expect(essays.length).toBe(22);
+    expect(essays.length).toBe(27);
 
     const mandirEssay = findJournalEssay("architecture-of-silence-ancient-mandirs");
     expect(mandirEssay).toBeDefined();
@@ -80,6 +80,31 @@ describe("journal publication gate", () => {
     expect(pitruE).toBeDefined();
     expect(pitruE?.publicationStatus).toBe("published");
     expect(pitruE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const suryaE = findJournalEssay("surya-arghya-the-sacred-science-of-offering-water-to-the-sun");
+    expect(suryaE).toBeDefined();
+    expect(suryaE?.publicationStatus).toBe("published");
+    expect(suryaE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const tulsiE = findJournalEssay("tulsi-seva-shastric-rules-for-watering-and-plucking");
+    expect(tulsiE).toBeDefined();
+    expect(tulsiE?.publicationStatus).toBe("published");
+    expect(tulsiE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const vastuE = findJournalEssay("home-mandir-vastu-direction-geometry-and-altar-setup");
+    expect(vastuE).toBeDefined();
+    expect(vastuE?.publicationStatus).toBe("published");
+    expect(vastuE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const chalisaE = findJournalEssay("hanuman-chalisa-meaning-meter-and-astrological-protection");
+    expect(chalisaE).toBeDefined();
+    expect(chalisaE?.publicationStatus).toBe("published");
+    expect(chalisaE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const sandhyaE = findJournalEssay("sandhyavandanam-cosmic-science-of-trisandhya-and-solar-meditation");
+    expect(sandhyaE).toBeDefined();
+    expect(sandhyaE?.publicationStatus).toBe("published");
+    expect(sandhyaE?.editorialReview?.sourcesVerified).toBe(true);
 
     const featured = getFeaturedJournalEssay();
     expect(featured).toBeDefined();

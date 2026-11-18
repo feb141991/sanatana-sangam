@@ -17,6 +17,11 @@ import { diwaliLakshmiPujaEssay } from "./journal-diwali-lakshmi-puja";
 import { janmashtamiEssay } from "./journal-janmashtami";
 import { ganeshChaturthiEssay } from "./journal-ganesh-chaturthi";
 import { pitruPakshaEssay } from "./journal-pitru-paksha";
+import { suryaArghyaEssay } from "./journal-surya-arghya";
+import { tulsiSevaEssay } from "./journal-tulsi-seva";
+import { homeMandirVastuEssay } from "./journal-home-mandir-vastu";
+import { hanumanChalisaEssay } from "./journal-hanuman-chalisa";
+import { sandhyavandanamEssay } from "./journal-sandhyavandanam";
 
 export type JournalSection = {
   heading: string;
@@ -848,7 +853,17 @@ const journalEssays: JournalEssay[] = [
   // Ganesh Chaturthi Madhyahna Sthapana
   ganeshChaturthiEssay,
   // Pitru Paksha & Mahalaya Tarpan
-  pitruPakshaEssay
+  pitruPakshaEssay,
+  // Surya Arghya: The Sacred Science of Offering Water to the Sun
+  suryaArghyaEssay,
+  // Tulsi Seva: Classical Shastric Rules for Watering and Plucking
+  tulsiSevaEssay,
+  // Home Mandir Vastu: Direction, Sacred Geometry, and Altar Setup
+  homeMandirVastuEssay,
+  // The Hanuman Chalisa: Meaning, Meter, and Astrological Protection
+  hanumanChalisaEssay,
+  // Sandhyavandanam: The Cosmic Science of Trisandhya & Solar Meditation
+  sandhyavandanamEssay
 ];
 
 function isPublishableJournalEssay(essay: JournalEssay): boolean {
