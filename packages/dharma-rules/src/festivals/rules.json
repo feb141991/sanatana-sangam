@@ -30,12 +30,24 @@
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
     "evaluator_conditions": [
-      { "type": "lunar_month", "value": "Magha", "monthSystem": "amanta" },
-      { "type": "paksha", "value": "shukla" },
-      { "type": "tithi_presence", "tithi": 5, "period": "purvahna", "mode": "touches" }
+      {
+        "type": "lunar_month",
+        "value": "Magha",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 5,
+        "period": "purvahna",
+        "mode": "touches"
+      }
     ],
-    "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-02-11, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #76) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -191,8 +203,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Chaitra Sukladi/Gudi Padava) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -401,7 +413,7 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -420,7 +432,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "ram-navami",
@@ -475,7 +488,7 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -494,7 +507,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "akshaya-tritiya",
@@ -512,12 +526,24 @@
     "lunar_tithi_index": 3,
     "allow_skipped_tithi": true,
     "evaluator_conditions": [
-      { "type": "lunar_month", "value": "Vaishakha", "monthSystem": "amanta" },
-      { "type": "paksha", "value": "shukla" },
-      { "type": "tithi_presence", "tithi": 3, "period": "purvahna", "mode": "touches" }
+      {
+        "type": "lunar_month",
+        "value": "Vaishakha",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 3,
+        "period": "purvahna",
+        "mode": "touches"
+      }
     ],
-    "launch_status": "deferred",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-04-20, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #13) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile.",
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -833,10 +859,27 @@
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
     "evaluator_conditions": [
-      { "type": "lunar_month", "value": "Shravana", "monthSystem": "amanta" },
-      { "type": "paksha", "value": "shukla" },
-      { "type": "tithi_presence", "tithi": 15, "period": "aparahna", "mode": "touches" },
-      { "type": "karana_presence", "karana": "Vishti", "period": "aparahna", "mode": "absent" }
+      {
+        "type": "lunar_month",
+        "value": "Shravana",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 15,
+        "period": "aparahna",
+        "mode": "touches"
+      },
+      {
+        "type": "karana_presence",
+        "karana": "Vishti",
+        "period": "aparahna",
+        "mode": "absent"
+      }
     ],
     "launch_status": "included",
     "date_assignment": {
@@ -1305,8 +1348,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "nakshatra_name": "Shravana",
-    "launch_status": "deferred",
-    "ratification_note": "D33 fix, 2026-08-17: corrected_lunar_masa_name was 'Bhadrapada', searching the WRONG amanta month for the Shravana nakshatra -- landed a lunation late (2026-09-23 instead of the real 2026-08-26 Onam date). Root cause: confusable naming -- 'Shravana' is both the target nakshatra AND the correct search month, and the masa field had been set to the following month by mistake. Fixed to 'Shravana' (matching nag-panchami, same year/system, whose sourced 2026-08-17 date sits in the same window only 9 days before Onam). Verified: corrected engine now computes 2026-08-26, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #33, Onam/Thiru Onam Day) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 for the original diagnosis."
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "hartalika-teej",
@@ -1326,13 +1369,25 @@
     "route_slug": "hartalika-teej",
     "corrected_allow_skipped_tithi": true,
     "evaluator_conditions": [
-      { "type": "lunar_month", "value": "Bhadrapada", "monthSystem": "amanta" },
-      { "type": "paksha", "value": "shukla" },
-      { "type": "tithi_presence", "tithi": 3, "period": "purvahna", "mode": "touches" }
+      {
+        "type": "lunar_month",
+        "value": "Bhadrapada",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 3,
+        "period": "purvahna",
+        "mode": "touches"
+      }
     ],
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 3,
       "paksha": "shukla",
@@ -1349,7 +1404,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "mahalaya-amavasya",
@@ -1385,7 +1441,7 @@
     "route_kind": "vrat",
     "route_slug": "amavasya",
     "launch_status": "deferred",
-    "ratification_note": "Converted from a -1 day offset from navratri-begins to its own Bhadrapada Amavasya window (aparahna/touches, the Shraddha window). The offset matched Amavasya at sunrise in 20 of 20 years but Aparahna in 13 of 20, and is a month early in adhika-Ashwin years (2039: 17 Oct against 17/18 Sep). Founder decision 2026-11-16 (window); window is unsourced (tier 6). Two consecutive days can qualify (2031, 2039, 2041): the engine default, first qualifying date, applies until the tie-break is decided. Remains deferred.",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -1587,13 +1643,16 @@
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
     "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
-    "launch_status": "deferred",
+    "launch_status": "included",
     "relation": {
       "kind": "convention",
       "parent_slug": "chaitra-navratri-begins",
       "offset_days": 0,
       "status": "proposed"
-    }
+    },
+    "relative_to_slug": "chaitra-navratri-begins",
+    "offset_days": 0,
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "chintpurni-mata-sharad-navratri",
@@ -1609,13 +1668,16 @@
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
     "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
-    "launch_status": "deferred",
+    "launch_status": "included",
     "relation": {
       "kind": "convention",
       "parent_slug": "navratri-begins",
       "offset_days": 0,
       "status": "proposed"
-    }
+    },
+    "relative_to_slug": "navratri-begins",
+    "offset_days": 0,
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "karva-chauth",
@@ -1931,9 +1993,21 @@
     "lunar_tithi_index": 6,
     "corrected_allow_skipped_tithi": true,
     "evaluator_conditions": [
-      { "type": "lunar_month", "value": "Kartika", "monthSystem": "amanta" },
-      { "type": "paksha", "value": "shukla" },
-      { "type": "tithi_presence", "tithi": 6, "period": "sayahna", "mode": "touches" }
+      {
+        "type": "lunar_month",
+        "value": "Kartika",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 6,
+        "period": "sayahna",
+        "mode": "touches"
+      }
     ],
     "route_kind": "festival",
     "route_slug": "chhath-puja",
@@ -2055,8 +2129,8 @@
     ],
     "route_kind": "vrat",
     "route_slug": "purnima",
-    "launch_status": "deferred",
-    "ratification_note": "Converted from a +16 day offset from diwali to its own Kartika Shukla 15 window (pradosha/touches, the Dev Deepawali evening). The offset matched Purnima at sunrise in 7 of 16 years and Purnima at pradosha in 3 of 16; the real gap from Diwali is 14, 15 or 16 days. Founder decision 2026-11-16 (window); window is unsourced (tier 6). Remains deferred.",
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2111,9 +2185,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 11,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 11,
       "paksha": "shukla",
@@ -2146,7 +2220,8 @@
       "nepali_bikram",
       "global_sanatan"
     ],
-    "profile_scope": "descriptive"
+    "profile_scope": "descriptive",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "vaikunta-ekadashi",
@@ -3158,7 +3233,8 @@
     "verification_type": "historical_commemoration",
     "solar_month": 2,
     "solar_day": 15,
-    "launch_status": "deferred"
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "losar-tibetan-new-year",
@@ -3175,9 +3251,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "tithi": 1,
       "paksha": "shukla",
       "lunar_month": "Phalguna",
@@ -3194,7 +3270,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "magha-puja",
@@ -3211,9 +3288,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "tithi": 15,
       "paksha": "shukla",
       "lunar_month": "Magha",
@@ -3230,7 +3307,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "vesak-buddha-purnima",
@@ -3247,9 +3325,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "tithi": 15,
       "paksha": "shukla",
       "lunar_month": "Vaishakha",
@@ -3266,7 +3344,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "asalha-puja",
@@ -3283,9 +3362,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "tithi": 15,
       "paksha": "shukla",
       "lunar_month": "Ashadha",
@@ -3302,7 +3381,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "vassa-begins-rains-retreat",
@@ -3319,10 +3399,10 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 16,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
-    "ratification_note": "PARKED 2026-08-18 (founder decision): no Tier 1-4 Buddhist source confirmed specifically for Theravada Vassa/Kathina (a monastic-calendar date, not a civil Poya holiday) -- see docs/sources/candidate-sources-sikh-buddhist-jain.md. Buddhist and Jain calendar sourcing deprioritized as a body of work, to be picked up together later. Stays deferred; no further engineering action until a primary source is available.",
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation.",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "tithi": 1,
       "paksha": "krishna",
       "lunar_month": "Ashadha",
@@ -3356,9 +3436,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "tithi": 15,
       "paksha": "shukla",
       "lunar_month": "Shravana",
@@ -3375,7 +3455,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "pavarana-end-of-vassa",
@@ -3446,13 +3527,16 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "relation": {
       "kind": "independent_offset",
       "parent_slug": "diwali",
       "offset_days": 16,
       "status": "proposed"
-    }
+    },
+    "relative_to_slug": "diwali",
+    "offset_days": 16,
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "bodhi-day",
@@ -3465,7 +3549,8 @@
     "verification_type": "historical_commemoration",
     "solar_month": 12,
     "solar_day": 8,
-    "launch_status": "deferred"
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "mahavir-jayanti",
@@ -3519,7 +3604,7 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 3,
     "allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -3538,7 +3623,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "paryushana-parva-begins",
@@ -3747,7 +3833,7 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -3766,7 +3852,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "jain-new-year-pratipada",
@@ -3779,13 +3866,14 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "govardhan-puja",
     "relative_offset_days": 0,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "relation": {
       "kind": "alias",
       "parent_slug": "govardhan-puja",
       "offset_days": 0,
       "status": "proposed"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "jain-diwali-nirvana-ladnun",
@@ -3798,13 +3886,16 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 0,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "relation": {
       "kind": "alias",
       "parent_slug": "diwali",
       "offset_days": 0,
       "status": "proposed"
-    }
+    },
+    "relative_to_slug": "diwali",
+    "offset_days": 0,
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "kartik-purnima-jain",
@@ -3817,13 +3908,14 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "kartik-purnima",
     "relative_offset_days": 0,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "relation": {
       "kind": "alias",
       "parent_slug": "kartik-purnima",
       "offset_days": 0,
       "status": "proposed"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "ekadashi",
@@ -4025,13 +4117,21 @@
       4
     ],
     "evaluator_conditions": [
-      { "type": "paksha", "value": "shukla" },
-      { "type": "tithi_presence", "tithi": 4, "period": "madhyahna", "mode": "touches" }
+      {
+        "type": "paksha",
+        "value": "shukla"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 4,
+        "period": "madhyahna",
+        "mode": "touches"
+      }
     ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "chaturthi",
-    "launch_status": "deferred",
+    "launch_status": "included",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4050,7 +4150,8 @@
       "location_in_source": "not yet identified",
       "read_by_human": false,
       "status": "unsourced"
-    }
+    },
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "sankashti-chaturthi",
@@ -4070,8 +4171,8 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "sankashti-chaturthi",
-    "launch_status": "deferred",
-    "ratification_note": "approved by Pt Prince Sharma 2026-11-11; not council ratified",
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "evaluator_conditions": [
       {
         "type": "paksha",
@@ -4120,7 +4221,8 @@
     "recurring_weekday": 1,
     "route_kind": "vrat",
     "route_slug": "somvar",
-    "launch_status": "deferred"
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "mangala-gauri-vrat",
@@ -4138,7 +4240,8 @@
     "recurring_weekday": 2,
     "route_kind": "vrat",
     "route_slug": "mangala-gauri",
-    "launch_status": "deferred"
+    "launch_status": "included",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
     "slug": "yogini-ekadashi",
@@ -4217,9 +4320,21 @@
     "corrected_skipped_tithi_policy": "following_day",
     "corrected_prefer_last_match": true,
     "evaluator_conditions": [
-      { "type": "lunar_month", "value": "Ashadha", "monthSystem": "purnimanta" },
-      { "type": "paksha", "value": "krishna" },
-      { "type": "tithi_presence", "tithi": 11, "period": "arunodaya", "mode": "prevails" }
+      {
+        "type": "lunar_month",
+        "value": "Ashadha",
+        "monthSystem": "purnimanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 11,
+        "period": "arunodaya",
+        "mode": "prevails"
+      }
     ],
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.30 (PDF file page 50) -- lists 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
@@ -4538,14 +4653,14 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "holi",
     "relative_offset_days": 1,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "relation": {
       "kind": "convention",
       "parent_slug": "holi",
       "offset_days": 1,
       "status": "proposed"
     },
-    "ratification_note": "Proposed split from the legacy holi slug. The existing holi row is the Holika Dahan/Phalguna Purnima rule; this row represents the following Rangwali Holi colour day. Window and cross-profile behaviour require human review before publication.",
+    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "calendar_profiles": [
       "legacy-ujjain",
       "tamil_solar",

@@ -33,6 +33,18 @@ import { calculateObservancesForYear } from '../engine';
  * sayahna window); missing-citation 65->66 (+1: narasimha-jayanti, whose window
  * source is recorded as unsourced; the five SGPC rules carry citations).
  *
+ * Updated 2026-11-19: included 86->116 (+30: vasant-panchami, gudi-padwa,
+ * ugadi, hanuman-jayanti, akshaya-tritiya, vinayaka-chaturthi, sankashti-chaturthi,
+ * gita-jayanti, hartalika-teej, rangwali-holi, kartik-purnima, akshaya-tritiya-jain,
+ * das-lakshana-dharma-begins, jain-new-year-pratipada, kartik-purnima-jain,
+ * bodhi-day, parinirvana-day, sangha-day-loy-krathong, jain-diwali-nirvana-ladnun,
+ * chintpurni-mata-chaitra-navratri, chintpurni-mata-sharad-navratri, onam,
+ * shravan-somvar, mangala-gauri-vrat, vesak-buddha-purnima, magha-puja, asalha-puja,
+ * vassa-begins-rains-retreat, ullambana-ancestor-day, losar-tibetan-new-year promoted
+ * to launch_status: included under founder sign-off Pt. Prince Sharma 2026-11-19;
+ * mahalaya-amavasya remains deferred per pitru-paksha-publication guard);
+ * missing-citation 66->96 (+30).
+ *
  * These numbers are expected to CHANGE as scholar/product work classifies
  * more rules and sources more citations -- a change here is real progress
  * or a real regression, not drift to silently absorb. When this test goes
@@ -110,12 +122,12 @@ describe('rule approval / source-evidence baseline (tripwire, not a content gate
     // undefined) genuinely does appear, proving this isn't vacuously true
     // because the whole engine call returned nothing.
     expect(occurrences2026.length).toBeGreaterThan(0);
-  }, 240000);
+  }, 360000);
 
   it('included rules missing a citation', () => {
     const included = CANONICAL_RULES.filter((r) => r.launch_status === 'included');
     const missing = included.filter((r) => !r.citation);
-    expect(included.length).toBe(86);
-    expect(missing.length).toBe(66);
+    expect(included.length).toBe(116);
+    expect(missing.length).toBe(96);
   });
 });
