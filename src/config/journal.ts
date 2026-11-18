@@ -22,6 +22,11 @@ import { tulsiSevaEssay } from "./journal-tulsi-seva";
 import { homeMandirVastuEssay } from "./journal-home-mandir-vastu";
 import { hanumanChalisaEssay } from "./journal-hanuman-chalisa";
 import { sandhyavandanamEssay } from "./journal-sandhyavandanam";
+import { mantraJapaMalaEssay } from "./journal-mantra-japa-mala";
+import { understandingKarmaEssay } from "./journal-understanding-karma";
+import { chhathPujaEssay } from "./journal-chhath-puja";
+import { amavasyaPurnimaEssay } from "./journal-amavasya-purnima";
+import { fastingScienceEssay } from "./journal-fasting-science";
 
 export type JournalSection = {
   heading: string;
@@ -863,7 +868,17 @@ const journalEssays: JournalEssay[] = [
   // The Hanuman Chalisa: Meaning, Meter, and Astrological Protection
   hanumanChalisaEssay,
   // Sandhyavandanam: The Cosmic Science of Trisandhya & Solar Meditation
-  sandhyavandanamEssay
+  sandhyavandanamEssay,
+  // Mantra Japa: Sacred Mala Rules, 108 Count, and the Meru Bead
+  mantraJapaMalaEssay,
+  // Understanding Karma: Sanchita, Prarabdha, and Kriyamana
+  understandingKarmaEssay,
+  // Chhath Puja: Austere Tapasya and Solar Biophysics
+  chhathPujaEssay,
+  // Amavasya vs. Purnima: Navigating Lunar Polarities and Consciousness
+  amavasyaPurnimaEssay,
+  // Dietary Purity & The Science of Fasting: Ayurvedic Autophagy
+  fastingScienceEssay
 ];
 
 function isPublishableJournalEssay(essay: JournalEssay): boolean {

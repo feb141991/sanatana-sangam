@@ -9,7 +9,7 @@ import {
 describe("journal publication gate", () => {
   it("exposes verified, published essays through public readers", () => {
     const essays = getAllJournalEssays();
-    expect(essays.length).toBe(27);
+    expect(essays.length).toBe(32);
 
     const mandirEssay = findJournalEssay("architecture-of-silence-ancient-mandirs");
     expect(mandirEssay).toBeDefined();
@@ -105,6 +105,31 @@ describe("journal publication gate", () => {
     expect(sandhyaE).toBeDefined();
     expect(sandhyaE?.publicationStatus).toBe("published");
     expect(sandhyaE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const japaE = findJournalEssay("mantra-japa-tulsi-vs-rudraksha-mala-and-meru-bead-rule");
+    expect(japaE).toBeDefined();
+    expect(japaE?.publicationStatus).toBe("published");
+    expect(japaE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const karmaE = findJournalEssay("understanding-karma-sanchita-prarabdha-and-kriyamana");
+    expect(karmaE).toBeDefined();
+    expect(karmaE?.publicationStatus).toBe("published");
+    expect(karmaE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const chhathE = findJournalEssay("chhath-puja-austere-tapasya-and-solar-biophysics");
+    expect(chhathE).toBeDefined();
+    expect(chhathE?.publicationStatus).toBe("published");
+    expect(chhathE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const amavasyaE = findJournalEssay("amavasya-vs-purnima-navigating-lunar-polarities-and-consciousness");
+    expect(amavasyaE).toBeDefined();
+    expect(amavasyaE?.publicationStatus).toBe("published");
+    expect(amavasyaE?.editorialReview?.sourcesVerified).toBe(true);
+
+    const fastingE = findJournalEssay("dietary-purity-and-the-science-of-fasting-ayurvedic-autophagy");
+    expect(fastingE).toBeDefined();
+    expect(fastingE?.publicationStatus).toBe("published");
+    expect(fastingE?.editorialReview?.sourcesVerified).toBe(true);
 
     const featured = getFeaturedJournalEssay();
     expect(featured).toBeDefined();
