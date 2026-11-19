@@ -137,6 +137,27 @@ const JAIN_SCRIPTURE_TERMS = [
 const PANCHATANTRA_TERMS = [
   'panchatantra', 'panchtantra', 'vishnu sharma', 'panchatantra fable', 'hitopadesha',
 ];
+const KABIR_TERMS = [
+  'kabir', 'sant kabir', 'kabir dohe', 'bijak',
+];
+const TIRUKKURAL_TERMS = [
+  'tirukkural', 'thirukkural', 'kural', 'tiruvalluvar', 'thiruvalluvar',
+];
+const SHANTI_PARVA_TERMS = [
+  'shanti parva', 'shantiparva', 'bhisma stuti',
+];
+const SHAIVA_KASHMIR_TERMS = [
+  'shiva sutras', 'shiva sutra', 'kashmir shaivism', 'vasugupta', 'spanda karika',
+];
+const PRABANDHAM_TERMS = [
+  'divya prabandham', 'prabandham', 'alvars', 'alvar',
+];
+const TIRUVACHAKAM_TERMS = [
+  'tiruvachakam', 'thiruvachakam', 'manikkavasagar',
+];
+const DASAM_GRANTH_TERMS = [
+  'dasam granth', 'chandi di var', 'akal ustat', 'bachittar natak',
+];
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -171,6 +192,13 @@ export const SCRIPTURE_ROUTES: readonly ScriptureRoute[] = [
   scriptureRoute('buddhist_dhamma', BUDDHIST_SCRIPTURE_TERMS),
   scriptureRoute('jain_dharma', JAIN_SCRIPTURE_TERMS),
   scriptureRoute('bhakti_panchatantra', PANCHATANTRA_TERMS),
+  scriptureRoute('sant_kabir', KABIR_TERMS),
+  scriptureRoute('tamil_tirukkural', TIRUKKURAL_TERMS),
+  scriptureRoute('mahabharata_shanti', SHANTI_PARVA_TERMS),
+  scriptureRoute('shaiva_kashmir', SHAIVA_KASHMIR_TERMS),
+  scriptureRoute('tamil_prabandham', PRABANDHAM_TERMS),
+  scriptureRoute('tamil_tiruvachakam', TIRUVACHAKAM_TERMS),
+  scriptureRoute('sikh_dasam_granth', DASAM_GRANTH_TERMS),
 ];
 
 /**
@@ -474,7 +502,14 @@ export async function retrieveDharmaChatGrounding(input: {
       || targetCorpus === 'buddhist_dhamma'
       || targetCorpus === 'jain_dharma'
       || targetCorpus === 'bhakti_katha'
-      || targetCorpus === 'bhakti_panchatantra';
+      || targetCorpus === 'bhakti_panchatantra'
+      || targetCorpus === 'sant_kabir'
+      || targetCorpus === 'tamil_tirukkural'
+      || targetCorpus === 'mahabharata_shanti'
+      || targetCorpus === 'shaiva_kashmir'
+      || targetCorpus === 'tamil_prabandham'
+      || targetCorpus === 'tamil_tiruvachakam'
+      || targetCorpus === 'sikh_dasam_granth';
     // The sparse TF-IDF corpora match on keywords, so they get the meaningful tokens
     // (stopwords would dilute them). The dense corpora match on meaning: a sentence
     // embedding reads the whole question, and stripping it to "work worrying results"

@@ -24,6 +24,8 @@ describe('query shape sent to the retriever', () => {
     ['What does the Dhammapada say about the mind and its training?', 'buddhist_dhamma'],
     ['Tell me the katha story of Prahlada and his devotion to Vishnu', 'bhakti_katha'],
     ['Tell me a Panchatantra moral fable about true friendship', 'bhakti_panchatantra'],
+    ['What does Sant Kabir teach about Guru and Govind?', 'sant_kabir'],
+    ['What does the Tirukkural say about the divine and virtue?', 'tamil_tirukkural'],
   ])('sends the dense corpora the whole question, stopwords included: %s', async (message, corpus) => {
     await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
     expect(retrieveMock).toHaveBeenCalledTimes(1);

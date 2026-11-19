@@ -192,6 +192,13 @@ def corpus_indexes(corpus_dir: Path) -> list[tuple[str, Path | None, Path | None
         ("jain_dharma", corpus_dir / "jain_dharma_index.json", corpus_dir / "jain_dharma_index_dense.json"),
         ("bhakti_katha", None, corpus_dir / "katha_index_dense.json"),
         ("bhakti_panchatantra", None, corpus_dir / "panchatantra_index_dense.json"),
+        ("sant_kabir", None, corpus_dir / "sant_kabir_index_dense.json"),
+        ("tamil_tirukkural", None, corpus_dir / "tamil_tirukkural_index_dense.json"),
+        ("mahabharata_shanti", None, corpus_dir / "mahabharata_shanti_index_dense.json"),
+        ("shaiva_kashmir", None, corpus_dir / "shaiva_kashmir_index_dense.json"),
+        ("tamil_prabandham", None, corpus_dir / "tamil_prabandham_index_dense.json"),
+        ("tamil_tiruvachakam", None, corpus_dir / "tamil_tiruvachakam_index_dense.json"),
+        ("sikh_dasam_granth", None, corpus_dir / "sikh_dasam_granth_index_dense.json"),
         ("valmiki_ramayana", corpus_dir / "valmiki_ramayana_index.json", None),
         ("dharam_veer_reflection", corpus_dir / "dharam_veer_index.json", None),
     ]

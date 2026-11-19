@@ -390,6 +390,63 @@ async function buildPanchatantra(embedder: any) {
   };
 }
 
+async function buildSingleManifestCorpus(
+  embedder: any,
+  manifestFileName: string,
+  corpusLabel: string
+) {
+  const filePath = path.join(MANIFESTS_DIR, manifestFileName);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Manifest file not found: ${manifestFileName}`);
+  }
+  const manifest = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  const docId = manifest.doc_id ?? manifestFileName.replace(/\.json$/, '');
+  const title = manifest.title ?? '';
+  const sourceName = manifest.source_name ?? '';
+  const tradition = manifest.tradition ?? '';
+
+  const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
+
+  for (const item of manifest.content ?? []) {
+    const ref: string = item.ref ?? '';
+    const chapterPart = ref.split('.')[0];
+    const chapter = /^\d+$/.test(chapterPart) ? parseInt(chapterPart, 10) : 1;
+    const text: string = item.text ?? '';
+    const original: string = item.original ?? item.sanskrit ?? '';
+    const transliteration: string = item.transliteration ?? '';
+
+    pending.push({
+      meta: {
+        id: `${docId}_${ref}`,
+        ref,
+        chapter,
+        sanskrit: item.sanskrit,
+        original: item.original,
+        transliteration,
+        text,
+        source_name: item.source_name ?? sourceName,
+        source_class: item.source_class ?? 'scripture',
+        rights_status: item.rights_status ?? 'public_domain',
+      },
+      text: `${title} ${ref}. ${text}`.trim(),
+    });
+  }
+
+  console.log(`${corpusLabel}: embedding ${pending.length} verses...`);
+  const documents = await embedAll(embedder, pending);
+
+  return {
+    metadata: {
+      manifest_count: 1,
+      document_count: documents.length,
+      scale_readiness: 'Sample-scale',
+      embedding_model: EMBEDDING_MODEL,
+      embedding_dim: EMBEDDING_DIM,
+    },
+    documents,
+  };
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const rebuildAll = args.includes('--all') || args.includes('--rebuild-all');
@@ -446,6 +503,24 @@ async function main() {
     const panchatantraIndex = await buildPanchatantra(embedder);
     fs.writeFileSync(path.join(CORPUS_DIR, 'panchatantra_index_dense.json'), JSON.stringify(panchatantraIndex, null, 2), 'utf-8');
     console.log(`Wrote panchatantra_index_dense.json (${panchatantraIndex.documents.length} docs)\n`);
+  }
+
+  const regionalCorpora: [string, string, string][] = [
+    ['sant_kabir', 'sant_kabir.json', 'sant_kabir_index_dense.json'],
+    ['tamil_tirukkural', 'tamil_tirukkural.json', 'tamil_tirukkural_index_dense.json'],
+    ['mahabharata_shanti', 'mahabharata_shanti.json', 'mahabharata_shanti_index_dense.json'],
+    ['shaiva_kashmir', 'shaiva_kashmir.json', 'shaiva_kashmir_index_dense.json'],
+    ['tamil_prabandham', 'tamil_prabandham.json', 'tamil_prabandham_index_dense.json'],
+    ['tamil_tiruvachakam', 'tamil_tiruvachakam.json', 'tamil_tiruvachakam_index_dense.json'],
+    ['sikh_dasam_granth', 'sikh_dasam_granth.json', 'sikh_dasam_granth_index_dense.json'],
+  ];
+
+  for (const [key, manifestFile, indexFile] of regionalCorpora) {
+    if (shouldBuild(key, indexFile)) {
+      const idx = await buildSingleManifestCorpus(embedder, manifestFile, key);
+      fs.writeFileSync(path.join(CORPUS_DIR, indexFile), JSON.stringify(idx, null, 2), 'utf-8');
+      console.log(`Wrote ${indexFile} (${idx.documents.length} docs)\n`);
+    }
   }
 }
 

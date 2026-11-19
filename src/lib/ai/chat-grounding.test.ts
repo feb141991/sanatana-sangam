@@ -363,6 +363,13 @@ describe('chat-grounding', () => {
         'buddhist_dhamma',
         'jain_dharma',
         'bhakti_panchatantra',
+        'sant_kabir',
+        'tamil_tirukkural',
+        'mahabharata_shanti',
+        'shaiva_kashmir',
+        'tamil_prabandham',
+        'tamil_tiruvachakam',
+        'sikh_dasam_granth',
       ]);
       for (const route of SCRIPTURE_ROUTES) expect(route.terms.length).toBeGreaterThan(0);
       expect(SCRIPTURE_ROUTES.find((route) => route.corpus === 'valmiki_ramayana')!.terms.length).toBeGreaterThan(50);

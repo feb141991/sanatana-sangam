@@ -1478,6 +1478,119 @@ PramanaRetrieverSelector.register('vedic_suktas_stotras', new PramanaGenericEmbe
   'Classical Vedic Suktas & Stotras'
 ));
 
+const kabirManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'sant_kabir',
+  sourceName: 'Sant Kabir',
+  sourceClass: 'scripture',
+  tradition: 'Sant Mat / Bhakti',
+  maxChapters: 1,
+});
+const kabirDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  kabirManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/sant_kabir_index_dense.json'),
+  'Sant Kabir',
+  'Sant Mat / Bhakti'
+);
+
+const tirukkuralManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'tamil_tirukkural',
+  sourceName: 'Tirukkural',
+  sourceClass: 'scripture',
+  tradition: 'Tamil Sangam',
+  maxChapters: 1,
+});
+const tirukkuralDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  tirukkuralManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/tamil_tirukkural_index_dense.json'),
+  'Tirukkural',
+  'Tamil Sangam'
+);
+
+const shantiManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'mahabharata_shanti',
+  sourceName: 'Mahabharata - Shanti Parva',
+  sourceClass: 'scripture',
+  tradition: 'Itihasa',
+  maxChapters: 1,
+});
+const shantiDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  shantiManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/mahabharata_shanti_index_dense.json'),
+  'Mahabharata - Shanti Parva',
+  'Itihasa'
+);
+
+const shaivaKashmirManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'shaiva_kashmir',
+  sourceName: 'Shiva Sutras',
+  sourceClass: 'scripture',
+  tradition: 'Kashmir Shaivism',
+  maxChapters: 1,
+});
+const shaivaKashmirDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  shaivaKashmirManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/shaiva_kashmir_index_dense.json'),
+  'Shiva Sutras',
+  'Kashmir Shaivism'
+);
+
+const tamilPrabandhamManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'tamil_prabandham',
+  sourceName: 'Naalayira Divya Prabandham',
+  sourceClass: 'scripture',
+  tradition: 'Sri Vaishnavism',
+  maxChapters: 1,
+});
+const tamilPrabandhamDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  tamilPrabandhamManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/tamil_prabandham_index_dense.json'),
+  'Naalayira Divya Prabandham',
+  'Sri Vaishnavism'
+);
+
+const tamilTiruvachakamManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'tamil_tiruvachakam',
+  sourceName: 'Tiruvachakam',
+  sourceClass: 'scripture',
+  tradition: 'Shaiva Siddhanta',
+  maxChapters: 1,
+});
+const tamilTiruvachakamDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  tamilTiruvachakamManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/tamil_tiruvachakam_index_dense.json'),
+  'Tiruvachakam',
+  'Shaiva Siddhanta'
+);
+
+const dasamGranthManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'sikh_dasam_granth',
+  sourceName: 'Dasam Granth',
+  sourceClass: 'scripture',
+  tradition: 'Sikhism',
+  maxChapters: 1,
+});
+const dasamGranthDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  dasamGranthManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/sikh_dasam_granth_index_dense.json'),
+  'Dasam Granth',
+  'Sikhism'
+);
+
+PramanaRetrieverSelector.register('sant_kabir', kabirDenseRetriever);
+PramanaRetrieverSelector.register('sant_kabir_dense', kabirDenseRetriever);
+PramanaRetrieverSelector.register('tamil_tirukkural', tirukkuralDenseRetriever);
+PramanaRetrieverSelector.register('tamil_tirukkural_dense', tirukkuralDenseRetriever);
+PramanaRetrieverSelector.register('mahabharata_shanti', shantiDenseRetriever);
+PramanaRetrieverSelector.register('mahabharata_shanti_dense', shantiDenseRetriever);
+PramanaRetrieverSelector.register('shaiva_kashmir', shaivaKashmirDenseRetriever);
+PramanaRetrieverSelector.register('shaiva_kashmir_dense', shaivaKashmirDenseRetriever);
+PramanaRetrieverSelector.register('tamil_prabandham', tamilPrabandhamDenseRetriever);
+PramanaRetrieverSelector.register('tamil_prabandham_dense', tamilPrabandhamDenseRetriever);
+PramanaRetrieverSelector.register('tamil_tiruvachakam', tamilTiruvachakamDenseRetriever);
+PramanaRetrieverSelector.register('tamil_tiruvachakam_dense', tamilTiruvachakamDenseRetriever);
+PramanaRetrieverSelector.register('sikh_dasam_granth', dasamGranthDenseRetriever);
+PramanaRetrieverSelector.register('sikh_dasam_granth_dense', dasamGranthDenseRetriever);
+
 export async function retrievePathshalaContext(input: {
   source?: string;
   title?: string;
