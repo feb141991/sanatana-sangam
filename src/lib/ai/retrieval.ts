@@ -1403,24 +1403,23 @@ PramanaRetrieverSelector.register('jain_dharma_sparse', new PramanaGenericEmbedd
 const ramayanaManifestRetriever = new PramanaManifestRetriever({
   prefix: 'valmiki_ramayana',
   sourceName: 'Valmiki Ramayana',
-  sourceClass: 'curated_lesson',
+  sourceClass: 'translation',
   tradition: 'Sanatana Dharma',
-  maxChapters: 0,
+  maxChapters: 2,
   fileNames: [
     'valmiki_ramayana_bala.json',
     'valmiki_ramayana_ayodhya.json',
-    'valmiki_ramayana_aranya.json',
-    'valmiki_ramayana_kishkindha.json',
-    'valmiki_ramayana_sundara.json',
-    'valmiki_ramayana_yuddha.json'
   ]
 });
-PramanaRetrieverSelector.register('valmiki_ramayana', new PramanaGenericEmbeddingRetriever(
+const ramayanaDenseRetriever = new PramanaDenseEmbeddingRetriever(
   ramayanaManifestRetriever,
-  path.join(process.cwd(), 'python/ai_pipeline/corpus/valmiki_ramayana_index.json'),
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/valmiki_ramayana_index_dense.json'),
+  'Valmiki Ramayana',
   'Sanatana Dharma',
-  'Valmiki Ramayana'
-));
+  'translation'
+);
+PramanaRetrieverSelector.register('valmiki_ramayana', ramayanaDenseRetriever);
+PramanaRetrieverSelector.register('valmiki_ramayana_dense', ramayanaDenseRetriever);
 
 const yogaManifestRetriever = new PramanaManifestRetriever({
   prefix: 'yoga_sutras',

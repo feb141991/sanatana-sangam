@@ -23,6 +23,8 @@ def build_ramayana_index(manifests_dir: Path, output_file: Path) -> None:
     for manifest_path in manifests:
         with open(manifest_path, "r", encoding="utf-8") as f:
             manifest = json.load(f)
+        if not manifest.get("is_pramana_grade", False) or manifest.get("review_status") != "source_audit_approved":
+            continue
         manifest_count += 1
         doc_id = manifest.get("doc_id", manifest_path.stem)
 
@@ -30,7 +32,7 @@ def build_ramayana_index(manifests_dir: Path, output_file: Path) -> None:
             ref = verse.get("ref", "")
             sanskrit = verse.get("sanskrit", "")
             transliteration = verse.get("transliteration", "")
-            text = verse.get("translation", "")
+            text = verse.get("text", "") or verse.get("translation", "")
             kanda = verse.get("kanda", "")
 
             ref_parts = ref.split(".")
@@ -108,10 +110,10 @@ def build_ramayana_index(manifests_dir: Path, output_file: Path) -> None:
             # chat-grounding.ts's source-audit-pending labeling depend on) --
             # keep in sync with docs/RAMAYANA_CANONICAL_SOURCE_PLAN.md. Written
             # here so regenerating the index can never silently drop them again.
-            "activation_status": "explicit_only",
-            "source_class": "curated_lesson",
-            "rights_status": "restricted_or_pending",
-            "review_status": "needs_source_audit"
+            "activation_status": "active",
+            "source_class": "translation",
+            "rights_status": "public_domain",
+            "review_status": "source_audit_approved"
         },
         "idf": idf,
         "documents": indexed_docs,

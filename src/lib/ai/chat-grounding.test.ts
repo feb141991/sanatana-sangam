@@ -127,17 +127,15 @@ describe('chat-grounding', () => {
       expect(res.documents.length).toBeGreaterThan(0);
     });
 
-    it("recognizes but withholds Ramayana inquiries until source audit approval", async () => {
+    it("grounds Ramayana inquiries with verified canonical passages", async () => {
       const res = await retrieveDharmaChatGrounding({
         message: "What is Rama's pledge of refuge in the Ramayana?",
         tradition: "hindu",
       });
-      expect(res.isGrounded).toBe(false);
+      expect(res.isGrounded).toBe(true);
       expect(res.corpus).toBe("valmiki_ramayana");
-      expect(res.documents).toHaveLength(0);
-      expect(res.groundingPromptText).toContain('APPROVED SOURCE COVERAGE UNAVAILABLE');
-      expect(res.groundingPromptText).toContain('does not yet have a source-audited Ramayana passage');
-      expect(res.groundingPromptText).not.toContain('verified passages from authorized scriptures');
+      expect(res.documents.length).toBeGreaterThan(0);
+      expect(res.groundingPromptText).toContain('Valmiki Ramayana');
     });
 
     it("grounds Puranic Vrat Katha inquiries", async () => {
@@ -201,10 +199,9 @@ describe('chat-grounding', () => {
         message: 'What does the Ramayana say about refuge?',
         tradition: 'jain',
       });
-      expect(res.isGrounded).toBe(false);
+      expect(res.isGrounded).toBe(true);
       expect(res.corpus).toBe('valmiki_ramayana');
-      expect(res.documents).toHaveLength(0);
-      expect(res.groundingPromptText).toContain('APPROVED SOURCE COVERAGE UNAVAILABLE');
+      expect(res.documents.length).toBeGreaterThan(0);
     });
 
     it('fails closed on empty messages', async () => {
@@ -281,13 +278,13 @@ describe('chat-grounding', () => {
       'Which events are told in Bala Kanda?',
       'What is Bal Kanda about?',
       'Explain Sunderkand path',
-    ])('fails closed on the withheld Ramayana instead of answering from a biography: %s', async (message) => {
+    ])('routes to the Ramayana corpus instead of answering from a biography: %s', async (message) => {
       const res = await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
       expect(res.corpus).toBe('valmiki_ramayana');
-      expect(res.isGrounded).toBe(false);
-      expect(res.documents).toHaveLength(0);
-      expect(res.groundingPromptText).toContain('APPROVED SOURCE COVERAGE UNAVAILABLE');
-      expect(res.groundingPromptText).not.toContain('AUTHENTIC DHARMIC SOURCE PASSAGES');
+      expect(res.isGrounded).toBe(true);
+      expect(res.documents.length).toBeGreaterThan(0);
+      expect(res.groundingPromptText).toContain('Valmiki Ramayana');
+      expect(res.groundingPromptText).not.toContain('verified historical/biographical records for this hero');
     });
 
     it.each([

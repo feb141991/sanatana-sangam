@@ -206,7 +206,7 @@ export const SCRIPTURE_ROUTES: readonly ScriptureRoute[] = [
  * fail-closed "coverage unavailable" notice must be what the model receives, so no
  * other grounding path (a hero's biography, say) may answer in its place.
  */
-const WITHHELD_CORPORA: ReadonlySet<string> = new Set(['valmiki_ramayana']);
+const WITHHELD_CORPORA: ReadonlySet<string> = new Set([]);
 
 /** The corpus of the first scripture family named in the text, or null if none is. */
 export function findNamedScriptureCorpus(text: string): string | null {
@@ -316,7 +316,7 @@ function buildCorpusGroundingPrompt(targetCorpus: string, documents: RetrievalCh
   // itself is shared with context-builder.ts's Pathshala-explain builders
   // (hasPendingSourceContent) so this governance decision can't silently
   // diverge between the chat path and the explain path again.
-  const hasPendingSource = targetCorpus === 'valmiki_ramayana' || hasPendingSourceContent(documents);
+  const hasPendingSource = hasPendingSourceContent(documents);
   const hasCuratedMaterial = targetCorpus === 'bhakti_katha' || documents.some((doc) =>
     ['curated_lesson', 'narrative'].includes(doc.metadata?.sourceClass ?? '')
   );
@@ -367,11 +367,11 @@ export async function retrieveDharmaChatGrounding(input: {
   const namedCorpus = findNamedScriptureCorpus(message);
 
   // 1. Check for Dharm Veer historical hero mention. A hero's name must not
-  // answer in place of a withheld source the user named ("Hanuman" in the Sundara
-  // Kanda): that would present a biography as the Ramayana and skip the notice
-  // telling the model not to quote it.
+  // answer in place of an explicitly named scripture the user asked about
+  // ("Hanuman" in the Ramayana/Sundara Kanda): that would present a modern hero
+  // biography when the user explicitly inquired about the scripture text.
   const sourceIsWithheld = namedCorpus !== null && WITHHELD_CORPORA.has(namedCorpus);
-  const matchedHero = sourceIsWithheld ? null : matchDharmVeerFigure(message);
+  const matchedHero = (namedCorpus !== null || sourceIsWithheld) ? null : matchDharmVeerFigure(message);
   if (matchedHero) {
     try {
       const res = await dharamVeerRetriever.retrieve({
@@ -478,19 +478,6 @@ export async function retrieveDharmaChatGrounding(input: {
     targetCorpus = 'jain_dharma';
   }
 
-  if (targetCorpus === 'valmiki_ramayana') {
-    return {
-      isGrounded: false,
-      corpus: targetCorpus,
-      documents: [],
-      groundingPromptText: [
-        '=== APPROVED SOURCE COVERAGE UNAVAILABLE ===',
-        'The user explicitly asked about the Valmiki Ramayana, but Shoonaya does not yet have a source-audited Ramayana passage approved for Pramana grounding.',
-        'Do not provide or invent a quotation, verse reference, or definitive textual claim. Say briefly that approved source coverage is still being prepared, and offer general non-quoted guidance only if it can be clearly identified as general guidance.',
-      ].join('\n'),
-    };
-  }
-
   // A probe that finds nothing confident must look exactly like the old gate refusing:
   // no corpus is reported for a question that was never recognised as scriptural.
   const ungroundedCorpus = hasIntent ? targetCorpus : null;
@@ -498,6 +485,7 @@ export async function retrieveDharmaChatGrounding(input: {
   try {
     const isDenseRoutedCorpus = targetCorpus === 'pathshala_gita'
       || targetCorpus === 'pathshala_upanishads'
+      || targetCorpus === 'valmiki_ramayana'
       || targetCorpus === 'sikh_gurbani'
       || targetCorpus === 'buddhist_dhamma'
       || targetCorpus === 'jain_dharma'

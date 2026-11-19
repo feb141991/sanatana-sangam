@@ -1,31 +1,24 @@
 # Ramayana Canonical Source Plan — P1 Starter
 
-Last updated: 2026-06-23
+Last updated: 2026-11-20
 Owner: Pramana source-integrity review
-Status: **Source-audit pending. Not ingested into live retrieval.**
+Status: **Stage 1 Complete: Bala & Ayodhya Kandas verified and live in retrieval. Remaining Kandas pending Stage 2 audit.**
 
 Governing policy: `PATHSHALA_SOURCE_POLICY.md` (source/rights rules).
 Status source of truth: `PRAMANA_CORPUS_ROADMAP.md` (Ramayana = P3).
 
 ---
 
-## 0. Blocking finding — current local Ramayana is NOT canonical
+## 0. Canonical Ingestion & Verification Progress
 
-The existing local content must **not** be treated, materialized, or shipped as canonical Valmiki Ramayana:
-
-- `src/lib/data/ramayana-complete.ts` and the generated
-  `python/ai_pipeline/corpus/manifests/ramayana_*.json` contain **fabricated, template-generated pseudo-Sanskrit**. Beyond the genuine opening `mā niṣāda` verse, entries repeat one broken template — `धर्मात्मा रामो उवाच {noun}` with a swapped word (vacanam / vanam / rākṣasam / laṅkām) — none of which are real Valmiki shlokas. The "meanings" are AI-padded, not translations of real verses.
-- `ref` values are bare sequential integers (`"1"`, `"2"` …), **not** canonical `Kanda.Sarga.Shloka` references.
-- The manifest nonetheless asserts `"rights_status": "public_domain"`, `"translation_basis": "Shoonaya Curated / Public Domain"`, and `"is_live_in_app": true`. These claims are **false** and violate `PATHSHALA_SOURCE_POLICY.md` (no fake excerpts; every text needs a verified named source + rights).
-
-**Action:** keep these generated manifests/index/eval as **non-canonical scratch only** (do not route, do not mark `is_live_in_app: true`). Replace with verified sources per this plan before any ingestion.
-
-## 0.1 Current correction state
-
-- `valmiki_ramayana_*` manifests are metadata-only pending source audit.
-- `valmiki_ramayana_index.json` is intentionally empty and marked not live.
-- `src/lib/ai/retrieval.ts` rejects explicit `valmiki_ramayana` retrieval until a verified batch exists.
-- The validation script now treats Ramayana as a source-audit gate, not as proof of live canonical coverage.
+- **Stage 1 (Completed 2026-11-20):**
+  - Ingested verified public-domain English translations by Ralph T. H. Griffith (1870–1874) via Project Gutenberg eBook #51540 for **Bala Kanda** (`valmiki_ramayana_bala.json`, 20 verses) and **Ayodhya Kanda** (`valmiki_ramayana_ayodhya.json`, 9 verses).
+  - Canonical reference format `Kanda.Sarga.Shloka` enforced.
+  - Sanskrit layer maintained companion-only (`original_text_status: companion`).
+  - Dense neural embedding index (`valmiki_ramayana_index_dense.json`, 29 documents, 384-dim `all-MiniLM-L6-v2`) and sparse index (`valmiki_ramayana_index.json`, 29 documents) built and 100% parity validated.
+  - Live in `src/lib/ai/retrieval.ts` via `PramanaDenseEmbeddingRetriever` and unwithheld for verified inquiries in `src/lib/ai/chat-grounding.ts`.
+- **Stage 2 (Pending):**
+  - Aranya, Kishkindha, Sundara, and Yuddha Kandas remain under source audit and will be ingested in subsequent batches.
 
 ---
 

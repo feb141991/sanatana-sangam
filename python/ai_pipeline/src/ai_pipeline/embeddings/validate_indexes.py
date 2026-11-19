@@ -199,7 +199,7 @@ def corpus_indexes(corpus_dir: Path) -> list[tuple[str, Path | None, Path | None
         ("tamil_prabandham", None, corpus_dir / "tamil_prabandham_index_dense.json"),
         ("tamil_tiruvachakam", None, corpus_dir / "tamil_tiruvachakam_index_dense.json"),
         ("sikh_dasam_granth", None, corpus_dir / "sikh_dasam_granth_index_dense.json"),
-        ("valmiki_ramayana", corpus_dir / "valmiki_ramayana_index.json", None),
+        ("valmiki_ramayana", corpus_dir / "valmiki_ramayana_index.json", corpus_dir / "valmiki_ramayana_index_dense.json"),
         ("dharam_veer_reflection", corpus_dir / "dharam_veer_index.json", None),
     ]
 
