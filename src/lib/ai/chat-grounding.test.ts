@@ -362,6 +362,7 @@ describe('chat-grounding', () => {
         'sikh_gurbani',
         'buddhist_dhamma',
         'jain_dharma',
+        'bhakti_panchatantra',
       ]);
       for (const route of SCRIPTURE_ROUTES) expect(route.terms.length).toBeGreaterThan(0);
       expect(SCRIPTURE_ROUTES.find((route) => route.corpus === 'valmiki_ramayana')!.terms.length).toBeGreaterThan(50);

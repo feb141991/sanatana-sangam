@@ -134,6 +134,9 @@ const JAIN_SCRIPTURE_TERMS = [
   'jain', 'jainism', 'tirthankara', 'tattvartha', 'saman suttam', 'anekantavada',
   'navkar', 'namokar',
 ];
+const PANCHATANTRA_TERMS = [
+  'panchatantra', 'panchtantra', 'vishnu sharma', 'panchatantra fable', 'hitopadesha',
+];
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -167,6 +170,7 @@ export const SCRIPTURE_ROUTES: readonly ScriptureRoute[] = [
   scriptureRoute('sikh_gurbani', SIKH_SCRIPTURE_TERMS),
   scriptureRoute('buddhist_dhamma', BUDDHIST_SCRIPTURE_TERMS),
   scriptureRoute('jain_dharma', JAIN_SCRIPTURE_TERMS),
+  scriptureRoute('bhakti_panchatantra', PANCHATANTRA_TERMS),
 ];
 
 /**
@@ -468,7 +472,9 @@ export async function retrieveDharmaChatGrounding(input: {
       || targetCorpus === 'pathshala_upanishads'
       || targetCorpus === 'sikh_gurbani'
       || targetCorpus === 'buddhist_dhamma'
-      || targetCorpus === 'jain_dharma';
+      || targetCorpus === 'jain_dharma'
+      || targetCorpus === 'bhakti_katha'
+      || targetCorpus === 'bhakti_panchatantra';
     // The sparse TF-IDF corpora match on keywords, so they get the meaningful tokens
     // (stopwords would dilute them). The dense corpora match on meaning: a sentence
     // embedding reads the whole question, and stripping it to "work worrying results"

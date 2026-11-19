@@ -42,6 +42,11 @@ type DenseDoc = {
   sanskrit?: string;
   original?: string;
   transliteration?: string;
+  story_title?: string;
+  curated_lesson?: string;
+  source_name?: string;
+  source_class?: string;
+  rights_status?: string;
   text: string;
   vector: number[];
 };
@@ -284,6 +289,107 @@ async function buildJain(embedder: any) {
   };
 }
 
+async function buildKatha(embedder: any) {
+  const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
+  const manifestFiles = fs.readdirSync(MANIFESTS_DIR)
+    .filter((f) => f.startsWith('katha_chapter_') && f.endsWith('.json'))
+    .sort();
+
+  for (const file of manifestFiles) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(MANIFESTS_DIR, file), 'utf-8'));
+    const docId = manifest.doc_id ?? file.replace(/\.json$/, '');
+
+    for (const item of manifest.content ?? []) {
+      const ref: string = item.ref ?? '';
+      const chapterPart = ref.split('.')[0];
+      const chapter = /^\d+$/.test(chapterPart) ? parseInt(chapterPart, 10) : 1;
+      const title: string = item.story_title ?? '';
+      const lesson: string = item.curated_lesson ?? '';
+      const text: string = item.text ?? '';
+
+      pending.push({
+        meta: {
+          id: `${docId}_${ref}`,
+          ref,
+          chapter,
+          story_title: title,
+          curated_lesson: lesson,
+          source_name: item.source_name || manifest.source_name || 'Bhakti Katha',
+          source_class: item.source_class || manifest.source_class || 'curated_lesson',
+          rights_status: item.rights_status || manifest.rights_status || 'rights_cleared',
+          text,
+        },
+        text: `${title}. ${lesson} ${text ? text.slice(0, 300) : ''}`.trim(),
+      });
+    }
+  }
+
+  console.log(`Bhakti Katha: embedding ${pending.length} stories from ${manifestFiles.length} manifests...`);
+  const documents = await embedAll(embedder, pending);
+
+  return {
+    metadata: {
+      manifest_count: manifestFiles.length,
+      document_count: documents.length,
+      scale_readiness: documents.length > 100 ? 'Production-scale' : 'Sample-scale',
+      embedding_model: EMBEDDING_MODEL,
+      embedding_dim: EMBEDDING_DIM,
+    },
+    documents,
+  };
+}
+
+async function buildPanchatantra(embedder: any) {
+  const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
+  const manifestFiles = fs.readdirSync(MANIFESTS_DIR)
+    .filter((f) => f.startsWith('panchatantra_chapter_') && f.endsWith('.json'))
+    .sort();
+
+  for (const file of manifestFiles) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(MANIFESTS_DIR, file), 'utf-8'));
+    const docId = manifest.doc_id ?? file.replace(/\.json$/, '');
+
+    for (const item of manifest.content ?? []) {
+      const ref: string = item.ref ?? '';
+      const chapterPart = ref.split('.')[0];
+      const chapter = /^\d+$/.test(chapterPart) ? parseInt(chapterPart, 10) : 1;
+      const title: string = item.story_title ?? '';
+      const lesson: string = item.curated_lesson ?? '';
+      const text: string = item.text ?? '';
+      const book: string = item.book ?? '';
+
+      pending.push({
+        meta: {
+          id: `${docId}_${ref}`,
+          ref,
+          chapter,
+          story_title: title,
+          curated_lesson: lesson,
+          source_name: item.source_name || manifest.source_name || 'The Panchatantra',
+          source_class: item.source_class || manifest.source_class || 'translation',
+          rights_status: item.rights_status || manifest.rights_status || 'public_domain',
+          text,
+        },
+        text: `${title}. ${book ? `${book}. ` : ''}${lesson} ${text ? text.slice(0, 300) : ''}`.trim(),
+      });
+    }
+  }
+
+  console.log(`Panchatantra: embedding ${pending.length} stories from ${manifestFiles.length} manifests...`);
+  const documents = await embedAll(embedder, pending);
+
+  return {
+    metadata: {
+      manifest_count: manifestFiles.length,
+      document_count: documents.length,
+      scale_readiness: documents.length > 100 ? 'Production-scale' : 'Sample-scale',
+      embedding_model: EMBEDDING_MODEL,
+      embedding_dim: EMBEDDING_DIM,
+    },
+    documents,
+  };
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const rebuildAll = args.includes('--all') || args.includes('--rebuild-all');
@@ -328,6 +434,18 @@ async function main() {
     const jainIndex = await buildJain(embedder);
     fs.writeFileSync(path.join(CORPUS_DIR, 'jain_dharma_index_dense.json'), JSON.stringify(jainIndex, null, 2), 'utf-8');
     console.log(`Wrote jain_dharma_index_dense.json (${jainIndex.documents.length} docs)\n`);
+  }
+
+  if (shouldBuild('katha', 'katha_index_dense.json')) {
+    const kathaIndex = await buildKatha(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'katha_index_dense.json'), JSON.stringify(kathaIndex, null, 2), 'utf-8');
+    console.log(`Wrote katha_index_dense.json (${kathaIndex.documents.length} docs)\n`);
+  }
+
+  if (shouldBuild('panchatantra', 'panchatantra_index_dense.json')) {
+    const panchatantraIndex = await buildPanchatantra(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'panchatantra_index_dense.json'), JSON.stringify(panchatantraIndex, null, 2), 'utf-8');
+    console.log(`Wrote panchatantra_index_dense.json (${panchatantraIndex.documents.length} docs)\n`);
   }
 }
 

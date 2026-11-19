@@ -772,14 +772,22 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
   private indexPath: string;
   private sourceName: string;
   private tradition: string;
+  private sourceClass: string;
   private indexData: any = null;
   private documentFrequency: Map<string, number> | null = null;
 
-  constructor(fallbackRetriever: PramanaManifestRetriever, indexPath: string, sourceName: string, tradition: string) {
+  constructor(
+    fallbackRetriever: PramanaManifestRetriever,
+    indexPath: string,
+    sourceName: string,
+    tradition: string,
+    sourceClass: string = 'scripture'
+  ) {
     this.fallbackRetriever = fallbackRetriever;
     this.indexPath = indexPath;
     this.sourceName = sourceName;
     this.tradition = tradition;
+    this.sourceClass = sourceClass;
   }
 
   private loadIndex() {
@@ -894,7 +902,7 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     // floor, so splicing only fires when the top result is a genuine,
     // confident match worth pulling surrounding verses for -- not a
     // TF-IDF-derived guess ported over unchanged.
-    if (topDocItem.score >= 0.5) {
+    if (topDocItem.score >= 0.5 && this.sourceClass === 'scripture') {
       const topDoc = topDocItem.doc;
       // Two-part (Gita 2.47) and three-part (Katha 1.3.3) refs both splice
       // the adjacent verses of the same section.
@@ -935,7 +943,9 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
       const textContent = [
         doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : doc.original ? `Original: ${doc.original}` : '',
         doc.transliteration ? `Transliteration: ${doc.transliteration}` : '',
-        doc.text ? `Translation: ${doc.text}` : ''
+        doc.story_title ? `Story: ${doc.story_title}` : '',
+        doc.text ? `Translation: ${doc.text}` : '',
+        doc.curated_lesson ? `Shoonaya retelling (curated, not a translation): ${doc.curated_lesson}` : ''
       ].filter(Boolean).join('\n');
 
       return {
@@ -945,10 +955,10 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
         metadata: {
           chunkId: doc.ref,
           docId: doc.id.split('_').slice(0, -1).join('_'),
-          tradition: this.tradition,
-          sourceName: this.sourceName,
-          sourceClass: 'scripture',
-          rightsStatus: 'public_domain'
+          tradition: doc.tradition || this.tradition,
+          sourceName: doc.source_name || this.sourceName,
+          sourceClass: doc.source_class || this.sourceClass,
+          rightsStatus: doc.rights_status || 'public_domain'
         }
       };
     });
@@ -985,24 +995,40 @@ PramanaRetrieverSelector.register('pathshala_upanishads', upanishadsDenseRetriev
 PramanaRetrieverSelector.register('pathshala_gita_dense', gitaDenseRetriever);
 PramanaRetrieverSelector.register('pathshala_upanishads_dense', upanishadsDenseRetriever);
 
-PramanaRetrieverSelector.register('bhakti_katha', new PramanaManifestRetriever({
+const kathaManifestRetriever = new PramanaManifestRetriever({
   prefix: 'katha_chapter',
   sourceName: 'Puranic Katha',
   sourceClass: 'narrative',
   tradition: 'Bhakti',
   maxChapters: 5
-}));
+});
+const kathaDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  kathaManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/katha_index_dense.json'),
+  'Puranic Katha',
+  'Bhakti',
+  'narrative'
+);
 
-PramanaRetrieverSelector.register('bhakti_panchatantra', new PramanaManifestRetriever({
+const panchatantraManifestRetriever = new PramanaManifestRetriever({
   prefix: 'panchatantra_chapter',
   sourceName: 'Panchatantra',
   sourceClass: 'narrative',
   tradition: 'Moral',
-  // Bumped from 5 to 10 during the full-82-story canonical coverage expansion (2026-07-23):
-  // chapter_6.json (Book IV completion) pushed the corpus past the original 5-file cap.
-  // Books III and I remain to be added and will likely need 2 more files each given their size.
   maxChapters: 10
-}));
+});
+const panchatantraDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  panchatantraManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/panchatantra_index_dense.json'),
+  'Panchatantra',
+  'Moral',
+  'narrative'
+);
+
+PramanaRetrieverSelector.register('bhakti_katha', kathaDenseRetriever);
+PramanaRetrieverSelector.register('bhakti_katha_dense', kathaDenseRetriever);
+PramanaRetrieverSelector.register('bhakti_panchatantra', panchatantraDenseRetriever);
+PramanaRetrieverSelector.register('bhakti_panchatantra_dense', panchatantraDenseRetriever);
 
 export class PramanaGurbaniEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
   private fallbackRetriever: PramanaManifestRetriever;

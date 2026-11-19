@@ -182,14 +182,16 @@ def check_parity(sparse: dict, dense: dict) -> list[str]:
     return errors
 
 
-def corpus_indexes(corpus_dir: Path) -> list[tuple[str, Path, Path | None]]:
-    """(name, sparse path, dense path or None) for every served corpus index."""
+def corpus_indexes(corpus_dir: Path) -> list[tuple[str, Path | None, Path | None]]:
+    """(name, sparse path or None, dense path or None) for every served corpus index."""
     return [
         ("pathshala_gita", corpus_dir / "gita_index.json", corpus_dir / "gita_index_dense.json"),
         ("pathshala_upanishads", corpus_dir / "upanishads_index.json", corpus_dir / "upanishads_index_dense.json"),
         ("sikh_gurbani", corpus_dir / "gurbani_index.json", corpus_dir / "gurbani_index_dense.json"),
         ("buddhist_dhamma", corpus_dir / "buddhist_dhamma_index.json", corpus_dir / "buddhist_dhamma_index_dense.json"),
         ("jain_dharma", corpus_dir / "jain_dharma_index.json", corpus_dir / "jain_dharma_index_dense.json"),
+        ("bhakti_katha", None, corpus_dir / "katha_index_dense.json"),
+        ("bhakti_panchatantra", None, corpus_dir / "panchatantra_index_dense.json"),
         ("valmiki_ramayana", corpus_dir / "valmiki_ramayana_index.json", None),
         ("dharam_veer_reflection", corpus_dir / "dharam_veer_index.json", None),
     ]
@@ -231,16 +233,20 @@ def main() -> None:
 
     all_valid = True
     for name, sparse_path, dense_path in corpus_indexes(corpus_dir):
-        sparse = validate_index(name, sparse_path)
-        print_summary(name, sparse)
-        all_valid = all_valid and sparse["valid"]
+        if sparse_path is not None:
+            sparse = validate_index(name, sparse_path)
+            print_summary(name, sparse)
+            all_valid = all_valid and sparse["valid"]
+        else:
+            sparse = None
 
         if dense_path is not None:
             dense = validate_index(f"{name} (dense)", dense_path)
-            parity_errors = check_parity(sparse, dense)
-            if parity_errors:
-                dense["errors"].extend(parity_errors)
-                dense["valid"] = False
+            if sparse is not None:
+                parity_errors = check_parity(sparse, dense)
+                if parity_errors:
+                    dense["errors"].extend(parity_errors)
+                    dense["valid"] = False
             print_summary(f"{name} (dense)", dense)
             all_valid = all_valid and dense["valid"]
 

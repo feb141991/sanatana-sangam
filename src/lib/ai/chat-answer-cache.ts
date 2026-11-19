@@ -22,7 +22,7 @@ export const CHAT_ANSWER_TTL_MS = 14 * 24 * 60 * 60 * 1000;
  * Bump when a grounding corpus is re-indexed or its approved content changes, so answers built on the old text are not
  * repeated. (The prompt wording and the model are part of the key automatically.) The 14-day expiry is the backstop.
  */
-export const GROUNDING_CORPUS_VERSION = '2026-11-20';
+export const GROUNDING_CORPUS_VERSION = '2026-11-20b';
 
 const TABLE = 'ai_chat_answer_cache';
 
