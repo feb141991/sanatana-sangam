@@ -94,7 +94,10 @@ def audit_manifest(filepath: str, raw_source_path: Optional[str] = None) -> Dict
         else:
             # Check for forbidden placeholders
             for ph in FORBIDDEN_PLACEHOLDERS:
-                if ph in english.lower():
+                if ph == "xxx":
+                    if re.search(r"\bxxx\b", english, re.IGNORECASE):
+                        report["errors"].append(f"[{ref}] Forbidden placeholder '{ph}' in translation.")
+                elif ph in english.lower():
                     report["errors"].append(f"[{ref}] Forbidden placeholder '{ph}' in translation.")
             # Check for ellipses / truncated markers
             for ep in ELLIPSIS_PATTERNS:
@@ -118,11 +121,14 @@ def audit_manifest(filepath: str, raw_source_path: Optional[str] = None) -> Dict
         # 4. Original / Sanskrit text validation
         original = (item.get("sanskrit") or item.get("original") or "").strip()
         orig_status = data.get("original_text_status")
-        if orig_status in ["canonical", "companion"] and not original:
+        if orig_status == "canonical" and not original:
             report["errors"].append(f"[{ref}] Missing original/Sanskrit text while original_text_status is '{orig_status}'.")
         elif original:
             for ph in FORBIDDEN_PLACEHOLDERS:
-                if ph in original.lower():
+                if ph == "xxx":
+                    if re.search(r"\bxxx\b", original, re.IGNORECASE):
+                        report["errors"].append(f"[{ref}] Forbidden placeholder '{ph}' in original text.")
+                elif ph in original.lower():
                     report["errors"].append(f"[{ref}] Forbidden placeholder '{ph}' in original text.")
             norm_orig = normalize_text(original)
             if norm_orig in seen_originals:

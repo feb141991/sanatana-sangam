@@ -49,3 +49,6 @@ venv/
 
 # Supabase CLI temp files
 supabase/.temp/
+
+# Raw scraped text sources
+python/ai_pipeline/corpus/raw/
