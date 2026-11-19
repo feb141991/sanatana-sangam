@@ -187,9 +187,9 @@ def corpus_indexes(corpus_dir: Path) -> list[tuple[str, Path, Path | None]]:
     return [
         ("pathshala_gita", corpus_dir / "gita_index.json", corpus_dir / "gita_index_dense.json"),
         ("pathshala_upanishads", corpus_dir / "upanishads_index.json", corpus_dir / "upanishads_index_dense.json"),
-        ("sikh_gurbani", corpus_dir / "gurbani_index.json", None),
-        ("buddhist_dhamma", corpus_dir / "buddhist_dhamma_index.json", None),
-        ("jain_dharma", corpus_dir / "jain_dharma_index.json", None),
+        ("sikh_gurbani", corpus_dir / "gurbani_index.json", corpus_dir / "gurbani_index_dense.json"),
+        ("buddhist_dhamma", corpus_dir / "buddhist_dhamma_index.json", corpus_dir / "buddhist_dhamma_index_dense.json"),
+        ("jain_dharma", corpus_dir / "jain_dharma_index.json", corpus_dir / "jain_dharma_index_dense.json"),
         ("valmiki_ramayana", corpus_dir / "valmiki_ramayana_index.json", None),
         ("dharam_veer_reflection", corpus_dir / "dharam_veer_index.json", None),
     ]

@@ -38,8 +38,10 @@ type DenseDoc = {
   ref: string;
   chapter: number;
   upanishad?: string;
-  sanskrit: string;
-  transliteration: string;
+  bani?: string;
+  sanskrit?: string;
+  original?: string;
+  transliteration?: string;
   text: string;
   vector: number[];
 };
@@ -158,19 +160,175 @@ async function buildUpanishads(embedder: any) {
   };
 }
 
+async function buildGurbani(embedder: any) {
+  const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
+  const manifestFiles = fs.readdirSync(MANIFESTS_DIR)
+    .filter((f) => f.startsWith('sikh_gurbani_') && f.endsWith('.json'))
+    .sort();
+
+  for (const file of manifestFiles) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(MANIFESTS_DIR, file), 'utf-8'));
+    const docId = manifest.doc_id ?? file.replace(/\.json$/, '');
+    const sectionId = manifest.section_id ?? 'gurbani';
+    const cleanTitle = (manifest.title ?? 'Gurbani').replace(/\s*\([^)]*\)/g, '').trim();
+
+    for (const verse of manifest.content ?? []) {
+      const ref: string = verse.ref ?? '';
+      const original: string = verse.original ?? '';
+      const transliteration: string = verse.transliteration ?? '';
+      const text: string = verse.text ?? '';
+      const chapterPart = ref.split('.')[0];
+      const chapter = /^\d+$/.test(chapterPart) ? parseInt(chapterPart, 10) : 1;
+
+      pending.push({
+        meta: { id: `${docId}_${ref}`, ref, chapter, bani: sectionId, original, transliteration, text },
+        text: `${cleanTitle} ${ref}. ${text.trim()}`,
+      });
+    }
+  }
+
+  console.log(`Gurbani: embedding ${pending.length} verses from ${manifestFiles.length} manifests...`);
+  const documents = await embedAll(embedder, pending);
+
+  return {
+    metadata: {
+      manifest_count: manifestFiles.length,
+      document_count: documents.length,
+      scale_readiness: documents.length > 100 ? 'Production-scale' : 'Sample-scale',
+      embedding_model: EMBEDDING_MODEL,
+      embedding_dim: EMBEDDING_DIM,
+    },
+    documents,
+  };
+}
+
+async function buildBuddhist(embedder: any) {
+  const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
+  const manifestFiles = fs.readdirSync(MANIFESTS_DIR)
+    .filter((f) => f.startsWith('buddhist_') && f.endsWith('.json'))
+    .sort();
+
+  for (const file of manifestFiles) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(MANIFESTS_DIR, file), 'utf-8'));
+    const docId = manifest.doc_id ?? file.replace(/\.json$/, '');
+
+    for (const verse of manifest.content ?? []) {
+      const ref: string = verse.ref ?? '';
+      const sanskrit: string = verse.sanskrit ?? '';
+      const transliteration: string = verse.transliteration ?? '';
+      const text: string = verse.text ?? '';
+      const chapterPart = ref.split('.')[0];
+      const chapter = /^\d+$/.test(chapterPart) ? parseInt(chapterPart, 10) : 1;
+
+      pending.push({
+        meta: { id: `${docId}_${ref}`, ref, chapter, sanskrit, transliteration, text },
+        text: `Dhammapada ${ref}. ${text.trim()}`,
+      });
+    }
+  }
+
+  console.log(`Buddhist Dhamma: embedding ${pending.length} verses from ${manifestFiles.length} manifests...`);
+  const documents = await embedAll(embedder, pending);
+
+  return {
+    metadata: {
+      manifest_count: manifestFiles.length,
+      document_count: documents.length,
+      scale_readiness: documents.length > 100 ? 'Production-scale' : 'Sample-scale',
+      embedding_model: EMBEDDING_MODEL,
+      embedding_dim: EMBEDDING_DIM,
+    },
+    documents,
+  };
+}
+
+async function buildJain(embedder: any) {
+  const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
+  const manifestFiles = fs.readdirSync(MANIFESTS_DIR)
+    .filter((f) => f.startsWith('jain_') && f.endsWith('.json'))
+    .sort();
+
+  for (const file of manifestFiles) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(MANIFESTS_DIR, file), 'utf-8'));
+    const docId = manifest.doc_id ?? file.replace(/\.json$/, '');
+    const scriptureName = (manifest.title ?? (manifest.name ? 'Jain Agamas' : 'Jain Dharma')).replace(/\s*\([^)]*\)/g, '').trim();
+
+    for (const verse of manifest.content ?? []) {
+      const ref: string = verse.ref ?? '';
+      const sanskrit: string = verse.sanskrit ?? verse.original ?? '';
+      const original: string = verse.original ?? verse.sanskrit ?? '';
+      const transliteration: string = verse.transliteration ?? '';
+      const text: string = verse.text ?? '';
+      const chapterPart = ref.split('.')[0];
+      const chapter = /^\d+$/.test(chapterPart) ? parseInt(chapterPart, 10) : 1;
+
+      pending.push({
+        meta: { id: `${docId}_${ref}`, ref, chapter, sanskrit, original, transliteration, text },
+        text: `${scriptureName} ${ref}. ${text.trim()}`,
+      });
+    }
+  }
+
+  console.log(`Jain Dharma: embedding ${pending.length} verses from ${manifestFiles.length} manifests...`);
+  const documents = await embedAll(embedder, pending);
+
+  return {
+    metadata: {
+      manifest_count: manifestFiles.length,
+      document_count: documents.length,
+      scale_readiness: documents.length > 100 ? 'Production-scale' : 'Sample-scale',
+      embedding_model: EMBEDDING_MODEL,
+      embedding_dim: EMBEDDING_DIM,
+    },
+    documents,
+  };
+}
+
 async function main() {
+  const args = process.argv.slice(2);
+  const rebuildAll = args.includes('--all') || args.includes('--rebuild-all');
+  const targetCorpora = args.filter((a) => !a.startsWith('--'));
+
   console.log(`Loading ${EMBEDDING_MODEL}...`);
   const start = Date.now();
   const embedder = await pipeline('feature-extraction', EMBEDDING_MODEL);
   console.log(`Model loaded in ${Date.now() - start}ms\n`);
 
-  const gitaIndex = await buildGita(embedder);
-  fs.writeFileSync(path.join(CORPUS_DIR, 'gita_index_dense.json'), JSON.stringify(gitaIndex, null, 2), 'utf-8');
-  console.log(`Wrote gita_index_dense.json (${gitaIndex.documents.length} docs)\n`);
+  const shouldBuild = (name: string, file: string) => {
+    if (targetCorpora.length > 0) return targetCorpora.includes(name);
+    if (rebuildAll) return true;
+    return !fs.existsSync(path.join(CORPUS_DIR, file));
+  };
 
-  const upanishadsIndex = await buildUpanishads(embedder);
-  fs.writeFileSync(path.join(CORPUS_DIR, 'upanishads_index_dense.json'), JSON.stringify(upanishadsIndex, null, 2), 'utf-8');
-  console.log(`Wrote upanishads_index_dense.json (${upanishadsIndex.documents.length} docs)`);
+  if (shouldBuild('gita', 'gita_index_dense.json')) {
+    const gitaIndex = await buildGita(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'gita_index_dense.json'), JSON.stringify(gitaIndex, null, 2), 'utf-8');
+    console.log(`Wrote gita_index_dense.json (${gitaIndex.documents.length} docs)\n`);
+  }
+
+  if (shouldBuild('upanishads', 'upanishads_index_dense.json')) {
+    const upanishadsIndex = await buildUpanishads(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'upanishads_index_dense.json'), JSON.stringify(upanishadsIndex, null, 2), 'utf-8');
+    console.log(`Wrote upanishads_index_dense.json (${upanishadsIndex.documents.length} docs)\n`);
+  }
+
+  if (shouldBuild('gurbani', 'gurbani_index_dense.json')) {
+    const gurbaniIndex = await buildGurbani(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'gurbani_index_dense.json'), JSON.stringify(gurbaniIndex, null, 2), 'utf-8');
+    console.log(`Wrote gurbani_index_dense.json (${gurbaniIndex.documents.length} docs)\n`);
+  }
+
+  if (shouldBuild('buddhist', 'buddhist_dhamma_index_dense.json')) {
+    const buddhistIndex = await buildBuddhist(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'buddhist_dhamma_index_dense.json'), JSON.stringify(buddhistIndex, null, 2), 'utf-8');
+    console.log(`Wrote buddhist_dhamma_index_dense.json (${buddhistIndex.documents.length} docs)\n`);
+  }
+
+  if (shouldBuild('jain', 'jain_dharma_index_dense.json')) {
+    const jainIndex = await buildJain(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'jain_dharma_index_dense.json'), JSON.stringify(jainIndex, null, 2), 'utf-8');
+    console.log(`Wrote jain_dharma_index_dense.json (${jainIndex.documents.length} docs)\n`);
+  }
 }
 
 main().catch((err) => {

@@ -506,7 +506,7 @@ export class PramanaGitaEmbeddingRetriever implements PramanaRetriever<Retrieval
     const documents: RetrievalChunk[] = topDocs.map((item) => {
       const doc = item.doc;
       const textContent = [
-        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : '',
+        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : doc.original ? `Original: ${doc.original}` : '',
         doc.transliteration ? `Transliteration: ${doc.transliteration}` : '',
         doc.text ? `Translation: ${doc.text}` : ''
       ].filter(Boolean).join('\n');
@@ -704,7 +704,7 @@ export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<Ret
     const documents: RetrievalChunk[] = topDocs.map((item) => {
       const doc = item.doc;
       const textContent = [
-        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : '',
+        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : doc.original ? `Original: ${doc.original}` : '',
         doc.transliteration ? `Transliteration: ${doc.transliteration}` : '',
         doc.text ? `Translation: ${doc.text}` : ''
       ].filter(Boolean).join('\n');
@@ -933,7 +933,7 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     const documents: RetrievalChunk[] = topDocs.map((item) => {
       const doc = item.doc;
       const textContent = [
-        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : '',
+        doc.sanskrit ? `Sanskrit: ${doc.sanskrit}` : doc.original ? `Original: ${doc.original}` : '',
         doc.transliteration ? `Transliteration: ${doc.transliteration}` : '',
         doc.text ? `Translation: ${doc.text}` : ''
       ].filter(Boolean).join('\n');
@@ -1175,7 +1175,15 @@ const gurbaniManifestRetriever = new PramanaManifestRetriever({
   ]
 });
 
-PramanaRetrieverSelector.register('sikh_gurbani', new PramanaGurbaniEmbeddingRetriever(gurbaniManifestRetriever));
+const gurbaniDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  gurbaniManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/gurbani_index_dense.json'),
+  'Sri Guru Granth Sahib Ji',
+  'Sikhi'
+);
+PramanaRetrieverSelector.register('sikh_gurbani', gurbaniDenseRetriever);
+PramanaRetrieverSelector.register('sikh_gurbani_dense', gurbaniDenseRetriever);
+PramanaRetrieverSelector.register('sikh_gurbani_sparse', new PramanaGurbaniEmbeddingRetriever(gurbaniManifestRetriever));
 
 export class PramanaGenericEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
   private fallbackRetriever: PramanaRetriever<RetrievalChunkMetadata>;
@@ -1324,7 +1332,15 @@ const buddhistManifestRetriever = new PramanaManifestRetriever({
   tradition: 'Buddhism',
   maxChapters: 1
 });
-PramanaRetrieverSelector.register('buddhist_dhamma', new PramanaGenericEmbeddingRetriever(
+const buddhistDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  buddhistManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/buddhist_dhamma_index_dense.json'),
+  'Buddhist Dhamma Texts',
+  'Buddhism'
+);
+PramanaRetrieverSelector.register('buddhist_dhamma', buddhistDenseRetriever);
+PramanaRetrieverSelector.register('buddhist_dhamma_dense', buddhistDenseRetriever);
+PramanaRetrieverSelector.register('buddhist_dhamma_sparse', new PramanaGenericEmbeddingRetriever(
   buddhistManifestRetriever,
   path.join(process.cwd(), 'python/ai_pipeline/corpus/buddhist_dhamma_index.json'),
   'Buddhism',
@@ -1343,7 +1359,15 @@ const jainManifestRetriever = new PramanaManifestRetriever({
     'jain_tattvartha_sutra.json'
   ]
 });
-PramanaRetrieverSelector.register('jain_dharma', new PramanaGenericEmbeddingRetriever(
+const jainDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  jainManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/jain_dharma_index_dense.json'),
+  'Jain Dharma Agamas',
+  'Jainism'
+);
+PramanaRetrieverSelector.register('jain_dharma', jainDenseRetriever);
+PramanaRetrieverSelector.register('jain_dharma_dense', jainDenseRetriever);
+PramanaRetrieverSelector.register('jain_dharma_sparse', new PramanaGenericEmbeddingRetriever(
   jainManifestRetriever,
   path.join(process.cwd(), 'python/ai_pipeline/corpus/jain_dharma_index.json'),
   'Jainism',

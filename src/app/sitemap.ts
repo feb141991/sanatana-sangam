@@ -22,6 +22,48 @@ import {
 const BASE_URL = "https://www.shoonaya.com";
 export const revalidate = 3600;
 
+// Top high-search festivals and diaspora cities for localized programmatic SEO
+const MAJOR_FESTIVAL_SLUGS_FOR_SEO: readonly string[] = [
+  "diwali",
+  "maha-shivaratri",
+  "holi",
+  "krishna-janmashtami",
+  "ganesh-chaturthi",
+  "raksha-bandhan",
+  "karva-chauth",
+  "dhanteras",
+  "chhath-puja",
+  "ram-navami",
+  "hanuman-jayanti",
+  "makar-sankranti",
+  "akshaya-tritiya",
+  "guru-purnima",
+  "kartik-purnima",
+  "gita-jayanti",
+  "navratri-begins",
+  "chaitra-navratri-begins",
+  "nirjala-ekadashi",
+  "vaikunta-ekadashi",
+];
+
+const TOP_DIASPORA_CITIES: readonly string[] = [
+  "london",
+  "leicester",
+  "birmingham",
+  "new-york",
+  "san-francisco",
+  "chicago",
+  "toronto",
+  "vancouver",
+  "sydney",
+  "melbourne",
+  "singapore",
+  "dubai",
+  "delhi",
+  "mumbai",
+  "bengaluru",
+];
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     // Core landing
@@ -219,6 +261,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...getPublishableFestivalSlugs().map((slug) => ({
       url: `${BASE_URL}/festival/${slug}`,
     })),
+    ...MAJOR_FESTIVAL_SLUGS_FOR_SEO.flatMap((slug) =>
+      TOP_DIASPORA_CITIES.map((city) => ({
+        url: `${BASE_URL}/festivals/${slug}/${city}`,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }))
+    ),
     ...getAllJournalEssays().map((essay) => ({
       url: `${BASE_URL}/journal/${essay.slug}`,
       changeFrequency: "monthly" as const,

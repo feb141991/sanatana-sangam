@@ -464,7 +464,11 @@ export async function retrieveDharmaChatGrounding(input: {
   const ungroundedCorpus = hasIntent ? targetCorpus : null;
 
   try {
-    const isDenseRoutedCorpus = targetCorpus === 'pathshala_gita' || targetCorpus === 'pathshala_upanishads';
+    const isDenseRoutedCorpus = targetCorpus === 'pathshala_gita'
+      || targetCorpus === 'pathshala_upanishads'
+      || targetCorpus === 'sikh_gurbani'
+      || targetCorpus === 'buddhist_dhamma'
+      || targetCorpus === 'jain_dharma';
     // The sparse TF-IDF corpora match on keywords, so they get the meaningful tokens
     // (stopwords would dilute them). The dense corpora match on meaning: a sentence
     // embedding reads the whole question, and stripping it to "work worrying results"
