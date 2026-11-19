@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimitByIp, rejectLargeRequest, asBoundedString } from '@/lib/api-security';
 import { getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { boundClientMetadata, generateAccessCode, hashAccessCode } from '@/lib/support/ticket-access';
 import {
   synthesizeSupportTicket,
   type TicketCategory,
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
     const category = body.category as TicketCategory | undefined;
     const ragResponse = asBoundedString(body.ragResponse, 2000);
     const ragFeedback = body.ragFeedback as 'helpful' | 'unresolved' | 'skipped' | undefined;
-    const clientMetadata = (body.clientMetadata || {}) as ClientMetadata;
+    const clientMetadata = boundClientMetadata(body.clientMetadata) as ClientMetadata;
 
     // Synthesize ticket metadata
     const draft = await synthesizeSupportTicket({
@@ -77,11 +78,15 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminClient() as any;
 
+    // The access code is shown once, here. Only its hash is stored.
+    const accessCode = generateAccessCode();
+
     // 1. Insert ticket record
     const { data: ticket, error: ticketError } = await admin
       .from('support_tickets')
       .insert({
         ticket_number: draft.ticketNumber,
+        access_token_hash: hashAccessCode(accessCode),
         user_id: authedUser?.id ?? null,
         seeker_name: seekerName,
         seeker_email: seekerEmail,
@@ -99,9 +104,9 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (ticketError) {
-      console.error('[Support API] Failed to insert support ticket:', ticketError);
+      console.error('[Support API] Failed to insert support ticket:', ticketError.code);
       return NextResponse.json(
-        { error: 'Database error creating ticket', details: ticketError.message },
+        { error: 'We could not create your ticket right now. Please try again in a moment.' },
         { status: 500 }
       );
     }
@@ -111,6 +116,7 @@ export async function POST(req: NextRequest) {
       ticket_id: ticket.id,
       sender_type: 'seeker',
       sender_id: authedUser?.id ?? 'guest',
+      user_id: authedUser?.id ?? null,
       sender_name: seekerName,
       message: draft.description,
       is_internal_note: false,
@@ -122,6 +128,7 @@ export async function POST(req: NextRequest) {
         ticket_id: ticket.id,
         sender_type: 'system_agent',
         sender_id: 'rag_deflection_agent',
+        user_id: authedUser?.id ?? null,
         sender_name: 'Shoonaya Assistant (RAG)',
         message: draft.ragSolutionOffered,
         is_internal_note: false,
@@ -132,6 +139,7 @@ export async function POST(req: NextRequest) {
       success: true,
       ticketId: ticket.id,
       ticketNumber: ticket.ticket_number,
+      accessCode,
       subject: ticket.subject,
       status: ticket.status,
       priority: ticket.priority,
@@ -140,9 +148,9 @@ export async function POST(req: NextRequest) {
       createdAt: ticket.created_at,
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown ticket creation error';
+    console.error('[Support API] ticket creation failed:', err instanceof Error ? err.name : 'unknown');
     return NextResponse.json(
-      { error: 'Failed to create support ticket', details: message },
+      { error: 'We could not create your ticket right now. Please try again in a moment.' },
       { status: 500 }
     );
   }
@@ -163,7 +171,8 @@ export async function GET(req: NextRequest) {
       .order('created_at', { ascending: false });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error('[Support API] ticket list failed:', error.code);
+      return NextResponse.json({ error: 'We could not load your tickets right now.' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -171,7 +180,7 @@ export async function GET(req: NextRequest) {
       tickets: tickets || [],
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown query error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('[Support API] ticket list failed:', err instanceof Error ? err.name : 'unknown');
+    return NextResponse.json({ error: 'We could not load your tickets right now.' }, { status: 500 });
   }
 }

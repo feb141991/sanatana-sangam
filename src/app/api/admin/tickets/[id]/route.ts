@@ -34,7 +34,7 @@ export async function GET(
     // 1. Fetch ticket
     const { data: ticket, error: ticketError } = await admin
       .from('support_tickets')
-      .select('*')
+      .select('id, ticket_number, user_id, seeker_name, seeker_email, category, priority, status, subject, description, rag_deflection_attempted, rag_solution_offered, rag_deflection_feedback, client_metadata, assigned_admin, resolved_at, created_at, updated_at')
       .eq('id', id)
       .single();
 
@@ -131,7 +131,7 @@ export async function PATCH(
       .from('support_tickets')
       .update(updates)
       .eq('id', id)
-      .select()
+      .select('id, ticket_number, user_id, seeker_name, seeker_email, category, priority, status, subject, description, rag_deflection_attempted, rag_solution_offered, rag_deflection_feedback, client_metadata, assigned_admin, resolved_at, created_at, updated_at')
       .single();
 
     if (updateError) {

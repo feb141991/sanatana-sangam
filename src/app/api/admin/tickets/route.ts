@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { sanitizeSearchTerm } from '@/lib/support/ticket-access';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
   const statusFilter = url.searchParams.get('status');
   const priorityFilter = url.searchParams.get('priority');
   const categoryFilter = url.searchParams.get('category');
-  const searchQuery = url.searchParams.get('search')?.trim();
+  const searchQuery = sanitizeSearchTerm(url.searchParams.get('search') ?? '');
   const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
   const limit = Math.min(50, Math.max(1, parseInt(url.searchParams.get('limit') || '20', 10)));
   const offset = (page - 1) * limit;
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
     // Build query for tickets list
     let query = admin
       .from('support_tickets')
-      .select('*', { count: 'exact' });
+      .select('id, ticket_number, user_id, seeker_name, seeker_email, category, priority, status, subject, description, rag_deflection_attempted, rag_solution_offered, rag_deflection_feedback, client_metadata, assigned_admin, resolved_at, created_at, updated_at', { count: 'exact' });
 
     if (statusFilter && statusFilter !== 'all') {
       query = query.eq('status', statusFilter);

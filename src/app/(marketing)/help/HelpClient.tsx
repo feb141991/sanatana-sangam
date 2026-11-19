@@ -68,10 +68,11 @@ export default function HelpClient() {
   const [seekerEmail, setSeekerEmail] = useState('');
   const [submittingTicket, setSubmittingTicket] = useState(false);
   const [createdTicketNumber, setCreatedTicketNumber] = useState<string | null>(null);
+  const [createdAccessCode, setCreatedAccessCode] = useState<string | null>(null);
 
   // Ticket tracking state
   const [trackTicketNumber, setTrackTicketNumber] = useState('');
-  const [trackEmail, setTrackEmail] = useState('');
+  const [trackAccessCode, setTrackAccessCode] = useState('');
   const [loadingTrack, setLoadingTrack] = useState(false);
   const [trackedTicket, setTrackedTicket] = useState<TrackedTicket | null>(null);
   const [replyText, setReplyText] = useState('');
@@ -149,7 +150,8 @@ export default function HelpClient() {
 
       const data = await res.json();
       setCreatedTicketNumber(data.ticketNumber);
-      toast.success(`Support Ticket #${data.ticketNumber} created successfully!`);
+      setCreatedAccessCode(data.accessCode ?? null);
+      toast.success('Your support ticket was created. Please save your access code.');
     } catch (err: any) {
       toast.error(err.message || 'Error submitting ticket');
     } finally {
@@ -159,22 +161,20 @@ export default function HelpClient() {
 
   const handleTrackTicket = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!trackTicketNumber.trim() || !trackEmail.trim()) {
-      toast.error('Please enter both your ticket reference number and email');
+    if (!trackTicketNumber.trim() || !trackAccessCode.trim()) {
+      toast.error('Please enter both your ticket reference and your access code');
       return;
     }
 
     setLoadingTrack(true);
     setTrackedTicket(null);
     try {
-      const res = await fetch(
-        `/api/support/tickets/${encodeURIComponent(trackTicketNumber.trim())}?email=${encodeURIComponent(
-          trackEmail.trim()
-        )}`
-      );
+      const res = await fetch(`/api/support/tickets/${encodeURIComponent(trackTicketNumber.trim())}`, {
+        headers: { 'x-ticket-access-code': trackAccessCode.trim() },
+      });
       if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Ticket not found or email does not match');
+        throw new Error(errJson.error || 'We could not find a ticket with that reference and access code.');
       }
       const data = await res.json();
       setTrackedTicket({
@@ -196,11 +196,8 @@ export default function HelpClient() {
     try {
       const res = await fetch(`/api/support/tickets/${encodeURIComponent(trackedTicket.ticketNumber)}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: replyText.trim(),
-          email: trackEmail.trim(),
-        }),
+        headers: { 'Content-Type': 'application/json', 'x-ticket-access-code': trackAccessCode.trim() },
+        body: JSON.stringify({ message: replyText.trim() }),
       });
 
       if (!res.ok) {
@@ -457,12 +454,20 @@ export default function HelpClient() {
                 {createdTicketNumber}
               </div>
               <p className="text-xs text-stone-300 max-w-md mx-auto">
-                We have received your ticket. A confirmation has been logged, and our team will review the issue. You can track this ticket anytime using your reference code.
+                We have received your ticket. We do not send e-mail updates yet, so please save both codes below. Replies from our team appear on the Track tab, and you need both codes to open your ticket.
               </p>
+              {createdAccessCode && (
+                <div className="space-y-1">
+                  <p className="text-[11px] text-stone-400">Access code (shown only once)</p>
+                  <div className="font-mono text-sm font-bold text-amber-300 bg-black/50 py-2 px-4 rounded-xl inline-block border border-amber-500/30 break-all select-all">
+                    {createdAccessCode}
+                  </div>
+                </div>
+              )}
               <button
                 onClick={() => {
                   setTrackTicketNumber(createdTicketNumber);
-                  setTrackEmail(seekerEmail);
+                  setTrackAccessCode(createdAccessCode ?? '');
                   setActiveTab('track');
                 }}
                 className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-colors inline-flex items-center gap-1.5"
@@ -482,17 +487,18 @@ export default function HelpClient() {
               <input
                 type="text"
                 required
-                placeholder="Ticket Reference (e.g. TKT-202611-ABCD)"
+                placeholder="Ticket Reference (e.g. TKT-202611-ABC234)"
                 value={trackTicketNumber}
                 onChange={(e) => setTrackTicketNumber(e.target.value.toUpperCase())}
                 className="px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-amber-400"
               />
               <input
-                type="email"
+                type="password"
+                autoComplete="off"
                 required
-                placeholder="Email used when submitting"
-                value={trackEmail}
-                onChange={(e) => setTrackEmail(e.target.value)}
+                placeholder="Access code from when you submitted"
+                value={trackAccessCode}
+                onChange={(e) => setTrackAccessCode(e.target.value)}
                 className="px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-white text-xs focus:outline-none focus:border-amber-400"
               />
               <button

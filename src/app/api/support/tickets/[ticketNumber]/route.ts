@@ -2,59 +2,58 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimitByIp, rejectLargeRequest, asBoundedString } from '@/lib/api-security';
 import { getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { accessCodeMatches, TICKET_NUMBER_PATTERN } from '@/lib/support/ticket-access';
 
 export const dynamic = 'force-dynamic';
 
-const TICKET_VIEW_RATE_LIMIT = {
-  keyPrefix: 'support-ticket-view',
-  limit: 30,
-  windowMs: 60 * 1000,
-};
+const NOT_FOUND = { error: 'We could not find a ticket with that reference and access code.' };
+const ACCESS_CODE_HEADER = 'x-ticket-access-code';
+
+/**
+ * A ticket is opened by its signed-in owner or by the access code shown once when it was created. A wrong reference, a wrong code and a
+ * missing ticket all answer the same 404, so neither can be told apart. An e-mail address is never a credential.
+ */
+async function authorise(
+  req: NextRequest,
+  ticketNumber: string,
+  columns: string,
+): Promise<{ ticket: any; authedUserId: string | null; authedName: string | null } | null> {
+  if (!TICKET_NUMBER_PATTERN.test(ticketNumber)) return null;
+  const admin = createAdminClient() as any;
+  const { data: ticket, error } = await admin
+    .from('support_tickets')
+    .select(`${columns}, access_token_hash, user_id`)
+    .eq('ticket_number', ticketNumber)
+    .maybeSingle();
+  if (error || !ticket) return null;
+
+  const authResult = await getApiUser(req);
+  const authedUser = authResult.user;
+  const isOwner = Boolean(authedUser && ticket.user_id && authedUser.id === ticket.user_id);
+  const codeOk = accessCodeMatches(req.headers.get(ACCESS_CODE_HEADER), ticket.access_token_hash);
+  if (!isOwner && !codeOk) return null;
+  return { ticket, authedUserId: authedUser?.id ?? null, authedName: authedUser?.user_metadata?.full_name ?? null };
+}
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ ticketNumber: string }> }
+  { params }: { params: Promise<{ ticketNumber: string }> },
 ) {
-  const rateRejection = rateLimitByIp(req, TICKET_VIEW_RATE_LIMIT);
+  const rateRejection = rateLimitByIp(req, { keyPrefix: 'support-ticket-view', limit: 20, windowMs: 60 * 1000 });
   if (rateRejection) return rateRejection;
 
-  const { ticketNumber } = await params;
-  if (!ticketNumber || !/^TKT-\d{6}-[A-Z0-9]{4}$/i.test(ticketNumber)) {
-    return NextResponse.json({ error: 'Invalid ticket reference format' }, { status: 400 });
-  }
+  const ticketNumber = (await params).ticketNumber?.toUpperCase() ?? '';
 
   try {
+    const access = await authorise(
+      req,
+      ticketNumber,
+      'id, ticket_number, seeker_name, subject, description, category, priority, status, created_at, updated_at, resolved_at',
+    );
+    if (!access) return NextResponse.json(NOT_FOUND, { status: 404 });
+    const { ticket } = access;
+
     const admin = createAdminClient() as any;
-    const { data: ticket, error: ticketError } = await admin
-      .from('support_tickets')
-      .select('id, ticket_number, seeker_name, seeker_email, subject, description, category, priority, status, created_at, updated_at, resolved_at, user_id')
-      .eq('ticket_number', ticketNumber.toUpperCase())
-      .single();
-
-    if (ticketError || !ticket) {
-      return NextResponse.json({ error: 'Support ticket not found' }, { status: 404 });
-    }
-
-    // Auth verification:
-    // If ticket belongs to an authenticated user, require that user to be signed in
-    // or provide the matching seeker_email query parameter
-    const authResult = await getApiUser(req);
-    const authedUser = authResult.user;
-    const emailParam = req.nextUrl.searchParams.get('email')?.toLowerCase();
-
-    const isAuthorized =
-      (authedUser && ticket.user_id && authedUser.id === ticket.user_id) ||
-      (emailParam && ticket.seeker_email.toLowerCase() === emailParam) ||
-      (!ticket.user_id && emailParam);
-
-    if (!isAuthorized && ticket.user_id) {
-      return NextResponse.json(
-        { error: 'Authentication or verification email required to view this ticket' },
-        { status: 403 }
-      );
-    }
-
-    // Fetch public messages (exclude internal admin notes)
     const { data: messages, error: messagesError } = await admin
       .from('support_ticket_messages')
       .select('id, sender_type, sender_name, message, created_at')
@@ -63,7 +62,8 @@ export async function GET(
       .order('created_at', { ascending: true });
 
     if (messagesError) {
-      return NextResponse.json({ error: messagesError.message }, { status: 500 });
+      console.error('[Support API] message read failed:', messagesError.code);
+      return NextResponse.json({ error: 'We could not load this ticket right now.' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -84,70 +84,46 @@ export async function GET(
       messages: messages || [],
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown query error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('[Support API] ticket read failed:', err instanceof Error ? err.name : 'unknown');
+    return NextResponse.json({ error: 'We could not load this ticket right now.' }, { status: 500 });
   }
 }
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ ticketNumber: string }> }
+  { params }: { params: Promise<{ ticketNumber: string }> },
 ) {
   const largeRejection = rejectLargeRequest(req, 10 * 1024);
   if (largeRejection) return largeRejection;
 
-  const rateRejection = rateLimitByIp(req, { keyPrefix: 'support-reply', limit: 15, windowMs: 60 * 1000 });
+  const rateRejection = rateLimitByIp(req, { keyPrefix: 'support-reply', limit: 10, windowMs: 60 * 1000 });
   if (rateRejection) return rateRejection;
 
-  const { ticketNumber } = await params;
-  if (!ticketNumber || !/^TKT-\d{6}-[A-Z0-9]{4}$/i.test(ticketNumber)) {
-    return NextResponse.json({ error: 'Invalid ticket reference format' }, { status: 400 });
-  }
+  const ticketNumber = (await params).ticketNumber?.toUpperCase() ?? '';
 
   try {
-    const admin = createAdminClient() as any;
-    const { data: ticket, error: ticketError } = await admin
-      .from('support_tickets')
-      .select('id, ticket_number, seeker_name, seeker_email, user_id, status')
-      .eq('ticket_number', ticketNumber.toUpperCase())
-      .single();
-
-    if (ticketError || !ticket) {
-      return NextResponse.json({ error: 'Support ticket not found' }, { status: 404 });
-    }
-
-    const authResult = await getApiUser(req);
-    const authedUser = authResult.user;
+    const access = await authorise(req, ticketNumber, 'id, seeker_name, status');
+    if (!access) return NextResponse.json(NOT_FOUND, { status: 404 });
+    const { ticket, authedUserId, authedName } = access;
 
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== 'object') {
       return NextResponse.json({ error: 'Invalid JSON request body' }, { status: 400 });
     }
-
     const message = asBoundedString(body.message, 2000)?.trim();
     if (!message || message.length < 2) {
       return NextResponse.json({ error: 'Message must be at least 2 characters' }, { status: 400 });
     }
 
-    const senderEmail = (asBoundedString(body.email, 120) || authedUser?.email || '').trim().toLowerCase();
-    const isAuthorized =
-      (authedUser && ticket.user_id && authedUser.id === ticket.user_id) ||
-      (senderEmail && ticket.seeker_email.toLowerCase() === senderEmail);
-
-    if (!isAuthorized) {
-      return NextResponse.json({ error: 'Unauthorized to reply to this ticket' }, { status: 403 });
-    }
-
-    const senderName = authedUser?.user_metadata?.full_name || ticket.seeker_name;
-
-    // 1. Insert message
+    const admin = createAdminClient() as any;
     const { data: newMsg, error: msgError } = await admin
       .from('support_ticket_messages')
       .insert({
         ticket_id: ticket.id,
         sender_type: 'seeker',
-        sender_id: authedUser?.id ?? 'guest',
-        sender_name: senderName,
+        sender_id: authedUserId ?? 'guest',
+        user_id: ticket.user_id ?? null,
+        sender_name: authedName || ticket.seeker_name,
         message,
         is_internal_note: false,
       })
@@ -155,26 +131,20 @@ export async function POST(
       .single();
 
     if (msgError) {
-      return NextResponse.json({ error: msgError.message }, { status: 500 });
+      console.error('[Support API] reply failed:', msgError.code);
+      return NextResponse.json({ error: 'We could not send your message right now.' }, { status: 500 });
     }
 
-    // 2. Re-open ticket if it was waiting or resolved
+    // A reply re-opens a finished ticket.
     const nextStatus = ticket.status === 'resolved' || ticket.status === 'closed' ? 'open' : ticket.status;
     await admin
       .from('support_tickets')
-      .update({
-        status: nextStatus,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ status: nextStatus, resolved_at: nextStatus === 'open' ? null : undefined, updated_at: new Date().toISOString() })
       .eq('id', ticket.id);
 
-    return NextResponse.json({
-      success: true,
-      message: newMsg,
-      ticketStatus: nextStatus,
-    });
+    return NextResponse.json({ success: true, message: newMsg, ticketStatus: nextStatus });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown reply error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('[Support API] reply failed:', err instanceof Error ? err.name : 'unknown');
+    return NextResponse.json({ error: 'We could not send your message right now.' }, { status: 500 });
   }
 }

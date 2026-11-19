@@ -29,15 +29,11 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
     category: 'calendar_panchang',
     keywords: ['date', 'different', 'city', 'ekadashi', 'festival', 'timezone', 'location', 'wrong date', 'uk', 'usa'],
     summary:
-      'Shoonaya calculates observance dates using high-precision astronomical algorithms (Drigganita). An observance date depends on the exact civil sunrise time at your specific city latitude and longitude. A Tithi ends at the same absolute instant worldwide, but if that instant occurs before sunrise in New York and after sunrise in Delhi, the festival civil date will naturally differ by one day. This is the orthodox Shastric standard, not a software bug.',
+      'An observance date depends on the local sunrise and the calendar profile for your location. A Tithi ends at the same instant everywhere, but if that instant falls before sunrise in one city and after sunrise in another, the civil date can differ by one day. Dates that the app has not confirmed are shown as unconfirmed rather than as a final date.',
     steps: [
       'Open Settings -> Location to verify your current city and timezone are set accurately.',
       'Check the Panchang view for your city to see the exact sunrise time and Tithi transition moment.',
       'If travelling across timezones, enable "Auto-detect location" or select your current pilgrimage city.',
-    ],
-    actionLinks: [
-      { label: "View Today's Panchang", href: '/panchang' },
-      { label: 'Update Location Settings', href: '/settings' },
     ],
   },
   {
@@ -50,10 +46,6 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
     steps: [
       'Enable Brahma Muhurta alerts under Settings -> Notifications -> Brahma Muhurta Reminders.',
       'Ensure device battery-saver mode does not restrict background notifications before sunrise.',
-    ],
-    actionLinks: [
-      { label: 'Notification Settings', href: '/settings' },
-      { label: 'Panchang Muhurta Details', href: '/panchang' },
     ],
   },
 
@@ -69,10 +61,6 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
       'Choose your preferred bead length (27, 54, or 108 beads) from the Japa drawer.',
       'Ensure haptic vibration and audio bells are toggled to your liking.',
       'If your streak appears delayed after an offline session, pull down to refresh or check connectivity.',
-    ],
-    actionLinks: [
-      { label: 'Open Tactile Japa', href: '/features/japa' },
-      { label: 'Daily Sadhana Log', href: '/features/daily-sadhana' },
     ],
   },
   {
@@ -99,14 +87,12 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
     category: 'account_auth',
     keywords: ['tradition', 'sanatan', 'sikh', 'jain', 'buddhist', 'switch', 'change profile', 'lock'],
     summary:
-      'Shoonaya embraces the four major Dharmic paths: Sanatan Dharma, Sikh Dharma, Jain Dharma, and Buddhist Dharma. Each tradition configures your calendar observances, Pathshala study texts, and Kul lineage markers according to the authentic Shastras and Maryada of that path.',
+      'You choose your tradition when you create your account, and it is locked afterwards because it decides which calendar, texts and observances you are shown. If you chose the wrong one, send us a message with this form and a person will help.',
     steps: [
-      'Go to Profile -> Settings -> Spiritual Tradition.',
-      'Choose your primary path or explore content from all traditions freely via the navigation menu.',
-      'Your existing japa counts, mala sessions, and notes are preserved across any change.',
+      'Tell us which tradition you chose and which one you want, using "I still need help" below.',
+      'Your japa counts, practice history and notes stay with your account.',
     ],
     actionLinks: [
-      { label: 'Profile Settings', href: '/settings' },
       { label: 'Explore Traditions', href: '/traditions' },
     ],
   },
@@ -123,7 +109,6 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
     ],
     actionLinks: [
       { label: 'Read Privacy Policy', href: '/privacy' },
-      { label: 'Account Settings', href: '/settings' },
     ],
   },
 
@@ -140,9 +125,6 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
       'On Android (Samsung, Xiaomi, OnePlus), exempt Shoonaya from "Battery Optimization" to allow background alarms.',
       'In Shoonaya Settings -> Notifications, verify that the specific reminder (e.g. Ekadashi, Japa, Brahma Muhurta) is toggled ON.',
     ],
-    actionLinks: [
-      { label: 'Notification Preferences', href: '/settings' },
-    ],
   },
   {
     id: 'cache-refresh-issue',
@@ -152,7 +134,7 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
     summary:
       'If a recent software deployment or network interruption causes an older cached bundle to load, a swift client cache refresh will immediately restore normal operation.',
     steps: [
-      'On Web / PWA: Press Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac), or clear browser cache for shoonaya.com.',
+      'On the website: press Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac), or clear the browser cache for shoonaya.com.',
       'On Android App: Long-press the Shoonaya app icon -> App Info -> Storage & Cache -> Clear Cache (not Data).',
       'Restart the app to fetch the latest canonical assets and database feeds.',
     ],
@@ -168,14 +150,10 @@ export const SHOONAYA_SUPPORT_CORPUS: SupportFaqItem[] = [
     category: 'general',
     keywords: ['download', 'play store', 'app store', 'iphone', 'ios', 'android', 'apk', 'mobile app'],
     summary:
-      'Shoonaya is available right now for all Android devices via the official Google Play Store, and on desktop/mobile browsers as an installable Progressive Web App (PWA). The native iOS edition for iPhone and iPad is currently in active development.',
+      'Shoonaya is available for Android through the official Google Play Store. The Get Shoonaya page lists every current way to install it, including iPhone and iPad.',
     steps: [
       'For Android: Search for "Shoonaya" on Google Play or visit the direct store link.',
-      'For iPhone / iPad (current): Open shoonaya.com in Safari, tap Share -> "Add to Home Screen" to install the full-featured PWA.',
-    ],
-    actionLinks: [
-      { label: 'Get Shoonaya on Google Play', href: '/get' },
-      { label: 'Open Web Experience', href: '/' },
+      'For iPhone / iPad: see the Get Shoonaya page for the current options.',
     ],
   },
   {

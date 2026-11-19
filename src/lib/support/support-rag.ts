@@ -6,6 +6,7 @@
 
 import { SHOONAYA_SUPPORT_CORPUS, type SupportFaqItem } from '@/lib/support/support-knowledge';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { generateTicketNumber } from '@/lib/support/ticket-access';
 
 export type TicketCategory =
   | 'calendar_panchang'
@@ -57,21 +58,6 @@ export interface SynthesizedTicketDraft {
   ragSolutionOffered: string;
   ragDeflectionFeedback?: 'helpful' | 'unresolved' | 'skipped';
   clientMetadata: ClientMetadata;
-}
-
-/**
- * Generates a human-friendly ticket reference code, e.g. TKT-202611-A8F2
- */
-export function generateTicketNumber(): string {
-  const now = new Date();
-  const year = now.getUTCFullYear();
-  const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-  let randomCode = '';
-  for (let i = 0; i < 4; i++) {
-    randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return `TKT-${year}${month}-${randomCode}`;
 }
 
 /**

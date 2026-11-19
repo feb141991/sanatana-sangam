@@ -39,7 +39,7 @@ export async function POST(
     // Verify ticket exists
     const { data: ticket, error: ticketCheck } = await admin
       .from('support_tickets')
-      .select('id, status')
+      .select('id, status, user_id')
       .eq('id', id)
       .single();
 
@@ -54,6 +54,7 @@ export async function POST(
         ticket_id: id,
         sender_type: 'admin',
         sender_id: adminUsername,
+        user_id: isInternalNote ? null : ticket.user_id ?? null,
         sender_name: adminUsername,
         message,
         is_internal_note: isInternalNote,
