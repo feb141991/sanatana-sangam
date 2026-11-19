@@ -34,11 +34,12 @@ const COMMENT_HIGHLIGHTED_CAP = 20;
 const MANDALI_PROMPT_AUTHOR_ID = process.env.MANDALI_PROMPT_AUTHOR_ID;
 
 /**
- * Materializes today's conversation-starter prompt as a real, pinned post --
- * once per Mandali per UTC day, the first time anyone reads that Mandali's
- * feed that day. Selection is deterministic over an id-sorted curated pool;
- * the stored post remains English while feed hydration supplies Hindi or
- * Punjabi text for viewers who selected those app languages.
+ * Materializes the weekly conversation-starter prompt as a real, pinned post --
+ * once per Mandali per UTC week (rotating every Monday at 00:00 UTC), the first
+ * time anyone reads that Mandali's feed that week. Selection is deterministic
+ * over an id-sorted curated pool; the stored post remains English while feed
+ * hydration supplies Hindi or Punjabi text for viewers who selected those app
+ * languages.
  *
  * Write goes through the service-role admin client, never a user's own
  * RLS-scoped one -- same reasoning as getOrMaterializeOccurrences in
@@ -85,13 +86,15 @@ async function ensureTodaysMandaliPrompt(
     if (existingError) throw existingError;
 
     if (!existing) {
-      // Check for canonical primary observances for today to pick a calendar-aware prompt
+      // Check for canonical primary observances during this week to pick a calendar-aware prompt
+      const weekEndDate = new Date(Date.parse(`${promptDate}T00:00:00.000Z`) + 6 * 86_400_000).toISOString().slice(0, 10);
       const { data: occurrences } = await admin
         .from('observance_occurrences')
         .select('date, observance_definitions(slug, kind, display_name)')
-        .eq('date', promptDate)
+        .gte('date', promptDate)
+        .lte('date', weekEndDate)
         .eq('publication_status', 'published')
-        .limit(5);
+        .limit(10);
 
       const observanceTags: string[] = [];
       for (const occ of occurrences ?? []) {

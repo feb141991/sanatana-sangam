@@ -16,9 +16,11 @@ const PROMPTS: MandaliPromptText[] = [
 ];
 
 describe('Mandali prompt rotation', () => {
-  it('uses an explicit UTC date boundary', () => {
-    expect(getMandaliPromptDate(new Date('2026-09-14T23:59:59.999Z'))).toBe('2026-09-14');
-    expect(getMandaliPromptDate(new Date('2026-09-15T00:00:00.000Z'))).toBe('2026-09-15');
+  it('uses an explicit UTC weekly boundary (rotating every Monday)', () => {
+    // 2026-09-14 is Monday; 2026-09-20 is Sunday (end of week); 2026-09-21 is next Monday
+    expect(getMandaliPromptDate(new Date('2026-09-14T12:00:00.000Z'))).toBe('2026-09-14');
+    expect(getMandaliPromptDate(new Date('2026-09-20T23:59:59.999Z'))).toBe('2026-09-14');
+    expect(getMandaliPromptDate(new Date('2026-09-21T00:00:00.000Z'))).toBe('2026-09-21');
   });
 
   it('selects deterministically regardless of database row order', () => {

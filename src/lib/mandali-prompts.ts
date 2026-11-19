@@ -12,9 +12,13 @@ export function normalizeMandaliPromptLanguage(value?: string | null): MandaliPr
   return value === 'hi' || value === 'pa' ? value : 'en';
 }
 
-/** The shared Mandali rotation changes at 00:00 UTC for every circle. */
+/** The shared Mandali rotation changes at 00:00 UTC every Monday for every circle. */
 export function getMandaliPromptDate(now: Date = new Date()): string {
-  return now.toISOString().slice(0, 10);
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const day = d.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day; // Align to Monday of current UTC week
+  d.setUTCDate(d.getUTCDate() + diff);
+  return d.toISOString().slice(0, 10);
 }
 
 export function selectMandaliPromptForDate(
@@ -26,7 +30,8 @@ export function selectMandaliPromptForDate(
   const ordered = [...prompts].sort((left, right) => left.id.localeCompare(right.id));
   const epochDay = Math.floor(Date.parse(`${promptDate}T00:00:00.000Z`) / 86_400_000);
   if (!Number.isFinite(epochDay)) return null;
-  return ordered[((epochDay % ordered.length) + ordered.length) % ordered.length];
+  const epochWeek = Math.floor(epochDay / 7);
+  return ordered[((epochWeek % ordered.length) + ordered.length) % ordered.length];
 }
 
 export function selectMandaliPromptForObservanceOrDate(

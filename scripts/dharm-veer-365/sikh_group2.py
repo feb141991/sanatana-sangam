@@ -1,0 +1,1205 @@
+# -*- coding: utf-8 -*-
+"""
+Sikh Group 2: Holy Mothers & Gursikh Women (8), Iconic Martyrs & Warriors (15) = 23 Heroes
+"""
+
+SIKH_GROUP_2 = [
+    {
+        "id": "mata-tripta",
+        "name": "Mata Tripta Ji",
+        "nameLocal": "माता तृप्ता जी",
+        "namePa": "ਮਾਤਾ ਤ੍ਰਿਪਤਾ ਜੀ",
+        "era": "1440–1522 CE",
+        "eraLocal": "१४४०–१५२२ ईस्वी",
+        "eraPa": "੧੪੪੦–੧੫੨੨ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Nankana Sahib (Rai Bhoi di Talwandi)",
+        "regionLocal": "ननकाना साहिब (राय भोई दी तलवंडी)",
+        "regionPa": "ਨਨਕਾਣਾ ਸਾਹਿਬ (ਰਾਇ ਭੋਇ ਦੀ ਤਲਵੰਡੀ)",
+        "emoji": "☬",
+        "tagline": "The holy mother of Guru Nanak Dev Ji whose unconditional maternal love, quiet spiritual discernment, and tender shelter nurtured the founder of Sikhi.",
+        "taglineLocal": "गुरु नानक देव जी की पूज्य माताजी जिनके वात्सल्य, धैर्य और सहज अध्यात्म ने प्रथम गुरु का लालन-पालन किया।",
+        "taglinePa": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੇ ਪੂਜਨੀਕ ਮਾਤਾ ਜੀ ਜਿਨ੍ਹਾਂ ਦੀ ਅਥਾਹ ਮਮਤਾ ਅਤੇ ਆਤਮਿਕ ਸੂਝ ਨੇ ਜਗਤ ਗੁਰੂ ਨੂੰ ਆਪਣੀ ਗੋਦ ਵਿੱਚ ਪਾਲਿਆ।",
+        "journey": "Mata Tripta was a woman of profound inner piety, gentleness, and silent devotion in Talwandi. When her divine child Nanak was born in 1469 CE, she perceived from the very first hour that this was no ordinary mortal. While her husband Mehta Kalu often grew frustrated with Nanak's disinterest in worldly commerce, farming, and cattle-grazing, Mata Tripta was the protective sanctuary who comforted her son, understanding that his mind was anchored in the Divine. She supported his radical charity during the Sacha Sauda (True Bargain) when he fed hungry dervishes instead of doing business. When Guru Nanak set out on his four long Udasis (spiritual odysseys across Asia), she endured the painful ache of separation with immense prayer and quiet grace, rejoicing when he returned to establish Kartarpur Sahib.",
+        "journeyLocal": "तलवंडी में जन्मी माता तृप्ता अत्यंत सरल, दयालु और धार्मिक स्वभाव की थीं। १४६९ में बालक नानक के जन्म के समय से ही उन्होंने उनके अलौकिक रूप को पहचान लिया था। जब पिता मेहता कालू सांसारिक लाभ न कमाने पर क्रोधित होते, तब माता तृप्ता ही बालक नानक की ढाल बनती थीं। 'सच्चा सौदा' के समय जब नानक जी ने भूखे साधुओं को भोजन कराया, तो माता ने उनके परोपकार को समझा। गुरु नानक देव जी की लंबी उदासियों के विरह को उन्होंने धैर्यपूर्वक सहा।",
+        "journeyPa": "ਮਾਤਾ ਤ੍ਰਿਪਤਾ ਜੀ ਨੇ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੇ ਇਲਾਹੀ ਨੂਰ ਨੂੰ ਬਚਪਨ ਵਿੱਚ ਹੀ ਪਛਾਣ ਲਿਆ ਸੀ। ਜਦੋਂ ਮਹਿਤਾ ਕਾਲੂ ਜੀ ਸੰਸਾਰੀ ਲਾਭ ਨਾ ਹੋਣ 'ਤੇ ਨਾਰਾਜ਼ ਹੁੰਦੇ, ਤਾਂ ਮਾਤਾ ਜੀ ਆਪਣੇ ਲਾਲ ਦੀ ਢਾਲ ਬਣਦੇ। ਸੱਚੇ ਸੌਦੇ ਦੀ ਘਟਨਾ ਵੇਲੇ ਵੀ ਉਹਨਾਂ ਨੇ ਪੁੱਤਰ ਦੇ ਪਰਉਪਕਾਰ ਨੂੰ ਸਮਝਿਆ। ਗੁਰੂ ਸਾਹਿਬ ਦੀਆਂ ਚਹੁੰ ਉਦਾਸੀਆਂ ਦੌਰਾਨ ਵਿਛੋੜੇ ਦੇ ਦਰਦ ਨੂੰ ਅਰਦਾਸ ਅਤੇ ਸਿਦਕ ਨਾਲ ਸਹਾਰਿਆ।",
+        "trial": "Enduring the continuous domestic tension between her pragmatic husband and her mystical son, silently protecting Nanak's spiritual mission while enduring decades of his absence during long travels.",
+        "trialLocal": "पति के सांसारिक दृष्टिकोण और पुत्र के दिव्य स्वभाव के बीच सामंजस्य बैठाना और दशकों तक पुत्र-वियोग को सहना उनकी महान परीक्षा थी।",
+        "trialPa": "ਪਤੀ ਦੇ ਗੁੱਸੇ ਅੱਗੇ ਪੁੱਤਰ ਦਾ ਬਚਾਅ ਕਰਨਾ ਅਤੇ ਲੰਮੀਆਂ ਉਦਾਸੀਆਂ ਦੇ ਵਿਛੋੜੇ ਨੂੰ ਅੱਖਾਂ ਵਿੱਚ ਹੰਝੂ ਪੀ ਕੇ ਜਰਨਾ ਉਹਨਾਂ ਦਾ ਵੱਡਾ ਤਪ ਸੀ।",
+        "teaching": "Maternal love at its highest is not possessive attachment, but a selfless spiritual vessel that offers the child to the welfare of humanity.",
+        "teachingLocal": "सच्चा वात्सल्य मोह में बांधना नहीं, बल्कि संतान को मानवता की सेवा हेतु समर्पित करने में है।",
+        "teachingPa": "ਮਾਂ ਦੀ ਮਮਤਾ ਕੇਵਲ ਮੋਹ ਨਹੀਂ, ਸਗੋਂ ਜਗਤ ਦੇ ਭਲੇ ਲਈ ਪੁੱਤਰ ਨੂੰ ਵਾਰ ਦੇਣ ਵਾਲੀ ਆਤਮਿਕ ਸ਼ਕਤੀ ਹੈ।",
+        "moral": "Quiet patience and gentle encouragement behind the scenes nurture world-transforming spiritual revolutions.",
+        "moralLocal": "मौन धैर्य और निस्वार्थ प्रेम ही युग-परिवर्तक संतों की आधारशिला बनते हैं।",
+        "moralPa": "ਧੀਰਜ ਅਤੇ ਨਿਸ਼ਕਾਮ ਪਿਆਰ ਨਾਲ ਹੀ ਸੰਸਾਰ ਨੂੰ ਬਦਲਣ ਵਾਲੀਆਂ ਰੂਹਾਂ ਤਿਆਰ ਹੁੰਦੀਆਂ ਹਨ।",
+        "legacy": "Revered as the mother of the Sikh faith, setting the highest standard of motherly love, quiet endurance, and spiritual receptivity.",
+        "legacyLocal": "सिख धर्म की आदि-माता के रूप में पूजनीय, जिन्होंने मातृत्व को त्याग और गरिमा का सर्वोच्च शिखर बनाया।",
+        "legacyPa": "ਸਿੱਖ ਕੌਮ ਦੀ ਆਦਿ ਮਾਤਾ ਵਜੋਂ ਸਮੁੱਚੀ ਮਾਨਵਤਾ ਲਈ ਸਤਿਕਾਰਯੋਗ ਅਤੇ ਪ੍ਰੇਰਨਾ ਸਰੋਤ।",
+        "source": "Puratan Janamsakhi, Bala Janamsakhi, Mahima Prakash",
+        "sourceLocal": "पुरातन जनमसाखी, बाला जनमसाखी, महिमा प्रकाश",
+        "sourcePa": "ਪੁਰਾਤਨ ਜਨਮਸਾਖੀ, ਬਾਲਾ ਜਨਮਸਾਖੀ, ਮਹਿਮਾ ਪ੍ਰਕਾਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Puratan Janamsakhi", "sourceRef": "Sakhi Avtar Guru Nanak Dev Ji", "tier": 1},
+            {"sourceName": "Bhai Santokh Singh", "sourceRef": "Sri Gur Nanak Prakash", "tier": 1}
+        ],
+        "quote": {
+            "text": "Mata dharat mahat.",
+            "attribution": "The earth is the great mother of all. — Guru Nanak Dev Ji, Japji Sahib (Salok, Ang 8)"
+        },
+        "quoteLocal": {
+            "text": "माता धरति महतु।",
+            "attribution": "गुरु नानक देव जी (जपजी साहिब, सलोक, अंग ८)"
+        },
+        "quotePa": {
+            "text": "ਮਾਤਾ ਧਰਤਿ ਮਹਤੁ ॥",
+            "attribution": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ (ਜਪੁਜੀ ਸਾਹਿਬ, ਸਲੋਕ, ਅੰਗ ੮)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting showing Mata Tripta Ji tenderly holding young child Nanak in a courtyard in Talwandi, looking at his serene face illuminated by celestial morning dawn."
+    },
+    {
+        "id": "bebe-nanaki",
+        "name": "Bebe Nanaki Ji",
+        "nameLocal": "बेबे नानकी जी",
+        "namePa": "ਬੇਬੇ ਨਾਨਕੀ ਜੀ",
+        "era": "1464–1518 CE",
+        "eraLocal": "१४६४–१५१८ ईस्वी",
+        "eraPa": "੧੪੬੪–੧੫੧੮ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Sultanpur Lodhi, Punjab",
+        "regionLocal": "सुल्तानपुर लोधी, पंजाब",
+        "regionPa": "ਸੁਲਤਾਨਪੁਰ ਲੋਧੀ, ਪੰਜਾਬ",
+        "emoji": "☬",
+        "tagline": "The elder sister of Guru Nanak Dev Ji who was the first mortal to recognize his divine mission and gifted Bhai Mardana the rebab that set Gurbani to music.",
+        "taglineLocal": "गुरु नानक देव जी की बड़ी बहन जो उनके दिव्य स्वरूप को पहचानने वाली प्रथम सिख बनीं और जिन्होंने भाई मरदाना को रबाब भेंट की।",
+        "taglinePa": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੀ ਵੱਡੀ ਭੈਣ ਜੋ ਗੁਰੂ ਸਾਹਿਬ ਦੇ ਇਲਾਹੀ ਨੂਰ ਨੂੰ ਪਛਾਣਨ ਵਾਲੇ ਪਹਿਲੇ ਸਿੱਖ ਬਣੇ ਅਤੇ ਭਾਈ ਮਰਦਾਨਾ ਜੀ ਨੂੰ ਰਬਾਬ ਲੈ ਕੇ ਦਿੱਤੀ।",
+        "journey": "Five years elder to Guru Nanak, Bebe Nanaki shared an unshakeable soul-bond with her brother. While the village gossiped that Nanak was idle or mad, Nanaki saw with radiant clarity that the light of the Creator shone through him. When she married Jai Ram and moved to Sultanpur Lodhi, she invited Nanak to join them, securing him employment at Nawab Daulat Khan Lodhi's royal granary (Modikhana). At Sultanpur Lodhi, when Nanak gave away grains counting 'Tera, Tera' (Thine, Thine), she stood by him unconditionally. Understanding that divine poetry required musical wings, she purchased and gifted a Rebab (stringed instrument) to Bhai Mardana, initiating the immortal tradition of Kirtan. She is recognized in Sikh history as the very first Sikh.",
+        "journeyLocal": "गुरु नानक देव जी से पांच वर्ष बड़ी बेबे नानकी ने ही सर्वप्रथम उनके ईश्वरत्व को पहचाना। जब सब नानक को पागल कहते, तब नानकी ने उनका सम्मान किया। विवाह के बाद सुल्तानपुर लोधी जाकर उन्होंने नानक जी को वहां बुलाया और नवाब के मोदीखाने में कार्य दिलवाया। नानक जी के 'तेरा-तेरा' तौलने पर उनका पूरा समर्थन किया। गुरबाणी के गायन हेतु उन्होंने ही भाई मरदाना को रबाब भेंट की। सिख इतिहास में उन्हें प्रथम सिख की पदवी प्राप्त है।",
+        "journeyPa": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਤੋਂ ਪੰਜ ਸਾਲ ਵੱਡੇ ਬੇਬੇ ਨਾਨਕੀ ਜੀ ਨੇ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਗੁਰੂ ਸਾਹਿਬ ਦੀ ਰੱਬੀ ਜੋਤ ਨੂੰ ਪਛਾਣਿਆ। ਸੁਲਤਾਨਪੁਰ ਲੋਧੀ ਵਿਖੇ ਨਵਾਬ ਦੇ ਮੋਦੀਖਾਨੇ ਵਿੱਚ ਗੁਰੂ ਸਾਹਿਬ ਨੂੰ ਸੇਵਾ ਦਿਵਾਈ। 'ਤੇਰਾ ਤੇਰਾ' ਤੋਲਣ ਵੇਲੇ ਗੁਰੂ ਜੀ ਦਾ ਪੂਰਨ ਸਾਥ ਦਿੱਤਾ। ਕੀਰਤਨ ਦੀ ਮਰਯਾਦਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਭਾਈ ਮਰਦਾਨਾ ਜੀ ਨੂੰ ਰਬਾਬ ਲੈ ਕੇ ਦਿੱਤੀ। ਆਪ ਜੀ ਨੂੰ ਸਿੱਖੀ ਦੇ ਪਹਿਲੇ ਸਿੱਖ ਹੋਣ ਦਾ ਮਾਣ ਪ੍ਰਾਪਤ ਹੈ।",
+        "trial": "Standing steadfastly as her brother's sole champion against parental reprimands, societal mockery, and the heartbreak of his departure on world tours.",
+        "trialLocal": "पारिवारिक उपेक्षा और समाज के तानों के विरुद्ध अपने भाई के सत्य पर अडिग विश्वास रखना उनकी आत्मिक शक्ति थी।",
+        "trialPa": "ਸਮਾਜ ਦੇ ਮਿਹਣਿਆਂ ਦੇ ਬਾਵਜੂਦ ਵੀਰ ਦੇ ਰੱਬੀ ਮਿਸ਼ਨ 'ਤੇ ਅਟੱਲ ਭਰੋਸਾ ਰੱਖਣਾ ਉਹਨਾਂ ਦੇ ਉੱਚੇ ਕਿਰਦਾਰ ਦਾ ਸਬੂਤ ਸੀ।",
+        "teaching": "True sisterhood and love discern the divine flame in the other; encouraging another's spiritual calling is the highest service.",
+        "teachingLocal": "सच्चा प्रेम दूसरे के भीतर परमात्मा की ज्योति को पहचानता है और उसके मार्ग को सुगम बनाता है।",
+        "teachingPa": "ਸੱਚਾ ਪਿਆਰ ਦੂਜੇ ਦੀ ਆਤਮਿਕ ਉੱਚਾਈ ਨੂੰ ਪਛਾਣ ਕੇ ਉਸਦਾ ਸਹਾਰਾ ਬਣਦਾ ਹੈ।",
+        "moral": "Recognizing truth before the rest of the world sees it requires pure spiritual intuition and profound humility.",
+        "moralLocal": "संसार के समझने से पहले सत्य को पहचान लेना केवल शुद्ध अंतःकरण द्वारा ही संभव है।",
+        "moralPa": "ਦੁਨੀਆਂ ਤੋਂ ਪਹਿਲਾਂ ਸੱਚ ਨੂੰ ਪਛਾਣ ਲੈਣਾ ਪਵਿੱਤਰ ਹਿਰਦੇ ਦੀ ਹੀ ਨਿਸ਼ਾਨੀ ਹੈ।",
+        "legacy": "Honored as the first Sikh, founder of the musical patron tradition that birthed Gurbani Kirtan, and archetype of saintly sisterhood.",
+        "legacyLocal": "सिख धर्म की प्रथम शिष्या और कीर्तन की परंपरा की प्रेरिका के रूप में अमर।",
+        "legacyPa": "ਸਿੱਖ ਇਤਿਹਾਸ ਦੇ ਪਹਿਲੇ ਸਿੱਖ ਅਤੇ ਗੁਰਮਤਿ ਸੰਗੀਤ ਦੇ ਮੋਢੀ ਸਰਪ੍ਰਸਤ ਵਜੋਂ ਸਤਿਕਾਰੇ ਜਾਂਦੇ ਹਨ।",
+        "source": "Janamsakhi Bhai Bala, Puratan Janamsakhi, Twarikh Guru Khalsa",
+        "sourceLocal": "जनमसाखी भाई बाला, पुरातन जनमसाखी, तवारीख गुरु खालसा",
+        "sourcePa": "ਜਨਮਸਾਖੀ ਭਾਈ ਬਾਲਾ, ਪੁਰਾਤਨ ਜਨਮਸਾਖੀ, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ",
+        "sourceCitations": [
+            {"sourceName": "Puratan Janamsakhi", "sourceRef": "Sakhi Sultanpur Lodhi", "tier": 1},
+            {"sourceName": "Giani Gian Singh", "sourceRef": "Twarikh Guru Khalsa", "tier": 1}
+        ],
+        "quote": {
+            "text": "Dhan dhan oho bhain ji jis veerey sach pachhaniya.",
+            "attribution": "Blessed, blessed is that noble sister who recognized the Truth incarnate in her brother. — Traditional Sikh Hymn of Praise"
+        },
+        "quoteLocal": {
+            "text": "धंनि धंनि ओहो भैण जी जिस वीरे सचु पछाणिआ।",
+            "attribution": "पारंपरिक सिख स्तुति"
+        },
+        "quotePa": {
+            "text": "ਧੰਨਿ ਧੰਨਿ ਓਹੋ ਭੈਣ ਜੀ ਜਿਸ ਵੀਰੇ ਸਚੁ ਪਛਾਣਿਆ ॥",
+            "attribution": "ਸਿੱਖ ਰਵਾਇਤੀ ਪ੍ਰਸ਼ੰਸਾ"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bebe Nanaki Ji warmly presenting an ornate wooden Rebab string instrument to Bhai Mardana while Guru Nanak sits beside them in Sultanpur Lodhi."
+    },
+    {
+        "id": "mata-khivi",
+        "name": "Mata Khivi Ji",
+        "nameLocal": "माता खीवी जी",
+        "namePa": "ਮਾਤਾ ਖੀਵੀ ਜੀ",
+        "era": "1506–1582 CE",
+        "eraLocal": "१५०६–१५८२ ईस्वी",
+        "eraPa": "੧੫੦੬–੧੫੮੨ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Khadur Sahib, Punjab",
+        "regionLocal": "खड़ूर साहिब, पंजाब",
+        "regionPa": "ਖਡੂਰ ਸਾਹਿਬ, ਪੰਜਾਬ",
+        "emoji": "☬",
+        "tagline": "The noble consort of Guru Angad Dev Ji whose unmatched hospitality made the community Langar a sanctuary of warmth, praised directly in Sri Guru Granth Sahib.",
+        "taglineLocal": "गुरु अंगद देव जी की धर्मपत्नी जिन्होंने लंगर सेवा को संस्थागत स्वरूप दिया, जिनका गुणगान स्वयं श्री गुरु ग्रंथ साहिब में दर्ज है।",
+        "taglinePa": "ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ ਦੇ ਮਹਿਲ ਜਿਨ੍ਹਾਂ ਨੇ ਲੰਗਰ ਦੀ ਸੇਵਾ ਨੂੰ ਸਿਖ਼ਰਾਂ 'ਤੇ ਪਹੁੰਚਾਇਆ ਅਤੇ ਜਿਨ੍ਹਾਂ ਦੀ ਵਡਿਆਈ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਵਿੱਚ ਦਰਜ ਹੈ।",
+        "journey": "Wife of the second Guru, Guru Angad Dev Ji, Mata Khivi was the beating heart of the community at Khadur Sahib. Long before modern social welfare existed, she personally organized and oversaw the preparation and distribution of Guru ka Langar. She ensured that the food was not merely surviving gruel, but rich, nutritious, and served with unconditional love. Her signature dish was 'Kheer' (rice pudding cooked in rich milk and ghee), which she served with her own hands to kings, beggars, outcasts, and ascetics sitting together as equals. Her maternal warmth and administrative genius sustained the fledgling Sikh community during harsh times. She lived through the Guruships of Guru Angad, Guru Amar Das, Guru Ram Das, and saw young Guru Arjan Dev, remaining an anchor of wisdom until age 75.",
+        "journeyLocal": "गुरु अंगद देव जी की पत्नी माता खीवी जी ने खड़ूर साहिब में लंगर व्यवस्था का ऐसा संचालन किया जो सामाजिक समरसता की मिसाल बन गया। उन्होंने सुनिश्चित किया कि लंगर केवल भोजन न होकर प्रेम का अमृत हो। वे अपने हाथों से घी-युक्त खीर परोसती थीं, जहां राजा और रंक एक ही पंगत में बैठते थे। उनके वात्सल्य और सेवाभाव की प्रशंसा स्वयं गुरु ग्रंथ साहिब में की गई है।",
+        "journeyPa": "ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ ਦੇ ਮਹਿਲ ਮਾਤਾ ਖੀਵੀ ਜੀ ਨੇ ਖਡੂਰ ਸਾਹਿਬ ਵਿਖੇ ਲੰਗਰ ਦੀ ਸੇਵਾ ਨੂੰ ਅਜਿਹਾ ਸੰਭਾਲਿਆ ਕਿ ਜਾਤ-ਪਾਤ ਦੇ ਸਾਰੇ ਭਰਮ ਮਿਟ ਗਏ। ਆਪ ਜੀ ਆਪਣੇ ਹੱਥੀਂ ਘਿਉ ਵਾਲੀ ਖੀਰ ਵਰਤਾਉਂਦੇ ਸਨ। ਆਪ ਜੀ ਦੀ ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਅਤੇ ਮਮਤਾ ਦੀ ਗਵਾਹੀ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਵਿੱਚ ਭੱਟ ਸੱਤਾ ਅਤੇ ਬਲਵੰਡ ਜੀ ਨੇ ਆਪਣੀ ਵਾਰ ਵਿੱਚ ਦਰਜ ਕੀਤੀ ਹੈ।",
+        "trial": "Managing food and hospitality for thousands of daily pilgrims amidst scarce agrarian resources and intense hostility from orthodox detractors who opposed inter-caste dining.",
+        "trialLocal": "सीमित साधनों के बावजूद हजारों लोगों के लिए भोजन जुटाना और जाति-प्रथा के ठेकेदारों के विरोध को सेवा से जीतना उनकी साधना थी।",
+        "trialPa": "ਸਾਧਨਾਂ ਦੀ ਘਾਟ ਅਤੇ ਜਾਤ-ਅਭਿਮਾਨੀਆਂ ਦੇ ਵਿਰੋਧ ਦੇ ਬਾਵਜੂਦ ਹਜ਼ਾਰਾਂ ਸੰਗਤਾਂ ਨੂੰ ਪਿਆਰ ਨਾਲ ਲੰਗਰ ਛਕਾਉਣਾ ਆਪ ਜੀ ਦਾ ਵੱਡਾ ਤਪ ਸੀ।",
+        "teaching": "Food served with true maternal love nourishes the soul as much as the body; no one is a stranger at the Guru's table.",
+        "teachingLocal": "मातृ-भाव से परोसा गया अन्न आत्मा को तृप्त करता है; गुरु के द्वार पर कोई पराया नहीं है।",
+        "teachingPa": "ਪਿਆਰ ਅਤੇ ਸਤਿਕਾਰ ਨਾਲ ਛਕਾਇਆ ਭੋਜਨ ਆਤਮਾ ਨੂੰ ਰੱਜ ਬਖ਼ਸ਼ਦਾ ਹੈ; ਗੁਰੂ ਦੇ ਲੰਗਰ ਵਿੱਚ ਸਭ ਬਰਾਬਰ ਹਨ।",
+        "moral": "Nourishing others with boundless warmth and selflessness is as sacred a spiritual path as ascetic meditation.",
+        "moralLocal": "दूसरों को प्रेमपूर्वक भोजन कराना और उनकी सेवा करना गहन तपस्या के समान पावन है।",
+        "moralPa": "ਭੁੱਖਿਆਂ ਨੂੰ ਅੰਨ ਛਕਾਉਣਾ ਅਤੇ ਨਿਮਰਤਾ ਨਾਲ ਸੇਵਾ ਨਿਭਾਉਣੀ ਵੱਡੀ ਭਗਤੀ ਹੈ।",
+        "legacy": "The only woman mentioned by name in Sri Guru Granth Sahib for her divine seva, forever venerated as the patron mother of Guru ka Langar.",
+        "legacyLocal": "श्री गुरु ग्रंथ साहिब में नाम से उल्लिखित एकमात्र महिला, जो लंगर परंपरा की अमर संरक्षिका हैं।",
+        "legacyPa": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਵਿੱਚ ਨਾਮ ਸਹਿਤ ਦਰਜ ਇਕਲੌਤੀ ਮਾਤਾ, ਜੋ ਲੰਗਰ ਦੀ ਮਰਯਾਦਾ ਦੇ ਪ੍ਰਤੀਕ ਹਨ।",
+        "source": "Sri Guru Granth Sahib (Ramkali ki Var, Satta & Balwand, Ang 967), Mahima Prakash",
+        "sourceLocal": "श्री गुरु ग्रंथ साहिब (रामकली की वार, सत्ता व बलवंड, अंग ९६७), महिमा प्रकाश",
+        "sourcePa": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (ਰਾਮਕਲੀ ਕੀ ਵਾਰ, ਸੱਤਾ ਤੇ ਬਲਵੰਡ, ਅੰਗ ੯੬੭), ਮਹਿਮਾ ਪ੍ਰਕਾਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Sri Guru Granth Sahib", "sourceRef": "Ramkali ki Var (Satta & Balwand), Ang 967", "tier": 1},
+            {"sourceName": "Mahima Prakash", "sourceRef": "Sakhi Mata Khivi Ji", "tier": 1}
+        ],
+        "quote": {
+            "text": "Balwand khivi nek jan jis bahuti chhaon patrali, langar daulat vandiyai ras amrit kheer gheali.",
+            "attribution": "Says Balwand, Khivi was a noble soul who gave dense leafy shade to all; she distributed the wealth of the Guru's Langar, serving sweet ambrosial kheer made with rich butter. — Satta & Balwand, Sri Guru Granth Sahib (Ang 967)"
+        },
+        "quoteLocal": {
+            "text": "बलवंड खीवी नेक जन जिसु बहुती छाउ पत्राली। लंगरि दउलति वंडीऐ रसु अम्रितु खीरि घिआली॥",
+            "attribution": "सत्ता व बलवंड (श्री गुरु ग्रंथ साहिब, अंग ९६७)"
+        },
+        "quotePa": {
+            "text": "ਬਲਵੰਡ ਖੀਵੀ ਨੇਕ ਜਨ ਜਿਸੁ ਬਹੁਤੀ ਛਾਉ ਪਤ੍ਰਾਲੀ ॥ ਲੰਗਰਿ ਦਉਲਤਿ ਵੰਡੀਐ ਰਸੁ ਅੰਮ੍ਰਿਤੁ ਖੀਰਿ ਘਿਆਲੀ ॥",
+            "attribution": "ਸੱਤਾ ਤੇ ਬਲਵੰਡ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੯੬੭)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting showing Mata Khivi Ji with serene, motherly grace ladling steaming sweet kheer from a large bronze cauldron into earthen bowls for village children seated in a sunny courtyard in Khadur Sahib."
+    },
+    {
+        "id": "mata-bhani",
+        "name": "Mata Bhani Ji",
+        "nameLocal": "माता भानी जी",
+        "namePa": "ਮਾਤਾ ਭਾਨੀ ਜੀ",
+        "era": "1535–1598 CE",
+        "eraLocal": "१५३५–१५९८ ईस्वी",
+        "eraPa": "੧੫੩੫–੧੫੯੮ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Goindval Sahib / Amritsar",
+        "regionLocal": "गोइन्दवाल साहिब / अमृतसर",
+        "regionPa": "ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ / ਅੰਮ੍ਰਿਤਸਰ",
+        "emoji": "☬",
+        "tagline": "The daughter of Guru Amar Das, wife of Guru Ram Das, and mother of Guru Arjan Dev, who personified intense physical devotion and spiritual sacrifice.",
+        "taglineLocal": "गुरु अमर दास जी की पुत्री, गुरु राम दास जी की पत्नी और गुरु अर्जुन देव जी की माता, जिनकी अनन्य सेवा ने इतिहास रचा।",
+        "taglinePa": "ਤੀਜੇ ਪਾਤਸ਼ਾਹ ਦੀ ਸਪੁੱਤਰੀ, ਚੌਥੇ ਪਾਤਸ਼ਾਹ ਦੇ ਮਹਿਲ ਅਤੇ ਪੰਜਵੇਂ ਪਾਤਸ਼ਾਹ ਦੇ ਮਾਤਾ ਜੀ ਜਿਨ੍ਹਾਂ ਨੇ ਸੇਵਾ ਤੇ ਤਿਆਗ ਦੀ ਅਦੁੱਤੀ ਮਿਸਾਲ ਕਾਇਮ ਕੀਤੀ।",
+        "journey": "Daughter of the third Guru, Mata Bhani was steeped in prayer and service from childhood. When her father was aging, she attended to his daily bath with extraordinary vigilance. Once, when a leg of the Guru's wooden bath-stool broke, she thrust her own hand beneath the broken peg to prevent the elderly Guru from falling, holding the immense weight while the splintered wood pierced deep into her palm and blood flowed. When Guru Amar Das finished and saw the pool of blood, he blessed her devotion. Married to Bhai Jetha (Guru Ram Das), she lived in utter simplicity, digging earth for the sacred sarovars. As mother to Guru Arjan Dev Ji, she imparted the highest spiritual fortitude that prepared him to face burning martyrdom with absolute peace.",
+        "journeyLocal": "गुरु अमर दास जी की पुत्री माता भानी बचपन से ही सेवा में लीन रहती थीं। एक बार स्नान के समय पिता की चौकी का पाया टूटने लगा, तो उन्होंने अपना हाथ पाए के नीचे रख दिया ताकि पिता का ध्यान भंग न हो। कील और लकड़ी उनके हाथ में चुभ गई और रक्त बहने लगा, परंतु उन्होंने हाथ नहीं हटाया। उनकी इस निष्ठा से प्रसन्न होकर गुरु जी ने वरदान दिया। वे गुरु राम दास जी की धर्मपत्नी और गुरु अर्जुन देव जी की माता बनीं।",
+        "journeyPa": "ਮਾਤਾ ਭਾਨੀ ਜੀ ਬਚਪਨ ਤੋਂ ਹੀ ਪਿਤਾ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ ਦੀ ਸੇਵਾ ਵਿੱਚ ਲੱਗੇ ਰਹਿੰਦੇ ਸਨ। ਇੱਕ ਦਿਨ ਇਸ਼ਨਾਨ ਕਰਾਉਂਦਿਆਂ ਚੌਂਕੀ ਦਾ ਪਾਵਾ ਟੁੱਟ ਗਿਆ ਤਾਂ ਆਪ ਜੀ ਨੇ ਆਪਣਾ ਹੱਥ ਹੇਠਾਂ ਦੇ ਦਿੱਤਾ ਤਾਂ ਜੋ ਪਿਤਾ ਜੀ ਦੀ ਸਮਾਧੀ ਨਾ ਟੁੱਟੇ। ਕਿੱਲ ਖੁੱਭਣ 'ਤੇ ਲਹੂ ਵਹਿ ਤੁਰਿਆ ਪਰ ਆਪ ਅਡੋਲ ਰਹੇ। ਆਪ ਜੀ ਗੁਰੂ ਰਾਮਦਾਸ ਜੀ ਦੇ ਮਹਿਲ ਅਤੇ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਦੇ ਮਾਤਾ ਜੀ ਬਣੇ।",
+        "trial": "Enduring severe bodily pain—allowing a fractured wooden peg and nail to bore through her palm rather than disturbing her father's meditation.",
+        "trialLocal": "पिता के स्नान और ध्यान की रक्षा हेतु अपने हाथ में कील चुभने की असह्य पीड़ा को मुस्कुराकर सहना उनकी सेवा का शिखर था।",
+        "trialPa": "ਪਿਤਾ ਦੇ ਆਰਾਮ ਲਈ ਹੱਥ ਵਿੱਚ ਕਿੱਲ ਖੁੱਭਣ ਦਾ ਅਸਹਿ ਦਰਦ ਚੁੱਪ-ਚਾਪ ਸਹਾਰ ਲੈਣਾ ਉਹਨਾਂ ਦੇ ਸਿਦਕ ਦੀ ਪ੍ਰੀਖਿਆ ਸੀ।",
+        "teaching": "Devotion that shuns bodily pain and sacrifices personal comfort out of deep love unlocks the deepest treasures of divine grace.",
+        "teachingLocal": "जो सेवा शारीरिक सुख-दुख से परे होकर की जाती है, वही प्रभु की कृपा का द्वार खोलती है।",
+        "teachingPa": "ਸਰੀਰਕ ਕਸ਼ਟਾਂ ਦੀ ਪ੍ਰਵਾਹ ਕੀਤੇ ਬਿਨਾਂ ਕੀਤੀ ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਹੀ ਦਰਗਾਹ ਵਿੱਚ ਪ੍ਰਵਾਨ ਹੁੰਦੀ ਹੈ।",
+        "moral": "Steadfast filial duty and selfless maternal guidance form the bedrock upon which world teachers are built.",
+        "moralLocal": "निस्वार्थ सेवा और उच्च संस्कार ही संतानों को महानता के शिखर पर पहुंचाते हैं।",
+        "moralPa": "ਮਾਪਿਆਂ ਦੀ ਸੱਚੇ ਦਿਲੋਂ ਕੀਤੀ ਸੇਵਾ ਮਨੁੱਖ ਨੂੰ ਆਤਮਿਕ ਤੌਰ 'ਤੇ ਅਮੀਰ ਬਣਾ ਦਿੰਦੀ ਹੈ।",
+        "legacy": "A uniquely revered figure occupying the central nexus of three Gurus—daughter, wife, and mother—whose blessing shaped Sikh heritage.",
+        "legacyLocal": "सिख परंपरा में तीन पीढ़ियों के गुरुओं से प्रत्यक्ष रूप से जुड़ी अद्वितीय पूज्य माता।",
+        "legacyPa": "ਗੁਰੂ-ਘਰ ਦੀ ਅਨੋਖੀ ਕੜੀ ਜੋ ਤਿੰਨ ਪਾਤਸ਼ਾਹਾਂ ਦੇ ਨੇੜੇ ਰਹੇ ਅਤੇ ਸਿੱਖੀ ਸੇਵਾ ਦਾ ਥੰਮ੍ਹ ਬਣੇ।",
+        "source": "Mahima Prakash, Bansavalinama, Suraj Prakash",
+        "sourceLocal": "महिमा प्रकाश, बंसावलीनामा, सूरज प्रकाश",
+        "sourcePa": "ਮਹਿਮਾ ਪ੍ਰਕਾਸ਼, ਬੰਸਾਵਲੀਨਾਮਾ, ਸੂਰਜ ਪ੍ਰਕਾਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Sarup Das Bhalla", "sourceRef": "Mahima Prakash, Sakhi Mata Bhani Ji", "tier": 1},
+            {"sourceName": "Bhai Santokh Singh", "sourceRef": "Sri Gur Pratap Suraj Granth", "tier": 1}
+        ],
+        "quote": {
+            "text": "Putha mata ki aasees, nimakh na bisro tum kao har har sada bhajo bhagwan.",
+            "attribution": "This is a mother's blessing for her child: May you never forget the Lord even for an instant; may you ever contemplate the Divine! — Guru Arjan Dev Ji (recording Mata Bhani's prayer), Sri Guru Granth Sahib (Ang 496)"
+        },
+        "quoteLocal": {
+            "text": "पुता माता की आसीस। निमख न बिसरउ तुम कउ हरि हरि सदा भजहु भगवान॥",
+            "attribution": "गुरु अर्जुन देव जी (श्री गुरु ग्रंथ साहिब, अंग ४९६)"
+        },
+        "quotePa": {
+            "text": "ਪੂਤਾ ਮਾਤਾ ਕੀ ਆਸੀਸ ॥ ਨਿਮਖ ਨ ਬਿਸਰਉ ਤੁਮ੍ਹ੍ਹ ਕਉ ਹਰਿ ਹਰਿ ਸਦਾ ਭਜਹੁ ਭਗਵਾਨ ॥",
+            "attribution": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੪੯੬)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Mata Bhani Ji kneeling beside a wooden basin at Goindval Sahib, placing her hand gently under the fractured stool, divine calm on her face despite blood dripping on the stones."
+    },
+    {
+        "id": "mata-ganga",
+        "name": "Mata Ganga Ji",
+        "nameLocal": "माता गंगा जी",
+        "namePa": "ਮਾਤਾ ਗੰਗਾ ਜੀ",
+        "era": "1570–1628 CE",
+        "eraLocal": "१५७०–१६२८ ईस्वी",
+        "eraPa": "੧੫੭੦–੧੬੨੮ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Amritsar / Bilga, Punjab",
+        "regionLocal": "अमृतसर / बिल्गा, पंजाब",
+        "regionPa": "ਅੰਮ੍ਰਿਤਸਰ / ਬਿਲਗਾ, ਪੰਜਾਬ",
+        "emoji": "☬",
+        "tagline": "The queen-consort of Guru Arjan Dev Ji and mother of Guru Hargobind, who sought blessings from Baba Buddha Ji in profound humility and bore martyrdom's grief with sublime grace.",
+        "taglineLocal": "गुरु अर्जुन देव जी की धर्मपत्नी और गुरु हरगोबिन्द साहिब की माता, जिन्होंने अहंकार त्यागकर बाबा बुड्ढा जी से आशीर्वाद लिया और शहादत के शोक को गरिमा में बदला।",
+        "taglinePa": "ਪੰਜਵੇਂ ਪਾਤਸ਼ਾਹ ਦੇ ਮਹਿਲ ਅਤੇ ਛੇਵੇਂ ਪਾਤਸ਼ਾਹ ਦੇ ਮਾਤਾ ਜੀ ਜਿਨ੍ਹਾਂ ਨੇ ਹੰਕਾਰ ਤਿਆਗ ਕੇ ਬਾਬਾ ਬੁੱਢਾ ਜੀ ਤੋਂ ਵਰ ਲਿਆ ਅਤੇ ਗੁਰੂ-ਸ਼ਹਾਦਤ ਦਾ ਭਾਣਾ ਮਿੱਠਾ ਕਰਕੇ ਮੰਨਿਆ।",
+        "journey": "Consort of the fifth Guru, Mata Ganga was a woman of noble dignity and gentle demeanor. When relatives taunted her for being childless, Guru Arjan Dev advised her to seek the blessing of the venerable saint Baba Buddha Ji. Initially travelling in royal palanquins with an ostentatious entourage, Baba Buddha felt embarrassed and did not bless her. Realizing her mistake, Mata Ganga cast aside royal luxury, ground fresh corn with her own hands, baked rustic Missi rotis, prepared raw onions and freshly churned butter, and walked barefoot like a humble village woman to Baba Buddha's forest abode. Delighted by her pure humility, Baba Buddha crushed an onion with his fist and prophesied: 'As I crush this onion, so will your son crush the heads of tyrants!' She gave birth to Guru Hargobind. Later, when Guru Arjan Dev attained martyrdom, Mata Ganga bore the supreme loss with tranquil resignation to the divine Will, guiding the young Guru.",
+        "journeyLocal": "संतान प्राप्ति की इच्छा होने पर गुरु अर्जुन देव जी ने उन्हें बाबा बुड्ढा जी से आशीर्वाद लेने को कहा। पहली बार पालकी और ठाठ-बाट से जाने पर उन्हें आशीर्वाद नहीं मिला। अपनी भूल समझकर माता गंगा ने स्वयं चक्की पर आटा पीसा, मिस्सी रोटी और लस्सी तैयार की और नंगे पैर बाबा बुड्ढा जी की कुटिया में पहुंचीं। उनकी विनम्रता से प्रसन्न होकर बाबा बुड्ढा जी ने प्याज फोड़ते हुए भविष्यवाणी की कि 'तुम्हारा पुत्र शत्रुओं के सिर इसी प्रकार तोड़ेगा।' उन्होंने गुरु हरगोबिन्द को जन्म दिया और बाद में पति की शहादत को ईश्वर का विधान मानकर धैर्य रखा।",
+        "journeyPa": "ਸੰਤਾਨ ਦੀ ਦਾਤ ਲਈ ਜਦੋਂ ਪਹਿਲੀ ਵਾਰ ਪਾਲਕੀਆਂ ਵਿੱਚ ਚੜ੍ਹ ਕੇ ਗਏ ਤਾਂ ਬਾਬਾ ਬੁੱਢਾ ਜੀ ਨੇ ਵਰ ਨਾ ਦਿੱਤਾ। ਆਪਣੀ ਭੁੱਲ ਪਛਾਣ ਕੇ ਮਾਤਾ ਗੰਗਾ ਜੀ ਨੇ ਹੱਥੀਂ ਮਿੱਸੀਆਂ ਰੋਟੀਆਂ ਪਕਾਈਆਂ, ਗੰਢੇ ਤੇ ਲੱਸੀ ਲੈ ਕੇ ਨੰਗੇ ਪੈਰੀਂ ਬਾਬਾ ਜੀ ਕੋਲ ਪੁੱਜੇ। ਬਾਬਾ ਜੀ ਨੇ ਗੰਢਾ ਭੰਨ ਕੇ ਵਰ ਦਿੱਤਾ ਕਿ 'ਤੇਰਾ ਪੁੱਤਰ ਦੁਸ਼ਮਣਾਂ ਦੇ ਸਿਰ ਇੰਝ ਭੰਨੇਗਾ।' ਆਪ ਜੀ ਦੀ ਕੁੱਖੋਂ ਛੇਵੇਂ ਪਾਤਸ਼ਾਹ ਪ੍ਰਗਟ ਹੋਏ। ਪਤੀ ਦੀ ਸ਼ਹਾਦਤ ਪਿੱਛੋਂ ਆਪ ਨੇ ਭਾਣਾ ਮਿੱਠਾ ਕਰਕੇ ਮੰਨਿਆ।",
+        "trial": "Discarding the pride of being the Guru's empress, walking barefoot across dusty fields with simple peasant food to beg blessings from an ascetic elder.",
+        "trialLocal": "राजसी अहंकार त्यागकर साधारण ग्रामीण महिला बनकर नंगे पैर संतों की सेवा में जाना उनकी निष्कपट भक्ति की परीक्षा थी।",
+        "trialPa": "ਮਹਾਰਾਣੀ ਵਾਲਾ ਮਾਣ ਛੱਡ ਕੇ ਸਾਧਾਰਨ ਪੇਂਡੂ ਔਰਤ ਵਾਂਗ ਨੰਗੇ ਪੈਰੀਂ ਸੰਤਾਂ ਦੇ ਚਰਨੀਂ ਪੁੱਜਣਾ ਉਹਨਾਂ ਦੀ ਨਿਮਰਤਾ ਦੀ ਪਰਖ ਸੀ।",
+        "teaching": "Blessings cannot be bought with royal pomp or wealth; only the broken heart of pure humility receives the nectar of divine grace.",
+        "teachingLocal": "आशीर्वाद वैभव या धन से नहीं मिलता; अहंकारहीन विनम्र हृदय ही परमात्मा की कृपा का पात्र बनता है।",
+        "teachingPa": "ਹਉਮੈ ਨਾਲ ਰੱਬ ਨਹੀਂ ਰੀਝਦਾ; ਸੱਚੀ ਨਿਮਰਤਾ ਅਤੇ ਪ੍ਰੇਮ ਹੀ ਦਾਤਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੁੰਜੀ ਹੈ।",
+        "moral": "Surrendering social pride and accepting the divine Will in moments of supreme tragedy elevates the human spirit to sainthood.",
+        "moralLocal": "अहंकार का त्याग और संकट में ईश्वर के विधान को स्वीकार करना ही सच्ची साधना है।",
+        "moralPa": "ਹੰਕਾਰ ਤਿਆਗਣਾ ਅਤੇ ਦੁੱਖ ਵਿੱਚ ਅਕਾਲ ਪੁਰਖ ਦੀ ਰਜ਼ਾ ਮੰਨਣੀ ਹੀ ਸਭ ਤੋਂ ਵੱਡਾ ਧਰਮ ਹੈ।",
+        "legacy": "Mother of the martial transformation of the Sikh faith (Miri-Piri), remembered for teaching the power of humble prayer and steadfast faith.",
+        "legacyLocal": "मीरी-पीरी के जनक गुरु हरगोबिन्द साहिब की माता, जिन्होंने भक्ति और धैर्य की नई परिभाषा गढ़ी।",
+        "legacyPa": "ਮੀਰੀ-ਪੀਰੀ ਦੇ ਮਾਲਕ ਛੇਵੇਂ ਪਾਤਸ਼ਾਹ ਦੇ ਮਾਤਾ ਜੀ ਵਜੋਂ ਸਿੱਖ ਕੌਮ ਵਿੱਚ ਸਦਾ ਸਤਿਕਾਰੇ ਜਾਂਦੇ ਹਨ।",
+        "source": "Gurbilas Patshahi 6, Suraj Prakash, Mahima Prakash",
+        "sourceLocal": "गुरबिलास पातशाही ६, सूरज प्रकाश, महिमा प्रकाश",
+        "sourcePa": "ਗੁਰਬਿਲਾਸ ਪਾਤਸ਼ਾਹੀ ੬, ਸੂਰਜ ਪ੍ਰਕਾਸ਼, ਮਹਿਮਾ ਪ੍ਰਕਾਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Suraj Prakash", "sourceRef": "Ras 2 & 3 (Birth of Hargobind)", "tier": 1},
+            {"sourceName": "Gurbilas Patshahi 6", "sourceRef": "Chapter on Birth of the Sixth Guru", "tier": 1}
+        ],
+        "quote": {
+            "text": "Garbi guman na bhave kartar, garba galai ghaneri baar.",
+            "attribution": "Arrogant pride is not pleasing to the Creator; pride has ruined souls countless times. — Sri Guru Granth Sahib (Ang 1089)"
+        },
+        "quoteLocal": {
+            "text": "गरबी गुमानु न भावै करतार। गरबा गलै घनेरी बार॥",
+            "attribution": "श्री गुरु ग्रंथ साहिब (अंग १०८९)"
+        },
+        "quotePa": {
+            "text": "ਗਰਬੀ ਗੁਮਾਨੁ ਨ ਭਾਵੈ ਕਰਤਾਰ ॥ ਗਰਬਾ ਗਲੈ ਘਨੇਰੀ ਬਾਰ ॥",
+            "attribution": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (ਅੰਗ ੧੦੮੯)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Mata Ganga Ji dressed in simple hand-spun attire holding a brass plate with rustic Missi roti and onions, standing with bowed head before aged Baba Buddha Ji under a banyan tree."
+    },
+    {
+        "id": "mata-sundari",
+        "name": "Mata Sundari Ji",
+        "nameLocal": "माता सुंदरी जी",
+        "namePa": "ਮਾਤਾ ਸੁੰਦਰੀ ਜੀ",
+        "era": "1667–1747 CE",
+        "eraLocal": "१६६७–१७४७ ईस्वी",
+        "eraPa": "੧੬੬੭–੧੭੪੭ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Delhi / Anandpur Sahib",
+        "regionLocal": "दिल्ली / आनंदपुर साहिब",
+        "regionPa": "ਦਿੱਲੀ / ਅਨੰਦਪੁਰ ਸਾਹਿਬ",
+        "emoji": "☬",
+        "tagline": "The revered consort of Guru Gobind Singh who provided steadfast spiritual and political leadership to the Khalsa Panth for four decades after the Guru's departure.",
+        "taglineLocal": "गुरु गोबिंद सिंह जी की धर्मपत्नी जिन्होंने दशमेश पिता के ज्योति-जोत समाने के बाद चार दशकों तक दिल्ली से सिख पंथ का कुशल मार्गदर्शन किया।",
+        "taglinePa": "ਦਸਮੇਸ਼ ਪਿਤਾ ਦੇ ਮਹਿਲ ਜਿਨ੍ਹਾਂ ਨੇ ਗੁਰੂ ਸਾਹਿਬ ਦੇ ਜੋਤੀ-ਜੋਤਿ ਸਮਾਉਣ ਪਿੱਛੋਂ ਚਾਰ ਦਹਾਕੇ ਦਿੱਲੀ ਤੋਂ ਖ਼ਾਲਸਾ ਪੰਥ ਦੀ ਸਿਆਸੀ ਤੇ ਆਤਮਿਕ ਅਗਵਾਈ ਕੀਤੀ।",
+        "journey": "Consort of the tenth Master, Mata Sundari was a woman of towering intellect, administrative brilliance, and profound spiritual grounding. After the evacuation of Anandpur Sahib and the martyrdom of her four sons, she joined Guru Gobind Singh at Talwandi Sabo. Following the Guru's ascension at Nanded in 1708, she resided at Delhi (Gurdwara Mata Sundari). For nearly forty years, during the darkest period of Mughal persecution when bounties were put on Sikh heads, Mata Sundari acted as the supreme supreme guiding matriarch of the Khalsa. She issued Hukamnamas (edicts) to Sikh sangats across India, mediated intense internal disputes between the Tat Khalsa and Bandai Khalsa to preserve unity, commissioned Bhai Mani Singh to collect and codify the writings of Guru Gobind Singh into the Dasam Granth, and preserved the historical institutions of the faith.",
+        "journeyLocal": "गुरु गोबिंद सिंह जी की पत्नी माता सुंदरी जी ने आनंदपुर के त्याग और चारों साहिबजादों के बलिदान को अदम्य धैर्य से सहा। १७०८ में गुरु जी के परलोक गमन के बाद उन्होंने दिल्ली में रहकर लगभग ४० वर्षों तक अत्यंत कठिन कालखंड में सिख पंथ का नेतृत्व किया। उन्होंने 'हुकमनामे' जारी कर पंथ को संगठित रखा, भाई मनी सिंह जी को दसम ग्रंथ के संकलन का निर्देश दिया और तत् खालसा व बंदई खालसा के मतभेदों को मिटाकर पंथक एकता की रक्षा की।",
+        "journeyPa": "ਚਹੁੰ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਸ਼ਹਾਦਤ ਮਗਰੋਂ ਆਪ ਜੀ ਨੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨਾਲ ਤਲਵੰਡੀ ਸਾਬੋ ਸਮਾਂ ਬਿਤਾਇਆ। ੧੭੦੮ ਵਿੱਚ ਗੁਰੂ ਸਾਹਿਬ ਦੇ ਜੋਤੀ-ਜੋਤਿ ਸਮਾਉਣ ਉਪਰੰਤ ਦਿੱਲੀ ਵਿਖੇ ਰਹਿ ਕੇ ਲਗਭਗ ੪੦ ਸਾਲ ਖ਼ਾਲਸਾ ਪੰਥ ਨੂੰ ਦਿਸ਼ਾ ਦਿੱਤੀ। ਹੁਕਮਨਾਮੇ ਭੇਜ ਕੇ ਸੰਗਤਾਂ ਨੂੰ ਇੱਕਮੁੱਠ ਰੱਖਿਆ, ਤੱਤ ਖ਼ਾਲਸਾ ਤੇ ਬੰਦਈ ਖ਼ਾਲਸਾ ਦਾ ਝਗੜਾ ਨਿਬੇੜਿਆ ਅਤੇ ਭਾਈ ਮਨੀ ਸਿੰਘ ਜੀ ਰਾਹੀਂ ਦਸਮ ਗ੍ਰੰਥ ਦੀ ਬਾਣੀ ਸੰਕਲਿਤ ਕਰਵਾਈ।",
+        "trial": "Bearing the loss of all four sons and her husband while steering a hunted community through relentless state genocide without losing faith.",
+        "trialLocal": "सर्वस्व न्योछावर हो जाने के बाद भी मुगलों के भीषण अत्याचारों के दौर में बिखरे हुए पंथ को एकजुट रखना उनका महान ऐतिहासिक पुरुषार्थ था।",
+        "trialPa": "ਪੁੱਤਰਾਂ ਅਤੇ ਪਤੀ ਦੇ ਵਿਛੋੜੇ ਦੇ ਬਾਵਜੂਦ ਮੁਗ਼ਲ ਜ਼ੁਲਮਾਂ ਦੇ ਦੌਰ ਵਿੱਚ ਖਿੰਡੇ ਹੋਏ ਸਿੱਖਾਂ ਨੂੰ ਇਕੱਠੇ ਰੱਖਣਾ ਅਤਿ ਕਠਿਨ ਕਾਰਜ ਸੀ।",
+        "teaching": "Grief must be channeled into resolute duty; the Guru's Panth is greater than personal family lineage.",
+        "teachingLocal": "शोक को कर्तव्यनिष्ठा में बदलो; पंथ की एकता और मर्यादा व्यक्तिगत परिवार से कहीं अधिक महत्वपूर्ण है।",
+        "teachingPa": "ਨਿੱਜੀ ਦੁੱਖ ਨੂੰ ਭੁਲਾ ਕੇ ਪੰਥ ਦੀ ਸੇਵਾ ਵਿੱਚ ਸਮਰਪਿਤ ਹੋਣਾ ਹੀ ਗੁਰੂ ਪ੍ਰਤੀ ਸੱਚੀ ਵਫ਼ਾਦਾਰੀ ਹੈ।",
+        "moral": "Visionary female leadership can hold an entire nation together through its most perilous existential storm.",
+        "moralLocal": "संकट के समय सुदृढ़ नारी नेतृत्व संपूर्ण समाज को बिखरने से बचा सकता है।",
+        "moralPa": "ਮਜ਼ਬੂਤ ਇਸਤਰੀ ਅਗਵਾਈ ਕੌਮਾਂ ਨੂੰ ਸਭ ਤੋਂ ਔਖੇ ਸਮਿਆਂ ਵਿੱਚ ਵੀ ਚੜ੍ਹਦੀ ਕਲਾ ਵਿੱਚ ਰੱਖ ਸਕਦੀ ਹੈ।",
+        "legacy": "Preserved the cohesion of the Khalsa through the tumultuous 18th century and oversaw the preservation of Sikh scripture and liturgy.",
+        "legacyLocal": "१८वीं सदी के भीषण संकट में सिख पंथ को बिखरने से बचाया और धार्मिक ग्रंथों का संरक्षण सुनिश्चित किया।",
+        "legacyPa": "੧੮ਵੀਂ ਸਦੀ ਦੇ ਘੱਲੂਘਾਰਿਆਂ ਦੇ ਦੌਰ ਵਿੱਚ ਸਿੱਖ ਕੌਮ ਨੂੰ ਲੀਡਰਸ਼ਿਪ ਦਿੱਤੀ ਅਤੇ ਗੁਰਬਾਣੀ ਦੇ ਸੰਭਾਲ ਦਾ ਕਾਰਜ ਸੰਪੂਰਨ ਕਰਵਾਇਆ।",
+        "source": "Hukamname Mata Sundari Ji, Prachin Panth Prakash, Twarikh Guru Khalsa",
+        "sourceLocal": "हुकमनामे माता सुंदरी जी, प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा",
+        "sourcePa": "ਹੁਕਮਨਾਮੇ ਮਾਤਾ ਸੁੰਦਰੀ ਜੀ, ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ",
+        "sourceCitations": [
+            {"sourceName": "Ganda Singh", "sourceRef": "Hukamname, Edicts of Mata Sundari Ji", "tier": 1},
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash", "tier": 1}
+        ],
+        "quote": {
+            "text": "Sabh te upar gur shabad bichar.",
+            "attribution": "Highest of all is the contemplation of the Guru's Word. — Sri Guru Granth Sahib (Ang 904)"
+        },
+        "quoteLocal": {
+            "text": "सभ ते ऊपरि गुर सबदु बीचारु।",
+            "attribution": "श्री गुरु ग्रंथ साहिब (अंग ९०४)"
+        },
+        "quotePa": {
+            "text": "ਸਭ ਤੇ ਊਪਰਿ ਗੁਰ ਸਬਦੁ ਬੀਚਾਰੁ ॥",
+            "attribution": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (ਅੰਗ ੯੦੪)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Mata Sundari Ji seated with quiet regal authority at a low wooden writing desk in Delhi, dictating a Hukamnama letter to scribe Bhai Mani Singh, oil lamps glowing in the chamber."
+    },
+    {
+        "id": "mata-sahib-devan",
+        "name": "Mata Sahib Devan Ji",
+        "nameLocal": "माता साहिब देवां जी",
+        "namePa": "ਮਾਤਾ ਸਾਹਿਬ ਦੇਵਾਂ ਜੀ",
+        "era": "1681–1747 CE",
+        "eraLocal": "१६८१–१७४७ ईस्वी",
+        "eraPa": "੧੬੮੧–੧੭੪੭ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Anandpur Sahib / Delhi",
+        "regionLocal": "आनंदपुर साहिब / दिल्ली",
+        "regionPa": "ਅਨੰਦਪੁਰ ਸਾਹਿਬ / ਦਿੱਲੀ",
+        "emoji": "☬",
+        "tagline": "Revered as the Mother of the Khalsa (Mata Sahib Kaur), who added sugar puffs (Patashas) to the immortal Amrit at Anandpur Sahib on Vaisakhi 1699.",
+        "taglineLocal": "खालसा पंथ की अमर माता (माता साहिब कौर), जिन्होंने वैशाखी १६९९ को अमृत तैयार करते समय उसमें मिठास हेतु बताशे डाले।",
+        "taglinePa": "ਖ਼ਾਲਸੇ ਦੇ ਮਾਤਾ ਜੀ (ਮਾਤਾ ਸਾਹਿਬ ਕੌਰ) ਜਿਨ੍ਹਾਂ ਨੇ ੧੬੯੯ ਦੀ ਵਿਸਾਖੀ ਨੂੰ ਖੰਡੇ-ਬਾਟੇ ਦੇ ਅੰਮ੍ਰਿਤ ਵਿੱਚ ਪਤਾਸੇ ਪਾ ਕੇ ਵੀਰਤਾ ਵਿੱਚ ਮਿਠਾਸ ਦਾ ਸੰਚਾਰ ਕੀਤਾ।",
+        "journey": "Born in Rohtas (now Pakistan), Sahib Devan dedicated her heart exclusively to the tenth Guru. When her father brought her to Anandpur Sahib, Guru Gobind Singh explained that he had taken a vow of worldly celibacy, but accepted her spiritual surrender. On Vaisakhi day 1699, when the Guru was preparing the Khande di Pahul (immortal nectar) with iron and double-edged sword, Mata Sahib Devan approached and dropped sugar puffs (Patashas) into the iron cauldron. The Guru smiled and proclaimed: 'You have perfected the Amrit; now my Khalsa shall not only possess the warrior's iron courage, but also the sweetness of boundless compassion!' The Guru bestowed upon her the eternal spiritual motherhood of the entire Khalsa nation: every baptized Sikh declares to this day that their spiritual father is Guru Gobind Singh and their mother is Mata Sahib Kaur.",
+        "journeyLocal": "रोहतास निवासी साहिब देवां ने सांसारिक मोह त्यागकर गुरु चरणों में समर्पण किया। वैशाखी १६९९ को जब दशमेश पिता खंडे से अमृत तैयार कर रहे थे, तब माता जी ने उसमें बताशे डाले। गुरु जी ने इसे स्वीकारते हुए कहा कि अब खालसा केवल शूरवीर ही नहीं, बल्कि दया और मिठास से भी परिपूर्ण होगा। गुरु जी ने उन्हें खालसे की माता घोषित किया, जिससे हर अमृतधारी सिख आज भी माता साहिब कौर को अपनी आध्यात्मिक माता मानता है।",
+        "journeyPa": "ਰੋਹਤਾਸ ਦੇ ਭਾਈ ਰਾਮੂ ਦੀ ਸਪੁੱਤਰੀ ਮਾਤਾ ਸਾਹਿਬ ਦੇਵਾਂ ਜੀ ਨੇ ਗੁਰੂ ਸਾਹਿਬ ਦੇ ਚਰਨਾਂ ਵਿੱਚ ਆਪਣਾ ਜੀਵਨ ਅਰਪਣ ਕੀਤਾ। ੧੬੯੯ ਦੀ ਵਿਸਾਖੀ ਨੂੰ ਜਦੋਂ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਖੰਡੇ ਦੀ ਪਾਹੁਲ ਤਿਆਰ ਕਰ ਰਹੇ ਸਨ ਤਾਂ ਮਾਤਾ ਜੀ ਨੇ ਬਾਟੇ ਵਿੱਚ ਪਤਾਸੇ ਪਾਏ। ਗੁਰੂ ਸਾਹਿਬ ਨੇ ਫ਼ੁਰਮਾਇਆ ਕਿ ਹੁਣ ਖ਼ਾਲਸਾ ਬੀਰ-ਰਸ ਦੇ ਨਾਲ-ਨਾਲ ਮਿਠਾਸ ਤੇ ਪ੍ਰੇਮ ਨਾਲ ਵੀ ਭਰਪੂਰ ਰਹੇਗਾ। ਆਪ ਜੀ ਨੂੰ ਖ਼ਾਲਸੇ ਦੀ ਆਤਮਿਕ ਮਾਤਾ ਦਾ ਦਰਜਾ ਬਖ਼ਸ਼ਿਆ ਗਿਆ।",
+        "trial": "Living a life of absolute spiritual celibacy while mothering millions of fierce warriors across centuries through spiritual grace.",
+        "trialLocal": "सांसारिक मातृत्व के स्थान पर संपूर्ण पंथ की आध्यात्मिक माता बनकर त्याग और ब्रह्मचर्य का पालन करना उनका जीवन-तप था।",
+        "trialPa": "ਦੁਨਿਆਵੀ ਮੋਹ ਤਿਆਗ ਕੇ ਸਮੁੱਚੇ ਖ਼ਾਲਸਾ ਪੰਥ ਦੀ ਆਤਮਿਕ ਮਾਂ ਬਣਨਾ ਅਤੇ ਪੰਥ ਨੂੰ ਚੜ੍ਹਦੀ ਕਲਾ ਵਿੱਚ ਰੱਖਣਾ ਆਪ ਜੀ ਦੀ ਕਮਾਈ ਸੀ।",
+        "teaching": "True martial valor without sweetness and compassion turns into brutality; courage and tender mercy must remain inseparable.",
+        "teachingLocal": "दया और मिठास के बिना वीरता क्रूरता बन जाती है; शौर्य और करुणा का समन्वय ही सच्चा धर्म है।",
+        "teachingPa": "ਬੀਰਤਾ ਵਿੱਚ ਨਿਮਰਤਾ ਤੇ ਮਿਠਾਸ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ; ਖੰਡੇ ਦੀ ਧਾਰ ਨਾਲ ਪਤਾਸਿਆਂ ਦਾ ਮੇਲ ਹੀ ਖ਼ਾਲਸਈ ਜੀਵਨ ਹੈ।",
+        "moral": "Infusing gentleness and sweetness into power prevents strength from decaying into arrogance.",
+        "moralLocal": "शक्ति में मिठास और करुणा का समावेश ही उसे लोक-कल्याणकारी बनाता है।",
+        "moralPa": "ਤਾਕਤ ਦੇ ਨਾਲ ਨਿਮਰਤਾ ਹੋਵੇ ਤਾਂ ਹੀ ਉਹ ਮਾਨਵਤਾ ਦੀ ਰੱਖਿਅਕ ਬਣਦੀ ਹੈ।",
+        "legacy": "Immortal Mother of the Khalsa (Mata Sahib Kaur), acknowledged in the formal baptism vows of every Sikh warrior to this day.",
+        "legacyLocal": "खालसा पंथ की आध्यात्मिक माता, जिनका नाम हर सिख के अमृत-संस्कार में सदैव गूंजता है।",
+        "legacyPa": "ਖ਼ਾਲਸੇ ਦੀ ਮਾਤਾ ਵਜੋਂ ਹਰ ਅੰਮ੍ਰਿਤਧਾਰੀ ਸਿੱਖ ਦੇ ਜੀਵਨ ਵਿੱਚ ਅਮਰ ਸਥਾਨ ਰੱਖਦੇ ਹਨ।",
+        "source": "Gurbilas Patshahi 10, Prachin Panth Prakash, Rahitname",
+        "sourceLocal": "गुरबिलास पातशाही १०, प्राचीन पंथ प्रकाश, रहितनामे",
+        "sourcePa": "ਗੁਰਬਿਲਾਸ ਪਾਤਸ਼ਾਹੀ ੧੦, ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਰਹਿਤਨਾਮੇ",
+        "sourceCitations": [
+            {"sourceName": "Koer Singh", "sourceRef": "Gurbilas Patshahi 10, Amrit Sanchar", "tier": 1},
+            {"sourceName": "Chaupa Singh", "sourceRef": "Rahitnama", "tier": 1}
+        ],
+        "quote": {
+            "text": "Mithat neevi Nanaka gun changiaiyan tat.",
+            "attribution": "Sweetness and humility, O Nanak, are the essence of all virtues. — Guru Nanak Dev Ji, Sri Guru Granth Sahib (Ang 470)"
+        },
+        "quoteLocal": {
+            "text": "मिठतु नीवी नानका गुण चंगिआईआ ततु।",
+            "attribution": "गुरु नानक देव जी (श्री गुरु ग्रंथ साहिब, अंग ४७०)"
+        },
+        "quotePa": {
+            "text": "ਮਿਠਤੁ ਨੀਵੀ ਨਾਨਕਾ ਗੁਣ ਚੰਗਿਆਈਆ ਤਤੁ ॥",
+            "attribution": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੪੭੦)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Mata Sahib Devan Ji in a pristine white chola and dupatta, gently dropping white sugar patashas into the iron bata stirred by Guru Gobind Singh's double-edged sword at Anandpur Sahib."
+    },
+    {
+        "id": "bibi-sharan-kaur",
+        "name": "Bibi Sharan Kaur Ji",
+        "nameLocal": "बीबी शरण कौर जी",
+        "namePa": "ਬੀਬੀ ਸ਼ਰਨ ਕੌਰ ਜੀ",
+        "era": "1680–1705 CE",
+        "eraLocal": "१६८०–१७०५ ईस्वी",
+        "eraPa": "੧੬੮੦–੧੭੦੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Chamkaur Sahib, Punjab",
+        "regionLocal": "चमकौर साहिब, पंजाब",
+        "regionPa": "ਚਮਕੌਰ ਸਾਹਿਬ, ਪੰਜਾਬ",
+        "emoji": "☬",
+        "tagline": "The fearless Gursikh woman who crept into the enemy camp at Chamkaur to cremate the sacred bodies of the martyred Sahibzadas and Sikhs, jumping into the funeral pyre.",
+        "taglineLocal": "वह वीरांगना जिन्होंने चमकौर के युद्ध के बाद रात के अंधेरे में मुगल छावनी में घुसकर साहिबजादों व शहीदों का अंतिम संस्कार किया और चिता में कूदकर प्राण दिए।",
+        "taglinePa": "ਉਹ ਦਲੇਰ ਸਿੱਖ ਬੀਬੀ ਜਿਸ ਨੇ ਚਮਕੌਰ ਦੇ ਜੰਗ ਦੇ ਮੈਦਾਨ ਵਿੱਚੋਂ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਤੇ ਸ਼ਹੀਦ ਸਿੰਘਾਂ ਦੇ ਸਰੀਰ ਇਕੱਠੇ ਕਰਕੇ ਸਸਕਾਰ ਕੀਤਾ ਅਤੇ ਖ਼ੁਦ ਚਿਖਾ ਵਿੱਚ ਕੁੱਦ ਕੇ ਸ਼ਹਾਦਤ ਪਾਈ।",
+        "journey": "Resident of the village of Chamkaur, Bibi Sharan Kaur was a devout Sikh woman who heard the earth-shattering clash of arms in December 1705. When the battle subsided and Guru Gobind Singh departed under Panj Pyare orders, thousands of Mughal and hill troops occupied the area, having strictly forbidden the cremation of the fallen Sikh martyrs to desecrate their remains. Sharan Kaur could not bear the thought of the bodies of Sahibzada Ajit Singh, Jujhar Singh, and the brave Sikhs being left to scavengers. In the freezing dead of night, slipping like a shadow past imperial sentries, she crawled through the gore-soaked field. One by one, she gathered the bodies, assembled a pyre of wood, and lit the fire. When the flames alerted Mughal soldiers, they surrounded her. Refusing capture or dishonor, she leaped into the sacred funeral flames, achieving immortal martyrdom.",
+        "journeyLocal": "चमकौर की निवासी बीबी शरण कौर ने युद्ध के उपरांत देखा कि मुगल सेना ने शहीदों और साहिबजादों के शवों का अंतिम संस्कार करने पर प्रतिबंध लगा दिया है। वे शहीदों के शवों को पशु-पक्षियों द्वारा क्षत-विक्षत होते नहीं देख सकीं। रात के घोर अंधकार में संतरियों से बचते हुए उन्होंने युद्धभूमि से साहिबजादों और सिंहों के पावन शरीरों को एकत्र किया और चिता सजाई। जब आग की लपटें देखकर मुगल सैनिकों ने उन्हें घेर लिया, तो बंदी बनने के स्थान पर वे स्वयं जलती चिता में कूद गईं।",
+        "journeyPa": "ਚਮਕੌਰ ਦੀ ਵਸਨੀਕ ਬੀਬੀ ਸ਼ਰਨ ਕੌਰ ਜੀ ਨੇ ਜੰਗ ਮਗਰੋਂ ਵੇਖਿਆ ਕਿ ਮੁਗ਼ਲ ਫ਼ੌਜ ਨੇ ਸ਼ਹੀਦਾਂ ਦੇ ਸਰੀਰਾਂ ਦਾ ਸਸਕਾਰ ਕਰਨ 'ਤੇ ਪਾਬੰਦੀ ਲਾਈ ਹੋਈ ਸੀ। ਉਹਨਾਂ ਕੋਲੋਂ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਅਤੇ ਸਿੰਘਾਂ ਦੇ ਪਵਿੱਤਰ ਸਰੀਰਾਂ ਦੀ ਬੇਅਦਬੀ ਨਾ ਸਹਾਰੀ ਗਈ। ਅੱਧੀ ਰਾਤ ਨੂੰ ਦੁਸ਼ਮਣ ਦੇ ਪਹਿਰਿਆਂ ਵਿੱਚੋਂ ਲੰਘ ਕੇ ਆਪ ਨੇ ਸਰੀਰ ਇਕੱਠੇ ਕੀਤੇ ਅਤੇ ਚਿਖਾ ਸਜਾ ਕੇ ਅਗਨ ਭੇਟ ਕੀਤੀ। ਜਦੋਂ ਮੁਗ਼ਲਾਂ ਨੇ ਘੇਰਾ ਪਾਇਆ ਤਾਂ ਆਪ ਨੇ ਬੰਦੀ ਬਣਨ ਦੀ ਥਾਂ ਬਲਦੀ ਚਿਖਾ ਵਿੱਚ ਛਾਲ ਮਾਰ ਕੇ ਸ਼ਹਾਦਤ ਦਾ ਜਾਮ ਪੀ ਲਿਆ।",
+        "trial": "Infiltrating a hostile imperial army camp alone at midnight to perform the sacred last rites of martyrs, facing certain death.",
+        "trialLocal": "अंधेरी रात में हजारों शत्रु सैनिकों के बीच अकेले जाकर शवों का संस्कार करना और बंदी बनने की जगह अग्नि-प्रवेश चुनना अद्वितीय वीरता थी।",
+        "trialPa": "ਦੁਸ਼ਮਣਾਂ ਦੇ ਘੇਰੇ ਵਿੱਚ ਇਕੱਲੀ ਜਾ ਕੇ ਸ਼ਹੀਦਾਂ ਦੇ ਸਸਕਾਰ ਦੀ ਸੇਵਾ ਨਿਭਾਉਣੀ ਅਤੇ ਖ਼ੁਦ ਅਗਨ ਭੇਟ ਹੋ ਜਾਣਾ ਸਿਦਕ ਦੀ ਸਿਖ਼ਰ ਸੀ।",
+        "teaching": "Respect for the martyrs of truth transcends fear of bodily death; honor and reverence are defended even in the darkest shadows.",
+        "teachingLocal": "धर्म के शहीदों का सम्मान अपने प्राणों से अधिक मूल्यवान है; कर्तव्य की वेदी पर नारी का साहस असीम है।",
+        "teachingPa": "ਸ਼ਹੀਦਾਂ ਦੇ ਸਤਿਕਾਰ ਲਈ ਆਪਣੀ ਜਾਨ ਦੀ ਬਾਜ਼ੀ ਲਾ ਦੇਣੀ ਹੀ ਸੱਚੇ ਸਿੱਖੀ ਪ੍ਰੇਮ ਦੀ ਪਛਾਣ ਹੈ।",
+        "moral": "When sacred honor calls, solitary courage in the dead of night can outshine an entire army of tyrants.",
+        "moralLocal": "अकेला सत्यनिष्ठ व्यक्ति भी घोर अंधकार में अपनी वीरता से अत्याचारियों के अभिमान को भस्म कर देता है।",
+        "moralPa": "ਸੱਚ ਦੇ ਰਸਤੇ 'ਤੇ ਤੁਰਨ ਵਾਲੇ ਇਕੱਲੇ ਹੋ ਕੇ ਵੀ ਲੱਖਾਂ ਜ਼ਾਲਮਾਂ ਦੇ ਹੌਸਲੇ ਪਸਤ ਕਰ ਦਿੰਦੇ ਹਨ।",
+        "legacy": "Revered as the patron of supreme funeral rites and female valor, showing that Sikh women match every warrior in devotion and martyrdom.",
+        "legacyLocal": "शहीदों के सम्मान की संरक्षिका और नारी शौर्य की अमर प्रतीक, जिन्होंने सिख इतिहास को गरिमा प्रदान की।",
+        "legacyPa": "ਸਿੱਖ ਇਤਿਹਾਸ ਦੀ ਅਮਰ ਵੀਰਾਂਗਣਾ ਜਿਸ ਨੇ ਸ਼ਹੀਦਾਂ ਦੇ ਸਤਿਕਾਰ ਲਈ ਆਪਣਾ ਆਪਾ ਕੁਰਬਾਨ ਕਰ ਦਿੱਤਾ।",
+        "source": "Prachin Panth Prakash, Twarikh Guru Khalsa, Mahan Kosh",
+        "sourceLocal": "प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा, महान कोश",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Giani Gian Singh", "sourceRef": "Twarikh Guru Khalsa, Chamkaur Saka", "tier": 1},
+            {"sourceName": "Kahn Singh Nabha", "sourceRef": "Mahan Kosh, Entry Bibi Sharan Kaur", "tier": 1}
+        ],
+        "quote": {
+            "text": "Jeevan maran nibaheeyai sir deejai kaan na keejai.",
+            "attribution": "Walk the path of faith through life and death; give up your head, but never compromise your duty! — Sikh Martyr Axiom"
+        },
+        "quoteLocal": {
+            "text": "जीवन मरण निबाहीऐ सिरु दीजै काण न कीजै।",
+            "attribution": "सिख शहादत का अमर सिद्धांत"
+        },
+        "quotePa": {
+            "text": "ਜੀਵਨ ਮਰਣ ਨਿਬਾਹੀਐ ਸਿਰੁ ਦੀਜੈ ਕਾਣ ਨ ਕੀਜੈ ॥",
+            "attribution": "ਸਿੱਖ ਸ਼ਹੀਦੀ ਸਿਧਾਂਤ"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bibi Sharan Kaur Ji standing in midnight darkness against a raging funeral pyre in the muddy fields of Chamkaur, silhouette backlit by orange flames, looking toward the heavens with serene bravery."
+    },
+    {
+        "id": "bhai-mati-das",
+        "name": "Bhai Mati Das Ji",
+        "nameLocal": "भाई मती दास जी",
+        "namePa": "ਭਾਈ ਮਤੀ ਦਾਸ ਜੀ",
+        "era": "1640–1675 CE",
+        "eraLocal": "१६४०–१६७५ ईस्वी",
+        "eraPa": "੧੬੪੦–੧੬੭੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Karyala, Jhelum / Chandni Chowk, Delhi",
+        "regionLocal": "करियाला, झेलम / चांदनी चौक, दिल्ली",
+        "regionPa": "ਕਰੀਆਲਾ, ਜੇਹਲਮ / ਚਾਂਦਨੀ ਚੌਕ, ਦਿੱਲੀ",
+        "emoji": "☬",
+        "tagline": "The supreme Sikh martyr who accompanied Guru Tegh Bahadur to Delhi and was sawn in two from head to waist rather than renounce his faith, chanting Japji Sahib to his last breath.",
+        "taglineLocal": "गुरु तेग बहादुर जी के अनन्य सिख जिन्हें चांदनी चौक में जीवित आरे से दो फाड़ कर दिया गया, परंतु वे अंत तक जपजी साहिब का पाठ करते रहे।",
+        "taglinePa": "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ ਦੇ ਅਨਿੰਨ ਸਿੱਖ ਜਿਨ੍ਹਾਂ ਨੂੰ ਚਾਂਦਨੀ ਚੌਕ ਦਿੱਲੀ ਵਿਖੇ ਆਰੇ ਨਾਲ ਚੀਰ ਕੇ ਦੋ ਫਾੜ ਕਰ ਦਿੱਤਾ ਗਿਆ ਪਰ ਮੁੱਖੋਂ ਜਪੁਜੀ ਸਾਹਿਬ ਦਾ ਜਾਪ ਨਾ ਛੱਡਿਆ।",
+        "journey": "Born into a distinguished Chhibber Brahmin family of Karyala, Bhai Mati Das was the Diwan (chief administrator) of Guru Tegh Bahadur's court. When Kashmiri Pandits pleaded for salvation against forced conversions by Aurangzeb, Guru Tegh Bahadur resolved to lay down his life. Bhai Mati Das, along with his brother Bhai Sati Das and Bhai Dayala, accompanied the Guru to Delhi. Imprisoned in Kotwali at Chandni Chowk, Aurangzeb's qazis offered Mati Das wealth, royal governorship, and beautiful maidens if he embraced Islam. When he spit on the offers, they threatened him with the most horrific execution. Bound tightly between two vertical wooden posts, executioners placed a jagged iron saw on the crown of his skull. As the saw cut through his flesh, bone, and brain, Bhai Mati Das did not utter a single cry of agony; his lips moved continuously in unbroken recitation of Japji Sahib until his body fell in two equal halves.",
+        "journeyLocal": "करियाला के प्रतिष्ठित परिवार में जन्मे भाई मती दास गुरु तेग बहादुर जी के दीवान थे। जब कश्मीरी पंडितों की रक्षा हेतु गुरु जी ने बलिदान का मार्ग चुना, तो भाई मती दास भी उनके साथ दिल्ली पहुंचे। औरंगजेब के काजियों ने उन्हें इस्लाम स्वीकारने पर अपार धन और पद का प्रलोभन दिया, जिसे उन्होंने ठुकरा दिया। चांदनी चौक में उन्हें दो खंभों के बीच बांधकर सिर पर आरा चलाया गया। शरीर दो टुकड़ों में बंट गया, परंतु जब तक प्राण रहे, उनके मुख से जपजी साहिब की वाणी गूंजती रही।",
+        "journeyPa": "ਭਾਈ ਮਤੀ ਦਾਸ ਜੀ ਨੌਵੇਂ ਪਾਤਸ਼ਾਹ ਦੇ ਮੁੱਖ ਦੀਵਾਨ ਸਨ। ਹਿੰਦੂ ਧਰਮ ਅਤੇ ਮਨੁੱਖੀ ਆਜ਼ਾਦੀ ਦੀ ਰਾਖੀ ਲਈ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ ਨਾਲ ਦਿੱਲੀ ਸ਼ਹੀਦ ਹੋਣ ਲਈ ਤੁਰੇ। ਮੁਗ਼ਲਾਂ ਦੇ ਲਾਲਚ ਅਤੇ ਡਰਾਵੇ ਉਹਨਾਂ ਦੇ ਸਿਦਕ ਨੂੰ ਨਾ ਡੁਲਾ ਸਕੇ। ਚਾਂਦਨੀ ਚੌਕ ਵਿਖੇ ਦੋ ਸ਼ਿਕੰਜਿਆਂ ਵਿੱਚ ਬੰਨ੍ਹ ਕੇ ਸਿਰ ਤੋਂ ਆਰਾ ਚਲਾਇਆ ਗਿਆ। ਸਰੀਰ ਦੇ ਦੋ ਟੋਟੇ ਹੋ ਗਏ ਪਰ ਅੰਤਮ ਸਾਹ ਤੱਕ ਉਹਨਾਂ ਦੇ ਮੁੱਖੋਂ ਜਪੁਜੀ ਸਾਹਿਬ ਦੀ ਬਾਣੀ ਨਿਰੰਤਰ ਉਚਾਰੀ ਜਾਂਦੀ ਰਹੀ।",
+        "trial": "Enduring the agonizing physical horror of being slowly sawn alive from the top of the head down to the waist without renouncing faith.",
+        "trialLocal": "जीवित अवस्था में सिर पर आरा चलवाना और असह्य पीड़ा में भी धर्म और वाणी पर अडिग रहना शहादत की पराकाष्ठा थी।",
+        "trialPa": "ਜੀਊਂਦੇ ਜੀਅ ਸਿਰ 'ਤੇ ਆਰਾ ਚਲਵਾ ਕੇ ਦੋ ਫਾੜ ਹੋ ਜਾਣਾ ਪਰ ਈਮਾਨ ਤੋਂ ਨਾ ਡੋਲਣਾ ਸੰਸਾਰ ਦੇ ਇਤਿਹਾਸ ਦੀ ਸਭ ਤੋਂ ਵੱਡੀ ਕੁਰਬਾਨੀ ਹੈ।",
+        "teaching": "The physical body can be torn asunder by iron blades, but the soul that is anchored in the Divine Word remains forever uncut and indestructible.",
+        "teachingLocal": "शरीर को शस्त्रों से काटा जा सकता है, परंतु ईश्वर के शब्द में लीन आत्मा को कोई शक्ति नष्ट नहीं कर सकती।",
+        "teachingPa": "ਸਰੀਰ ਆਰੇ ਨਾਲ ਚੀਰਿਆ ਜਾ ਸਕਦਾ ਹੈ ਪਰ ਨਾਮ ਨਾਲ ਜੁੜੀ ਆਤਮਾ ਅਵਿਨਾਸ਼ੀ ਰਹਿੰਦੀ ਹੈ।",
+        "moral": "Unshakeable devotion to truth transforms the most terrifying torture into an immortal spiritual triumph.",
+        "moralLocal": "सत्य के प्रति अटूट निष्ठा मृत्यु के भय और असह्य यातना को भी परास्त कर देती है।",
+        "moralPa": "ਸੱਚਾਈ 'ਤੇ ਡਟੇ ਰਹਿਣ ਵਾਲਿਆਂ ਅੱਗੇ ਵੱਡੀ ਤੋਂ ਵੱਡੀ ਤਸੀਹਾ-ਮਈ ਮੌਤ ਵੀ ਹਾਰ ਜਾਂਦੀ ਹੈ।",
+        "legacy": "His supreme sacrifice is invoked every single day in the worldwide Sikh Ardas: 'Jinhan ne charakhariyan te chadhe, aariyan naal chiraaye...'",
+        "legacyLocal": "सिख अरदास में 'जिन्होंने आरे से सिर कटवाए' कहकर उनके बलिदान को प्रतिदिन नमन किया जाता है।",
+        "legacyPa": "ਰੋਜ਼ਾਨਾ ਅਰਦਾਸ ਵਿੱਚ 'ਜਿਨ੍ਹਾਂ ਨੇ ਆਰਿਆਂ ਨਾਲ ਤਨ ਚਿਰਾਏ' ਕਹਿ ਕੇ ਆਪ ਜੀ ਦੀ ਕੁਰਬਾਨੀ ਨੂੰ ਯਾਦ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।",
+        "source": "Bhatt Vahi Talauda, Bansavalinama, Suraj Prakash, Mahan Kosh",
+        "sourceLocal": "भाट वही तलौडा, बंसावलीनामा, सूरज प्रकाश, महान कोश",
+        "sourcePa": "ਭੱਟ ਵਹੀ ਤਲੌਢਾ, ਬੰਸਾਵਲੀਨਾਮਾ, ਸੂਰਜ ਪ੍ਰਕਾਸ਼, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Bhatt Vahi Talauda", "sourceRef": "Paraganah Jind, Record of Delhi Shaheedian", "tier": 1},
+            {"sourceName": "Bhai Santokh Singh", "sourceRef": "Sri Gur Pratap Suraj Granth, Ras 12", "tier": 1}
+        ],
+        "quote": {
+            "text": "Tera keeya meetha laagai har naam padarath Nanak maangai.",
+            "attribution": "Sweet is Your Will, O my Lord; Nanak asks only for the treasure of Your Holy Name. — Guru Arjan Dev Ji, Sri Guru Granth Sahib (Ang 394)"
+        },
+        "quoteLocal": {
+            "text": "तेरा कीआ मीठा लागै। हरि नामु पदारथु नानकु मांगै॥",
+            "attribution": "गुरु अर्जुन देव जी (श्री गुरु ग्रंथ साहिब, अंग ३९४)"
+        },
+        "quotePa": {
+            "text": "ਤੇਰਾ ਕੀਆ ਮੀਠਾ ਲਾਗੈ ॥ ਹਰਿ ਨਾਮੁ ਪਦਾਰਥੁ ਨਾਨਕੁ ਮਾਂਗੈ ॥",
+            "attribution": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੩੯੪)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bhai Mati Das Ji bound between heavy timber posts in Chandni Chowk, eyes closed in profound meditative ecstasy, saw resting on his crown, golden spiritual glow illuminating his face amid dark executioners."
+    },
+    {
+        "id": "bhai-sati-das",
+        "name": "Bhai Sati Das Ji",
+        "nameLocal": "भाई सती दास जी",
+        "namePa": "ਭਾਈ ਸਤੀ ਦਾਸ ਜੀ",
+        "era": "1642–1675 CE",
+        "eraLocal": "१६४२–१६७५ ईस्वी",
+        "eraPa": "੧੬੪੨–੧੬੭੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Karyala, Jhelum / Chandni Chowk, Delhi",
+        "regionLocal": "करियाला, झेलम / चांदनी चौक, दिल्ली",
+        "regionPa": "ਕਰੀਆਲਾ, ਜੇਹਲਮ / ਚਾਂਦਨੀ ਚੌਕ, ਦਿੱਲੀ",
+        "emoji": "☬",
+        "tagline": "The scholarly scribe of Guru Tegh Bahadur who was wrapped in cotton wool and burned alive at Chandni Chowk, remaining peaceful in prayer as flames consumed him.",
+        "taglineLocal": "गुरु तेग बहादुर जी के विद्वान लेखक जिन्हें चांदनी चौक में रुई में लपेटकर जीवित जला दिया गया, परंतु वे अग्नि में भी ईश्वर-स्मरण में लीन रहे।",
+        "taglinePa": "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ ਦੇ ਵਿਦਵਾਨ ਲਿਖਾਰੀ ਜਿਨ੍ਹਾਂ ਨੂੰ ਰੂੰ ਵਿੱਚ ਲਪੇਟ ਕੇ ਜਿਊਂਦੇ ਜੀਅ ਸਾੜਿਆ ਗਿਆ ਪਰ ਅਗਨੀ ਦੀਆਂ ਲਾਟਾਂ ਵਿੱਚ ਵੀ ਸਿਮਰਨ ਕਰਦੇ ਰਹੇ।",
+        "journey": "Younger brother of Bhai Mati Das, Bhai Sati Das was a gifted scholar of Persian, Sanskrit, and Gurmukhi who served as the chief Persian scribe and secretary to Guru Tegh Bahadur Ji. He recorded the Guru's holy travels, teachings, and administrative letters. Standing alongside his Master and elder brother in Delhi's Kotwali, he refused all imperial bribes of rank and safety. Immediately after witnessing Bhai Mati Das sawn in two and Bhai Dayala boiled alive, the executioners turned to Sati Das, demanding that he accept Islam or face a fiery death. Sati Das calmly replied that fire can burn only the temporary garments of clay, not the immortal soul anchored in the Guru. Bound to a wooden stake, executioners wrapped his entire body in thick rolls of cotton wool, poured oil over him, and set it ablaze. Sati Das stood like an effulgent beacon of divine light, chanting hymns until his breath dissolved into the Timeless.",
+        "journeyLocal": "भाई मती दास के अनुज भाई सती दास गुरु तेग बहादुर जी के मुख्य लेखक व विद्वान थे। उन्होंने गुरु जी की वाणी और इतिहास को लिपिबद्ध किया। दिल्ली में अपने भाई मती दास और भाई दयाला के क्रूर बलिदान को अपनी आंखों के सामने देखने के बाद भी वे तनिक नहीं डगमगाए। जब काजियों ने इस्लाम कबूलने का दबाव बनाया, तो उन्होंने कहा कि अग्नि केवल नश्वर देह को जला सकती है, आत्मा को नहीं। उन्हें रुई में लपेटकर जीवित जला दिया गया, परंतु वे शांत भाव से परमात्मा के नाम का जाप करते रहे।",
+        "journeyPa": "ਭਾਈ ਮਤੀ ਦਾਸ ਜੀ ਦੇ ਛੋਟੇ ਭਰਾ ਭਾਈ ਸਤੀ ਦਾਸ ਜੀ ਫ਼ਾਰਸੀ ਅਤੇ ਸੰਸਕ੍ਰਿਤ ਦੇ ਉੱਘੇ ਵਿਦਵਾਨ ਸਨ ਅਤੇ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ ਦੇ ਲਿਖਾਰੀ ਵਜੋਂ ਸੇਵਾ ਨਿਭਾਉਂਦੇ ਸਨ। ਆਪਣੇ ਭਰਾ ਅਤੇ ਭਾਈ ਦਿਆਲਾ ਜੀ ਦੇ ਅਸਹਿ ਕਸ਼ਟ ਅੱਖੀਂ ਦੇਖ ਕੇ ਵੀ ਉਹਨਾਂ ਨੇ ਇਸਲਾਮ ਕਬੂਲਣ ਤੋਂ ਇਨਕਾਰ ਕਰ ਦਿੱਤਾ। ਮੁਗ਼ਲਾਂ ਨੇ ਉਹਨਾਂ ਨੂੰ ਰੂੰ ਵਿੱਚ ਲਪੇਟ ਕੇ ਅੱਗ ਲਗਾ ਦਿੱਤੀ। ਆਪ ਜੀ ਅਗਨੀ ਵਿੱਚ ਸੜਦਿਆਂ ਵੀ ਅਡੋਲ ਰਹਿ ਕੇ ਵਾਹਿਗੁਰੂ ਦਾ ਸਿਮਰਨ ਕਰਦੇ ਰਹੇ।",
+        "trial": "Watching his brother sawn in two and compatriot boiled alive, yet unblinkingly accepting being wrapped in cotton and burned alive.",
+        "trialLocal": "अपने भाई और साथी के भीषण बलिदान को देखकर भी विचलित न होना और रुई में जलने की दारुण वेदना को सहजता से स्वीकार करना उनकी आत्मिक विजय थी।",
+        "trialPa": "ਸਾਥੀਆਂ ਦੀ ਭਿਆਨਕ ਸ਼ਹਾਦਤ ਅੱਖੀਂ ਵੇਖ ਕੇ ਵੀ ਅਗਨੀ ਵਿੱਚ ਜਿਊਂਦੇ ਜੀਅ ਸੜਨਾ ਪ੍ਰਵਾਨ ਕਰਨਾ ਅਥਾਹ ਸਿਦਕ ਦੀ ਨਿਸ਼ਾਨੀ ਸੀ।",
+        "teaching": "Fire burns away only the ephemeral garment of the body; the consciousness fixed in Truth shines brighter in the blaze.",
+        "teachingLocal": "अग्नि केवल नश्वर वस्त्रों को जलाती है; सत्य में स्थित चेतना आग की लपटों में भी अधिक प्रदीप्त होकर चमकती है।",
+        "teachingPa": "ਅੱਗ ਸਿਰਫ਼ ਮਿੱਟੀ ਦੇ ਸਰੀਰ ਨੂੰ ਸਾੜ ਸਕਦੀ ਹੈ; ਗੁਰੂ ਦੇ ਸ਼ਬਦ ਵਿੱਚ ਰੱਤੀ ਆਤਮਾ ਅਗਨੀ ਵਿੱਚ ਵੀ ਅਡੋਲ ਰਹਿੰਦੀ ਹੈ।",
+        "moral": "Intellectual scholarship finds its ultimate fulfillment when backed by the courage to lay down life for freedom of conscience.",
+        "moralLocal": "सच्ची विद्वता वही है जो धर्म और अंतरात्मा की रक्षा हेतु प्राण देने का साहस रखती हो।",
+        "moralPa": "ਵਿੱਦਿਆ ਤਾਂ ਹੀ ਸਫਲ ਹੈ ਜੇਕਰ ਧਰਮ ਅਤੇ ਮਨੁੱਖੀ ਹੱਕਾਂ ਦੀ ਰਾਖੀ ਲਈ ਸੀਸ ਵਾਰਨ ਦੀ ਦਲੇਰੀ ਹੋਵੇ।",
+        "legacy": "Immortalized in the daily Sikh Ardas as a pillar of unwavering faith, remembered alongside his brother as the golden standard of martyrdom.",
+        "legacyLocal": "सिख इतिहास में आस्था और विद्वता के अद्वितीय संगम, जिनका नाम अरदास में नित्य आदर से लिया जाता है।",
+        "legacyPa": "ਸਿੱਖ ਕੌਮ ਦੀ ਰੋਜ਼ਾਨਾ ਅਰਦਾਸ ਵਿੱਚ ਅਮਰ ਸ਼ਹੀਦ ਵਜੋਂ ਯਾਦ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।",
+        "source": "Bhatt Vahi Talauda, Suraj Prakash, Bansavalinama",
+        "sourceLocal": "भाट वही तलौडा, सूरज प्रकाश, बंसावलीनामा",
+        "sourcePa": "ਭੱਟ ਵਹੀ ਤਲੌਢਾ, ਸੂਰਜ ਪ੍ਰਕਾਸ਼, ਬੰਸਾਵਲੀਨਾਮਾ",
+        "sourceCitations": [
+            {"sourceName": "Bhatt Vahi Talauda", "sourceRef": "Record of Chandni Chowk Shaheedian", "tier": 1},
+            {"sourceName": "Suraj Prakash", "sourceRef": "Ras 12, Chapter on Delhi Martyrs", "tier": 1}
+        ],
+        "quote": {
+            "text": "Gursikh meeta maran pujiye kook na keeje.",
+            "attribution": "When the hour of martyrdom arrives, the Gurmukh bows in prayer and utters not a single cry of complaint! — Sikh Historical Chronicle"
+        },
+        "quoteLocal": {
+            "text": "गुरसिख मीता मरण पुजीऐ कूक न कीजै।",
+            "attribution": "सिख ऐतिहासिक शहादत वचन"
+        },
+        "quotePa": {
+            "text": "ਗੁਰਸਿਖ ਮੀਤਾ ਮਰਣ ਪੁਜੀਐ ਕੂਕ ਨ ਕੀਜੈ ॥",
+            "attribution": "ਸਿੱਖ ਇਤਿਹਾਸਕ ਸ਼ਹੀਦੀ ਬੋਲ"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bhai Sati Das Ji wrapped in thick white cotton rolls tied to a stake in Chandni Chowk, flames beginning to rise, his eyes gazing calmly into infinity with divine tranquility."
+    },
+    {
+        "id": "bhai-dayala",
+        "name": "Bhai Dayala Ji",
+        "nameLocal": "भाई दयाला जी",
+        "namePa": "ਭਾਈ ਦਿਆਲਾ ਜੀ",
+        "era": "1644–1675 CE",
+        "eraLocal": "१६४४–१६७५ ईस्वी",
+        "eraPa": "੧੬੪੪–੧੬੭੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Alipur / Chandni Chowk, Delhi",
+        "regionLocal": "अलीपुर / चांदनी चौक, दिल्ली",
+        "regionPa": "ਅਲੀਪੁਰ / ਚਾਂਦਨੀ ਚੌਕ, ਦਿੱਲੀ",
+        "emoji": "☬",
+        "tagline": "The steadfast companion of Guru Tegh Bahadur who was boiled alive in a cauldron of scalding water at Chandni Chowk, smiling in supreme meditation.",
+        "taglineLocal": "गुरु तेग बहादुर जी के अनन्य सेवक जिन्हें चांदनी चौक में खौलते हुए पानी के देग में जीवित उबाला गया, परंतु उन्होंने उफ़ तक नहीं की।",
+        "taglinePa": "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ ਦੇ ਪਰਮ ਸਨੇਹੀ ਜਿਨ੍ਹਾਂ ਨੂੰ ਚਾਂਦਨੀ ਚੌਕ ਵਿਖੇ ਉੱਬਲਦੀ ਦੇਗ਼ ਵਿੱਚ ਪਾ ਕੇ ਸ਼ਹੀਦ ਕੀਤਾ ਗਿਆ ਪਰ ਸੀਅ ਨਾ ਉਚਾਰੀ।",
+        "journey": "Bhai Dayala (also known as Bhai Dial Das) was the younger brother of Bhai Mani Singh and head of the Guru's household affairs. Dedicated to Guru Tegh Bahadur from his early youth, he was entrusted with managing the pilgrimage tour across eastern India to Assam. When the Guru resolved to defend the fundamental human right to freedom of conscience, Bhai Dayala insisted on accompanying him to Delhi. Following the brutal martyrdom of Bhai Mati Das, the Mughal qazis dragged Bhai Dayala to the center of Chandni Chowk. A massive copper cauldron (Deg) filled with water was set atop roaring firewood until the water bubbled violently. They demanded he abandon Sikhi or be immersed in boiling liquid. Bhai Dayala looked at the cauldron with serene joy, bowed in the direction of Guru Tegh Bahadur, and climbed into the scalding water. As the boiling liquid tore his skin and boiled his flesh, he sat cross-legged with folded hands, his voice resounding with the sacred words of Japji Sahib until his soul merged into the eternal Light.",
+        "journeyLocal": "भाई दयाला जी (भाई दयाल दास) भाई मनी सिंह के भ्राता थे और गुरु तेग बहादुर जी के अत्यंत विश्वासपात्र सेवक थे। गुरु जी के साथ दिल्ली पहुंचकर उन्होंने मुगलों की हर यातना को हँसते-हँसते झेला। भाई मती दास के बलिदान के बाद काजियों ने उन्हें खौलते हुए पानी के बड़े कड़ाह में डालने की धमकी दी। धर्म न छोड़ने पर उन्हें उबलते हुए देग में बैठा दिया गया। उबलते जल में भी वे पद्मासन लगाकर हाथ जोड़कर बैठे रहे और जपजी साहिब का पाठ करते हुए अपने प्राण त्याग दिए।",
+        "journeyPa": "ਭਾਈ ਦਿਆਲਾ ਜੀ ਭਾਈ ਮਨੀ ਸਿੰਘ ਜੀ ਦੇ ਭਰਾ ਸਨ ਅਤੇ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ ਦੇ ਨਿਕਟਵਰਤੀ ਸੇਵਕ ਸਨ। ਦਿੱਲੀ ਦੇ ਚਾਂਦਨੀ ਚੌਕ ਵਿਖੇ ਜਦੋਂ ਉਹਨਾਂ ਨੇ ਇਸਲਾਮ ਕਬੂਲਣ ਤੋਂ ਇਨਕਾਰ ਕੀਤਾ ਤਾਂ ਜ਼ਾਲਮਾਂ ਨੇ ਉਹਨਾਂ ਨੂੰ ਉੱਬਲਦੇ ਪਾਣੀ ਦੀ ਦੇਗ਼ ਵਿੱਚ ਬਿਠਾ ਦਿੱਤਾ। ਹੇਠਾਂ ਤੇਜ਼ ਅੱਗ ਬਲ ਰਹੀ ਸੀ। ਆਪ ਜੀ ਦੇਗ਼ ਵਿੱਚ ਚੌਂਕੜਾ ਮਾਰ ਕੇ ਬੈਠ ਗਏ ਅਤੇ ਜਪੁਜੀ ਸਾਹਿਬ ਦਾ ਪਾਠ ਕਰਦਿਆਂ ਸ਼ਹਾਦਤ ਦਾ ਜਾਮ ਪੀਤਾ।",
+        "trial": "Enduring the agonizing physical torment of being boiled alive in a copper cauldron without crying out or yielding to imperial demands.",
+        "trialLocal": "खौलते हुए जल के कड़ाह में जीवित बैठकर असह्य जलन सहते हुए भी चित्त को शांत रखना भक्ति का सर्वोच्च चमत्कार था।",
+        "trialPa": "ਉੱਬਲਦੀ ਦੇਗ਼ ਵਿੱਚ ਬੈਠ ਕੇ ਸਰੀਰ ਨੂੰ ਉਬਲਵਾ ਲੈਣਾ ਪਰ ਗੁਰੂ ਦੇ ਬਚਨਾਂ ਤੋਂ ਨਾ ਫਿਰਨਾ ਸ਼ਹਾਦਤ ਦੀ ਲਾਸਾਨੀ ਮਿਸਾਲ ਸੀ।",
+        "teaching": "Pain and pleasure are equalized in the soul that is deeply immersed in the nectar of God's Name; physical boiling water cannot touch inner serenity.",
+        "teachingLocal": "सुख और दुख उस आत्मा के लिए एक समान हो जाते हैं जो प्रभु के नाम में लीन हो; खौलता पानी भी आत्मिक शांति को नष्ट नहीं कर सकता।",
+        "teachingPa": "ਸੁਖੁ ਦੁਖੁ ਦੋਵੈ ਸਮ ਕਰਿ ਜਾਨੈ। ਨਾਮ ਦੇ ਰੰਗ ਵਿੱਚ ਰੱਤੀ ਆਤਮਾ ਲਈ ਉੱਬਲਦਾ ਪਾਣੀ ਵੀ ਠੰਢਾ ਅੰਮ੍ਰਿਤ ਬਣ ਜਾਂਦਾ ਹੈ।",
+        "moral": "When faith is absolute, even boiling water cannot shake the peace of a righteous soul.",
+        "moralLocal": "अटल विश्वास के सम्मुख खौलता हुआ पानी भी निष्प्रभावी हो जाता है।",
+        "moralPa": "ਦ੍ਰਿੜ੍ਹ ਇਰਾਦੇ ਅਤੇ ਸਿਦਕ ਵਾਲੇ ਗੁਰਸਿੱਖ ਨੂੰ ਕੋਈ ਵੀ ਤਸੀਹਾ ਡੁਲਾ ਨਹੀਂ ਸਕਦਾ।",
+        "legacy": "Invoked in the daily Sikh Ardas among those who were boiled in cauldrons ('Degan vich ubale gaye...'), eternal icon of stoic martyrdom.",
+        "legacyLocal": "सिख अरदास में 'देगों में उबाले गए' कहकर उनके धैर्य और बलिदान को सदा स्मरण किया जाता है।",
+        "legacyPa": "ਰੋਜ਼ਾਨਾ ਅਰਦਾਸ ਵਿੱਚ 'ਜਿਨ੍ਹਾਂ ਨੇ ਦੇਗ਼ਾਂ ਵਿੱਚ ਉਬਾਲੇ ਖਾਧੇ' ਕਹਿ ਕੇ ਆਪ ਜੀ ਦੀ ਲਾਸਾਨੀ ਕੁਰਬਾਨੀ ਅੱਗੇ ਸੀਸ ਝੁਕਾਇਆ ਜਾਂਦਾ ਹੈ।",
+        "source": "Bhatt Vahi Multani Sindhi, Suraj Prakash, Mahan Kosh",
+        "sourceLocal": "भाट वही मुलतानी सिंधी, सूरज प्रकाश, महान कोश",
+        "sourcePa": "ਭੱਟ ਵਹੀ ਮੁਲਤਾਨੀ ਸਿੰਧੀ, ਸੂਰਜ ਪ੍ਰਕਾਸ਼, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Bhatt Vahi Multani Sindhi", "sourceRef": "Khata Jalhana, Record of Delhi Shaheedian", "tier": 1},
+            {"sourceName": "Bhai Santokh Singh", "sourceRef": "Sri Gur Pratap Suraj Granth", "tier": 1}
+        ],
+        "quote": {
+            "text": "Jo nar dukh me dukh nahi manai, sukh saneh ar bhai nahi jaake kanchan maati jaanai.",
+            "attribution": "That person who in the midst of sorrow feels no sorrow, who is free from fear, attachment, and worldly pleasure, and regards gold as mere dust. — Guru Tegh Bahadur Ji, Sri Guru Granth Sahib (Ang 633)"
+        },
+        "quoteLocal": {
+            "text": "जो नरु दुख मै दुखु नही मानै। सुख सनेहु अरु भै नही जा कै कंचन माटी मानै॥",
+            "attribution": "गुरु तेग बहादुर जी (श्री गुरु ग्रंथ साहिब, अंग ६३३)"
+        },
+        "quotePa": {
+            "text": "ਜੋ ਨਰੁ ਦੁਖ ਮੈ ਦੁਖੁ ਨਹੀ ਮਾਨੈ ॥ ਸੁਖ ਸਨੇਹੁ ਅਰੁ ਭੈ ਨਹੀ ਜਾ ਕੈ ਕੰਚਨ ਮਾਟੀ ਮਾਨੈ ॥",
+            "attribution": "ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੬੩੩)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bhai Dayala Ji sitting cross-legged in a massive boiling copper cauldron in Chandni Chowk, hands gently folded in prayer, steam swirling around him, surrounded by stunned Mughal guards."
+    },
+    {
+        "id": "bhai-kanhaiya",
+        "name": "Bhai Kanhaiya Ji",
+        "nameLocal": "भाई कन्हैया जी",
+        "namePa": "ਭਾਈ ਘਨ੍ਹਈਆ ਜੀ",
+        "era": "1648–1718 CE",
+        "eraLocal": "१६४८–१७१८ ईस्वी",
+        "eraPa": "੧੬੪੮–੧੭੧੮ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Sodhra, Wazirabad / Anandpur Sahib",
+        "regionLocal": "सोदरा, वजीराबाद / आनंदपुर साहिब",
+        "regionPa": "ਸੋਦਰਾ, ਵਜ਼ੀਰਾਬਾਦ / ਅਨੰਦਪੁਰ ਸਾਹਿਬ",
+        "emoji": "☬",
+        "tagline": "The saintly disciple of Guru Gobind Singh who carried a goatskin water-bag (Mashak) onto the battlefield to serve water to wounded soldiers, both Sikh and Mughal, seeing only the Guru in all.",
+        "taglineLocal": "गुरु गोबिंद सिंह जी के अनन्य सेवक जिन्होंने युद्धभूमि में बिना भेद-भाव सिख और मुगल दोनों घायल सैनिकों को जल पिलाया और 'रेड क्रॉस' से दो सदी पूर्व मानवता की सेवा की।",
+        "taglinePa": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਦੇ ਉਹ ਅਨੋਖੇ ਸਿੱਖ ਜਿਨ੍ਹਾਂ ਨੇ ਜੰਗ ਦੇ ਮੈਦਾਨ ਵਿੱਚ ਬਿਨਾਂ ਵੈਰ-ਵਿਰੋਧ ਸਿੱਖਾਂ ਤੇ ਮੁਗ਼ਲਾਂ ਦੋਵਾਂ ਨੂੰ ਪਾਣੀ ਪਿਲਾ ਕੇ 'ਨਾ ਕੋ ਬੈਰੀ ਨਹੀ ਬਿਗਾਨਾ' ਦਾ ਸੰਦੇਸ਼ ਦਿੱਤਾ।",
+        "journey": "Born into a wealthy merchant family in Sodhra, Kanhaiya renounced material wealth in search of true peace, eventually finding his spiritual master in Guru Tegh Bahadur and later Guru Gobind Singh. During the fierce battles at Anandpur Sahib, he took up the service of carrying a leather mashak (water-skin), walking between dying men on the gory battlefield. Some Sikhs noticed with outrage that Kanhaiya was reviving fallen enemy soldiers—pouring cooling water down the throats of Mughal and hill troops who had just fired arrows at the Sikhs. They dragged him before Guru Gobind Singh, accusing him of treason. The Guru asked him, 'Kanhaiya, is it true that you have been giving water to the enemy?' Kanhaiya replied with celestial simplicity: 'Master, since you opened my inner eye, I see no enemy and no stranger on that battlefield. I see only your radiant face in every wounded, dying soul.' Overcome with divine joy, Guru Gobind Singh embraced him, handed him a box of medicinal ointment, and said, 'Go, Kanhaiya! From now on, not only give them water, but also dress their wounds!'",
+        "journeyLocal": "सोदरा के धनी परिवार के कन्हैया जी गुरु चरणों में समर्पित होकर आनंदपुर साहिब में सेवा करने लगे। आनंदपुर के भीषण युद्ध में वे मशक लेकर रणभूमि में घायलों को जल पिलाने लगे। कुछ सिखों ने देखा कि वे मुगल सैनिकों को भी जल पिला रहे हैं। उन्होंने गुरु गोबिंद सिंह जी से शिकायत की। जब गुरु जी ने पूछा, तो कन्हैया जी ने कहा, 'महाराज! रणभूमि में मुझे न कोई सिख दिखता है न कोई मुगल; मुझे तो हर घायल में केवल आपका ही मुखड़ा दिखाई देता है।' गुरु जी ने गदगद होकर उन्हें गले से लगा लिया और मरहम की डिब्बी देते हुए कहा कि आज से जल के साथ घावों पर मरहम भी लगाओ।",
+        "journeyPa": "ਸੋਦਰਾ ਦੇ ਰਹਿਣ ਵਾਲੇ ਭਾਈ ਘਨ੍ਹਈਆ ਜੀ ਨੇ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਦੀ ਜੰਗ ਦੌਰਾਨ ਮਸ਼ਕ ਚੁੱਕ ਕੇ ਮੈਦਾਨ-ਏ-ਜੰਗ ਵਿੱਚ ਜ਼ਖ਼ਮੀਆਂ ਨੂੰ ਪਾਣੀ ਪਿਲਾਉਣ ਦੀ ਸੇਵਾ ਸੰਭਾਲੀ। ਕੁਝ ਸਿੰਘਾਂ ਨੇ ਸ਼ਿਕਾਇਤ ਕੀਤੀ ਕਿ ਇਹ ਦੁਸ਼ਮਣ ਮੁਗ਼ਲਾਂ ਨੂੰ ਵੀ ਪਾਣੀ ਪਿਲਾਉਂਦੇ ਹਨ। ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਵੱਲੋਂ ਪੁੱਛੇ ਜਾਣ 'ਤੇ ਆਪ ਨੇ ਹੱਥ ਜੋੜ ਕੇ ਕਿਹਾ, 'ਪਾਤਸ਼ਾਹ! ਮੈਨੂੰ ਤਾਂ ਕੋਈ ਵੈਰੀ ਜਾਂ ਬੇਗਾਨਾ ਦਿਸਦਾ ਹੀ ਨਹੀਂ, ਹਰ ਚਿਹਰੇ ਵਿੱਚੋਂ ਤੁਹਾਡਾ ਹੀ ਨੂਰ ਝਲਕਦਾ ਹੈ।' ਗੁਰੂ ਸਾਹਿਬ ਨੇ ਖ਼ੁਸ਼ ਹੋ ਕੇ ਛਾਤੀ ਨਾਲ ਲਾਇਆ ਅਤੇ ਮਰਹਮ ਦੀ ਡੱਬੀ ਦੇ ਕੇ ਜ਼ਖ਼ਮਾਂ ਦੀ ਪੱਟੀ ਕਰਨ ਦਾ ਹੁਕਮ ਦਿੱਤਾ।",
+        "trial": "Facing fierce accusations of treachery from his fellow brethren while continuing to walk through flying bullets to serve enemy wounded.",
+        "trialLocal": "अपने ही साथियों द्वारा गद्दार समझे जाने के अपमान और युद्धभूमि के गोलियों के बीच निष्पक्ष सेवा में डटे रहना उनका महान धर्म था।",
+        "trialPa": "ਆਪਣੇ ਸਾਥੀਆਂ ਦੇ ਗੁੱਸੇ ਅਤੇ ਸ਼ੰਕਿਆਂ ਦੇ ਬਾਵਜੂਦ ਬਿਨਾਂ ਡੋਲੇ ਨਿਰਸੁਆਰਥ ਮਾਨਵਤਾ ਦੀ ਸੇਵਾ ਵਿੱਚ ਲੱਗੇ ਰਹਿਣਾ ਉਹਨਾਂ ਦੀ ਕਮਾਈ ਸੀ।",
+        "teaching": "When the divine light is realized within oneself, all enmity dissolves; there is neither friend nor foe, only the Beloved in every creature.",
+        "teachingLocal": "जब हृदय में परमात्मा का साक्षात्कार हो जाता है, तो सारा वैर मिट जाता है; हर प्राणी में वही एक ईश्वर दिखाई देता है।",
+        "teachingPa": "ਨਾ ਕੋ ਬੈਰੀ ਨਹੀ ਬਿਗਾਨਾ ਸਗਲ ਸੰਗਿ ਹਮ ਕਉ ਬਨਿ ਆਈ। ਹਰ ਜੀਵ ਵਿੱਚ ਰੱਬ ਦਾ ਰੂਪ ਦੇਖਣਾ ਹੀ ਅਸਲ ਅਧਿਆਤਮ ਹੈ।",
+        "moral": "Universal humanitarian compassion transcends military borders and pre-dates international relief covenants by centuries.",
+        "moralLocal": "सच्ची मानवता युद्ध और सीमाओं से परे है; निस्वार्थ करुणा ही धर्म का सर्वोच्च शिखर है।",
+        "moralPa": "ਮਨੁੱਖਤਾ ਦੀ ਸੇਵਾ ਹਰ ਤਰ੍ਹਾਂ ਦੇ ਵੈਰ-ਵਿਰੋਧ ਅਤੇ ਸਰਹੱਦਾਂ ਤੋਂ ਉੱਚੀ ਹੈ।",
+        "legacy": "Founded the Sevapanthi order of the Sikhs, recognized as the pioneer of humanitarian medical neutrality and battlefield relief 160 years before the Red Cross.",
+        "legacyLocal": "सेवापंथी संप्रदाय के संस्थापक, जिन्हें रेड क्रॉस से डेढ़ सौ वर्ष पूर्व युद्धभूमि में निष्पक्ष चिकित्सा सेवा का अग्रदूत माना जाता है।",
+        "legacyPa": "ਸੇਵਾਪੰਥੀ ਸੰਪਰਦਾ ਦੇ ਬਾਨੀ, ਜਿਨ੍ਹਾਂ ਨੇ ਰੈੱਡ ਕਰਾਸ ਤੋਂ ਸਦੀਆਂ ਪਹਿਲਾਂ ਮੈਦਾਨ-ਏ-ਜੰਗ ਵਿੱਚ ਨਿਰਪੱਖ ਮਾਨਵਤਾ ਦੀ ਸੇਵਾ ਦੀ ਨੀਂਹ ਰੱਖੀ।",
+        "source": "Gurbilas Patshahi 10, Prachin Panth Prakash, Mahan Kosh",
+        "sourceLocal": "गुरबिलास पातशाही १०, प्राचीन पंथ प्रकाश, महान कोश",
+        "sourcePa": "ਗੁਰਬਿਲਾਸ ਪਾਤਸ਼ਾਹੀ ੧੦, ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Sukha Singh", "sourceRef": "Gurbilas Patshahi 10, Anandpur Battle", "tier": 1},
+            {"sourceName": "Kahn Singh Nabha", "sourceRef": "Mahan Kosh, Entry Bhai Kanhaiya", "tier": 1}
+        ],
+        "quote": {
+            "text": "Na ko bairi nahi begana sagal sang ham kao ban aayee.",
+            "attribution": "No one is my enemy, and no one is a stranger to me; I am in harmony with all living beings! — Guru Arjan Dev Ji, Sri Guru Granth Sahib (Ang 1299)"
+        },
+        "quoteLocal": {
+            "text": "ना को बैरी नही बिगाना सगल संगि हम कउ बनि आई॥",
+            "attribution": "गुरु अर्जुन देव जी (श्री गुरु ग्रंथ साहिब, अंग १२९९)"
+        },
+        "quotePa": {
+            "text": "ਨਾ ਕੋ ਬੈਰੀ ਨਹੀ ਬਿਗਾਨਾ ਸਗਲ ਸੰਗਿ ਹਮ ਕਉ ਬਨਿ ਆਈ ॥",
+            "attribution": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੧੨੯੯)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bhai Kanhaiya Ji kneeling on a dusty, smoky battlefield offering water from his leather Mashak bowl to a parched wounded Mughal soldier, gentle celestial compassion illuminating his face."
+    },
+    {
+        "id": "bhai-bachittar-singh",
+        "name": "Bhai Bachittar Singh Ji",
+        "nameLocal": "भाई बचित्र सिंह जी",
+        "namePa": "ਭਾਈ ਬਚਿੱਤਰ ਸਿੰਘ ਜੀ",
+        "era": "1675–1705 CE",
+        "eraLocal": "१६७५–१७०५ ईस्वी",
+        "eraPa": "੧੬੭੫–੧੭੦੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Alipur / Anandpur Sahib / Kotla Nihang Khan",
+        "regionLocal": "अलीपुर / आनंदपुर साहिब / कोटला निहंग खान",
+        "regionPa": "ਅਲੀਪੁਰ / ਅਨੰਦਪੁਰ ਸਾਹਿਬ / ਕੋਟਲਾ ਨਿਹੰਗ ਖ਼ਾਨ",
+        "emoji": "☬",
+        "tagline": "The legendary warrior who, armed with the serpent-spear Nagni Barchha, charged solo on horseback and pierced the armored war elephant at the battle of Lohgarh.",
+        "taglineLocal": "आनंदपुर साहिब में 'नागणी बरछे' से लोहगढ़ के किले पर हमला करने वाले मतवाले बख्तरबंद हाथी का मस्तक चीरने वाले अद्वितीय वीर।",
+        "taglinePa": "ਸ੍ਰੀ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਦੀ ਜੰਗ ਵਿੱਚ 'ਨਾਗਣੀ ਬਰਛੇ' ਨਾਲ ਲੋਹਗੜ੍ਹ ਦੇ ਕਿਲ੍ਹੇ ਦਾ ਬੂਹਾ ਤੋੜਨ ਆਏ ਮਸਤ ਹਾਥੀ ਦੇ ਮੱਥੇ ਨੂੰ ਵਿੰਨ੍ਹਣ ਵਾਲੇ ਅਣਖੀਲੇ ਯੋਧੇ।",
+        "journey": "Son of Bhai Mani Singh, Bhai Bachittar Singh was raised in the martial discipline of the Guru's court. In 1700 CE, during the siege of Lohgarh fort at Anandpur Sahib, the allied hill rajas and imperial forces grew desperate. Raja Kesari Chand brought forward a colossal male war-elephant, heavily intoxicated with liquor and encased in thick steel armor with double-edged curved blades strapped to its tusks, to shatter the fort gates. When Sikhs whispered about the beast, Guru Gobind Singh looked at the lean, wiry Bachittar Singh and commanded him to face the elephant. Handing him the sacred serpent-spear (Nagni Barchha), the Guru blessed him. Bachittar Singh rode out on his stallion, stood in his stirrups as the roaring monster charged, and drove the spear with superhuman velocity straight through the steel forehead-plate of the beast into its brain. Maddened with agony, the elephant turned around and trampled hundreds of enemy soldiers, turning the tide of battle in minutes.",
+        "journeyLocal": "भाई मनी सिंह के सुपुत्र भाई बचित्र सिंह आनंदपुर साहिब के कुशल योद्धा थे। १७०० में जब पहाड़ी राजाओं ने लोहगढ़ किले के फाटक तोड़ने के लिए शराब पिलाए और लोहे के बख्तर से ढके मतवाले हाथी को आगे किया, तो गुरु गोबिंद सिंह जी ने दुबले-पतले बचित्र सिंह को उस हाथी का सामना करने का आदेश दिया। गुरु जी ने उन्हें 'नागणी बरछा' सौंपा। बचित्र सिंह ने अपने घोड़े को दौड़ाकर उछलते हुए बरछे से हाथी के लोहे के बख्तर को भेदते हुए उसके मस्तक को चीर दिया। घायल हाथी पीछे भागा और अपनी ही सेना को रौंद डाला।",
+        "journeyPa": "ਭਾਈ ਮਨੀ ਸਿੰਘ ਜੀ ਦੇ ਸਪੁੱਤਰ ਭਾਈ ਬਚਿੱਤਰ ਸਿੰਘ ਜੀ ਨੇ ੧੭੦੦ ਵਿੱਚ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਵਿਖੇ ਅਦੁੱਤੀ ਕਾਰਨਾਮਾ ਕੀਤਾ। ਜਦੋਂ ਪਹਾੜੀ ਰਾਜਿਆਂ ਨੇ ਲੋਹਗੜ੍ਹ ਦਾ ਕਿਲ੍ਹਾ ਤੋੜਨ ਲਈ ਸ਼ਰਾਬੀ ਮਸਤ ਹਾਥੀ ਅੱਗੇ ਕੀਤਾ, ਤਾਂ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੇ ਭਾਈ ਬਚਿੱਤਰ ਸਿੰਘ ਨੂੰ ਨਾਗਣੀ ਬਰਛਾ ਦੇ ਕੇ ਮੁਕਾਬਲੇ ਲਈ ਤੋਰਿਆ। ਆਪ ਨੇ ਘੋੜੇ 'ਤੇ ਸਵਾਰ ਹੋ ਕੇ ਹਾਥੀ ਦੇ ਮੱਥੇ ਵਿੱਚ ਐਸਾ ਬਰਛਾ ਮਾਰਿਆ ਕਿ ਲੋਹੇ ਦਾ ਤਵਾ ਚੀਰਦਾ ਹੋਇਆ ਅੰਦਰ ਧਸ ਗਿਆ। ਹਾਥੀ ਨੇ ਪਿੱਛੇ ਮੁੜ ਕੇ ਆਪਣੀ ਹੀ ਫ਼ੌਜ ਨੂੰ ਲਤਾੜ ਦਿੱਤਾ।",
+        "trial": "Charging on horseback straight into the path of an armored, blade-wielding intoxicated war-elephant on the single command of the Guru.",
+        "trialLocal": "गुरु की एक आज्ञा पर साक्षात यमराज तुल्य मतवाले लोहे से ढके हाथी के सामने अकेले घोड़े पर कूद पड़ना अदम्य पराक्रम था।",
+        "trialPa": "ਗੁਰੂ ਦੇ ਬਚਨ 'ਤੇ ਭਰੋਸਾ ਰੱਖ ਕੇ ਇਕੱਲੇ ਘੋੜੇ 'ਤੇ ਸਵਾਰ ਹੋ ਕੇ ਮਸਤ ਹਾਥੀ ਦੇ ਸਨਮੁਖ ਹੋਣਾ ਅਦੁੱਤੀ ਵੀਰਤਾ ਸੀ।",
+        "teaching": "When divine grace and faith in the Guru guide the weapon, a single determined sparrow can easily overpower imperial hawks and monstrous elephants.",
+        "teachingLocal": "गुरु की कृपा और संकल्प शक्ति के आगे पर्वत तुल्य दैत्य भी तिनके के समान बिखर जाते हैं।",
+        "teachingPa": "ਚਿੜੀਆਂ ਤੋਂ ਬਾਜ ਤੁੜਾਉਣ ਦਾ ਇਲਾਹੀ ਕ੍ਰਿਸ਼ਮਾ ਗੁਰੂ ਦੇ ਥਾਪੜੇ ਅਤੇ ਸਿਦਕ ਨਾਲ ਹੀ ਸੰਭਵ ਹੁੰਦਾ ਹੈ।",
+        "moral": "Physical size and material armaments are meaningless before absolute mental conviction and fearless devotion.",
+        "moralLocal": "शारीरिक विशालता और अस्त्र-शस्त्र दृढ़ आत्मबल और भक्ति के सामने बौने साबित होते हैं।",
+        "moralPa": "ਆਤਮਿਕ ਬਲ ਅਤੇ ਦ੍ਰਿੜ੍ਹ ਇਰਾਦੇ ਅੱਗੇ ਦੁਨਿਆਵੀ ਤਾਕਤਾਂ ਕਦੇ ਟਿਕ ਨਹੀਂ ਸਕਦੀਆਂ।",
+        "legacy": "Immortalized in Sikh folklore as the quintessential slayer of the rogue elephant, symbol of the Khalsa's fearless martial prowess.",
+        "legacyLocal": "खालसा शौर्य के अमर प्रतीक, जिनकी वीरता की गाथाएं सदियों से सिख वीरों में जोश भरती आई हैं।",
+        "legacyPa": "ਖਾਲਸਾਈ ਅਣਖ ਅਤੇ ਬਹਾਦਰੀ ਦੇ ਪ੍ਰਤੀਕ, ਜਿਨ੍ਹਾਂ ਦਾ ਨਾਂ ਸੁਣਦਿਆਂ ਹੀ ਸਿੱਖਾਂ ਵਿੱਚ ਬੀਰ-ਰਸ ਜਾਗ ਉੱਠਦਾ ਹੈ।",
+        "source": "Gur Bilas Patshahi 10, Suraj Prakash, Mahan Kosh",
+        "sourceLocal": "गुर बिलास पातशाही १०, सूरज प्रकाश, महान कोश",
+        "sourcePa": "ਗੁਰ ਬਿਲਾਸ ਪਾਤਸ਼ਾਹੀ ੧੦, ਸੂਰਜ ਪ੍ਰਕਾਸ਼, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Koer Singh", "sourceRef": "Gurbilas Patshahi 10, Battle of Lohgarh", "tier": 1},
+            {"sourceName": "Suraj Prakash", "sourceRef": "Rut 4, Chapter on Elephant Attack", "tier": 1}
+        ],
+        "quote": {
+            "text": "Sava lakh se ek ladaun tabe Gobind Singh naam kahaoon.",
+            "attribution": "When I make one sparrow fight a hundred and twenty-five thousand hawks, only then may I be named Gobind Singh! — Guru Gobind Singh Ji"
+        },
+        "quoteLocal": {
+            "text": "सवा लाख से एक लड़ाऊं तबे गोबिंद सिंह नाम कहाऊं।",
+            "attribution": "गुरु गोबिंद सिंह जी"
+        },
+        "quotePa": {
+            "text": "ਸਵਾ ਲਾਖ ਸੇ ਏਕ ਲੜਾਊਂ ਤਬੈ ਗੋਬਿੰਦ ਸਿੰਘ ਨਾਮ ਕਹਾਊਂ ॥",
+            "attribution": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting young Bhai Bachittar Singh on a rearing white horse, thrusting the twisted serpent Nagni spear directly into the armored forehead of an enormous charging war elephant outside Lohgarh fort."
+    },
+    {
+        "id": "bhai-uday-singh",
+        "name": "Bhai Uday Singh Ji",
+        "nameLocal": "भाई उदय सिंह जी",
+        "namePa": "ਭਾਈ ਉਦੈ ਸਿੰਘ ਜੀ",
+        "era": "1678–1705 CE",
+        "eraLocal": "१६७८–१७०५ ईस्वी",
+        "eraPa": "੧੬੭੮–੧੭੦੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Alipur / Anandpur Sahib / Shahi Tibbi",
+        "regionLocal": "अलीपुर / आनंदपुर साहिब / शाही टिब्बी",
+        "regionPa": "ਅਲੀਪੁਰ / ਅਨੰਦਪੁਰ ਸਾਹਿਬ / ਸ਼ਾਹੀ ਟਿੱਬੀ",
+        "emoji": "☬",
+        "tagline": "The valiant brother of Bhai Bachittar Singh who beheaded the arrogant hill raja Kesari Chand in single combat and held the rear guard at Shahi Tibbi.",
+        "taglineLocal": "पहाड़ी राजा केसरी चंद का द्वंद्वयुद्ध में सिर काटकर भाले पर टांगने वाले और शाही टिब्बी पर अंतिम सांस तक मुगलों को रोकने वाले महाबली।",
+        "taglinePa": "ਜੰਗ ਦੇ ਮੈਦਾਨ ਵਿੱਚ ਪਹਾੜੀ ਰਾਜੇ ਕੇਸਰੀ ਚੰਦ ਦਾ ਸਿਰ ਵੱਢ ਕੇ ਨੇਜ਼ੇ 'ਤੇ ਟੰਗਣ ਵਾਲੇ ਅਤੇ ਸ਼ਾਹੀ ਟਿੱਬੀ 'ਤੇ ਸ਼ਹੀਦ ਹੋਣ ਵਾਲੇ ਅਮਰ ਯੋਧੇ।",
+        "journey": "Another illustrious son of Bhai Mani Singh, Bhai Uday Singh was a commanding figure of strength, tactical daring, and absolute devotion. During the battle of Taragarh at Anandpur Sahib, Raja Kesari Chand of Jaswal bragged arrogantly that he would bring Guru Gobind Singh's head or never return. Guru Gobind Singh appointed Uday Singh to counter him. Riding into the fray, Uday Singh matched Kesari Chand blade for blade, severed the raja's head with a lightning stroke of his scimitar, impaled the head upon his spear, and brought it back into the Guru's presence, breaking the morale of the hill armies. Five years later, during the harrowing evacuation of Anandpur in the dead of winter 1705, Uday Singh commanded the rear guard of just fifty Sikhs at Shahi Tibbi. Ordered to hold off hundreds of thousands of pursuing imperial troops until the Guru crossed the flooded Sarsa river, Uday Singh fought like a titan until every single warrior fell in glorious defense of their Master.",
+        "journeyLocal": "भाई मनी सिंह के सुपुत्र भाई उदय सिंह असीम शौर्य के धनी थे। तारागढ़ के युद्ध में जब पहाड़ी राजा केसरी चंद ने गुरु जी को बंदी बनाने का दंभ भरा, तो उदय सिंह ने द्वंद्वयुद्ध में उसका शीश काटकर भाले पर टांग लिया और गुरु जी के समक्ष प्रस्तुत किया। १७०५ में आनंदपुर त्याग के समय 'शाही टिब्बी' पर केवल ५० सिंहों के साथ लाखों मुगल सैनिकों को तब तक रोके रखा जब तक गुरु जी ने सरसा नदी पार नहीं कर ली, और वहीं वीरगति प्राप्त की।",
+        "journeyPa": "ਭਾਈ ਉਦੈ ਸਿੰਘ ਜੀ ਨੇ ਤਾਰਾਗੜ੍ਹ ਦੀ ਲੜਾਈ ਵਿੱਚ ਹੰਕਾਰੀ ਪਹਾੜੀ ਰਾਜੇ ਕੇਸਰੀ ਚੰਦ ਨੂੰ ਦੋ-ਹੱਥੀਂ ਤਲਵਾਰ ਨਾਲ ਮੌਤ ਦੇ ਘਾਟ ਉਤਾਰ ਕੇ ਉਸਦਾ ਸਿਰ ਨੇਜ਼ੇ 'ਤੇ ਟੰਗਿਆ। ੧੭੦੫ ਵਿੱਚ ਜਦੋਂ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਛੱਡਿਆ ਤਾਂ ਸ਼ਾਹੀ ਟਿੱਬੀ ਦੇ ਸਥਾਨ 'ਤੇ ਮਾਤਰ ੫੦ ਸਿੰਘਾਂ ਨਾਲ ਲੱਖਾਂ ਦੀ ਮੁਗ਼ਲ ਫ਼ੌਜ ਨੂੰ ਕਈ ਘੰਟੇ ਰੋਕੀ ਰੱਖਿਆ ਤਾਂ ਜੋ ਗੁਰੂ ਸਾਹਿਬ ਸਰਸਾ ਪਾਰ ਕਰ ਸਕਣ, ਅਤੇ ਉੱਥੇ ਹੀ ਲਾਸਾਨੀ ਸ਼ਹਾਦਤ ਪਾਈ।",
+        "trial": "Holding an open hill with fifty warriors against an advancing imperial army of fifty thousand to buy time for the Guru's family to cross the torrential Sarsa.",
+        "trialLocal": "शाही टिब्बी पर पचास साथियों के साथ पचास हजार की सेना को रोककर गुरु परिवार की रक्षा हेतु प्राण न्योछावर करना उनका सर्वोच्च त्याग था।",
+        "trialPa": "ਸ਼ਾਹੀ ਟਿੱਬੀ 'ਤੇ ਮੁੱਠੀ ਭਰ ਸਿੰਘਾਂ ਨਾਲ ਲੱਖਾਂ ਦੀ ਫ਼ੌਜ ਦਾ ਮੁਕਾਬਲਾ ਕਰਕੇ ਗੁਰੂ ਸਾਹਿਬ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕੱਢਣ ਲਈ ਸ਼ਹੀਦ ਹੋ ਜਾਣਾ ਅਦੁੱਤੀ ਪਰਖ ਸੀ।",
+        "teaching": "A warrior's sword strikes down arrogance, not innocent lives; shielding the Guru's sacred mission with one's body is the highest bliss.",
+        "teachingLocal": "योद्धा की तलवार अहंकार का नाश करने के लिए उठती है; गुरु के मिशन की रक्षा में प्राण देना ही जीवन की सार्थकता है।",
+        "teachingPa": "ਹੰਕਾਰੀਆਂ ਦਾ ਨਾਸ ਕਰਨਾ ਅਤੇ ਗੁਰੂ ਦੇ ਰਾਹ ਵਿੱਚ ਆਪਣਾ ਆਪ ਵਾਰ ਦੇਣਾ ਹੀ ਸੱਚੇ ਸੂਰਮੇ ਦਾ ਧਰਮ ਹੈ।",
+        "moral": "A handful of steadfast defenders who refuse to flee can delay entire empires and alter the destiny of civilizations.",
+        "moralLocal": "अटल संकल्प वाले मुट्ठी भर वीर भी विशाल साम्राज्यों की गति को रोककर इतिहास की धारा मोड़ देते हैं।",
+        "moralPa": "ਮੁੱਠੀ ਭਰ ਸਿਦਕੀ ਯੋਧੇ ਵੀ ਵੱਡੀਆਂ-ਵੱਡੀਆਂ ਸਲਤਨਤਾਂ ਦੇ ਪੈਰ ਉਖਾੜ ਦਿੰਦੇ ਹਨ।",
+        "legacy": "Remembered as the hero of Shahi Tibbi and the vanquisher of Kesari Chand, whose rear-guard stand enabled the Khalsa spirit to survive.",
+        "legacyLocal": "शाही टिब्बी के अमर सेनानी और केसरी चंद के विजेता, जिन्होंने अपने प्राण देकर पंथ की रक्षा की।",
+        "legacyPa": "ਸ਼ਾਹੀ ਟਿੱਬੀ ਦੇ ਮਹਾਨ ਸ਼ਹੀਦ ਜਿਨ੍ਹਾਂ ਦੀ ਕੁਰਬਾਨੀ ਨੇ ਸਿੱਖੀ ਦੀ ਲਾਟ ਨੂੰ ਬਲਦਾ ਰੱਖਿਆ।",
+        "source": "Gur Bilas Patshahi 10, Prachin Panth Prakash, Suraj Prakash",
+        "sourceLocal": "गुर बिलास पातशाही १०, प्राचीन पंथ प्रकाश, सूरज प्रकाश",
+        "sourcePa": "ਗੁਰ ਬਿਲਾਸ ਪਾਤਸ਼ਾਹੀ ੧੦, ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਸੂਰਜ ਪ੍ਰਕਾਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Koer Singh", "sourceRef": "Gurbilas Patshahi 10, Battle of Shahi Tibbi", "tier": 1},
+            {"sourceName": "Suraj Prakash", "sourceRef": "Rut 5, Chapters on Sarsa and Shahi Tibbi", "tier": 1}
+        ],
+        "quote": {
+            "text": "Jab aav ki audh nidhan banai ati hi ran me tab joojh maron.",
+            "attribution": "When the final hour of my life arrives, grant that I may die fighting on the battlefield with boundless valor! — Guru Gobind Singh Ji, Chandi Charitar"
+        },
+        "quoteLocal": {
+            "text": "जब आव की अउध निदान बनै अति ही रन मै तब जूझ मरौ॥",
+            "attribution": "गुरु गोबिंद सिंह जी (चंडी चरित्र)"
+        },
+        "quotePa": {
+            "text": "ਜਬ ਆਵ ਕੀ ਅਉਧ ਨਿਦਾਨ ਬਨੈ ਅਤਿ ਹੀ ਰਨ ਮੈ ਤਬ ਜੂਝ ਮਰੌ ॥",
+            "attribution": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ (ਚੰਡੀ ਚਰਿਤ੍ਰ)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bhai Uday Singh Ji on horseback galloping back to Anandpur Sahib carrying his long spear with the helmet of the defeated raja, his red cape billowing in the mountain wind."
+    },
+    {
+        "id": "bhai-jaita",
+        "name": "Bhai Jaita Ji (Bhai Jiwan Singh)",
+        "nameLocal": "भाई जैता जी (बाबा जीवन सिंह)",
+        "namePa": "ਭਾਈ ਜੈਤਾ ਜੀ (ਬਾਬਾ ਜੀਵਨ ਸਿੰਘ)",
+        "era": "1649–1705 CE",
+        "eraLocal": "१६४९–१७०५ ईस्वी",
+        "eraPa": "੧੬੪੯–੧੭੦੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Delhi / Anandpur Sahib / Chamkaur",
+        "regionLocal": "दिल्ली / आनंदपुर साहिब / चमकौर",
+        "regionPa": "ਦਿੱਲੀ / ਅਨੰਦਪੁਰ ਸਾਹਿਬ / ਚਮਕੌਰ",
+        "emoji": "☬",
+        "tagline": "The daring disciple who retrieved the severed head of Guru Tegh Bahadur from Mughal guards in Chandni Chowk and carried it 350 km to Anandpur, hailed as 'Ranghreta Guru Ka Beta'.",
+        "taglineLocal": "चांदनी चौक से गुरु तेग बहादुर जी का पावन शीश मुगलों की छाती पर से उठाकर आनंदपुर पहुंचाने वाले वीर, जिन्हें दशमेश पिता ने 'रंघरेटा गुरु का बेटा' कहकर गले लगाया।",
+        "taglinePa": "ਚਾਂਦਨੀ ਚੌਕ ਦਿੱਲੀ ਤੋਂ ਨੌਵੇਂ ਪਾਤਸ਼ਾਹ ਦਾ ਪਵਿੱਤਰ ਸੀਸ ਮੁਗ਼ਲ ਪਹਿਰੇ ਵਿੱਚੋਂ ਚੁੱਕ ਕੇ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਪਹੁੰਚਾਉਣ ਵਾਲੇ ਮਹਾਨ ਯੋਧੇ, ਜਿਨ੍ਹਾਂ ਨੂੰ 'ਰੰਘਰੇਟਾ ਗੁਰੂ ਕਾ ਬੇਟਾ' ਦਾ ਖ਼ਿਤਾਬ ਮਿਲਿਆ।",
+        "journey": "Born into a marginalized Mazhabi (Ranghreta) family in Delhi, Bhai Jaita was deeply devoted to Guru Tegh Bahadur. On that fateful November day in 1675 at Chandni Chowk, after the Guru was publicly beheaded, imperial criers announced that anyone daring to touch the body would be flayed alive. As a freak dust storm swept over the city, Bhai Jaita courageously slipped through the terror-stricken crowd, wrapped the sacred severed head of Guru Tegh Bahadur in pristine cloth, and carried it with him. Walking day and night across 350 kilometers through police checkpoints, he reached Kiratpur Sahib and presented the sacred head to young Guru Gobind Singh. The nine-year-old Guru embraced Jaita passionately, weeping with love, and conferred upon him and his community the eternal blessing: 'Ranghreta Guru Ka Beta' (The Ranghreta is the Guru's own son!). Bhai Jaita took Amrit to become Bhai Jiwan Singh, commanded troops, trained the young Sahibzadas, authored Sri Gurkatha, and fell fighting heroically at Chamkaur in 1705.",
+        "journeyLocal": "दिल्ली के रंगरेटा परिवार में जन्मे भाई जैता जी ने १६७५ में चांदनी चौक में गुरु तेग बहादुर जी के शीश कटने के बाद भयंकर आंधी-तूफान के बीच अदम्य साहस दिखाया। वे मुगलों के कड़े पहरे से गुरु जी का पावन शीश लेकर नंगे पैर ३५० किलोमीटर की यात्रा कर आनंदपुर पहुंचे। बालक गुरु गोबिंद सिंह जी ने उन्हें अपने सीने से लगाकर 'रंघरेटा गुरु का बेटा' की उपाधि दी। बाद में अमृत छककर वे भाई जीवन सिंह बने और चमकौर के युद्ध में अद्भुत पराक्रम दिखाते हुए शहीद हुए।",
+        "journeyPa": "੧੬੭੫ ਵਿੱਚ ਜਦੋਂ ਚਾਂਦਨੀ ਚੌਕ ਵਿਖੇ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ ਨੂੰ ਸ਼ਹੀਦ ਕੀਤਾ ਗਿਆ, ਤਾਂ ਭਾਈ ਜੈਤਾ ਜੀ ਨੇ ਹਨੇਰੀ-ਤੂਫ਼ਾਨ ਦੀ ਆੜ ਵਿੱਚ ਆਪਣੀ ਜਾਨ ਦੀ ਬਾਜ਼ੀ ਲਾ ਕੇ ਗੁਰੂ ਸਾਹਿਬ ਦਾ ਪਵਿੱਤਰ ਸੀਸ ਚੁੱਕ ਲਿਆ। ਪੈਦਲ ਯਾਤਰਾ ਕਰਕੇ ਸੀਸ ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਕੋਲ ਪਹੁੰਚਾਇਆ। ਗੁਰੂ ਸਾਹਿਬ ਨੇ ਗਲ ਨਾਲ ਲਾ ਕੇ 'ਰੰਘਰੇਟਾ ਗੁਰੂ ਕਾ ਬੇਟਾ' ਦਾ ਵਰਦਾਨ ਦਿੱਤਾ। ਅੰਮ੍ਰਿਤ ਛਕ ਕੇ ਭਾਈ ਜੀਵਨ ਸਿੰਘ ਬਣੇ ਅਤੇ ਚਮਕੌਰ ਦੀ ਜੰਗ ਵਿੱਚ ਸ਼ਹਾਦਤ ਪਾਈ।",
+        "trial": "Carrying a severed holy head through heavily garrisoned Mughal territory for days under immediate threat of torture and execution if discovered.",
+        "trialLocal": "मुगल साम्राज्य के कठोरतम पहरे के बीच ३५० किलोमीटर तक शीश को सुरक्षित पहुंचाना असीम वीरता और निष्ठा की परीक्षा थी।",
+        "trialPa": "ਮੁਗ਼ਲ ਹਕੂਮਤ ਦੀਆਂ ਨਜ਼ਰਾਂ ਤੋਂ ਬਚ ਕੇ ੩੫੦ ਕਿਲੋਮੀਟਰ ਪੈਂਡਾ ਤੈਅ ਕਰਨਾ ਅਤੇ ਸੀਸ ਅਨੰਦਪੁਰ ਪਹੁੰਚਾਉਣਾ ਅਦੁੱਤੀ ਸਾਹਸ ਸੀ।",
+        "teaching": "Caste barriers shatter instantly in the Guru's embrace; love and devotion elevate the humblest soul to the status of the Guru's own child.",
+        "teachingLocal": "गुरु के चरणों में जाति-पाति के सारे भेद मिट जाते हैं; प्रेम और निष्ठा साधारण मनुष्य को भी ईश्वर का पुत्र बना देती है।",
+        "teachingPa": "ਗੁਰੂ ਘਰ ਵਿੱਚ ਜਾਤ-ਪਾਤ ਦੀ ਕੋਈ ਥਾਂ ਨਹੀਂ; ਪ੍ਰੇਮ ਅਤੇ ਕੁਰਬਾਨੀ ਨਾਲ ਨਿਮਾਣਾ ਵੀ ਗੁਰੂ ਦਾ ਪੁੱਤਰ ਬਣ ਜਾਂਦਾ ਹੈ।",
+        "moral": "Moral duty must be fulfilled regardless of the terrifying risks; history crowns those who dare when everyone else flees in fear.",
+        "moralLocal": "जब सारा संसार भयभीत हो, तब सत्य और मर्यादा की रक्षा हेतु आगे आने वाला ही अमर होता है।",
+        "moralPa": "ਡਰ ਦੇ ਮਾਹੌਲ ਵਿੱਚ ਜਦੋਂ ਸਾਰੇ ਪਿੱਛੇ ਹਟ ਜਾਣ, ਉਦੋਂ ਦਲੇਰੀ ਨਾਲ ਫ਼ਰਜ਼ ਨਿਭਾਉਣਾ ਹੀ ਸੂਰਮਤਾਈ ਹੈ।",
+        "legacy": "Celebrated as Baba Jiwan Singh, the bridge between Delhi's martyrdom and Anandpur's sovereignty, and a towering patron of equality.",
+        "legacyLocal": "'रंघरेटा गुरु का बेटा' के रूप में सामाजिक समानता और शौर्य के अमर स्तंभ।",
+        "legacyPa": "'ਰੰਘਰੇਟਾ ਗੁਰੂ ਕਾ ਬੇਟਾ' ਵਜੋਂ ਜਾਣੇ ਜਾਂਦੇ ਬਾਬਾ ਜੀਵਨ ਸਿੰਘ ਸਿੱਖ ਇਤਿਹਾਸ ਦੇ ਅਮਰ ਨਾਇਕ ਹਨ।",
+        "source": "Sri Gurkatha (Bhai Jiwan Singh), Bansavalinama, Prachin Panth Prakash",
+        "sourceLocal": "श्री गुरकथा (भाई जीवन सिंह), बंसावलीनामा, प्राचीन पंथ प्रकाश",
+        "sourcePa": "ਸ੍ਰੀ ਗੁਰਕਥਾ (ਭਾਈ ਜੀਵਨ ਸਿੰਘ), ਬੰਸਾਵਲੀਨਾਮਾ, ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Bhai Jiwan Singh", "sourceRef": "Sri Gurkatha", "tier": 1},
+            {"sourceName": "Kesar Singh Chhibber", "sourceRef": "Bansavalinama, Charan 9", "tier": 1}
+        ],
+        "quote": {
+            "text": "Ranghreta guru ka beta, deena dharmi panth sametha.",
+            "attribution": "The Ranghreta is the Guru's own beloved son; he is the upholder of faith and the soul of the Khalsa Panth! — Guru Gobind Singh Ji's Blessing"
+        },
+        "quoteLocal": {
+            "text": "रंघरेटा गुरु का बेटा। दीना धरमी पंथ समेता॥",
+            "attribution": "गुरु गोबिंद सिंह जी का पावन वरदान"
+        },
+        "quotePa": {
+            "text": "ਰੰਘਰੇਟਾ ਗੁਰੂ ਕਾ ਬੇਟਾ ॥ ਦੀਨਾ ਧਰਮੀ ਪੰਥ ਸਮੇਤਾ ॥",
+            "attribution": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਦਾ ਪਾਵਨ ਵਰਦਾਨ"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting young Guru Gobind Singh Ji with tears of love embracing Bhai Jaita Ji who kneels reverently holding the cloth-wrapped sacred head of Guru Tegh Bahadur in Kiratpur Sahib."
+    },
+    {
+        "id": "bhai-subeg-singh",
+        "name": "Bhai Subeg Singh Ji",
+        "nameLocal": "भाई सुबेग सिंह जी",
+        "namePa": "ਭਾਈ ਸੁਬੇਗ ਸਿੰਘ ਜੀ",
+        "era": "1690–1745 CE",
+        "eraLocal": "१६९०–१७४५ ईस्वी",
+        "eraPa": "੧੬੯੦–੧੭੪੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Jambar, Lahore",
+        "regionLocal": "जंबर, लाहौर",
+        "regionPa": "ਜੰਬਰ, ਲਾਹੌਰ",
+        "emoji": "☬",
+        "tagline": "The respected Sikh Kotwal of Lahore who, along with his son Shahbaz Singh, was crushed on toothed wheels (Charkhari) rather than surrender his faith.",
+        "taglineLocal": "लाहौर के विद्वान कोतवाल जिन्होंने अपने युवा पुत्र शाहबाज सिंह के साथ चरखी पर काटे जाना स्वीकार किया, परंतु इस्लाम कबूल नहीं किया।",
+        "taglinePa": "ਲਾਹੌਰ ਦੇ ਕੋਤਵਾਲ ਜਿਨ੍ਹਾਂ ਨੇ ਆਪਣੇ ਪੁੱਤਰ ਸ਼ਾਹਬਾਜ਼ ਸਿੰਘ ਸਮੇਤ ਚਰਖੜੀ 'ਤੇ ਚੜ੍ਹ ਕੇ ਸ਼ਹਾਦਤ ਦਾ ਜਾਮ ਪੀਤਾ ਪਰ ਸਿੱਖੀ ਸਿਦਕ ਨਾ ਹਾਰਿਆ।",
+        "journey": "A scholar of Persian and Arabic from Jambar near Lahore, Bhai Subeg Singh was appointed Kotwal (city police chief) of Lahore by the Mughal governor Zakariya Khan due to his unblemished integrity and fairness. Respected equally by Hindus, Muslims, and Sikhs, he acted as a diplomat between the Mughal administration and the outlawed Khalsa warriors living in the jungles, negotiating the historic jagir and title of 'Nawab' for Kapur Singh in 1733. However, when anti-Sikh persecution flared under Yahya Khan, Subeg Singh's upright nature made him a target of corrupt qazis. He and his eighteen-year-old son Shahbaz Singh were arrested on false charges of sedition and given the standard ultimatum: convert to Islam or face agonizing execution on the Charkhari (a wooden wheel studded with razor-sharp steel teeth). Father and son stood firm, encouraging one another with sacred verses until their bones were crushed into powder.",
+        "journeyLocal": "लाहौर के निष्पक्ष कोतवाल भाई सुबेग सिंह अरबी और फारसी के प्रकांड विद्वान थे। उन्होंने १७३३ में मुगल सरकार और जंगलों में रहने वाले खालसा के बीच समझौता करवाकर कपूर सिंह को 'नवाब' की पदवी दिलवाई। जब मुगलों ने सिखों पर अत्याचार बढ़ाए, तो सुबेग सिंह और उनके १८ वर्षीय पुत्र शाहबाज सिंह पर झूठे आरोप लगाकर बंदी बना लिया गया। दोनों को चरखी पर चढ़ाकर जीवित हड्डियों को कुचल दिया गया, परंतु पिता-पुत्र ने हंसते-हंसते धर्म की रक्षा की।",
+        "journeyPa": "ਲਾਹੌਰ ਦੇ ਕੋਤਵਾਲ ਭਾਈ ਸੁਬੇਗ ਸਿੰਘ ਨੇ ੧੭੩੩ ਵਿੱਚ ਮੁਗ਼ਲ ਸਰਕਾਰ ਵੱਲੋਂ ਖ਼ਾਲਸਾ ਪੰਥ ਨੂੰ ਨਵਾਬੀ ਦਾ ਪੱਤਰ ਲਿਆ ਕੇ ਦਿੱਤਾ ਸੀ। ਬਾਅਦ ਵਿੱਚ ਜ਼ਾਲਮ ਹਕੂਮਤ ਨੇ ਉਹਨਾਂ ਅਤੇ ਉਹਨਾਂ ਦੇ ਨੌਜਵਾਨ ਪੁੱਤਰ ਭਾਈ ਸ਼ਾਹਬਾਜ਼ ਸਿੰਘ ਨੂੰ ਗ੍ਰਿਫ਼ਤਾਰ ਕਰ ਲਿਆ। ਇਸਲਾਮ ਨਾ ਕਬੂਲਣ 'ਤੇ ਦੋਵਾਂ ਪਿਉ-ਪੁੱਤਾਂ ਨੂੰ ਚਰਖੜੀਆਂ 'ਤੇ ਚਾੜ੍ਹ ਕੇ ਬੰਦ-ਬੰਦ ਕੱਟ ਦਿੱਤਾ ਗਿਆ, ਪਰ ਦੋਵੇਂ ਅਕਾਲ ਪੁਰਖ ਦੇ ਭਾਣੇ ਵਿੱਚ ਅਡੋਲ ਰਹੇ।",
+        "trial": "Standing strapped to revolving sharp-toothed wheels alongside his son, witnessing his child's flesh torn while exhorting him to remain steadfast.",
+        "trialLocal": "अपने पुत्र के शरीर को चरखी पर कटते देखना और स्वयं भी उसी असह्य वेदना को सहते हुए धर्म पर अडिग रहना उनकी अद्वितीय परीक्षा थी।",
+        "trialPa": "ਪੁੱਤਰ ਨੂੰ ਅੱਖਾਂ ਸਾਹਮਣੇ ਚਰਖੜੀ 'ਤੇ ਕੱਟੇ ਜਾਂਦੇ ਵੇਖ ਕੇ ਵੀ ਸਿੱਖੀ ਸਿਦਕ ਨਿਭਾਉਣ ਲਈ ਹੌਸਲਾ ਦੇਣਾ ਲਾਸਾਨੀ ਸਿਦਕ ਸੀ।",
+        "teaching": "Honor and spiritual integrity cannot be bartered for administrative status; a true Sikh welcomes the wheel of torture over betrayal of faith.",
+        "teachingLocal": "पद और प्रतिष्ठा के लिए धर्म का सौदा नहीं किया जा सकता; कष्ट सहकर भी सत्य पर अडिग रहना ही सिख का धर्म है।",
+        "teachingPa": "ਅਹੁਦੇ ਅਤੇ ਦੁਨਿਆਵੀ ਸ਼ਾਨੋ-ਸ਼ੌਕਤ ਸਿੱਖੀ ਸਿਦਕ ਤੋਂ ਉੱਚੇ ਨਹੀਂ; ਧਰਮ ਖ਼ਾਤਰ ਕਸ਼ਟ ਸਹਾਰਨਾ ਹੀ ਅਸਲ ਕਮਾਈ ਹੈ।",
+        "moral": "Parents who instill divine fearlessness in their children create legacies that outlive all tyrannies.",
+        "moralLocal": "जो माता-पिता संतानों को सत्य और निर्भयता के संस्कार देते हैं, वे इतिहास में अमर हो जाते हैं।",
+        "moralPa": "ਜਿਹੜੇ ਮਾਪੇ ਬੱਚਿਆਂ ਨੂੰ ਧਰਮ 'ਤੇ ਦ੍ਰਿੜ੍ਹ ਰਹਿਣ ਦੀ ਸਿੱਖਿਆ ਦਿੰਦੇ ਹਨ, ਉਹ ਪੀੜ੍ਹੀਆਂ ਲਈ ਚਾਨਣ-ਮੁਨਾਰਾ ਬਣਦੇ ਹਨ।",
+        "legacy": "Immortalized in the daily Sikh Ardas in the sacred line: 'Jinhan ne charkhariyan te chadhe...', eternal symbol of familial martyrdom.",
+        "legacyLocal": "सिख अरदास में 'जिन्होंने चरखियों पर चढ़कर प्राण दिए' में पिता-पुत्र की यह जोड़ी सदा के लिए अमर है।",
+        "legacyPa": "ਰੋਜ਼ਾਨਾ ਅਰਦਾਸ ਵਿੱਚ 'ਚਰਖੜੀਆਂ 'ਤੇ ਚੜ੍ਹਨ ਵਾਲੇ' ਸ਼ਹੀਦਾਂ ਵਜੋਂ ਪਿਓ-ਪੁੱਤ ਦੀ ਇਹ ਜੋੜੀ ਸਦਾ ਯਾਦ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
+        "source": "Prachin Panth Prakash (Rattan Singh Bhangu), Twarikh Guru Khalsa",
+        "sourceLocal": "प्राचीन पंथ प्रकाश (रतन सिंह भंगू), तवारीख गुरु खालसा",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼ (ਰਤਨ ਸਿੰਘ ਭੰਗੂ), ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ",
+        "sourceCitations": [
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Saka Bhai Subeg Singh Shahbaz Singh", "tier": 1},
+            {"sourceName": "Giani Gian Singh", "sourceRef": "Shamsheer Khalsa", "tier": 1}
+        ],
+        "quote": {
+            "text": "Tu beparvah mat janeh kachu re, aape saach chhadai nischai.",
+            "attribution": "Do not think that the Carefree Lord knows nothing; the True Lord surely liberates those who hold fast to Truth. — Sri Guru Granth Sahib (Ang 988)"
+        },
+        "quoteLocal": {
+            "text": "तू बेपरवाहु मत जाणहि कछु रे। आपे साचु छडाइ निसचै॥",
+            "attribution": "श्री गुरु ग्रंथ साहिब (अंग ९८८)"
+        },
+        "quotePa": {
+            "text": "ਤੂ ਬੇਪਰਵਾਹੁ ਮਤ ਜਾਣਹਿ ਕਛੁ ਰੇ ॥ ਆਪੇ ਸਾਚੁ ਛਡਾਇ ਨਿਸਚੈ ॥",
+            "attribution": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (ਅੰਗ ੯੮੮)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bhai Subeg Singh Ji looking across to his son Shahbaz Singh on the execution ground of Lahore, both bound to large wooden spiked wheels, their faces serene and eyes locked in divine brotherhood."
+    },
+    {
+        "id": "bhai-shahbaz-singh",
+        "name": "Bhai Shahbaz Singh Ji",
+        "nameLocal": "भाई शाहबाज सिंह जी",
+        "namePa": "ਭਾਈ ਸ਼ਾਹਬਾਜ਼ ਸਿੰਘ ਜੀ",
+        "era": "1727–1745 CE",
+        "eraLocal": "१७२७–१७४५ ईस्वी",
+        "eraPa": "੧੭੨੭–੧੭੪੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Jambar / Lahore",
+        "regionLocal": "जंबर / लाहौर",
+        "regionPa": "ਜੰਬਰ / ਲਾਹੌਰ",
+        "emoji": "☬",
+        "tagline": "The brilliant eighteen-year-old scholar-youth who spurned conversion to Islam in his madrasa and embraced the razor-sharp Charkhari alongside his father.",
+        "taglineLocal": "अठारह वर्षीय मेधावी छात्र जिन्होंने मदरसे में धर्म परिवर्तन के दबाव को ठुकराया और पिता के साथ चरखी पर अपनी देह कटवा दी।",
+        "taglinePa": "੧੮ ਸਾਲਾ ਵਿਦਵਾਨ ਨੌਜਵਾਨ ਜਿਨ੍ਹਾਂ ਨੇ ਮਦਰੱਸੇ ਵਿੱਚ ਧਰਮ ਬਦਲਣ ਤੋਂ ਇਨਕਾਰ ਕੀਤਾ ਅਤੇ ਪਿਤਾ ਨਾਲ ਚਰਖੜੀ 'ਤੇ ਚੜ੍ਹ ਕੇ ਸ਼ਹੀਦੀ ਪ੍ਰਾਪਤ ਕੀਤੀ।",
+        "journey": "Son of Bhai Subeg Singh, young Shahbaz Singh studied Arabic and Persian under a Muslim Kazi in Lahore. Gifted with extraordinary intellect, exceptional handsome looks, and sharp debate skills, his teacher sought to convert him to Islam. Shahbaz refused, defending the universal wisdom of Guru Nanak with impeccable theological clarity. Enraged, the Kazi lodged false blasphemy charges against the boy. In 1745, when both father and son were sentenced to the Charkhari, the executioners tried to break young Shahbaz first, promising him that if he uttered the Kalma, his life and wealth would be spared and his father would be freed. Shahbaz looked at his father, saw the pride of Guru Gobind Singh in his eyes, and declared: 'My breath belongs to the Guru; I will never defile my father's honor!' Bound to the spinning toothed wheel, the young prince of the Khalsa was shredded alive, passing into immortal glory.",
+        "journeyLocal": "लाहौर के मदरसे में फारसी पढ़ते हुए १८ वर्षीय शाहबाज सिंह ने काजी के धर्म परिवर्तन के प्रस्ताव को दृढ़ता से ठुकरा दिया। झूठे आरोपों में पिता सुबेग सिंह के साथ बंदी बनाए जाने पर मुगलों ने बालक पर दया का ढोंग करते हुए कहा कि केवल इस्लाम कबूल कर लो, तुम्हें और तुम्हारे पिता को छोड़ दिया जाएगा। शाहबाज ने पिता के चेहरे पर गर्व देखकर कहा कि यह शीश केवल गुरु का है। चरखी पर चढ़कर उन्होंने हंसते-हंसते अपनी देह न्योछावर कर दी।",
+        "journeyPa": "ਲਾਹੌਰ ਦੇ ਮਦਰੱਸੇ ਵਿੱਚ ਪੜ੍ਹਦਿਆਂ ਕਾਜ਼ੀ ਨੇ ਸ਼ਾਹਬਾਜ਼ ਸਿੰਘ 'ਤੇ ਇਸਲਾਮ ਕਬੂਲਣ ਦਾ ਦਬਾਅ ਪਾਇਆ। ਦਲੀਲਾਂ ਨਾਲ ਕਾਜ਼ੀ ਨੂੰ ਲਾਜਵਾਬ ਕਰਨ 'ਤੇ ਉਸਨੇ ਝੂਠੀ ਸ਼ਿਕਾਇਤ ਕਰਕੇ ਪਿਤਾ ਸਮੇਤ ਕੈਦ ਕਰਵਾ ਦਿੱਤਾ। ਕਚਹਿਰੀ ਵਿੱਚ ਲਾਲਚ ਦਿੱਤੇ ਗਏ ਕਿ ਦੀਨ ਕਬੂਲ ਲਓ ਤਾਂ ਦੋਵੇਂ ਬਚ ਜਾਓਗੇ। ਸ਼ਾਹਬਾਜ਼ ਨੇ ਪਿਤਾ ਦੇ ਚਿਹਰੇ ਵੱਲ ਵੇਖ ਕੇ ਗੱਜ ਕੇ ਕਿਹਾ, 'ਮੈਂ ਗੁਰੂ ਦੀ ਅਮਾਨਤ ਹਾਂ, ਸਿੱਖੀ ਨਹੀਂ ਛੱਡਾਂਗਾ।' ਚਰਖੜੀ 'ਤੇ ਚੜ੍ਹ ਕੇ ਆਪ ਨੇ ਲਾਸਾਨੀ ਸ਼ਹਾਦਤ ਦਿੱਤੀ।",
+        "trial": "Spurning alluring offers of royal freedom and clemency at eighteen years of age while staring at the bloody spiked wheel.",
+        "trialLocal": "अठारह वर्ष की यौवनावस्था में जीवन और भोग-विलास के प्रलोभन को ठुकराकर चरखी के लोहे के दांतों को गले लगाना अदम्य शौर्य था।",
+        "trialPa": "ਭਰੀ ਜਵਾਨੀ ਵਿੱਚ ਜਾਨ ਬਚਾਉਣ ਦੇ ਲਾਲਚ ਠੁਕਰਾ ਕੇ ਚਰਖੜੀ ਦੇ ਤਿੱਖੇ ਦੰਦਿਆਂ ਨੂੰ ਹੱਸ ਕੇ ਕਬੂਲ ਕਰਨਾ ਵੱਡੀ ਦਲੇਰੀ ਸੀ।",
+        "teaching": "Youth reaches its highest majesty when it refuses to compromise conscience for the transient pleasures of the world.",
+        "teachingLocal": "युवावस्था की सच्ची शोभा सांसारिक भोगों में नहीं, बल्कि सत्य और स्वाभिमान की रक्षा में प्राण न्योछावर करने में है।",
+        "teachingPa": "ਜਵਾਨੀ ਦਾ ਅਸਲ ਮਾਣ ਸੰਸਾਰੀ ਭੋਗਾਂ ਵਿੱਚ ਨਹੀਂ, ਸਗੋਂ ਸੱਚ ਅਤੇ ਅਣਖ 'ਤੇ ਪਹਿਰਾ ਦੇਣ ਵਿੱਚ ਹੈ।",
+        "moral": "True youth does not fear physical destruction when anchored in spiritual purpose and honor.",
+        "moralLocal": "जिस युवा का हृदय धर्म से आलोकित हो, वह मृत्यु की विभीषिका से भी नहीं डरता।",
+        "moralPa": "ਜਿਸ ਨੌਜਵਾਨ ਦੇ ਦਿਲ ਵਿੱਚ ਸਿੱਖੀ ਸਿਦਕ ਹੋਵੇ, ਉਹ ਮੌਤ ਦੀ ਪਰਵਾਹ ਨਹੀਂ ਕਰਦਾ।",
+        "legacy": "Honored as a youth hero whose moral clarity shamed despots, celebrated in Sikh folklore and prayers forever.",
+        "legacyLocal": "सिख कौम के अमर बाल-योद्धा, जिनकी निष्ठा ने मुगल साम्राज्य की क्रूरता को बेनकाब किया।",
+        "legacyPa": "ਸਿੱਖ ਨੌਜਵਾਨੀ ਦੇ ਰੋਲ ਮਾਡਲ ਜਿਨ੍ਹਾਂ ਨੇ ਸਿੱਖੀ ਕੇਸਾਂ-ਸੁਆਸਾਂ ਸੰਗ ਨਿਭਾ ਕੇ ਕੌਮ ਦਾ ਸਿਰ ਉੱਚਾ ਕੀਤਾ।",
+        "source": "Prachin Panth Prakash, Twarikh Guru Khalsa, Mahan Kosh",
+        "sourceLocal": "प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा, महान कोश",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Prasang Subeg Singh", "tier": 1},
+            {"sourceName": "Kahn Singh Nabha", "sourceRef": "Mahan Kosh, Entry Shahbaz Singh", "tier": 1}
+        ],
+        "quote": {
+            "text": "Gur satgur ka jo sikh akhaaye so bhalke uth har naam dhiyaavai.",
+            "attribution": "One who calls oneself a Sikh of the True Guru shall rise at dawn and meditate on the Lord's Name. — Sri Guru Granth Sahib (Ang 305)"
+        },
+        "quoteLocal": {
+            "text": "गुर सतिगुर का जो सिखु अखाए सु भलके उठਿ हरि नामु धिआवै।",
+            "attribution": "श्री गुरु ग्रंथ साहिब (अंग ३०५)"
+        },
+        "quotePa": {
+            "text": "ਗੁਰ ਸਤਿਗੁਰ ਕਾ ਜੋ ਸਿਖੁ ਅਖਾਏ ਸੁ ਭਲਕੇ ਉਠਿ ਹਰਿ ਨਾਮੁ ਧਿਆਵੈ ॥",
+            "attribution": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (ਅੰਗ ੩੦੫)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting eighteen-year-old Bhai Shahbaz Singh Ji standing tall in the Lahore court with folded hands and shining eyes, refusing the robe of honor proffered by qazis."
+    },
+    {
+        "id": "baba-gurbaksh-singh",
+        "name": "Baba Gurbaksh Singh Ji Nihang",
+        "nameLocal": "बाबा गुरबख्श सिंह जी निहंग",
+        "namePa": "ਬਾਬਾ ਗੁਰਬਖ਼ਸ਼ ਸਿੰਘ ਜੀ ਨਿਹੰਗ",
+        "era": "1688–1764 CE",
+        "eraLocal": "१६८८–१७६४ ईस्वी",
+        "eraPa": "੧੬੮੮–੧੭੬੪ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Khemkaran / Sri Harmandir Sahib, Amritsar",
+        "regionLocal": "खेमकरण / श्री हरिमंदिर साहिब, अमृतसर",
+        "regionPa": "ਖੇਮਕਰਨ / ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ, ਅੰਮ੍ਰਿਤਸਰ",
+        "emoji": "☬",
+        "tagline": "The venerable Nihang warrior who led thirty Sikhs into a glorious last stand at Sri Harmandir Sahib against Ahmad Shah Abdali's invading army of thirty thousand.",
+        "taglineLocal": "वह निहंग जत्थेदार जिन्होंने मात्र ३० सिंहों के साथ अहमद शाह अब्दाली की ३०,००० की अफगान सेना के सामने हरिमंदिर साहिब की रक्षा में वीरगति पाई।",
+        "taglinePa": "ਉਹ ਨਿਹੰਗ ਮੁਖੀ ਜਿਨ੍ਹਾਂ ਨੇ ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ ਦੀ ਪਵਿੱਤਰਤਾ ਲਈ ਕੇਵਲ ੩੦ ਸਿੰਘਾਂ ਨਾਲ ਅਹਿਮਦ ਸ਼ਾਹ ਅਬਦਾਲੀ ਦੀ ੩੦,੦੦੦ ਅਫ਼ਗ਼ਾਨ ਫ਼ੌਜ ਦਾ ਸਾਹਮਣਾ ਕਰਦਿਆਂ ਸ਼ਹੀਦੀ ਪਾਈ।",
+        "journey": "Born in Khemkaran, Gurbaksh Singh was baptized by Bhai Mani Singh and became a revered Nihang warrior-saint in the Taruna Dal. In December 1764, the Afghan invader Ahmad Shah Abdali swept into Punjab on his seventh invasion, specifically intending to demolish Sri Harmandir Sahib once again. Aware that the main Dal Khalsa forces had temporarily retreated to the Lakhi jungle for guerrilla tactics, Baba Gurbaksh Singh refused to leave the Golden Temple defenceless. He and twenty-nine elderly and young Sikhs dressed themselves in ceremonial saffron wedding robes, performing their own Ardas of martyrdom. When Abdali's army of thirty thousand advanced upon the sacred precinct, Baba Gurbaksh Singh and his thirty lions charged out from the Akal Takht. Qazi Nur Muhammad, the official Afghan court chronicler who witnessed the battle, wrote with stunned admiration: 'These thirty men showed no fear of slaughter... they plunged into our army like enraged tigers and fought until every single one of them lay dead on the bloodstained marble.'",
+        "journeyLocal": "खेमकरण के निवासी बाबा गुरबख्श सिंह निहंग पंथ के महान संत-योद्धा थे। १७६४ में जब अहमद शाह अब्दाली ने हरिमंदिर साहिब को ध्वस्त करने के लिए ३०,००० की सेना के साथ हमला किया, तो बाबा जी ने पवित्र स्थल को अकेला छोड़ने से इनकार कर दिया। उन्होंने मात्र २९ अन्य सिंहों के साथ शहादत का बाना (केसरिया वस्त्र) पहना और अकाल तख्त से निकलकर अफगान सेना पर भूखे शेरों की तरह टूट पड़े। अफगान इतिहासकार काजी नूर मुहम्मद ने लिखा कि इन ३० वीरों में मृत्यु का रत्ती भर भी भय नहीं था; वे अंतिम सांस तक लड़े और पवित्र सरोवर की परिक्रमा में शहीद हुए।",
+        "journeyPa": "ਖੇਮਕਰਨ ਦੇ ਬਾਬਾ ਗੁਰਬਖ਼ਸ਼ ਸਿੰਘ ਜੀ ਤਰੁਣਾ ਦਲ ਦੇ ਸਿਰਕੱਢ ਨਿਹੰਗ ਯੋਧੇ ਸਨ। ੧੭੬੪ ਵਿੱਚ ਜਦੋਂ ਅਹਿਮਦ ਸ਼ਾਹ ਅਬਦਾਲੀ ੩੦,੦੦੦ ਫ਼ੌਜ ਲੈ ਕੇ ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਨੂੰ ਢਾਹੁਣ ਆਇਆ, ਤਾਂ ਬਾਬਾ ਜੀ ਨੇ ਮਾਤਰ ੨੯ ਸਿੰਘਾਂ ਸਮੇਤ ਕੇਸਰੀ ਬਾਣੇ ਪਾ ਕੇ ਸ਼ਹੀਦੀ ਲਾੜੀ ਵਿਆਹੁਣ ਦਾ ਪ੍ਰਣ ਲਿਆ। ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ ਮੂਹਰਿਓਂ ਨਿਕਲ ਕੇ ਸਿੰਘਾਂ ਨੇ ਅਫ਼ਗ਼ਾਨਾਂ ਦੇ ਆਹੂ ਲਾਹੇ। ਕਾਜ਼ੀ ਨੂਰ ਮੁਹੰਮਦ ਨੇ ਆਪਣੀ ਕਿਤਾਬ 'ਜੰਗਨਾਮਾ' ਵਿੱਚ ਲਿਖਿਆ ਕਿ ਇਹ ਤੀਹੇ ਸਿੰਘ ਸ਼ੇਰਾਂ ਵਾਂਗ ਲੜੇ ਅਤੇ ਸਾਰੇ ਦੇ ਸਾਰੇ ਸ਼ਹੀਦ ਹੋ ਗਏ ਪਰ ਪਿੱਠ ਨਹੀਂ ਦਿਖਾਈ।",
+        "trial": "Standing with thirty men against an imperial army of thirty thousand, turning a certain massacre into an immortal epic of defiance.",
+        "trialLocal": "तीस हजार की विदेशी सेना के सामने केवल तीस सिंहों के साथ पवित्र धाम की रक्षा में कूद पड़ना अद्वितीय शौर्य था।",
+        "trialPa": "੩੦ ਹਜ਼ਾਰ ਦੀ ਅਫ਼ਗ਼ਾਨ ਫ਼ੌਜ ਸਾਹਮਣੇ ਕੇਵਲ ੩੦ ਸਿੰਘਾਂ ਨਾਲ ਮੈਦਾਨ ਵਿੱਚ ਨਿੱਤਰਨਾ ਅਣਖ ਅਤੇ ਦਲੇਰੀ ਦੀ ਸਿਖ਼ਰ ਸੀ।",
+        "teaching": "A holy shrine is not defended by fleeing to preserve mortal life, but by watering its sacred thresholds with the blood of righteous devotion.",
+        "teachingLocal": "पवित्र धर्मस्थल की रक्षा प्राण बचाकर भागने से नहीं, बल्कि अपने रक्त से उसकी चौखट को सींचने से होती है।",
+        "teachingPa": "ਸੱਚੇ ਧਰਮ ਅਸਥਾਨਾਂ ਦੀ ਰਾਖੀ ਆਪਣੇ ਲਹੂ ਨਾਲ ਕੀਤੀ ਜਾਂਦੀ ਹੈ; ਸਿੱਖ ਕਦੇ ਵੀ ਪਵਿੱਤਰ ਅਸਥਾਨ ਨੂੰ ਬੇਸਹਾਰਾ ਨਹੀਂ ਛੱਡਦਾ।",
+        "moral": "The glory of a last stand is measured not by numbers, but by the purity of the cause and the fearlessness of the warriors.",
+        "moralLocal": "शौर्य की महानता सैनिकों की संख्या से नहीं, बल्कि उद्देश्य की पवित्रता और निर्भयता से मापी जाती है।",
+        "moralPa": "ਗਿਣਤੀਆਂ-ਮਿਣਤੀਆਂ ਕੋਈ ਮਾਅਨੇ ਨਹੀਂ ਰੱਖਦੀਆਂ ਜਦੋਂ ਧਰਮ ਅਤੇ ਸਵੈਮਾਣ ਦਾ ਸਵਾਲ ਹੋਵੇ।",
+        "legacy": "Gurdwara Shahid Ganj Baba Gurbaksh Singh behind the Akal Takht commemorates the spot where these thirty immortals defended the Sanctum Sanctorum.",
+        "legacyLocal": "अकाल तख्त के पीछे स्थित गुरुद्वारा शहीद गंज बाबा गुरबख्श सिंह उनकी अद्वितीय वीरता का पावन स्मारक है।",
+        "legacyPa": "ਸ੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ ਦੇ ਪਿੱਛੇ ਗੁਰਦੁਆਰਾ ਸ਼ਹੀਦ ਗੰਜ ਬਾਬਾ ਗੁਰਬਖ਼ਸ਼ ਸਿੰਘ ਜੀ ਉਹਨਾਂ ਦੀ ਲਾਸਾਨੀ ਕੁਰਬਾਨੀ ਦੀ ਯਾਦ ਦਿਵਾਉਂਦਾ ਹੈ।",
+        "source": "Jangnama (Qazi Nur Muhammad, 1765), Prachin Panth Prakash, Twarikh Guru Khalsa",
+        "sourceLocal": "जंगनामा (काजी नूर मुहम्मद, १७६५), प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा",
+        "sourcePa": "ਜੰਗਨਾਮਾ (ਕਾਜ਼ੀ ਨੂਰ ਮੁਹੰਮਦ, ੧੭੬੫), ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ",
+        "sourceCitations": [
+            {"sourceName": "Qazi Nur Muhammad", "sourceRef": "Jangnama, Account of Amritsar Attack (1764)", "tier": 1},
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Saka Baba Gurbaksh Singh", "tier": 1}
+        ],
+        "quote": {
+            "text": "Kaho Nanak ab oot bhayee har raakh lehu rehman.",
+            "attribution": "Says Nanak, I have now taken refuge in the Lord; save me, O Merciful Lord of the Universe! — Guru Tegh Bahadur Ji, Sri Guru Granth Sahib (Ang 1427)"
+        },
+        "quoteLocal": {
+            "text": "कहु नानक अब ओट भई हरि राखु लेहु रहमान॥",
+            "attribution": "गुरु तेग बहादुर जी (श्री गुरु ग्रंथ साहिब, अंग १४२७)"
+        },
+        "quotePa": {
+            "text": "ਕਹੁ ਨਾਨਕ ਅਬ ਓਟ ਭਈ ਹਰਿ ਰਾਖੁ ਲੇਹੁ ਰਹਮਾਨ ॥",
+            "attribution": "ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੧੪੨੭)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting tall, blue-turbaned Nihang Baba Gurbaksh Singh Ji with flowing white beard wielding a heavy steel Khanda sword on the marble parikrama of Sri Harmandir Sahib, charging fearlessly against waves of Afghan soldiers."
+    },
+    {
+        "id": "bhai-sukha-singh",
+        "name": "Bhai Sukha Singh Ji",
+        "nameLocal": "भाई सुखा सिंह जी",
+        "namePa": "ਭਾਈ ਸੁੱਖਾ ਸਿੰਘ ਜੀ",
+        "era": "1710–1752 CE",
+        "eraLocal": "१७१०–१७५२ ईस्वी",
+        "eraPa": "੧੭੧੦–੧੭੫੨ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Mari Kamboke / Amritsar",
+        "regionLocal": "माड़ी कांबोके / अमृतसर",
+        "regionPa": "ਮਾੜੀ ਕਾਂਬੋਕੇ / ਅੰਮ੍ਰਿਤਸਰ",
+        "emoji": "☬",
+        "tagline": "The fearless carpenter-warrior who rode disguised into desecrated Amritsar with Bhai Mehtab Singh and punished the blasphemous Massa Ranghar.",
+        "taglineLocal": "भाई मेहताब सिंह के साथ भेष बदलकर अमृतसर में घुसकर हरिमंदिर साहिब को अपवित्र करने वाले मस्से रंघड़ का सिर काटने वाले साहसी वीर।",
+        "taglinePa": "ਭਾਈ ਮਹਿਤਾਬ ਸਿੰਘ ਜੀ ਨਾਲ ਭੇਸ ਬਦਲ ਕੇ ਸ੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ ਪੁੱਜ ਕੇ ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਬੇਅਦਬੀ ਕਰਨ ਵਾਲੇ ਮੱਸੇ ਰੰਘੜ ਦਾ ਸਿਰ ਵੱਢਣ ਵਾਲੇ ਦਲੇਰ ਸੂਰਮੇ।",
+        "journey": "Born into a carpenter (Tarkhan) family in Mari Kamboke, Sukha was captivated by the Khalsa spirit. When his parents, fearing Mughal reprisals, cut his hair in his sleep, Sukha was so devastated that he attempted suicide by jumping into a well, but was saved. He fled into the jungles, took Amrit from the Dal Khalsa, and became a master horseman. In 1740, news reached the Sikh sanctuary in Rajasthan's deserts that the Mughal commander Massa Ranghar had turned Sri Harmandir Sahib into a brothel and stables, smoking hookahs on the holy precinct. Sukha Singh and Bhai Mehtab Singh volunteered for the near-suicidal mission. Disguised as revenue-collecting village landlords carrying bags filled with broken earthen pots (posing as gold coins), they rode into Amritsar, passed through imperial cordons, entered the inner sanctum, struck off Massa Ranghar's head, and galloped away before the garrison could react.",
+        "journeyLocal": "माड़ी कांबोके के सुखा सिंह ने बाल्यकाल में केश कटवाए जाने पर कुएं में छलांग लगा दी थी, परंतु बच गए और जंगलों में जाकर अमृत छककर खालसा बने। १७४० में जब मस्सा रंघड़ ने हरिमंदिर साहिब को अपवित्र कर वहां मद्यपान और नर्तकियों का अड्डा बनाया, तो सुखा सिंह और मेहताब सिंह ने राजस्थान के जंगलों से आकर भेष बदला। उन्होंने हरिमंदिर साहिब में घुसकर बिजली की फुर्ती से मस्से रंघड़ का सिर काट लिया और घोड़े दौड़ाते हुए सुरक्षित निकल गए।",
+        "journeyPa": "ਮਾੜੀ ਕਾਂਬੋਕੇ ਦੇ ਭਾਈ ਸੁੱਖਾ ਸਿੰਘ ਜੀ ਸਿੱਖੀ ਕੇਸਾਂ ਨੂੰ ਜਾਨ ਤੋਂ ਵੱਧ ਪਿਆਰ ਕਰਦੇ ਸਨ। ੧੭੪੦ ਵਿੱਚ ਜਦੋਂ ਮੱਸੇ ਰੰਘੜ ਨੇ ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਘੋਰ ਬੇਅਦਬੀ ਕੀਤੀ, ਤਾਂ ਭਾਈ ਸੁੱਖਾ ਸਿੰਘ ਤੇ ਭਾਈ ਮਹਿਤਾਬ ਸਿੰਘ ਨੇ ਬੀਕਾਨੇਰ ਤੋਂ ਆ ਕੇ ਨੰਬਰਦਾਰਾਂ ਦਾ ਭੇਸ ਬਣਾਇਆ। ਠੀਕਰਾਂ ਦੀਆਂ ਬੋਰੀਆਂ ਮਾਮਲੇ ਵਜੋਂ ਵਿਖਾ ਕੇ ਅੰਦਰ ਦਾਖ਼ਲ ਹੋਏ ਅਤੇ ਮੱਸੇ ਰੰਘੜ ਦਾ ਸਿਰ ਵੱਢ ਕੇ ਨੇਜ਼ੇ 'ਤੇ ਟੰਗ ਕੇ ਲੈ ਗਏ।",
+        "trial": "Riding hundreds of miles through enemy patrols and entering the heavily fortified center of an occupied shrine with certainty of gruesome death if recognized.",
+        "trialLocal": "कड़े मुगल पहरे के बीच हरिमंदिर साहिब के भीतर घुसकर दुष्ट का संहार करना और जीवित निकलना अदम्य पराक्रम था।",
+        "trialPa": "ਹਜ਼ਾਰਾਂ ਮੁਗ਼ਲ ਫ਼ੌਜੀਆਂ ਦੇ ਘੇਰੇ ਵਿੱਚੋਂ ਲੰਘ ਕੇ ਪਵਿੱਤਰ ਅਸਥਾਨ ਦੀ ਪਵਿੱਤਰਤਾ ਬਹਾਲ ਕਰਨ ਲਈ ਜਾਨ ਦੀ ਬਾਜ਼ੀ ਲਾਉਣੀ ਅਲੌਕਿਕ ਸਾਹਸ ਸੀ।",
+        "teaching": "Desecration of sacred dignity must never be tolerated in silence; justice demands swift, fearless, and decisive action.",
+        "teachingLocal": "पवित्र स्थलों की मर्यादा का अपमान कभी चुपचाप नहीं सहना चाहिए; न्याय हेतु त्वरित और निर्भय कदम उठाना अनिवार्य है।",
+        "teachingPa": "ਧਰਮ ਅਸਥਾਨਾਂ ਦੀ ਬੇਅਦਬੀ ਚੁੱਪ ਕਰਕੇ ਜਰਨਾ ਪਾਪ ਹੈ; ਅਣਖ ਅਤੇ ਅਣਖੀਲੇ ਬਦਲੇ ਲਈ ਹਰ ਪਲ ਤਿਆਰ ਰਹਿਣਾ ਚਾਹੀਦਾ ਹੈ।",
+        "moral": "When sacred boundaries are violated, righteous daring shatters imperial arrogance in broad daylight.",
+        "moralLocal": "पवित्र मर्यादाओं के उल्लंघन पर सत्यनिष्ठ शूरवीर दिनदहाड़े आतताइयों के अहंकार को चूर कर देते हैं।",
+        "moralPa": "ਸੱਚੇ ਸੂਰਮੇ ਜ਼ਾਲਮਾਂ ਦੇ ਘਰ ਜਾ ਕੇ ਉਹਨਾਂ ਦੇ ਕਿਲ੍ਹੇ ਹਿਲਾ ਦਿੰਦੇ ਹਨ।",
+        "legacy": "A folk legend in Punjab, celebrated as the avenger of the Golden Temple's sanctity and paragon of martial audacity.",
+        "legacyLocal": "हरिमंदिर साहिब की पवित्रता के रक्षक के रूप में लोक-इतिहास में अमर सेनानी।",
+        "legacyPa": "ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਪਵਿੱਤਰਤਾ ਦੇ ਰਖਵਾਲੇ ਵਜੋਂ ਪੰਜਾਬ ਦੇ ਲੋਕ-ਮਨਾਂ ਵਿੱਚ ਸਦਾ ਜਿਊਂਦੇ ਹਨ।",
+        "source": "Prachin Panth Prakash, Twarikh Guru Khalsa, Shamsheer Khalsa",
+        "sourceLocal": "प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा, शमशीर खालसा",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ, ਸ਼ਮਸ਼ੀਰ ਖ਼ਾਲਸਾ",
+        "sourceCitations": [
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Episode of Massa Ranghar", "tier": 1},
+            {"sourceName": "Giani Gian Singh", "sourceRef": "Twarikh Guru Khalsa", "tier": 1}
+        ],
+        "quote": {
+            "text": "Khalsa so jo chadhai turang, khalsa so jo karai nit jang.",
+            "attribution": "The Khalsa is one who mounts the swift steed; the Khalsa is one who battles constantly against injustice! — Traditional Khalsa Rehit Code"
+        },
+        "quoteLocal": {
+            "text": "खालसा सो जो चढ़ै तुरंग। खालसा सो जो करै नित जंग॥",
+            "attribution": "पारंपरिक खालसा रहित वचन"
+        },
+        "quotePa": {
+            "text": "ਖ਼ਾਲਸਾ ਸੋ ਜੋ ਚੜ੍ਹੈ ਤੁਰੰਗ ॥ ਖ਼ਾਲਸਾ ਸੋ ਜੋ ਕਰੈ ਨਿਤ ਜੰਗ ॥",
+            "attribution": "ਰਵਾਇਤੀ ਖ਼ਾਲਸਾ ਰਹਿਤ ਬੋਲ"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Bhai Sukha Singh Ji and Bhai Mehtab Singh Ji on galloping warhorses leaping across the causeway of Sri Harmandir Sahib under stormy skies, scimitars gleaming in the lightning."
+    },
+    {
+        "id": "bhai-mehtab-singh",
+        "name": "Bhai Mehtab Singh Ji",
+        "nameLocal": "भाई मेहताब सिंह जी",
+        "namePa": "ਭਾਈ ਮਹਿਤਾਬ ਸਿੰਘ ਜੀ",
+        "era": "1710–1745 CE",
+        "eraLocal": "१७१०–१७४५ ईस्वी",
+        "eraPa": "੧੭੧੦–੧੭੪੫ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Mirankot / Amritsar / Lahore",
+        "regionLocal": "मीरांकोट / अमृतसर / लाहौर",
+        "regionPa": "ਮੀਰਾਂਕੋਟ / ਅੰਮ੍ਰਿਤਸਰ / ਲਾਹੌਰ",
+        "emoji": "☬",
+        "tagline": "The lion of Mirankot who eliminated Massa Ranghar to restore the Golden Temple and later attained martyrdom on the Charkhari at Lahore with unshakeable poise.",
+        "taglineLocal": "मीरांकोट के शूरवीर जिन्होंने हरिमंदिर साहिब की पवित्रता बहाल की और बाद में लाहौर में चरखी पर कटते हुए भी धर्म नहीं छोड़ा।",
+        "taglinePa": "ਮੀਰਾਂਕੋਟ ਦੇ ਉਹ ਬਹਾਦਰ ਸੂਰਮੇ ਜਿਨ੍ਹਾਂ ਨੇ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਬੇਅਦਬੀ ਦਾ ਬਦਲਾ ਲਿਆ ਅਤੇ ਬਾਅਦ ਵਿੱਚ ਲਾਹੌਰ ਵਿਖੇ ਚਰਖੜੀ 'ਤੇ ਸ਼ਹੀਦੀ ਪਾਈ।",
+        "journey": "Born into a Sandhu Jat family in Mirankot near Amritsar, Bhai Mehtab Singh was an established warrior of the Budha Dal. When news reached Bikaner of Massa Ranghar's sacrilege at Sri Harmandir Sahib, Mehtab Singh stood up immediately, declaring that while a single Sikh lived, the sanctuary of Guru Ram Das could not be disgraced. Alongside Bhai Sukha Singh, he rode across deserts and rivers, entered the Darbar Sahib disguised as a village landlord, decapitated the blasphemer with a single stroke of his sword, and galloped away. Years later, betrayed and arrested in 1745, he was brought to Lahore. Given the choice between converting to Islam or death on the Charkhari, Mehtab Singh smiled serenely, climbed onto the spinning spiked wheel, and endured his bones being broken piece by piece, remaining immersed in prayer.",
+        "journeyLocal": "मीरांकोट के भाई मेहताब सिंह ने बीकानेर में जब हरिमंदिर साहिब के अपमान की बात सुनी, तो वे सुखा सिंह के साथ तुरंत रवाना हुए। उन्होंने अमृतसर पहुंचकर मस्से रंघड़ का सिर धड़ से अलग किया। वर्षों बाद १७४५ में गद्दारों द्वारा बंदी बनाए जाने पर लाहौर में उन्हें चरखी पर चढ़ाया गया। उन्होंने इस्लाम स्वीकार करने के स्थान पर अपनी हड्डियों को कुचलवाना स्वीकार किया और अमर बलिदान दिया।",
+        "journeyPa": "ਮੀਰਾਂਕੋਟ ਦੇ ਭਾਈ ਮਹਿਤਾਬ ਸਿੰਘ ਜੀ ਨੇ ਬੀਕਾਨੇਰ ਦੀ ਧਰਤੀ 'ਤੇ ਪ੍ਰਣ ਕੀਤਾ ਕਿ ਜਦੋਂ ਤੱਕ ਉਹ ਜਿਊਂਦੇ ਹਨ, ਸ੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ ਦੀ ਬੇਅਦਬੀ ਬਰਦਾਸ਼ਤ ਨਹੀਂ ਹੋਵੇਗੀ। ਭਾਈ ਸੁੱਖਾ ਸਿੰਘ ਨਾਲ ਮਿਲ ਕੇ ਮੱਸੇ ਰੰਘੜ ਨੂੰ ਸੋਧਿਆ। ੧੭੪੫ ਵਿੱਚ ਲਾਹੌਰ ਵਿਖੇ ਗ੍ਰਿਫ਼ਤਾਰ ਕਰਕੇ ਜਦੋਂ ਚਰਖੜੀ 'ਤੇ ਚਾੜ੍ਹਿਆ ਗਿਆ, ਤਾਂ ਆਪ ਨੇ ਹੱਸ ਕੇ ਸ਼ਹਾਦਤ ਦਾ ਜਾਮ ਪੀਤਾ ਪਰ ਸਿੱਖੀ ਸਿਦਕ ਤੋਂ ਪਿੱਛੇ ਨਾ ਹਟੇ।",
+        "trial": "Surrendering his body to the bone-crushing wheels of the Charkhari after a lifetime of defending Sikh honor against the Mughal state.",
+        "trialLocal": "चरखी के तीखे दांतों पर अपनी हड्डियों को तिल-तिल कुचलवाना और चेहरे पर मुस्कान बनाए रखना उनकी अदम्य निष्ठा थी।",
+        "trialPa": "ਚਰਖੜੀ 'ਤੇ ਚੜ੍ਹ ਕੇ ਬੰਦ-ਬੰਦ ਕਟਵਾਉਣਾ ਪਰ ਮੁੱਖੋਂ ਸੀਅ ਨਾ ਉਚਾਰਨਾ ਉਹਨਾਂ ਦੇ ਸਿਦਕ ਦੀ ਅਦੁੱਤੀ ਪਰਖ ਸੀ।",
+        "teaching": "The house of the Guru is dearer than physical life; those who defend sacred honor live forever in the collective memory of the free.",
+        "teachingLocal": "गुरु का धाम प्राणों से अधिक प्यारा है; जो धर्म की रक्षा हेतु जीवन देते हैं, वे इतिहास में अमर हो जाते हैं।",
+        "teachingPa": "ਗੁਰੂ ਦਾ ਦਰਬਾਰ ਜਾਨ ਤੋਂ ਪਿਆਰਾ ਹੈ; ਅਣਖ ਨਾਲ ਜਿਊਣਾ ਅਤੇ ਧਰਮ ਲਈ ਸ਼ਹੀਦ ਹੋਣਾ ਹੀ ਸਿੱਖ ਦਾ ਗਹਿਣਾ ਹੈ।",
+        "moral": "Courage in youth and serenity in martyrdom make a warrior truly immortal.",
+        "moralLocal": "शौर्य और शहादत का संगम ही मनुष्य को अमरत्व प्रदान करता है।",
+        "moralPa": "ਬਹਾਦਰੀ ਅਤੇ ਸਿਦਕ ਦਾ ਸੁਮੇਲ ਹੀ ਮਨੁੱਖ ਨੂੰ ਆਤਮਿਕ ਤੌਰ 'ਤੇ ਅਮਰ ਕਰਦਾ ਹੈ।",
+        "legacy": "Celebrated alongside Sukha Singh in Sikh folklore, and revered among the foremost martyrs of the eighteenth-century resistance.",
+        "legacyLocal": "सिख इतिहास में शौर्य और शहादत के सर्वोच्च प्रतीक, जिनकी वीरता अमर गाथा बन गई।",
+        "legacyPa": "੧੮ਵੀਂ ਸਦੀ ਦੇ ਸਿੱਖ ਸੰਘਰਸ਼ ਦੇ ਮਹਾਨ ਨਾਇਕ ਅਤੇ ਸ਼ਹੀਦ ਵਜੋਂ ਸਦਾ ਸਤਿਕਾਰੇ ਜਾਂਦੇ ਹਨ।",
+        "source": "Prachin Panth Prakash, Twarikh Guru Khalsa, Shamsheer Khalsa",
+        "sourceLocal": "प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा, शमशीर खालसा",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ, ਸ਼ਮਸ਼ੀਰ ਖ਼ਾਲਸਾ",
+        "sourceCitations": [
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Saka Mehtab Singh", "tier": 1},
+            {"sourceName": "Giani Gian Singh", "sourceRef": "Shamsheer Khalsa", "tier": 1}
+        ],
+        "quote": {
+            "text": "Bhai re man rehiye har ranga, har dhiyaaye sada sukh paaye mit jaaye sabh sanga.",
+            "attribution": "O brother, let your mind abide in the love of the Lord; meditating on the Divine, find eternal peace and cast off all worldly dread. — Sri Guru Granth Sahib (Ang 44)"
+        },
+        "quoteLocal": {
+            "text": "भाई रे मनु रहीऐ हरि रंगा। हरि धिआइ सदा सुखु पाईऐ मिटि जाइ सगल संगा॥",
+            "attribution": "श्री गुरु ग्रंथ साहिब (अंग ४४)"
+        },
+        "quotePa": {
+            "text": "ਭਾਈ ਰੇ ਮਨੁ ਰਹੀਐ ਹਰਿ ਰੰਗਾ ॥ ਹਰਿ ਧਿਆਇ ਸਦਾ ਸੁਖੁ ਪਾਈਐ ਮਿਟਿ ਜਾਇ ਸਗਲ ਸੰਗਾ ॥",
+            "attribution": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (ਅੰਗ ੪੪)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting showing Bhai Mehtab Singh Ji in simple Rajasthani robes standing poised inside the marble courtyard of Amritsar, drawn talwar raised high, lightning reflecting off the sacred pool."
+    },
+    {
+        "id": "sardar-baghel-singh",
+        "name": "Sardar Baghel Singh Ji",
+        "nameLocal": "सरदार बघेल सिंह जी",
+        "namePa": "ਸਰਦਾਰ ਬਘੇਲ ਸਿੰਘ ਜੀ",
+        "era": "1730–1802 CE",
+        "eraLocal": "१७३०–१८०२ ईस्वी",
+        "eraPa": "੧੭੩੦–੧੮੦੨ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Chhabal, Amritsar / Delhi",
+        "regionLocal": "झबाल, अमृतसर / दिल्ली",
+        "regionPa": "ਝਬਾਲ, ਅੰਮ੍ਰਿਤਸਰ / ਦਿੱਲੀ",
+        "emoji": "☬",
+        "tagline": "The legendary general of the Karor Singhia Misl who conquered Delhi in 1783, raised the Nishan Sahib on the Red Fort, and constructed all historical Gurdwaras in Delhi.",
+        "taglineLocal": "करोड़सिंहिया मिसल के महान सेनापति जिन्होंने १७८३ में दिल्ली फतह कर लाल किले पर निशान साहिब फहराया और दिल्ली के ऐतिहासिक गुरुद्वारों का निर्माण कराया।",
+        "taglinePa": "ਕਰੋੜਸਿੰਘੀਆ ਮਿਸਲ ਦੇ ਮਹਾਨ ਜਰਨੈਲ ਜਿਨ੍ਹਾਂ ਨੇ ੧੭੮੩ ਵਿੱਚ ਦਿੱਲੀ ਜਿੱਤ ਕੇ ਲਾਲ ਕਿਲ੍ਹੇ 'ਤੇ ਨਿਸ਼ਾਨ ਸਾਹਿਬ ਝੁਲਾਇਆ ਅਤੇ ਦਿੱਲੀ ਦੇ ਸਾਰੇ ਇਤਿਹਾਸਕ ਗੁਰਦੁਆਰੇ ਉਸਾਰੇ।",
+        "journey": "Head of the Karor Singhia Misl, Sardar Baghel Singh was one of the brilliant military strategists of eighteenth-century India. In March 1783, commanding a united Sikh confederacy army of thirty thousand warriors (the Dal Khalsa), Baghel Singh swept past Mughal defenses and captured the imperial capital of Delhi. His forces stormed the Red Fort and hoisted the Sikh Nishan Sahib upon the Diwan-i-Aam. Mughal Emperor Shah Alam II sued for peace, conceding the Sikhs' terms: Baghel Singh was granted the right to collect 37.5% (six annas in a rupee) of all octroi duties of Delhi and received imperial authority to locate and construct shrines at all historical sites associated with the Sikh Gurus. With remarkable diligence, Baghel Singh spent months in Delhi identifying the sacred sites, constructing Gurdwara Sis Ganj Sahib (site of Guru Tegh Bahadur's martyrdom), Gurdwara Bangla Sahib, Gurdwara Rakab Ganj, Gurdwara Bala Sahib, Gurdwara Majnu ka Tilla, and Gurdwara Moti Bagh.",
+        "journeyLocal": "करोड़सिंहिया मिसल के प्रमुख सरदार बघेल सिंह अद्वितीय सैन्य रणनीतिकार थे। मार्च १७८३ में उन्होंने ३०,००० खालसा सेना के साथ दिल्ली पर विजय प्राप्त की और लाल किले के दीवान-ए-आम पर निशान साहिब फहराया। मुगल सम्राट शाह आलम द्वितीय ने उनके सामने आत्मसमर्पण किया। बघेल सिंह ने दिल्ली के चुंगी कर का ३७.५% हिस्सा प्राप्त किया और दिल्ली में गुरु साहिबानों से जुड़े पावन स्थलों की खोज कर गुरुद्वारा सीस गंज साहिब, बंगला साहिब, रकाब गंज साहिब, माता सुंदरी जी और मजनूं का टीला साहिब का भव्य निर्माण कराया।",
+        "journeyPa": "ਕਰੋੜਸਿੰਘੀਆ ਮਿਸਲ ਦੇ ਮੁਖੀ ਸਰਦਾਰ ਬਘੇਲ ਸਿੰਘ ਜੀ ਨੇ ਮਾਰਚ ੧੭੮੩ ਵਿੱਚ ੩੦,੦੦੦ ਖ਼ਾਲਸਾ ਫ਼ੌਜ ਸਮੇਤ ਦਿੱਲੀ ਫ਼ਤਹਿ ਕੀਤੀ ਅਤੇ ਲਾਲ ਕਿਲ੍ਹੇ ਦੇ ਦੀਵਾਨ-ਏ-ਆਮ 'ਤੇ ਕੇਸਰੀ ਨਿਸ਼ਾਨ ਸਾਹਿਬ ਲਹਿਰਾਇਆ। ਮੁਗ਼ਲ ਬਾਦਸ਼ਾਹ ਸ਼ਾਹ ਆਲਮ ਨੇ ਈਨ ਮੰਨੀ। ਆਪ ਨੇ ਦਿੱਲੀ ਵਿੱਚ ਗੁਰੂ ਸਾਹਿਬਾਨ ਨਾਲ ਸਬੰਧਤ ਅਸਥਾਨਾਂ ਦੀ ਖੋਜ ਕਰਕੇ ਗੁਰਦੁਆਰਾ ਸੀਸ ਗੰਜ ਸਾਹਿਬ, ਰਕਾਬ ਗੰਜ ਸਾਹਿਬ, ਬੰਗਲਾ ਸਾਹਿਬ ਅਤੇ ਮਜਨੂੰ ਦਾ ਟਿੱਲਾ ਸਮੇਤ ਇਤਿਹਾਸਕ ਗੁਰਦੁਆਰੇ ਕਾਇਮ ਕੀਤੇ।",
+        "trial": "Refusing the throne of Delhi for personal empire, choosing instead the imperial revenue to discover and build sacred monuments to the Gurus' sacrifices.",
+        "trialLocal": "दिल्ली के राजसिंहासन को ठुकराकर गुरु साहिबानों के पावन तीर्थों के निर्माण को प्राथमिकता देना उनका अद्वितीय आत्मिक विवेक था।",
+        "trialPa": "ਦਿੱਲੀ ਦੇ ਤਖ਼ਤ ਦਾ ਲਾਲਚ ਤਿਆਗ ਕੇ ਗੁਰੂ ਸਾਹਿਬਾਨ ਦੇ ਇਤਿਹਾਸਕ ਅਸਥਾਨਾਂ ਦੀ ਸੇਵਾ ਸੰਭਾਲ ਕਰਨੀ ਆਪ ਜੀ ਦੀ ਉੱਚੀ ਸੋਚ ਸੀ।",
+        "teaching": "Military conquest finds its true noble purpose not in imperial vanity, but in restoring the sacred memory of righteous martyrs.",
+        "teachingLocal": "सैन्य विजय का सच्चा उद्देश्य अहंकार नहीं, बल्कि धर्म और शहीदों की पवित्र स्मृति का सम्मान स्थापित करना है।",
+        "teachingPa": "ਫ਼ਤਹਿ ਦਾ ਅਸਲ ਮਨੋਰਥ ਹਕੂਮਤ ਕਰਨਾ ਨਹੀਂ, ਸਗੋਂ ਧਰਮ ਅਤੇ ਸ਼ਹੀਦਾਂ ਦੇ ਸਤਿਕਾਰ ਨੂੰ ਬਹਾਲ ਕਰਨਾ ਹੈ।",
+        "moral": "True sovereignty uses power to build enduring monuments of spiritual light rather than monuments of personal vanity.",
+        "moralLocal": "सच्चा शासक शक्ति का उपयोग व्यक्तिगत अहंकार के लिए नहीं, बल्कि समाज के आध्यात्मिक उत्थान के लिए करता है।",
+        "moralPa": "ਤਾਕਤ ਦਾ ਸਹੀ ਇਸਤੇਮਾਲ ਇਤਿਹਾਸਕ ਵਿਰਸੇ ਨੂੰ ਸੰਭਾਲਣ ਅਤੇ ਲੋਕ-ਭਲਾਈ ਲਈ ਕਰਨਾ ਹੀ ਅਸਲ ਬਾਦਸ਼ਾਹੀ ਹੈ।",
+        "legacy": "Builder of Delhi's premier Gurdwaras, conqueror of the Red Fort, and architect of Sikh political triumph in northern India.",
+        "legacyLocal": "दिल्ली के ऐतिहासिक गुरुद्वारों के निर्माता और लाल किले पर खालसा की विजय पताका फहराने वाले महान सेनापति।",
+        "legacyPa": "ਦਿੱਲੀ ਦੇ ਸਮੂਹ ਇਤਿਹਾਸਕ ਗੁਰਦੁਆਰਿਆਂ ਦੇ ਉਸਰੱਈਏ ਅਤੇ ਲਾਲ ਕਿਲ੍ਹੇ 'ਤੇ ਨਿਸ਼ਾਨ ਸਾਹਿਬ ਝੁਲਾਉਣ ਵਾਲੇ ਅਮਰ ਜਰਨੈਲ।",
+        "source": "Prachin Panth Prakash, Twarikh Guru Khalsa, Delhi Chronicles",
+        "sourceLocal": "प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा, दिल्ली इतिहास",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ, ਦਿੱਲੀ ਇਤਿਹਾਸ",
+        "sourceCitations": [
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Episode of Delhi Fateh", "tier": 1},
+            {"sourceName": "Hari Ram Gupta", "sourceRef": "History of the Sikhs, Vol. 3 (Sikh Misl Period)", "tier": 1}
+        ],
+        "quote": {
+            "text": "Raj karega Khalsa aaki rahe na koye, khowar hoye sabh milenge bache sharan jo hoye.",
+            "attribution": "The Khalsa shall rule, and none who rebel against righteousness shall remain; all who are scattered shall unite, and those who take refuge in Truth shall be saved. — Tankhahnama Bhai Nand Lal Ji"
+        },
+        "quoteLocal": {
+            "text": "राज करेगा खालसा आकी रहे न कोइ। ख्वार होइ सभ मिलहंगे बचे सरन जो होइ॥",
+            "attribution": "तनखाहनामा भाई नंद लाल जी"
+        },
+        "quotePa": {
+            "text": "ਰਾਜ ਕਰੇਗਾ ਖ਼ਾਲਸਾ ਆਕੀ ਰਹੇ ਨ ਕੋਇ ॥ ਖ਼ੁਆਰ ਹੋਇ ਸਭ ਮਿਲਹੰਗੇ ਬਚੇ ਸਰਨ ਜੋ ਹੋਇ ॥",
+            "attribution": "ਤਨਖ਼ਾਹਨਾਮਾ ਭਾਈ ਨੰਦ ਲਾਲ ਜੀ"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Sardar Baghel Singh Ji riding an armored stallion leading columns of Sikh cavalry through the Lahori Gate of the Red Fort in Delhi, saffron Nishan Sahib waving proudly against marble arches."
+    },
+    {
+        "id": "jassa-singh-ramgarhia",
+        "name": "Sardar Jassa Singh Ramgarhia",
+        "nameLocal": "सरदार जस्सा सिंह रामगढ़िया",
+        "namePa": "ਸਰਦਾਰ ਜੱਸਾ ਸਿੰਘ ਰਾਮਗੜ੍ਹੀਆ",
+        "era": "1723–1803 CE",
+        "eraLocal": "१७२३–१८०३ ईस्वी",
+        "eraPa": "੧੭੨੩–੧੮੦੩ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Ichogil, Lahore / Ramgarh, Amritsar",
+        "regionLocal": "इचोगिल, लाहौर / रामगढ़, अमृतसर",
+        "regionPa": "ਇਚੋਗਿਲ, ਲਾਹੌਰ / ਰਾਮਗੜ੍ਹ, ਅੰਮ੍ਰਿਤਸਰ",
+        "emoji": "☬",
+        "tagline": "The master engineer and formidable Misl ruler who fortified Ram Rauni at Amritsar, liberated Delhi with the Dal Khalsa, and brought back the coronation stone slab of Mughal emperors.",
+        "taglineLocal": "रामगढ़िया मिसल के संस्थापक जिन्होंने अमृतसर में रामरौणी का किला बनाया, दिल्ली फतह की और मुगलों का तख्त-ए-ताऊस का संगमरमरी पत्थर अमृतसर ले आए।",
+        "taglinePa": "ਰਾਮਗੜ੍ਹੀਆ ਮਿਸਲ ਦੇ ਮੁਖੀ ਜਿਨ੍ਹਾਂ ਨੇ ਅੰਮ੍ਰਿਤਸਰ ਵਿਖੇ ਰਾਮਰੌਣੀ ਕਿਲ੍ਹਾ ਉਸਾਰਿਆ, ਦਿੱਲੀ ਜਿੱਤੀ ਅਤੇ ਮੁਗ਼ਲਾਂ ਦੇ ਤਖ਼ਤ ਦਾ ਸੰਗਮਰਮਰੀ ਸਿਲ੍ਹਾ ਅੰਮ੍ਰਿਤਸਰ ਲਿਆਂਦਾ।",
+        "journey": "Grandson of Hardas Singh who fought under Guru Gobind Singh, Jassa Singh was a carpenter-artisan by birth and a military genius by calling. When Amritsar was under siege in 1748, he fortified the small mud fortress of Ram Rauni, from which his misl took the name 'Ramgarhia'. A brilliant military engineer and fierce warrior, he built fortifications across the Doaba and Majha regions. In the 1783 capture of Delhi alongside Jassa Singh Ahluwalia and Baghel Singh, Ramgarhia troops stormed the Red Fort. From the Diwan-i-Khas, Jassa Singh personally detached the enormous marble coronation slab on which Mughal emperors had been crowned, hitched it to elephants, and hauled it across four hundred miles back to Sri Harmandir Sahib in Amritsar. Today, that very Mughal coronation stone lies subjugated beneath the feet of visitors inside the Ramgarhia Bunga, testament to the fall of imperial tyranny.",
+        "journeyLocal": "शिल्पकार परिवार में जन्मे जस्सा सिंह रामगढ़िया अद्वितीय दुर्ग-निर्माता और योद्धा थे। उन्होंने अमृतसर में रामरौणी किले का निर्माण किया, जिसके नाम पर उनकी मिसल 'रामगढ़िया' कहलाई। १७८३ में जब खालसा सेना ने दिल्ली पर विजय प्राप्त की, तो जस्सा सिंह लाल किले के दीवान-ए-खास से वह विशाल संगमरमरी पत्थर उखाड़ लाए जिस पर बैठकर मुगल सम्राट तख्त पर बैठते थे। उस पत्थर को हाथियों से खिंचवाकर अमृतसर लाया गया, जो आज भी रामगढ़िया बुंगे में मुगलों के पतन का साक्षी है।",
+        "journeyPa": "ਜੱਸਾ ਸਿੰਘ ਰਾਮਗੜ੍ਹੀਆ ਜੀ ਨੇ ੧੭੪੮ ਵਿੱਚ ਅੰਮ੍ਰਿਤਸਰ ਵਿਖੇ ਰਾਮਰੌਣੀ ਦਾ ਕਿਲ੍ਹਾ ਬਣਾਇਆ, ਜਿਸ ਕਰਕੇ ਆਪ ਜੀ ਦੀ ਮਿਸਲ ਦਾ ਨਾਂ 'ਰਾਮਗੜ੍ਹੀਆ' ਪਿਆ। ਆਪ ਜੀ ਮਹਾਨ ਇੰਜੀਨੀਅਰ ਅਤੇ ਅਣਖੀਲੇ ਜਰਨੈਲ ਸਨ। ੧੭੮੩ ਵਿੱਚ ਦਿੱਲੀ ਫ਼ਤਹਿ ਸਮੇਂ ਲਾਲ ਕਿਲ੍ਹੇ ਦੇ ਦੀਵਾਨ-ਏ-ਖ਼ਾਸ ਵਿੱਚੋਂ ਮੁਗ਼ਲ ਬਾਦਸ਼ਾਹਾਂ ਦੇ ਤਖ਼ਤ ਦਾ ਸੰਗਮਰਮਰੀ ਪੱਥਰ ਪੁੱਟ ਕੇ ਅੰਮ੍ਰਿਤਸਰ ਲੈ ਆਏ, ਜੋ ਅੱਜ ਵੀ ਰਾਮਗੜ੍ਹੀਆ ਬੁੰਗੇ ਵਿੱਚ ਪਿਆ ਮੁਗ਼ਲ ਹਕੂਮਤ ਦੇ ਖ਼ਾਤਮੇ ਦੀ ਗਵਾਹੀ ਭਰਦਾ ਹੈ।",
+        "trial": "Holding Ram Rauni fort under prolonged siege with dwindling food and water, displaying unbreakable engineering resilience and martial resolve.",
+        "trialLocal": "सीमित साधनों के साथ रामरौणी के कच्चे किले में हफ्तों तक घेराबंदी झेलते हुए धर्म की रक्षा करना उनका अद्भुत पुरुषार्थ था।",
+        "trialPa": "ਰਾਮਰੌਣੀ ਦੇ ਕਿਲ੍ਹੇ ਵਿੱਚ ਘੇਰਾਬੰਦੀ ਦੌਰਾਨ ਭੁੱਖ-ਪਿਆਸ ਝੱਲਦਿਆਂ ਵੀ ਚੜ੍ਹਦੀ ਕਲਾ ਵਿੱਚ ਰਹਿਣਾ ਆਪ ਜੀ ਦੇ ਸਿਦਕ ਦੀ ਨਿਸ਼ਾਨੀ ਸੀ।",
+        "teaching": "Humblest artisan skills combined with the Guru's Amrit forge unconquerable sovereigns who topple despotic thrones.",
+        "teachingLocal": "हस्तशिल्प और श्रम जब गुरु की कृपा से जुड़ते हैं, तो वे बड़े से बड़े साम्राज्यों के सिंहासन को उखाड़ फेंकते हैं।",
+        "teachingPa": "ਹੱਥੀਂ ਕਿਰਤ ਕਰਨ ਵਾਲੇ ਗੁਰੂ ਦੀ ਬਖ਼ਸ਼ਿਸ਼ ਨਾਲ ਬਾਦਸ਼ਾਹੀਆਂ ਦੇ ਤਖ਼ਤ ਉਲਟਾਉਣ ਦੇ ਸਮਰੱਥ ਹੋ ਜਾਂਦੇ ਹਨ।",
+        "moral": "Skill, craftsmanship, and courage together form an indomitable foundation for liberty and national sovereignty.",
+        "moralLocal": "हुनर, श्रम और साहस का समन्वय ही स्वाधीनता और संप्रभुता का वास्तविक आधार है।",
+        "moralPa": "ਹੁਨਰਮੰਦੀ ਅਤੇ ਸੂਰਮਤਾਈ ਦਾ ਮੇਲ ਹੀ ਕੌਮਾਂ ਨੂੰ ਆਜ਼ਾਦੀ ਦਿਵਾਉਂਦਾ ਹੈ।",
+        "legacy": "Builder of the iconic Ramgarhia Bunga with its twin watchtowers at Sri Harmandir Sahib, immortalized for bringing the Mughal throne stone to Amritsar.",
+        "legacyLocal": "हरिमंदिर साहिब के प्रसिद्ध रामगढ़िया बुंगे के निर्माता और मुगल तख्त के पत्थर को लाकर इतिहास रचने वाले महानायक।",
+        "legacyPa": "ਸ੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ ਵਿਖੇ ਰਾਮਗੜ੍ਹੀਆ ਬੁੰਗੇ ਦੇ ਉਸਰੱਈਏ ਅਤੇ ਮੁਗ਼ਲ ਤਖ਼ਤ ਦੀ ਸਿਲ੍ਹ ਅੰਮ੍ਰਿਤਸਰ ਲਿਆਉਣ ਵਾਲੇ ਅਮਰ ਯੋਧੇ।",
+        "source": "Prachin Panth Prakash, Twarikh Guru Khalsa, Mahan Kosh",
+        "sourceLocal": "प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा, महान कोश",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Misl Ramgarhian", "tier": 1},
+            {"sourceName": "Hari Ram Gupta", "sourceRef": "History of the Sikhs, Vol. 4", "tier": 1}
+        ],
+        "quote": {
+            "text": "Kirat kar chhad aalas manua, har simar simar sukh paavai.",
+            "attribution": "Engage in honest labor and cast off laziness from the mind; contemplating the Divine, discover true everlasting peace. — Sri Guru Granth Sahib (Ang 453)"
+        },
+        "quoteLocal": {
+            "text": "किरत करहु छडि आलसु मनूआ। हरि सिमरत सदा सुखु पावै॥",
+            "attribution": "श्री गुरु ग्रंथ साहिब (अंग ४५३)"
+        },
+        "quotePa": {
+            "text": "ਕਿਰਤ ਕਰਹੁ ਛਡਿ ਆਲਸੁ ਮਨੂਆ ॥ ਹਰਿ ਸਿਮਰਤ ਸਦਾ ਸੁਖੁ ਪਾਵੈ ॥",
+            "attribution": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ (ਅੰਗ ੪੫੩)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Sardar Jassa Singh Ramgarhia supervising the unfastening of the large Mughal coronation marble slab in the pillared Diwan-i-Khas of Delhi's Red Fort, surrounded by armed Khalsa soldiers."
+    },
+    {
+        "id": "nawab-kapur-singh",
+        "name": "Nawab Kapur Singh Ji",
+        "nameLocal": "नवाब कपूर सिंह जी",
+        "namePa": "ਨਵਾਬ ਕਪੂਰ ਸਿੰਘ ਜੀ",
+        "era": "1697–1753 CE",
+        "eraLocal": "१६९७–१७५३ ईस्वी",
+        "eraPa": "੧੬੯੭–੧੭੫੩ ਈਸਵੀ",
+        "tradition": "sikh",
+        "region": "Faizullapur / Amritsar",
+        "regionLocal": "फैजुल्लापुर / अमृतसर",
+        "regionPa": "ਫ਼ੈਜ਼ੁੱਲਾਪੁਰ / ਅੰਮ੍ਰਿਤਸਰ",
+        "emoji": "☬",
+        "tagline": "The supreme organizer of the Khalsa who founded the Dal Khalsa, divided it into Budha Dal and Taruna Dal, and accepted the title of Nawab only on the condition that he could continue fanning the Sangat.",
+        "taglineLocal": "दल खालसा के सर्वोच्च संगठनकर्ता जिन्होंने बुद्ध दल व तरुना दल की स्थापना की और नवाब की पदवी तभी स्वीकार की जब उन्हें लंगर में पंखा झलने की सेवा करने दी गई।",
+        "taglinePa": "ਦਲ ਖ਼ਾਲਸਾ ਦੇ ਮਹਾਨ ਪ੍ਰਬੰਧਕ ਜਿਨ੍ਹਾਂ ਨੇ ਬੁੱਢਾ ਦਲ ਤੇ ਤਰੁਣਾ ਦਲ ਕਾਇਮ ਕੀਤੇ ਅਤੇ ਨਵਾਬੀ ਦੀ ਪਦਵੀ ਤਾਂ ਹੀ ਕਬੂਲੀ ਜੇ ਸੰਗਤਾਂ ਨੂੰ ਪੱਖਾ ਝੱਲਣ ਦੀ ਸੇਵਾ ਜਾਰੀ ਰੱਖਣ ਦਿੱਤੀ ਜਾਵੇ।",
+        "journey": "Born into a Virk Jat family of Faizullapur, Kapur Singh took Amrit at the 1721 Amritsar gathering. During the brutal persecution by Zakariya Khan when Sikhs lived in the wilderness, Kapur Singh emerged as their beloved field commander. In 1733, the Mughal court, desperate for truce, sent a robe of honor, a jagir, and the title of 'Nawab' to the Sikhs. The assembled Khalsa refused the title, considering it beneath the sovereignty bestowed by Guru Gobind Singh. When urged to accept for political breathing room, the Khalsa threw the robe at the feet of Kapur Singh, who was humbly fanning the horses and the Sangat in the Langar. Kapur Singh accepted the title only after touching it to the feet of five beloved Sikhs, stipulating that he would never abandon his humble chore of waving the fan (pankha) for the Sangat. In 1734, he brilliantly reorganized the entire Sikh martial force into the Budha Dal (veterans overseeing gurdwaras and spiritual discipline) and Taruna Dal (youth fighters defending the borders), laying the bedrock of the 12 Sikh Misls.",
+        "journeyLocal": "फैजुल्लापुर के कपूर सिंह १७२१ में अमृत छककर सिख पंथ के संगठनकर्ता बने। १७३३ में जब मुगल सरकार ने सिखों को 'नवाब' की पदवी और जागीर की पेशकश की, तो किसी ने इसे स्वीकार नहीं किया। अंत में संगत में पंखा झल रहे कपूर सिंह के चरणों में यह उपाधि रखी गई। उन्होंने पंज प्यारों के चरणों से स्पर्श करवाकर ही इसे स्वीकार किया, परंतु शर्त रखी कि वे लंगर में पंखा झलने की सेवा नहीं छोड़ेंगे। १७३४ में उन्होंने दल खालसा को 'बुद्ध दल' और 'तरुना दल' में संगठित कर सिख साम्राज्य की नींव रखी।",
+        "journeyPa": "ਫ਼ੈਜ਼ੁੱਲਾਪੁਰ ਦੇ ਕਪੂਰ ਸਿੰਘ ਜੀ ਨੇ ੧੭੩੩ ਵਿੱਚ ਮੁਗ਼ਲਾਂ ਵੱਲੋਂ ਆਈ 'ਨਵਾਬੀ' ਨੂੰ ਉਦੋਂ ਤੱਕ ਸਵੀਕਾਰ ਨਾ ਕੀਤਾ ਜਦੋਂ ਤੱਕ ਪੰਜਾਂ ਪਿਆਰਿਆਂ ਦੇ ਚਰਨਾਂ ਨਾਲ ਨਾ ਛੁਹਾਇਆ ਗਿਆ। ਉਹਨਾਂ ਨੇ ਸ਼ਰਤ ਰੱਖੀ ਕਿ ਨਵਾਬੀ ਮਿਲਣ ਤੋਂ ਬਾਅਦ ਵੀ ਉਹ ਸੰਗਤ ਨੂੰ ਪੱਖਾ ਝੱਲਣ ਅਤੇ ਘੋੜਿਆਂ ਦੀ ਲਿੱਦ ਚੁੱਕਣ ਦੀ ਸੇਵਾ ਕਰਦੇ ਰਹਿਣਗੇ। ਆਪ ਜੀ ਨੇ ੧੭੩੪ ਵਿੱਚ ਦਲ ਖ਼ਾਲਸਾ ਨੂੰ 'ਬੁੱਢਾ ਦਲ' ਅਤੇ 'ਤਰੁਣਾ ਦਲ' ਵਿੱਚ ਵੰਡ ਕੇ ਮਿਸਲਾਂ ਦਾ ਮਜ਼ਬੂਤ ਪ੍ਰਬੰਧ ਕਾਇਮ ਕੀਤਾ।",
+        "trial": "Refusing imperial status and worldly pomp, maintaining daily manual labor of waving a hand-fan in the public Langar despite being the supreme military leader of all Sikhs.",
+        "trialLocal": "सर्वोच्च सैन्य सेनापति होकर भी लंगर में हाथ का पंखा झलना और घोड़ों की सेवा करना उनके असीम निरहंकार का प्रमाण था।",
+        "trialPa": "ਸਮੁੱਚੇ ਪੰਥ ਦੇ ਸਰਬਉੱਚ ਜਰਨੈਲ ਹੁੰਦਿਆਂ ਵੀ ਸੰਗਤ ਵਿੱਚ ਪੱਖਾ ਝੱਲਣ ਅਤੇ ਘੋੜਿਆਂ ਦੀ ਸੇਵਾ ਕਰਨ ਦਾ ਨਿਮਰਤਾ ਭਰਿਆ ਸਿਦਕ ਨਿਭਾਉਣਾ ਅਦੁੱਤੀ ਪਰਖ ਸੀ।",
+        "teaching": "True leadership in the Guru's house is measured not by titles or crowns, but by the dust of the Sangat's feet and the willingness to serve the humblest creature.",
+        "teachingLocal": "सच्चा नेतृत्व पदवियों में नहीं, बल्कि संगत की सेवा और निरभिमानता में निहित है।",
+        "teachingPa": "ਸਿੱਖੀ ਵਿੱਚ ਅਸਲ ਆਗੂ ਉਹ ਹੈ ਜੋ ਸਭ ਤੋਂ ਵੱਧ ਨਿਮਰ ਹੋ ਕੇ ਸੰਗਤ ਦੀ ਸੇਵਾ ਕਰਦਾ ਹੈ।",
+        "moral": "When leaders anchor supreme authority in genuine humility, their institutions endure across centuries.",
+        "moralLocal": "अहंकारहीन सेवा पर आधारित संगठन ही शताब्दियों तक अजेय बने रहते हैं।",
+        "moralPa": "ਨਿਮਰਤਾ ਨਾਲ ਕੀਤੀ ਅਗਵਾਈ ਹੀ ਕੌਮਾਂ ਨੂੰ ਸਦਾ ਚੜ੍ਹਦੀ ਕਲਾ ਵਿੱਚ ਰੱਖਦੀ ਹੈ।",
+        "legacy": "Founder of the Dal Khalsa, mentor to Jassa Singh Ahluwalia, and father of the Misl confederacy that liberated Punjab.",
+        "legacyLocal": "दल खालसा के निर्माता और सिख मिसलों के जन्मदाता, जिन्होंने पंजाब में स्वाधीनता की आधारशिला रखी।",
+        "legacyPa": "ਦਲ ਖ਼ਾਲਸਾ ਦੇ ਮੋਢੀ ਅਤੇ ਸੁਲਤਾਨ-ਉਲ-ਕੌਮ ਜੱਸਾ ਸਿੰਘ ਆਹਲੂਵਾਲੀਆ ਦੇ ਮਾਰਗਦਰਸ਼ਕ ਵਜੋਂ ਸਤਿਕਾਰੇ ਜਾਂਦੇ ਹਨ।",
+        "source": "Prachin Panth Prakash, Twarikh Guru Khalsa, Mahan Kosh",
+        "sourceLocal": "प्राचीन पंथ प्रकाश, तवारीख गुरु खालसा, महान कोश",
+        "sourcePa": "ਪ੍ਰਾਚੀਨ ਪੰਥ ਪ੍ਰਕਾਸ਼, ਤਵਾਰੀਖ਼ ਗੁਰੂ ਖ਼ਾਲਸਾ, ਮਹਾਨ ਕੋਸ਼",
+        "sourceCitations": [
+            {"sourceName": "Rattan Singh Bhangu", "sourceRef": "Prachin Panth Prakash, Prasang Nawab Kapur Singh", "tier": 1},
+            {"sourceName": "Giani Gian Singh", "sourceRef": "Twarikh Guru Khalsa", "tier": 1}
+        ],
+        "quote": {
+            "text": "Aap gavaaye seva kare ta kichh paaye maan.",
+            "attribution": "When one obliterates self-conceit and performs selfless service, only then is true honor attained in the Divine Court. — Guru Angad Dev Ji, Sri Guru Granth Sahib (Ang 474)"
+        },
+        "quoteLocal": {
+            "text": "आपु गवाइ सेवा करे ता किछु पाए मानु।",
+            "attribution": "गुरु अंगद देव जी (श्री गुरु ग्रंथ साहिब, अंग ४७४)"
+        },
+        "quotePa": {
+            "text": "ਆਪੁ ਗਵਾਇ ਸੇਵਾ ਕਰੇ ਤਾ ਕਿਛੁ ਪਾਏ ਮਾਨੁ ॥",
+            "attribution": "ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ (ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਅੰਗ ੪੭੪)"
+        },
+        "illustrationPrompt": "Raja Ravi Varma style oil painting depicting Nawab Kapur Singh Ji dressed in humble homespun robes gently waving a large woven palm fan over rows of pilgrims in the open Langar at Amritsar, while a royal Mughal turban and robe of honor lie untouched on a rug nearby."
+    }
+]
+
+print(f"Sikh Group 2 heroes: {len(SIKH_GROUP_2)}")
