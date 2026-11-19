@@ -392,14 +392,21 @@ async function buildPanchatantra(embedder: any) {
 
 async function buildRamayana(embedder: any) {
   const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
-  const manifestFiles = ['valmiki_ramayana_bala.json', 'valmiki_ramayana_ayodhya.json'];
+  const manifestFiles = [
+    'valmiki_ramayana_bala.json',
+    'valmiki_ramayana_ayodhya.json',
+    'valmiki_ramayana_aranya.json',
+    'valmiki_ramayana_kishkindha.json',
+    'valmiki_ramayana_sundara.json',
+    'valmiki_ramayana_yuddha.json',
+  ];
 
   for (const file of manifestFiles) {
     const filePath = path.join(MANIFESTS_DIR, file);
     if (!fs.existsSync(filePath)) continue;
     const manifest = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     const docId = manifest.doc_id ?? file.replace(/\.json$/, '');
-    const kandaTitle = file.includes('bala') ? 'Bala Kanda' : 'Ayodhya Kanda';
+    const kandaTitle = manifest.title?.replace('Valmiki Ramayana — ', '') || file.replace('valmiki_ramayana_', '').replace('.json', '');
 
     for (const verse of manifest.content ?? []) {
       const ref: string = verse.ref ?? '';
@@ -421,7 +428,7 @@ async function buildRamayana(embedder: any) {
           source_class: verse.source_class || 'translation',
           rights_status: verse.rights_status || 'public_domain',
         },
-        text: `Valmiki Ramayana ${kandaTitle} ${ref}. ${text.trim()}`,
+        text: `Valmiki Ramayana ${kandaTitle} ${ref}. ${transliteration ? `${transliteration}. ` : ''}${text.trim()}`,
       });
     }
   }

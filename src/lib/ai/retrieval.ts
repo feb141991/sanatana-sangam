@@ -1405,10 +1405,14 @@ const ramayanaManifestRetriever = new PramanaManifestRetriever({
   sourceName: 'Valmiki Ramayana',
   sourceClass: 'translation',
   tradition: 'Sanatana Dharma',
-  maxChapters: 2,
+  maxChapters: 6,
   fileNames: [
     'valmiki_ramayana_bala.json',
     'valmiki_ramayana_ayodhya.json',
+    'valmiki_ramayana_aranya.json',
+    'valmiki_ramayana_kishkindha.json',
+    'valmiki_ramayana_sundara.json',
+    'valmiki_ramayana_yuddha.json'
   ]
 });
 const ramayanaDenseRetriever = new PramanaDenseEmbeddingRetriever(

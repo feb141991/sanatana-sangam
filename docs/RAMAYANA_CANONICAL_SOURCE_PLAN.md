@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-20
 Owner: Pramana source-integrity review
-Status: **Stage 1 Complete: Bala & Ayodhya Kandas verified and live in retrieval. Remaining Kandas pending Stage 2 audit.**
+Status: **Stage 1 & 2 Complete: All 6 primary Kandas (Bala, Ayodhya, Aranya, Kishkindha, Sundara, Yuddha — 46 verses) verified and live in retrieval.**
 
 Governing policy: `PATHSHALA_SOURCE_POLICY.md` (source/rights rules).
 Status source of truth: `PRAMANA_CORPUS_ROADMAP.md` (Ramayana = P3).
@@ -15,10 +15,17 @@ Status source of truth: `PRAMANA_CORPUS_ROADMAP.md` (Ramayana = P3).
   - Ingested verified public-domain English translations by Ralph T. H. Griffith (1870–1874) via Project Gutenberg eBook #51540 for **Bala Kanda** (`valmiki_ramayana_bala.json`, 20 verses) and **Ayodhya Kanda** (`valmiki_ramayana_ayodhya.json`, 9 verses).
   - Canonical reference format `Kanda.Sarga.Shloka` enforced.
   - Sanskrit layer maintained companion-only (`original_text_status: companion`).
-  - Dense neural embedding index (`valmiki_ramayana_index_dense.json`, 29 documents, 384-dim `all-MiniLM-L6-v2`) and sparse index (`valmiki_ramayana_index.json`, 29 documents) built and 100% parity validated.
+  - Dense neural embedding index (`valmiki_ramayana_index_dense.json`) and sparse index (`valmiki_ramayana_index.json`) built and parity validated.
   - Live in `src/lib/ai/retrieval.ts` via `PramanaDenseEmbeddingRetriever` and unwithheld for verified inquiries in `src/lib/ai/chat-grounding.ts`.
-- **Stage 2 (Pending):**
-  - Aranya, Kishkindha, Sundara, and Yuddha Kandas remain under source audit and will be ingested in subsequent batches.
+- **Stage 2 (Completed 2026-11-20):**
+  - Ingested verified public-domain English translations by Ralph T. H. Griffith via Project Gutenberg eBook #51540 for:
+    - **Aranya Kanda** (`valmiki_ramayana_aranya.json`, 4 verses: 3.1.1, 3.9.1, 3.16.1, 3.68.29).
+    - **Kishkindha Kanda** (`valmiki_ramayana_kishkindha.json`, 4 verses: 4.1.1, 4.4.18, 4.5.11, 4.18.40).
+    - **Sundara Kanda** (`valmiki_ramayana_sundara.json`, 5 verses: 5.1.1, 5.15.20, 5.36.2, 5.36.3, 5.38.48).
+    - **Yuddha Kanda** (`valmiki_ramayana_yuddha.json`, 4 verses: 6.18.33, 6.18.34, 6.105.1, 6.128.95).
+  - Total 46 authentic verses across all 6 Kandas indexed in both dense (384-dim) and sparse TF-IDF indexes with 100% parity.
+- **Stage 3 (Future):**
+  - Uttara Kanda compilation and ongoing verse expansion across existing Kandas.
 
 ---
 
