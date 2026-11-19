@@ -26,6 +26,7 @@ import {
   MessageCircle,
   FileCheck,
   Share2,
+  LifeBuoy,
   type LucideProps,
 } from "lucide-react";
 
@@ -55,6 +56,7 @@ const ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
   MessageCircle,
   FileCheck,
   Share2,
+  LifeBuoy,
 };
 
 export function AdminIcon({ name, size = 16, className = "" }: { name: string; size?: number; className?: string }) {

@@ -92,6 +92,7 @@ const FOOTER_COLUMNS = [
       { href: "/about", label: "About Sanctuary" },
       { href: "/sources", label: "Scriptural Sources & Lineage" },
       { href: "/faq", label: "Frequently Asked Questions" },
+      { href: "/help", label: "Help Center & Support Desk" },
       { href: "/contact", label: "Contact & Dialogue" },
       { href: OFFICIAL_STORE_LINKS.googlePlay, label: "Download Android App" },
     ],

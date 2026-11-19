@@ -42,6 +42,15 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
   },
   // Work Queues
   {
+    id: "tickets",
+    path: "/admin/tickets",
+    title: "Support Tickets & Help Desk",
+    shortTitle: "Support Tickets",
+    description: "Devotee support inquiries, RAG escalations & resolution workflow",
+    group: "work_queues",
+    iconName: "LifeBuoy",
+  },
+  {
     id: "moderation",
     path: "/admin/moderation",
     title: "Trust & Moderation Hub",
