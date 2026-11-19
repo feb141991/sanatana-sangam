@@ -1,0 +1,60 @@
+{
+  "corpus_id": "bhakti_sutras",
+  "doc_id": "bhakti_sutras_doc_1",
+  "title": "Narada Bhakti Sutras",
+  "source_name": "Devarshi Narada",
+  "language": "sanskrit",
+  "tradition": "Bhakti / Sanatan Dharma",
+  "source_class": "scripture",
+  "rights_status": "public-domain",
+  "content": [
+    {
+      "ref": "1",
+      "original": "अथातो भक्तिं व्याख्यास्यामः",
+      "transliteration": "Athato bhaktim vyakhyasyamah",
+      "text": "Now, therefore, we shall expound the nature of supreme devotional love (Bhakti)."
+    },
+    {
+      "ref": "2",
+      "original": "सा त्वस्मिन् परमप्रेमरूपा",
+      "transliteration": "Sa tvasmin parama-prema-rupa",
+      "text": "That devotion is of the nature of supreme, unconditional love for the Divine."
+    },
+    {
+      "ref": "3",
+      "original": "अमृतस्वरूपा च",
+      "transliteration": "Amrita-svarupa cha",
+      "text": "And it is of the nature of immortality, freeing the seeker from all mortal fears."
+    },
+    {
+      "ref": "4",
+      "original": "यल्लव्ध्वा पुमान् सिद्धो भवत्यमृतो भवति तृप्तो भवति",
+      "transliteration": "Yal-labdhva puman siddho bhavaty amrito bhavati tripto bhavati",
+      "text": "Attaining which a human being becomes spiritually perfected, immortal, and utterly contented."
+    },
+    {
+      "ref": "5",
+      "original": "यत्प्राप्य न किञ्चिद् वाञ्छति न शोचति न द्वेष्टि न रमते नोत्साही भवति",
+      "transliteration": "Yat prapya na kinchid vanchhati na shochati na dveshti na ramate notsahi bhavati",
+      "text": "Attaining which one no longer craves worldly objects, neither grieves nor hates, nor delights in ephemeral pleasures, nor strives for selfish gain."
+    },
+    {
+      "ref": "19",
+      "original": "नारदस्तु तदर्पिताखिलाचारता तद्विस्मरणे परमव्याकुलतेति",
+      "transliteration": "Naradas tu tad-arpitakhilacharata tad-vismarane parama-vyakulateti",
+      "text": "Narada holds that Bhakti consists of dedicating all everyday actions to the Divine, and experiencing profound inner longing whenever remembrance of the Divine is forgotten."
+    },
+    {
+      "ref": "51",
+      "original": "अनिर्वचनीयं प्रेमस्वरूपम्",
+      "transliteration": "Anirvachaniyam prema-svarupam",
+      "text": "The true nature of divine love is ineffable, beyond the capacity of words to fully convey."
+    },
+    {
+      "ref": "52",
+      "original": "मूकास्वादनवत्",
+      "transliteration": "Mookasvadanavat",
+      "text": "It is like the taste of sweet nectar experienced by one who cannot speak—deeply felt within the heart, though silent to the world."
+    }
+  ]
+}

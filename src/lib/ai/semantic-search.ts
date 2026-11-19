@@ -9,6 +9,7 @@ import { ALL_KATHAS, type Katha } from '@/lib/katha-library';
 import dharmVeer365Snapshot from '@/lib/data/dharm-veer-365-snapshot.json';
 import festivalRulesJson from '../../../packages/dharma-rules/src/festivals/rules.json';
 import { retrievePathshalaContext, type RetrievalChunk } from '@/lib/ai/retrieval';
+import { PramanaRetrieverSelector } from '@sangam/pramana-serve';
 
 export type PramanaSearchCategory = 'all' | 'scripture' | 'journal' | 'hero' | 'festival' | 'story';
 
@@ -273,18 +274,21 @@ function searchStories(tokens: string[], traditionFilter?: string | null): Prama
  * Search Canonical Scriptures via Pramana Retrieval Pipeline.
  */
 async function searchScriptures(query: string, traditionFilter?: string | null): Promise<PramanaSearchResultItem[]> {
+  const results: PramanaSearchResultItem[] = [];
+
   try {
     const chunks = await retrievePathshalaContext({
       title: query,
       tradition: traditionFilter || 'hindu',
     });
 
-    return chunks.map((chunk, index) => {
+    for (let index = 0; index < chunks.length; index++) {
+      const chunk = chunks[index];
       const meta = (chunk.metadata || {}) as Record<string, any>;
       const sourceName = (meta.sourceName as string) || (meta.docId as string) || 'Sacred Scripture';
       const chunkId = meta.chunkId ? `Ref: ${meta.chunkId}` : undefined;
 
-      return {
+      results.push({
         id: `scripture-${(meta.docId as string) || 'chunk'}-${index}`,
         category: 'scripture',
         title: sourceName,
@@ -297,12 +301,57 @@ async function searchScriptures(query: string, traditionFilter?: string | null):
         tradition: (meta.tradition as string) || traditionFilter || 'sanatan',
         relevanceScore: Number((chunk.score ?? 0.85).toFixed(3)),
         tags: ['scripture', (meta.tradition as string) || 'sanatan'],
-      };
-    });
+      });
+    }
   } catch {
     // If dense scripture retriever has no match or query doesn't match specific verse
-    return [];
   }
+
+  // Cross-search newly ingested classical canonical corpora (Yoga, Jyotish, Bhakti, Stotras)
+  const additionalCorpora = ['yoga_sutras', 'jyotish_classics', 'bhakti_sutras', 'vedic_suktas_stotras'];
+  const queryTokens = tokenize(query);
+  const seenTexts = new Set<string>();
+
+  for (const corp of additionalCorpora) {
+    try {
+      const retriever = PramanaRetrieverSelector.get(corp);
+      if (retriever) {
+        const res = await retriever.retrieve({ text: query, topK: 3 });
+        if (res.documents) {
+          for (let i = 0; i < res.documents.length; i++) {
+            const doc = res.documents[i];
+            const cleanContent = doc.content.trim();
+            if (seenTexts.has(cleanContent)) continue;
+            seenTexts.add(cleanContent);
+
+            const meta = (doc.metadata || {}) as Record<string, any>;
+            const title = (meta.sourceName as string) || corp.replace(/_/g, ' ');
+            const tokenScore = calculateScore(queryTokens, cleanContent, title);
+            const finalScore = Math.max(tokenScore, (doc.score ?? 0.5) * 1.5);
+
+            results.push({
+              id: `scripture-${corp}-${i}`,
+              category: 'scripture',
+              title,
+              subtitle: (meta.chunkId as string) || (doc.id ?? undefined),
+              source: (meta.sourceName as string) || corp,
+              citation: (meta.chunkId as string) || undefined,
+              content: cleanContent,
+              originalText: meta.sanskrit as string | undefined,
+              url: '/pathshala',
+              tradition: (meta.tradition as string) || 'Sanatan Dharma',
+              relevanceScore: Number(finalScore.toFixed(3)),
+              tags: ['scripture', corp],
+            });
+          }
+        }
+      }
+    } catch {
+      // Continue safely
+    }
+  }
+
+  return results;
 }
 
 /**

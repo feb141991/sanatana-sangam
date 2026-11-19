@@ -1372,6 +1372,62 @@ PramanaRetrieverSelector.register('valmiki_ramayana', new PramanaGenericEmbeddin
   'Valmiki Ramayana'
 ));
 
+const yogaManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'yoga_sutras',
+  sourceName: 'Patanjali Yoga Sutras',
+  sourceClass: 'scripture',
+  tradition: 'Yoga / Sanatana Dharma',
+  maxChapters: 4,
+});
+PramanaRetrieverSelector.register('yoga_sutras', new PramanaGenericEmbeddingRetriever(
+  yogaManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/yoga_sutras_index.json'),
+  'Yoga / Sanatana Dharma',
+  'Patanjali Yoga Sutras'
+));
+
+const jyotishManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'jyotish_classics',
+  sourceName: 'Brihat Parashara Hora Shastra & Phaladeepika',
+  sourceClass: 'scripture',
+  tradition: 'Vedic Jyotish Shastra',
+  maxChapters: 30,
+});
+PramanaRetrieverSelector.register('jyotish_classics', new PramanaGenericEmbeddingRetriever(
+  jyotishManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/jyotish_classics_index.json'),
+  'Vedic Jyotish Shastra',
+  'Brihat Parashara Hora Shastra & Phaladeepika'
+));
+
+const bhaktiManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'bhakti_sutras',
+  sourceName: 'Narada Bhakti Sutras',
+  sourceClass: 'scripture',
+  tradition: 'Bhakti / Sanatana Dharma',
+  maxChapters: 1,
+});
+PramanaRetrieverSelector.register('bhakti_sutras', new PramanaGenericEmbeddingRetriever(
+  bhaktiManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/bhakti_sutras_index.json'),
+  'Bhakti / Sanatana Dharma',
+  'Narada Bhakti Sutras'
+));
+
+const vedicStotrasManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'vedic_suktas_stotras',
+  sourceName: 'Classical Vedic Suktas & Stotras',
+  sourceClass: 'scripture',
+  tradition: 'Vedic / Sanatana Dharma',
+  maxChapters: 1,
+});
+PramanaRetrieverSelector.register('vedic_suktas_stotras', new PramanaGenericEmbeddingRetriever(
+  vedicStotrasManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/vedic_suktas_stotras_index.json'),
+  'Vedic / Sanatana Dharma',
+  'Classical Vedic Suktas & Stotras'
+));
+
 export async function retrievePathshalaContext(input: {
   source?: string;
   title?: string;

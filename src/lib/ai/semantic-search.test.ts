@@ -73,6 +73,18 @@ describe('Pramana Semantic Search', () => {
     }
   });
 
+  it('searches canonical scriptures including Patanjali Yoga Sutras', async () => {
+    const res = await performSemanticPramanaSearch({
+      query: 'chitta vritti nirodha',
+      category: 'scripture',
+    });
+
+    expect(res.results.length).toBeGreaterThan(0);
+    const top = res.results[0];
+    expect(top.category).toBe('scripture');
+    expect(top.content).toContain('Yoga');
+  });
+
   it('honors result limit', async () => {
     const res = await performSemanticPramanaSearch({
       query: 'dharma peace',

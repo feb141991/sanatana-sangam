@@ -1,0 +1,180 @@
+{
+  "corpus_id": "yoga_sutras",
+  "doc_id": "yoga_sutras_doc_1",
+  "title": "Patanjali Yoga Sutras",
+  "source_name": "Patanjali",
+  "language": "sanskrit",
+  "tradition": "Yoga / Sanatan Dharma",
+  "source_class": "scripture",
+  "rights_status": "public-domain",
+  "content": [
+    {
+      "ref": "1.1",
+      "original": "अथ योगानुशासनम्",
+      "transliteration": "Atha yoganushasanam",
+      "text": "Now, the instruction on Yoga begins."
+    },
+    {
+      "ref": "1.2",
+      "original": "योगश्चित्तवृत्तिनिरोधः",
+      "transliteration": "Yogash chitta-vritti-nirodhah",
+      "text": "Yoga is the cessation of the modifications and fluctuations of the mind-field."
+    },
+    {
+      "ref": "1.3",
+      "original": "तदा द्रष्टुः स्वरूपेऽवस्थानम्",
+      "transliteration": "Tada drashtuh svarupe avasthanam",
+      "text": "Then the Seer (pure consciousness) rests established in its own true, essential nature."
+    },
+    {
+      "ref": "1.4",
+      "original": "वृत्तिसारूप्यमितरत्र",
+      "transliteration": "Vritti sarupyam itaratra",
+      "text": "At other times, the Seer identifies with the fluctuations and movements of the mind."
+    },
+    {
+      "ref": "1.12",
+      "original": "अभ्यासवैराग्याभ्यां तन्निरोधः",
+      "transliteration": "Abhyasa-vairagyabhyam tan-nirodhah",
+      "text": "The calming of the mind is achieved through steadfast practice (abhyasa) and non-attachment (vairagya)."
+    },
+    {
+      "ref": "1.13",
+      "original": "तत्र स्थितौ यत्नोऽभ्यासः",
+      "transliteration": "Tatra sthitau yatno abhyasah",
+      "text": "Practice (abhyasa) is the continuous, dedicated effort toward inner stillness and stability."
+    },
+    {
+      "ref": "1.14",
+      "original": "स तु दीर्घकालनैरन्तर्यसत्कारासेवितो दृढभूमिः",
+      "transliteration": "Sa tu dirgha-kala-nairantarya-satkara-asevito dridha-bhumih",
+      "text": "That practice becomes firmly grounded when cultivated for a long duration, without interruption, and with reverent devotion."
+    },
+    {
+      "ref": "1.15",
+      "original": "दृष्टानुश्रविकविषयवितृष्णस्य वशीकारसंज्ञा वैराग्यम्",
+      "transliteration": "Drishtanushravika-vishaya-vitrishnasya vashikara-sanjna vairagyam",
+      "text": "Dispassion (vairagya) is the mastery that arises when one loses craving for seen or heard sensory objects."
+    },
+    {
+      "ref": "1.20",
+      "original": "श्रद्धावीर्यस्मृतिसमाधिप्रज्ञापूर्वक इतरेषाम्",
+      "transliteration": "Shraddha-virya-smriti-samadhi-prajna-purvaka itaresham",
+      "text": "For others, this spiritual attainment is preceded by faith (shraddha), energy/vigor (virya), mindful memory (smriti), meditative absorption (samadhi), and intuitive wisdom (prajna)."
+    },
+    {
+      "ref": "1.23",
+      "original": "ईश्वरप्रणिधानाद्वा",
+      "transliteration": "Ishvara-pranidhanad va",
+      "text": "Or spiritual realization is attained through total, loving surrender to the Supreme Divine (Ishvara)."
+    },
+    {
+      "ref": "1.27",
+      "original": "तस्य वाचकः प्रणवः",
+      "transliteration": "Tasya vachakah pranavah",
+      "text": "The sacred sound representing the Divine is the sacred syllable Pranava (OM)."
+    },
+    {
+      "ref": "1.28",
+      "original": "तज्जपस्तदर्थभावनम्",
+      "transliteration": "Taj-japas tad-artha-bhavanam",
+      "text": "Its repetition (japa) must be practiced with deep contemplation and feeling for its profound spiritual meaning."
+    },
+    {
+      "ref": "1.33",
+      "original": "मैत्रीकरुणामुदितोपेक्षाणां सुखदुःखपुण्यापुण्यविषयाणां भावनातश्चित्तप्रसादनम्",
+      "transliteration": "Maitri-karuna-muditopekshanam sukha-duhkha-punyapunva-vishayanam bhavanatash chitta-prasadanam",
+      "text": "The mind becomes serenely tranquil by cultivating friendship toward the happy, compassion toward the suffering, joy toward the virtuous, and neutral equanimity toward the unvirtuous."
+    },
+    {
+      "ref": "2.1",
+      "original": "तपःस्वाध्यायेश्वरप्रणिधानानि क्रियायोगः",
+      "transliteration": "Tapah-svadhyayeshvara-pranidhanani kriya-yogah",
+      "text": "Austerity/discipline (tapas), self-study of sacred texts (svadhyaya), and surrender to the Divine (Ishvara pranidhana) constitute Kriya Yoga."
+    },
+    {
+      "ref": "2.2",
+      "original": "समाधिभावनार्थः क्लेशतनूकरणार्थश्च",
+      "transliteration": "Samadhi-bhavanarthah klesha-tanukaranarthash cha",
+      "text": "The purpose of Kriya Yoga is to cultivate deep meditative absorption (samadhi) and attenuate the afflictions (kleshas)."
+    },
+    {
+      "ref": "2.3",
+      "original": "अविद्यास्मितारागद्वेषाभिनिवेशाः क्लेशाः",
+      "transliteration": "Avidyasmita-raga-dveshabhiniveshah kleshah",
+      "text": "The five root afflictions are ignorance (avidya), egoism (asmita), attachment (raga), aversion (dvesha), and clinging to bodily life/fear of death (abhinivesha)."
+    },
+    {
+      "ref": "2.28",
+      "original": "योगाङ्गानुष्ठानादशुद्धिक्षये ज्ञानदीप्तिरा विवेकख्यातेः",
+      "transliteration": "Yoganganushthanad ashuddhi-kshaye jnana-diptir a viveka-khyateh",
+      "text": "By dedicated practice of the limbs of Yoga, impurities are destroyed and the radiant light of wisdom dawns, leading to discriminative discernment."
+    },
+    {
+      "ref": "2.29",
+      "original": "यमनियमासनप्राणायामप्रत्याहारधारणाध्यानसमाधयोऽष्टावङ्गानि",
+      "transliteration": "Yama-niyamasana-pranayama-pratyahara-dharana-dhyana-samadhayo ashtav angani",
+      "text": "The eight limbs of Yoga are: ethical restraints (Yama), personal observances (Niyama), physical posture (Asana), breath regulation (Pranayama), sensory withdrawal (Pratyahara), concentration (Dharana), meditation (Dhyana), and absorption (Samadhi)."
+    },
+    {
+      "ref": "2.30",
+      "original": "अहिंसासत्यास्तेयब्रह्मचर्यापरिग्रहा यमाः",
+      "transliteration": "Ahimsa-satyasteya-brahmacharyaparigraha yamah",
+      "text": "The Yamas (universal ethical vows) are non-violence (Ahimsa), truthfulness (Satya), non-stealing (Asteya), continence/moderation (Brahmacharya), and non-possessiveness (Aparigraha)."
+    },
+    {
+      "ref": "2.32",
+      "original": "शौचसन्तोषतपःस्वाध्यायेश्वरप्रणिधानानि नियमाः",
+      "transliteration": "Shaucha-santosha-tapah-svadhyayeshvara-pranidhanani niyamah",
+      "text": "The Niyamas (personal disciplines) are purity (Shaucha), contentment (Santosha), self-discipline (Tapas), scriptural self-inquiry (Svadhyaya), and surrender to God (Ishvara Pranidhana)."
+    },
+    {
+      "ref": "2.46",
+      "original": "स्थिरसुखमासनम्",
+      "transliteration": "Sthira-sukham asanam",
+      "text": "Posture (asana) should be steady (sthira) and comfortable/joyful (sukha)."
+    },
+    {
+      "ref": "2.49",
+      "original": "तस्मिन् सति श्वासप्रश्वासयोर्गतिविच्छेदः प्राणायामः",
+      "transliteration": "Tasmin sati shvasa-prashvasayor gati-vichchedah pranayamah",
+      "text": "Once posture is mastered, regulation of the breath through cessation of inhalation and exhalation is Pranayama."
+    },
+    {
+      "ref": "2.54",
+      "original": "स्वविषयासंप्रयोगे चित्तस्य स्वरूपानुकार इवेन्द्रियाणां प्रत्याहारः",
+      "transliteration": "Sva-vishayasamprayoge chittasya svarupanukara ivendriyanam pratyaharah",
+      "text": "Pratyahara is the withdrawal of the senses from their external objects, mirroring the inward stillness of the mind."
+    },
+    {
+      "ref": "3.1",
+      "original": "देशबन्धश्चित्तस्य धारणा",
+      "transliteration": "Desha-bandhash chittasya dharana",
+      "text": "Concentration (Dharana) is the binding of the mind-field to a single sacred locus or point of focus."
+    },
+    {
+      "ref": "3.2",
+      "original": "तत्र प्रत्ययैकतानता ध्यानम्",
+      "transliteration": "Tatra pratyayaikatanata dhyanam",
+      "text": "Meditation (Dhyana) is the continuous, unbroken flow of awareness toward that single object of focus."
+    },
+    {
+      "ref": "3.3",
+      "original": "तदेवार्थमात्रनिर्भासं स्वरूपशून्यमिव समाधिः",
+      "transliteration": "Tad evartha-matra-nirbhasam svarupa-shunyam iva samadhih",
+      "text": "Absorption (Samadhi) is when that same meditation shines forth as the object alone, as if devoid of individual egoic form."
+    },
+    {
+      "ref": "3.4",
+      "original": "त्रयमेकत्र संयमः",
+      "transliteration": "Trayam ekatra samyamah",
+      "text": "The three practiced together upon one object (Dharana, Dhyana, Samadhi) constitute Samyama."
+    },
+    {
+      "ref": "4.34",
+      "original": "पुरुषार्थशून्यानां गुणानां प्रतिप्रसवः कैवल्यं स्वरूपप्रतिष्ठा वा चितिशक्तिरिति",
+      "transliteration": "Purushartha-shunyanam gunanam pratiprasavah kaivalyam svarupa-pratishtha va chiti-shaktir iti",
+      "text": "Liberation (Kaivalya) is attained when the Gunas, having fulfilled their purpose for the Purusha, dissolve back into their source; or it is the absolute abiding of Pure Consciousness in its own radiant reality."
+    }
+  ]
+}

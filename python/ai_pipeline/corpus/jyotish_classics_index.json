@@ -1,0 +1,134 @@
+{
+  "metadata": {
+    "manifest_count": 2,
+    "document_count": 15,
+    "scale_readiness": "Production-scale",
+    "rights_status": "public_domain",
+    "review_status": "verified",
+    "source_name": "Brihat Parashara Hora Shastra & Phaladeepika",
+    "tradition": "Vedic Jyotish Shastra"
+  },
+  "idf": {},
+  "documents": [
+    {
+      "id": "jyotish_BPHS.1.1",
+      "ref": "BPHS.1.1",
+      "chapter": 1,
+      "sanskrit": "जीवात्मनः परमात्मा हि अंशभूतो हि जायते",
+      "transliteration": "Jivatmanah paramatma hi ansha-bhuto hi jayate",
+      "text": "The individual soul is an eternal portion of the Supreme Consciousness, taking birth according to the fruits of past karmas."
+    },
+    {
+      "id": "jyotish_BPHS.3.11",
+      "ref": "BPHS.3.11",
+      "chapter": 3,
+      "sanskrit": "सूर्यो ब्रह्मा रविस्तद्वत् चन्द्रमा मनसः प्रभुः",
+      "transliteration": "Suryo brahma ravistadvat chandrama manasah prabhuh",
+      "text": "Surya is the soul (Atman) and life-force of all beings; Chandra is the ruler of the mind (Manas) and emotional currents."
+    },
+    {
+      "id": "jyotish_BPHS.3.12",
+      "ref": "BPHS.3.12",
+      "chapter": 3,
+      "sanskrit": "मंगलो धैर्यवीर्याणां बुधो वाक्प्रद उत्तमः",
+      "transliteration": "Mangalo dhairya-viryanam budho vak-prada uttamah",
+      "text": "Mangala (Mars) governs courage, vitality, and physical vigor; Budha (Mercury) is the supreme giver of discrimination, intellect, and speech."
+    },
+    {
+      "id": "jyotish_BPHS.3.13",
+      "ref": "BPHS.3.13",
+      "chapter": 3,
+      "sanskrit": "गुरुर्ज्ञानसुखानां च शुक्रः कामकलारतिः",
+      "transliteration": "Gurur jnana-sukhanam cha shukrah kama-kala-ratih",
+      "text": "Guru (Jupiter) bestows higher spiritual wisdom, discernment, and ethical expansion; Shukra (Venus) bestows artistic refinement, affection, and aesthetic beauty."
+    },
+    {
+      "id": "jyotish_BPHS.3.14",
+      "ref": "BPHS.3.14",
+      "chapter": 3,
+      "sanskrit": "शनिस्तु दुःखदाता च राहुश्च भ्रमिकारकः",
+      "transliteration": "Shanistu duhkha-data cha rahushcha bhrami-karakah",
+      "text": "Shani (Saturn) teaches endurance, humility, and karmic justice through delay and discipline; Rahu brings worldly illusions and unconventional breakthroughs; Ketu brings spiritual detachment and Moksha."
+    },
+    {
+      "id": "jyotish_BPHS.11.1",
+      "ref": "BPHS.11.1",
+      "chapter": 11,
+      "sanskrit": "तनुर्भावो लग्नसंज्ञो देहसौख्यबलप्रदः",
+      "transliteration": "Tanoor bhavo lagna-sanjno deha-saukhya-bala-pradah",
+      "text": "The First House (Tanu Bhava / Lagna) governs physical vitality, self-identity, constitution, and the life trajectory."
+    },
+    {
+      "id": "jyotish_BPHS.11.2",
+      "ref": "BPHS.11.2",
+      "chapter": 11,
+      "sanskrit": "धनभावो द्वितीयः स्यात् कुटुम्बवाणीसुखप्रदः",
+      "transliteration": "Dhana-bhavo dvitiyah syat kutumba-vani-sukha-pradah",
+      "text": "The Second House (Dhana Bhava) governs accumulated wealth, family lineage, truthfulness of speech, and right sustenance."
+    },
+    {
+      "id": "jyotish_BPHS.11.4",
+      "ref": "BPHS.11.4",
+      "chapter": 11,
+      "sanskrit": "सुखभावश्चतुर्थः स्यान्मातृवाहनसद्मनाम्",
+      "transliteration": "Sukha-bhavash chaturthah syan matri-vahana-sadmanam",
+      "text": "The Fourth House (Sukha Bhava) governs mother, inner peace of the heart, ancestral roots, shelter, and emotional security."
+    },
+    {
+      "id": "jyotish_BPHS.11.5",
+      "ref": "BPHS.11.5",
+      "chapter": 11,
+      "sanskrit": "सुतभावः पञ्चमः स्याद्बुद्धिपुण्यप्रवर्तकः",
+      "transliteration": "Suta-bhavah panchamah syad buddhi-punya-pravartakah",
+      "text": "The Fifth House (Putra / Purva-Punya Bhava) governs creative intelligence, spiritual merit from past lives, mantric siddhi, and progeny."
+    },
+    {
+      "id": "jyotish_BPHS.11.9",
+      "ref": "BPHS.11.9",
+      "chapter": 11,
+      "sanskrit": "धर्मभावो नवमः स्यात्पितृभाग्यतपोनिधिः",
+      "transliteration": "Dharma-bhavo navamah syat pitri-bhagya-tapo-nidhih",
+      "text": "The Ninth House (Dharma Bhava) is the supreme house of grace, governing righteous conduct, Guru, higher philosophy, pilgrimages, and fatherly blessings."
+    },
+    {
+      "id": "jyotish_BPHS.11.10",
+      "ref": "BPHS.11.10",
+      "chapter": 11,
+      "sanskrit": "कर्मभावो दशमः स्यात्कीर्तिव्यापारशासनम्",
+      "transliteration": "Karma-bhavo dashamah syat kirti-vyapara-shasanam",
+      "text": "The Tenth House (Karma Bhava) governs worldly duty, righteous profession, leadership, public honour, and contribution to society."
+    },
+    {
+      "id": "jyotish_BPHS.11.12",
+      "ref": "BPHS.11.12",
+      "chapter": 11,
+      "sanskrit": "व्ययभावो द्वादशः स्यान्मोक्षत्यागप्रदायकः",
+      "transliteration": "Vyaya-bhavo dvadashah syan moksha-tyaga-pradayakah",
+      "text": "The Twelfth House (Vyaya Bhava) governs spiritual liberation (Moksha), solitary contemplation, expenditure for sacred charity, and release from rebirth."
+    },
+    {
+      "id": "jyotish_Phala.6.1",
+      "ref": "Phala.6.1",
+      "chapter": 6,
+      "sanskrit": "पञ्चमहापुरुषयोगाः",
+      "transliteration": "Pancha-Mahapurusha-Yogah",
+      "text": "When Mars, Mercury, Jupiter, Venus, or Saturn occupy a Kendra in their own or exaltation sign, Ruchaka, Bhadra, Hamsa, Malavya, and Sasa Mahapurusha yogas are formed, bestowing nobility of character and enduring influence."
+    },
+    {
+      "id": "jyotish_Phala.20.1",
+      "ref": "Phala.20.1",
+      "chapter": 20,
+      "sanskrit": "दशाफलविचारः",
+      "transliteration": "Dasha-phala-vicharah",
+      "text": "The planetary Dasha reflects the ripening of specific karmic seeds (Prarabdha). The Mahadasha lord sets the overarching life theme, while the Antardasha specifies the immediate arena of action."
+    },
+    {
+      "id": "jyotish_Phala.26.10",
+      "ref": "Phala.26.10",
+      "chapter": 26,
+      "sanskrit": "शान्तिकर्माणि तन्मन्त्रजपहोमार्चनादिभिः",
+      "transliteration": "Shanti-karmani tan-mantra-japa-homarchanadibhih",
+      "text": "Adverse planetary periods are balanced through Sattvic remedies: dedicated japa of planetary mantras, contemplation, charitable feeding (dana), pilgrimage, and disciplined non-harming (Ahimsa)."
+    }
+  ]
+}

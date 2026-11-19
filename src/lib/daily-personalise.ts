@@ -1,5 +1,6 @@
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { performSemanticPramanaSearch } from '@/lib/ai/semantic-search';
 import {
   validatePipelineTags,
   getDefaultTags,
@@ -98,6 +99,22 @@ export async function generateDailyPersonalisation(
     ? input.seeking.join(', ')
     : (input.seeking ?? '');
 
+  let groundingContext = '';
+  try {
+    const searchRes = await performSemanticPramanaSearch({
+      query: seekingText || `${dayOfWeek} morning meditation sadhana`,
+      tradition: tradition === 'general' ? 'all' : tradition,
+      category: 'scripture',
+      limit: 1,
+    });
+    if (searchRes.results.length > 0) {
+      const top = searchRes.results[0];
+      groundingContext = `\nGROUNDING PRAMANA CLASSICAL PASSAGE:\nSource: ${top.source} (${top.citation || 'Classical'})\nInsight: "${top.content.slice(0, 200)}"\nAnchor today's suggestion directly in this timeless wisdom.`;
+    }
+  } catch {
+    // Graceful fallback
+  }
+
   const prompt = `You are a warm, wise spiritual guide. Generate a personalised daily practice suggestion for ${name}.
 
 USER PROFILE:
@@ -105,6 +122,7 @@ USER PROFILE:
 - Spiritual level: ${level}
 - Currently seeking: ${seekingText || 'general guidance'}
 - Day: ${dayOfWeek}
+${groundingContext}
 
 Return ONLY this JSON (no markdown fences, no extra keys):
 {

@@ -1,0 +1,60 @@
+{
+  "corpus_id": "vedic_suktas_stotras",
+  "doc_id": "vedic_suktas_stotras_doc_1",
+  "title": "Classical Vedic Suktas & Stotras",
+  "source_name": "Vedic Rishis & Acharyas",
+  "language": "sanskrit",
+  "tradition": "Vedic / Sanatan Dharma",
+  "source_class": "scripture",
+  "rights_status": "public-domain",
+  "content": [
+    {
+      "ref": "Purusha.1",
+      "original": "सहस्रशीर्षा पुरुषः सहस्राक्षः सहस्रपात्। स भूमिं विश्वतो वृत्वात्यतिष्ठद्दशाङ्गुलम्॥",
+      "transliteration": "Sahasra-shirsha purushah sahasrakshah sahasra-pat. Sa bhumim vishvato vritvatyatishthad dashangulam.",
+      "text": "The Cosmic Being (Purusha) has a thousand heads, a thousand eyes, and a thousand feet. Pervading the entire cosmos in all directions, He transcends it by ten fingers."
+    },
+    {
+      "ref": "Purusha.12",
+      "original": "चन्द्रमा मनसो जातः। चक्षोः सूर्यो अजायत।",
+      "transliteration": "Chandrama manaso jatah. Chakshoh suryo ajayata.",
+      "text": "From the Cosmic Mind (Manas) the Moon was born; from the Cosmic Eye the Sun was born."
+    },
+    {
+      "ref": "Nasadiya.1",
+      "original": "नासदासीन्नो सदासीत्तदानीं नासीद्रजो नो व्योमा परो यत्।",
+      "transliteration": "Nasadasin no sadasit tadanim nasid rajo no vyoma paro yat.",
+      "text": "Then there was neither non-existence nor existence; there was no realm of air, nor the celestial vault beyond. What covered all? Where? Under whose protection?"
+    },
+    {
+      "ref": "SriSukta.1",
+      "original": "हिरण्यवर्णां हरिणीं सुवर्णरजतस्रजाम्। चन्द्रां हिरण्मयीं लक्ष्मीं जातवेदो म आवह॥",
+      "transliteration": "Hiranya-varnam harinim suvarna-rajata-srajam. Chandram hiranmayim lakshmim jata-vedo ma avaha.",
+      "text": "O Agni, invoke for me the radiant Devi Lakshmi, who shines with golden lustre, like a golden deer adorned with garlands of gold and silver, luminous as the moon."
+    },
+    {
+      "ref": "AdityaHridaya.15",
+      "original": "सर्वदेवात्मको ह्येष तेजस्वी रश्मिभावनः। एष देवासुरगणांल्लोकान् पाति गभस्तिभिः॥",
+      "transliteration": "Sarva-devatmako hy esha tejasvi rashmi-bhavanah. Esha devasura-ganaml lokan pati gabhastibhih.",
+      "text": "Indeed, this Sun embodies all deities; he is radiant, the creator of the rays. With his illuminating rays, he sustains the celestial beings, the titans, and all mortal worlds."
+    },
+    {
+      "ref": "Mahamrityunjaya.1",
+      "original": "त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्। उर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय माऽमृतात्॥",
+      "transliteration": "Tryambakam yajamahe sugandhim pushti-vardhanam. Urvarukam iva bandhanan mrityor mukshiya ma amritat.",
+      "text": "We revere the Three-Eyed Lord (Shiva), the fragrant one who nourishes and sustains all life. May He liberate us from the bondage of mortality and cyclic death, as effortlessly as a ripe cucumber is severed from its vine, but never from immortality."
+    },
+    {
+      "ref": "ShivaTandava.1",
+      "original": "जटाटवीगलज्जलप्रवाहपावितस्थले गलेऽवलम्ब्य लम्बितां भुजङ्गतुङ्गमालिकाम्।",
+      "transliteration": "Jatata-vigalaj-jala-pravaha-pavita-sthale gale avalambya lambitam bhujanga-tunga-malikam.",
+      "text": "With his neck consecrated by the sacred flow of water trickling down from his dense forest of matted locks, and adorned with the lofty garland of the serpent king coiled around his throat, Lord Shiva performs his cosmic dance."
+    },
+    {
+      "ref": "HanumanChalisa.1",
+      "original": "जय हनुमान ज्ञान गुन सागर। जय कपीस तिहुँ लोक उजागर॥",
+      "transliteration": "Jaya Hanumana jnana guna sagara. Jaya kapisa tihu loka ujagara.",
+      "text": "Hail to Lord Hanuman, the boundless ocean of wisdom and virtues! Hail to the sovereign of monkey warriors, whose glory illuminates all three worlds."
+    }
+  ]
+}
