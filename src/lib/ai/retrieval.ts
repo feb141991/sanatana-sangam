@@ -1424,6 +1424,12 @@ const ramayanaDenseRetriever = new PramanaDenseEmbeddingRetriever(
 );
 PramanaRetrieverSelector.register('valmiki_ramayana', ramayanaDenseRetriever);
 PramanaRetrieverSelector.register('valmiki_ramayana_dense', ramayanaDenseRetriever);
+PramanaRetrieverSelector.register('valmiki_ramayana_sparse', new PramanaGenericEmbeddingRetriever(
+  ramayanaManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/valmiki_ramayana_index.json'),
+  'Sanatana Dharma',
+  'Valmiki Ramayana'
+));
 
 const yogaManifestRetriever = new PramanaManifestRetriever({
   prefix: 'yoga_sutras',
@@ -1626,9 +1632,6 @@ export async function retrievePathshalaContext(input: {
     }
   );
 
-  if (corpusId === 'valmiki_ramayana') {
-    // Registered and explicit-only
-  }
 
   const start = Date.now();
   const retriever = PramanaRetrieverSelector.select(corpusId);

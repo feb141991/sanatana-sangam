@@ -307,8 +307,16 @@ async function searchScriptures(query: string, traditionFilter?: string | null):
     // If dense scripture retriever has no match or query doesn't match specific verse
   }
 
-  // Cross-search newly ingested classical canonical corpora (Yoga, Jyotish, Bhakti, Stotras)
-  const additionalCorpora = ['yoga_sutras', 'jyotish_classics', 'bhakti_sutras', 'vedic_suktas_stotras'];
+  // Cross-search classical canonical corpora (Ramayana, Yoga, Jyotish, Bhakti, Stotras)
+  if (traditionFilter && traditionFilter !== 'all') {
+    const tf = traditionFilter.toLowerCase();
+    const isHinduFamily = tf === 'hindu' || tf === 'sanatan' || tf === 'vedic';
+    if (!isHinduFamily) {
+      return results;
+    }
+  }
+
+  const additionalCorpora = ['valmiki_ramayana', 'yoga_sutras', 'jyotish_classics', 'bhakti_sutras', 'vedic_suktas_stotras'];
   const queryTokens = tokenize(query);
   const seenTexts = new Set<string>();
 

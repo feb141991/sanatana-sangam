@@ -85,6 +85,18 @@ describe('Pramana Semantic Search', () => {
     expect(top.content).toContain('Yoga');
   });
 
+  it('searches Valmiki Ramayana canonical passages', async () => {
+    const res = await performSemanticPramanaSearch({
+      query: 'abhayam sarvabhutebhyo Vibhishana surrender',
+      category: 'scripture',
+    });
+
+    expect(res.results.length).toBeGreaterThan(0);
+    const top = res.results[0];
+    expect(top.category).toBe('scripture');
+    expect(top.title).toContain('Ramayana');
+  });
+
   it('honors result limit', async () => {
     const res = await performSemanticPramanaSearch({
       query: 'dharma peace',
