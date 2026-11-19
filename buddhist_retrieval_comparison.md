@@ -4,12 +4,12 @@ This report compares the retrieval behavior of the traditional **Heuristic Retri
 
 | Case ID | Query Text | Heuristic Retrieved Chunks (Base Score) | Embedding-Backed Retrieved Chunks (Cosine Similarity Score) | Latency (Heur / Embed) |
 | :--- | :--- | :--- | :--- | :--- |
-| **`buddhist-dhamma-dukkha`** | *Buddhist Dhamma 1.1* | 1.1 (1.40), 1.2 (1.00) | 1.1 (0.64), 1.2 (0.52), 2.1 (0.20), 1.4 (0.20), 1.3 (0.19) | 0ms / 1ms |
-| **`buddhist-dhamma-anatta`** | *Buddhist Dhamma 1.2* | 1.1 (1.00), 1.2 (1.40), 1.3 (1.00) | 1.2 (0.73), 1.1 (0.63), 1.3 (0.61), 2.1 (0.20), 1.4 (0.20) | 0ms / 0ms |
-| **`buddhist-dhamma-dependent-origination`** | *Buddhist Dhamma 1.3* | 1.2 (1.00), 1.3 (1.40), 1.4 (1.00) | 1.3 (0.64), 1.2 (0.54), 1.4 (0.52), 2.1 (0.20), 1.1 (0.19) | 0ms / 0ms |
-| **`buddhist-dhamma-middle-way`** | *Buddhist Dhamma 1.4* | 1.3 (1.00), 1.4 (1.40) | 1.4 (0.65), 1.3 (0.55), 1.2 (0.22), 2.1 (0.20), 1.1 (0.19) | 0ms / 0ms |
-| **`buddhist-dhamma-metta`** | *Buddhist Dhamma 2.1* | 1.1 (0.40), 1.2 (0.40), 1.3 (0.40), 1.4 (0.40), 2.1 (0.40) | 2.1 (0.66), 2.2 (0.54), 1.2 (0.22), 1.4 (0.20), 1.1 (0.19) | 0ms / 0ms |
-| **`buddhist-dhamma-impermanence`** | *Buddhist Dhamma 2.2* | 1.1 (0.40), 1.2 (0.40), 1.3 (0.40), 1.4 (0.40), 2.1 (0.40) | 2.2 (0.61), 2.1 (0.51), 1.2 (0.22), 1.4 (0.20), 1.1 (0.19) | 1ms / 0ms |
+| **`buddhist-dhamma-dukkha`** | *Buddhist Dhamma 1.1* | 1.1 (2.42), 1.2 (2.02) | 1.1 (0.69), 1.2 (0.57) | 2ms / 2ms |
+| **`buddhist-dhamma-anatta`** | *Buddhist Dhamma 1.2* | 1.2 (2.42), 1.1 (2.02), 1.3 (1.85) | 1.2 (0.75), 1.1 (0.65), 1.3 (0.63) | 0ms / 0ms |
+| **`buddhist-dhamma-dependent-origination`** | *Buddhist Dhamma 1.3* | 1.3 (2.25), 1.2 (2.02), 1.4 (1.85) | 1.3 (0.72), 1.2 (0.62), 1.4 (0.60) | 0ms / 1ms |
+| **`buddhist-dhamma-middle-way`** | *Buddhist Dhamma 1.4* | 1.4 (2.25), 1.3 (1.85), 1.5 (1.85) | 1.4 (0.73), 1.3 (0.63), 1.5 (0.61) | 0ms / 0ms |
+| **`buddhist-dhamma-metta`** | *Buddhist Dhamma 2.1* | 2.1 (2.25), 2.2 (1.85) | 2.1 (0.76), 2.2 (0.64) | 0ms / 0ms |
+| **`buddhist-dhamma-impermanence`** | *Buddhist Dhamma 2.2* | 2.2 (2.25), 2.1 (1.85), 2.3 (1.85) | 2.2 (0.67), 2.1 (0.57), 2.3 (0.55) | 0ms / 1ms |
 
 ## 📊 Analysis & Verification Summary
 

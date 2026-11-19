@@ -21,6 +21,7 @@ describe('query shape sent to the retriever', () => {
 
   it.each([
     ['What do the Upanishads teach about the self and the world around us?', 'pathshala_upanishads'],
+    ['What does the Dhammapada say about the mind and its training?', 'buddhist_dhamma'],
   ])('sends the dense corpora the whole question, stopwords included: %s', async (message, corpus) => {
     await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
     expect(retrieveMock).toHaveBeenCalledTimes(1);
@@ -44,10 +45,10 @@ describe('query shape sent to the retriever', () => {
   });
 
   it('keeps stripping stopwords for the sparse keyword corpora', async () => {
-    const message = 'What does the Dhammapada say about the mind and its training?';
+    const message = 'Tell me the katha story of Prahlada and his devotion to Vishnu';
     await retrieveDharmaChatGrounding({ message, tradition: 'hindu' });
     const sent = retrieveMock.mock.calls[0][0];
-    expect(sent.corpus).toBe('buddhist_dhamma');
+    expect(sent.corpus).toBe('bhakti_katha');
     expect(sent.title).toBe(extractMeaningfulTokens(message).join(' '));
     expect(sent.title).not.toBe(message);
   });

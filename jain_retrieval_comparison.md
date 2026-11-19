@@ -4,12 +4,12 @@ This report compares the retrieval behavior of the traditional **Heuristic Retri
 
 | Case ID | Query Text | Heuristic Retrieved Chunks (Base Score) | Embedding-Backed Retrieved Chunks (Cosine Similarity Score) | Latency (Heur / Embed) |
 | :--- | :--- | :--- | :--- | :--- |
-| **`jain-ahimsa-principle`** | *Jain Dharma 1.1* | 1.1 (1.57), 1.2 (1.00) | 1.1 (0.66), 1.2 (0.54), 1.1 (0.64), 1.1 (0.62), 2.1 (0.24) | 1ms / 0ms |
-| **`jain-anekantavada`** | *Jain Dharma 1.2* | 1.1 (1.17), 1.2 (1.40), 1.3 (1.00) | 1.2 (0.71), 1.1 (0.61), 1.3 (0.59), 1.1 (0.21), 1.1 (0.20) | 0ms / 0ms |
-| **`jain-ratnatraya`** | *Jain Dharma 1.3* | 1.2 (1.00), 1.3 (1.40), 1.4 (1.00) | 1.3 (0.65), 1.2 (0.55), 1.4 (0.53), 1.1 (0.21), 1.1 (0.21) | 0ms / 0ms |
-| **`jain-karma-and-soul`** | *Jain Dharma 1.4* | 1.3 (1.00), 1.4 (1.40) | 1.4 (0.64), 1.3 (0.54), 1.1 (0.21), 1.1 (0.21), 1.1 (0.20) | 0ms / 0ms |
-| **`jain-five-vows`** | *Jain Dharma 2.1* | 1.1 (0.57), 2.1 (0.57), 2.2 (0.57), 1.2 (0.40), 1.3 (0.40) | 2.1 (0.72), 2.2 (0.60), 1.1 (0.21), 1.1 (0.21), 1.1 (0.20) | 0ms / 0ms |
-| **`jain-equanimity`** | *Jain Dharma 2.2* | 1.1 (0.57), 2.1 (0.57), 2.2 (0.57), 1.2 (0.40), 1.3 (0.40) | 2.2 (0.59), 2.1 (0.49), 1.1 (0.21), 1.1 (0.21), 1.1 (0.20) | 0ms / 0ms |
+| **`jain-ahimsa-principle`** | *Jain Dharma 1.1* | 1.1 (2.25), 1.2 (1.85) | 1.1 (0.71), 1.2 (0.59), 1.1 (0.70), 1.1 (0.69) | 1ms / 2ms |
+| **`jain-anekantavada`** | *Jain Dharma 1.2* | 1.2 (2.25), 1.1 (1.85), 1.3 (1.85) | 1.2 (0.83), 1.1 (0.73), 1.3 (0.71) | 0ms / 0ms |
+| **`jain-ratnatraya`** | *Jain Dharma 1.3* | 1.3 (2.25), 1.2 (1.85), 1.4 (1.85) | 1.3 (0.81), 1.2 (0.71), 1.4 (0.69) | 1ms / 0ms |
+| **`jain-karma-and-soul`** | *Jain Dharma 1.4* | 1.4 (2.25), 1.3 (1.85), 1.5 (1.85) | 1.4 (0.69), 1.3 (0.59), 1.5 (0.57) | 0ms / 0ms |
+| **`jain-five-vows`** | *Jain Dharma 2.1* | 2.1 (2.25), 2.2 (1.85) | 2.1 (0.81), 2.2 (0.69) | 0ms / 0ms |
+| **`jain-equanimity`** | *Jain Dharma 2.2* | 2.2 (2.25), 2.1 (1.85), 2.3 (1.85) | 2.2 (0.73), 2.1 (0.63), 2.3 (0.61) | 1ms / 0ms |
 
 ## 📊 Analysis & Verification Summary
 
