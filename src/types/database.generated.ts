@@ -9020,6 +9020,116 @@ export type Database = {
         }
         Relationships: []
       }
+      support_ticket_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_internal_note: boolean
+          message: string
+          sender_id: string | null
+          sender_name: string
+          sender_type: string
+          ticket_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_internal_note?: boolean
+          message: string
+          sender_id?: string | null
+          sender_name: string
+          sender_type: string
+          ticket_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_internal_note?: boolean
+          message?: string
+          sender_id?: string | null
+          sender_name?: string
+          sender_type?: string
+          ticket_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          access_token_hash: string
+          assigned_admin: string | null
+          category: string
+          client_metadata: Json
+          created_at: string
+          description: string
+          id: string
+          priority: string
+          rag_deflection_attempted: boolean
+          rag_deflection_feedback: string | null
+          rag_solution_offered: string | null
+          resolved_at: string | null
+          seeker_email: string
+          seeker_name: string
+          status: string
+          subject: string
+          ticket_number: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          access_token_hash: string
+          assigned_admin?: string | null
+          category: string
+          client_metadata?: Json
+          created_at?: string
+          description: string
+          id?: string
+          priority?: string
+          rag_deflection_attempted?: boolean
+          rag_deflection_feedback?: string | null
+          rag_solution_offered?: string | null
+          resolved_at?: string | null
+          seeker_email: string
+          seeker_name: string
+          status?: string
+          subject: string
+          ticket_number: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          access_token_hash?: string
+          assigned_admin?: string | null
+          category?: string
+          client_metadata?: Json
+          created_at?: string
+          description?: string
+          id?: string
+          priority?: string
+          rag_deflection_attempted?: boolean
+          rag_deflection_feedback?: string | null
+          rag_solution_offered?: string | null
+          resolved_at?: string | null
+          seeker_email?: string
+          seeker_name?: string
+          status?: string
+          subject?: string
+          ticket_number?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       thread_messages: {
         Row: {
           body: string

@@ -28,6 +28,8 @@ export const USER_EXPORT_SOURCES: UserExportSource[] = [
   { table: 'calendar_subscriptions', userColumns: ['user_id'], orderBy: ['created_at'], redact: ['token'] },
   { table: 'comment_upvotes', userColumns: ['user_id'], orderBy: ['created_at'] },
   { table: 'consent_events', userColumns: ['user_id'], orderBy: ['seq'] },
+  { table: 'support_tickets', userColumns: ['user_id'], orderBy: ['created_at'], redact: ['access_token_hash'] },
+  { table: 'support_ticket_messages', userColumns: ['user_id'], orderBy: ['created_at'] },
   { table: 'darshan_preferences', userColumns: ['user_id'], orderBy: ['created_at'] },
   { table: 'dharm_veer_responses', userColumns: ['user_id'], orderBy: ['id'] },
   { table: 'email_consent_events', userColumns: ['user_id'], orderBy: ['id'] },
