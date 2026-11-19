@@ -39,12 +39,13 @@ export default async function FestivalPage({ params }: Props) {
   }
 
   const url = `https://www.shoonaya.com/festival/${decodedSlug}`;
+  const geo = isFestivalPublishable(festival) ? extractFestivalGeo(festival) : null;
   return <>
-    {isFestivalPublishable(festival) && <>
-      <GeoArticleJsonLd geo={extractFestivalGeo(festival)} url={url} />
+    {geo && <>
+      <GeoArticleJsonLd geo={geo} url={url} />
       <BreadcrumbJsonLd items={[{ name: 'Home', url: 'https://www.shoonaya.com' },
         { name: resolveFestivalText(festival.name), url }]} />
     </>}
-    <FestivalClient festival={festival} originalSlug={decodedSlug} />
+    <FestivalClient festival={festival} originalSlug={decodedSlug} geo={geo} />
   </>;
 }

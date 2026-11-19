@@ -48,7 +48,7 @@ const MCP_TOOLS = [
   },
   {
     name: "getFestivalDetails",
-    description: "Retrieve council-reviewed festival or vrat details across Hindu, Sikh, Buddhist, and Jain traditions (e.g. Nirjala Ekadashi, Vaikunta Ekadashi, Diwali, Shivaratri, Gurpurab, Buddha Purnima, Mahavir Jayanti), including significance, parana window, fasting rules, and recommended observances.",
+    description: "Retrieve canonical festival or vrat details across Hindu, Sikh, Buddhist, and Jain traditions (e.g. Nirjala Ekadashi, Vaikunta Ekadashi, Diwali, Shivaratri, Gurpurab, Buddha Purnima, Mahavir Jayanti), including significance, parana window, fasting rules, and recommended observances.",
     inputSchema: {
       type: "object",
       properties: {

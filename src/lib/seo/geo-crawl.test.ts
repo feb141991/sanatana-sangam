@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import robots, { AI_CRAWLER_USER_AGENTS } from '@/app/robots';
 import type { FestivalContent } from '@/lib/festival-data';
-import { extractFestivalGeo } from './geo-extractors';
+import { extractFestivalGeo, extractVratGeo, extractJournalGeo } from './geo-extractors';
 import { buildLlmsFull } from './llms-full';
 
 const reviewedText = (value: string) => ({
@@ -60,6 +60,58 @@ describe('AI crawler discovery', () => {
       expect.objectContaining({ question: 'What is the significance of Reviewed Festival?' }),
       expect.objectContaining({ question: 'How is Reviewed Festival observed?' }),
     ]));
+  });
+
+  it('extracts tradition-aware fasting rules and Parana guidance for observances', () => {
+    const nirjalaVrat = {
+      id: 'nirjala-ekadashi',
+      name: 'Nirjala Ekadashi',
+      tagline: 'The most austere Ekadashi',
+      emoji: '💧',
+      mantra: 'Om Namo Bhagavate Vasudevaya',
+      significance: 'Equal to observing all twenty-four Ekadashis.',
+      practice: 'Waterless fasting for 24 hours.',
+      fastingType: 'nirjala' as const,
+      breakFastTime: 'Next day during Parana window after sunrise.',
+      dos: ['Chant Om Namo Bhagavate Vasudevaya'],
+      donts: ['Do not consume water or food'],
+    };
+
+    const geo = extractVratGeo(nirjalaVrat);
+    const fastingQA = geo.qa.find((q: { question: string }) => q.question.includes('fasting rule'));
+
+    expect(fastingQA).toBeDefined();
+    expect(fastingQA?.answer).toContain('complete waterless fasting (Nirjala)');
+    expect(geo.provenance).toBe('Sanatan Dharma (Vedic Tradition)');
+  });
+
+  it('extracts structured citations and practice guidance from journal essays', () => {
+    const sampleEssay = {
+      slug: 'sacred-time',
+      title: 'Sacred Time and Circadian Alignment',
+      subtitle: 'How ancient timekeeping aligns with human chronobiology',
+      tradition: 'Sanatan Dharma',
+      traditionColor: 'text-amber-500',
+      readTime: '6 min read',
+      author: 'Dr. Shastri',
+      authorRole: 'Vedic Astrometry Researcher',
+      authorBio: 'Researcher in chronobiology.',
+      publishedDate: 'November 2026',
+      emblem: '/relics/shankha-conch.png',
+      excerpt: 'Exploring circadian rhythm and Brahma Muhurta.',
+      keyTakeaways: ['Wake during Brahma Muhurta', 'Align with solar dawn'],
+      sections: [{ heading: 'Circadian Phase', paragraphs: ['The pre-dawn window has lowest ambient noise.'] }],
+      practiceGuidance: { title: 'Dawn Routine', steps: ['Wake 48 mins before sunrise', 'Drink warm water'] },
+      citations: [{ reference: 'Surya Siddhanta 1.12', text: 'On divisions of solar time' }],
+      relatedSlugs: [],
+      publicationStatus: 'published' as const,
+    };
+
+    const geo = extractJournalGeo(sampleEssay);
+
+    expect(geo.canonicalUrl).toBe('https://www.shoonaya.com/journal/sacred-time');
+    expect(geo.qa.length).toBeGreaterThanOrEqual(3);
+    expect(geo.provenance).toContain('Surya Siddhanta 1.12');
   });
 });
 

@@ -68,6 +68,7 @@ export default async function VratPage({ params }: Props) {
       <VratClient
         vrat={vratData}
         originalSlug={decodedId}
+        geo={geo}
         isAuthenticated={!!user}
         appLanguage={(profile as any)?.app_language ?? 'en'}
         meaningLanguage={(profile as any)?.meaning_language ?? 'en'}

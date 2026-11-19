@@ -1,5 +1,6 @@
 import { getPublishableFestivalContent, resolveFestivalList, resolveFestivalText } from '@/lib/festival-data';
 import { getCanonicalVratData, type VratData } from '@/lib/vrat-data';
+import { getAllJournalEssays, type JournalEssay } from '@/config/journal';
 
 const BASE_URL = 'https://www.shoonaya.com';
 
@@ -58,12 +59,40 @@ function festivalSections(): string[] {
   });
 }
 
+function journalSections(): string[] {
+  return getAllJournalEssays()
+    .filter((essay) => essay.publicationStatus === 'published')
+    .sort((a, b) => a.title.localeCompare(b.title))
+    .map((essay) => {
+      const citations = essay.citations?.map((c) => `- ${c.reference}: "${c.text}"`) ?? [];
+      const takeaways = essay.keyTakeaways?.map((t) => `- ${t}`) ?? [];
+      const practiceSteps = essay.practiceGuidance?.steps?.map((s) => `- ${s}`) ?? [];
+
+      return [
+        `## ${essay.title}`,
+        '',
+        `Canonical URL: ${BASE_URL}/journal/${essay.slug}`,
+        '',
+        `Tradition: ${essay.tradition} | Author: ${essay.author} (${essay.authorRole})`,
+        '',
+        `> ${essay.subtitle || essay.excerpt}`,
+        '',
+        '### Key Takeaways',
+        ...takeaways,
+        '',
+        ...(practiceSteps.length > 0 ? [`### Practice Guidance: ${essay.practiceGuidance.title}`, ...practiceSteps, ''] : []),
+        ...(citations.length > 0 ? ['### Primary Scriptural & Archival Citations', ...citations, ''] : []),
+      ].join('\n').trim();
+    });
+}
+
 export function buildLlmsFull(indexContent: string): string {
   const vrats = getCanonicalVratData()
     .filter((vrat, index, all) => all.findIndex(candidate => candidate.id === vrat.id) === index)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map(vratSection);
   const festivals = festivalSections();
+  const journals = journalSections();
 
   return [
     indexContent.trim(),
@@ -76,5 +105,6 @@ export function buildLlmsFull(indexContent: string): string {
     '',
     ...vrats.flatMap(section => [section, '']),
     ...(festivals.length > 0 ? ['# Published festival guides', '', ...festivals.flatMap(section => [section, ''])] : []),
+    ...(journals.length > 0 ? ['# Published Sanctuary Journal & Contemplative Wisdom Essays', '', ...journals.flatMap(section => [section, ''])] : []),
   ].join('\n').trimEnd() + '\n';
 }

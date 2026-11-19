@@ -23,6 +23,8 @@ import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter
 import { isEligibleToObserveToday, buildVratObservationPayload } from '@/lib/vrat-observation';
 
 import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
+import type { GeoModel } from '@/lib/seo/geo-model';
+import { GeoMicroSummary } from '@/components/seo/GeoMicroSummary';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -43,6 +45,7 @@ function fastingLabel(type: FastingType): string {
 interface VratClientProps {
   vrat: VratData;
   originalSlug: string;
+  geo?: GeoModel;
   isAuthenticated?: boolean;
   appLanguage?: string;
   meaningLanguage?: string;
@@ -54,6 +57,7 @@ interface VratClientProps {
 export default function VratClient({
   vrat,
   originalSlug,
+  geo,
   isAuthenticated = false,
   appLanguage,
   meaningLanguage,
@@ -705,6 +709,16 @@ export default function VratClient({
               </div>
             )}
           </section>
+        )}
+
+        {/* GEO Q&A Micro-Summary (Visible on-page & AI-crawlable) */}
+        {geo && (
+          <GeoMicroSummary
+            geo={geo}
+            cardBg={activeTheme.card}
+            borderColor={activeTheme.border}
+            textColor={activeTheme.text}
+          />
         )}
 
         {/* 3 — Live Darshan suggestion */}

@@ -77,6 +77,24 @@ export const PRODUCT_CLAIMS: readonly ProductClaim[] = [
     evidence: "consent_product_analytics and marketing_consent default to false; onboarding's email switch starts off."
   },
   {
+    id: "dharm_veer_365",
+    statement: "Shoonaya features 365 daily heroes of dharma across Hindu, Sikh, Jain, and Buddhist traditions with trilingual text and primary citations.",
+    status: "confirmed",
+    evidence: "assets/data/dharm-veer-365-snapshot.json contains exactly 365 unique heroes with complete trilingual narratives (EN, HI, PA) and primary scriptural/historical citations."
+  },
+  {
+    id: "panchatantra_stories",
+    statement: "Shoonaya includes 98 depth-expanded interactive bilingual Panchatantra stories with morals for daily reflection and family reading.",
+    status: "confirmed",
+    evidence: "assets/data/panchatantra-expanded-snapshot.json and PanchatantraStorybookView.tsx contain 98 full 6-paragraph bilingual fables with morals."
+  },
+  {
+    id: "scriptural_fasting_accuracy",
+    statement: "Fasting guidance strictly follows tradition: waterless discipline is reserved for Nirjala Ekadashi, while other Ekadashis observe phalahar; Puranmashi and Uposatha observe their respective traditional practices.",
+    status: "confirmed",
+    evidence: "vrat-data.ts in both repositories strictly isolates nirjala to nirjala-ekadashi, phalahar for all other Ekadashis, none for puranmashi, and ekbhukta for uposatha, guarded by ekadashi-resolution-contract.test.ts."
+  },
+  {
     id: "kul_family_space",
     statement: "Kul is a private space for your family.",
     status: "needs_confirmation",

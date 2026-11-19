@@ -1,7 +1,7 @@
 # Shoonaya: Brand Positioning & Messaging Guide
 
 > **Founder Core Pitch**:
-> *"Shoonaya: The Ad-Free Spiritual Companion Bringing Astronomy-Backed Sacred Time and Scripture to the Next Generation along with ancestors kathas, Panchtantra stories, family remembrance and vault, traditional chausar game, and a whole lot of Sanatana Dharma."*
+> *"Shoonaya: The Daily Spiritual Sanctuary Bringing Astronomy-Backed Sacred Time, Timeless Kathas, 365 Heroes of Dharma, and Authentic Practice to the Next Generation."*
 
 ---
 
@@ -10,20 +10,21 @@
 ### A. Google Play Store & Apple App Store (Full Description Intro)
 > **Shoonaya: Find Your Infinite**
 >
-> The ad-free daily spiritual companion bringing astronomy-backed sacred time, scripture, and timeless tradition to the next generation.
+> A daily spiritual sanctuary for sacred time, practice, and connection.
 >
-> Experience the full depth of Sanatana Dharma in one serene sanctuary:
-> - **Astronomy-Backed Sacred Time**: High-precision Panchang, tithi, muhurta, and council-reviewed festival calendars.
-> - **Ancient Kathas & Sakhis**: Sourced stories of our ancestors, rishis, gurus, and tirthankaras across Hindu, Sikh, Buddhist, and Jain traditions.
-> - **Panchatantra Wisdom**: Timeless moral fables illustrated for seekers and families.
-> - **Kul (Family Vault & Remembrance)**: Honor ancestral tithis, preserve sacred memories, and bond across generations in private family spaces.
-> - **Traditional Chausar (Dyuta)**: Play the ancient game of wisdom and destiny (Gyan Chaupar).
-> - **Sacred Daily Sadhana**: Distraction-free digital Japa Mala, Vedic Kundali birth charts, and fasting (Vrat) guidelines.
+> Experience the timeless depth of dharmic living in one serene, distraction-free space:
+> - **Astronomy-Backed Sacred Time**: High-precision local Panchang, tithi, sunrise, muhurta, and canonical festival calendars tailored to your exact city.
+> - **Dharm Veer (365 Heroes of Dharma)**: Daily handcrafted accounts of unsung heroes, rishis, gurus, and warrior-saints across Hindu, Sikh, Jain, and Buddhist traditions, complete with primary source citations.
+> - **Panchatantra Illustrated Fables**: 98 depth-expanded, bilingual wisdom tales with practical life morals for seekers and families.
+> - **Sacred Daily Sadhana**: Haptic digital Japa Mala counter, streak reflections, and scripturally authentic fasting (Vrat) guidance.
+> - **Four Distinct Traditions**: Separate, dedicated experiences for Sanatan Dharma, Sikh Gurmat, Jain Dharma, and Buddhist Dhamma.
+> - **Traditional Chausar (Dyuta)**: Play the timeless strategy board game of ancient India.
+> - **Kul (Family Heritage & Lineage)**: Honor ancestral tithis and preserve family traditions in private family spaces.
 
 ---
 
 ### B. Google Play Store "Short Description" (80 Characters Max)
-> `Ad-free Panchang, Vedic Kundali, Japa Mala, Kathas & family spiritual vault.`
+> `Daily Panchang, Japa Mala, 365 Dharm Veer heroes, Panchatantra & sacred time.`
 
 ---
 
@@ -33,9 +34,9 @@
 ---
 
 ### D. Product Hunt & Startup Directories (Tagline & Description)
-* **Tagline**: *Ad-free spiritual companion bringing astronomy-backed sacred time & tradition to modern life.*
+* **Tagline**: *A daily spiritual sanctuary for sacred time, practice, and connection.*
 * **Short Pitch**:
-  > *Shoonaya is an ad-free spiritual sanctuary that bridges ancient Sanatana Dharma with modern design. Track high-precision astronomical Panchangs, read authentic ancestor kathas & Panchatantra tales, record family remembrance in a secure vault, and play traditional Chausar — all in one privacy-first app.*
+  > *Shoonaya is a serene spiritual sanctuary that bridges ancient dharmic traditions with modern design. Track high-precision astronomical Panchangs tailored to your city, read 365 sourced Dharm Veer hero stories and 98 Panchatantra fables, maintain your daily Japa practice, and connect with heritage — all in one privacy-first app.*
 
 ---
 

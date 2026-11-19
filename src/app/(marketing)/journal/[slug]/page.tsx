@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 
 import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
+import { GeoArticleJsonLd } from "@/components/seo/JsonLd";
+import { GeoMicroSummary } from "@/components/seo/GeoMicroSummary";
+import { extractJournalGeo } from "@/lib/seo/geo-extractors";
 import {
   findJournalEssay,
   getAllJournalEssays,
@@ -63,33 +66,12 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
   if (!essay) notFound();
 
   const related = getRelatedEssays(essay.slug, 3);
-
-  // Article JSON-LD Structured Data
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: essay.title,
-    description: essay.excerpt,
-    ...(essay.publishedAt ? { datePublished: essay.publishedAt } : {}),
-    author: {
-      "@type": "Person",
-      name: essay.author,
-      jobTitle: essay.authorRole,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Shoonaya",
-      url: "https://www.shoonaya.com",
-    },
-    mainEntityOfPage: `https://www.shoonaya.com/journal/${essay.slug}`,
-  };
+  const canonicalUrl = `https://www.shoonaya.com/journal/${essay.slug}`;
+  const geo = extractJournalGeo(essay);
 
   return (
     <main className="w-full overflow-x-clip">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <GeoArticleJsonLd geo={geo} url={canonicalUrl} />
 
       {/* ── Article Header & Hero ───────────────────────────────────────── */}
       <section className="relative w-full overflow-hidden border-b border-[var(--card-border)] bg-gradient-to-b from-[var(--surface-soft)] via-[var(--surface-base)] to-[var(--surface-base)] px-6 pt-36 pb-16 sm:px-10 lg:px-14 xl:px-20 lg:pt-44 lg:pb-24">
@@ -247,6 +229,9 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
               </div>
             </div>
 
+            {/* ── GEO Q&A Micro-Summary (Visible & AI-Crawlable) ────────────── */}
+            <GeoMicroSummary geo={geo} />
+
             {/* ── Shoonaya Mobile App Companion Conversion Card ───────────────── */}
             <div className="mt-14 overflow-hidden rounded-3xl border border-[var(--brand-primary)]/40 bg-gradient-to-br from-[var(--surface-soft)] via-[var(--card-bg)] to-[var(--brand-primary-soft)]/20 p-8 sm:p-10 shadow-[var(--shadow-soft)]">
               <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-8">
@@ -279,7 +264,7 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="size-4 text-[var(--brand-primary-strong)] shrink-0" />
-                      <span>100% Ad-Free, Private & Battery-Efficient</span>
+                      <span>Privacy-First, Battery-Efficient Architecture</span>
                     </div>
                   </div>
                 </div>

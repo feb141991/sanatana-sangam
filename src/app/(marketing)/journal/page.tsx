@@ -21,8 +21,35 @@ export const metadata: Metadata = {
 export default function JournalPage() {
   const essays = getAllJournalEssays();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "The Sanctuary Journal: Contemplative Essays & Lived Wisdom",
+    description:
+      "Original long-form reflections on lived dharma, sacred architecture, astronomical timekeeping, silent meditation, and ethical mindfulness for the modern seeker.",
+    url: "https://www.shoonaya.com/journal",
+    publisher: {
+      "@type": "Organization",
+      name: "Shoonaya",
+      url: "https://www.shoonaya.com",
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: essays.map((essay, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://www.shoonaya.com/journal/${essay.slug}`,
+        name: essay.title,
+      })),
+    },
+  };
+
   return (
     <main className="w-full overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <MarketingPageHero
         eyebrow="The Sanctuary Journal"
         title="Timeless reflections for the conscious seeker."

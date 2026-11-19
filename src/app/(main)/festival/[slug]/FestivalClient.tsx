@@ -13,13 +13,16 @@ import {
 } from '@/lib/festival-data';
 import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
+import type { GeoModel } from '@/lib/seo/geo-model';
+import { GeoMicroSummary } from '@/components/seo/GeoMicroSummary';
 
 interface FestivalClientProps {
   festival: FestivalContent;
   originalSlug: string;
+  geo?: GeoModel | null;
 }
 
-export default function FestivalClient({ festival, originalSlug }: FestivalClientProps) {
+export default function FestivalClient({ festival, originalSlug, geo }: FestivalClientProps) {
   const [calendarObservance, setCalendarObservance] = useState<ClientObservanceResult | null>(null);
 
   useEffect(() => {
@@ -156,6 +159,11 @@ export default function FestivalClient({ festival, originalSlug }: FestivalClien
           <p className="italic opacity-70">{festival.mantra.transliteration}</p>
           <p className="opacity-90">{mantraTranslation}</p>
         </section>
+      )}
+
+      {/* ── GEO Q&A Micro-Summary ───────────────────────────────────── */}
+      {geo && (
+        <GeoMicroSummary geo={geo} />
       )}
     </div>
   );

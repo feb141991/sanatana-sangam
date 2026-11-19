@@ -159,7 +159,6 @@ export function OrganizationJsonLd() {
           OFFICIAL_SOCIAL_LINKS.instagram,
           OFFICIAL_SOCIAL_LINKS.facebook,
           "https://apps.apple.com/app/id6793055966",
-          "https://play.google.com/store/apps/details?id=com.shoonaya.app",
         ],
         "contactPoint": [
           {
@@ -211,7 +210,7 @@ export function OrganizationJsonLd() {
         "name": "Astronomy-Backed Dharma Panchang & Festival Engine",
         "provider": { "@id": "https://www.shoonaya.com/#organization" },
         "serviceType": "Astrological & Spiritual Calendar Service",
-        "description": "Accurate tithi, nakshatra, yoga, karana, muhurta, and council-reviewed festival calculations across Hindu, Sikh, Buddhist, and Jain traditions.",
+        "description": "Astronomy-backed tithi, nakshatra, yoga, karana, muhurta, and canonical festival calculations across Hindu, Sikh, Buddhist, and Jain traditions.",
         "areaServed": "Global",
       },
       {
@@ -236,10 +235,10 @@ export function OrganizationJsonLd() {
           },
           {
             "@type": "Question",
-            "name": "Are festival dates universal or council-reviewed?",
+            "name": "Are festival dates universal or tradition-specific?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Shoonaya's festival calendar combines declarative rule families with rigorous council editorial review and critical apparatus concordances for each sacred observance.",
+              "text": "Shoonaya's festival calendar combines declarative rule families with tradition-specific canonical concordances and astronomical timings for each sacred observance.",
             },
           },
           {

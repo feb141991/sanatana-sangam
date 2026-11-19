@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
   "name": "shoonaya-mcp",
   "title": "Shoonaya Spiritual Companion & Panchang MCP Server",
-  "description": "Model Context Protocol server for Shoonaya providing astronomy-backed Panchang calculations, council-ratified multi-tradition festival calendars, Bhakti scripture library search, and Pathshala learning modules.",
+  "description": "Model Context Protocol server for Shoonaya providing astronomy-backed Panchang calculations, canonical multi-tradition festival calendars, Bhakti scripture library search, and Pathshala learning modules.",
   "version": "1.0.0",
   "homepage": "https://www.shoonaya.com",
   "endpoint": "https://www.shoonaya.com/.well-known/mcp/server-card.json",
@@ -56,7 +56,7 @@
     },
     {
       "name": "getFestivalDetails",
-      "description": "Retrieve council-reviewed festival or vrat details across Hindu, Sikh, Buddhist, and Jain traditions (e.g., Nirjala Ekadashi, Vaikunta Ekadashi, Diwali, Shivaratri, Gurpurab, Buddha Purnima, Mahavir Jayanti), including significance, parana window, fasting rules, and recommended observances.",
+      "description": "Retrieve canonical festival or vrat details across Hindu, Sikh, Buddhist, and Jain traditions (e.g., Nirjala Ekadashi, Vaikunta Ekadashi, Diwali, Shivaratri, Gurpurab, Buddha Purnima, Mahavir Jayanti), including significance, parana window, fasting rules, and recommended observances.",
       "inputSchema": {
         "type": "object",
         "properties": {
