@@ -483,7 +483,7 @@ async function buildSingleManifestCorpus(
         source_class: item.source_class ?? 'scripture',
         rights_status: item.rights_status ?? 'public_domain',
       },
-      text: `${title} ${ref}. ${text}`.trim(),
+      text: `${title} ${ref}. ${transliteration ? `${transliteration}. ` : ''}${text}`.trim(),
     });
   }
 
@@ -574,6 +574,10 @@ async function main() {
     ['tamil_prabandham', 'tamil_prabandham.json', 'tamil_prabandham_index_dense.json'],
     ['tamil_tiruvachakam', 'tamil_tiruvachakam.json', 'tamil_tiruvachakam_index_dense.json'],
     ['sikh_dasam_granth', 'sikh_dasam_granth.json', 'sikh_dasam_granth_index_dense.json'],
+    ['yoga_sutras', 'yoga_sutras.json', 'yoga_sutras_index_dense.json'],
+    ['bhakti_sutras', 'bhakti_sutras.json', 'bhakti_sutras_index_dense.json'],
+    ['jyotish_classics', 'jyotish_classics.json', 'jyotish_classics_index_dense.json'],
+    ['vedic_suktas_stotras', 'vedic_suktas_stotras.json', 'vedic_suktas_stotras_index_dense.json'],
   ];
 
   for (const [key, manifestFile, indexFile] of regionalCorpora) {

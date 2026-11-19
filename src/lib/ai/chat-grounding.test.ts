@@ -162,6 +162,48 @@ describe('chat-grounding', () => {
       expect(res.documents[0].id).toContain("2.7");
     });
 
+    it("grounds Patanjali Yoga Sutras inquiries with dense embeddings", async () => {
+      const res = await retrieveDharmaChatGrounding({
+        message: "What do the Yoga Sutras say about chitta vritti nirodha?",
+        tradition: "hindu",
+      });
+      expect(res.isGrounded).toBe(true);
+      expect(res.corpus).toBe("yoga_sutras");
+      expect(res.documents.length).toBeGreaterThan(0);
+      expect(res.documents.some((d) => d.id.includes("yoga_sutras_1.2"))).toBe(true);
+    });
+
+    it("grounds Narada Bhakti Sutras inquiries with dense embeddings", async () => {
+      const res = await retrieveDharmaChatGrounding({
+        message: "What do the Narada Bhakti Sutras say about divine love?",
+        tradition: "hindu",
+      });
+      expect(res.isGrounded).toBe(true);
+      expect(res.corpus).toBe("bhakti_sutras");
+      expect(res.documents.length).toBeGreaterThan(0);
+    });
+
+    it("grounds Brihat Parashara Hora Shastra inquiries with dense embeddings", async () => {
+      const res = await retrieveDharmaChatGrounding({
+        message: "What does Brihat Parashara Hora Shastra say about the first house?",
+        tradition: "hindu",
+      });
+      expect(res.isGrounded).toBe(true);
+      expect(res.corpus).toBe("jyotish_classics");
+      expect(res.documents.length).toBeGreaterThan(0);
+    });
+
+    it("grounds Classical Vedic Suktas & Stotras inquiries with dense embeddings", async () => {
+      const res = await retrieveDharmaChatGrounding({
+        message: "What is the cosmic vision in the Purusha Sukta?",
+        tradition: "hindu",
+      });
+      expect(res.isGrounded).toBe(true);
+      expect(res.corpus).toBe("vedic_suktas_stotras");
+      expect(res.documents.length).toBeGreaterThan(0);
+      expect(res.documents[0].id).toContain("Purusha.1");
+    });
+
     it('fails closed on off-topic and everyday questions without forcing scripture', async () => {
       const res = await retrieveDharmaChatGrounding({
         message: 'Hello, what should I eat for breakfast?',
@@ -367,6 +409,10 @@ describe('chat-grounding', () => {
         'tamil_prabandham',
         'tamil_tiruvachakam',
         'sikh_dasam_granth',
+        'yoga_sutras',
+        'bhakti_sutras',
+        'jyotish_classics',
+        'vedic_suktas_stotras',
       ]);
       for (const route of SCRIPTURE_ROUTES) expect(route.terms.length).toBeGreaterThan(0);
       expect(SCRIPTURE_ROUTES.find((route) => route.corpus === 'valmiki_ramayana')!.terms.length).toBeGreaterThan(50);

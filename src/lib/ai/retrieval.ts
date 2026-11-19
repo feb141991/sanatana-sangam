@@ -853,7 +853,7 @@ export class PramanaDenseEmbeddingRetriever implements PramanaRetriever<Retrieva
     for (const doc of index.documents) {
       const score = PramanaDenseEmbeddingRetriever.cosine(queryVector, doc.vector);
       if (score > 0) {
-        const documentText = String(doc.text ?? '').toLowerCase();
+        const documentText = `${doc.text ?? ''} ${doc.transliteration ?? ''} ${doc.sanskrit ?? ''} ${doc.original ?? ''}`.toLowerCase();
         let lexicalLift = 0;
         for (const term of queryTerms) {
           if (!new RegExp(`\\b${term}\\b`).test(documentText)) continue;
@@ -1427,27 +1427,35 @@ const yogaManifestRetriever = new PramanaManifestRetriever({
   sourceClass: 'scripture',
   tradition: 'Yoga / Sanatana Dharma',
   maxChapters: 4,
+  fileNames: ['yoga_sutras.json'],
 });
-PramanaRetrieverSelector.register('yoga_sutras', new PramanaGenericEmbeddingRetriever(
+const yogaDenseRetriever = new PramanaDenseEmbeddingRetriever(
   yogaManifestRetriever,
-  path.join(process.cwd(), 'python/ai_pipeline/corpus/yoga_sutras_index.json'),
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/yoga_sutras_index_dense.json'),
+  'Patanjali Yoga Sutras',
   'Yoga / Sanatana Dharma',
-  'Patanjali Yoga Sutras'
-));
+  'scripture'
+);
+PramanaRetrieverSelector.register('yoga_sutras', yogaDenseRetriever);
+PramanaRetrieverSelector.register('yoga_sutras_dense', yogaDenseRetriever);
 
 const jyotishManifestRetriever = new PramanaManifestRetriever({
   prefix: 'jyotish_classics',
   sourceName: 'Brihat Parashara Hora Shastra & Phaladeepika',
   sourceClass: 'scripture',
   tradition: 'Vedic Jyotish Shastra',
-  maxChapters: 30,
+  maxChapters: 1,
+  fileNames: ['jyotish_classics.json'],
 });
-PramanaRetrieverSelector.register('jyotish_classics', new PramanaGenericEmbeddingRetriever(
+const jyotishDenseRetriever = new PramanaDenseEmbeddingRetriever(
   jyotishManifestRetriever,
-  path.join(process.cwd(), 'python/ai_pipeline/corpus/jyotish_classics_index.json'),
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/jyotish_classics_index_dense.json'),
+  'Brihat Parashara Hora Shastra & Phaladeepika',
   'Vedic Jyotish Shastra',
-  'Brihat Parashara Hora Shastra & Phaladeepika'
-));
+  'scripture'
+);
+PramanaRetrieverSelector.register('jyotish_classics', jyotishDenseRetriever);
+PramanaRetrieverSelector.register('jyotish_classics_dense', jyotishDenseRetriever);
 
 const bhaktiManifestRetriever = new PramanaManifestRetriever({
   prefix: 'bhakti_sutras',
@@ -1455,13 +1463,17 @@ const bhaktiManifestRetriever = new PramanaManifestRetriever({
   sourceClass: 'scripture',
   tradition: 'Bhakti / Sanatana Dharma',
   maxChapters: 1,
+  fileNames: ['bhakti_sutras.json'],
 });
-PramanaRetrieverSelector.register('bhakti_sutras', new PramanaGenericEmbeddingRetriever(
+const bhaktiDenseRetriever = new PramanaDenseEmbeddingRetriever(
   bhaktiManifestRetriever,
-  path.join(process.cwd(), 'python/ai_pipeline/corpus/bhakti_sutras_index.json'),
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/bhakti_sutras_index_dense.json'),
+  'Narada Bhakti Sutras',
   'Bhakti / Sanatana Dharma',
-  'Narada Bhakti Sutras'
-));
+  'scripture'
+);
+PramanaRetrieverSelector.register('bhakti_sutras', bhaktiDenseRetriever);
+PramanaRetrieverSelector.register('bhakti_sutras_dense', bhaktiDenseRetriever);
 
 const vedicStotrasManifestRetriever = new PramanaManifestRetriever({
   prefix: 'vedic_suktas_stotras',
@@ -1469,13 +1481,17 @@ const vedicStotrasManifestRetriever = new PramanaManifestRetriever({
   sourceClass: 'scripture',
   tradition: 'Vedic / Sanatana Dharma',
   maxChapters: 1,
+  fileNames: ['vedic_suktas_stotras.json'],
 });
-PramanaRetrieverSelector.register('vedic_suktas_stotras', new PramanaGenericEmbeddingRetriever(
+const vedicStotrasDenseRetriever = new PramanaDenseEmbeddingRetriever(
   vedicStotrasManifestRetriever,
-  path.join(process.cwd(), 'python/ai_pipeline/corpus/vedic_suktas_stotras_index.json'),
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/vedic_suktas_stotras_index_dense.json'),
+  'Classical Vedic Suktas & Stotras',
   'Vedic / Sanatana Dharma',
-  'Classical Vedic Suktas & Stotras'
-));
+  'scripture'
+);
+PramanaRetrieverSelector.register('vedic_suktas_stotras', vedicStotrasDenseRetriever);
+PramanaRetrieverSelector.register('vedic_suktas_stotras_dense', vedicStotrasDenseRetriever);
 
 const kabirManifestRetriever = new PramanaManifestRetriever({
   prefix: 'sant_kabir',

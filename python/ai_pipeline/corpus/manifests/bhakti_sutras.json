@@ -1,12 +1,15 @@
 {
   "corpus_id": "bhakti_sutras",
-  "doc_id": "bhakti_sutras_doc_1",
+  "doc_id": "bhakti_sutras",
   "title": "Narada Bhakti Sutras",
   "source_name": "Devarshi Narada",
   "language": "sanskrit",
   "tradition": "Bhakti / Sanatan Dharma",
   "source_class": "scripture",
-  "rights_status": "public-domain",
+  "rights_status": "public_domain",
+  "review_status": "source_audit_approved",
+  "is_pramana_grade": true,
+  "is_live_in_app": true,
   "content": [
     {
       "ref": "1",

@@ -158,6 +158,18 @@ const TIRUVACHAKAM_TERMS = [
 const DASAM_GRANTH_TERMS = [
   'dasam granth', 'chandi di var', 'akal ustat', 'bachittar natak',
 ];
+const YOGA_SUTRAS_TERMS = [
+  'yoga sutras', 'yoga sutra', 'patanjali', 'chitta vritti', 'chittavritti', 'ashtanga yoga', 'yama niyama', 'pratyahara', 'kaivalya', 'kriya yoga',
+];
+const BHAKTI_SUTRAS_TERMS = [
+  'narada bhakti sutra', 'narada bhakti sutras', 'bhakti sutra', 'bhakti sutras', 'anirvachaniya prema',
+];
+const JYOTISH_CLASSICS_TERMS = [
+  'brihat parashara', 'parashara hora', 'hora shastra', 'bphs', 'phaladeepika', 'mantreswara',
+];
+const VEDIC_SUKTAS_TERMS = [
+  'purusha sukta', 'nasadiya sukta', 'sri sukta', 'shri sukta', 'aditya hridaya', 'adityahridayam', 'mahamrityunjaya', 'shiva tandava', 'hanuman chalisa',
+];
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -199,6 +211,10 @@ export const SCRIPTURE_ROUTES: readonly ScriptureRoute[] = [
   scriptureRoute('tamil_prabandham', PRABANDHAM_TERMS),
   scriptureRoute('tamil_tiruvachakam', TIRUVACHAKAM_TERMS),
   scriptureRoute('sikh_dasam_granth', DASAM_GRANTH_TERMS),
+  scriptureRoute('yoga_sutras', YOGA_SUTRAS_TERMS),
+  scriptureRoute('bhakti_sutras', BHAKTI_SUTRAS_TERMS),
+  scriptureRoute('jyotish_classics', JYOTISH_CLASSICS_TERMS),
+  scriptureRoute('vedic_suktas_stotras', VEDIC_SUKTAS_TERMS),
 ];
 
 /**
@@ -497,7 +513,11 @@ export async function retrieveDharmaChatGrounding(input: {
       || targetCorpus === 'shaiva_kashmir'
       || targetCorpus === 'tamil_prabandham'
       || targetCorpus === 'tamil_tiruvachakam'
-      || targetCorpus === 'sikh_dasam_granth';
+      || targetCorpus === 'sikh_dasam_granth'
+      || targetCorpus === 'yoga_sutras'
+      || targetCorpus === 'bhakti_sutras'
+      || targetCorpus === 'jyotish_classics'
+      || targetCorpus === 'vedic_suktas_stotras';
     // The sparse TF-IDF corpora match on keywords, so they get the meaningful tokens
     // (stopwords would dilute them). The dense corpora match on meaning: a sentence
     // embedding reads the whole question, and stripping it to "work worrying results"

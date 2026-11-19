@@ -1,12 +1,15 @@
 {
   "corpus_id": "vedic_suktas_stotras",
-  "doc_id": "vedic_suktas_stotras_doc_1",
+  "doc_id": "vedic_stotra",
   "title": "Classical Vedic Suktas & Stotras",
   "source_name": "Vedic Rishis & Acharyas",
   "language": "sanskrit",
   "tradition": "Vedic / Sanatan Dharma",
   "source_class": "scripture",
-  "rights_status": "public-domain",
+  "rights_status": "public_domain",
+  "review_status": "source_audit_approved",
+  "is_pramana_grade": true,
+  "is_live_in_app": true,
   "content": [
     {
       "ref": "Purusha.1",

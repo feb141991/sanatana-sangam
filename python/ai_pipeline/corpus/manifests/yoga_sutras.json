@@ -1,12 +1,15 @@
 {
   "corpus_id": "yoga_sutras",
-  "doc_id": "yoga_sutras_doc_1",
+  "doc_id": "yoga_sutras",
   "title": "Patanjali Yoga Sutras",
   "source_name": "Patanjali",
   "language": "sanskrit",
   "tradition": "Yoga / Sanatan Dharma",
   "source_class": "scripture",
-  "rights_status": "public-domain",
+  "rights_status": "public_domain",
+  "review_status": "source_audit_approved",
+  "is_pramana_grade": true,
+  "is_live_in_app": true,
   "content": [
     {
       "ref": "1.1",
