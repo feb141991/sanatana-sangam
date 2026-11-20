@@ -1268,6 +1268,7 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   // Vaishnava
   ...GITA_ENTRIES,
   ...BHAGAVATAM_ENTRIES,
+  ...BHAGAVATAM_COMPLETE_ENTRIES,
   ...VISHNU_SAHASRANAMA_ENTRIES,
   // Epic / Devotional
   ...RAMAYANA_ENTRIES,
@@ -1353,7 +1354,7 @@ export interface PathshalaSectionDetail {
 export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Vaishnava ────────────────────────────────────────────────────────────────
   { id: 'gita',               title: 'Bhagavad Gita',         emoji: '🦚', tradition: 'hindu',    category: 'gita',               desc: 'Krishna\'s eternal teachings to Arjuna on dharma, yoga & liberation',       count: GITA_ENTRIES.length },
-  { id: 'bhagavatam',         title: 'Srimad Bhagavatam',     emoji: '🌸', tradition: 'hindu',    category: 'bhagavatam',         desc: 'The great Purana of devotion — Krishna, Vishnu & the nature of reality',   count: BHAGAVATAM_ENTRIES.length },
+  { id: 'bhagavatam',         title: 'Srimad Bhagavatam',     emoji: '🌸', tradition: 'hindu',    category: 'bhagavatam',         desc: 'The great Purana of devotion — Krishna, Vishnu & the nature of reality',   count: BHAGAVATAM_ENTRIES.length + BHAGAVATAM_COMPLETE_ENTRIES.length },
   { id: 'puranas',            title: 'Mahapuranas',           emoji: '🔱', tradition: 'hindu',    category: 'purana',             desc: 'Wisdom from Shiva, Vishnu, and Devi Puranas',   count: PURANA_ENTRIES.length },
   { id: 'vishnu_sahasranama', title: 'Vishnu Sahasranama',    emoji: '🔱', tradition: 'hindu',    category: 'vishnu_sahasranama', desc: 'The thousand names of Vishnu — from the Mahabharata',                      count: VISHNU_SAHASRANAMA_ENTRIES.length },
   // ── Epic ─────────────────────────────────────────────────────────────────────
