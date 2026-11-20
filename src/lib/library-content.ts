@@ -1375,9 +1375,9 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Sikh ─────────────────────────────────────────────────────────────────────
   { id: 'gurbani',            title: 'Nitnem & Gurbani',      emoji: '☬', tradition: 'sikh',     category: 'gurbani',            desc: 'The sacred hymns of the Guru Granth Sahib — Japji, Anand & daily Nitnem', count: GURBANI_ENTRIES.length + NITNEM_ENTRIES.length },
   // ── Buddhist ─────────────────────────────────────────────────────────────────
-  { id: 'dhammapada',         title: 'Buddhist Suttas',       emoji: '☸️', tradition: 'buddhist', category: 'buddhist_foundations', desc: 'Dhammapada, Heart Sutra, Metta Sutta & early Dhamma teachings',           count: BUDDHIST_ENTRIES.length + BUDDHIST_ADDITIONAL_ENTRIES.length },
+  { id: 'dhammapada',         title: 'Buddhist Suttas',       emoji: '☸️', tradition: 'buddhist', category: 'buddhist_foundations', desc: 'Dhammapada, Heart Sutra, Metta Sutta & early Dhamma teachings',           count: BUDDHIST_ENTRIES.length + BUDDHIST_ADDITIONAL_ENTRIES.length + DHAMMAPADA_ENTRIES.length + NOBLE_TRUTHS_ENTRIES.length + HEART_SUTRA_ENTRIES.length + METTA_SUTTA_ENTRIES.length + SATIPATTHANA_ENTRIES.length + EIGHTFOLD_PATH_ENTRIES.length + JATAKA_TALES_ENTRIES.length },
   // ── Jain ─────────────────────────────────────────────────────────────────────
-  { id: 'jain',               title: 'Jain Agamas',           emoji: '🤲', tradition: 'jain',     category: 'jain_scripture',     desc: 'Navkar Mantra, Tattvartha Sutra, Samayasara & Mahavir\'s teachings',       count: JAIN_ENTRIES.length + JAIN_ADDITIONAL_ENTRIES.length },
+  { id: 'jain',               title: 'Jain Agamas',           emoji: '🤲', tradition: 'jain',     category: 'jain_scripture',     desc: 'Navkar Mantra, Tattvartha Sutra, Samayasara & Mahavir\'s teachings',       count: JAIN_ENTRIES.length + JAIN_ADDITIONAL_ENTRIES.length + NAMOKAR_ENTRIES.length + BHAKTAMAR_ENTRIES.length + TATTVARTHA_ENTRIES.length + ACHARANGA_ENTRIES.length + KARMA_DOCTRINE_ENTRIES.length + JAIN_COSMOLOGY_ENTRIES.length },
 ];
 
 export const PATHSHALA_TRADITIONS: PathshalaTraditionMeta[] = [

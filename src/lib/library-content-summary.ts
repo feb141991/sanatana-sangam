@@ -230,7 +230,7 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
     "tradition": "buddhist",
     "category": "buddhist_foundations",
     "desc": "Dhammapada, Heart Sutra, Metta Sutta & early Dhamma teachings",
-    "count": 18
+    "count": 557
   },
   {
     "id": "jain",
@@ -239,7 +239,7 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
     "tradition": "jain",
     "category": "jain_scripture",
     "desc": "Navkar Mantra, Tattvartha Sutra, Samayasara & Mahavir's teachings",
-    "count": 12
+    "count": 182
   }
 ];
 
