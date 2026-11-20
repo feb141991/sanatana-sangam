@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
 import slugMap from '../../../docs/sources/sgpc-nanakshahi-slug-map.json';
 
 export type SgpcSidebarRow = {
@@ -28,7 +28,23 @@ type EditionFile = {
 
 type SlugMapEntry = { slug: string; name_includes: string[] };
 
-const sourceDirectory = join(process.cwd(), 'docs', 'sources');
+function findSourceDirectory(): string {
+  let curr = process.cwd();
+  for (let i = 0; i < 5; i++) {
+    const candidate = join(curr, 'docs', 'sources');
+    if (existsSync(candidate)) return candidate;
+    const parent = dirname(curr);
+    if (parent === curr) break;
+    curr = parent;
+  }
+  if (typeof __dirname !== 'undefined') {
+    const fallback = resolve(__dirname, '../../../docs/sources');
+    if (existsSync(fallback)) return fallback;
+  }
+  return join(process.cwd(), 'docs', 'sources');
+}
+
+const sourceDirectory = findSourceDirectory();
 const slugMappings = slugMap as SlugMapEntry[];
 
 function loadEditionFiles(): SgpcEdition[] {

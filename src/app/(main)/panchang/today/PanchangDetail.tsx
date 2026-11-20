@@ -250,7 +250,7 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
     } catch {}
 
     const tzQuery = timezone || 'Asia/Kolkata';
-    fetch(`/api/calendar/upcoming?days=7&tz=${encodeURIComponent(tzQuery)}`)
+    fetch(`/api/calendar/upcoming?days=7&reviewed=1&tz=${encodeURIComponent(tzQuery)}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data?.observances) setUpcomingObservances(data.observances);

@@ -146,7 +146,7 @@ describe('Naraka Chaturdashi — Prompt 1 Remediation Suite', () => {
     // Production calculation filters launch_status === 'included'
     const includedRules = (rules as any[]).filter(r => r.launch_status === 'included');
     expect(includedRules.filter(r => r.slug === 'naraka-chaturdashi')).toHaveLength(1);
-    expect((rules as any[]).find(r => r.slug === 'vasant-panchami')?.launch_status).toBe('deferred');
+    expect((rules as any[]).find(r => r.slug === 'mahalaya-amavasya')?.launch_status).toBe('deferred');
   });
 
   /**

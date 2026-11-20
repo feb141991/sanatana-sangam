@@ -1,5 +1,6 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import { getCanonicalKathaId, getKathaById } from '@/lib/katha-library';
+import { getRelatedWisdomForKatha } from '@/lib/seo/related-wisdom';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import KathaReaderClient from './KathaReaderClient';
 import type { Metadata } from 'next';
@@ -65,6 +66,7 @@ export default async function KathaReaderPage({ params }: Props) {
 
   const geo = extractKathaGeo(katha);
   const canonicalUrl = `https://www.shoonaya.com/bhakti/katha/${canonicalId}`;
+  const relatedWisdom = getRelatedWisdomForKatha(canonicalId);
 
   return (
     <>
@@ -77,6 +79,7 @@ export default async function KathaReaderPage({ params }: Props) {
       ]} />
       <KathaReaderClient
         katha={katha}
+        relatedWisdom={relatedWisdom}
         appLanguage={profile?.app_language ?? 'en'}
         meaningLanguage={profile?.meaning_language ?? 'en'}
         transliterationLanguage={profile?.transliteration_language ?? 'en'}

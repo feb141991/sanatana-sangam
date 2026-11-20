@@ -4944,6 +4944,66 @@
         }
       })();
     </script>
+    <!-- ── Product Hunt Launch Ribbon ─────────────────────────────────────── -->
+    <div
+      id="ph-launch-ribbon"
+      role="banner"
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: linear-gradient(90deg, #1a1a1a 0%, #2a1f18 50%, #1a1a1a 100%);
+        color: #f5f5f5;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-family: var(--fb);
+        border-bottom: 1px solid rgba(255, 97, 84, 0.35);
+        position: relative;
+        z-index: 100;
+      "
+    >
+      <div style="margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; text-align: center;">
+        <span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; background: rgba(255, 97, 84, 0.2); color: #ff6154; font-size: 11px; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(255, 97, 84, 0.4);">
+          ★ Product Hunt
+        </span>
+        <span style="color: #e5e5e5;">
+          Shoonaya is featured today! Explore our launch &amp; join the conversation:
+        </span>
+        <a
+          href="https://www.producthunt.com/products/shoonaya?embed=true&utm_source=embed&utm_medium=post_embed"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="color: #c5a059; font-weight: 600; text-decoration: underline; text-underline-offset: 3px;"
+        >
+          Check it out on Product Hunt →
+        </a>
+      </div>
+      <button
+        onclick="dismissPhRibbon()"
+        aria-label="Dismiss banner"
+        style="background: transparent; border: none; color: #888; font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1;"
+        onmouseover="this.style.color='#fff'"
+        onmouseout="this.style.color='#888'"
+      >
+        ✕
+      </button>
+    </div>
+    <script>
+      (function() {
+        try {
+          if (sessionStorage.getItem('ph_ribbon_dismissed_v1')) {
+            var el = document.getElementById('ph-launch-ribbon');
+            if (el) el.style.display = 'none';
+          }
+        } catch(e) {}
+      })();
+      function dismissPhRibbon() {
+        var el = document.getElementById('ph-launch-ribbon');
+        if (el) el.style.display = 'none';
+        try { sessionStorage.setItem('ph_ribbon_dismissed_v1', 'true'); } catch(e) {}
+      }
+    </script>
     <div id="splash">
       <div class="splash-ambient-aura" aria-hidden="true"></div>
       <nav class="hero-nav" aria-label="Homepage navigation">
@@ -5192,6 +5252,21 @@
                 <span class="store-badge-ios-title">Coming Soon</span>
               </span>
             </div>
+            <a
+              class="store-badge-link"
+              href="https://www.producthunt.com/products/shoonaya?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-shoonaya"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Shoonaya on Product Hunt"
+            >
+              <img
+                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1323867&theme=neutral&t=1795157969891"
+                alt="Shoonaya - Meditation and spiritual learning for everyday life | Product Hunt"
+                width="250"
+                height="54"
+                style="height: 52px; width: auto; border-radius: 10px; display: block;"
+              />
+            </a>
           </div>
         </div>
         <aside class="hero-observance-rail" aria-label="Upcoming reviewed observances">
@@ -8198,6 +8273,21 @@
                   <span class="store-badge-ios-title">Coming Soon</span>
                 </span>
               </div>
+              <a
+                class="store-badge-link"
+                href="https://www.producthunt.com/products/shoonaya?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-shoonaya"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Shoonaya on Product Hunt"
+              >
+                <img
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1323867&theme=neutral&t=1795157969891"
+                  alt="Shoonaya - Meditation and spiritual learning for everyday life | Product Hunt"
+                  width="250"
+                  height="54"
+                  style="height: 52px; width: auto; border-radius: 10px; display: block;"
+                />
+              </a>
             </div>
             <a class="cta-note cta-signin-link" href="/login"
               >Already have an account? Sign in</a
@@ -8444,6 +8534,21 @@
                   <span class="store-badge-ios-title">Coming Soon</span>
                 </span>
               </div>
+              <a
+                class="store-badge-link"
+                href="https://www.producthunt.com/products/shoonaya?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-shoonaya"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Shoonaya on Product Hunt"
+              >
+                <img
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1323867&theme=neutral&t=1795157969891"
+                  alt="Shoonaya - Meditation and spiritual learning for everyday life | Product Hunt"
+                  width="250"
+                  height="54"
+                  style="height: 52px; width: auto; border-radius: 10px; display: block;"
+                />
+              </a>
             </div>
           </div>
 

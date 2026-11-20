@@ -13,8 +13,8 @@
     "calendar": "north_indian_purnimanta",
     "tradition": "smarta"
   },
-  "capturedAt": "2026-08-18T00:12:46.601Z",
-  "engineVersion": "0.2.2",
+  "capturedAt": "2026-11-20T07:38:01.445Z",
+  "engineVersion": "0.2.4",
   "ruleEngineVersion": "2.0.0",
   "captured": {
     "civilDate": "2027-08-24",
@@ -22,5 +22,5 @@
     "recurring": null
   },
   "approved": false,
-  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-08-18T00:12:46.601Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
+  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-11-20T07:38:01.445Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
 }

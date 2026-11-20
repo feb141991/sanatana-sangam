@@ -29,7 +29,7 @@ export default function FestivalClient({ festival, originalSlug, geo }: Festival
     const controller = new AbortController();
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
 
-    fetch(`/api/calendar/upcoming?days=60&tz=${encodeURIComponent(timezone)}`, {
+    fetch(`/api/calendar/upcoming?days=60&reviewed=1&tz=${encodeURIComponent(timezone)}`, {
       signal: controller.signal,
     })
       .then((response) => (response.ok ? response.json() : null))

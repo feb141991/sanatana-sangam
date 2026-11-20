@@ -5,6 +5,11 @@ import { notFound } from 'next/navigation';
 import { generateFestivalSeoCampaign } from '@/lib/ai/marketing-rag';
 import { AppStoreBadges } from '@/components/marketing/AppStoreBadges';
 import festivalRulesJson from '../../../../../../packages/dharma-rules/src/festivals/rules.json';
+import {
+  formatCityCoordinates,
+  getFestivalCityFacts,
+  resolveFestivalSeoCity,
+} from '@/lib/seo/festival-city-facts';
 
 type FestivalCityPageProps = {
   params: Promise<{ slug: string; city: string }>;
@@ -15,12 +20,22 @@ interface RuleRecord {
   display_name: string;
 }
 
+function Fact({ label, value }: { label: string; value: string }): JSX.Element {
+  return (
+    <div className="rounded-xl border border-[var(--card-border)] bg-[var(--page-bg)]/45 p-3">
+      <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">{label}</div>
+      <div className="mt-1 text-sm font-semibold text-[var(--text-cream)]">{value}</div>
+    </div>
+  );
+}
+
 export async function generateMetadata({
   params,
 }: FestivalCityPageProps): Promise<Metadata> {
   const { slug, city } = await params;
-  const decodedCity = decodeURIComponent(city).replace(/-/g, ' ');
-  const capitalizedCity = decodedCity.replace(/\b\w/g, (c) => c.toUpperCase());
+  const resolvedCity = resolveFestivalSeoCity(city);
+  if (!resolvedCity) notFound();
+  const capitalizedCity = resolvedCity.name;
 
   const rules = festivalRulesJson as unknown as RuleRecord[];
   const rule = rules.find((r) => r.slug === slug);
@@ -46,17 +61,31 @@ export async function generateMetadata({
 
 export default async function FestivalCityPage({ params }: FestivalCityPageProps) {
   const { slug, city } = await params;
-  const decodedCity = decodeURIComponent(city).replace(/-/g, ' ');
-  const capitalizedCity = decodedCity.replace(/\b\w/g, (c) => c.toUpperCase());
+  const resolvedCity = resolveFestivalSeoCity(city);
+  if (!resolvedCity) notFound();
+  const capitalizedCity = resolvedCity.name;
+  const year = new Date().getFullYear();
 
   const rules = festivalRulesJson as unknown as RuleRecord[];
   const rule = rules.find((r) => r.slug === slug);
   if (!rule && slug.length < 3) notFound();
 
+  const facts = await getFestivalCityFacts(slug, city, year);
+  if (!facts) notFound();
+
   const campaign = await generateFestivalSeoCampaign({
     festivalSlug: slug,
     city: capitalizedCity,
-    year: new Date().getFullYear(),
+    year,
+    locationFacts: {
+      festivalDate: facts.festivalDate,
+      timezone: facts.city.tz,
+      coordinates: formatCityCoordinates(facts.city),
+      sunrise: facts.panchang.sunrise,
+      sunset: facts.panchang.sunset,
+      tithi: `${facts.panchang.paksha} ${facts.panchang.tithi}`,
+      masa: facts.panchang.masaName,
+    },
   });
 
   return (
@@ -100,7 +129,7 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
             </h1>
 
             <p className="mt-4 text-base leading-relaxed text-[var(--text-muted-warm)] sm:text-lg">
-              Exact astronomical windows and Shastric puja timings for devotees in {campaign.city}.
+              A location-specific observance date and daily Panchang context for devotees in {campaign.city}.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -113,6 +142,34 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
               </Link>
             </div>
           </div>
+
+          {/* Deterministic local facts: the page's city value is visible and auditable. */}
+          <section className="rounded-2xl border border-[var(--brand-primary)]/30 bg-[var(--card-bg)] p-6 sm:p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-[var(--brand-primary-soft)] text-[var(--brand-primary-strong)]">
+                <MapPin className="size-5" />
+              </div>
+              <div>
+                <h2 className="font-display text-xl font-bold text-[var(--text-cream)]">
+                  {campaign.festivalName} in {facts.city.name}
+                </h2>
+                <p className="text-xs text-[var(--text-dim)]">
+                  {facts.city.country} · {facts.city.tz} · {formatCityCoordinates(facts.city)}
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Fact label="Calculated date" value={facts.festivalDate ?? 'No engine date available'} />
+              <Fact label="Local sunrise" value={facts.panchang.sunrise} />
+              <Fact label="Local sunset" value={facts.panchang.sunset} />
+              <Fact label="Tithi at local noon" value={`${facts.panchang.paksha} ${facts.panchang.tithi}`} />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--text-dim)]">
+              <span>Masa: {facts.panchang.masaName}</span>
+              <span>Nakshatra: {facts.panchang.nakshatra}</span>
+              <span>{facts.calculationLabel}</span>
+            </div>
+          </section>
         </div>
       </section>
 
@@ -151,7 +208,9 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
               </div>
             </div>
             <p className="text-sm leading-relaxed text-[var(--text-muted-warm)]">
-              {campaign.astronomicalTimingExplanation}
+              {facts.festivalDate
+                ? `${campaign.astronomicalTimingExplanation} For ${facts.city.name}, the corrected engine resolves this observance to ${facts.festivalDate}; the local sunrise is ${facts.panchang.sunrise} and sunset is ${facts.panchang.sunset} (${facts.city.tz}).`
+                : `No computed date is published for ${campaign.festivalName} in ${facts.city.name} for ${year}. The page does not substitute a generic Indian date.`}
             </p>
           </div>
 

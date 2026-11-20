@@ -19,6 +19,8 @@ import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import type { AppContentLanguage } from '@/lib/language-runtime';
 import ReaderShell from '@/components/reader/ReaderShell';
+import { RelatedWisdomRAG } from '@/components/seo/RelatedWisdomRAG';
+import type { RelatedWisdomPayload } from '@/lib/seo/related-wisdom';
 
 interface Props {
   katha: Katha;
@@ -26,6 +28,7 @@ interface Props {
   meaningLanguage?: string;
   transliterationLanguage?: string;
   showTransliteration?: boolean;
+  relatedWisdom?: RelatedWisdomPayload;
 }
 
 const THEME = {
@@ -108,6 +111,7 @@ export default function KathaReaderClient({
   katha,
   appLanguage,
   meaningLanguage,
+  relatedWisdom,
 }: Props) {
   const router = useRouter();
   const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
@@ -504,6 +508,13 @@ export default function KathaReaderClient({
           </motion.div>
         </Link>
       </section>
+
+      {/* ── Related Wisdom & Practice (Knowledge Mesh) ── */}
+      {relatedWisdom && (
+        <div className="px-6 mt-10">
+          <RelatedWisdomRAG payload={relatedWisdom} />
+        </div>
+      )}
 
       {/* ── Like / Appreciate ── */}
       <section className="px-6 mt-10 flex justify-center">

@@ -129,7 +129,7 @@ export function MarketingFooter() {
           </div>
 
           <div className="flex shrink-0 items-center">
-            <AppStoreBadges />
+            <AppStoreBadges showProductHunt />
           </div>
         </div>
       </div>

@@ -623,6 +623,15 @@ function selectFirstOfConsecutiveDates<T extends { date: string }>(items: T[]): 
   return sorted.filter(item => !dates.has(offsetDateStr(item.date, -1)));
 }
 
+const evaluatorRunCache = new Map<string, {
+  resolved: EvaluatorResolvedOccurrence[];
+  unresolved: ReviewQueueItem[];
+}>();
+
+export function clearEvaluatorRunCache(): void {
+  evaluatorRunCache.clear();
+}
+
 export function calculateOccurrencesWithEvaluator(
   year: number,
   location: LocationInput = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' },
@@ -650,6 +659,11 @@ export function calculateOccurrencesWithEvaluator(
   }>;
   unresolved: ReviewQueueItem[];
 } {
+  const cacheKey = `${year}:${location.lat.toFixed(4)}:${location.lon.toFixed(4)}:${location.tz}`;
+  const cached = evaluatorRunCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
   // Shared with calculateObservancesForYear's non-evaluator branch -- see
   // LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR in engine.ts. Using the same
   // function here (rather than re-deriving USE_CORRECTED_MASA locally, as
@@ -847,7 +861,9 @@ export function calculateOccurrencesWithEvaluator(
     }
   }
 
-  return { resolved: resolvedOccurrences, unresolved };
+  const result = { resolved: resolvedOccurrences, unresolved };
+  evaluatorRunCache.set(cacheKey, result);
+  return result;
 }
 
 export type ReviewQueueAmbiguityType =

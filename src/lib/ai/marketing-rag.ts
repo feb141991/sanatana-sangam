@@ -42,6 +42,15 @@ export interface FestivalSeoPageRequest {
   festivalSlug: string;
   city: string;
   year?: number;
+  locationFacts?: {
+    festivalDate: string | null;
+    timezone: string;
+    coordinates: string;
+    sunrise: string;
+    sunset: string;
+    tithi: string;
+    masa: string;
+  };
 }
 
 export interface FaqItem {
@@ -290,8 +299,9 @@ Year: ${year}
 Rule Summary: ${rule.description || ''}
 Rule Family: ${rule.rule_family || ''}
 Classical Background: ${relatedEssay ? relatedEssay.excerpt : 'Classical Shastric festival observance'}
+Location facts (use these values; do not invent alternatives): ${request.locationFacts ? JSON.stringify(request.locationFacts) : 'not provided'}
 
-Task: Generate a complete SEO landing page specification. Output strictly valid JSON with this schema:
+Task: Generate a complete SEO landing page specification. Output strictly valid JSON with this schema. Do not claim an exact local date or time unless it appears in the supplied location facts. Do not present generic India timings as local city timings:
 {
   "metaTitle": "SEO title under 60 chars including festival, year, city",
   "metaDescription": "SEO meta description under 155 chars with high CTR appeal",

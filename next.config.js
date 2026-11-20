@@ -175,7 +175,7 @@ const nextConfig = {
               "connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co https://api.sarvam.ai https://tts.bhashini.ai https://overpass-api.de https://overpass.kumi.systems https://nominatim.openstreetmap.org https://api.geoapify.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.google-analytics.com https://vitals.vercel-insights.com https://*.clarity.ms https://c.bing.com",
               "font-src 'self' data:",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://*.supabase.co https://img.icons8.com https://i.ytimg.com https://*.tile.openstreetmap.org https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.clarity.ms https://c.bing.com",
+              "img-src 'self' data: blob: https://*.supabase.co https://img.icons8.com https://i.ytimg.com https://*.tile.openstreetmap.org https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://*.clarity.ms https://c.bing.com https://api.producthunt.com https://ph-files.imgix.net",
               "media-src 'self' data: blob: https://*.supabase.co https://assets.mixkit.co https://commons.wikimedia.org https://upload.wikimedia.org",
               "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://tpc.googlesyndication.com https://googleads.g.doubleclick.net",
               "frame-ancestors 'self'",

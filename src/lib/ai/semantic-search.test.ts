@@ -45,7 +45,7 @@ describe('Pramana Semantic Search', () => {
     const fest = res.results.find((r) => r.title.includes('Makar Sankranti'));
     expect(fest).toBeDefined();
     expect(fest?.category).toBe('festival');
-    expect(fest?.url).toContain('/festivals/');
+    expect(fest?.url).toContain('/festival/');
   });
 
   it('searches moral stories from Panchatantra', async () => {
@@ -57,7 +57,7 @@ describe('Pramana Semantic Search', () => {
     expect(res.results.length).toBeGreaterThan(0);
     const story = res.results[0];
     expect(story.category).toBe('story');
-    expect(story.url).toContain('/stories/');
+    expect(story.url).toContain('/bhakti/katha/');
   });
 
   it('filters by tradition correctly', async () => {

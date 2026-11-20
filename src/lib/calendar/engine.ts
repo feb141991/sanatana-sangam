@@ -879,11 +879,14 @@ function buildOccurrencesMap(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
-    if (isSgpcOnlySikhRule(rule)) {
-      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
-      continue;
-    }
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
+    if (isSgpcOnlySikhRule(rule)) {
+      const sgpcDates = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      if (sgpcDates.length > 0) {
+        occurrencesMap[rk] = sgpcDates;
+        continue;
+      }
+    }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
@@ -1383,11 +1386,14 @@ function buildOccurrencesMapCorrected(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
-    if (isSgpcOnlySikhRule(rule)) {
-      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
-      continue;
-    }
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
+    if (isSgpcOnlySikhRule(rule)) {
+      const sgpcDates = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      if (sgpcDates.length > 0) {
+        occurrencesMap[rk] = sgpcDates;
+        continue;
+      }
+    }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
     if (r.rule_family === 'solar_fixed') {

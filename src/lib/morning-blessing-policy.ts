@@ -7,10 +7,32 @@ export function isMorningBlessingWindow(date: Date = new Date()): boolean {
   return (hour === 6 && minute >= 30) || (hour >= 7 && hour < 11);
 }
 
+function civilDateFor(date: Date, timezone?: string): string {
+  if (timezone) {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).formatToParts(date);
+      const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+      if (values.year && values.month && values.day) {
+        return `${values.year}-${values.month}-${values.day}`;
+      }
+    } catch {
+      // Fall back to the browser's local civil date for an invalid profile timezone.
+    }
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function buildMorningBlessingKey(date: Date = new Date(), timezone?: string): string {
-  // Scoped per local civil date
-  const iso = date.toISOString().slice(0, 10);
-  return `${MORNING_BLESSING_DISMISS_PREFIX}${timezone ? `${timezone}-` : ''}${iso}`;
+  return `${MORNING_BLESSING_DISMISS_PREFIX}${timezone ? `${timezone}-` : ''}${civilDateFor(date, timezone)}`;
 }
 
 export function buildMorningBlessingMessage(params: {

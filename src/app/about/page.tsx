@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
+import { ProductHuntCard } from "@/components/marketing/ProductHuntCard";
 import { MarketingShell } from "@/components/marketing/MarketingShell";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 
@@ -247,6 +248,22 @@ export default function AboutPage() {
                 &ldquo;Shoonaya helps you notice sacred time, understand what it means to you, and make room for what matters.&rdquo;
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* ── Community & Global Recognition ─────────────────────────────────── */}
+        <section className="w-full border-t border-[var(--card-border)] px-6 py-16 sm:px-10 lg:px-14 xl:px-20">
+          <div className="mx-auto max-w-4xl flex flex-col items-center text-center">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)] mb-3">
+              Global Product Community
+            </span>
+            <h2 className="font-display text-2xl sm:text-3xl font-semibold text-[var(--text-cream)] mb-3">
+              Featured on Product Hunt
+            </h2>
+            <p className="max-w-xl text-sm leading-relaxed text-[var(--text-muted-warm)] mb-8">
+              Join mindful seekers and tech makers exploring conscious living. Read the discussion, share your experience, and support our launch.
+            </p>
+            <ProductHuntCard />
           </div>
         </section>
 

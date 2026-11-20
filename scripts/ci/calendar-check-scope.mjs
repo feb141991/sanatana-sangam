@@ -13,6 +13,7 @@ import { pathToFileURL } from 'node:url';
 
 export const CALENDAR_CHECK_PATHS = [
   '.github/workflows/ci.yml',
+  'docs/sources/',
   'package-lock.json',
   'package.json',
   'packages/dharma-rules/',

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
+import { ProductHuntCard } from "@/components/marketing/ProductHuntCard";
 import { MarketingPageHero } from "@/components/marketing/MarketingPageHero";
 
 export const metadata: Metadata = {
@@ -327,8 +328,15 @@ export default function CommunityPage() {
               Download Shoonaya free on Google Play for Android to join your city Mandali, follow sacred time, and build daily practice. iOS app coming soon.
             </p>
 
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex flex-col items-center gap-6">
               <AppStoreBadges className="justify-center" />
+
+              <div className="pt-6 border-t border-[var(--card-border)]/60 w-full flex flex-col items-center">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-dim)] mb-3">
+                  Support Our Mission on Product Hunt
+                </span>
+                <ProductHuntCard />
+              </div>
             </div>
           </div>
         </div>

@@ -4,12 +4,20 @@ import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
 type AppStoreBadgesProps = {
   size?: "sm" | "md";
   showIos?: boolean;
+  showProductHunt?: boolean;
   className?: string;
+};
+
+export const PRODUCT_HUNT_EMBED = {
+  href: "https://www.producthunt.com/products/shoonaya?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-shoonaya",
+  imgSrc: "https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1323867&theme=neutral&t=1795157969891",
+  alt: "Shoonaya - Meditation and spiritual learning for everyday life | Product Hunt",
 };
 
 export function AppStoreBadges({
   size = "md",
   showIos = true,
+  showProductHunt = false,
   className = "",
 }: AppStoreBadgesProps) {
   const heightClass = size === "sm" ? "h-11" : "h-[52px]";
@@ -55,6 +63,25 @@ export function AppStoreBadges({
             </span>
           </div>
         </div>
+      )}
+
+      {showProductHunt && (
+        <a
+          href={PRODUCT_HUNT_EMBED.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Shoonaya on Product Hunt"
+          className="inline-flex min-h-11 items-center rounded-lg transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={PRODUCT_HUNT_EMBED.imgSrc}
+            alt={PRODUCT_HUNT_EMBED.alt}
+            width={250}
+            height={54}
+            className={`${heightClass} w-auto block rounded-[10px]`}
+          />
+        </a>
       )}
     </div>
   );

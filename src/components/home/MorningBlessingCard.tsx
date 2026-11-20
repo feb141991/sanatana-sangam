@@ -37,16 +37,25 @@ export default function MorningBlessingCard({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (!isMorningBlessingWindow()) {
-      setDismissed(true);
-      return;
-    }
-    const key = buildMorningBlessingKey(new Date(), timezone);
-    if (readLocalStorageItem(key)) {
-      setDismissed(true);
-      return;
-    }
-    setDismissed(false);
+    const refresh = () => {
+      if (!isMorningBlessingWindow()) {
+        setDismissed(true);
+        return;
+      }
+      const key = buildMorningBlessingKey(new Date(), timezone);
+      setDismissed(Boolean(readLocalStorageItem(key)));
+    };
+
+    refresh();
+    const interval = window.setInterval(refresh, 60_000);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, [timezone]);
 
   const dismiss = useCallback(() => {
@@ -71,15 +80,20 @@ export default function MorningBlessingCard({
         });
         return;
       } catch (err) {
-        // User cancelled or unsupported, fallback to clipboard
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        // Unsupported or failed native share can still use clipboard.
       }
     }
 
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      await navigator.clipboard.writeText(message);
-      setCopied(true);
-      toast.success('Morning blessing copied to clipboard for WhatsApp!');
-      setTimeout(() => setCopied(false), 2500);
+      try {
+        await navigator.clipboard.writeText(message);
+        setCopied(true);
+        toast.success('Morning blessing copied to clipboard for WhatsApp!');
+        setTimeout(() => setCopied(false), 2500);
+      } catch {
+        toast.error('Sharing is unavailable in this browser.');
+      }
     }
   }, [cityName, tithiName, verseSnippet]);
 
@@ -138,7 +152,7 @@ export default function MorningBlessingCard({
           type="button"
           onClick={dismiss}
           aria-label="Dismiss Morning Blessing prompt"
-          className="p-1.5 rounded-lg text-[var(--text-dim,#888)] hover:text-[var(--text-cream,#fff)] hover:bg-white/5 transition-colors"
+          className="min-h-[44px] min-w-[44px] p-2 rounded-lg text-[var(--text-dim,#888)] hover:text-[var(--text-cream,#fff)] hover:bg-white/5 transition-colors"
         >
           <X className="size-4" />
         </button>
@@ -148,7 +162,7 @@ export default function MorningBlessingCard({
         <button
           type="button"
           onClick={handleShare}
-          className="inline-flex min-h-[40px] items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all active:scale-[0.98]"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all active:scale-[0.98]"
           style={{
             backgroundColor: accent,
             color: '#1a1612',

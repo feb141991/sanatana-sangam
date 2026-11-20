@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import VratClient from './VratClient';
 import { lookupVratData } from '@/lib/vrat-data';
+import { getRelatedWisdomForVrat } from '@/lib/seo/related-wisdom';
 import type { Metadata } from 'next';
 import { GeoArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { extractVratGeo } from '@/lib/seo/geo-extractors';
@@ -56,6 +57,7 @@ export default async function VratPage({ params }: Props) {
 
   const geo = extractVratGeo(vratData);
   const canonicalUrl = `https://www.shoonaya.com/vrat/${decodedId}`;
+  const relatedWisdom = getRelatedWisdomForVrat(decodedId);
 
   return (
     <>
@@ -69,6 +71,7 @@ export default async function VratPage({ params }: Props) {
         vrat={vratData}
         originalSlug={decodedId}
         geo={geo}
+        relatedWisdom={relatedWisdom}
         isAuthenticated={!!user}
         appLanguage={(profile as any)?.app_language ?? 'en'}
         meaningLanguage={(profile as any)?.meaning_language ?? 'en'}

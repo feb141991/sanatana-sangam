@@ -25,6 +25,8 @@ import { isEligibleToObserveToday, buildVratObservationPayload } from '@/lib/vra
 import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
 import type { GeoModel } from '@/lib/seo/geo-model';
 import { GeoMicroSummary } from '@/components/seo/GeoMicroSummary';
+import { RelatedWisdomRAG } from '@/components/seo/RelatedWisdomRAG';
+import type { RelatedWisdomPayload } from '@/lib/seo/related-wisdom';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -46,6 +48,7 @@ interface VratClientProps {
   vrat: VratData;
   originalSlug: string;
   geo?: GeoModel;
+  relatedWisdom?: RelatedWisdomPayload;
   isAuthenticated?: boolean;
   appLanguage?: string;
   meaningLanguage?: string;
@@ -58,6 +61,7 @@ export default function VratClient({
   vrat,
   originalSlug,
   geo,
+  relatedWisdom,
   isAuthenticated = false,
   appLanguage,
   meaningLanguage,
@@ -231,7 +235,7 @@ export default function VratClient({
     const currentSlug = originalSlug;
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
 
-    fetch(`/api/calendar/upcoming?days=60&tz=${encodeURIComponent(timezone)}`, {
+    fetch(`/api/calendar/upcoming?days=60&reviewed=1&tz=${encodeURIComponent(timezone)}`, {
       signal: controller.signal,
     })
       .then((response) => (response.ok ? response.json() : null))
@@ -831,6 +835,11 @@ export default function VratClient({
                 </div>
               )}
             </motion.div>
+          )}
+
+          {/* ── Related Wisdom & Practice (Knowledge Mesh) ── */}
+          {relatedWisdom && (
+            <RelatedWisdomRAG payload={relatedWisdom} className="w-full text-left my-8" />
           )}
 
           {/* Share Button */}

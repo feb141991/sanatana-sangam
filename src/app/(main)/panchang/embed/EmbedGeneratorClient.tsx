@@ -9,6 +9,7 @@ export default function EmbedGeneratorClient() {
   const [selectedCity, setSelectedCity] = useState('new-york');
   const [theme, setTheme] = useState<'light' | 'dark' | 'gold'>('light');
   const [compact, setCompact] = useState(false);
+  const [includeAttribution, setIncludeAttribution] = useState(true);
   const [copied, setCopied] = useState(false);
 
   const cityList = Object.values(EMBED_POPULAR_CITIES);
@@ -28,12 +29,15 @@ export default function EmbedGeneratorClient() {
   frameborder="0"
   style="border:none;max-width:420px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.06);margin:0 auto;display:block;"
   title="Daily Vedic Panchang for ${activeCity.name} - Powered by Shoonaya"
-></iframe>
-<div style="font-size:12px;text-align:center;margin-top:6px;font-family:sans-serif;">
-  <a href="https://www.shoonaya.com/panchang" target="_blank" rel="noopener" style="color:#C5A059;text-decoration:none;font-weight:500;">
-    🕉️ Powered by Shoonaya Sacred Calendar
+></iframe>${
+    includeAttribution
+      ? `\n<div style="font-size:12px;text-align:center;margin-top:6px;font-family:sans-serif;">
+  <a href="https://www.shoonaya.com/panchang" target="_blank" rel="noopener nofollow" style="color:#C5A059;text-decoration:none;font-weight:500;">
+    Shoonaya Sacred Calendar
   </a>
-</div>`;
+</div>`
+      : ''
+  }`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(embedSnippet);
@@ -169,7 +173,25 @@ export default function EmbedGeneratorClient() {
                 type="checkbox"
                 checked={compact}
                 onChange={(e) => setCompact(e.target.checked)}
-                className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
+                className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 cursor-pointer"
+              />
+            </div>
+
+            {/* 4. Optional Attribution Link */}
+            <div className="flex items-center justify-between p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-800/60">
+              <div>
+                <span className="text-sm font-semibold text-stone-900 dark:text-stone-100 block">
+                  Include Attribution Link (Optional)
+                </span>
+                <span className="text-xs text-stone-500 dark:text-stone-400">
+                  Includes a subtle, branded link to the sacred calendar beneath the widget.
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={includeAttribution}
+                onChange={(e) => setIncludeAttribution(e.target.checked)}
+                className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 cursor-pointer"
               />
             </div>
           </div>
@@ -232,6 +254,18 @@ export default function EmbedGeneratorClient() {
               }}
               title="Shoonaya Daily Panchang Preview"
             />
+            {includeAttribution && (
+              <div className="text-center text-xs mt-2 text-stone-500 font-sans">
+                <a
+                  href="/panchang"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-600 dark:text-amber-400 font-medium hover:underline"
+                >
+                  Shoonaya Sacred Calendar
+                </a>
+              </div>
+            )}
           </div>
         </div>
 
