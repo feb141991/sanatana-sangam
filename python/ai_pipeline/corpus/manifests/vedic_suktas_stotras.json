@@ -13,27 +13,353 @@
   "content": [
     {
       "ref": "Purusha.1",
-      "original": "सहस्रशीर्षा पुरुषः सहस्राक्षः सहस्रपात्। स भूमिं विश्वतो वृत्वात्यतिष्ठद्दशाङ्गुलम्॥",
-      "transliteration": "Sahasra-shirsha purushah sahasrakshah sahasra-pat. Sa bhumim vishvato vritvatyatishthad dashangulam.",
-      "text": "The Cosmic Being (Purusha) has a thousand heads, a thousand eyes, and a thousand feet. Pervading the entire cosmos in all directions, He transcends it by ten fingers."
+      "original": "सहस्रशीर्षा पुरुषः सहस्राक्षः सहस्रपात् ।\nस भूमिं विश्वतो वृत्वात्यतिष्ठद्दशाङ्गुलम् ॥ १ ॥",
+      "transliteration": "sahasraśīrṣā puruṣaḥ sahasrākṣaḥ sahasrapāt |\nsa bhūmiṃ viśvato vṛtvātyatiṣṭhaddaśāṅgulam || 1 ||",
+      "text": "A thousand heads hath Puruṣa, a thousand eyes, a thousand feet.\nOn every side pervading earth he fills a space ten fingers wide.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.1) — Cosmic Form of the Supreme Person. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.2",
+      "original": "पुरुष एवेदं सर्वं यद्भूतं यच्च भव्यम् ।\nउतामृतत्वस्येशानो यदन्नेनातिरोहति ॥ २ ॥",
+      "transliteration": "puruṣa evedaṃ sarvaṃ yadbhūtaṃ yacca bhavyam |\nutāmṛtatvasyeśāno yadannenātirohati || 2 ||",
+      "text": "This Puruṣa is all that yet hath been and all that is to be;\nThe Lord of immortality which waxes greater still by food.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.2) — Puruṣa as Past, Present, and Future. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.3",
+      "original": "एतावानस्य महिमातो ज्यायांश्च पूरुषः ।\nपादोऽस्य विश्वा भूतानि त्रिपादस्यामृतं दिवि ॥ ३ ॥",
+      "transliteration": "etāvānasya mahimāto jyāyāṃśca pūruṣaḥ |\npādo'sya viśvā bhūtāni tripādasyāmṛtaṃ divi || 3 ||",
+      "text": "So mighty is his greatness; yea, greater than this is Puruṣa.\nAll creatures are one-fourth of him, three-fourths eternal life in heaven.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.3) — The Four Quarters of the Supreme. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.4",
+      "original": "त्रिपादू pieceर्ध्व उदैत्पुरुषः पादोऽस्येहाभवत्पुनः ।\nततो विष्वङ् व्यक्रामत्साशनानशने अभि ॥ ४ ॥",
+      "transliteration": "tripādū piecerdhva udaitpuruṣaḥ pādo'syehābhavatpunaḥ |\ntato viṣvaṅ vyakrāmatsāśanānaśane abhi || 4 ||",
+      "text": "With three-fourths Puruṣa went up: one-fourth of him again was here.\nThence he strode out to every side over what eats and what eats not.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.4) — The Manifestation of Creation. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.5",
+      "original": "तस्माद्विराळजायत विराजो अधि पूरुषः ।\nस जातो अत्यरिच्यत पश्चाद्भूमिमथो पुरः ॥ ५ ॥",
+      "transliteration": "tasmādvirāḻajāyata virājo adhi pūruṣaḥ |\nsa jāto atyaricyata paścādbhūmimatho puraḥ || 5 ||",
+      "text": "From him Virāj was born; again Puruṣa from Virāj was born.\nAs soon as he was born he spread eastward and westward o’er the earth.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.5) — The Cosmic Body Virāj. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.6",
+      "original": "यत्पुरुषेण हविषा देवा यज्ञमतन्वता ।\nवसन्तो अस्यासीदाज्यं ग्रीष्म इध्मः शरद्धविः ॥ ६ ॥",
+      "transliteration": "yatpuruṣeṇa haviṣā devā yajñamatanvatā |\nvasanto asyāsīdājyaṃ grīṣma idhmaḥ śaraddhaviḥ || 6 ||",
+      "text": "When Gods prepared the sacrifice with Puruṣa as their offering,\nIts oil was spring, the holy gift was autumn, summer was the wood.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.6) — The Cosmic Primal Sacrifice. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.7",
+      "original": "तं यज्ञं बर्हिषि प्रौक्षन्पुरुषं जातमग्रतः ।\nतेन देवा अयजन्त साध्या ऋषयश्च ये ॥ ७ ॥",
+      "transliteration": "taṃ yajñaṃ barhiṣi praukṣanpuruṣaṃ jātamagrataḥ |\ntena devā ayajanta sādhyā ṛṣayaśca ye || 7 ||",
+      "text": "They balmed as sacrifice on holy grass the Puruṣa born when time began.\nWith him the deities and all Sādhyas and Ṛṣis made sacrifice.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.7) — The Consecration of the Offering. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.8",
+      "original": "तस्माद्यज्ञात्सर्वहुतः संभृतं पृषदाज्यम् ।\nपशून्तांश्चक्रे वायव्यानारण्यान ग्राम्याश्च ये ॥ ८ ॥",
+      "transliteration": "tasmādyajñātsarvahutaḥ saṃbhṛtaṃ pṛṣadājyam |\npaśūntāṃścakre vāyavyānāraṇyāna grāmyāśca ye || 8 ||",
+      "text": "From that great general sacrifice the drippings of the fat were gathered.\nHe formed the creatures of-the air, and animals both wild and tame.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.8) — Origin of Living Creatures. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.9",
+      "original": "तस्माद्यज्ञात्सर्वहुत ऋचः सामानि जज्ञिरे ।\nछन्दांसि जज्ञिरे तस्माद्यजुस्तस्मादजायत ॥ ९ ॥",
+      "transliteration": "tasmādyajñātsarvahuta ṛcaḥ sāmāni jajñire |\nchandāṃsi jajñire tasmādyajustasmādajāyata || 9 ||",
+      "text": "From that great general sacrifice Ṛcas and Sāma-hymns were produced:\nTherefrom were spells and charms produced; the Yajus had its birth from it.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.9) — Origin of the Four Vedas. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.10",
+      "original": "तस्मादश्वा अजायन्त ये के चोभयादतः ।\nगावो ह जज्ञिरे तस्मात्तस्माज्जाता अजावयः ॥ १० ॥",
+      "transliteration": "tasmādaśvā ajāyanta ye ke cobhayādataḥ |\ngāvo ha jajñire tasmāttasmājjātā ajāvayaḥ || 10 ||",
+      "text": "From it were horses born, from it all cattle with two rows of teeth:\nFrom it were generated kine, from it the goats and sheep were born.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.10) — Origin of the Animal Kingdom. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.11",
+      "original": "यत्पुरुषं व्यदधुः कतिधा व्यकल्पयन् ।\nमुखं किमस्य कौ बाहू का ऊरू पादा उच्येते ॥ ११ ॥",
+      "transliteration": "yatpuruṣaṃ vyadadhuḥ katidhā vyakalpayan |\nmukhaṃ kimasya kau bāhū kā ūrū pādā ucyete || 11 ||",
+      "text": "When they divided Puruṣa how many portions did they make?\nWhat do they call his mouth, his arms? What do they call his thighs and feet?",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.11) — The Divine Cosmic Anatomy. Griffith (1896)."
     },
     {
       "ref": "Purusha.12",
-      "original": "चन्द्रमा मनसो जातः। चक्षोः सूर्यो अजायत।",
-      "transliteration": "Chandrama manaso jatah. Chakshoh suryo ajayata.",
-      "text": "From the Cosmic Mind (Manas) the Moon was born; from the Cosmic Eye the Sun was born."
+      "original": "ब्राह्मणोऽस्य मुखमासीद्बाहू राजन्यः कृतः ।\nऊरू तदस्य यद्वैश्यः पद्भ्यां शूद्रो अजायत ॥ १२ ॥",
+      "transliteration": "brāhmaṇo'sya mukhamāsīdbāhū rājanyaḥ kṛtaḥ |\nūrū tadasya yadvaiśyaḥ padbhyāṃ śūdro ajāyata || 12 ||",
+      "text": "The Brāhmaṇa was his mouth, of both his arms was the Rājanya made.\nHis thighs became the Vaiśya, from his feet the Śūdra was produced.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.12) — The Cosmic Social Order. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.13",
+      "original": "चन्द्रमा मनसो जातश्चक्षोः सूर्यो अजायत ।\nमुखादिन्द्रश्चाग्निश्च प्राणाद्वायुरजायत ॥ १३ ॥",
+      "transliteration": "candramā manaso jātaścakṣoḥ sūryo ajāyata |\nmukhādindraścāgniśca prāṇādvāyurajāyata || 13 ||",
+      "text": "The Moon was gendered from his mind, and from his eye the Sun had birth;\nIndra and Agni from his mouth were born, and Vāyu from his breath.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.13) — Origin of the Celestial Deities. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.14",
+      "original": "नाभ्या आसीदन्तरिक्षं शीर्ष्णो द्यौः समवर्तत ।\nपद्भ्यां भूमिर्दिशः श्रोत्रात्तथा लोकाँ अकल्पयन् ॥ १४ ॥",
+      "transliteration": "nābhyā āsīdantarikṣaṃ śīrṣṇo dyauḥ samavartata |\npadbhyāṃ bhūmirdiśaḥ śrotrāttathā lokā~ akalpayan || 14 ||",
+      "text": "Forth from his navel came mid-air the sky was fashioned from his head\nEarth from his feet, and from his ear the regions. Thus they formed the worlds.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.14) — Origin of the Earth, Sky, and Cosmos. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.15",
+      "original": "सप्तास्यासन्परिधयस्त्रिः सप्त समिधः कृताः ।\nदेवा यद्यज्ञं तन्वाना अबध्नन्पुरुषं पशुम् ॥ १५ ॥",
+      "transliteration": "saptāsyāsanparidhayastriḥ sapta samidhaḥ kṛtāḥ |\ndevā yadyajñaṃ tanvānā abadhnanpuruṣaṃ paśum || 15 ||",
+      "text": "Seven fencing-sticks had he, thrice seven layers of fuel were prepared,\nWhen the Gods, offering sacrifice, bound, as their victim, Puruṣa.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.15) — The Cosmic Fuel and Boundaries. Griffith (1896)."
+    },
+    {
+      "ref": "Purusha.16",
+      "original": "यज्ञेन यज्ञमयजन्त देवास्तानि धर्माणि प्रथमान्यासन् ।\nते ह नाकं महिमानः सचन्त यत्र पूर्वे साध्याः सन्ति देवाः ॥ १६ ॥",
+      "transliteration": "yajñena yajñamayajanta devāstāni dharmāṇi prathamānyāsan |\nte ha nākaṃ mahimānaḥ sacanta yatra pūrve sādhyāḥ santi devāḥ || 16 ||",
+      "text": "Gods, sacrificing, sacrificed the victim these were the earliest holy ordinances.\nThe mighty ones attained the height of heaven, there where the Sādhyas, Gods of old, are dwelling.",
+      "provenance": "Puruṣa Sukta (Rigveda 10.90.16) — The Primordial Dharma. Griffith (1896)."
     },
     {
       "ref": "Nasadiya.1",
-      "original": "नासदासीन्नो सदासीत्तदानीं नासीद्रजो नो व्योमा परो यत्।",
-      "transliteration": "Nasadasin no sadasit tadanim nasid rajo no vyoma paro yat.",
-      "text": "Then there was neither non-existence nor existence; there was no realm of air, nor the celestial vault beyond. What covered all? Where? Under whose protection?"
+      "original": "नासदासीन्नो सदासीत्तदानीं नासीद्रजो नो व्योमा परो यत् ।\nकिमावरीवः कुह कस्य शर्मन्नम्भः किमासीद्गहनं गभीरम् ॥ १ ॥",
+      "transliteration": "nāsadāsīnno sadāsīttadānīṃ nāsīdrajo no vyomā paro yat |\nkimāvarīvaḥ kuha kasya śarmannambhaḥ kimāsīdgahanaṃ gabhīram || 1 ||",
+      "text": "Then was not non-existent nor existent: there was no realm of air, no sky beyond it.\nWhat covered in, and where? and what gave shelter? Was water there, unfathomed depth of water?",
+      "provenance": "Nāsadīya Sūkta (Rigveda 10.129.1) — The State Before Creation. Griffith (1896)."
+    },
+    {
+      "ref": "Nasadiya.2",
+      "original": "न मृत्युरासीदमृतं न तर्हि न रात्र्या अह्न आसीत्प्रकेतः ।\nआनीदवातं स्वधया तदेकं तस्माद्धान्यन्न परः किञ्चनास ॥ २ ॥",
+      "transliteration": "na mṛtyurāsīdamṛtaṃ na tarhi na rātryā ahna āsītpraketaḥ |\nānīdavātaṃ svadhayā tadekaṃ tasmāddhānyanna paraḥ kiñcanāsa || 2 ||",
+      "text": "Death was not then, nor was there aught immortal: no sign was there, the day's and night's divider.\nThat One Thing, breathless, breathed by its own nature: apart from it was nothing whatsoever.",
+      "provenance": "Nāsadīya Sūkta (Rigveda 10.129.2) — The Breathless Breathing of the One. Griffith (1896)."
+    },
+    {
+      "ref": "Nasadiya.3",
+      "original": "तम आसीत्तमसा गूळ्हमग्रेऽप्रकेतं सलिलं सर्वमा इदम् ।\nतुच्छ्येनाभ्वपिहितं यदासीत्तपसस्तन्महिनाजायतैकम् ॥ ३ ॥",
+      "transliteration": "tama āsīttamasā gūḻhamagre'praketaṃ salilaṃ sarvamā idam |\ntucchyenābhvapihitaṃ yadāsīttapasastanmahinājāyataikam || 3 ||",
+      "text": "Darkness there was: at first concealed in darkness this All was undiscriminated chaos.\nAll that existed then was void and formless: by the great power of Warmth was born that Unit.",
+      "provenance": "Nāsadīya Sūkta (Rigveda 10.129.3) — The Primordial Darkness and Tapas. Griffith (1896)."
+    },
+    {
+      "ref": "Nasadiya.4",
+      "original": "कामस्तदग्रे समवर्तताधि मनसो रेतः प्रथमं यदासीत् ।\nसतो बन्धुमसति निरविन्दन्हृदि प्रतीष्या कवयो मनीषा ॥ ४ ॥",
+      "transliteration": "kāmastadagre samavartatādhi manaso retaḥ prathamaṃ yadāsīt |\nsato bandhumasati niravindanhṛdi pratīṣyā kavayo manīṣā || 4 ||",
+      "text": "Thereafter rose Desire in the beginning, Desire, the primal seed and germ of Spirit.\nSages who searched with their heart's thought discovered the existent's kinship in the non-existent.",
+      "provenance": "Nāsadīya Sūkta (Rigveda 10.129.4) — Primal Desire, the Seed of Mind. Griffith (1896)."
+    },
+    {
+      "ref": "Nasadiya.5",
+      "original": "तिरश्चीनो विततो रश्मिरेषामधः स्विदासीदुपरि स्विदासीत् ।\nरेतोधा आसन्महिमान आसन्त्स्वधा अवस्तात्प्रयतिः परस्तात् ॥ ५ ॥",
+      "transliteration": "tiraścīno vitato raśmireṣāmadhaḥ svidāsīdupari svidāsīt |\nretodhā āsanmahimāna āsantsvadhā avastātprayatiḥ parastāt || 5 ||",
+      "text": "Crosswise was severed their dividing line: was aught above it, and was aught below it?\nThere were begetters, there were mighty forces, free action here and energy up yonder.",
+      "provenance": "Nāsadīya Sūkta (Rigveda 10.129.5) — The Cosmic Division and Forces. Griffith (1896)."
+    },
+    {
+      "ref": "Nasadiya.6",
+      "original": "को अद्धा वेद क इह प्र वोचत्कुत आजाता कुत इयं विसृष्टिः ।\nअर्वाग्देवा अस्य विसर्जनेनाथा को वेद यत आबभूव ॥ ६ ॥",
+      "transliteration": "ko addhā veda ka iha pra vocatkuta ājātā kuta iyaṃ visṛṣṭiḥ |\narvāgdevā asya visarjanenāthā ko veda yata ābabhūva || 6 ||",
+      "text": "Who verily knows and who can here declare it, whence it was born and whence comes this creation?\nThe Gods are later than this world's production. Who knows then whence it first came into being?",
+      "provenance": "Nāsadīya Sūkta (Rigveda 10.129.6) — The Cosmic Mystery. Griffith (1896)."
+    },
+    {
+      "ref": "Nasadiya.7",
+      "original": "इयं विसृष्टिर्यत आबभूव यदि वा दधे यदि वा न ।\nयो अस्याध्यक्षः परमे व्योमन्त्सो अङ्ग वेद यदि वा न वेद ॥ ७ ॥",
+      "transliteration": "iyaṃ visṛṣṭiryata ābabhūva yadi vā dadhe yadi vā na |\nyo asyādhyakṣaḥ parame vyomantso aṅga veda yadi vā na veda || 7 ||",
+      "text": "He, the first origin of this creation, whether he formed it all or did not form it,\nWhose eye controls this world in highest heaven, he verily knows it, or perhaps he knows not.",
+      "provenance": "Nāsadīya Sūkta (Rigveda 10.129.7) — The Overseer in Highest Heaven. Griffith (1896)."
     },
     {
       "ref": "SriSukta.1",
-      "original": "हिरण्यवर्णां हरिणीं सुवर्णरजतस्रजाम्। चन्द्रां हिरण्मयीं लक्ष्मीं जातवेदो म आवह॥",
-      "transliteration": "Hiranya-varnam harinim suvarna-rajata-srajam. Chandram hiranmayim lakshmim jata-vedo ma avaha.",
-      "text": "O Agni, invoke for me the radiant Devi Lakshmi, who shines with golden lustre, like a golden deer adorned with garlands of gold and silver, luminous as the moon."
+      "original": "हिरण्यवर्णां हरिणीं सुवर्णरजतस्रजाम् ।\nचन्द्रां हिरण्मयीं लक्ष्मीं जातवेदो म आवह ॥ १ ॥",
+      "transliteration": "hiraṇyavarṇāṃ hariṇīṃ suvarṇarajatasrajām |\ncandrāṃ hiraṇmayīṃ lakṣmīṃ jātavedo ma āvaha || 1 ||",
+      "text": "Invoke for me, O Agni, that Lakshmi of golden hue, radiant like gold, bedecked with garlands of silver and gold, brilliant as the moon and embodiment of fortune.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.1) — Invocation of Golden Lakshmi. Public Domain."
+    },
+    {
+      "ref": "SriSukta.2",
+      "original": "तां म आवह जातवेदो लक्ष्मीमनपगामिनीम् ।\nयस्यां हिरण्यं विन्देयं गामश्वं पुरुषानहम् ॥ २ ॥",
+      "transliteration": "tāṃ ma āvaha jātavedo lakṣmīmanapagāminīm |\nyasyāṃ hiraṇyaṃ vindeyaṃ gāmaśvaṃ puruṣānaham || 2 ||",
+      "text": "Invoke for me, O Agni, that Lakshmi who never departs, through whose grace I may attain gold, kine, horses, and virtuous companions.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.2) — Prayer for Abiding Auspiciousness. Public Domain."
+    },
+    {
+      "ref": "SriSukta.3",
+      "original": "अश्वपूर्वां रथमध्यां हस्तिनादप्रबोधिनीम् ।\nश्रियं देवीमुपह्वये श्रीर्मा देवी जुषताम् ॥ ३ ॥",
+      "transliteration": "aśvapūrvāṃ rathamadhyāṃ hastinādaprabodhinīm |\nśriyaṃ devīmupahvaye śrīrmā devī juṣatām || 3 ||",
+      "text": "Preceded by horses, riding in the midst of chariots, awakened by the trumpet of majestic elephants, I invoke that divine Sri. May the Goddess be gracious unto me.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.3) — The Royal Procession of Sri. Public Domain."
+    },
+    {
+      "ref": "SriSukta.4",
+      "original": "कां सोस्मितां हिरण्यप्राकारामार्द्रां ज्वलन्तीं तृप्तां तर्पयन्तीम् ।\nपद्मे स्थितां पद्मवर्णां तामिहोपह्वये श्रियम् ॥ ४ ॥",
+      "transliteration": "kāṃ sosmitāṃ hiraṇyaprākārāmārdrāṃ jvalantīṃ tṛptāṃ tarpayantīm |\npadme sthitāṃ padmavarṇāṃ tāmihopahvaye śriyam || 4 ||",
+      "text": "She who possesses a gentle smile, enclosed within radiant golden ramparts, ever blissful, glowing, satisfied and granting satisfaction, dwelling upon the lotus, lotus-hued, I invoke that Sri.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.4) — The Radiant Lotus-Dwellling Mother. Public Domain."
+    },
+    {
+      "ref": "SriSukta.5",
+      "original": "चन्द्रां प्रभासां यशसा ज्वलन्तीं श्रियं लोके देवजुष्टामुदाराम् ।\nतां पद्मिनीमीं शरणमहं प्रपद्येऽलक्ष्मीर्मे नश्यतां त्वां वृणे ॥ ५ ॥",
+      "transliteration": "candrāṃ prabhāsāṃ yaśasā jvalantīṃ śriyaṃ loke devajuṣṭāmudārām |\ntāṃ padminīmīṃ śaraṇamahaṃ prapadye'lakṣmīrme naśyatāṃ tvāṃ vṛṇe || 5 ||",
+      "text": "Shining like the moon, glowing with auspicious splendor, adored by the celestials, noble and generous, I take refuge in that Lotus Goddess. May adversity vanish; I seek Your shelter.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.5) — Refuging in the Moon-like Splendor. Public Domain."
+    },
+    {
+      "ref": "SriSukta.6",
+      "original": "आदित्यवर्णे तपसोऽधिजातो वनस्पतिस्तव वृक्षोऽथ बिल्वः ।\nतस्य फलानि तपसानुदन्तु मायान्तरायाश्च बाह्या अलक्ष्मीः ॥ ६ ॥",
+      "transliteration": "ādityavarṇe tapaso'dhijāto vanaspatistava vṛkṣo'tha bilvaḥ |\ntasya phalāni tapasānudantu māyāntarāyāśca bāhyā alakṣmīḥ || 6 ||",
+      "text": "O Goddess radiant like the sun, through your intense penance was born the Bilva tree, sacred king of trees. May its holy fruits dispel the inner darkness of ignorance and outer poverty.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.6) — The Sacred Bilva Tree. Public Domain."
+    },
+    {
+      "ref": "SriSukta.7",
+      "original": "उपैतु मां देवसखः कीर्तिश्च मणिना सह ।\nप्रादुर्भूतोऽस्मि राष्ट्रेऽस्मिन् कीर्तिमृद्धिं ददातु मे ॥ ७ ॥",
+      "transliteration": "upaitu māṃ devasakhaḥ kīrtiśca maṇinā saha |\nprādurbhūto'smi rāṣṭre'smin kīrtimṛddhiṃ dadātu me || 7 ||",
+      "text": "May the friend of the celestials Kubera, and Fame along with the wishing-jewel, come unto me. Born in this sacred land, bestow upon me lasting fame and prosperity.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.7) — Prayer for Divine Companionship and Renown. Public Domain."
+    },
+    {
+      "ref": "SriSukta.8",
+      "original": "क्षुत्पिपासामलां ज्येष्ठामलक्ष्मीं नाशयाम्यहम् ।\nअभूतिमसमृद्धिं च सर्वान् निर्णुद मे गृहात् ॥ ८ ॥",
+      "transliteration": "kṣutpipāsāmalāṃ jyeṣṭhāmalakṣmīṃ nāśayāmyaham |\nabhūtimasamṛddhiṃ ca sarvān nirṇuda me gṛhāt || 8 ||",
+      "text": "I dispel the eldest misfortune, hunger and thirst and filth. O Mother, banish from my home all distress, decay, and lack of spiritual and material abundance.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.8) — Banishment of Poverty and Affliction. Public Domain."
+    },
+    {
+      "ref": "SriSukta.9",
+      "original": "गन्धद्वारां दुराधर्षां नित्यपुष्टां करीषिणीम् ।\nईश्वरीं सर्वभूतानां तामिहोपह्वये श्रियम् ॥ ९ ॥",
+      "transliteration": "gandhadvārāṃ durādharṣāṃ nityapuṣṭāṃ karīṣiṇīm |\nīśvarīṃ sarvabhūtānāṃ tāmihopahvaye śriyam || 9 ||",
+      "text": "Approached through fragrant aroma, invincible, eternally thriving, rich in fertile harvest and cattle, the sovereign ruler of all beings, I invoke that Sri.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.9) — Sovereign Empress of Creation. Public Domain."
+    },
+    {
+      "ref": "SriSukta.10",
+      "original": "मनसः काममाकूतिं वाचः सत्यमशीमहि ।\nपशूनां रूपमन्नस्य मयि श्रीः श्रयतां यशः ॥ १० ॥",
+      "transliteration": "manasaḥ kāmamākūtiṃ vācaḥ satyamaśīmahi |\npaśūnāṃ rūpamannasya mayi śrīḥ śrayatāṃ yaśaḥ || 10 ||",
+      "text": "May the sincere aspirations of my heart, the truth of speech, the beauty of living herds, and the abundance of food dwell within me; may glory and spiritual majesty abide.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.10) — The Realization of Truth and Glory. Public Domain."
+    },
+    {
+      "ref": "SriSukta.11",
+      "original": "कर्दमेन प्रजाभूता मयि सम्भव कर्दम ।\nश्रियं वासय मे कुले मातरं पद्ममालिनीम् ॥ ११ ॥",
+      "transliteration": "kardamena prajābhūtā mayi sambhava kardama |\nśriyaṃ vāsaya me kule mātaraṃ padmamālinīm || 11 ||",
+      "text": "Through Kardama Prajapati you have progeny. Dwell in me, O Kardama, and cause the Mother Sri, crowned with lotus garlands, to dwell forever in our lineage.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.11) — Lineage of Sage Kardama. Public Domain."
+    },
+    {
+      "ref": "SriSukta.12",
+      "original": "आपः सृजन्तु स्निग्धानि चिक्लीत वस मे गृहे ।\nनि च देवीं मातरं श्रियं वासय मे कुले ॥ १२ ॥",
+      "transliteration": "āpaḥ sṛjantu snigdhāni ciklīta vasa me gṛhe |\nni ca devīṃ mātaraṃ śriyaṃ vāsaya me kule || 12 ||",
+      "text": "May the waters create pure loving harmony. O Chiklita, dwell within my home, and establish the Divine Mother Sri permanently in our family.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.12) — The Nectar of Harmony and Peace. Public Domain."
+    },
+    {
+      "ref": "SriSukta.13",
+      "original": "आर्द्रां पुष्करिणीं पुष्टिं पिङ्गलां पद्ममालिनीम् ।\nचन्द्रां हिरण्मयीं लक्ष्मीं जातवेदो म आवह ॥ १३ ॥",
+      "transliteration": "ārdrāṃ puṣkariṇīṃ puṣṭiṃ piṅgalāṃ padmamālinīm |\ncandrāṃ hiraṇmayīṃ lakṣmīṃ jātavedo ma āvaha || 13 ||",
+      "text": "Invoke for me, O Agni, that Mother who is compassionate, endowed with the waters of life, the embodiment of sustenance, golden-hued, garlanded with lotuses, radiant as the moon.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.13) — Auspicious Sustenance of Life. Public Domain."
+    },
+    {
+      "ref": "SriSukta.14",
+      "original": "आर्द्रां यः करिणीं यष्टिं सुवर्णां हेममालिनीम् ।\nसूर्यां हिरण्मयीं लक्ष्मीं जातवेदो म आवह ॥ १४ ॥",
+      "transliteration": "ārdrāṃ yaḥ kariṇīṃ yaṣṭiṃ suvarṇāṃ hemamālinīm |\nsūryāṃ hiraṇmayīṃ lakṣmīṃ jātavedo ma āvaha || 14 ||",
+      "text": "Invoke for me, O Agni, that Mother who holds the royal scepter of dharma, golden-hued, adorned with golden garlands, dazzling as the sun.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.14) — The Sun-like Sovereign Mother. Public Domain."
+    },
+    {
+      "ref": "SriSukta.15",
+      "original": "यः शुचिः प्रयतो भूत्वा जुहुयादाज्यमन्वहम् ।\nश्रियः पञ्चदशर्चं च श्रीकामः सततं जपेत् ॥ १५ ॥",
+      "transliteration": "yaḥ śuciḥ prayato bhūtvā juhuyādājyamanvaham |\nśriyaḥ pañcadaśarcaṃ ca śrīkāmaḥ satataṃ japet || 15 ||",
+      "text": "Whosoever, purified and devoted, offers daily oblations of clarified butter and recites these fifteen sacred verses desiring spiritual and material well-being, attains the perpetual grace of Sri.",
+      "provenance": "Śrī Sūkta (Rigveda Khilani 5.87.15) — Phalaśruti (Spiritual Fruit). Public Domain."
+    },
+    {
+      "ref": "Shanti.1",
+      "original": "ॐ पूर्णमदः पूर्णमिदं पूर्णात्पूर्णमुदच्यते ।\nपूर्णस्य पूर्णमादाय पूर्णमेवावशिष्यते ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ pūrṇamadaḥ pūrṇamidaṃ pūrṇātpūrṇamudacyate |\npūrṇasya pūrṇamādāya pūrṇamevāvaśiṣyate ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "That is Infinite, this is Infinite; from the Infinite proceeds the Infinite.\nTaking the Infinite from the Infinite, the Infinite alone remains.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Bṛhadāraṇyaka & Īśāvāsya Upaniṣad. Müller (1879)."
+    },
+    {
+      "ref": "Shanti.2",
+      "original": "ॐ सह नाववतु । सह नौ भुनक्तु ।\nसह वीर्यं करवावहै ।\nतेजस्वि नावधीतमस्तु मा विद्विषावहै ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ saha nāvavatu | saha nau bhunaktu |\nsaha vīryaṃ karavāvahai |\ntejasvi nāvadhītamastu mā vidviṣāvahai ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "May He protect us both together; may He nourish us both together;\nMay we work together with great energy;\nMay our study be vigorous and fruitful; may we never hold dislike for one another.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Taittirīya & Kaṭha Upaniṣad. Müller (1884)."
+    },
+    {
+      "ref": "Shanti.3",
+      "original": "ॐ असतो मा सद्गमय । तमसो मा ज्योतिर्गमय ।\nमृत्योर्मा अमृतं गमय ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ asato mā sadgamaya | tamaso mā jyotirgamaya |\nmṛtyormā amṛtaṃ gamaya ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "Lead me from the unreal to the Real.\nLead me from darkness to Light.\nLead me from death to Immortality.\nOm Peace, Peace, Peace.",
+      "provenance": "Pavamāna Mantra — Bṛhadāraṇyaka Upaniṣad (1.3.28). Müller (1884)."
+    },
+    {
+      "ref": "Shanti.4",
+      "original": "ॐ शं नो मित्रः शं वरुणः । शं नो भवत्वर्यमा ।\nशं न इन्द्रो बृहस्पतिः । शं नो विष्णुरुरुक्रमः ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ śaṃ no mitraḥ śaṃ varuṇaḥ | śaṃ no bhavatvaryamā |\nśaṃ na indro bṛhaspatiḥ | śaṃ no viṣṇururukramaḥ ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "May Mitra be propitious to us, and Varuṇa; may Aryaman be propitious to us;\nMay Indra and Bṛhaspati be propitious to us; may the wide-striding Viṣṇu be propitious to us.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Taittirīya Upaniṣad (1.1.1). Müller (1884)."
+    },
+    {
+      "ref": "Shanti.5",
+      "original": "ॐ भद्रं कर्णेभिः शृणुयाम देवाः ।\nभद्रं पश्येमाक्षभिर्यजत्राः ।\nस्थिरैरङ्गैस्तुष्टुवांसस्तनूभिः ।\nव्यशेम देवहितं यदायुः ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ bhadraṃ karṇebhiḥ śṛṇuyāma devāḥ |\nbhadraṃ paśyemākṣabhiryajatrāḥ |\nsthirairaṅgaistuṣṭuvāṃsastanūbhiḥ |\nvyaśema devahitaṃ yadāyuḥ ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "May we, O Devas, hear with our ears what is auspicious.\nMay we, who are worthy of worship, see with our eyes what is auspicious.\nWith limbs and body firm and singing praises unto you, may we enjoy the full span of life decreed by the divine.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Praśna, Muṇḍaka & Māṇḍūkya Upaniṣads (Rigveda 1.89.8). Griffith (1896)."
+    },
+    {
+      "ref": "Shanti.6",
+      "original": "ॐ द्यौः शान्तिरन्तरिक्षं शान्तिः पृथिवी शान्तिरापः शान्तिरोषधयः शान्तिः ।\nवनस्पतयः शान्तिर्विश्वेदेवाः शान्तिर्ब्रह्म शान्तिः सर्वं शान्तिः शान्तिरेव शान्तिः सा मा शान्तिरेधि ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ dyauḥ śāntirantarikṣaṃ śāntiḥ pṛthivī śāntirāpaḥ śāntiroṣadhayaḥ śāntiḥ |\nvanaspatayaḥ śāntirviśvedevāḥ śāntirbrahma śāntiḥ sarvaṃ śāntiḥ śāntireva śāntiḥ sā mā śāntiredhi ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "May there be peace in heaven, peace in the atmosphere, peace on earth, peace in the waters, peace in herbs and plants.\nMay there be peace in all divine beings, peace in Brahman, peace everywhere; peace alone peace; may that true peace abide within me.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Śukla Yajurveda (36.17). Griffith (1899)."
+    },
+    {
+      "ref": "Shanti.7",
+      "original": "ॐ सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः ।\nसर्वे भद्राणि पश्यन्तु मा कश्चिद्दुःखभाग्भवेत् ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ sarve bhavantu sukhinaḥ sarve santu nirāmayāḥ |\nsarve bhadrāṇi paśyantu mā kaścidduḥkhabhāgbhavet ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "May all beings be happy; may all beings be free from illness.\nMay all behold what is good and auspicious; may no one suffer any sorrow.\nOm Peace, Peace, Peace.",
+      "provenance": "Universal Peace Prayer — Traditional Bṛhadāraṇyaka Pariśiṣṭa. Public Domain."
+    },
+    {
+      "ref": "Shanti.8",
+      "original": "ॐ वाङ् मे मनसि प्रतिष्ठिता मनो मे वाचि प्रतिष्ठितम् ।\nआविरावीर्म एधि वेदस्य म आणीस्थः श्रुतं मे मा प्रहासीः ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ vāṅ me manasi pratiṣṭhitā mano me vāci pratiṣṭhitam |\nāvirāvīrma edhi vedasya ma āṇīsthaḥ śrutaṃ me mā prahāsīḥ ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "May my speech be established in my mind; may my mind be established in my speech.\nO Divine Self, reveal Thyself to me; may speech and mind bring me the truths of the Veda; may what I have heard never depart from me.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Aitareya Upaniṣad (Rigveda). Müller (1879)."
+    },
+    {
+      "ref": "Shanti.9",
+      "original": "ॐ आप्यायन्तु ममाङ्गानि वाक्प्राणश्चक्षुः श्रोत्रमथो बलमिन्द्रियाणि च सर्वाणि ।\nसर्वं ब्रह्मौपनिषदं माहं ब्रह्म निराकुर्यां मा मा ब्रह्म निराकरोत् ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ āpyāyantu mamāṅgāni vākprāṇaścakṣuḥ śrotramatho balamindriyāṇi ca sarvāṇi |\nsarvaṃ brahmaupaniṣadaṃ māhaṃ brahma nirākuryāṃ mā mā brahma nirākarot ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "May my limbs, speech, vital energy, eyes, ears, and strength of all senses grow strong.\nAll is the Brahman of the Upaniṣads; may I never deny Brahman, and may Brahman never reject me.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Kena & Chāndogya Upaniṣads (Sāmaveda). Müller (1879)."
+    },
+    {
+      "ref": "Shanti.10",
+      "original": "ॐ नमो ब्रह्मणे । नमस्ते वायो ।\nत्वमेव प्रत्यक्षं ब्रह्मासि । त्वामेव प्रत्यक्षं ब्रह्म वदिष्यामि ।\nऋतं वदिष्यामि । सत्यं वदिष्यामि । तन्मामवतु । तद्वक्तारमवतु ॥\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ namo brahmaṇe | namaste vāyo |\ntvameva pratyakṣaṃ brahmāsi | tvāmeva pratyakṣaṃ brahma vadiṣyāmi |\nṛtaṃ vadiṣyāmi | satyaṃ vadiṣyāmi | tanmāmavatu | tadvaktāramavatu ||\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "Salutation to Brahman! Salutation to Thee, O Vāyu (Cosmic Life Breath)!\nThou indeed art the perceptible Brahman. I shall declare Thee as the perceptible Brahman.\nI shall speak the eternal Law (Ṛtam); I shall speak the absolute Truth (Satyam). May That protect me; may That protect the teacher.\nOm Peace, Peace, Peace.",
+      "provenance": "Śānti Mantra — Taittirīya Upaniṣad (1.1.2). Müller (1884)."
+    },
+    {
+      "ref": "Shanti.11",
+      "original": "ॐ ॐ ॐ ।\nॐ शान्तिः शान्तिः शान्तिः ॥",
+      "transliteration": "oṃ oṃ oṃ |\noṃ śāntiḥ śāntiḥ śāntiḥ ||",
+      "text": "Om is the primordial sound of the Divine Cosmic Reality.\nMay peace reign in the physical world (Ādhibhautika), the mental-subtle realm (Ādhidaivika), and the spiritual-causal core of the Self (Ādhyātmika).",
+      "provenance": "Universal Triple Peace Invocations (Trividha Śānti). Public Domain."
+    },
+    {
+      "ref": "Gayatri.1",
+      "original": "ॐ भूर्भुवः स्वः ।\nतत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि ।\nधियो यो नः प्रचोदयात् ॥",
+      "transliteration": "oṃ bhūrbhuvaḥ svaḥ |\ntatsaviturvareṇyaṃ bhargo devasya dhīmahi |\ndhiyo yo naḥ pracodayāt ||",
+      "text": "Om, the physical plane, the subtle atmospheric realm, and the celestial sphere of light.\nWe meditate upon the adorable, radiant splendor of the divine Savitur (the creative source of all light);\nMay He illuminate, awaken, and guide our intellects toward the highest Truth.",
+      "provenance": "Gāyatrī Mantra (Rigveda 3.62.10) — The Sovereign Solar Vedic Invocation. Griffith (1896)."
     },
     {
       "ref": "AdityaHridaya.15",

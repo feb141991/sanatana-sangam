@@ -88,7 +88,7 @@ def audit_manifest(filepath: str, raw_source_path: Optional[str] = None) -> Dict
         seen_refs.add(ref)
 
         # 2. English text validation
-        english = (item.get("translation") or item.get("text") or item.get("meaning") or "").strip()
+        english = (item.get("translation") or item.get("text") or item.get("meaning") or item.get("curated_lesson") or "").strip()
         if not english:
             report["errors"].append(f"[{ref}] Missing/empty English translation.")
         else:

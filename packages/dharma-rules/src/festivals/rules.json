@@ -1650,8 +1650,6 @@
       "offset_days": 0,
       "status": "proposed"
     },
-    "relative_to_slug": "chaitra-navratri-begins",
-    "offset_days": 0,
     "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
@@ -1675,8 +1673,6 @@
       "offset_days": 0,
       "status": "proposed"
     },
-    "relative_to_slug": "navratri-begins",
-    "offset_days": 0,
     "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
@@ -3534,8 +3530,6 @@
       "offset_days": 16,
       "status": "proposed"
     },
-    "relative_to_slug": "diwali",
-    "offset_days": 16,
     "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {
@@ -3893,8 +3887,6 @@
       "offset_days": 0,
       "status": "proposed"
     },
-    "relative_to_slug": "diwali",
-    "offset_days": 0,
     "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar calculation."
   },
   {

@@ -170,7 +170,7 @@ describe('chat-grounding', () => {
       expect(res.isGrounded).toBe(true);
       expect(res.corpus).toBe("yoga_sutras");
       expect(res.documents.length).toBeGreaterThan(0);
-      expect(res.documents.some((d) => d.id.includes("yoga_sutras_1.2"))).toBe(true);
+      expect(res.documents.some((d) => d.id?.includes("yoga_sutras_1.2"))).toBe(true);
     });
 
     it("grounds Narada Bhakti Sutras inquiries with dense embeddings", async () => {

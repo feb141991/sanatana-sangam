@@ -30,6 +30,7 @@ import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 import NextPracticeCard from '@/components/home/NextPracticeCard';
 import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
+import MorningBlessingCard from '@/components/home/MorningBlessingCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
 import ScriptureCorrectionModal from '@/components/ScriptureCorrectionModal';
 import Divine3DDiyaSection from './Divine3DDiyaSection';
@@ -1044,6 +1045,16 @@ export function HeroSection({
 
       {/* ── Interactive 3D Flame Light Sanctuary ── */}
       <Divine3DDiyaSection />
+
+      {/* ── Pratah Smaran / Morning Blessing card ── */}
+      <MorningBlessingCard
+        tithiName={panchang?.tithi}
+        nakshatraName={panchang?.nakshatra}
+        cityName={city}
+        tradition={tradition}
+        verseSnippet={dailyText?.meaning}
+        timezone={timezone}
+      />
 
       {/* ── Brahma Muhurta card ── */}
       {panchang?.brahmaMuhurta && panchang?.sunrise && (
