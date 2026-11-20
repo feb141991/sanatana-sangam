@@ -15,29 +15,30 @@ if current_dir not in sys.path:
 from ingest_batch import ingest_batch
 
 BATCHES = [
-    # Kanda 1: Bala Kanda (75 cantos)
+    # Kanda 1: Bala Kanda (75 cantos, max sarga 77)
     (1, 1, 25),
     (1, 26, 50),
-    (1, 51, 75),
-    # Kanda 2: Ayodhya Kanda (119 cantos)
+    (1, 51, 80),
+    # Kanda 2: Ayodhya Kanda (119 cantos, max sarga 119)
     (2, 1, 30),
     (2, 31, 60),
     (2, 61, 90),
-    (2, 91, 119),
-    # Kanda 3: Aranya Kanda (76 cantos)
+    (2, 91, 125),
+    # Kanda 3: Aranya Kanda (76 cantos, max sarga 76)
     (3, 1, 30),
     (3, 31, 60),
-    (3, 61, 76),
-    # Kanda 4: Kishkindha Kanda (67 cantos)
+    (3, 61, 80),
+    # Kanda 4: Kishkindha Kanda (67 cantos, max sarga 67)
     (4, 1, 35),
-    (4, 36, 67),
-    # Kanda 5: Sundara Kanda (55 cantos)
+    (4, 36, 75),
+    # Kanda 5: Sundara Kanda (55 cantos, max sarga 66)
     (5, 1, 30),
-    (5, 31, 55),
-    # Kanda 6: Yuddha Kanda (101 cantos)
+    (5, 31, 75),
+    # Kanda 6: Yuddha Kanda (101 cantos, max sarga 130)
     (6, 1, 35),
     (6, 36, 70),
-    (6, 71, 101),
+    (6, 71, 100),
+    (6, 101, 135),
 ]
 
 

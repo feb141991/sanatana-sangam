@@ -88,6 +88,12 @@ def parse_all_cantos() -> Dict[int, List[Dict[str, Any]]]:
             if start_body < b_pos < end_body:
                 end_body = b_pos
 
+        # Check if appendices, footnotes or end notes start before next canto
+        for marker in ["\nAPPENDIX", "\nFOOTNOTES", "\nADDITIONAL NOTES", "*** END OF"]:
+            m_pos = clean_text.find(marker, start_body)
+            if m_pos != -1 and m_pos < end_body:
+                end_body = m_pos
+
         c_body = clean_text[start_body:end_body].strip()
         # Strip leading "OM."
         c_body = re.sub(r"^\s*OM\.\s*", "", c_body).strip()
