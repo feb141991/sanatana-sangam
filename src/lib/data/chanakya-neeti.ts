@@ -256,13 +256,13 @@ export const CHANAKYA_ENTRIES: LibraryEntry[] = [
   {
     id: 'chanakya-ch5-4',
     title: 'Chanakya Neeti — Chapter 5, Sutra 4',
-    source: 'Chanakya Neeti',
-    original: 'एकेन शुष्कवृक्षेण दह्यमानेन वह्निना',
-    transliteration: 'Romanized transliteration of the Chanakya sutra.',
-    meaning: 'A profound lesson on conduct and life wisdom derived from the teachings of Chanakya.',
+    source: 'Chanakya Neeti 3.16',
+    original: 'एकेन शुष्कवृक्षेण दह्यमानेन वह्निना ।\nदह्यते तद्वनं सर्वं कुपुत्रेण कुलं यथा ॥',
+    transliteration: 'ekena śuṣka-vṛkṣeṇa dahyamānena vahninā\ndahyate tad vanaṁ sarvaṁ kuputreṇa kulaṁ yathā',
+    meaning: 'Just as an entire forest is burned down when a single withered dry tree catches fire, so too is an entire lineage brought to ruin by one degenerate descendant.',
     tradition: 'hindu',
     category: 'chanakya',
-    tags: ['chanakya-neeti', 'leadership'],
+    tags: ['chanakya-neeti', 'family', 'conduct'],
     attribution: 'Chanakya'
   },
   {

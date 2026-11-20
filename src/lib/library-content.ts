@@ -1278,6 +1278,7 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   ...VEDIC_SUKTA_ENTRIES,
   // Shaiva
   ...SHAIVA_ENTRIES,
+  ...SHIVA_PURANA_ENTRIES,
   // Shakta
   ...SHAKTA_ENTRIES,
   // Stotras & Mantras (mixed)
@@ -1365,7 +1366,7 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   { id: 'yoga_sutra',         title: 'Yoga Sutras',           emoji: '🧘', tradition: 'hindu',    category: 'yoga_sutra',         desc: 'Patanjali\'s 196 sutras — the science of the mind and liberation',         count: YOGA_SUTRA_ENTRIES.length },
   { id: 'chanakya',           title: 'Chanakya Niti',         emoji: '⚖️', tradition: 'hindu',    category: 'chanakya',           desc: 'Ancient wisdom on governance, ethics & practical living',                   count: CHANAKYA_ENTRIES.length },
   // ── Shaiva ───────────────────────────────────────────────────────────────────
-  { id: 'shiva_purana',       title: 'Shaiva Scriptures',     emoji: '🌙', tradition: 'hindu',    category: 'shiva_purana',       desc: 'Rudrashtakam, Lingashtakam, Mahimna Stotram & Panchakshara',               count: SHAIVA_ENTRIES.length },
+  { id: 'shiva_purana',       title: 'Shaiva Scriptures',     emoji: '🌙', tradition: 'hindu',    category: 'shiva_purana',       desc: 'Rudrashtakam, Lingashtakam, Mahimna Stotram & Panchakshara',               count: SHAIVA_ENTRIES.length + SHIVA_PURANA_ENTRIES.length },
   // ── Shakta ───────────────────────────────────────────────────────────────────
   { id: 'shakta',             title: 'Shakta Scriptures',     emoji: '🌺', tradition: 'hindu',    category: 'shakta',             desc: 'Devi Mahatmyam, Lalita Sahasranama & hymns to the Divine Mother',          count: SHAKTA_ENTRIES.length },
   // ── Mixed Stotras ─────────────────────────────────────────────────────────────
