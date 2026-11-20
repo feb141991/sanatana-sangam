@@ -2,6 +2,7 @@ import {
   OFFICIAL_EMAILS,
   OFFICIAL_ENTITY_NAME,
   OFFICIAL_SOCIAL_LINKS,
+  OFFICIAL_STORE_LINKS,
 } from "@/config/official-links";
 import React from 'react';
 import type { GeoModel } from '@/lib/seo/geo-model';
@@ -67,6 +68,8 @@ export function GeoArticleJsonLd({ geo, url }: { geo: GeoModel; url: string }) {
       OFFICIAL_SOCIAL_LINKS.linkedin,
       OFFICIAL_SOCIAL_LINKS.instagram,
       OFFICIAL_SOCIAL_LINKS.facebook,
+      "https://apps.apple.com/app/id6793055966",
+      OFFICIAL_STORE_LINKS.googlePlayCanonical,
     ],
   };
 
@@ -159,6 +162,7 @@ export function OrganizationJsonLd() {
           OFFICIAL_SOCIAL_LINKS.instagram,
           OFFICIAL_SOCIAL_LINKS.facebook,
           "https://apps.apple.com/app/id6793055966",
+          OFFICIAL_STORE_LINKS.googlePlayCanonical,
         ],
         "contactPoint": [
           {
@@ -202,6 +206,11 @@ export function OrganizationJsonLd() {
         "applicationCategory": "LifestyleApplication",
         "description": "Daily spiritual companion featuring astronomy-backed Panchang, festival calendars, Bhakti scripture library, Japa mala, and Pathshala learning.",
         "installUrl": "https://www.shoonaya.com/get",
+        "downloadUrl": OFFICIAL_STORE_LINKS.googlePlayCanonical,
+        "sameAs": [
+          "https://apps.apple.com/app/id6793055966",
+          OFFICIAL_STORE_LINKS.googlePlayCanonical,
+        ],
         "publisher": { "@id": "https://www.shoonaya.com/#organization" },
       },
       {

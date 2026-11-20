@@ -1,5 +1,5 @@
 import { EMBED_POPULAR_CITIES, type EmbedCityPreset } from '@/lib/embed/cities';
-import { calculatePanchang } from '@/lib/panchang';
+import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import { unstable_cache } from 'next/cache';
 import {
   calculateObservancesForYearCorrected,
@@ -13,6 +13,12 @@ export interface FestivalCityFacts {
   panchang: ReturnType<typeof calculatePanchang>;
   calculationLabel: string;
 }
+
+export const FESTIVAL_DATE_LOCATION = {
+  lat: REFERENCE_LOCATION_UJJAIN.lat,
+  lon: REFERENCE_LOCATION_UJJAIN.lon,
+  tz: REFERENCE_LOCATION_UJJAIN.tz,
+} as const;
 
 function normalizeCitySlug(value: string): string {
   return decodeURIComponent(value).trim().toLowerCase().replace(/\s+/g, '-');
@@ -55,7 +61,7 @@ function computeFestivalCityFacts(
 
   const location = { lat: city.lat, lon: city.lon, tz: city.tz };
   const festivalDate = occurrenceDate(
-    calculateObservancesForYearCorrected(year, location),
+    calculateObservancesForYearCorrected(year, FESTIVAL_DATE_LOCATION),
     festivalSlug,
   );
   const panchangDate = festivalDate ?? currentCivilDate(city.tz);
@@ -65,7 +71,7 @@ function computeFestivalCityFacts(
     year,
     festivalDate,
     panchang: calculatePanchang(civilNoon(panchangDate), city.lat, city.lon, city.tz),
-    calculationLabel: 'Corrected Shoonaya engine · local coordinates · local IANA timezone',
+    calculationLabel: 'Festival date: Ujjain reference set · timings: local coordinates and IANA timezone',
   };
 }
 

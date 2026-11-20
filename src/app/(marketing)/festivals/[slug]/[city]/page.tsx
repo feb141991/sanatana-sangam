@@ -79,6 +79,7 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
     year,
     locationFacts: {
       festivalDate: facts.festivalDate,
+      festivalDateBasis: 'Ujjain reference set; local date derivation is deferred',
       timezone: facts.city.tz,
       coordinates: formatCityCoordinates(facts.city),
       sunrise: facts.panchang.sunrise,
@@ -159,7 +160,7 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Fact label="Calculated date" value={facts.festivalDate ?? 'No engine date available'} />
+              <Fact label="Reference date" value={facts.festivalDate ?? 'No reference date available'} />
               <Fact label="Local sunrise" value={facts.panchang.sunrise} />
               <Fact label="Local sunset" value={facts.panchang.sunset} />
               <Fact label="Tithi at local noon" value={`${facts.panchang.paksha} ${facts.panchang.tithi}`} />
@@ -209,8 +210,8 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
             </div>
             <p className="text-sm leading-relaxed text-[var(--text-muted-warm)]">
               {facts.festivalDate
-                ? `${campaign.astronomicalTimingExplanation} For ${facts.city.name}, the corrected engine resolves this observance to ${facts.festivalDate}; the local sunrise is ${facts.panchang.sunrise} and sunset is ${facts.panchang.sunset} (${facts.city.tz}).`
-                : `No computed date is published for ${campaign.festivalName} in ${facts.city.name} for ${year}. The page does not substitute a generic Indian date.`}
+                ? `${campaign.astronomicalTimingExplanation} Shoonaya currently publishes the Ujjain reference date (${facts.festivalDate}) and shows the local astronomical context for ${facts.city.name}: sunrise ${facts.panchang.sunrise} and sunset ${facts.panchang.sunset} (${facts.city.tz}). Local civil-date derivation is deferred until stored astronomical instants are available.`
+                : `No reference date is published for ${campaign.festivalName} in ${year}. The page does not substitute a generic Indian date.`}
             </p>
           </div>
 

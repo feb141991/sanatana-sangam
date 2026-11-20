@@ -44,6 +44,7 @@ export interface FestivalSeoPageRequest {
   year?: number;
   locationFacts?: {
     festivalDate: string | null;
+    festivalDateBasis: string;
     timezone: string;
     coordinates: string;
     sunrise: string;
