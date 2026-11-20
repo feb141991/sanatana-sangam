@@ -1275,6 +1275,7 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   // Upanishads & Vedas
   ...UPANISHAD_ENTRIES,
   ...VEDA_ENTRIES,
+  ...VEDIC_SUKTA_ENTRIES,
   // Shaiva
   ...SHAIVA_ENTRIES,
   // Shakta
@@ -1359,7 +1360,7 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   { id: 'ramcharitmanas',     title: 'Ramcharitmanas',        emoji: '🪔', tradition: 'hindu',    category: 'ramcharitmanas',     desc: 'Tulsidas\' devotional retelling — Hanuman Chalisa, dohas & chaupais',       count: RAMCHARITMANAS_ENTRIES.length },
   // ── Vedic & Upanishadic ───────────────────────────────────────────────────────
   { id: 'upanishad',          title: 'Upanishads',            emoji: '📿', tradition: 'hindu',    category: 'upanishad',          desc: 'The wisdom texts — Brahman, Atman & the Mahavakyas',                       count: UPANISHAD_ENTRIES.length },
-  { id: 'veda',               title: 'Vedic Hymns',           emoji: '🔥', tradition: 'hindu',    category: 'veda',               desc: 'Purusha Sukta, Nasadiya, Shanti mantras & Vedic prayers',                  count: VEDA_ENTRIES.length },
+  { id: 'veda',               title: 'Vedic Hymns',           emoji: '🔥', tradition: 'hindu',    category: 'veda',               desc: 'Purusha Sukta, Nasadiya, Shanti mantras & Vedic prayers',                  count: VEDA_ENTRIES.length + VEDIC_SUKTA_ENTRIES.length },
   // ── Yoga & Niti ───────────────────────────────────────────────────────────────
   { id: 'yoga_sutra',         title: 'Yoga Sutras',           emoji: '🧘', tradition: 'hindu',    category: 'yoga_sutra',         desc: 'Patanjali\'s 196 sutras — the science of the mind and liberation',         count: YOGA_SUTRA_ENTRIES.length },
   { id: 'chanakya',           title: 'Chanakya Niti',         emoji: '⚖️', tradition: 'hindu',    category: 'chanakya',           desc: 'Ancient wisdom on governance, ethics & practical living',                   count: CHANAKYA_ENTRIES.length },
