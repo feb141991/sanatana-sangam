@@ -162,6 +162,19 @@ export const SEED_PATHS: PathshalaPath[] = [
     total_lessons: 25,
     duration_days: 25,
   },
+  {
+    id: 'ramcharitmanas-sundar-kand',
+    title: 'Sundar Kand — The Complete Paath',
+    title_hi: 'सुन्दरकाण्ड — सम्पूर्ण पाठ',
+    title_pa: 'ਸੁੰਦਰਕਾਂਡ — ਸੰਪੂਰਨ ਪਾਠ',
+    description: 'All 60 Dohas and Chaupais of Sundar Kand: Hanumān\'s ocean leap, the burning of Lanka, and Vibhīshaṇa\'s refuge.',
+    description_hi: 'सुन्दरकाण्ड के सभी 60 दोहे और चौपाइयां: हनुमान जी का समुद्र लांघना, लंका दहन, और विभीषण शरणागति।',
+    description_pa: 'ਸੁੰਦਰਕਾਂਡ ਦੇ ਸਾਰੇ 60 ਦੋਹੇ ਅਤੇ ਚੌਪਾਈਆਂ: ਹਨੂਮਾਨ ਜੀ ਦਾ ਸਮੁੰਦਰ ਪਾਰ ਕਰਨਾ, ਲੰਕਾ ਦਹਿਨ, ਅਤੇ ਵਿਭੀਸ਼ਣ ਸ਼ਰਣਾਗਤੀ।',
+    difficulty: 'intermediate',
+    tradition: 'hindu',
+    total_lessons: 15,
+    duration_days: 30,
+  },
 
   // ── SIKH PATHS (11) ──────────────────────────────────────────────────────────
   {

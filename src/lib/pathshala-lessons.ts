@@ -166,6 +166,36 @@ export function getPathLessons(pathId: string): Lesson[] {
       return result.length > 0 ? result : [{ title: 'Ramcharitmanas', entries: ram.slice(0, 4) }];
     }
 
+    case 'ramcharitmanas-sundar-kand': {
+      const sundarEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tags.includes('sundarkand') && e.id.startsWith('rch-sundar-canto-'));
+      const result: Lesson[] = [];
+      const labels = [
+        'Dohas 1–4: Hanumān’s Leap & Lankā Arrival',
+        'Dohas 5–8: Exploring Lankā & Meeting Vibhīshaṇa',
+        'Dohas 9–12: Ashoka Vātikā & Mother Sita',
+        'Dohas 13–16: Meeting Mother Sita & Consolation',
+        'Dohas 17–20: Ashoka Grove Waste & Capture',
+        'Dohas 21–24: Fearless Stand in Ravaṇa’s Court',
+        'Dohas 25–28: Lanka Dahan (The Burning of Lanka)',
+        'Dohas 29–32: Return Leap & Vānara Joy',
+        'Dohas 33–36: Delivering Chūḍāmaṇi to Sri Rama',
+        'Dohas 37–40: March to Seashore & War Council',
+        'Dohas 41–44: Vibhīshaṇa’s Refuge & Rama’s Vow',
+        'Dohas 45–48: Selfless Surrender & Royal Coronation',
+        'Dohas 49–52: Ocean Meditation & Haughty Letters',
+        'Dohas 53–56: Shuka’s Warning & Mandodarī’s Counsel',
+        'Dohas 57–60: Divine Wrath, Ocean Submission & Bridge',
+      ];
+      for (let i = 0; i < sundarEntries.length; i += 4) {
+        const idx = Math.floor(i / 4);
+        result.push({
+          title: labels[idx] ?? `Sundar Kand — Part ${idx + 1}`,
+          entries: sundarEntries.slice(i, i + 4),
+        });
+      }
+      return result.length > 0 ? result : [{ title: 'Sundar Kand', entries: sundarEntries.slice(0, 4) }];
+    }
+
     // ── Sikh Paths ──────────────────────────────────────────────────────────────
 
     case 'japji-sahib-deep': {
