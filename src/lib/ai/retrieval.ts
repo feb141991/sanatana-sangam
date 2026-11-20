@@ -1431,6 +1431,32 @@ PramanaRetrieverSelector.register('valmiki_ramayana_sparse', new PramanaGenericE
   'Valmiki Ramayana'
 ));
 
+const ramcharitmanasManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'tulsidas_ramcharitmanas',
+  sourceName: 'Goswami Tulsidas Ramcharitmanas',
+  sourceClass: 'translation',
+  tradition: 'Sanatana Dharma',
+  maxChapters: 7,
+  fileNames: [
+    'tulsidas_ramcharitmanas_sundara.json',
+  ],
+});
+const ramcharitmanasDenseRetriever = new PramanaDenseEmbeddingRetriever(
+  ramcharitmanasManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/tulsidas_ramcharitmanas_index_dense.json'),
+  'Goswami Tulsidas Ramcharitmanas',
+  'Sanatana Dharma',
+  'translation'
+);
+PramanaRetrieverSelector.register('tulsidas_ramcharitmanas', ramcharitmanasDenseRetriever);
+PramanaRetrieverSelector.register('tulsidas_ramcharitmanas_dense', ramcharitmanasDenseRetriever);
+PramanaRetrieverSelector.register('tulsidas_ramcharitmanas_sparse', new PramanaGenericEmbeddingRetriever(
+  ramcharitmanasManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/tulsidas_ramcharitmanas_index.json'),
+  'Sanatana Dharma',
+  'Goswami Tulsidas Ramcharitmanas'
+));
+
 const yogaManifestRetriever = new PramanaManifestRetriever({
   prefix: 'yoga_sutras',
   sourceName: 'Patanjali Yoga Sutras',

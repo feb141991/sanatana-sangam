@@ -316,7 +316,7 @@ async function searchScriptures(query: string, traditionFilter?: string | null):
     }
   }
 
-  const additionalCorpora = ['valmiki_ramayana', 'yoga_sutras', 'jyotish_classics', 'bhakti_sutras', 'vedic_suktas_stotras'];
+  const additionalCorpora = ['valmiki_ramayana', 'tulsidas_ramcharitmanas', 'yoga_sutras', 'jyotish_classics', 'bhakti_sutras', 'vedic_suktas_stotras'];
   const queryTokens = tokenize(query);
   const seenTexts = new Set<string>();
 

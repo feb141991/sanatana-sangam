@@ -452,6 +452,65 @@ async function buildRamayana(embedder: any) {
   };
 }
 
+async function buildRamcharitmanas(embedder: any) {
+  const pending: { meta: Omit<DenseDoc, 'vector'>; text: string }[] = [];
+  const manifestFiles = [
+    'tulsidas_ramcharitmanas_sundara.json',
+  ];
+
+  for (const file of manifestFiles) {
+    const filePath = path.join(MANIFESTS_DIR, file);
+    if (!fs.existsSync(filePath)) continue;
+    const manifest = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const docId = manifest.doc_id ?? file.replace(/\.json$/, '');
+    const kandaTitle = manifest.title?.replace('Ramcharitmanas — ', '') || file.replace('tulsidas_ramcharitmanas_', '').replace('.json', '');
+
+    for (const verse of manifest.content ?? []) {
+      const ref: string = verse.ref ?? '';
+      const sanskrit: string = verse.sanskrit ?? '';
+      const transliteration: string = verse.transliteration ?? '';
+      const text: string = verse.text ?? verse.translation ?? '';
+      const chapterPart = ref.split('.')[0];
+      const chapter = /^\d+$/.test(chapterPart) ? parseInt(chapterPart, 10) : 5;
+
+      pending.push({
+        meta: {
+          id: `${docId}_${ref}`,
+          ref,
+          chapter,
+          sanskrit,
+          transliteration,
+          text,
+          source_name: 'Goswami Tulsidas Ramcharitmanas',
+          source_class: verse.source_class || 'translation',
+          rights_status: verse.rights_status || 'public_domain',
+        },
+        text: `Ramcharitmanas ${kandaTitle} ${ref}. ${text.trim()}`,
+      });
+    }
+  }
+
+  console.log(`Ramcharitmanas: embedding ${pending.length} verses from ${manifestFiles.length} manifests...`);
+  const documents = await embedAll(embedder, pending);
+
+  return {
+    metadata: {
+      manifest_count: manifestFiles.length,
+      document_count: documents.length,
+      scale_readiness: documents.length > 50 ? 'Production-scale' : 'Sample-scale',
+      embedding_model: EMBEDDING_MODEL,
+      embedding_dim: EMBEDDING_DIM,
+      source_class: 'translation',
+      rights_status: 'public_domain',
+      review_status: 'source_audit_approved',
+      is_live_in_app: true,
+      activation_status: 'active',
+      built_at: new Date().toISOString(),
+    },
+    documents,
+  };
+}
+
 async function buildSingleManifestCorpus(
   embedder: any,
   manifestFileName: string,
@@ -571,6 +630,12 @@ async function main() {
     const ramayanaIndex = await buildRamayana(embedder);
     fs.writeFileSync(path.join(CORPUS_DIR, 'valmiki_ramayana_index_dense.json'), JSON.stringify(ramayanaIndex, null, 2), 'utf-8');
     console.log(`Wrote valmiki_ramayana_index_dense.json (${ramayanaIndex.documents.length} docs)\n`);
+  }
+
+  if (shouldBuild('tulsidas_ramcharitmanas', 'tulsidas_ramcharitmanas_index_dense.json')) {
+    const ramcharitmanasIndex = await buildRamcharitmanas(embedder);
+    fs.writeFileSync(path.join(CORPUS_DIR, 'tulsidas_ramcharitmanas_index_dense.json'), JSON.stringify(ramcharitmanasIndex, null, 2), 'utf-8');
+    console.log(`Wrote tulsidas_ramcharitmanas_index_dense.json (${ramcharitmanasIndex.documents.length} docs)\n`);
   }
 
   const regionalCorpora: [string, string, string][] = [

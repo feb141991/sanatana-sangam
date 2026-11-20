@@ -97,6 +97,17 @@ describe('Pramana Semantic Search', () => {
     expect(top.title).toContain('Ramayana');
   });
 
+  it('searches Goswami Tulsidas Ramcharitmanas canonical passages', async () => {
+    const res = await performSemanticPramanaSearch({
+      query: 'Hanuman ocean crossing Mainaka Lanka',
+      category: 'scripture',
+    });
+
+    expect(res.results.length).toBeGreaterThan(0);
+    const hasRamcharitmanas = res.results.some((r) => r.source.includes('Ramcharitmanas') || r.title.includes('Ramcharitmanas'));
+    expect(hasRamcharitmanas).toBe(true);
+  });
+
   it('honors result limit', async () => {
     const res = await performSemanticPramanaSearch({
       query: 'dharma peace',
