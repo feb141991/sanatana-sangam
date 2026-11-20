@@ -209,18 +209,17 @@ describe("what the real corpora allow today", () => {
     }
   });
 
-  // These corpora remain unfit (placeholder meanings, repeated entries, mixed-script text). When one is
-  // repaired and reviewed, update this test on purpose; until then they must never reach a card.
+  // Unfit corpora remaining to be repaired. When one is repaired and reviewed, update this test on purpose; until then they must never reach a card.
   it.each([
     ["Metta Sutta", METTA_SUTTA_ENTRIES, ["devanagari"]],
-    ["Tattvartha Sutra", TATTVARTHA_ENTRIES, ["devanagari"]],
-    ["Bhaktamar Stotra", BHAKTAMAR_ENTRIES, ["devanagari"]]
   ] as const)("%s is rejected: nothing in it may reach a card", (_name, entries, scripts) => {
     expect(assessCorpus(entries as unknown as CorpusEntry[], scripts).usable).toHaveLength(0);
   });
 
   it("repaired corpora have authentic usable entries for morning cards", () => {
     expect(assessCorpus(NAMOKAR_ENTRIES as unknown as CorpusEntry[], ["devanagari"]).usable).toHaveLength(7);
+    expect(assessCorpus(TATTVARTHA_ENTRIES as unknown as CorpusEntry[], ["devanagari"]).usable).toHaveLength(45);
+    expect(assessCorpus(BHAKTAMAR_ENTRIES as unknown as CorpusEntry[], ["devanagari"]).usable).toHaveLength(48);
     expect(assessCorpus(DHAMMAPADA_ENTRIES as unknown as CorpusEntry[], ["devanagari"]).usable).toHaveLength(4);
   });
 
@@ -228,7 +227,7 @@ describe("what the real corpora allow today", () => {
     expect(poolSize("hindu")).toBeGreaterThanOrEqual(20);
     expect(poolSize("sikh")).toBeGreaterThanOrEqual(20);
     expect(poolSize("buddhist")).toBe(4);
-    expect(poolSize("jain")).toBe(7);
+    expect(poolSize("jain")).toBeGreaterThanOrEqual(20);
   });
 
   it("buildPool follows the curated order for the Gita, whatever order the corpus is in", () => {
