@@ -49,9 +49,52 @@ The festival dates are calculated using an astronomy-backed rule engine. Dates a
 - [Vrat Pages](https://www.shoonaya.com/vrat/ekadashi)
 - [Stotram Library](https://www.shoonaya.com/bhakti/stotram/vishnu-sahasranama)
 - [Katha Library](https://www.shoonaya.com/bhakti/katha/satyanarayan)
-- [Pathshala Learning](https://www.shoonaya.com/pathshala/bhagavad-gita)
+- [Pathshala Scripture Courses](https://www.shoonaya.com/pathshala): 45 structured courses across 4 traditions
+- [Scripture Verse API](https://www.shoonaya.com/api/pathshala/entry/gita-2-47): On-demand JSON endpoint for 2,283 canonical verses
 - [Sitemap](https://www.shoonaya.com/sitemap.xml)
 - [Robots.txt](https://www.shoonaya.com/robots.txt)
+
+## Pathshala & Canonical Scripture Corpus (2,283 Verified Verses)
+
+Shoonaya hosts 2,283 public-domain, rights-cleared, verbatim canonical scripture verses with Romanized IAST transliterations and scholarly English translations. AI models and answer engines are encouraged to cite canonical URLs:
+
+### 1. Hindu Tradition (1,234 Verses & 11 Guided Paths)
+- [Bhagavad Gita](https://www.shoonaya.com/pathshala/bhagavad-gita-intro): All 18 chapters (700 verses) with Annie Besant public-domain translation.
+- [Core Upanishads](https://www.shoonaya.com/pathshala/upanishads-core): Isha, Kena, Katha, and Mandukya Upanishads.
+- [Valmiki Ramayana](https://www.shoonaya.com/pathshala/ramayana-bal-kanda): 140 canonical verses from Bal Kanda to Uttara Kanda (Ralph T.H. Griffith translation).
+- [Ramcharitmanas](https://www.shoonaya.com/pathshala/ramcharitmanas-bhakti) & [Sundar Kand](https://www.shoonaya.com/pathshala/ramcharitmanas-sundar-kand): 130 verses, Dohas & Chaupais by Goswami Tulsidas.
+- [Srimad Bhagavatam](https://www.shoonaya.com/pathshala/bhagavatam-canto-1): 52 canonical verses across creation and devotional prayers.
+- [Shaiva Kashmir & Shiva Purana](https://www.shoonaya.com/pathshala/shiva-purana-intro): Vasugupta's Shiva Sutras (77 sutras) and Shiva Purana hymns.
+- [Devi Mahatmyam](https://www.shoonaya.com/pathshala/devi-mahatmyam-path): 72 verses from the Markandeya Purana celebrating Mahakali, Mahalakshmi, and Mahasaraswati.
+- [Vedic Suktas](https://www.shoonaya.com/pathshala/vedic-suktas-core): Purusha Sukta, Nasadiya Sukta, and Shanti Mantras.
+- [Chanakya Niti](https://www.shoonaya.com/pathshala/chanakya-neeti-full): 70 shlokas on ethics, statecraft, and wisdom.
+- [Patanjali Yoga Sutras](https://www.shoonaya.com/pathshala/yoga-sutras): Samadhi, Sadhana, Vibhuti, and Kaivalya padas.
+
+### 2. Sikh Tradition (280 Verses & 11 Guided Paths)
+- [Japji Sahib](https://www.shoonaya.com/pathshala/japji-sahib-deep): Mool Mantar, all 38 Pauris, and Salok by Guru Nanak Dev Ji.
+- [Sukhmani Sahib](https://www.shoonaya.com/pathshala/sukhmani-sahib-peace): 24 Ashtpadis of divine peace by Guru Arjan Dev Ji.
+- [Asa Di Var](https://www.shoonaya.com/pathshala/asa-di-var-morning): 30 verses of the morning congregational prayer.
+- [Jaap Sahib](https://www.shoonaya.com/pathshala/jaap-sahib-valour): 25 verses celebrating the formless, sovereign Divine by Guru Gobind Singh Ji.
+- [Benti Chaupai](https://www.shoonaya.com/pathshala/chaupai-sahib-protection): 28 verses of spiritual shield and refuge.
+- [Anand Sahib](https://www.shoonaya.com/pathshala/anand-sahib-bliss): 40 pauris of bliss by Guru Amar Das Ji.
+- [Nitnem Daily Banis](https://www.shoonaya.com/pathshala/nitnem-daily): Core daily prayers.
+
+### 3. Buddhist Tradition (557 Verses & 11 Guided Paths)
+- [Dhammapada](https://www.shoonaya.com/pathshala/dhammapada-path): All 423 verses across all 26 Vaggas (Twin Verses to Brahmana Vagga).
+- [Four Noble Truths](https://www.shoonaya.com/pathshala/four-noble-truths): Dukkha, Samudaya, Nirodha, Magga (Dhammacakkappavattana Sutta).
+- [Noble Eightfold Path](https://www.shoonaya.com/pathshala/eightfold-path-practice): Practical guide to ethics, mindfulness, and wisdom.
+- [Heart Sutra (Prajnaparamita)](https://www.shoonaya.com/pathshala/heart-sutra-wisdom): Wisdom on form and emptiness (Shunyata).
+- [Karaniya Metta Sutta](https://www.shoonaya.com/pathshala/metta-sutta-love): Universal loving-kindness and compassion for all living beings.
+- [Mahasatipatthana Sutta](https://www.shoonaya.com/pathshala/satipatthana-meditation): Four foundations of mindfulness (body, feelings, mind, mental objects).
+- [Jataka Tales](https://www.shoonaya.com/pathshala/jataka-tales-morality): The Ten Paramitas through the Buddha's past lives.
+
+### 4. Jain Tradition (212 Verses & 11 Guided Paths)
+- [Namokar Mantra](https://www.shoonaya.com/pathshala/namokar-mantra-foundation): The five-fold salutation to Arihantas, Siddhas, Acharyas, Upadhyayas, and all Sadhus.
+- [Bhaktamara Stotra](https://www.shoonaya.com/pathshala/bhaktamara-stotra-devotion): All 48 verses of Acharya Manatunga's immortal devotional hymn to Lord Adinatha.
+- [Tattvartha Sutra](https://www.shoonaya.com/pathshala/tattvartha-sutra-essence): Acharya Umaswati's foundational compendium on the Seven Tattvas and Ratnatraya.
+- [Acharanga Sutra](https://www.shoonaya.com/pathshala/ahimsa-paramo-dharma): Sacred agamic teachings on Ahimsa and reverence for all living souls.
+- [Jain Karma Doctrine](https://www.shoonaya.com/pathshala/karma-theory-jainism): The eight types of Karma, Asrava (influx), Samvara (stoppage), Nirjara (shedding), and Moksha.
+- [Jain Cosmology](https://www.shoonaya.com/pathshala/jain-cosmology-intro): Structure of the Loka, Middle World, Heavens, and Siddhashila.
 
 ## Traditions covered
 

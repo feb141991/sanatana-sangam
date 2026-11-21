@@ -31,7 +31,7 @@ describe('sitemap database pages', () => {
       { url: 'https://www.shoonaya.com/beta/android' },
       { url: 'https://www.shoonaya.com/blog' },
       { url: 'https://www.shoonaya.com/site-map' },
-      { url: 'https://www.shoonaya.com/pathshala/bhagavad-gita-intro' },
+      { url: 'https://www.shoonaya.com/pathshala/saved' },
       { url: 'https://www.shoonaya.com/name/prince-abc12' },
       { url: 'https://www.shoonaya.com/bhakti/katha/katha-sujata' },
     ];

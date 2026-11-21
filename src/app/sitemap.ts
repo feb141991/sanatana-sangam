@@ -10,6 +10,7 @@ import { VRAT_DATABASE } from "@/lib/vrat-data";
 import { STOTRAMS } from "@/lib/stotrams";
 import { ALL_KATHAS, getCanonicalKathaId } from "@/lib/katha-library";
 import { getPublishableFestivalSlugs } from "@/lib/festival-data";
+import { SEED_PATHS } from "@/lib/pathshala-paths";
 import {
   deduplicateSitemap,
   filterSitemapIndexableRoutes,
@@ -213,6 +214,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  const pathshalaRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/pathshala`,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    ...SEED_PATHS.map((path) => ({
+      url: `${BASE_URL}/pathshala/${path.id}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
+    })),
+  ];
+
   let discoverRoutes: MetadataRoute.Sitemap = [];
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -254,6 +268,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const rawEntries: MetadataRoute.Sitemap = [
     ...staticRoutes,
+    ...pathshalaRoutes,
     ...vratRoutes,
     ...stotramRoutes,
     ...kathaRoutes,

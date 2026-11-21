@@ -264,3 +264,58 @@ export function OrganizationJsonLd() {
   };
   return <JsonLd data={schema} />;
 }
+
+export function ScriptureCreativeWorkJsonLd({
+  title,
+  source,
+  original,
+  transliteration,
+  meaning,
+  attribution,
+  tradition,
+  url,
+}: {
+  title: string;
+  source: string;
+  original?: string;
+  transliteration?: string;
+  meaning: string;
+  attribution?: string;
+  tradition: string;
+  url: string;
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": title,
+    "headline": title,
+    "description": meaning.slice(0, 200),
+    "inLanguage": ["sa", "pi", "pra", "pa", "hi", "en"],
+    "genre": "Sacred Scripture",
+    "about": {
+      "@type": "Thing",
+      "name": tradition.charAt(0).toUpperCase() + tradition.slice(1) + " Dharma",
+    },
+    ...(attribution ? { "author": { "@type": "Person", "name": attribution } } : {}),
+    ...(source ? { "isPartOf": { "@type": "Book", "name": source } } : {}),
+    "text": [original, transliteration, meaning].filter(Boolean).join('\n\n'),
+    "url": url,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Shoonaya",
+      "url": "https://www.shoonaya.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.shoonaya.com/icons/icon-512x512.png"
+      },
+      "sameAs": [
+        OFFICIAL_SOCIAL_LINKS.linkedin,
+        OFFICIAL_SOCIAL_LINKS.instagram,
+        OFFICIAL_SOCIAL_LINKS.facebook,
+        "https://apps.apple.com/app/id6793055966",
+        OFFICIAL_STORE_LINKS.googlePlayCanonical,
+      ],
+    }
+  };
+  return <JsonLd data={schema} />;
+}

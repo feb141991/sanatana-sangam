@@ -33,7 +33,10 @@ export function filterSitemapIndexableRoutes(entries: MetadataRoute.Sitemap): Me
       pathname === '/beta/android' ||
       pathname === '/blog' ||
       pathname === '/site-map' ||
-      pathname.startsWith('/pathshala/') ||
+      pathname === '/pathshala/saved' ||
+      pathname === '/pathshala/insights' ||
+      pathname.endsWith('/lesson') ||
+      pathname.endsWith('/recite') ||
       pathname.startsWith('/name/')
     );
   });
