@@ -1,16 +1,160 @@
 {
   "corpus_id": "jain_kalpa_sutra",
   "doc_id": "kalpa_sutra_1",
-  "title": "Kalpa Sutra",
-  "source_name": "Bhadrabahu",
-  "language": "prakrit",
-  "tradition": "Jainism (Shvetambara)",
+  "title": "Kalpa Sutra of Bhadrabahu",
+  "source_name": "Bhadrabahu Svamin",
+  "language": "pra",
+  "tradition": "Jainism",
   "content": [
     {
       "ref": "1.1",
-      "original": "नमो अरिहंताणं",
-      "transliteration": "namo arihantāṇaṃ",
-      "text": "Obeisance to the Arihants (conquerors)."
+      "original": "नमो अरिहंताणं नमो सिद्धाणं नमो आयरियाणं ।\nनमो उवज्झायाणं नमो लोए सव्वसाहूणं ॥",
+      "transliteration": "namo arihaṃtāṇaṃ namo siddhāṇaṃ namo āyariyāṇaṃ | namo uvajjhāyāṇaṃ namo loe savvasāhūṇaṃ ||",
+      "text": "Obeisance to the Arihantas (conquerors); obeisance to the Siddhas (liberated souls); obeisance to the Acharyas (spiritual masters); obeisance to the Upadhyayas (teachers); obeisance to all the Sadhus (monks) in the world."
+    },
+    {
+      "ref": "1.2",
+      "original": "एसो पंचनमुक्कारो सव्वपावप्पणासणो ।\nमंगलाणं च सव्वेसिं पढमं हवइ मंगलं ॥",
+      "transliteration": "eso paṃcanamukkāro savvapāvappaṇāsaṇo | maṃgalāṇaṃ ca savvesiṃ paḍhamaṃ havai maṃgalaṃ ||",
+      "text": "This fivefold obeisance destroys all sins, and among all auspicious things it is the foremost auspicious blessing."
+    },
+    {
+      "ref": "1.3",
+      "original": "तेणं कालेणं तेणं समएणं समणे भगवं महावीरे विहरइ ।",
+      "transliteration": "teṇaṃ kāleṇaṃ teṇaṃ samaeṇaṃ samaṇe bhagavaṃ mahāvīre viharai |",
+      "text": "In that period, at that time, the Venerable Ascetic Mahavira lived and walked upon the earth, shedding the light of supreme liberation."
+    },
+    {
+      "ref": "1.4",
+      "original": "समणे भगवं महावीरे कासवगोत्तेणं, तस्स णं तओ नामधेज्जा एवं आहिज्जंति—तम्हा वद्धमाणो य समणो य महावीरो य ।",
+      "transliteration": "samaṇe bhagavaṃ mahāvīre kāsavagotteṇaṃ, tassa ṇaṃ tao nāmadhejjā evaṃ āhijjaṃti—tamhā vaddhamāṇo ya samaṇo ya mahāvīro ya |",
+      "text": "The Venerable Ascetic Mahavira belonged to the Kashyapa gotra. Three names were bestowed upon him: Vardhamana ('the prosperous'), Shramana ('the ascetic'), and Mahavira ('the great hero')."
+    },
+    {
+      "ref": "1.5",
+      "original": "तओ णं सा तिसला खत्तियाणी चउद्दस महासुविणे पासित्ताणं पडिबुद्धा ।",
+      "transliteration": "tao ṇaṃ sā tisalā khattiyāṇī cauddasa mahāsuviṇe pāsittāṇaṃ paḍibuddhā |",
+      "text": "Then Queen Trishala, resting in peaceful repose, beheld the fourteen great auspicious dreams and awoke in profound joy."
+    },
+    {
+      "ref": "1.6",
+      "original": "गय-वसह-सीह-अभिसेय-दाम-ससि-दिणयरं झसं कुंभं ।\nपउमसर-सागर-विमाण-भवण-रयणोच्चयं सिहिं च ॥",
+      "transliteration": "gaya-vasaha-sīha-abhiseya-dāma-sasi-diṇayaraṃ jhasaṃ kuṃbhaṃ | paumasara-sāgara-vimāṇa-bhavaṇa-rayaṇoccayaṃ sihiṃ ca ||",
+      "text": "The fourteen dreams were: a magnificent elephant, an auspicious bull, a fearless lion, Goddess Lakshmi anointed by elephants, a fragrant flower garland, the radiant full moon, the golden sun, a divine celestial flag, a vase of golden water, a lotus lake, the milky ocean, a celestial aerial abode (vimana), a heap of precious jewels, and a smokeless blazing fire."
+    },
+    {
+      "ref": "1.7",
+      "original": "एए सुविणे पासित्ता देवी परमविम्हिता जाया ।",
+      "transliteration": "ee suviṇe pāsittā devī paramavimhitā jāyā |",
+      "text": "Having beheld these fourteen dreams, the Queen was filled with wonder, and the royal palace resounded with divine joy."
+    },
+    {
+      "ref": "1.8",
+      "original": "सिद्धत्थेणं खत्तिएणं सुविणपाढगा सद्दावेत्ता पुच्छिया ।",
+      "transliteration": "siddhattheṇaṃ khattieṇaṃ suviṇapāḍhagā saddāvettā pucchiyā |",
+      "text": "King Siddhartha summoned the interpreters of dreams and inquired into the spiritual significance of the fourteen auspicious visions."
+    },
+    {
+      "ref": "1.9",
+      "original": "महापुरिसो जइ भविस्सइ, तित्थंकरे वा चक्कवट्टी वा भविस्सइ ।",
+      "transliteration": "mahāpuriso jai bhavissai, titthaṃkare vā cakkavaṭṭī vā bhavissai |",
+      "text": "The interpreters replied: 'A supreme personage will be born! He will either become a Universal Sovereign (Chakravartin) or a supreme Tirthankara, establishing the ford across the ocean of worldly existence.'"
+    },
+    {
+      "ref": "1.10",
+      "original": "तए णं समणे भगवं महावीरे नवण्हं मासाणं दसाण य राइंदियाणं विइकंताणं सुकुमालपाणिपाए जाओ ।",
+      "transliteration": "tae ṇaṃ samaṇe bhagavaṃ mahāvīre navaṇhaṃ māsāṇaṃ dasāṇa ya rāiṃdiyāṇaṃ viikaṃtāṇaṃ sukumālapāṇipāe jāo |",
+      "text": "After nine months and ten days, the Venerable Ascetic Mahavira was born, endowed with all auspicious marks and tender lotus-like limbs."
+    },
+    {
+      "ref": "1.11",
+      "original": "सकललोए आलोगो अहोसि, देवा देविंदा य महामहिमं करिसु ।",
+      "transliteration": "sakalaloe ālogo ahosi, devā deviṃdā ya mahāmahimaṃ karisu |",
+      "text": "A boundless spiritual light filled all the worlds, and the gods and Indras celebrated the grand birth festival (Janma Kalyanak) upon Mount Meru."
+    },
+    {
+      "ref": "1.12",
+      "original": "जाव जीवेण सह धम्मं पालइत्ता, तीसवत्थुसंमए संसारं परिच्चइत्ता दिक्खं पव्वइए ।",
+      "transliteration": "jāva jīveṇa saha dhammaṃ pālaittā, tīsavatthusaṃmae saṃsāraṃ pariccaittā dikkhaṃ pavvaie |",
+      "text": "Having lived thirty years as a prince, Mahavira renounced all worldly wealth, royal power, and palace splendors, and embraced the life of homeless asceticism (Diksha Kalyanak)."
+    },
+    {
+      "ref": "1.13",
+      "original": "अचेलगो हुत्वा समणे भगवं महावीरे बारस संवच्छराणि अणुकंपाए परीसहे सहइ ।",
+      "transliteration": "acelago hutvā samaṇe bhagavaṃ mahāvīre bārasa saṃvaccharāṇi aṇukaṃpāe parīsahe sahai |",
+      "text": "Renouncing all possessions and garments, for twelve years the Venerable Mahavira endured severe hardships, insults, cold, heat, and physical perils with absolute equanimity."
+    },
+    {
+      "ref": "1.14",
+      "original": "सदा समाहितो अकुतोभयो, ध्यानेन अकलुषो विहरइ ।",
+      "transliteration": "sadā samāhito akutobhayo, dhyānena akaluṣo viharai |",
+      "text": "Ever meditative, fearless, compassionate, and pure in heart, he harbored no enmity toward any living being."
+    },
+    {
+      "ref": "1.15",
+      "original": "जुम्भियगामस्स बाहिरियाए उज्जुवालियाए णईए तीरे सालोरुक्खस्स अहे केवलज्ञानं उप्पन्नं ।",
+      "transliteration": "jumbhiyagāmassa bāhiriyāe ujjuvāliyāe ṇaīe tīre sālorukkhassa ahe kevalajñānaṃ uppannaṃ |",
+      "text": "Outside the town of Jrimbhikagrama, on the banks of the river Rijupalika, beneath a sala tree, supreme, infinite, unexcelled omniscience (Kevala Jnana) arose within Him."
+    },
+    {
+      "ref": "1.16",
+      "original": "सकलभावाणं जाणए पासए सव्वन्नू सव्वदरिसी जाओ ।",
+      "transliteration": "sakalabhāvāṇaṃ jāṇae pāsae savvannū savvadarisī jāo |",
+      "text": "He became omniscient, all-perceiving, knowing and seeing the thoughts, lives, and modifications of all beings across all time."
+    },
+    {
+      "ref": "1.17",
+      "original": "चउव्विहस्स संघस्स पण्णवेत्ता—समणा, समणीओ, सावया, साविगाओ ।",
+      "transliteration": "cauvvihassa saṃghassa paṇṇavettā—samaṇā, samaṇīo, sāvayā, sāvigāo |",
+      "text": "He established the fourfold holy congregation: monks (sadhus), nuns (sadhvis), laymen (shravakas), and laywomen (shravikas)."
+    },
+    {
+      "ref": "1.18",
+      "original": "अहिंसासच्चअचौर्यब्रह्मचर्यापरिग्रहरूपं पंचमहाव्वयं उवदिसइ ।",
+      "transliteration": "ahiṃsāsaccaacauryabrahmacaryāparigraharūpaṃ paṃcamahāvvayaṃ uvadisai |",
+      "text": "He expounded the Five Great Vows: Non-violence (Ahimsa), Truthfulness (Satya), Non-stealing (Achaurya), Chastity (Brahmacharya), and Non-possessiveness (Aparigraha)."
+    },
+    {
+      "ref": "1.19",
+      "original": "सव्वे पाणा न हंतव्वा, न परिघेत्तव्वा, न परितावेयव्वा ।",
+      "transliteration": "savve pāṇā na haṃtavvā, na parighettavvā, na paritāveyavvā |",
+      "text": "All living creatures, all beings, all souls should not be slain, nor treated with violence, nor abused, nor tormented, nor driven away."
+    },
+    {
+      "ref": "1.20",
+      "original": "इत्थं भगवया धम्मो देसिओ, बहुजणहिताय बहुजणसुहाय ।",
+      "transliteration": "itthaṃ bhagavayā dhammo desio, bahujaṇahitāya bahujaṇasuhāya |",
+      "text": "Thus was the Dharma expounded by the Blessed One, for the spiritual welfare of many, for the joy and liberation of all beings."
+    },
+    {
+      "ref": "1.21",
+      "original": "पावाए नयरीए हत्थिवालस्स रन्नो रज्जुसभाए समणे भगवं महावीरे कालगओ मुत्तो ।",
+      "transliteration": "pāvāe nayarīe hatthivālassa ranno rajjusabhāe samaṇe bhagavaṃ mahāvīre kālagao mutto |",
+      "text": "In the town of Pavapuri, in the assembly hall of King Hastipala, having delivered his final discourses, the Venerable Ascetic Mahavira attained final liberation (Nirvana Kalyanak)."
+    },
+    {
+      "ref": "1.22",
+      "original": "सव्वदुक्खप्पहीणो सिद्धो बुद्धो परिनिव्वुडो जाव अंतं करेसि ।",
+      "transliteration": "savvadukkhappahīṇo siddho buddho parinivvuḍo jāva aṃtaṃ karesi |",
+      "text": "Freed from all suffering, perfected, enlightened, liberated, he put a complete and final end to the cycle of transmigration."
+    },
+    {
+      "ref": "1.23",
+      "original": "दिवंगए नाहे, देवा मणुया य दीवोत्सवेणं पूयं करिसु ।",
+      "transliteration": "divaṃgae nāhe, devā maṇuyā ya dīvotsaveṇaṃ pūyaṃ karisu |",
+      "text": "When the Supreme Master ascended to Nirvana, gods and humans illuminated the darkness with rows of earthen lamps, instituting the festival of Diwali."
+    },
+    {
+      "ref": "1.24",
+      "original": "पासस्स वि अरहओ पुरिसादाणीयरस बारस संवच्छराणि छउमत्थकालो अहोसि ।",
+      "transliteration": "pāsassa vi arahao purisādāṇīyarasa bārasa saṃvaccharāṇi chaumatthakālo ahosi |",
+      "text": "Likewise, Lord Parshvanatha, the revered 23rd Tirthankara, attained Kevala Jnana after profound meditation and guided humanity on the path of non-violence."
+    },
+    {
+      "ref": "1.25",
+      "original": "कप्पसुत्तमिणं सुयं पठित्ता सुणित्ता य, जीवा संसारसागरं तरंति ।",
+      "transliteration": "kappasuttamiṇaṃ suyaṃ paṭhittā suṇittā ya, jīvā saṃsārasāgaraṃ taraṃti |",
+      "text": "Having heard, recited, and contemplated this sacred Kalpa Sutra, living souls safely cross the vast and perilous ocean of worldly existence."
     }
   ]
 }

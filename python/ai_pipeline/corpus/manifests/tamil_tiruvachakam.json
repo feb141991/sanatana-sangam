@@ -1,8 +1,8 @@
 {
   "corpus_id": "tamil_tiruvachakam",
-  "doc_id": "tiruvachakam",
-  "title": "Tiruvachakam",
-  "source_name": "Manikkavasagar",
+  "doc_id": "tiruvachakam_sivapuranam",
+  "title": "Tiruvachakam — Siva Puranam",
+  "source_name": "Manikkavacakar",
   "language": "ta",
   "tradition": "Shaiva Siddhanta",
   "content": [
@@ -10,7 +10,151 @@
       "ref": "1.1",
       "original": "நமச்சிவாய வாஅழ்க நாதன் தாள் வாழ்க\nஇமைப்பொழுதும் என் நெஞ்சில் நீங்காதான் தாள் வாழ்க",
       "transliteration": "namaccivaya vaazhka nathan thaal vaazhka\nimaippozhudhum en nenjil neengaathaan thaal vaazhka",
-      "text": "Long live Namah Shivaya, long live the Master's feet. Long live the feet of Him who never departs my heart even for an instant."
+      "text": "Long live Namah Shivaya! Long live the Master's holy feet! Long live the feet of Him who departs not from my heart even for the blinking of an eye!"
+    },
+    {
+      "ref": "1.2",
+      "original": "கோகழி ஆண்ட குருமணிதன் தாள் வாழ்க\nஆகமம் ஆகிநின்று அண்ணிப்பான் தாள் வாழ்க",
+      "transliteration": "kokazhi aanda gurumanidhan thaal vaazhka\nagama maginindru annippaan thaal vaazhka",
+      "text": "Long live the feet of the jewel Guru who ruled in Kokazhi! Long live the feet of Him who abides as the sacred Agamas, drawing sweet and near!"
+    },
+    {
+      "ref": "1.3",
+      "original": "ஏகன் அநேகன் இறைவன் அடிவாழ்க\nவேகம் கெடுத்து ஆண்ட வேந்தன் அடிவெல்க",
+      "transliteration": "egan anegan iraivan adivaazhka\nvegam keduthu aanda vendhan adivelka",
+      "text": "Long live the feet of the One who is manifold! Victorious be the feet of the Sovereign who subdued the restless turmoil of my senses and made me His own!"
+    },
+    {
+      "ref": "1.4",
+      "original": "பிறப்பறுக்கும் பிஞ்ஞகன்தன் பெய்கழல்கள் வெல்க\nபுறத்தார்க்குச் சேயோன் தன் பூங்கழல்கள் வெல்க",
+      "transliteration": "pirapparukkum pinjakanthan peykazhalkal velka\npurathaarkuc seyon than poongazhalkal velka",
+      "text": "Victorious be the ankleted feet of the Lord who severs rebirth! Victorious be the flower-like feet of Him who stands far from those without love!"
+    },
+    {
+      "ref": "1.5",
+      "original": "கரங்குவிவார் உள்மகிழும் கோன்கழல்கள் வெல்க\nசிரங்குவிவார் ஓங்குவிக்கும் சீரோன் கழல்வெல்க",
+      "transliteration": "karamkuvivaar ulmakizhum konkazhalkal velka\nsiramkuvivaar oonguvikkum seeron kazhalvelka",
+      "text": "Victorious be the feet of the King who rejoices in the hearts of those who fold their hands in reverence! Victorious be the feet of the Glorious One who elevates those who bow before Him!"
+    },
+    {
+      "ref": "1.6",
+      "original": "ஈசன் அடிபோற்றி எந்தை அடிபோற்றி\nதேசன் அடிபோற்றி சிவன் சேவடி போற்றி",
+      "transliteration": "eesan adipotri endhai adipotri\nthesan adipotri sivan sevadi potri",
+      "text": "Praise be to the feet of the Lord (Isha)! Praise to the feet of my Father! Praise to the feet of the Radiant Light! Praise to the red lotus feet of Shiva!"
+    },
+    {
+      "ref": "1.7",
+      "original": "நேயத்தே நின்ற நிமலன் அடிபோற்றி\nமாயப் பிறப்பறுக்கும் மன்னன் அடிபோற்றி",
+      "transliteration": "neyathe nindra nimalan adipotri\nmaayap pirapparukkum mannan adipotri",
+      "text": "Praise to the feet of the Spotless One who abides in love! Praise to the feet of the King who dissolves the illusory cycle of repeated birth!"
+    },
+    {
+      "ref": "1.8",
+      "original": "சீரார் பெருந்துறை நம் தேவன் அடிபோற்றி\nஆராத இன்பம் அருளும் மலைபோற்றி",
+      "transliteration": "seeraar perundhurai nam thevan adipotri\naaraadha inbam arulum malaipotri",
+      "text": "Praise to the feet of our God who manifested at Perundhurai! Praise to the mountain of boundless grace who bestows unceasing bliss!"
+    },
+    {
+      "ref": "1.9",
+      "original": "சிவன் அவன் என்சிந்தையுள் நின்ற அதனால்\nஅவன் அருளாலே அவன் தாள் வணங்கி",
+      "transliteration": "sivan avan ensindhaiyul nindra adhanaal\navan arulaale avan thaal vanangi",
+      "text": "Because Shiva Himself took His abode within my consciousness, by His grace alone do I bow down at His holy feet."
+    },
+    {
+      "ref": "1.10",
+      "original": "சிந்தை மகிழச் சிவபுரா ணந்தன்னை\nமுந்தை வினைமுழுதும் ஓய உரைப்பன் யான்",
+      "transliteration": "sindhai makizhas sivapuraa nandhannai\nmundhai vinaimuzhudhum oya uraippan yaan",
+      "text": "With heart overflowing with joy, I recite this sacred Siva Puranam, so that all past accumulated karmas may thoroughly dissolve and cease."
+    },
+    {
+      "ref": "1.11",
+      "original": "கண்ணுதலான் தன்கருணைக் கண்காட்ட வந்துஎய்தி\nஎண்ணுதற்கு எட்டா எழிலார் கழலிறைஞ்சி",
+      "transliteration": "kannudhalaan thankarunaik kankaatta vandheydhi\nennudharku ettaa ezhilaar kazhalirainji",
+      "text": "He of the forehead eye revealed Himself through His glance of compassion; I approached and worshipped those ankleted feet whose beauty surpasses thought."
+    },
+    {
+      "ref": "1.12",
+      "original": "விண்ணிறைந்து மண்ணிறைந்து மிக்காய் விளங்கொளியாய்\nஎண்ணிறந்து எல்லை இலாதானே நின் பெருஞ்சீர்",
+      "transliteration": "vinniraindhu mannniraindhu mikkaay vilangoliyaay\nennirandhu ellai ilaadhaane nin perunjeer",
+      "text": "Filling the heavens, filling the earth, transcending both as luminous radiance, beyond reckoning and without boundary is Your infinite glory!"
+    },
+    {
+      "ref": "1.13",
+      "original": "பொல்லா வினையேன் புகழுமாறு ஒன்றறியேன்\nபுல்லாகிப் பூடாய்ப் புழுவாய் மரமாகிப்",
+      "transliteration": "pollaa vinaiyen pugazhumaaru ondtrariyen\npullaagip poodaayp puzhuvaay maramaagip",
+      "text": "A person of past demerits, I know not how to praise You adequately! Grass was I, shrub was I, worm was I, tree was I..."
+    },
+    {
+      "ref": "1.14",
+      "original": "பல்விருக மாகிப் பறவையாய்ப் பாம்பாகிக்\nகல்லாய் மனிதராய்ப் பேயாய்க் கணங்களாய்",
+      "transliteration": "palviruga maagip paravaiyaayp paambaagik\nkallaay manidharaayp peyaayk ganangalaay",
+      "text": "Many kinds of beasts was I, bird was I, serpent was I, stone was I, mortal was I, phantom and celestial host was I..."
+    },
+    {
+      "ref": "1.15",
+      "original": "வல்லசுர ராகி முனிவராய்த் தேவராய்ச்\nசெல்லாஅ நின்ற இத்தாவர சங்கமத்துள்",
+      "transliteration": "vallasura raagi munivaraayt thevaraays\nsellaaa nindra iththaavara sangamathul",
+      "text": "Mighty demon was I, sage was I, god was I; across all immobile and mobile life throughout endless births have I wandered..."
+    },
+    {
+      "ref": "1.16",
+      "original": "எல்லாப் பிறப்பும் பிறந்திளைத்தேன் எம்பெருமான்\nமெய்யேஉன் பொன்னடிகள் கண்டு இன்று வீடுற்றேன்",
+      "transliteration": "ellaap pirappum pirandhilaiththen emperumaan\nmeyye un ponnadigal kandu indru veedutren",
+      "text": "Wearied by wandering through every species of birth, O my Lord, today, beholding Your golden feet in truth, I have attained supreme liberation!"
+    },
+    {
+      "ref": "1.17",
+      "original": "உய்யவென் உள்ளத்துள் ஓங்கார மாய்நின்ற\nமெய்யா விமலா விடைப்பாகா வேதங்கள்",
+      "transliteration": "uyyaven ullathul oongaara maaynindra\nmeyyaa vimalaa vidaippaagaa vedhangal",
+      "text": "Abiding within my heart as the sacred Omkara for my salvation, O Truth! O Spotless One! O Rider of the Bull whom the Vedas revere!"
+    },
+    {
+      "ref": "1.18",
+      "original": "ஐயா எனவோங்கி ஆழ்ந்து அகன்ற நுண்ணியனே\nவெய்யாய் தணியாய் இயமானனாம் விமலா",
+      "transliteration": "aiyaa enavongi aazhndhu agandra nunniyane\nveyyaay thaniyaay iyamaananaam vimalaa",
+      "text": "Exalted as the Master, unfathomable, vast and yet most subtle; burning as fire and cooling as water, O immaculate Lord of all!"
+    },
+    {
+      "ref": "1.19",
+      "original": "பொய்யா யினவெல்லாம் போயகல வந்தருளி\nமெய்ஞ்ஞான மாகி மிளிர்கின்ற மெய்ச் சுடரே",
+      "transliteration": "poyyaa yinavellaam poyagala vandharuli\nmeyngnaana maagi milirgindra meyc sudare",
+      "text": "Dispelling all illusions so that they vanish completely, You shine as the blazing flame of divine wisdom and truth!"
+    },
+    {
+      "ref": "1.20",
+      "original": "எஞ்ஞானம் இல்லாதேன் இன்பப் பெருமானே\nஅஞ்ஞானந் தன்னை அகல்விக்கும் நல்லறிவே",
+      "transliteration": "engnaanam illaadhren inbap perumaane\nangnaanan thannai agalvikkum nallarive",
+      "text": "To me who had no spiritual knowledge, You came as the Lord of Bliss, the supreme wisdom that banishes all ignorance!"
+    },
+    {
+      "ref": "1.21",
+      "original": "ஆக்கமும் கேடும் பிரிவும் தமக்கிலாத்\nதோற்றப் பொலிவே துயரறுக்கும் சோதியே",
+      "transliteration": "aakkamum kedum pirivum thamakkilaath\nthotrapp polive thuyararukkum sodhiye",
+      "text": "Devoid of creation, destruction, or separation, radiant in splendour, O Light that severs all mortal anguish!"
+    },
+    {
+      "ref": "1.22",
+      "original": "பேசப் படாத பெருந்தன்மை எம்மான்\nகாசினி மேல்வந்து கருணைபுரி காளத்தியாய்",
+      "transliteration": "pesap padaadha perunthanmai emmaan\nkaasini melvandhu karunaipuri kaalathiyaay",
+      "text": "Possessing majestic greatness beyond the reach of speech, my Master, who descended upon the earth to bestow grace!"
+    },
+    {
+      "ref": "1.23",
+      "original": "பண்டைய பாசம் பறியப் பரிந்தருளி\nஅண்டமாய் நின்ற ஆதிப்பிரான் வாழ்கவே",
+      "transliteration": "pandaiya paasam pariyap parindharuli\nandamaay nindra aadhippiraan vaazhgave",
+      "text": "Severing ancient bonds of attachment through loving compassion, long live the Primal Lord who abides as the universe!"
+    },
+    {
+      "ref": "1.24",
+      "original": "சென்று சென்று தொழுது சிந்தை தெளிய\nஇன்றெனக்குத் தந்ததுன் இணையடிக்கே ஆட்பட்டேனே",
+      "transliteration": "sendru sendru thozhudhu sindhai theliya\nindrenakkuth thandhadhun inaiyadikke aatpattene",
+      "text": "Bowing in worship again and again until my mind became clear and peaceful, today I have surrendered completely to Your twin lotus feet."
+    },
+    {
+      "ref": "1.25",
+      "original": "நமச்சிவாய வாஅழ்க சிவபுராணம் முற்றிற்று ।",
+      "transliteration": "namaccivaya vaazhka sivapuraanam mutritru",
+      "text": "Long live Namah Shivaya! Thus concludes the sacred Siva Puranam of Saint Manikkavacakar."
     }
   ]
 }

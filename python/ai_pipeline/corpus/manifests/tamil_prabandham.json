@@ -1,16 +1,190 @@
 {
   "corpus_id": "tamil_prabandham",
-  "doc_id": "divya_prabandham",
-  "title": "Naalayira Divya Prabandham",
-  "source_name": "Alvars",
+  "doc_id": "thiruppavai_andal",
+  "title": "Nalayira Divya Prabandham — Andal's Thiruppavai",
+  "source_name": "Andal / Alvars",
   "language": "ta",
   "tradition": "Sri Vaishnavism",
   "content": [
     {
       "ref": "1.1",
-      "original": "பல்லாண்டு பல்லாண்டு பல்லாயிரத்தாண்டு\nபலகோடி நூறாயிரம்...",
-      "transliteration": "pallandu pallandu pallayirathandu\npalakodi noorayiram...",
-      "text": "Many years, many years, many thousands of years, and many millions of years..."
+      "original": "மார்கழித் திங்கள் மதிநிறைந்த நன்னாளால்\nநீராடப் போதுவீர் போதுமினோ நேரிழையீர்...",
+      "transliteration": "margazhit thingal madhiniraindha nannaalaal\nneeraadap podhuveer podhumino nerizhaiyeer...",
+      "text": "In the auspicious month of Margazhi, on this day illuminated by the full moon, come forth to bathe in grace, O richly adorned maidens! Let us go to worship Narayana, who bestows liberation."
+    },
+    {
+      "ref": "1.2",
+      "original": "வையத்து வாழ்வீர்காள் நாமும்நம் பாவைக்குச்\nசெய்யும் கிரிசைகள் கேளீரோ...",
+      "transliteration": "vaiyaththu vaazhveerkal naamumnam paavaikkus\nseyyum kirisaigal keleero...",
+      "text": "O dwellers of this world! Hear of the sacred observances we undertake for our vow: singing the praises of the Supreme Lord who measured the worlds, refraining from harm and ill thoughts, and giving generously."
+    },
+    {
+      "ref": "1.3",
+      "original": "ஓங்கி உலகளந்த உத்தமன் பேர்பாடி\nநாங்கள்நம் பாவைக்குச் சாற்றிநீ ராடினால்...",
+      "transliteration": "oongi ulagalandha uththaman perpaadi\nnaangalnam paavaikkus saatrinee raadinaal...",
+      "text": "Singing the names of that Supreme Being who strode high measuring the worlds, if we bathe in dedication to our vow, rain will fall three times a month, the paddy fields will flourish, and prosperity will abound."
+    },
+    {
+      "ref": "1.4",
+      "original": "ஆழி மழைக் கண்ணா ஒன்றுநீ கைக்கரவேல்\nஆழியுள் புக்கு முகந்துகொடு ஆர்த்தேறி...",
+      "transliteration": "aazhi mazhaik kannaa ondrunee kaikkaravel\naazhiyul pukku mugandhukodu aarththeri...",
+      "text": "O Rain God, withhold nothing of your bounty! Plunge into the deep ocean, drink its waters, billow into storm clouds dark as Lord Padmanabha, flash lightning like His discus, and pour blessings upon the earth."
+    },
+    {
+      "ref": "1.5",
+      "original": "மாயனை மன்னு வடமதுரை மைந்தனைத்\nதூய பெருநீர் யமுனைத் துறைவனை...",
+      "transliteration": "maayanai mannu vadamadhurai maindhanaith\nthooya peruneer yamunaith thuraivanai...",
+      "text": "Worshipping the Wonder-Worker, the youth of northern Mathura, the Lord of the pure waters of Yamuna, offering fresh blossoms and singing His glories with pure heart, all past and future karmas turn to ashes."
+    },
+    {
+      "ref": "1.6",
+      "original": "புள்ளும் சிலம்பினகாண் புள்ளரையன் கோயிலில்\nவெள்ளை விளிசங்கின் பேரரவம் கேட்டிலையோ...",
+      "transliteration": "pullum silambinakaan pullaraiyan koyilil\nvellai vilisangin peraravam kettilaiyo...",
+      "text": "Behold, the birds are chirping in the dawn! Have you not heard the resounding boom of the white conch from the temple of the King of Garuda? Arise, sweet maiden, and let us sing the glory of the Lord!"
+    },
+    {
+      "ref": "1.7",
+      "original": "கீசுகீ சென்றுஎங்கும் ஆனைச்சாத்தன் கலந்து\nபேசின பேச்சரவம் கேட்டிலையோ பேய்ப்பெண்ணே...",
+      "transliteration": "keesukee sendrengum aanaisaaththan kalandhu\npesina peccharavam kettilaiyo peyppenne...",
+      "text": "Have you not heard the chatter of the blackbirds greeting the morning? The curd-churners are churning fragrant butter while their bangles chime. Awaken, O innocent girl, and sing Kesava's praise!"
+    },
+    {
+      "ref": "1.8",
+      "original": "கீழ்வானம் வெள்ளென்று எருமை சிறுவீடு\nமேய்வான் பரந்தனகாண் மிக்குள்ள பிள்ளைகளும்...",
+      "transliteration": "keezhvaanam vellendru erumai siruveedu\nmeyvaan parandhanakaan mikkulla pillaigalum...",
+      "text": "The eastern horizon has turned white with dawn! The buffaloes have wandered out to graze on fresh grass. All the other companions have gathered. Arise, so we may approach the Lord who destroyed Kesi!"
+    },
+    {
+      "ref": "1.9",
+      "original": "தூமணி மாடத்துச் சுற்றும் விளக்கெரியத்\nதூபம் கமழத் துயிலணைமேல் கண்வளரும்...",
+      "transliteration": "thoomani maadaththus sutrum vilakkeriyath\nthoopam kamazhath thuyilanaimel kanvalarum...",
+      "text": "Resting on a soft couch in a palace of flawless gems, surrounded by lamps and sweet fragrance of incense — O uncle's daughter, open the door and awaken to the praise of Madhava!"
+    },
+    {
+      "ref": "1.10",
+      "original": "நோற்றுச் சுவர்க்கம் புகுகின்ற அம்மனாய்\nமாற்றமும் தாராரோ வாசல் திறவாதார்...",
+      "transliteration": "notrus suvarkkam pugugindra ammanaay\nmaatramum thaaraaro vaasal thiravaadhaar...",
+      "text": "O maiden entering heaven through past merit! Will you not even speak a sweet word, keeping the door fastened? Has slumber stolen your senses? Awaken to praise Narayana!"
+    },
+    {
+      "ref": "1.11",
+      "original": "கற்றுக் கறவைக் கணங்கள் பலகறந்து\nசெற்றார்க்கு வெம்பல் செய்யும் செல்வர் சிறுமினோ...",
+      "transliteration": "katruk karavaik kanangal palakarandhu\nsetraarkku vembal seyyum selvar sirumino...",
+      "text": "O golden daughter of the wealthy cowherd who milks herds of kine and overcomes all foes! Arise, peacock-like maiden, and let us sing of the dark cloud-complexioned Lord."
+    },
+    {
+      "ref": "1.12",
+      "original": "கனைத்திளங் கற்றெருமை கன்றுக் கிரங்கி\nநினைத்து முலைவழியே நின்றுபால் சோர...",
+      "transliteration": "kanaiththilang katrerumai kandruk kirangi\nninaiththu mulaivazhiye nindrupaal sora...",
+      "text": "The young she-buffalo, yearning for her calf, drops streams of milk overflowing the threshold. We stand outside in the dewy mist singing of Rama who destroyed the King of Lanka. Arise!"
+    },
+    {
+      "ref": "1.13",
+      "original": "புள்ளின்வாய் கீண்டானைப் பொல்லா அரக்கனைக்\nகிள்ளிக் களைந்தானைக் கீர்த்திமை பாடிப்போய்...",
+      "transliteration": "pullinvaay keendaanaip pollaa arakkanaik\nkillik kalaindhaanaik keerthimai paadippoy...",
+      "text": "Singing the glory of Him who tore open the beak of the demon crane (Bakasura) and destroyed the wicked Rakshasa, the morning star has risen and Jupiter has set. Arise and join the holy bathing!"
+    },
+    {
+      "ref": "1.14",
+      "original": "உங்கள் புழக்கடைத் தோட்டத்து வாவியுள்\nசெங்கழுநீர் வாய்நெகிழ்ந்து ஆம்பல் வாய் கூம்பினகாண்...",
+      "transliteration": "ungal puzhakkadaith thottaththu vaaviyul\nsengazhuneer vaaynegizhndhu aambal vaay koombinakaan...",
+      "text": "In the pond in your garden, the red lotuses are blooming and the night lilies have closed! Ascetics in red robes with white conches are walking to their shrines. Awaken, let us sing the lotus-eyed Lord!"
+    },
+    {
+      "ref": "1.15",
+      "original": "எல்லே இளங்கிளியே இன்னம் உறங்குதியோ\nசில்லென்று அழையேன்மின் நங்கைமீர் போதருகின்றேன்...",
+      "transliteration": "elle ilangiliye innam urangudhiyo\nsillendru azhaiyenmin nangaimer podharugindren...",
+      "text": "'O young parrot, are you still sleeping?' 'Call me not harshly, sisters, I am coming!' 'Come swiftly, let us sing the glory of the Wonder-Worker who defeated foes and protects the universe!'"
+    },
+    {
+      "ref": "1.16",
+      "original": "நாயகனாய் நின்ற நந்தகோபனுடைய\nகோயில் காப்பானே கொடித்தோன்றும் தோரண...",
+      "transliteration": "naayaganaay nindra nandhagobanudaiya\nkoyil kaappaane kodiththondrum thorana...",
+      "text": "O guard of the threshold of our chieftain Nandagopa! Open the ornate door, for we young maidens have come at dawn to sing the glory of Lord Krishna with pure hearts."
+    },
+    {
+      "ref": "1.17",
+      "original": "அம்பரமே தண்ணீரே சோறே அறஞ்செய்யும்\nஎம்பெருமான் நந்தகோபாலா எழுந்திராய்...",
+      "transliteration": "ambarame thanneere sore aranjeyyum\nemperumaan nandhagobaalaa ezhundhiraay...",
+      "text": "O Lord Nandagopa, renowned for bestowing garments, cool water, and nourishing food in charity, awaken! O Mother Yashoda, beacon of the cowherds, awaken! O Lord Krishna and Balarama, arise!"
+    },
+    {
+      "ref": "1.18",
+      "original": "உந்து மதகளிற்றன் ஓடாத தோள்வலியன்\nநந்தகோபாலன் மருமகளே நப்பின்னாய்...",
+      "transliteration": "undhu madhakalitran odaadha tholvaliyan\nnandhagobaalan marumagale nappinnaay...",
+      "text": "O Nappinnai, daughter-in-law of Nandagopa, with fragrant tresses and bangled hands, open the door! The cuckoos are calling on the boughs of the garden. Arise!"
+    },
+    {
+      "ref": "1.19",
+      "original": "குத்து விளக்கெரியக் கோட்டுக் கால் கட்டில்மேல்\nமெத்தென்ற பஞ்சசயனத்தின் மேல்ஏறி...",
+      "transliteration": "kuththu vilakkeriyak kottuk kaal kattilmel\nmeththendra panjasayanaththin meleri...",
+      "text": "Surrounded by burning brass lamps, resting upon the soft bed supported by ivory legs, embracing Nappinnai — O Lord, awaken and look with mercy upon us who seek Your shelter!"
+    },
+    {
+      "ref": "1.20",
+      "original": "முப்பத்து மூவர் அமரர்க்கு முன்சென்று\nகப்பம் தவிர்க்கும் கலியே துயிலெழாய்...",
+      "transliteration": "muppaththu moovar amararkku munsendru\nkappam thavirkkum kaliye thuyilezhaay...",
+      "text": "O Valorous Hero who dispels the fear of the thirty-three crore devas by stepping forth first into battle! Pure Lord of boundless light, arise from Your slumber and shower grace upon us!"
+    },
+    {
+      "ref": "1.21",
+      "original": "ஏற்ற கலங்கள் எதிர் பொங்கி மீதளிப்ப\nமாற்றாதே பால்சொரியும் வள்ளல் பெரும் பசுக்கள்...",
+      "transliteration": "etra kalangal edhir pongi meedhalippa\nmaatraadhe paalsoriyum vallal perum pasukkal...",
+      "text": "Son of the lord of generous cows that fill vessels to overflowing with sweet milk! Luminous child of limitless glory, rise and bestow the grace of Your divine presence upon us!"
+    },
+    {
+      "ref": "1.22",
+      "original": "அங்கண்மா ஞாலத்து அரசர் அபிமான\nபங்கமாய் வந்துநின் பள்ளிக்கட் டிற்கீழே...",
+      "transliteration": "ankanmaa gnaalaththu arasar abhimaana\nbangamaay vandhunin pallikkat dirkeezhe...",
+      "text": "Just as vanquished kings cast away their pride and assemble beneath Your throne, so have we arrived at Your lotus feet. Turn Your dark lotus eyes upon us like sun and moon!"
+    },
+    {
+      "ref": "1.23",
+      "original": "மாரி மலைமுழைஞ்சில் மன்னிக் கிடந்துறங்கும்\nசீரிய சிங்கம் அறிவுற்றுத் தீவிழித்து...",
+      "transliteration": "maari malaimuzhainjil mannik kidandhurangum\nseeriya singam arivutruth theevizhiththu...",
+      "text": "Like a magnificent lion sleeping in a mountain cave during the rains that awakens, flashes fiery eyes, shakes its mane, and strides forth — even so, O Lord, emerge to hear our prayer!"
+    },
+    {
+      "ref": "1.24",
+      "original": "அன்றுஇவ் வுலகம் அளந்தாய் அடிபோற்றி\nசென்றங்குத் தென்னிலங்கை செற்றாய் திறல்போற்றி...",
+      "transliteration": "andriv vulagam alandhaay adipotri\nsendranguth thennilangai setraay thiralpotri...",
+      "text": "Praise to Your feet that measured the cosmos! Praise to Your valour that destroyed Lanka! Praise to Your prowess that kicked the cart! Praise to Your grace that lifted Mount Govardhana!"
+    },
+    {
+      "ref": "1.25",
+      "original": "ஒருத்தி மகனாய்ப் பிறந்து ஓரிரவில்\nஒருத்தி மகனாய் ஒளித்து வளர...",
+      "transliteration": "oruththi maganaayp pirandhu oriravil\noruththi maganaay oliththu valara...",
+      "text": "Born as the son of Devaki, in a single night hidden to grow as the son of Yashoda, frustrating the schemes of Kamsa — O Lord, we have come singing Your praise, desiring only Your grace!"
+    },
+    {
+      "ref": "1.26",
+      "original": "மாலே மணிவண்ணா மார்கழிநீ ராடுவான்\nமேலையார் செய்வனகள் வேண்டுவன கேட்டியேல்...",
+      "transliteration": "maale manivannaa maargadhinee raaduvaan\nmelaiyaar seyvanagal venduvana kettiyeel...",
+      "text": "O Supreme Lord, sapphire-hued Narayana! If You ask what we require for our sacred Margazhi bathing: grant us the white conch like Panchajanya, the mighty drum, and the singing of hymns!"
+    },
+    {
+      "ref": "1.27",
+      "original": "கூடாரை வெல்லும் சீர்க் கோவிந்தா உன்தன்னைப்\nபாடிப் பறைகொண்டு யாம்பெறும் சம்மானம்...",
+      "transliteration": "koodaarai vellum seerk govindhaa unthannaip\npaadip paraigondu yaamperum sammaanam...",
+      "text": "O Govinda who conquers all obstinate foes! Singing Your glories, we receive our true reward: jewels of virtue, silken garments of devotion, and sweet milk-rice overflowing with ghee, united in bliss!"
+    },
+    {
+      "ref": "1.28",
+      "original": "கறவைகள் பின்சென்று கானம் சேர்ந்துண்போம்\nஅறிவொன்றும் இல்லாத ஆய்க்குலத்து உன்தன்னைப்...",
+      "transliteration": "karavaigal pinsendru kaanam serndhunbom\narivondrum illaadha aaikkulaththu unthannaip...",
+      "text": "Following the cows to graze in the forest, devoid of bookish learning, we are simple cowherds. Yet You chose to be born in our midst! Our bond with You can never be severed; forgive our shortcomings!"
+    },
+    {
+      "ref": "1.29",
+      "original": "சிற்றஞ் சிறுகாலே வந்துன்னைச் சேவித்துன்\nபொற்றா மரையடியே போற்றும் பொருள் கேளாய்...",
+      "transliteration": "sitranj sirugaale vandhunnais seviththun\npotraa maraiyadiye potrum porul keelaay...",
+      "text": "Hear the true purpose for which we have come at dawn to worship Your golden lotus feet: not for temporary boons, but that in all sevenfold births to come, we may serve You alone, and none other!"
+    },
+    {
+      "ref": "1.30",
+      "original": "வங்கக் கடல் கடைந்த மாதவனைக் கேசவனைத்\nதிங்கள் திருமுகத்துச் சேயிழையார் சென்றுஇறைஞ்சி...",
+      "transliteration": "vangak kadal kadaindha maadhavanaik kesavanaith\ndhingal thirumugaththus seyizhaiyaar sendrirainji...",
+      "text": "Those who recite with devotion these thirty verses composed by Vishnuchitta's daughter Andal of Srivilliputhur in praise of Madhava who churned the ocean, will attain the boundless bliss of Lord Narayana."
     }
   ]
 }

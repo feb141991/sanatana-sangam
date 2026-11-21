@@ -1,16 +1,100 @@
 {
   "corpus_id": "sikh_dasam_granth",
-  "doc_id": "dasam_granth_1",
-  "title": "Dasam Granth",
-  "source_name": "Guru Gobind Singh",
+  "doc_id": "dasam_granth_selections",
+  "title": "Dasam Granth — Tav-Prasad Savaiye & Invocations",
+  "source_name": "Guru Gobind Singh Ji",
   "language": "pa",
   "tradition": "Sikhism",
   "content": [
     {
       "ref": "1.1",
-      "original": "ਚੱਕ੍ਰ ਚਿਹਨ ਅਰੁ ਬਰਨ ਜਾਤਿ ਅਰੁ ਪਾਤਿ ਨਹਿਨ ਜਿਹ ॥",
-      "transliteration": "chakkar chihan ar baran jaat ar paat nahin jih ||",
-      "text": "He who has no mark, no color, no caste, and no lineage."
+      "original": "ਚੱਕ੍ਰ ਚਿਹਨ ਅਰੁ ਬਰਨ ਜਾਤਿ ਅਰੁ ਪਾਤਿ ਨਹਿਨ ਜਿਹ ॥ ਰੂਪ ਰੰਗ ਅਰੁ ਰੇਖ ਭੇਖ ਕੋਊ ਕਹਿ ਨ ਸਕਸ ਤਿਹ ॥",
+      "transliteration": "chakkar chihan ar baran jaat ar paat nahin jih || roop rang ar rekh bhekh ko-oo kahi na sakas tih ||",
+      "text": "He who has no mark, no color, no caste, and no lineage; whose form, hue, shape, and garb none can describe. He is the eternal, immutable, self-luminous Supreme Being."
+    },
+    {
+      "ref": "1.2",
+      "original": "ਅਚਲ ਮੂਰਤਿ ਅਨਭਉ ਪ੍ਰਕਾਸ ਅਮਿਤੋਜਿ ਕਹੀਜੈ ॥ ਤ੍ਰਿਭਵਣ ਮਹੀਪ ਸੁਰ ਨਰ ਅਸੁਰ ਨੇਤ ਨੇਤ ਬਨ ਤ੍ਰਿਣ ਕਹੈ ॥",
+      "transliteration": "achal moorat anbhav parkaas amitoj kaheejai || tribhavan maheep sur nar asur net net ban trin kahai ||",
+      "text": "Immovable form, self-revealed light of wisdom, of infinite potency. Sovereign of the three worlds, whom gods, mortals, demons, and every blade of grass describe as: 'Not this, not this.'"
+    },
+    {
+      "ref": "2.1",
+      "original": "ਸ੍ਰਾਵਗ ਸੁਧ ਸਮੂਹ ਸਿਧਾਨ ਕੇ ਦੇਖਿ ਫਿਰਿਓ ਘਰ ਜੋਗ ਜਤੀ ਕੇ ॥",
+      "transliteration": "sraavag sudh samooh sidhaan ke dekhi phirio ghar jog jatee ke ||",
+      "text": "I have traveled and beheld assemblies of pure Jain ascetics, accomplished Siddhas, Yogis, and celibates. Yet nowhere did I find the living presence of the Lord without genuine loving devotion."
+    },
+    {
+      "ref": "2.2",
+      "original": "ਕੂਰ ਕ੍ਰਿਆ ਉਰਝਿਓ ਸਭ ਹੀ ਜਗੁ ਸ੍ਰੀ ਭਗਵਾਨ ਕੋ ਭੇਦੁ ਨ ਪਾਇਓ ॥",
+      "transliteration": "koor kriaa urjhio sabh hee jag sree bhagwaan ko bhed na paaio ||",
+      "text": "The whole world is entangled in false rituals and hypocritical ceremonies, and has not understood the mystery of the Supreme Lord."
+    },
+    {
+      "ref": "2.3",
+      "original": "ਜਿਨ੍ਹ ਪ੍ਰੇਮ ਕੀਓ ਤਿਨ ਹੀ ਪ੍ਰਭ ਪਾਇਓ ॥",
+      "transliteration": "jin prem keeo tin hee prabh paaio ||",
+      "text": "Hear ye all, I proclaim the ultimate truth: They alone who love with all their heart truly attain the Divine Lord."
+    },
+    {
+      "ref": "2.4",
+      "original": "ਮਾਤੇ ਮਤੰਗ ਜਰੇ ਜਰ ਸੰਗ ਅਨੂਪ ਉਤੰਗ ਸੁਰੰਗ ਸਵਾਰੇ ॥",
+      "transliteration": "maate matang jare jar sang anoop utang surang sawaare ||",
+      "text": "Rulers may possess intoxicated elephants adorned with gold, peerless thoroughbred steeds, and unnumbered armies. Yet when death arrives, they depart barefoot and empty-handed."
+    },
+    {
+      "ref": "2.5",
+      "original": "ਜੀਤ ਫਿਰੇ ਸਭ ਦੇਸ ਦਿਸਾਨ ਕੋ ਬਾਜਤ ਢੋਲ ਮ੍ਰਿਦੰਗ ਨਗਾਰੇ ॥",
+      "transliteration": "jeet phire sabh des disaan ko baajat dhol mridang nagaare ||",
+      "text": "They may march victorious across all lands to the beating of victory drums and kettledrums. Yet in the end, without devotion to the One Creator, all worldly glory turns to dust."
+    },
+    {
+      "ref": "2.6",
+      "original": "ਤੀਰਥ ਨ੍ਹਾਨ ਦਇਆ ਦਮ ਦਾਨ ਸੁ ਸੰਜਮ ਨੇਮ ਅਨੇਕ ਬਿਸੇਖੈ ॥",
+      "transliteration": "teerath nhaan daiaa dam daan su sanjam nem anek bisekhai ||",
+      "text": "One may bathe at sacred pilgrimage shrines, practice charity, control the senses, and perform countless rigid austerities. Yet without the love of the Supreme Lord, they are of no avail."
+    },
+    {
+      "ref": "2.7",
+      "original": "ਦਾਨਵ ਦੇਵ ਫਨਿੰਦ ਗਨਿੰਦ ਜਿਤੇ ਜਗ ਕੇ ਸਭ ਜਾਨਤ ਮਾਹੀ ॥",
+      "transliteration": "daanav dev fanind ganind jite jag ke sabh jaanat maahee ||",
+      "text": "Demons, gods, celestial serpent-lords, and all creatures of the world dwell in His knowledge. The Creator provides for all, from the tiniest ant to the highest heavens."
+    },
+    {
+      "ref": "2.8",
+      "original": "ਸਾਧ ਸਮੂਹ ਪ੍ਰਸੰਨ ਫਿਰੈ ਜਗ ਛਤ੍ਰਪਤੀ ਸਭ ਸੀਸ ਨਿਵਾਵੈ ॥",
+      "transliteration": "saadh samooh prasann phirai jag chhatrapati sabh sees niwaavai ||",
+      "text": "Rulers may bow their crowned heads before the righteous, but he who is puffed up with pride falls into the snare of death unless he takes refuge in the Lord."
+    },
+    {
+      "ref": "2.9",
+      "original": "ਮਾਨਵ ਇੰਦ੍ਰ ਗਜਿੰਦ੍ਰ ਨਰਾਧਿਪ ਜੌਨ ਤ੍ਰਿਲੋਕ ਕੋ ਰਾਜੁ ਕਰੈਗੇ ॥",
+      "transliteration": "maanav indr gajindr naraadhip joun trilok ko raaj karaige ||",
+      "text": "Monarchs may rule over the three worlds and bathe in waters poured from golden vessels. Yet they must leave all behind in an instant, while the servant of God abides forever."
+    },
+    {
+      "ref": "2.10",
+      "original": "ਏਕ ਚਿਤ ਜਿਹ ਇਕ ਛਿਨ ਧਿਆਇਓ ॥ ਕਾਲ ਫਾਸ ਕੇ ਬੀਚ ਨ ਆਇਓ ॥",
+      "transliteration": "ek chit jih ik chhin dhiaaio || kaal faas ke beech na aaio ||",
+      "text": "Whoever meditates upon the One Supreme Lord with focused consciousness even for a single instant, never falls into the snare of spiritual death."
+    },
+    {
+      "ref": "3.1",
+      "original": "ਪ੍ਰਥਮ ਭਗੌਤੀ ਸਿਮਰਿ ਕੈ ਗੁਰੁ ਨਾਨਕ ਲਈਂ ਧਿਆਇ ॥ ਫਿਰ ਅੰਗਦ ਗੁਰ ਤੇ ਅਮਰਦਾਸੁ ਰਾਮਦਾਸੈ ਹੋਈਂ ਸਹਾਇ ॥",
+      "transliteration": "pratham bhagauti simar kai gur nanak laeen dhiaae || phir angad gur te amardaas raamdaasai hoeen sahaae ||",
+      "text": "First, remember the divine Sword of Primal Power, and then meditate upon Guru Nanak. Then call upon Guru Angad, Guru Amar Das, and Guru Ram Das for their holy protection."
+    },
+    {
+      "ref": "3.2",
+      "original": "ਅਰਜਨ ਹਰਗੋਬਿੰਦ ਨੋ ਸਿਮਰੌ ਸ੍ਰੀ ਹਰਿਰਾਇ ॥ ਸ੍ਰੀ ਹਰਿਕ੍ਰਿਸਨ ਧਿਆਈਐ ਜਿਸ ਡਿਠੇ ਸਭਿ ਦੁਖਿ ਜਾਇ ॥",
+      "transliteration": "arjan hargobind no simrau sree hariraae || sree harikrisan dhiaaeeai jis dithe sabhi dukhi jaae ||",
+      "text": "Meditate upon Guru Arjan, Guru Hargobind, and holy Guru Har Rai. Meditate upon Guru Har Krishan, the sight of whom dispels all suffering and sorrow."
+    },
+    {
+      "ref": "3.3",
+      "original": "ਤੇਗ ਬਹਾਦਰ ਸਿਮਰਿਐ ਘਰ ਨਉ ਨਿਧਿ ਆਵੈ ਧਾਇ ॥ ਸਭ ਥਾਈਂ ਹੋਇ ਸਹਾਇ ॥",
+      "transliteration": "teg bahaadar simariai ghar nau nidhi aavai dhaae || sabh thaa-een hoe sahaae ||",
+      "text": "Remember Guru Tegh Bahadur, and all the nine treasures of spiritual wealth come rushing home. May the Gurus be our constant protector and aid at all times and in all places."
     }
   ]
 }

@@ -1,16 +1,310 @@
 {
   "corpus_id": "sant_kabir",
-  "doc_id": "kabir_dohe_1",
-  "title": "Kabir Dohe",
-  "source_name": "Sant Kabir",
+  "doc_id": "kabir_sakhis_dohas",
+  "title": "Sant Kabir Sakhis & Dohas",
+  "source_name": "Kabir Granthavali / Bijak",
   "language": "hi",
-  "tradition": "Sant Mat / Bhakti",
+  "tradition": "Bhakti",
   "content": [
     {
       "ref": "1.1",
-      "original": "गुरु गोविंद दोऊ खड़े, काके लागू पाँय।\nबलिहारी गुरु आपने, गोविंद दियो बताय॥",
-      "transliteration": "guru govind dou khade, kaake laagu paany.\nbalihaari guru aapne, govind diyo batay.",
-      "text": "Guru and God both stand before me, whose feet should I touch first? I bow to the Guru, for he is the one who showed me the path to God."
+      "original": "गुरु गोविंद दोऊ खड़े, काके लागू पाँय ।\nबलिहारी गुरु आपने, गोविंद दियो बताय ॥",
+      "transliteration": "guru goviṃda doū khar̤e, kāke lāgū pā~ya | balihārī guru āpane, goviṃda diyo batāya ||",
+      "text": "Guru and God both stand before me, whose feet should I touch first? I bow to the Guru, for he is the one who revealed God unto me."
+    },
+    {
+      "ref": "1.2",
+      "original": "जाति न पूछो साधु की, पूछ लीजिये ज्ञान ।\nमोल करो तरवार का, पड़ा रहन दो म्यान ॥",
+      "transliteration": "jāti na pūcho sādhu kī, pūcha lījiye jñāna | mola karo taravāra kā, par̤ā rahana do myāna ||",
+      "text": "Ask not the caste of a saint, ask instead of his wisdom. Value the sharp steel of the sword, let the ornamental scabbard lie."
+    },
+    {
+      "ref": "1.3",
+      "original": "पोथी पढ़ि पढ़ि जग मुआ, पंडित भया न कोय ।\nढाई आखर प्रेम का, पढ़े सो पंडित होय ॥",
+      "transliteration": "pothī par̤hi par̤hi jaga muā, paṃḍita bhayā na koya | ḍhāī ākhara prema kā, par̤he so paṃḍita hoya ||",
+      "text": "Reading endless heavy scriptures, the world passed away and none became truly wise. But he who reads and lives the two-and-a-half letters of Love (Prem), he alone is truly learned."
+    },
+    {
+      "ref": "1.4",
+      "original": "बुरा जो देखन मैं चला, बुरा न मिलिया कोय ।\nजो दिल खोजा आपना, मुझसे बुरा न कोय ॥",
+      "transliteration": "burā jo dekhana maiṃ calā, burā na miliyā koya | jo dila khojā āpanā, mujhase burā na koya ||",
+      "text": "I went searching across the world for a wicked person, but could find none. Yet when I searched into my own heart, I found none more flawed than myself."
+    },
+    {
+      "ref": "1.5",
+      "original": "कस्तूरी कुंडल बसै, मृग ढूँढै बन माहिं ।\nऐसे घट घट राम हैं, दुनिया देखै नाहिं ॥",
+      "transliteration": "kastūrī kuṃḍala basai, mṛga ḍhū~ḍhai bana māhiṃ | aise ghaṭa ghaṭa rāma haiṃ, duniyā dekhai nāhiṃ ||",
+      "text": "The musk resides within the deer's own navel, yet it wanders frantically searching for the fragrance throughout the forest. In the same way, the Divine abides within every heart, yet the world sees Him not."
+    },
+    {
+      "ref": "1.6",
+      "original": "दुःख में सुमिरन सब करे, सुख में करै न कोय ।\nजो सुख में सुमिरन करै, दुःख काहे को होय ॥",
+      "transliteration": "duḥkha meṃ sumirana saba kare, sukha meṃ karai na koya | jo sukha meṃ sumirana karai, duḥkha kāhe ko hoya ||",
+      "text": "In times of anguish, everyone remembers God; in times of prosperity, none remembers Him. If one were to remember Him in prosperity, why would suffering ever arise?"
+    },
+    {
+      "ref": "1.7",
+      "original": "साईं इतना दीजिए, जा में कुटुंब समाय ।\nमैं भी भूखा न रहूँ, साधु न भूखा जाय ॥",
+      "transliteration": "sāīṃ itanā dījie, jā meṃ kuṭuṃba samāya | maiṃ bhī bhūkhā na rahū~, sādhu na bhūkhā jāya ||",
+      "text": "Give me only this much, O Lord, by which my family may be sustained: that I may not remain hungry, nor may the visiting traveler or saint leave hungry from my door."
+    },
+    {
+      "ref": "1.8",
+      "original": "माटी कहे कुम्हार से, तू क्या रूँदे मोहि ।\nइक दिन ऐसा आएगा, मैं रूँदूंगी तोहि ॥",
+      "transliteration": "māṭī kahe kumhāra se, tū kyā rū~de mohi | ika dina aisā āegā, maiṃ rū~dūṃgī tohi ||",
+      "text": "The clay says to the potter: 'Why do you trample and knead me under your feet? A day will surely arrive when you will return to dust, and I shall cover you.'"
+    },
+    {
+      "ref": "1.9",
+      "original": "माला फेरत जुग भया, फिरा न मन का फेर ।\nकर का मनका डारि दे, मन का मनका फेर ॥",
+      "transliteration": "mālā pherata juga bhayā, phirā na mana kā phera | kara kā manakā ḍāri de, mana kā manakā phera ||",
+      "text": "Ages have passed turning the prayer beads with the hand, yet the restless wanderings of the mind did not turn inward. Drop the bead from the hand, and turn the true bead of the mind."
+    },
+    {
+      "ref": "1.10",
+      "original": "बड़ा हुआ तो क्या हुआ, जैसे पेड़ खजूर ।\nपंथी को छाया नहीं, फल लागे अति दूर ॥",
+      "transliteration": "bar̤ā huā to kyā huā, jaise per̤a khajūra | paṃthī ko chāyā nahīṃ, phala lāge ati dūra ||",
+      "text": "What is the use of being elevated in pride, like a towering palm tree? It gives no shade to the weary traveler, and its fruits hang exceedingly far out of reach."
+    },
+    {
+      "ref": "1.11",
+      "original": "काल करे सो आज कर, आज करे सो अब ।\nपल में परलै होएगी, बहुरि करेगा कब ॥",
+      "transliteration": "kāla kare so āja kara, āja kare so aba | pala meṃ paralai hoegī, bahuri karegā kaba ||",
+      "text": "What you must do tomorrow, do today; what you must do today, do this very moment. In an instant dissolution may strike, and then when will you act?"
+    },
+    {
+      "ref": "1.12",
+      "original": "ऐसी बानी बोलिए, मन का आपा खोय ।\nऔरन को सीतल करै, आपहु सीतल होय ॥",
+      "transliteration": "aisī bānī bolie, mana kā āpā khoya | aurana ko sītala karai, āpahu sītala hoya ||",
+      "text": "Speak words free from the arrogance of ego: words that soothe and cool the hearts of others, and fill your own being with sweet tranquility."
+    },
+    {
+      "ref": "1.13",
+      "original": "तिनका कबहुँ ना निंदिए, जो पाँवन तर होय ।\nकबहुँ उड़ी आँखिन पड़े, तो पीर घनेरी होय ॥",
+      "transliteration": "tinakā kabahu~ nā niṃdie, jo pā~vana tara hoya | kabahu~ ur̤ī ā~khina par̤e, to pīra ghanerī hoya ||",
+      "text": "Never scorn even a tiny straw lying beneath your feet. For if the wind carries it into your eye, it causes deep and piercing agony."
+    },
+    {
+      "ref": "1.14",
+      "original": "अति का भला न बोलना, अति की भली न चूप ।\nअति का भला न बरसना, अति की भली न धूप ॥",
+      "transliteration": "ati kā bhalā na bolanā, ati kī bhalī na cūpa | ati kā bhalā na barasanā, ati kī bhalī na dhūpa ||",
+      "text": "Excessive speaking is not good, nor is excessive silence. Excessive rain brings deluge, and excessive scorching sun brings drought."
+    },
+    {
+      "ref": "1.15",
+      "original": "निंदक नियरे राखिए, आँगन कुटी छवाय ।\nबिन पानी साबुन बिना, निरमल करे सुभाय ॥",
+      "transliteration": "niṃdaka niyare rākhie, ā~gana kuṭī chavāya | bina pānī sābuna binā, niramala kare subhāya ||",
+      "text": "Keep your critic close to you, build him a shelter in your courtyard. For without water and without soap, his watchful words cleanse your true character."
+    },
+    {
+      "ref": "1.16",
+      "original": "धीरे-धीरे रे मना, धीरे सब कुछ होय ।\nमाली सींचे सौ घड़ा, ऋतु आए फल होय ॥",
+      "transliteration": "dhīre-dhīre re manā, dhīre saba kucha hoya | mālī sīṃce sau ghar̤ā, ṛtu āe phala hoya ||",
+      "text": "Patience, O mind, patience! Everything unfolds in its own due season. Though the gardener pours a hundred jars of water, the tree bears fruit only when the season arrives."
+    },
+    {
+      "ref": "1.17",
+      "original": "जल में कुंभ, कुंभ में जल है, बाहर भीतर पानी ।\nफूटा कुंभ, जल जलहि समाना, यह तथ कह्यौ गियानी ॥",
+      "transliteration": "jala meṃ kuṃbha, kuṃbha meṃ jala hai, bāhara bhītara pānī | phūṭā kuṃbha, jala jalahi samānā, yaha tatha kahyau giyānī ||",
+      "text": "The earthen vessel is in the water, and within the vessel is water; there is water both outside and inside. When the vessel breaks, the water merges with the water — so proclaims the wise seer on the soul and Brahman."
+    },
+    {
+      "ref": "1.18",
+      "original": "काँकर पाथर जोरि के, मसजिद लई बनाय ।\nता चढ़ि मुल्ला बाँग दे, क्या बहरा हुआ खुदाय ॥",
+      "transliteration": "kā~kara pāthara jori ke, masajida laī banāya | tā car̤hi mullā bā~ga de, kyā baharā huā khudāya ||",
+      "text": "Gathering pebbles and mortar, humans build an outer shrine, and climbing atop, one shouts loudly. Has the all-hearing Lord within become deaf that one must shout?"
+    },
+    {
+      "ref": "1.19",
+      "original": "पाहन पूजे हरि मिलैं, तो मैं पूजौं पहार ।\nताते यह चाकी भली, पीस खाय संसार ॥",
+      "transliteration": "pāhana pūje hari milaiṃ, to maiṃ pūjauṃ pahāra | tāte yaha cākī bhalī, pīsa khāya saṃsāra ||",
+      "text": "If the Divine could be attained merely by worshipping stone, I would worship a whole mountain. Better than that stone is the household millstone, which grinds the grain that feeds the world."
+    },
+    {
+      "ref": "1.20",
+      "original": "माया मुई न मन मुआ, मरि मरि गया सरीर ।\nआसा त्रिसना न मुई, कहि गए दास कबीर ॥",
+      "transliteration": "māyā muī na mana muā, mari mari gayā sarīra | āsā trisanā na muī, kahi gae dāsa kabīra ||",
+      "text": "Neither Maya died nor did the craving mind die; only the physical body died again and again. Worldly hopes and thirst never died — so declared servant Kabir."
+    },
+    {
+      "ref": "1.21",
+      "original": "लूट सके तो लूट ले, राम नाम की लूट ।\nपाछे फिरे पछताओगे, प्राण जाहिं जब छूट ॥",
+      "transliteration": "lūṭa sake to lūṭa le, rāma nāma kī lūṭa | pāche phire pachatāoge, prāṇa jāhiṃ jaba chūṭa ||",
+      "text": "Gather the spiritual treasure of the Divine Name as much as you can while life remains. For later you will lament when the breath slips away from the body."
+    },
+    {
+      "ref": "1.22",
+      "original": "जब मैं था तब हरि नहीं, अब हरि हैं मैं नाहिं ।\nसब अँधियारा मिटि गया, जब दीपक देख्या माहिं ॥",
+      "transliteration": "jaba maiṃ thā taba hari nahīṃ, aba hari haiṃ maiṃ nāhiṃ | saba a~dhiyārā miṭi gayā, jaba dīpaka dekhyā māhiṃ ||",
+      "text": "When the 'I' (ego) was within me, the Lord was not revealed; now the Lord is, and the 'I' is no more. All darkness vanished when the lamp of truth was lit within."
+    },
+    {
+      "ref": "1.23",
+      "original": "साधु भूखा भाव का, धन का भूखा नाहिं ।\nधन का भूखा जो फिरै, सो तो साधु नाहिं ॥",
+      "transliteration": "sādhu bhūkhā bhāva kā, dhana kā bhūkhā nāhiṃ | dhana kā bhūkhā jo phirai, so to sādhu nāhiṃ ||",
+      "text": "The true saint hungers only for pure devotion of the heart, never for worldly wealth. One who wanders hungry for gold and coins is no saint at all."
+    },
+    {
+      "ref": "1.24",
+      "original": "मांगन मरण समान है, मत कोई मांगो भीख ।\nमांगन ते मरना भला, यह सतगुरु की सीख ॥",
+      "transliteration": "māṃgana maraṇa samāna hai, mata koī māṃgo bhīkha | māṃgana te maranā bhalā, yaha sataguru kī sīkha ||",
+      "text": "Begging and dependency are equal to death; let no one demean the soul by begging. To pass away with dignity is better than begging — this is the true master's counsel."
+    },
+    {
+      "ref": "1.25",
+      "original": "कबीरा खड़ा बाज़ार में, माँगे सबकी खैर ।\nना काहू से दोस्ती, ना काहू से बैर ॥",
+      "transliteration": "kabīrā khar̤ā bāzāra meṃ, mā~ge sabakī khaira | nā kāhū se dostī, nā kāhū se baira ||",
+      "text": "Kabir stands in the open marketplace of the world, praying for the welfare of all beings. Bearing friendship with no faction, and harboring enmity toward none."
+    },
+    {
+      "ref": "1.26",
+      "original": "सोना, सज्जन, साधु जन, टूटि जुड़ै सौ बार ।\nदुर्जन कुंभ कुम्हार के, एकै धका दरार ॥",
+      "transliteration": "sonā, sajjana, sādhu jana, ṭūṭi jur̤ai sau bāra | durjana kuṃbha kumhāra ke, ekai dhakā darāra ||",
+      "text": "Pure gold, noble souls, and holy saints mend together a hundred times though tested by strain. But the wicked are like the fragile earthen pot of a potter: one small knock shatters them forever."
+    },
+    {
+      "ref": "1.27",
+      "original": "झूठे को झूठा मिले, दूणा बंधे सनेह ।\nझूठे को सांचा मिले, तब ही टूटे नेह ॥",
+      "transliteration": "jhūṭhe ko jhūṭhā mile, dūṇā baṃdhe saneha | jhūṭhe ko sāṃcā mile, taba hī ṭūṭe neha ||",
+      "text": "When a deceiver meets another deceiver, their mutual bond doubles in worldly scheming. But when the deceiver meets a truthful soul, the false affection breaks at once."
+    },
+    {
+      "ref": "1.28",
+      "original": "सांच बराबर तप नहीं, झूठ बराबर पाप ।\nजाके हिरदै सांच है, ताके हिरदै आप ॥",
+      "transliteration": "sāṃca barābara tapa nahīṃ, jhūṭha barābara pāpa | jāke hiradai sāṃca hai, tāke hiradai āpa ||",
+      "text": "There is no austerity equal to Truth, and no sin equal to Falsehood. In whose heart Truth abides, in that heart the Divine Himself dwells."
+    },
+    {
+      "ref": "1.29",
+      "original": "प्रेम न बाड़ी उपजै, प्रेम न हाट बिकाय ।\nराजा परजा जो रुचै, सीस देइ लै जाय ॥",
+      "transliteration": "prema na bār̤ī upajai, prema na hāṭa bikāya | rājā parajā jo rucai, sīsa dei lai jāya ||",
+      "text": "Love grows not in farmed gardens, nor is Love sold in the city market. Whosoever desires it, be he king or pauper, must surrender his prideful head to attain it."
+    },
+    {
+      "ref": "1.30",
+      "original": "तन को जोगी सब करैं, मन को बिरला कोय ।\nसहजै सब बिधि पाइए, जो मन जोगी होय ॥",
+      "transliteration": "tana ko jogī saba karaiṃ, mana ko biralā koya | sahajai saba bidhi pāie, jo mana jogī hoya ||",
+      "text": "Anyone can clothe the physical body in ascetic saffron robes, but rare is one who disciplines the mind. All spiritual perfection is easily attained if the mind itself becomes an ascetic."
+    },
+    {
+      "ref": "1.31",
+      "original": "कबीर सूता क्या करे, जागो रोवो दुख ।\nजाका बासा गोर में, सो क्यों सोवे सुख ॥",
+      "transliteration": "kabīra sūtā kyā kare, jāgo rovo dukha | jākā bāsā gora meṃ, so kyoṃ sove sukha ||",
+      "text": "Why do you slumber in heedless ease, O soul? Awaken and weep over the passing of fleeting days! One whose final resting place is the grave, how can he sleep in careless pleasure?"
+    },
+    {
+      "ref": "1.32",
+      "original": "उठि बगुला क्या बैसि रहे, हंसा पाख उघारि ।\nजो तू हंसा है सखी, तो मोती चुग चुग खाहि ॥",
+      "transliteration": "uṭhi bagulā kyā baisi rahe, haṃsā pākha ughāri | jo tū haṃsā hai sakhī, to motī cuga cuga khāhi ||",
+      "text": "Why sit like a crane in muddy waters? Spread your wings like the royal swan! If you are indeed a swan, seek the lake of truth and feed on the pearls of wisdom."
+    },
+    {
+      "ref": "1.33",
+      "original": "हाड़ जलै ज्यों लाकड़ी, केस जलै ज्यों घास ।\nसब तन जलता देखि करि, भया कबीर उदास ॥",
+      "transliteration": "hār̤a jalai jyoṃ lākar̤ī, kesa jalai jyoṃ ghāsa | saba tana jalatā dekhi kari, bhayā kabīra udāsa ||",
+      "text": "The bones burn like dry firewood, and the hair burns away like withered grass. Beholding the temporary body consumed in flames, Kabir turned his heart toward the eternal."
+    },
+    {
+      "ref": "1.34",
+      "original": "जो तोको काँटा बुवै, ताहि बोइ तू फूल ।\nतोहि फूल को फूल है, वाको है त्रिसूल ॥",
+      "transliteration": "jo toko kā~ṭā buvai, tāhi boi tū phūla | tohi phūla ko phūla hai, vāko hai trisūla ||",
+      "text": "To him who plants thorns in your path, sow sweet flowers in return. For you, the reward will be flowers; for him, his own thorns will become a trident of sorrow."
+    },
+    {
+      "ref": "1.35",
+      "original": "कामी क्रोधी लालची, इनसे भक्ति न होय ।\nभक्ति करै कोई सूरमा, जाति बरन कुल खोय ॥",
+      "transliteration": "kāmī krodhī lālacī, inase bhakti na hoya | bhakti karai koī sūramā, jāti barana kula khoya ||",
+      "text": "The lustful, the wrathful, and the greedy cannot practice true devotion. Only a spiritual hero can walk the path of Bhakti, casting away caste, color, and pedigree."
+    },
+    {
+      "ref": "1.36",
+      "original": "नैना अंतर आव तू, ज्यों हौं नैन झँपेउँ ।\nना हौं देखौं और को, ना तोहि देखन देउँ ॥",
+      "transliteration": "nainā aṃtara āva tū, jyoṃ hauṃ naina jha~peu~ | nā hauṃ dekhauṃ aura ko, nā tohi dekhana deu~ ||",
+      "text": "Come into my eyes, O Beloved, so that I may gently close them. That I may gaze upon none other, nor allow anyone else to behold Your secret dwelling."
+    },
+    {
+      "ref": "1.37",
+      "original": "कबीर माया मोहिनी, जैसी मीठी खांड ।\nसद्गुरु की कृपा भई, नहीं तो करती भांड ॥",
+      "transliteration": "kabīra māyā mohinī, jaisī mīṭhī khāṃḍa | sadguru kī kṛpā bhaī, nahīṃ to karatī bhāṃḍa ||",
+      "text": "Kabir says: Maya is enchanting, alluring like sweet raw sugar. But the grace of the True Master saved me, else she would have brought me to ruin."
+    },
+    {
+      "ref": "1.38",
+      "original": "चित्त चकोर निसि दिन बसै, साहिब के परतीत ।\nज्यों चकोर अंगार चबै, तैसे राखै प्रीत ॥",
+      "transliteration": "citta cakora nisi dina basai, sāhiba ke paratīta | jyoṃ cakora aṃgāra cabai, taise rākhai prīta ||",
+      "text": "Day and night the heart abides like the chakora bird, unwavering in trust toward the Master. Just as the chakora swallows hot embers for love of the moon, so does he endure all trials for love."
+    },
+    {
+      "ref": "1.39",
+      "original": "दीपक जोया घट विखे, सूझा अगम अपार ।\nबिन बाटी बिन तेल के, जगमग करे उजार ॥",
+      "transliteration": "dīpaka joyā ghaṭa vikhe, sūjhā agama apāra | bina bāṭī bina tela ke, jagamaga kare ujāra ||",
+      "text": "I lit the divine lamp within my own heart, and the fathomless mystery was revealed: without wick and without oil, it radiates eternal and dazzling light."
+    },
+    {
+      "ref": "1.40",
+      "original": "चाह मिटी चिंता मिटी, मनवा बेपरवाह ।\nजाको कछु न चाहिए, सोई शहंशाह ॥",
+      "transliteration": "cāha miṭī ciṃtā miṭī, manavā beparavāha | jāko kachu na cāhie, soī śahaṃśāha ||",
+      "text": "Desire has ceased, anxiety has departed, and the mind is carefree and tranquil. He who craves nothing in this world is the true King of Kings."
+    },
+    {
+      "ref": "1.41",
+      "original": "मन के हारे हार है, मन के जीते जीत ।\nकहे कबीर हरि पाइए, मन ही की परतीत ॥",
+      "transliteration": "mana ke hāre hāra hai, mana ke jīte jīta | kahe kabīra hari pāie, mana hī kī paratīta ||",
+      "text": "Defeat lies in the surrender of the mind, and victory lies in mastering the mind. Says Kabir: The Divine is realized through the steadfast conviction and purity of the heart."
+    },
+    {
+      "ref": "1.42",
+      "original": "तीरथ गए ते एक फल, संत मिले फल चार ।\nसद्गुरु मिले अनेक फल, कहे कबीर विचार ॥",
+      "transliteration": "tīratha gae te eka phala, saṃta mile phala cāra | sadguru mile aneka phala, kahe kabīra vicāra ||",
+      "text": "Visiting holy pilgrimage sites bears a single fruit of merit; meeting a true saint bears fourfold merit. But encountering the True Guru bears infinite fruits — so contemplates Kabir."
+    },
+    {
+      "ref": "1.43",
+      "original": "कबीर यह घर प्रेम का, खाला का घर नाहिं ।\nसीस उतारे भुइँ धरे, तब पैठे घर माहिं ॥",
+      "transliteration": "kabīra yaha ghara prema kā, khālā kā ghara nāhiṃ | sīsa utāre bhui~ dhare, taba paiṭhe ghara māhiṃ ||",
+      "text": "Kabir says: This is the sacred abode of Love, not the home of an indulgent aunt. Only he who severs his ego and lays down his pride can enter this sanctuary."
+    },
+    {
+      "ref": "1.44",
+      "original": "रूखा सूखा खाय के, ठंडा पानी पीव ।\nदेखि पराई चूपड़ी, मत ललचावै जीव ॥",
+      "transliteration": "rūkhā sūkhā khāya ke, ṭhaṃḍā pānī pīva | dekhi parāī cūpar̤ī, mata lalacāvai jīva ||",
+      "text": "Eat your simple dry bread with gratitude, and drink cool refreshing water. Beholding the buttered feasts of others, let your soul never covet nor envy."
+    },
+    {
+      "ref": "1.45",
+      "original": "माली आवत देख के, कलियान करी पुकार ।\nफूले फूले चुन लिए, कालि हमारी बार ॥",
+      "transliteration": "mālī āvata dekha ke, kaliyāna karī pukāra | phūle phūle cuna lie, kāli hamārī bāra ||",
+      "text": "Seeing the gardener approaching, the young flower buds cry out: 'Today he plucks the blossomed flowers; tomorrow will surely be our turn!'"
+    },
+    {
+      "ref": "1.46",
+      "original": "कबीर नौका बाण की, पाहन बांधी भार ।\nचढ़ि बैठे बिच धार में, कैसे उतरे पार ॥",
+      "transliteration": "kabīra naukā bāṇa kī, pāhana bāṃdhī bhāra | car̤hi baiṭhe bica dhāra meṃ, kaise utare pāra ||",
+      "text": "People board a frail vessel made of arrows, loaded heavily with weights of stone. How can they cross the turbulent river of worldly transmigrations without the grace of the Guru?"
+    },
+    {
+      "ref": "1.47",
+      "original": "गुरु कुम्हार शिष कुंभ है, गढ़ि गढ़ि काढ़ै खोट ।\nअन्तर हाथ सहार दै, बाहर बाहै चोट ॥",
+      "transliteration": "guru kumhāra śiṣa kuṃbha hai, gar̤hi gar̤hi kār̤hai khoṭa | antara hātha sahāra dai, bāhara bāhai coṭa ||",
+      "text": "The Guru is the potter and the disciple is the vessel, skillfully shaping away every hidden flaw. Supporting with one hand from within, while firmly shaping with strokes from without."
+    },
+    {
+      "ref": "1.48",
+      "original": "जा घट प्रेम न संचरै, सो घट जानु मसान ।\nजैसे खाल लोहार की, सांस लेत बिनु प्रान ॥",
+      "transliteration": "jā ghaṭa prema na saṃcarai, so ghaṭa jānu masāna | jaise khāla lohāra kī, sāṃsa leta binu prāna ||",
+      "text": "That heart in which love flows not is verily like a desolate cremation ground. Like the bellows of a blacksmith, it breathes in and out devoid of true life."
+    },
+    {
+      "ref": "1.49",
+      "original": "कबीर मन निरमल भया, जैसे गंगा नीर ।\nपाछे पाछे हरि फिरै, कहत कबीर कबीर ॥",
+      "transliteration": "kabīra mana niramala bhayā, jaise gaṃgā nīra | pāche pāche hari phirai, kahata kabīra kabīra ||",
+      "text": "Kabir's mind has become spotless and pristine, pure as the water of the holy Ganga. Now the Supreme Lord Himself follows close behind, calling out: 'Kabir, Kabir!'"
+    },
+    {
+      "ref": "1.50",
+      "original": "सद्गुरु हम सूं रीझि करि, एक कह्या प्रसंग ।\nबरस्या बादल प्रेम का, भीजि गया सब अंग ॥",
+      "transliteration": "sadguru hama sūṃ rījhi kari, eka kahyā prasaṃga | barasyā bādala prema kā, bhīji gayā saba aṃga ||",
+      "text": "Delighted with my longing, the True Guru spoke a single profound mystery. A cloud of divine Love showered down, drenching every pore of my being in bliss."
     }
   ]
 }

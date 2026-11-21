@@ -1,16 +1,472 @@
 {
   "corpus_id": "shaiva_kashmir",
-  "doc_id": "shiva_sutras_1",
-  "title": "Shiva Sutras",
-  "source_name": "Vasugupta",
+  "doc_id": "shiva_sutras_vasugupta",
+  "title": "Shiva Sutras of Vasugupta",
+  "source_name": "Vasugupta / Kashmir Shaivism",
   "language": "sa",
-  "tradition": "Kashmir Shaivism",
+  "tradition": "Hinduism",
   "content": [
     {
       "ref": "1.1",
-      "sanskrit": "चैतन्यमात्मा",
-      "transliteration": "caitanyamātmā",
-      "text": "Consciousness is the self."
+      "sanskrit": "चैतन्यमात्मा ।",
+      "transliteration": "caitanyamātmā |",
+      "text": "Consciousness is the Self."
+    },
+    {
+      "ref": "1.2",
+      "sanskrit": "ज्ञानं बन्धः ।",
+      "transliteration": "jñānaṃ bandhaḥ |",
+      "text": "Limited knowledge is bondage."
+    },
+    {
+      "ref": "1.3",
+      "sanskrit": "योनिवर्गः शरीरम् ।",
+      "transliteration": "yonivargaḥ śarīram |",
+      "text": "The group of causal sources (the matrix of speech and elements) constitutes the body of ignorance."
+    },
+    {
+      "ref": "1.4",
+      "sanskrit": "ज्ञानाधिष्ठानं मातृका ।",
+      "transliteration": "jñānādhiṣṭhānaṃ mātṛkā |",
+      "text": "The foundation of all limited knowledge is Matrika, the uncomprehended power of sound and letters."
+    },
+    {
+      "ref": "1.5",
+      "sanskrit": "उद्यमो भैरवः ।",
+      "transliteration": "udyamo bhairavaḥ |",
+      "text": "A flash of supreme intuitive awareness (udayama) is Bhairava Himself."
+    },
+    {
+      "ref": "1.6",
+      "sanskrit": "शक्तिचक्रसन्धाने विश्वसंहारः ।",
+      "transliteration": "śakticakrasandhāne viśvasaṃhāraḥ |",
+      "text": "Through union with the wheel of divine energies, the dissolution of the objective universe takes place."
+    },
+    {
+      "ref": "1.7",
+      "sanskrit": "जाग्रत्स्वप्नसुषुप्तभेदे तुर्याभोगसंभवः ।",
+      "transliteration": "jāgratsvapnasuṣuptabhede turyābhogasaṃbhavaḥ |",
+      "text": "Through the differentiation of waking, dreaming, and deep sleep, the continuous bliss of Turiya (the fourth state) is experienced."
+    },
+    {
+      "ref": "1.8",
+      "sanskrit": "ज्ञानं जाग्रत् ।",
+      "transliteration": "jñānaṃ jāgrat |",
+      "text": "Common sensory knowledge constitutes the waking state."
+    },
+    {
+      "ref": "1.9",
+      "sanskrit": "स्वप्नो विकल्पाः ।",
+      "transliteration": "svapno vikalpāḥ |",
+      "text": "Vague conceptual imagination constitutes the dream state."
+    },
+    {
+      "ref": "1.10",
+      "sanskrit": "अविवेको मायासौषुप्तम् ।",
+      "transliteration": "aviveko māyāsauṣuptam |",
+      "text": "Lack of discernment and unawareness of reality constitutes deep sleep (sushupti)."
+    },
+    {
+      "ref": "1.11",
+      "sanskrit": "त्रितयभोक्ता वीरेशः ।",
+      "transliteration": "tritayabhoktā vīreśaḥ |",
+      "text": "He who is the conscious master and consumer of all three states is the lord of heroes (Viresha)."
+    },
+    {
+      "ref": "1.12",
+      "sanskrit": "विस्मयो योगभूमिकाः ।",
+      "transliteration": "vismayo yogabhūmikāḥ |",
+      "text": "The planes of yogic realization are characterized by supreme wonder (vismaya)."
+    },
+    {
+      "ref": "1.13",
+      "sanskrit": "इच्छा शक्तिरुमा कुमारी ।",
+      "transliteration": "icchā śaktirumā kumārī |",
+      "text": "His divine will (iccha-shakti) is Uma, the ever-youthful, immaculate goddess."
+    },
+    {
+      "ref": "1.14",
+      "sanskrit": "दृश्यं शरीरम् ।",
+      "transliteration": "dṛśyaṃ śarīram |",
+      "text": "All perceptible phenomena are experienced as His own cosmic body."
+    },
+    {
+      "ref": "1.15",
+      "sanskrit": "हृदये चित्तसंघट्टाद् दृश्यस्वापदर्शनम् ।",
+      "transliteration": "hṛdaye cittasaṃghaṭṭād dṛśyasvāpadarśanam |",
+      "text": "By unifying the mind in the spiritual heart-center, perception of external forms and inner void dissolves into pure light."
+    },
+    {
+      "ref": "1.16",
+      "sanskrit": "शुद्धतत्त्वसन्धानाद् वाऽपशुशक्तिः ।",
+      "transliteration": "śuddhatattvasandhānād vā'paśuśaktiḥ |",
+      "text": "By steadfast focus on the pure transcendental reality (Shuddhatattva), freedom from the bound condition (pashu-shakti) is achieved."
+    },
+    {
+      "ref": "1.17",
+      "sanskrit": "वितर्क आत्मज्ञानम् ।",
+      "transliteration": "vitarka ātmajñānam |",
+      "text": "Unshakable, spontaneous conviction of one's divinity is true Self-knowledge."
+    },
+    {
+      "ref": "1.18",
+      "sanskrit": "लोकानन्दः समाधिसुखम् ।",
+      "transliteration": "lokānandaḥ samādhisukham |",
+      "text": "The pervasive bliss of the world becomes the bliss of his continuous absorption (samadhi)."
+    },
+    {
+      "ref": "1.19",
+      "sanskrit": "शक्तिसन्धाने शरीरोत्पत्तिः ।",
+      "transliteration": "śaktisandhāne śarīrotpattiḥ |",
+      "text": "By contemplation on the supreme divine energy, any desired form or reality can be brought forth."
+    },
+    {
+      "ref": "1.20",
+      "sanskrit": "भूतसन्धान भूतपृथक्त्व विश्वसङ्घट्टाः ।",
+      "transliteration": "bhūtasandhāna bhūtapṛthaktva viśvasaṅghaṭṭāḥ |",
+      "text": "He masters the union of elements, the dissolution of elements, and the synthesis of the cosmos."
+    },
+    {
+      "ref": "1.21",
+      "sanskrit": "शुद्धविद्योदयाच्चक्रेशत्वसिद्धिः ।",
+      "transliteration": "śuddhavidyodayāccakreśatvasiddhiḥ |",
+      "text": "Upon the rise of pure unconditioned knowledge (Shuddhavidya), mastery over the cosmic wheel of energies is attained."
+    },
+    {
+      "ref": "1.22",
+      "sanskrit": "महाह्रदानुसन्धानान्मन्त्रवीर्यानुभवः ।",
+      "transliteration": "mahāhradānusandhānānmantravīryānubhavaḥ |",
+      "text": "By immersing awareness in the vast lake of cosmic consciousness, the living potency of all sacred mantras is directly realized."
+    },
+    {
+      "ref": "2.1",
+      "sanskrit": "चित्तं मन्त्रः ।",
+      "transliteration": "cittaṃ mantraḥ |",
+      "text": "The mind deeply absorbed in the divine essence is itself the mantra."
+    },
+    {
+      "ref": "2.2",
+      "sanskrit": "प्रयत्नः साधकः ।",
+      "transliteration": "prayatnaḥ sādhakaḥ |",
+      "text": "Zealous, spontaneous effort in awareness is the true practitioner."
+    },
+    {
+      "ref": "2.3",
+      "sanskrit": "विद्याशरीरसत्ता मन्त्ररहस्यम् ।",
+      "transliteration": "vidyāśarīrasattā mantrarahasyam |",
+      "text": "The luminous reality of the body of divine knowledge is the secret of all mantras."
+    },
+    {
+      "ref": "2.4",
+      "sanskrit": "गर्भे चित्तविकासोऽविशिष्टविद्यास्वप्नः ।",
+      "transliteration": "garbhe cittavikāso'viśiṣṭavidyāsvapnaḥ |",
+      "text": "The expansion of consciousness within the womb of Maya without full awakening is mere dream-like knowledge."
+    },
+    {
+      "ref": "2.5",
+      "sanskrit": "विद्यासमुत्थाने स्वाभाविकै खेचरी शिवावस्था ।",
+      "transliteration": "vidyāsamutthāne svābhāvikai khecarī śivāvasthā |",
+      "text": "When pure knowledge spontaneously dawns, the khechari mudra (soaring in the sky of consciousness) reveals the state of Shiva."
+    },
+    {
+      "ref": "2.6",
+      "sanskrit": "गुरुुरुपायः ।",
+      "transliteration": "guruurupāyaḥ |",
+      "text": "The enlightened Guru is the direct means to liberation."
+    },
+    {
+      "ref": "2.7",
+      "sanskrit": "मातृकाचक्रसम्बोधः ।",
+      "transliteration": "mātṛkācakrasambodhaḥ |",
+      "text": "He attains the awakening and illumination of the secret wheel of Matrika."
+    },
+    {
+      "ref": "2.8",
+      "sanskrit": "शरीरं हविः ।",
+      "transliteration": "śarīraṃ haviḥ |",
+      "text": "The yogi's physical body becomes the sacred sacrificial offering in the fire of consciousness."
+    },
+    {
+      "ref": "2.9",
+      "sanskrit": "ज्ञानमन्नम् ।",
+      "transliteration": "jñānamannam |",
+      "text": "The objective universe of knowledge becomes his spiritual food."
+    },
+    {
+      "ref": "2.10",
+      "sanskrit": "विद्यासंहारे तदुत्थस्वप्नदर्शनम् ।",
+      "transliteration": "vidyāsaṃhāre tadutthasvapnadarśanam |",
+      "text": "With the withdrawal of objective knowledge, dream-like appearances arising from it dissolve into stillness."
+    },
+    {
+      "ref": "3.1",
+      "sanskrit": "आत्मा चित्तम् ।",
+      "transliteration": "ātmā cittam |",
+      "text": "The individual soul bound in worldly transmigrations identifies itself as the finite mind."
+    },
+    {
+      "ref": "3.2",
+      "sanskrit": "ज्ञानं बन्धः ।",
+      "transliteration": "jñānaṃ bandhaḥ |",
+      "text": "Its attachment to dualistic, fragmented knowledge is its bondage."
+    },
+    {
+      "ref": "3.3",
+      "sanskrit": "कलादीनां तत्त्वानामविवेको माया ।",
+      "transliteration": "kalādīnāṃ tattvānāmaviveko māyā |",
+      "text": "Non-discernment of principles such as Kala and Maya creates worldly illusion."
+    },
+    {
+      "ref": "3.4",
+      "sanskrit": "शरीरे संहारः कलानाम् ।",
+      "transliteration": "śarīre saṃhāraḥ kalānām |",
+      "text": "In the physical body, the dissolution of limiting factors (kalas) is to be meditated upon."
+    },
+    {
+      "ref": "3.5",
+      "sanskrit": "नाडीसंहारभूतजयभूतकैवल्यभूतपृथक्त्वानि ।",
+      "transliteration": "nāḍīsaṃhārabhūtajayabhūtakaivalyabhūtapṛthaktvāni |",
+      "text": "The dissolution of pranic nadis, mastery of gross elements, detachment from elements, and separation of components are mastered."
+    },
+    {
+      "ref": "3.6",
+      "sanskrit": "मोहावरणात् सिद्धिः ।",
+      "transliteration": "mohāvaraṇāt siddhiḥ |",
+      "text": "Supernatural powers arise from the veil of spiritual delusion; they are not ultimate freedom."
+    },
+    {
+      "ref": "3.7",
+      "sanskrit": "मोहजयादनन्ताभोगात् सहजविद्याजयः ।",
+      "transliteration": "mohajayādanantābhogāt sahajavidyājayaḥ |",
+      "text": "By conquering delusion and expanding into infinite bliss, mastery of natural, innate wisdom is achieved."
+    },
+    {
+      "ref": "3.8",
+      "sanskrit": "जाग्रद् द्वितीयकरः ।",
+      "transliteration": "jāgrad dvitīyakaraḥ |",
+      "text": "The waking world is experienced merely as a secondary radiance of his own Self."
+    },
+    {
+      "ref": "3.9",
+      "sanskrit": "नर्तक आत्मा ।",
+      "transliteration": "nartaka ātmā |",
+      "text": "The Self is the cosmic actor/dancer, performing all roles across the stage of existence."
+    },
+    {
+      "ref": "3.10",
+      "sanskrit": "रङ्गोऽन्तरात्मा ।",
+      "transliteration": "raṅgo'ntarātmā |",
+      "text": "The inner, subtle soul is the sacred stage upon which the cosmic play unfolds."
+    },
+    {
+      "ref": "3.11",
+      "sanskrit": "इन्द्रियाणि प्रेक्षकाणि ।",
+      "transliteration": "indriyāṇi prekṣakāṇi |",
+      "text": "The sensory organs are the spectators beholding the divine drama."
+    },
+    {
+      "ref": "3.12",
+      "sanskrit": "धीवशात् सत्त्वसिद्धिः ।",
+      "transliteration": "dhīvaśāt sattvasiddhiḥ |",
+      "text": "By means of refined, illumined intellect, the state of pure sattva is firmly established."
+    },
+    {
+      "ref": "3.13",
+      "sanskrit": "सिद्धः स्वतन्त्रभावः ।",
+      "transliteration": "siddhaḥ svatantrabhāvaḥ |",
+      "text": "The perfected being achieves absolute, unhindered freedom (svatantrya)."
+    },
+    {
+      "ref": "3.14",
+      "sanskrit": "यथा तत्र तथान्यत्र ।",
+      "transliteration": "yathā tatra tathānyatra |",
+      "text": "As is his state in divine absorption, so is it in every other circumstance and place."
+    },
+    {
+      "ref": "3.15",
+      "sanskrit": "विसर्गस्वाभाव्याद् बहिरपि सम्भवः ।",
+      "transliteration": "visargasvābhāvyād bahirapi sambhavaḥ |",
+      "text": "Owing to the natural radiation of divine consciousness, creation manifests outwardly without diminishing the source."
+    },
+    {
+      "ref": "3.16",
+      "sanskrit": "बीजावधानम् ।",
+      "transliteration": "bījāvadhānam |",
+      "text": "Steadfast meditation upon the primal seed of consciousness is practiced."
+    },
+    {
+      "ref": "3.17",
+      "sanskrit": "आसनस्थः सुखं ह्रदे निमज्जति ।",
+      "transliteration": "āsanasthaḥ sukhaṃ hrade nimajjati |",
+      "text": "Established in the firm seat of divine awareness, he immerses effortlessly in the lake of immortal nectar."
+    },
+    {
+      "ref": "3.18",
+      "sanskrit": "स्वमात्रानिर्माणमापादयति ।",
+      "transliteration": "svamātrānirmāṇamāpādayati |",
+      "text": "He creates and manifests according to his own cosmic measure and will."
+    },
+    {
+      "ref": "3.19",
+      "sanskrit": "विद्याविनाशे जन्मविनाशः ।",
+      "transliteration": "vidyāvināśe janmavināśaḥ |",
+      "text": "With the eradication of binding ignorance, rebirth in worldly suffering is permanently destroyed."
+    },
+    {
+      "ref": "3.20",
+      "sanskrit": "कवर्गादिषु माहेश्वर्याद्याः पशुमातरः ।",
+      "transliteration": "kavargādiṣu māheśvaryādyāḥ paśumātaraḥ |",
+      "text": "In the letters of the alphabet from the ka-group onwards, deities like Maheshvari act as mothers binding the unawakened soul."
+    },
+    {
+      "ref": "3.21",
+      "sanskrit": "त्रिषु चतुर्थं तैलवदासञ्च्यम् ।",
+      "transliteration": "triṣu caturthaṃ tailavadāsañcyam |",
+      "text": "Throughout the three states of waking, dreaming, and sleeping, the fourth state (Turiya) should be poured continuously like a stream of oil."
+    },
+    {
+      "ref": "3.22",
+      "sanskrit": "मग्नः स्वचित्तेन प्रविशेत् ।",
+      "transliteration": "magnaḥ svacittena praviśet |",
+      "text": "Submerged in his own purified consciousness, he enters the innermost sanctuary of reality."
+    },
+    {
+      "ref": "3.23",
+      "sanskrit": "प्राणसमाचारे समदर्शनम् ।",
+      "transliteration": "prāṇasamācāre samadarśanam |",
+      "text": "When the flow of life-breath (prana) becomes harmonized, the vision of cosmic equality dawns."
+    },
+    {
+      "ref": "3.24",
+      "sanskrit": "मध्येऽवरप्रसवः ।",
+      "transliteration": "madhye'varaprasavaḥ |",
+      "text": "By resting awareness in the central spiritual channel (sushumna), lower instinctive impulses cease to arise."
+    },
+    {
+      "ref": "3.25",
+      "sanskrit": "मात्रास्वप्रत्ययसन्धाने नष्टस्य पुनरुत्थानम् ।",
+      "transliteration": "mātrāsvapratyayasandhāne naṣṭasya punarutthānam |",
+      "text": "By reconnecting fragmented thoughts with the original source, that which was lost is restored to divine life."
+    },
+    {
+      "ref": "3.26",
+      "sanskrit": "शिवतुल्यो जायते ।",
+      "transliteration": "śivatulyo jāyate |",
+      "text": "He becomes equal to Shiva Himself."
+    },
+    {
+      "ref": "3.27",
+      "sanskrit": "शरीरवृत्तिर्व्रतम् ।",
+      "transliteration": "śarīravṛttirvratam |",
+      "text": "His very bodily life becomes his sacred vow and worship."
+    },
+    {
+      "ref": "3.28",
+      "sanskrit": "कथा जपः ।",
+      "transliteration": "kathā japaḥ |",
+      "text": "His spontaneous, natural speech becomes the recitation of holy mantra (japa)."
+    },
+    {
+      "ref": "3.29",
+      "sanskrit": "दानमात्मज्ञानम् ।",
+      "transliteration": "dānamātmajñānam |",
+      "text": "His gift to the world is the sharing of Self-knowledge."
+    },
+    {
+      "ref": "3.30",
+      "sanskrit": "योऽविपस्थो ज्ञाहेतुश्च ।",
+      "transliteration": "yo'vipastho jñāhetuśca |",
+      "text": "He who abides unswerving in awareness is the true source of awakening for others."
+    },
+    {
+      "ref": "3.31",
+      "sanskrit": "स्वशक्तिप्रचयोऽस्य विश्वम् ।",
+      "transliteration": "svaśaktipracayo'sya viśvam |",
+      "text": "The manifested universe is recognized as the unfolding play of his own divine energy."
+    },
+    {
+      "ref": "3.32",
+      "sanskrit": "स्थितिलयौ ।",
+      "transliteration": "sthitilayau |",
+      "text": "Both the maintenance and dissolution of worldly appearances are within his conscious domain."
+    },
+    {
+      "ref": "3.33",
+      "sanskrit": "तथा प्रवृत्तावप्यनिरासः संवेत्तृभावात् ।",
+      "transliteration": "tathā pravṛttāvapyanirāsaḥ saṃvettṛbhāvāt |",
+      "text": "Even while actively engaged in worldly affairs, his awareness remains unbroken because he never departs from the knower."
+    },
+    {
+      "ref": "3.34",
+      "sanskrit": "सुखदुःखयोर्बहिर्मननम् ।",
+      "transliteration": "sukhaduḥkhayorbahirmananam |",
+      "text": "Pleasure and pain are perceived purely as external phenomena, touching not the inner Self."
+    },
+    {
+      "ref": "3.35",
+      "sanskrit": "तद्विमुक्तस्तु केवली ।",
+      "transliteration": "tadvimuktastu kevalī |",
+      "text": "Freed completely from pleasure, pain, and dualities, he is truly alone and complete (kevali)."
+    },
+    {
+      "ref": "3.36",
+      "sanskrit": "मोहप्रतिसंहतस्तु कर्मात्मा ।",
+      "transliteration": "mohapratisaṃhatastu karmātmā |",
+      "text": "He whose awareness is constricted by delusion remains bound to the reactions of karma."
+    },
+    {
+      "ref": "3.37",
+      "sanskrit": "भेदतिरस्कारे संहारान्तरोत्पत्तिः ।",
+      "transliteration": "bhedatiraskāre saṃhārāntarotpattiḥ |",
+      "text": "When all distinctions are transcended, the capacity for creating a new spiritual world appears."
+    },
+    {
+      "ref": "3.38",
+      "sanskrit": "करणशक्तिः स्वतोऽनुभवात् ।",
+      "transliteration": "karaṇaśaktiḥ svato'nubhavāt |",
+      "text": "The creative power of the senses is experienced directly as an extension of one's own will."
+    },
+    {
+      "ref": "3.39",
+      "sanskrit": "त्रिपुरावच्छेदाद् व्यापकता ।",
+      "transliteration": "tripurāvacchedād vyāpakatā |",
+      "text": "By transcending the three states of experience, omnipresence is fully realized."
+    },
+    {
+      "ref": "3.40",
+      "sanskrit": "आयत्तचित्तस्य तस्य सर्वत्रानिरुद्धता ।",
+      "transliteration": "āyattacittasya tasya sarvatrāniruddhatā |",
+      "text": "For him whose mind is surrendered to divine consciousness, there is no obstruction anywhere in the three worlds."
+    },
+    {
+      "ref": "3.41",
+      "sanskrit": "तदारूढप्रमत्तस्य तु प्रपञ्चो बन्धाय ।",
+      "transliteration": "tadārūḍhapramattasya tu prapañco bandhāya |",
+      "text": "If one who has ascended to this awareness becomes careless, worldly distraction binds him once again."
+    },
+    {
+      "ref": "3.42",
+      "sanskrit": "सदा जाग्रतो न कश्चिद् दोषः ।",
+      "transliteration": "sadā jāgrato na kaścid doṣaḥ |",
+      "text": "For one who remains ever vigilant in divine awareness, no fault or affliction can ever arise."
+    },
+    {
+      "ref": "3.43",
+      "sanskrit": "अखण्डानन्दनिर्भरः शिव एव भवति ।",
+      "transliteration": "akhaṇḍānandanirbharaḥ śiva eva bhavati |",
+      "text": "Filled with unbroken, sovereign bliss, he is Shiva Himself."
+    },
+    {
+      "ref": "3.44",
+      "sanskrit": "सर्वज्ञः सर्वकर्त्ता च शिवतुल्यो न संशयः ।",
+      "transliteration": "sarvajñaḥ sarvakarttā ca śivatulyo na saṃśayaḥ |",
+      "text": "Omniscient and all-powerful, he is indistinguishable from Shiva; of this there is no doubt."
+    },
+    {
+      "ref": "3.45",
+      "sanskrit": "इति शिवसूत्राणि समाप्तानि ।",
+      "transliteration": "iti śivasūtrāṇi samāptāni |",
+      "text": "Thus conclude the Shiva Sutras of Vasugupta."
     }
   ]
 }
