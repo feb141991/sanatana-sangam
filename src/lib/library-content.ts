@@ -1272,6 +1272,7 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   ...VISHNU_SAHASRANAMA_ENTRIES,
   // Epic / Devotional
   ...RAMAYANA_ENTRIES,
+  ...RAMAYANA_COMPLETE_ENTRIES.filter(e => !RAMAYANA_ENTRIES.some(r => r.id === e.id)),
   ...RAMCHARITMANAS_ENTRIES,
   // Upanishads & Vedas
   ...UPANISHAD_ENTRIES,
@@ -1282,6 +1283,7 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   ...SHIVA_PURANA_ENTRIES,
   // Shakta
   ...SHAKTA_ENTRIES,
+  ...DEVI_MAHATMYAM_ENTRIES.filter(e => !SHAKTA_ENTRIES.some(s => s.id === e.id)),
   // Stotras & Mantras (mixed)
   ...STOTRA_ENTRIES,
   // Yoga
@@ -1291,6 +1293,12 @@ export const ALL_LIBRARY_ENTRIES: LibraryEntry[] = [
   // Sikh
   ...GURBANI_ENTRIES,
   ...NITNEM_ENTRIES,
+  ...JAPJI_SAHIB_ENTRIES.filter(e => !GURBANI_ENTRIES.some(g => g.id === e.id)),
+  ...SUKHMANI_SAHIB_ENTRIES.filter(e => !GURBANI_ENTRIES.some(g => g.id === e.id)),
+  ...ASA_DI_VAR_ENTRIES.filter(e => !GURBANI_ENTRIES.some(g => g.id === e.id)),
+  ...JAAP_SAHIB_ENTRIES.filter(e => !GURBANI_ENTRIES.some(g => g.id === e.id)),
+  ...CHAUPAI_SAHIB_ENTRIES.filter(e => !GURBANI_ENTRIES.some(g => g.id === e.id)),
+  ...ANAND_SAHIB_ENTRIES.filter(e => !GURBANI_ENTRIES.some(g => g.id === e.id)),
   // Buddhist
   ...BUDDHIST_ENTRIES,
   ...BUDDHIST_ADDITIONAL_ENTRIES,
@@ -1358,7 +1366,7 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   { id: 'puranas',            title: 'Mahapuranas',           emoji: '🔱', tradition: 'hindu',    category: 'purana',             desc: 'Wisdom from Shiva, Vishnu, and Devi Puranas',   count: PURANA_ENTRIES.length },
   { id: 'vishnu_sahasranama', title: 'Vishnu Sahasranama',    emoji: '🔱', tradition: 'hindu',    category: 'vishnu_sahasranama', desc: 'The thousand names of Vishnu — from the Mahabharata',                      count: VISHNU_SAHASRANAMA_ENTRIES.length },
   // ── Epic ─────────────────────────────────────────────────────────────────────
-  { id: 'ramayana',           title: 'Valmiki Ramayana',      emoji: '🏹', tradition: 'hindu',    category: 'ramayana',           desc: 'Valmiki\'s epic — the ideal life of Shri Rama',                            count: RAMAYANA_ENTRIES.length },
+  { id: 'ramayana',           title: 'Valmiki Ramayana',      emoji: '🏹', tradition: 'hindu',    category: 'ramayana',           desc: 'Valmiki\'s epic — the ideal life of Shri Rama',                            count: RAMAYANA_COMPLETE_ENTRIES.length },
   { id: 'ramcharitmanas',     title: 'Ramcharitmanas',        emoji: '🪔', tradition: 'hindu',    category: 'ramcharitmanas',     desc: 'Tulsidas\' devotional retelling — Hanuman Chalisa, dohas & chaupais',       count: RAMCHARITMANAS_ENTRIES.length },
   // ── Vedic & Upanishadic ───────────────────────────────────────────────────────
   { id: 'upanishad',          title: 'Upanishads',            emoji: '📿', tradition: 'hindu',    category: 'upanishad',          desc: 'The wisdom texts — Brahman, Atman & the Mahavakyas',                       count: UPANISHAD_ENTRIES.length },
@@ -1369,11 +1377,11 @@ export const LIBRARY_SECTIONS: LibrarySection[] = [
   // ── Shaiva ───────────────────────────────────────────────────────────────────
   { id: 'shiva_purana',       title: 'Shaiva Scriptures',     emoji: '🌙', tradition: 'hindu',    category: 'shiva_purana',       desc: 'Rudrashtakam, Lingashtakam, Mahimna Stotram & Panchakshara',               count: SHAIVA_ENTRIES.length + SHIVA_PURANA_ENTRIES.length },
   // ── Shakta ───────────────────────────────────────────────────────────────────
-  { id: 'shakta',             title: 'Shakta Scriptures',     emoji: '🌺', tradition: 'hindu',    category: 'shakta',             desc: 'Devi Mahatmyam, Lalita Sahasranama & hymns to the Divine Mother',          count: SHAKTA_ENTRIES.length },
+  { id: 'shakta',             title: 'Shakta Scriptures',     emoji: '🌺', tradition: 'hindu',    category: 'shakta',             desc: 'Devi Mahatmyam, Lalita Sahasranama & hymns to the Divine Mother',          count: SHAKTA_ENTRIES.length + DEVI_MAHATMYAM_ENTRIES.length },
   // ── Mixed Stotras ─────────────────────────────────────────────────────────────
   { id: 'stotra',             title: 'Stotras & Mantras',     emoji: '🕉️', tradition: 'hindu',    category: 'stotra',             desc: 'Gayatri, Mahamrityunjaya, Hanuman Chalisa & universal mantras',            count: STOTRA_ENTRIES.length },
   // ── Sikh ─────────────────────────────────────────────────────────────────────
-  { id: 'gurbani',            title: 'Nitnem & Gurbani',      emoji: '☬', tradition: 'sikh',     category: 'gurbani',            desc: 'The sacred hymns of the Guru Granth Sahib — Japji, Anand & daily Nitnem', count: GURBANI_ENTRIES.length + NITNEM_ENTRIES.length },
+  { id: 'gurbani',            title: 'Nitnem & Gurbani',      emoji: '☬', tradition: 'sikh',     category: 'gurbani',            desc: 'The sacred hymns of the Guru Granth Sahib — Japji, Anand & daily Nitnem', count: GURBANI_ENTRIES.length + NITNEM_ENTRIES.length + JAPJI_SAHIB_ENTRIES.length + SUKHMANI_SAHIB_ENTRIES.length + ASA_DI_VAR_ENTRIES.length + JAAP_SAHIB_ENTRIES.length + CHAUPAI_SAHIB_ENTRIES.length + ANAND_SAHIB_ENTRIES.length },
   // ── Buddhist ─────────────────────────────────────────────────────────────────
   { id: 'dhammapada',         title: 'Buddhist Suttas',       emoji: '☸️', tradition: 'buddhist', category: 'buddhist_foundations', desc: 'Dhammapada, Heart Sutra, Metta Sutta & early Dhamma teachings',           count: BUDDHIST_ENTRIES.length + BUDDHIST_ADDITIONAL_ENTRIES.length + DHAMMAPADA_ENTRIES.length + NOBLE_TRUTHS_ENTRIES.length + HEART_SUTRA_ENTRIES.length + METTA_SUTTA_ENTRIES.length + SATIPATTHANA_ENTRIES.length + EIGHTFOLD_PATH_ENTRIES.length + JATAKA_TALES_ENTRIES.length },
   // ── Jain ─────────────────────────────────────────────────────────────────────

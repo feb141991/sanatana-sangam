@@ -67,7 +67,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'nitnem-daily': {
-      const gurbaniEntries = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'gurbani' || e.category === 'nitnem');
+      const gurbaniEntries = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'nitnem' || (e.tradition === 'sikh' && e.tags.includes('nitnem')));
       const result: Lesson[] = [];
       for (let i = 0; i < gurbaniEntries.length; i += ENTRIES_PER_LESSON) {
         result.push({ title: `Nitnem Session ${Math.floor(i / ENTRIES_PER_LESSON) + 1}`, entries: gurbaniEntries.slice(i, i + ENTRIES_PER_LESSON) });
@@ -76,25 +76,57 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'dhammapada-path': {
-      const dhamma = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'dhammapada');
-      const result: Lesson[] = [];
-      for (let i = 0; i < dhamma.length; i += ENTRIES_PER_LESSON) {
-        result.push({ title: `Chapter ${Math.floor(i / ENTRIES_PER_LESSON) + 1} — Dhammapada`, entries: dhamma.slice(i, i + ENTRIES_PER_LESSON) });
-      }
-      return result.length > 0 ? result : [{ title: 'Dhammapada', entries: dhamma.slice(0, 4) }];
+      const chapters = Array.from({ length: 26 }, (_, i) => i + 1);
+      const chapterNames = [
+        'Yamaka Vagga (Twin Verses)',
+        'Appamada Vagga (Heedfulness)',
+        'Citta Vagga (The Mind)',
+        'Puppha Vagga (Flowers)',
+        'Bala Vagga (The Fool)',
+        'Pandita Vagga (The Wise)',
+        'Arahanta Vagga (The Arhat)',
+        'Sahassa Vagga (The Thousands)',
+        'Papa Vagga (Evil)',
+        'Danda Vagga (The Rod / Punishment)',
+        'Jara Vagga (Old Age)',
+        'Atta Vagga (The Self)',
+        'Loka Vagga (The World)',
+        'Buddha Vagga (The Awakened One)',
+        'Sukha Vagga (Happiness)',
+        'Piya Vagga (Affection)',
+        'Kodha Vagga (Anger)',
+        'Mala Vagga (Impurity)',
+        'Dhammattha Vagga (The Just)',
+        'Magga Vagga (The Path)',
+        'Pakinnaka Vagga (Miscellaneous)',
+        'Niraya Vagga (The Downward Path)',
+        'Naga Vagga (The Elephant)',
+        'Tanha Vagga (Craving)',
+        'Bhikkhu Vagga (The Monastic)',
+        'Brahmana Vagga (The Holy One)',
+      ];
+      return chapters.map((ch, idx) => {
+        const prefix = `dhp-${ch}-`;
+        const chEntries = ALL_LIBRARY_ENTRIES.filter(e => e.id.startsWith(prefix));
+        return {
+          title: `Chapter ${ch}: ${chapterNames[idx] ?? 'Dhammapada'}`,
+          entries: (chEntries.length > 0 ? chEntries.slice(0, 8) : ALL_LIBRARY_ENTRIES.filter(e => e.category === 'dhammapada').slice(0, 4)) as LibraryEntry[],
+        };
+      }).filter(l => l.entries.length > 0);
     }
 
     // ── Hindu — Epic & Puranic ──────────────────────────────────────────────────
 
     case 'ramayana-bal-kanda': {
-      const ram = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'ramayana');
+      const ram = ALL_LIBRARY_ENTRIES.filter(e => e.category === 'ramayana' && (e.id.includes('bal') || e.title.includes('Bal') || e.tags.some(t => t.includes('bal'))));
+      const base = ram.length >= 4 ? ram : ALL_LIBRARY_ENTRIES.filter(e => e.category === 'ramayana');
       const result: Lesson[] = [];
-      const labels = ['Valmiki & Narada', 'Rama\'s Virtues', 'Exile & Sita', 'Aranya Kanda', 'Lanka & Hanuman', 'Victory & Return', 'The Ideal Kingdom', 'Uttara Kanda'];
-      for (let i = 0; i < ram.length; i += ENTRIES_PER_LESSON) {
+      const labels = ['Valmiki & Narada', 'Rama\'s Virtues', 'Birth of Rama', 'Sage Vishvamitra', 'Tataka & Subahu', 'Marriage to Sita'];
+      for (let i = 0; i < base.length; i += ENTRIES_PER_LESSON) {
         const idx = Math.floor(i / ENTRIES_PER_LESSON);
-        result.push({ title: labels[idx] ?? `Sarga ${idx + 1}`, entries: ram.slice(i, i + ENTRIES_PER_LESSON) });
+        result.push({ title: labels[idx] ?? `Sarga ${idx + 1}`, entries: base.slice(i, i + ENTRIES_PER_LESSON) });
       }
-      return result.length > 0 ? result : [{ title: 'Bal Kanda', entries: ram.slice(0, 4) }];
+      return result.length > 0 ? result : [{ title: 'Bal Kanda', entries: base.slice(0, 4) }];
     }
 
     case 'bhagavatam-canto-1': {
@@ -199,10 +231,10 @@ export function getPathLessons(pathId: string): Lesson[] {
     // ── Sikh Paths ──────────────────────────────────────────────────────────────
 
     case 'japji-sahib-deep': {
-      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t.includes('japji') || t === 'mool-mantar' || t === 'waheguru'));
+      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t.includes('japji') || t === 'mool-mantar'));
       const base = sikhEntries.length >= 4 ? sikhEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh');
       const result: Lesson[] = [];
-      const labels = ['Mool Mantar & Pauris 1–5', 'Pauris 6–11 — Forms of God', 'Pauris 12–18 — Naam', 'Pauris 19–24 — Seva', 'Pauris 25–31 — Hukam', 'Pauris 32–38 — Liberation', 'Shalok — The Seal'];
+      const labels = ['Mool Mantar & Pauris 1–4', 'Pauris 5–8 — Listening (Suni-ai)', 'Pauris 9–12 — Acceptance (Manni-ai)', 'Pauris 13–16 — Panch Parvan', 'Pauris 17–20 — Infinite Creation', 'Pauris 21–24 — Praise & Glory', 'Pauris 25–28 — Contentment & Grace', 'Pauris 29–32 — Divine Governance', 'Pauris 33–36 — Realms of Wisdom (Gyan Khand)', 'Pauris 37–38 & Salok — The Realm of Truth (Sach Khand)'];
       for (let i = 0; i < base.length; i += ENTRIES_PER_LESSON) {
         const idx = Math.floor(i / ENTRIES_PER_LESSON);
         result.push({ title: labels[idx] ?? `Pauri Group ${idx + 1}`, entries: base.slice(i, i + ENTRIES_PER_LESSON) });
@@ -211,7 +243,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'sukhmani-sahib-peace': {
-      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t === 'sukhmani' || t === 'peace' || t === 'simran'));
+      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t === 'sukhmani'));
       const base = sikhEntries.length >= 4 ? sikhEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh');
       const result: Lesson[] = [];
       for (let i = 0; i < base.length; i += ENTRIES_PER_LESSON) {
@@ -221,7 +253,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'asa-di-var-morning': {
-      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => ['asa-di-var', 'morning', 'congregation'].includes(t)));
+      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t === 'asa-di-var'));
       const base = sikhEntries.length >= 2 ? sikhEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh');
       const result: Lesson[] = [];
       const labels = ['Opening Slokas — Dawn', 'Pauries 1–6 — Naam', 'Pauries 7–12 — Seva', 'Pauries 13–18 — Grace', 'Pauries 19–24 — Congregation', 'Closing Slokas — Gratitude'];
@@ -233,7 +265,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'jaap-sahib-valour': {
-      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => ['warrior', 'courage', 'guru-gobind-singh', 'victory'].includes(t)));
+      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t === 'jaap-sahib'));
       const base = sikhEntries.length >= 2 ? sikhEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh');
       const result: Lesson[] = [];
       const labels = ['Verses 1–20 — Divine Names', 'Verses 21–60 — Formless God', 'Verses 61–99 — All-Pervading', 'Verses 100–140 — The Creator', 'Verses 141–199 — The Liberator'];
@@ -245,7 +277,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'chaupai-sahib-protection': {
-      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => ['chaupai-sahib', 'protection', 'strength'].includes(t)));
+      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t === 'chaupai-sahib'));
       const base = sikhEntries.length >= 2 ? sikhEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh');
       const result: Lesson[] = [];
       for (let i = 0; i < base.length; i += ENTRIES_PER_LESSON) {
@@ -255,7 +287,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'anand-sahib-bliss': {
-      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => ['anand-sahib', 'bliss', 'joy', 'guru-amar-das'].includes(t)));
+      const sikhEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh' && e.tags.some(t => t === 'anand-sahib'));
       const base = sikhEntries.length >= 2 ? sikhEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'sikh');
       const result: Lesson[] = [];
       const labels = ['Pauris 1–10 — Song of Bliss', 'Pauris 11–20 — The True Guru', 'Pauris 21–30 — Naam Amrit', 'Pauris 31–40 — Liberation', 'Closing Shloka'];
@@ -279,9 +311,12 @@ export function getPathLessons(pathId: string): Lesson[] {
         'rehras-sahib-evening': ['Evening Prayer', 'Charan Kamal', 'Gratitude & Surrender', 'Closing Shabad'],
       };
       const labels = sessionLabels[pathId] ?? [];
-      for (let i = 0; i < sikhAll.length; i += ENTRIES_PER_LESSON) {
-        const idx = Math.floor(i / ENTRIES_PER_LESSON);
-        result.push({ title: labels[idx] ?? `Session ${idx + 1}`, entries: sikhAll.slice(i, i + ENTRIES_PER_LESSON) });
+      const count = labels.length > 0 ? labels.length : Math.ceil(sikhAll.length / ENTRIES_PER_LESSON);
+      for (let idx = 0; idx < count; idx++) {
+        const slice = sikhAll.slice(idx * ENTRIES_PER_LESSON, (idx + 1) * ENTRIES_PER_LESSON);
+        if (slice.length > 0) {
+          result.push({ title: labels[idx] ?? `Session ${idx + 1}`, entries: slice });
+        }
       }
       return result.length > 0 ? result : [{ title: 'Gurbani', entries: sikhAll.slice(0, 4) }];
     }
@@ -289,7 +324,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     // ── Buddhist Paths ──────────────────────────────────────────────────────────
 
     case 'four-noble-truths': {
-      const bEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist' && e.tags.some(t => ['four-noble-truths', 'dukkha', 'nirvana', 'first-sermon'].includes(t)));
+      const bEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist' && e.tags.some(t => ['noble-truths', 'four-noble-truths', 'dukkha', 'nirvana', 'first-sermon'].includes(t)));
       const base = bEntries.length >= 4 ? bEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist');
       const result: Lesson[] = [];
       const labels = ['First Truth — Dukkha', 'Second Truth — Samudaya', 'Third Truth — Nirodha', 'Fourth Truth — Magga', 'The Noble Eightfold Path', 'Liberation in Practice'];
@@ -301,7 +336,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'eightfold-path-practice': {
-      const bEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist' && e.tags.some(t => ['eightfold-path', 'middle-way', 'ethics', 'meditation', 'wisdom'].includes(t)));
+      const bEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist' && e.tags.some(t => ['eightfold-path', 'middle-way', 'ethics', 'meditation', 'wisdom', 'noble-path'].includes(t)));
       const base = bEntries.length >= 4 ? bEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist');
       const result: Lesson[] = [];
       const labels = ['Right View & Intention', 'Right Speech & Action', 'Right Livelihood', 'Right Effort & Mindfulness', 'Right Concentration', 'Integration'];
@@ -349,7 +384,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'satipatthana-meditation': {
-      const bEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist' && e.tags.some(t => ['mindfulness', 'satipatthana', 'meditation', 'majjhima-nikaya'].includes(t)));
+      const bEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist' && e.tags.some(t => ['mindfulness', 'satipatthana', 'meditation', 'majjhima-nikaya', 'anapanasati'].includes(t)));
       const base = bEntries.length >= 2 ? bEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'buddhist');
       const result: Lesson[] = [];
       const labels = ['Foundation — The Direct Path', 'Body — Breath & Posture', 'Feelings — Pleasant & Unpleasant', 'Mind States — Awareness', 'Mental Objects — Hindrances', 'Mental Objects — Factors', 'Integration'];
@@ -373,9 +408,12 @@ export function getPathLessons(pathId: string): Lesson[] {
         'vinaya-pitaka-ethics':     ['Foundation of Discipline', 'Monastic Rules', 'Lay Ethics', 'Right Conduct', 'Community Harmony', 'The Sangha'],
       };
       const labels = sessionLabels[pathId] ?? [];
-      for (let i = 0; i < buddhistAll.length; i += ENTRIES_PER_LESSON) {
-        const idx = Math.floor(i / ENTRIES_PER_LESSON);
-        result.push({ title: labels[idx] ?? `Session ${idx + 1}`, entries: buddhistAll.slice(i, i + ENTRIES_PER_LESSON) });
+      const count = labels.length > 0 ? labels.length : Math.ceil(buddhistAll.length / ENTRIES_PER_LESSON);
+      for (let idx = 0; idx < count; idx++) {
+        const slice = buddhistAll.slice(idx * ENTRIES_PER_LESSON, (idx + 1) * ENTRIES_PER_LESSON);
+        if (slice.length > 0) {
+          result.push({ title: labels[idx] ?? `Session ${idx + 1}`, entries: slice });
+        }
       }
       return result.length > 0 ? result : [{ title: 'Buddhist Wisdom', entries: buddhistAll.slice(0, 4) }];
     }
@@ -395,7 +433,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'ahimsa-paramo-dharma': {
-      const jEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain' && e.tags.some(t => ['ahimsa', 'non-violence', 'mahavir', 'acharanga'].includes(t)));
+      const jEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain' && e.tags.some(t => ['acharanga', 'ahimsa', 'non-violence', 'mahavir'].includes(t)));
       const base = jEntries.length >= 2 ? jEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain');
       const result: Lesson[] = [];
       const labels = ['Ahimsa — The Supreme Way', 'In Thought', 'In Word', 'In Deed', 'Towards All Life', 'Satya & Asteya', 'Brahmacharya', 'Aparigraha', 'Ahimsa in Daily Life', 'The Living Vow'];
@@ -407,10 +445,21 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'tattvartha-sutra-essence': {
-      const jEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain' && e.tags.some(t => ['ratnatraya', 'moksha', 'liberation', 'knowledge', 'conduct', 'tattva'].includes(t)));
+      const jEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain' && e.tags.some(t => ['tattvartha', 'umaswati', 'ratnatraya', 'moksha', 'liberation', 'knowledge', 'conduct', 'tattva'].includes(t)));
       const base = jEntries.length >= 2 ? jEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain');
       const result: Lesson[] = [];
-      const labels = ['Sutra 1 — Right Knowledge', 'The Soul (Jiva)', 'Ajiva & Matter', 'Karma Influx', 'Vows & Restraint', 'Stopping Karma', 'Shedding Karma', 'Liberation', 'Seven Tattvas', 'The Complete Path'];
+      const labels = [
+        'Chapter 1: Right Faith & Knowledge (Sutra 1–4)',
+        'Chapter 2: The Category of the Living (Jiva)',
+        'Chapter 3: The Lower and Middle Worlds',
+        'Chapter 4: The Celestial Devas',
+        'Chapter 5: Non-Living Substances (Ajiva)',
+        'Chapter 6: Influx of Karma (Asrava)',
+        'Chapter 7: The Five Great Vows (Vratas)',
+        'Chapter 8: Karmic Bondage (Bandha)',
+        'Chapter 9: Stoppage & Shedding of Karma (Samvara & Nirjara)',
+        'Chapter 10: Complete Liberation (Moksha)',
+      ];
       for (let i = 0; i < base.length; i += ENTRIES_PER_LESSON) {
         const idx = Math.floor(i / ENTRIES_PER_LESSON);
         result.push({ title: labels[idx] ?? `Chapter ${idx + 1}`, entries: base.slice(i, i + ENTRIES_PER_LESSON) });
@@ -441,7 +490,7 @@ export function getPathLessons(pathId: string): Lesson[] {
     }
 
     case 'karma-theory-jainism': {
-      const jEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain' && e.tags.some(t => ['karma', 'soul', 'liberation', 'kundakunda'].includes(t)));
+      const jEntries = ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain' && e.tags.some(t => ['karma-doctrine', 'karma', 'soul', 'liberation', 'kundakunda'].includes(t)));
       const base = jEntries.length >= 2 ? jEntries : ALL_LIBRARY_ENTRIES.filter(e => e.tradition === 'jain');
       const result: Lesson[] = [];
       const labels = ['The Eight Karmas', 'Asrava — Influx', 'Samvara — Stoppage', 'Nirjara — Shedding', 'The Soul Unbound', 'Karma in Daily Life', 'Spiritual Cleansing', 'The Science of the Soul', 'Living Without Karma', 'The Liberated Soul', 'Nirvana', 'Siddha State', 'Moksha', 'Complete Liberation'];
@@ -467,9 +516,12 @@ export function getPathLessons(pathId: string): Lesson[] {
         'kalpa-sutra-scripture':    ['Life of Mahavira', 'Birth & Renunciation', 'The Great Ordeal', 'Omniscience', 'The Sangha', 'Life of Parsvanath', 'The Monastic Code', 'Daily Discipline', 'Sacred Rules', 'The Complete Path', 'Parshva to Mahavira', 'The Eternal Dharma', 'Scripture & Liberation', 'Samavayanga Sutra', 'The Living Agama', 'Eternal Truth', 'Modern Application', 'Complete Study', 'Integration', 'The Kalpa Way'],
       };
       const labels = sessionLabels[pathId] ?? [];
-      for (let i = 0; i < jainAll.length; i += ENTRIES_PER_LESSON) {
-        const idx = Math.floor(i / ENTRIES_PER_LESSON);
-        result.push({ title: labels[idx] ?? `Session ${idx + 1}`, entries: jainAll.slice(i, i + ENTRIES_PER_LESSON) });
+      const count = labels.length > 0 ? labels.length : Math.ceil(jainAll.length / ENTRIES_PER_LESSON);
+      for (let idx = 0; idx < count; idx++) {
+        const slice = jainAll.slice(idx * ENTRIES_PER_LESSON, (idx + 1) * ENTRIES_PER_LESSON);
+        if (slice.length > 0) {
+          result.push({ title: labels[idx] ?? `Session ${idx + 1}`, entries: slice });
+        }
       }
       return result.length > 0 ? result : [{ title: 'Jain Wisdom', entries: jainAll.slice(0, 4) }];
     }
