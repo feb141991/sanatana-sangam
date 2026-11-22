@@ -532,6 +532,67 @@ async function getCachedDharmVeerRoster(supabase: any, timeoutMs: number): Promi
   }
 }
 
+// calendar_profiles and tradition_profiles are slow-changing reference rows
+// (a handful of distinct slugs shared across every user), queried by slug
+// rather than a single global row like hero_assets/dharm_veer above -- a
+// small Map keyed by slug, same TTL and same "never cache a null/failed
+// read" discipline as the two caches above. Caching a transient failure
+// would mean one person's slow request serves `data: null` to everyone
+// else requesting the same slug for the next 5 minutes (AGENTS.md section
+// 18): only a genuine row is cached; a miss falls back to the slug's own
+// last-good value, if any, exactly like the caches above.
+const calendarProfileCache = new Map<string, CachedGlobal<{ month_system: string | null }>>();
+const traditionProfileCache = new Map<
+  string,
+  CachedGlobal<{ slug: string; ekadashi_method: string | null; janmashtami_method: string | null }>
+>();
+
+async function getCachedCalendarProfile(
+  supabase: any,
+  slug: string,
+  timeoutMs: number,
+): Promise<{ data: { month_system: string | null } | null }> {
+  const now = Date.now();
+  const cached = calendarProfileCache.get(slug);
+  if (cached && now - cached.timestamp < GLOBAL_CACHE_TTL_MS) {
+    return { data: cached.data };
+  }
+  const res = await withTimeout<{ month_system: string | null }>(
+    supabase.from('calendar_profiles').select('month_system').eq('slug', slug).maybeSingle(),
+    timeoutMs,
+  );
+  if (res.data) {
+    calendarProfileCache.set(slug, { data: res.data, timestamp: now });
+    return res;
+  }
+  return cached ? { data: cached.data } : res;
+}
+
+async function getCachedTraditionProfile(
+  supabase: any,
+  slug: string,
+  timeoutMs: number,
+): Promise<{ data: { slug: string; ekadashi_method: string | null; janmashtami_method: string | null } | null }> {
+  const now = Date.now();
+  const cached = traditionProfileCache.get(slug);
+  if (cached && now - cached.timestamp < GLOBAL_CACHE_TTL_MS) {
+    return { data: cached.data };
+  }
+  const res = await withTimeout<{ slug: string; ekadashi_method: string | null; janmashtami_method: string | null }>(
+    supabase
+      .from('tradition_profiles')
+      .select('slug, ekadashi_method, janmashtami_method')
+      .eq('slug', slug)
+      .maybeSingle(),
+    timeoutMs,
+  );
+  if (res.data) {
+    traditionProfileCache.set(slug, { data: res.data, timestamp: now });
+    return res;
+  }
+  return cached ? { data: cached.data } : res;
+}
+
 export async function GET(request: NextRequest) {
   const timings = new ServerTimingCollector();
   const degradedSections = new Set<string>();
@@ -609,18 +670,12 @@ export async function GET(request: NextRequest) {
   const longitude = profile?.longitude ?? 75.7885;
   const calendarScope = profile?.calendar_scope ?? null;
 
+  const calendarProfileSlug = profile?.calendar_profile;
   const calendarProfilePromise = skipCalendar
     ? Promise.resolve({ data: null })
-    : profile?.calendar_profile
+    : calendarProfileSlug
       ? timings.measure('calendar_profile', 'Calendar Profile', async () =>
-          withTimeout<{ month_system: string | null }>(
-            supabase
-              .from('calendar_profiles')
-              .select('month_system')
-              .eq('slug', profile.calendar_profile)
-              .maybeSingle(),
-            DB_TIMEOUT,
-          )
+          getCachedCalendarProfile(supabase, calendarProfileSlug, DB_TIMEOUT)
         )
       : Promise.resolve({ data: null });
 
@@ -641,14 +696,7 @@ export async function GET(request: NextRequest) {
     ? Promise.resolve({ data: null })
     : targetTraditionSlug
       ? timings.measure('tradition_profile', 'Tradition Profile', async () =>
-          withTimeout<{ slug: string; ekadashi_method: string | null; janmashtami_method: string | null }>(
-            supabase
-              .from('tradition_profiles')
-              .select('slug, ekadashi_method, janmashtami_method')
-              .eq('slug', targetTraditionSlug)
-              .maybeSingle(),
-            DB_TIMEOUT,
-          )
+          getCachedTraditionProfile(supabase, targetTraditionSlug, DB_TIMEOUT)
         )
       : Promise.resolve({ data: null });
 
