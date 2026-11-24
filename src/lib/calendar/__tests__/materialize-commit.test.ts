@@ -247,6 +247,8 @@ function makeClient(opts: {
   return { client, inserted, updated, queueUpserts, existing, batches, deleted };
 }
 
+// Maintenance: when a rule is promoted and this file fails with "Review queue definitions missing for: <slug>", add that slug here
+// (done for raksha-bandhan, akshaya-tritiya, hartalika-teej and sankashti-chaturthi). DEFS stays small on purpose; see DEFS_WITH_RECURRING.
 const DEFS = [
   { id: 'def-diwali', slug: 'diwali' },
   { id: 'def-holi', slug: 'holi' },
@@ -255,6 +257,9 @@ const DEFS = [
   // not only definitions that happen to insert rows in this launch year.
   { id: 'def-yogini', slug: 'yogini-ekadashi' },
   { id: 'def-raksha-bandhan', slug: 'raksha-bandhan' },
+  { id: 'def-akshaya-tritiya', slug: 'akshaya-tritiya' },
+  { id: 'def-hartalika-teej', slug: 'hartalika-teej' },
+  { id: 'def-sankashti-chaturthi', slug: 'sankashti-chaturthi' },
   { id: 'def-ekadashi', slug: 'ekadashi' },
   { id: 'def-pradosh', slug: 'pradosh-vrat' },
   { id: 'def-purnima', slug: 'purnima-vrat' },

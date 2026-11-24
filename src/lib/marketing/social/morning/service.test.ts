@@ -30,6 +30,7 @@ vi.mock("./card-renderer", async (importOriginal) => {
 });
 
 import { CardRenderError } from "./card-renderer";
+import { pickMorningVerse } from "./verse-sources";
 import {
   approveCard,
   checkCardDate,
@@ -203,12 +204,22 @@ describe("generateMorningSet", () => {
     expect(row("sikh").source_snapshot).toMatchObject({ script: "gurmukhi" });
 
     expect(by.buddhist.result).toBe("created");
-    expect(row("buddhist")).toMatchObject({ status: "draft", card_date: DATE, generated_by: "founder", source_ref: expect.stringMatching(/^dhp-/) });
-    expect(row("buddhist").source_snapshot).toMatchObject({ script: "devanagari" });
+    // The Buddhist pool is the chosen Dhammapada verses plus the Metta Sutta (verse-sources.ts), and the Jain pool also holds the
+    // Tattvartha Sutra and Bhaktamar Stotra. The card must carry exactly the verse the picker chooses for this date, whichever
+    // source that is, and that source must be one the tradition declares.
+    const chosen = (tradition: "buddhist" | "jain") => {
+      const pick = pickMorningVerse(tradition, DATE);
+      if (!pick.ok) throw new Error(`no ${tradition} verse for ${DATE}`);
+      return pick.verse;
+    };
+    expect(row("buddhist")).toMatchObject({ status: "draft", card_date: DATE, generated_by: "founder", source_ref: chosen("buddhist").sourceRef });
+    expect(row("buddhist").source_ref).toMatch(/^(dhp|metta)-/);
+    expect(row("buddhist").source_snapshot).toMatchObject({ script: chosen("buddhist").script });
 
     expect(by.jain.result).toBe("created");
-    expect(row("jain")).toMatchObject({ status: "draft", card_date: DATE, generated_by: "founder", source_ref: expect.stringMatching(/^namokar-/) });
-    expect(row("jain").source_snapshot).toMatchObject({ script: "devanagari" });
+    expect(row("jain")).toMatchObject({ status: "draft", card_date: DATE, generated_by: "founder", source_ref: chosen("jain").sourceRef });
+    expect(row("jain").source_ref).toMatch(/^(namokar|tattvartha|bhaktamar)-/);
+    expect(row("jain").source_snapshot).toMatchObject({ script: chosen("jain").script });
 
     expect(db.rows).toHaveLength(4);
   }, 60_000);

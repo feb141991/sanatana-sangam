@@ -132,15 +132,18 @@ describe("the content check", () => {
     expect((await generateDiasporaDraft({}, { ...base, channels: ["email"] }, deps)).ok).toBe(false);
   });
 
-  it("Android is refused unless a Play listing is configured", async () => {
+  it("Android may be mentioned: the Play listing is declared live in app-store-links.ts, so the store URL always resolves", async () => {
+    // Until 2026-11-18 resolveStoreUrls returned null for Android without NATIVE_APP_STORE_URL_ANDROID and this draft was
+    // refused. It now falls back to ANDROID_PLAY_STORE_URL ("Android is live on Google Play"), so it is allowed with or
+    // without the override. The copy check's own refusal when no listing exists is still tested in copy-check.test.ts.
     mocks.draftChannelCopy.mockResolvedValue({ ...clean("email"), body: "Get the Android app today." });
-    expect((await generateDiasporaDraft({}, { ...base, channels: ["email"] }, deps)).ok).toBe(false);
+    expect((await generateDiasporaDraft({}, { ...base, channels: ["email"] }, deps)).ok).toBe(true);
     mocks.draftChannelCopy.mockResolvedValue({ ...clean("email"), body: "Get the Android app today." });
-    const withPlay = await generateDiasporaDraft({}, { ...base, channels: ["email"] }, {
+    const withOverride = await generateDiasporaDraft({}, { ...base, channels: ["email"] }, {
       ...deps,
       env: { NATIVE_APP_STORE_URL_ANDROID: "https://play.google.com/store/apps/details?id=com.shoonaya.app" }
     });
-    expect(withPlay.ok).toBe(true);
+    expect(withOverride.ok).toBe(true);
   });
 });
 

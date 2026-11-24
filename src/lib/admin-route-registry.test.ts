@@ -36,6 +36,7 @@ describe("Admin Route Registry", () => {
         "/admin/marketing/social",
         "/admin/reports",
         "/admin/settings",
+        "/admin/tickets",
       ];
       const paths = ADMIN_ROUTES.map((r) => r.path);
       expect([...paths].sort()).toEqual([...expected].sort());

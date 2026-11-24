@@ -32,6 +32,20 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+import festivalRules from '@sangam/dharma-rules/src/festivals/rules.json';
+
+/**
+ * A rule that is deferred TODAY, read from the rules themselves. These tests used Onam as "the deferred example" until its rule
+ * was promoted (the route then correctly started emailing it), so the example is looked up, never named: promoting another rule
+ * cannot make the test stale again. If no rule is deferred any more the test says so instead of passing on nothing.
+ */
+const deferredRule = (festivalRules as Array<{ slug: string; display_name: string; launch_status: string }>)
+  .find((rule) => rule.launch_status === 'deferred');
+function requireDeferredRule() {
+  if (!deferredRule) throw new Error('No rule in rules.json is launch_status: deferred, so there is no withheld example to test with. Add one.');
+  return deferredRule;
+}
+
 const enqueueShoonayaEmail = vi.fn().mockResolvedValue('queued');
 vi.mock('@/lib/email-outbox', () => ({ enqueueShoonayaEmail: (...a: unknown[]) => enqueueShoonayaEmail(...a) }));
 
@@ -123,9 +137,9 @@ beforeEach(() => {
 
 describe('GET /api/cron/festival-email — withheld filtering', () => {
   it('does not email users about a launch_status: deferred festival with a stray published row', async () => {
-    // Onam is a real, currently-deferred rule (rules.json) that -- per the
-    // 2026-09-04 audit -- already has a published occurrence row.
-    occurrenceRows = [row({ slug: 'onam', display_name: 'Onam' })];
+    // A real, currently-deferred rule (rules.json, looked up above) that can still have a stray published occurrence row.
+    const deferred = requireDeferredRule();
+    occurrenceRows = [row({ slug: deferred.slug, display_name: deferred.display_name })];
 
     const res = await GET(makeRequest());
     const body = await res.json();
@@ -191,9 +205,10 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
     // publishable 4th festival for the same date never gets considered at
     // all. This is the exact shape a naive `.limit(3)` on the raw query
     // would have hidden.
+    const deferred = requireDeferredRule();
     occurrenceRows = [
       row({ slug: 'gudi-padwa-ugadi', display_name: 'Gudi Padwa / Ugadi' }), // no rule
-      row({ slug: 'onam', display_name: 'Onam' }), // deferred rule
+      row({ slug: deferred.slug, display_name: deferred.display_name }), // deferred rule
       row({ slug: 'samvatsari', display_name: 'Samvatsari' }), // no rule
       row({ slug: 'diwali', display_name: 'Diwali' }), // the valid 4th
     ];
