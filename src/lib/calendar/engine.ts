@@ -881,11 +881,11 @@ function buildOccurrencesMap(
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (isSgpcOnlySikhRule(rule)) {
-      const sgpcDates = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
-      if (sgpcDates.length > 0) {
-        occurrencesMap[rk] = sgpcDates;
-        continue;
-      }
+      // Fail closed (founder decision 2026-11-25): a Sikh rule with no printed row in a loaded SGPC edition emits nothing. It never falls
+      // through to a calculated date, which would carry no SGPC provenance. Commit 7ebdf70 let it fall through; the Sikh SGPC-only
+      // test (sikh-sgpc-only-engine.test.ts) exists to prevent exactly that.
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      continue;
     }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
@@ -1388,11 +1388,11 @@ function buildOccurrencesMapCorrected(
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
     if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (isSgpcOnlySikhRule(rule)) {
-      const sgpcDates = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
-      if (sgpcDates.length > 0) {
-        occurrencesMap[rk] = sgpcDates;
-        continue;
-      }
+      // Fail closed (founder decision 2026-11-25): a Sikh rule with no printed row in a loaded SGPC edition emits nothing. It never falls
+      // through to a calculated date, which would carry no SGPC provenance. Commit 7ebdf70 let it fall through; the Sikh SGPC-only
+      // test (sikh-sgpc-only-engine.test.ts) exists to prevent exactly that.
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
+      continue;
     }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
