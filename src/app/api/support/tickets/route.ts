@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimitByIp, rejectLargeRequest, asBoundedString } from '@/lib/api-security';
-import { getApiUser } from '@/lib/api-auth';
+import { getApiAuthFailureResponse, getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { boundClientMetadata, generateAccessCode, hashAccessCode } from '@/lib/support/ticket-access';
 import {
@@ -157,9 +157,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const authResult = await getApiUser(req);
-  if (!authResult.user) {
-    return NextResponse.json({ error: 'Authentication required to list user tickets' }, { status: 401 });
+  const { user, error: authError } = await getApiUser(req);
+  if (!user) {
+    // Shared 401/503 classification: a rejected session is a 401, an unreachable auth service is a retryable 503. A raw 401
+    // for both would make the app end a valid session during a short outage (api-auth-route-contract.test.ts).
+    return getApiAuthFailureResponse(authError);
   }
 
   try {
@@ -167,7 +169,7 @@ export async function GET(req: NextRequest) {
     const { data: tickets, error } = await admin
       .from('support_tickets')
       .select('id, ticket_number, subject, category, priority, status, created_at, updated_at, resolved_at')
-      .eq('user_id', authResult.user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {

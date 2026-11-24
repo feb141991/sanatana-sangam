@@ -16,6 +16,7 @@
 .admin-pages.admin-pages.admin-pages .bg-amber-50\/70:not(.admin-light-island, .admin-light-island *) { background-color: rgba(245, 158, 11, 0.07); }
 .admin-pages.admin-pages.admin-pages .bg-amber-50\/80:not(.admin-light-island, .admin-light-island *) { background-color: rgba(245, 158, 11, 0.08); }
 .admin-pages.admin-pages.admin-pages .bg-black\/10:not(.admin-light-island, .admin-light-island *) { background-color: rgba(255, 255, 255, 0.09); }
+.admin-pages.admin-pages.admin-pages .bg-black\/30:not(.admin-light-island, .admin-light-island *) { background-color: rgba(255, 255, 255, 0.27); }
 .admin-pages.admin-pages.admin-pages .bg-black\/5:not(.admin-light-island, .admin-light-island *) { background-color: rgba(255, 255, 255, 0.045); }
 .admin-pages.admin-pages.admin-pages .bg-blue-100:not(.admin-light-island, .admin-light-island *) { background-color: rgba(59, 130, 246, 0.15); }
 .admin-pages.admin-pages.admin-pages .bg-blue-100\/80:not(.admin-light-island, .admin-light-island *) { background-color: rgba(59, 130, 246, 0.12); }
@@ -186,6 +187,8 @@
 .admin-pages.admin-pages.admin-pages .hover\:bg-slate-50:hover:not(.admin-light-island, .admin-light-island *) { background-color: rgba(255, 255, 255, 0.045); }
 .admin-pages.admin-pages.admin-pages .hover\:bg-white:hover:not(.admin-light-island, .admin-light-island *) { background-color: rgba(24, 21, 26, 0.34); background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02)); }
 .admin-pages.admin-pages.admin-pages .hover\:bg-white\/10:hover:not(.admin-light-island, .admin-light-island *) { background-color: rgba(24, 21, 26, 0.034); background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.008), rgba(255, 255, 255, 0.002)); }
+.admin-pages.admin-pages.admin-pages .hover\:bg-white\/15:hover:not(.admin-light-island, .admin-light-island *) { background-color: rgba(24, 21, 26, 0.051); background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.011), rgba(255, 255, 255, 0.003)); }
+.admin-pages.admin-pages.admin-pages .hover\:bg-white\/20:hover:not(.admin-light-island, .admin-light-island *) { background-color: rgba(24, 21, 26, 0.068); background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.004)); }
 .admin-pages.admin-pages.admin-pages .hover\:bg-white\/50:hover:not(.admin-light-island, .admin-light-island *) { background-color: rgba(24, 21, 26, 0.17); background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.038), rgba(255, 255, 255, 0.01)); }
 .admin-pages.admin-pages.admin-pages .hover\:bg-white\/60:hover:not(.admin-light-island, .admin-light-island *) { background-color: rgba(24, 21, 26, 0.204); background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)); }
 .admin-pages.admin-pages.admin-pages .hover\:border-amber-300:hover:not(.admin-light-island, .admin-light-island *) { border-color: rgba(251, 191, 36, 0.4); }
@@ -266,6 +269,7 @@
 .admin-pages.admin-pages.admin-pages .text-neutral-400:not(.admin-light-island, .admin-light-island *) { color: #aaa298 !important; }
 .admin-pages.admin-pages.admin-pages .text-neutral-500:not(.admin-light-island, .admin-light-island *) { color: #bdb5aa !important; }
 .admin-pages.admin-pages.admin-pages .text-neutral-950:not(.admin-light-island, .admin-light-island *) { color: #f8f4ee !important; }
+.admin-pages.admin-pages.admin-pages .text-orange-300:not(.admin-light-island, .admin-light-island *) { color: #fdba74 !important; }
 .admin-pages.admin-pages.admin-pages .text-orange-600:not(.admin-light-island, .admin-light-island *) { color: #fdba74 !important; }
 .admin-pages.admin-pages.admin-pages .text-orange-800:not(.admin-light-island, .admin-light-island *) { color: #fed7aa !important; }
 .admin-pages.admin-pages.admin-pages .text-orange-900:not(.admin-light-island, .admin-light-island *) { color: #fed7aa !important; }
@@ -304,15 +308,18 @@
 .admin-pages.admin-pages.admin-pages .text-slate-800:not(.admin-light-island, .admin-light-island *) { color: #efeae2 !important; }
 .admin-pages.admin-pages.admin-pages .text-slate-900:not(.admin-light-island, .admin-light-island *) { color: #f8f4ee !important; }
 .admin-pages.admin-pages.admin-pages .text-stone-100:not(.admin-light-island, .admin-light-island *) { color: #f5f5f4 !important; }
+.admin-pages.admin-pages.admin-pages .text-stone-300:not(.admin-light-island, .admin-light-island *) { color: #9a9288 !important; }
 .admin-pages.admin-pages.admin-pages .text-stone-400:not(.admin-light-island, .admin-light-island *) { color: #aaa298 !important; }
 .admin-pages.admin-pages.admin-pages .text-stone-500:not(.admin-light-island, .admin-light-island *) { color: #bdb5aa !important; }
 .admin-pages.admin-pages.admin-pages .text-stone-600:not(.admin-light-island, .admin-light-island *) { color: #d3ccc2 !important; }
 .admin-pages.admin-pages.admin-pages .text-stone-700:not(.admin-light-island, .admin-light-island *) { color: #e4ded5 !important; }
 .admin-pages.admin-pages.admin-pages .text-stone-800:not(.admin-light-island, .admin-light-island *) { color: #efeae2 !important; }
 .admin-pages.admin-pages.admin-pages .text-stone-900:not(.admin-light-island, .admin-light-island *) { color: #f8f4ee !important; }
+.admin-pages.admin-pages.admin-pages .text-stone-950:not(.admin-light-island, .admin-light-island *) { color: #f8f4ee !important; }
 .admin-pages.admin-pages.admin-pages .text-zinc-400:not(.admin-light-island, .admin-light-island *) { color: #aaa298 !important; }
 .admin-pages.admin-pages.admin-pages .text-zinc-600:not(.admin-light-island, .admin-light-island *) { color: #d3ccc2 !important; }
 .admin-pages.admin-pages.admin-pages .to-orange-100:not(.admin-light-island, .admin-light-island *) { --tw-gradient-to: rgba(249, 115, 22, 0.15) var(--tw-gradient-to-position); }
 /* Pairs whose dark text value would not read on a fill that stays light: keep the original text colour. */
 .admin-pages.admin-pages.admin-pages .bg-amber-500.text-black:not(.admin-light-island, .admin-light-island *) { color: #000000 !important; }
 .admin-pages.admin-pages.admin-pages .bg-amber-500.text-neutral-950:not(.admin-light-island, .admin-light-island *) { color: #0a0a0a !important; }
+.admin-pages.admin-pages.admin-pages .bg-amber-500.text-stone-950:not(.admin-light-island, .admin-light-island *) { color: #0c0a09 !important; }

@@ -11,9 +11,11 @@ const mocks = vi.hoisted(() => ({
   calls: [] as any[],
 }));
 
-vi.mock('@/lib/api-auth', () => ({
-  getApiUser: vi.fn().mockImplementation(async () => mocks.authResult),
-}));
+vi.mock('@/lib/api-auth', async () => {
+  // Keep the real shared 401/503 helper: the route must answer through it.
+  const actual = await vi.importActual<typeof import('@/lib/api-auth')>('@/lib/api-auth');
+  return { ...actual, getApiUser: vi.fn().mockImplementation(async () => mocks.authResult) };
+});
 
 vi.mock('@/lib/api-security', () => ({
   rateLimitByIp: vi.fn().mockReturnValue(null),
@@ -131,6 +133,22 @@ describe('Support System Public & Seeker APIs', () => {
 
     it('lists only a signed-in account\'s tickets and refuses guests', async () => {
       expect((await listTicketsHandler(new NextRequest('http://localhost:3000/api/support/tickets'))).status).toBe(401);
+    });
+
+    it('answers 401 for a rejected session, but a retryable 503 when the auth service is unreachable (never a sign-out)', async () => {
+      const request = () => new NextRequest('http://localhost:3000/api/support/tickets');
+      mocks.authResult = { user: null, error: null, supabase: null };
+      const rejected = await listTicketsHandler(request());
+      expect(rejected.status).toBe(401);
+      expect((await rejected.json()).code).toBe('AUTH_REQUIRED');
+
+      for (const failure of [{ name: 'AuthRetryableFetchError', message: 'fetch failed' }, { status: 503 }, { status: 0 }, new Error('boom')]) {
+        mocks.authResult = { user: null, error: failure as never, supabase: null };
+        const outage = await listTicketsHandler(request());
+        expect(outage.status, JSON.stringify(failure)).toBe(503);
+        expect(outage.headers.get('Retry-After')).toBe('5');
+        expect((await outage.json()).code).toBe('AUTH_UNAVAILABLE');
+      }
     });
   });
 
