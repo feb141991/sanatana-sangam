@@ -879,14 +879,16 @@ function buildOccurrencesMap(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
-    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (isSgpcOnlySikhRule(rule)) {
-      // Fail closed (founder decision 2026-11-25): a Sikh rule with no printed row in a loaded SGPC edition emits nothing. It never falls
-      // through to a calculated date, which would carry no SGPC provenance. Commit 7ebdf70 let it fall through; the Sikh SGPC-only
-      // test (sikh-sgpc-only-engine.test.ts) exists to prevent exactly that.
+      // For Sikh rules the printed SGPC edition is the only authority (founder decisions 2026-11-25). Two consequences:
+      //  1. A rule with no printed row in a loaded edition emits nothing. It never falls through to a calculated date, which would carry
+      //     no SGPC provenance (commit 7ebdf70 let it fall through; sikh-sgpc-only-engine.test.ts exists to prevent that).
+      //  2. A printed date is emitted even for a rule-year the rule lists in disputed_years: the dispute concerns the lunar calculation,
+      //     which Sikh rules do not use. This runs BEFORE the publication gate below, as it did before 7ebdf70 moved the gate ahead of it.
       occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
       continue;
     }
+    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
@@ -1386,14 +1388,16 @@ function buildOccurrencesMapCorrected(
   for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
     slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
-    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (isSgpcOnlySikhRule(rule)) {
-      // Fail closed (founder decision 2026-11-25): a Sikh rule with no printed row in a loaded SGPC edition emits nothing. It never falls
-      // through to a calculated date, which would carry no SGPC provenance. Commit 7ebdf70 let it fall through; the Sikh SGPC-only
-      // test (sikh-sgpc-only-engine.test.ts) exists to prevent exactly that.
+      // For Sikh rules the printed SGPC edition is the only authority (founder decisions 2026-11-25). Two consequences:
+      //  1. A rule with no printed row in a loaded edition emits nothing. It never falls through to a calculated date, which would carry
+      //     no SGPC provenance (commit 7ebdf70 let it fall through; sikh-sgpc-only-engine.test.ts exists to prevent that).
+      //  2. A printed date is emitted even for a rule-year the rule lists in disputed_years: the dispute concerns the lunar calculation,
+      //     which Sikh rules do not use. This runs BEFORE the publication gate below, as it did before 7ebdf70 moved the gate ahead of it.
       occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year).map(result => result.date);
       continue;
     }
+    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
     if (r.rule_family === 'solar_fixed') {

@@ -16,21 +16,18 @@ function printedDates(slug: string, year: number): string[] {
   return [...new Set(dates)];
 }
 
-/**
- * What the engine must emit: the printed rows, except for a rule-year the rule itself marks not publishable (`disputed_years`, or
- * deferred). The publication gate runs before the SGPC lookup (commit 7ebdf70) and AGENTS.md section 2 says a disputed date is never
- * published, so a printed date for a disputed rule-year is withheld, not emitted.
- */
+/** What the engine must emit: every printed row inside a loaded edition, and nothing else. */
 function expectedPrintedDates(year: number): Map<string, string[]> {
   const expected = new Map<string, string[]>();
-  for (const rule of SIKH_RULES) {
-    expected.set(rule.slug, isPublishableForYear(rule, year) ? printedDates(rule.slug, year) : []);
-  }
+  for (const rule of SIKH_RULES) expected.set(rule.slug, printedDates(rule.slug, year));
   return expected;
 }
 
-/** Printed SGPC dates the gate withholds, as `slug@date`. Listed by name so a new one is a decision, never a silent drop. */
-function withheldPrinted(years: number[]): string[] {
+/**
+ * Printed dates for a rule-year the rule itself marks not publishable (disputed_years, deferred, not computable), as `slug@date`.
+ * Listed by name: a new one appearing is a decision about that date, never a silent change.
+ */
+function printedForNonPublishable(years: number[]): string[] {
   return years.flatMap(year => SIKH_RULES
     .filter(rule => !isPublishableForYear(rule, year))
     .flatMap(rule => printedDates(rule.slug, year).map(date => `${rule.slug}@${date}`)));
@@ -58,15 +55,16 @@ describe('Sikh SGPC-only engine path', () => {
       }
     }
 
-    // 2027 is 1, not 2: the second printed row (guru-ravidas-jayanti, 2027-02-20) is withheld, see below.
-    expect(Object.fromEntries(actualCounts)).toEqual({ 2026: 10, 2027: 1, 2028: 0, 2029: 0 });
+    expect(Object.fromEntries(actualCounts)).toEqual({ 2026: 10, 2027: 2, 2028: 0, 2029: 0 });
   }, 120_000);
 
-  it('withholds a printed date only for a rule-year the rule marks disputed, and names every one', () => {
-    // guru-ravidas-jayanti lists 2027 in disputed_years (Magha Purnima begins mid-morning on 2027-02-20 and is absent at sunrise), so the
-    // printed SGPC date is not published. If another printed date ever appears here, decide on it; do not add it to make this pass.
-    expect(withheldPrinted([2026, 2027, 2028, 2029])).toEqual(['guru-ravidas-jayanti@2027-02-20']);
-  });
+  it('a printed date is emitted even for a rule-year the rule marks disputed: for Sikh rules SGPC is the authority', () => {
+    // guru-ravidas-jayanti lists 2027 in disputed_years (Magha Purnima begins mid-morning on 2027-02-20 and is absent at sunrise). The dispute is
+    // about the lunar calculation; SGPC prints 2027-02-20, and for Sikh rules the printed edition always wins (founder, 2026-11-25).
+    expect(printedForNonPublishable([2026, 2027, 2028, 2029])).toEqual(['guru-ravidas-jayanti@2027-02-20']);
+    const emitted = calculateObservancesForYearCorrected(2027).filter(row => row.slug === 'guru-ravidas-jayanti').map(row => row.date);
+    expect(emitted).toEqual(['2027-02-20']);
+  }, 120_000);
 
   it('a Sikh rule with no printed row in a loaded edition emits nothing: it is never calculated', () => {
     // guru-ravidas-jayanti has no printed row for 2026. Commit 7ebdf70 let such a rule fall through to a calculated date (2026-02-01, outside
