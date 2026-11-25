@@ -2537,7 +2537,7 @@ Tradition: Sanatan Dharma | Author: Acharya V. Ramanathan & Dr. Arvind Shastri (
 ### Key Takeaways
 - Worship of Both Transitions: Chhath Puja is uniquely sublime in world theology because it worships the setting Sun (Sandhya Arghya) with the same reverence as the rising Sun (Usha Arghya), recognizing that decline and dawn are equal, sacred phases of the cosmic cycle.
 - The 36-Hour Waterless Fast: The primary practitioner (the Vrati) undertakes an unyielding thirty-six-hour Nirjala fast spanning from the evening of Kharna (Day 2) through the culmination of Usha Arghya on Day 4, demanding extraordinary physical and mental stamina.
-- The Biophysics of River Immersion (Jal-Tapasya): Standing waist-deep in cold flowing water grounds the body's electrical potential, activates cold-shock proteins and brown adipose tissue (BAT), and focuses the mind during retinal solar light absorption.
+- The Biophysics of River Immersion (Jal-Tapasya): Standing waist-deep in cold flowing water grounds the body's electrical potential, activates cold-shock proteins and brown adipose tissue (BAT), and focuses the mind. Do not look directly at the sun, even at sunrise or sunset; it can permanently damage your eyes.
 - Shashthi Devi (Chhathi Maiya): Celebrated on Kartika Shukla Shashthi (the sixth lunar day), the festival venerates Chhathi Maiya—the sixth cosmic manifestation of Mula Prakriti (divine nature) described in the Brahma Vaivarta Purana as the guardian of children and biological longevity.
 - Radical Ecological and Social Purity: Chhath Puja requires no temple intermediary or priest. Everything offered comes directly from nature: bamboo baskets (Supa), clay lamps, sugarcane, ginger, raw turmeric, and unrefined wheat-jaggery sweets (Thekua), uniting all social strata in the same waters.
 
@@ -2983,7 +2983,7 @@ Tradition: Sanatan Dharma | Author: Dr. Arvind Shastri & Acharya V. Ramanathan (
 ### Key Takeaways
 - The Primary Vedic Injunction (Nitya Karma): In classical Dharmashastra, Sandhyavandanam is not an optional spiritual bonus; it is the non-negotiable daily foundation. Neglecting it forfeits the authority to perform all other rituals, while its daily practice grants long life, sharp intellect, and spiritual radiance (Brahma Tejas).
 - The Trisandhya Windows: The practice is anchored to the three astronomical transitions (Sandhis) of the solar day: Pratah Sandhya (commenced before sunrise while stars still twinkle), Madhyahna Sandhya (at exact solar noon zenith), and Sayam Sandhya (commenced before sunset and concluded as stars emerge).
-- The Fivefold Liturgical Architecture: The practice harmonizes five physiological and spiritual actions: Achamana (water ionization of the digestive tract), Pranayama (rhythmic balance of Ida and Pingala channels), Marjana (sensory lustration), Surya Arghya (solar tribute), and Gayatri Japa (silent contemplation of the supreme light).
+- The Fivefold Liturgical Architecture: The practice harmonizes five physiological and spiritual actions: Achamana (ritual sipping of water), Pranayama (rhythmic balance of Ida and Pingala channels), Marjana (sensory lustration), Surya Arghya (solar tribute), and Gayatri Japa (silent contemplation of the supreme light).
 - The Science of Manasika Gayatri: The highest tier of Gayatri chanting is silent, mental repetition (Manasika), where acoustic vibration resolves into subtle electromagnetic oscillation within the heart and prefrontal cortex.
 - Universal Access for Modern Seekers: While classical orthodox initiation requires the sacred thread (Upanayana), the essential heart of Sandhyavandanam—sitting quietly at dawn and dusk, harmonizing the breath, and contemplating the divine solar light—is an eternal, universal science accessible to every human soul.
 
@@ -3063,7 +3063,7 @@ Tradition: Sanatan Dharma | Author: Dr. Arvind Shastri & Acharya V. Ramanathan (
 
 ### Key Takeaways
 - Pratyaksha Devata: In Sanatan Dharma, Surya (the Sun) is the sole Pratyaksha Devata—the directly visible, tangible manifestation of the Supreme Absolute whose energy sustains all biological life.
-- The Optical Prism Effect: Raising a copper vessel and offering water in a continuous cascading stream creates an optical prism. Gazing at the rising sun through these micro-droplets refracts the full solar spectrum into seven chromatic rays without burning the sensitive retinal macula.
+- Protect Your Eyes: Do not look directly at the sun. Even at sunrise, and even through water, it can permanently damage your eyes.
 - Circadian Neuro-Endocrine Trigger: Morning sunlight entering the eye stimulates the intrinsically photosensitive retinal ganglion cells (ipRGCs), signaling the Suprachiasmatic Nucleus (SCN) to suppress melatonin, elevate daytime dopamine, and set the master circadian clock.
 - The Copper Conduit (Tamra Patra): Pure copper is ruled by Surya in Vedic alchemy (Rasashastra). Copper's oligodynamic antimicrobial properties and bio-energetic resonance make it the mandatory Shastric vessel for solar libations.
 - The Ecological Rule: Sacred Arghya water must never be stepped upon or allowed to splash under the practitioner's feet. It should fall into an earthen tray, a potted holy plant (such as Tulsi), or onto bare earth.
@@ -3072,7 +3072,7 @@ Tradition: Sanatan Dharma | Author: Dr. Arvind Shastri & Acharya V. Ramanathan (
 - Wake Before Dawn & Cleanse: Awaken during Brahma Muhurta, brush your teeth, take a morning snan, and put on clean cotton attire.
 - Prepare the Copper Vessel: Fill a pure copper lota (Tamra Patra) with fresh water, adding a pinch of red sandalwood paste (Rakta Chandana), a few grains of raw unbroken rice (Akshat), and red flowers (such as hibiscus or rose petals).
 - The Threefold Oblation Posture: Stand on clean earth or an asana facing East, feet together. Raise the copper vessel with both hands slightly above your forehead, bending your elbows comfortably so the water stream flows between you and the solar disc.
-- Recite the Gayatri Mantra: Pour the water in three distinct, equal streams while reciting the Gayatri Mantra ('Om Bhur Bhuvah Svaha, Tat Savitur Varenyam, Bhargo Devasya Dheemahi, Dhiyo Yo Nah Prachodayat') three times, gazing softly at the refracted solar rays.
+- Recite the Gayatri Mantra: Pour the water in three distinct, equal streams while reciting the Gayatri Mantra ('Om Bhur Bhuvah Svaha, Tat Savitur Varenyam, Bhargo Devasya Dheemahi, Dhiyo Yo Nah Prachodayat') three times, without looking directly at the sun.
 - Circumambulate & Honor: Touch a drop of the sacred fallen water to your forehead and neck with your ring finger, circumambulate clockwise in place three times (Pradakshina) chanting 'Om Suryaya Namaha', and offer silent gratitude for the gift of life.
 
 ### Primary Scriptural & Archival Citations
@@ -3252,7 +3252,6 @@ Tradition: Sanatan Dharma | Author: Dr. Arvind Shastri & Acharya V. Ramanathan (
 - The Static Alarm Trap: Because local sunrise varies significantly by latitude and season (from 5:15 AM in summer to 7:45 AM in winter in temperate zones), a static 4:00 AM or 5:00 AM clock alarm misses the true sacred window for most of the year.
 - Classical Shastric Injunctions: Both the Ashtanga Hridaya (Sutra Sthana 2.1) and Manu Smriti (4.92) command pre-dawn awakening not as an ascetic ordeal, but as the foundational prescription for biological longevity and mental sovereignty.
 - Neurobiological Transition: During this 48-minute gate, ambient melatonin levels decline while cortisol has not yet spiked. The brain naturally stabilizes in alpha and low-theta frequencies, down-regulating the Default Mode Network (DMN) before sensory input begins.
-- Atmospheric Nascent State: Pre-dawn air holds the peak natural concentration of nascent oxygen and natural ozone, maximizing cellular cellular prana absorption prior to photochemical degradation by ultraviolet solar radiation.
 
 ### Practice Guidance: The 5-Step Classical Brahma Muhurta Dinacharya
 - Awaken gently at the onset of your local Brahma Muhurta without looking at smartphone screens, news feeds, or communication apps.
@@ -3265,7 +3264,7 @@ Tradition: Sanatan Dharma | Author: Dr. Arvind Shastri & Acharya V. Ramanathan (
 - Vagbhata, Ashtanga Hridaya, Sutra Sthana, Chapter 2 (Dinacharya Adhyaya), Verse 1.: "Brahme muhurte uttisthet svastho raksartham ayushah — Preservation of longevity through pre-dawn awakening."
 - Manu Smriti, Adhyaya 4, Shloka 92.: "Brahme muhurte budhyeta dharmarthau chanuchintayet — Awakening at Brahma Muhurta to meditate on Dharma and Truth."
 - Surya Siddhanta, Madhyamadhikara, Shlokas 11–14; Skanda Purana, Brahma Khanda, Chapter 7.: "Division of day and night into thirty Muhurtas and the 14th Muhurta attributes."
-- Journal of Pineal Research; International Journal of Biometeorology (Atmospheric Ionization Studies).: "Chronobiological studies on pre-dawn melatonin taper, cortisol awakening response (CAR), and atmospheric nascent ionization."
+- Journal of Pineal Research.: "Chronobiological studies on pre-dawn melatonin taper and cortisol awakening response (CAR)."
 
 ## Tulsi Seva: Classical Shastric Rules for Watering, Touching, and Plucking
 

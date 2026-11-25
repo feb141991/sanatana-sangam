@@ -4925,13 +4925,11 @@
     <!-- Clarity tracking code for https://shoonaya.com/ -->
     <script>
       (function(c,l,a,r,i,t,y){
+        // Load only after a recorded yes to analytics. No choice, an old consent version or unreadable storage means no.
         try {
-          var raw = localStorage.getItem("shoonaya.web-consent");
-          if (raw) {
-            var consent = JSON.parse(raw);
-            if (consent && consent.analytics === false) return;
-          }
-        } catch (e) {}
+          var consent = JSON.parse(localStorage.getItem("shoonaya.web-consent"));
+          if (!consent || consent.version !== "2026-08-28.v2" || !consent.decidedAt || consent.analytics !== true) return;
+        } catch (e) { return; }
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
@@ -4946,66 +4944,6 @@
           document.body.classList.add("landing-embed", "landing-embed-" + section);
         }
       })();
-    </script>
-    <!-- ── Product Hunt Launch Ribbon ─────────────────────────────────────── -->
-    <div
-      id="ph-launch-ribbon"
-      role="banner"
-      style="
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        background: linear-gradient(90deg, #1a1a1a 0%, #2a1f18 50%, #1a1a1a 100%);
-        color: #f5f5f5;
-        padding: 8px 16px;
-        font-size: 13px;
-        font-family: var(--fb);
-        border-bottom: 1px solid rgba(255, 97, 84, 0.35);
-        position: relative;
-        z-index: 100;
-      "
-    >
-      <div style="margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; text-align: center;">
-        <span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; background: rgba(255, 97, 84, 0.2); color: #ff6154; font-size: 11px; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(255, 97, 84, 0.4);">
-          ★ Product Hunt
-        </span>
-        <span style="color: #e5e5e5;">
-          Shoonaya is featured today! Explore our launch &amp; join the conversation:
-        </span>
-        <a
-          href="https://www.producthunt.com/products/shoonaya?embed=true&utm_source=embed&utm_medium=post_embed"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="color: #c5a059; font-weight: 600; text-decoration: underline; text-underline-offset: 3px;"
-        >
-          Check it out on Product Hunt →
-        </a>
-      </div>
-      <button
-        onclick="dismissPhRibbon()"
-        aria-label="Dismiss banner"
-        style="background: transparent; border: none; color: #888; font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1;"
-        onmouseover="this.style.color='#fff'"
-        onmouseout="this.style.color='#888'"
-      >
-        ✕
-      </button>
-    </div>
-    <script>
-      (function() {
-        try {
-          if (sessionStorage.getItem('ph_ribbon_dismissed_v1')) {
-            var el = document.getElementById('ph-launch-ribbon');
-            if (el) el.style.display = 'none';
-          }
-        } catch(e) {}
-      })();
-      function dismissPhRibbon() {
-        var el = document.getElementById('ph-launch-ribbon');
-        if (el) el.style.display = 'none';
-        try { sessionStorage.setItem('ph_ribbon_dismissed_v1', 'true'); } catch(e) {}
-      }
     </script>
     <div id="splash">
       <div class="splash-ambient-aura" aria-hidden="true"></div>
@@ -7245,10 +7183,10 @@
                 ></div>
               </div>
               <div class="ft-content">
-                <div class="ft-year">c. 3500 BCE</div>
+                <div class="ft-year">Vedic period</div>
                 <div class="ft-text-name">Rigveda</div>
                 <div class="ft-text-sub">
-                  The oldest known human text. Sanskrit. Oral. Eternal.
+                  The oldest of the four Vedas, in Sanskrit, passed down by recitation.
                 </div>
               </div>
             </div>
@@ -7934,8 +7872,8 @@
                   "guru-nanak-gurpurab": "/relics/khanda-gold.png",
                   "baisakhi": "/relics/sacred-kirpan.png",
                   "vesak-buddha-purnima": "/relics/bodhi-leaf.png",
-                  "mahavir-jayanti": "/relics/ahimsa-hand.png",
-                  "paryushana": "/relics/siddhachakra-wheel.png"
+                  "mahavir-jayanti": "/relics/lotus-bloom.png",
+                  "paryushana": "/relics/lotus-bloom.png"
                 };
 
                 var itemSlug = (item.slug || "").toLowerCase();
@@ -7953,7 +7891,7 @@
                 } else if (tradition === "buddhist") {
                   relicSrc = "/relics/dharma-wheel.png";
                 } else if (tradition === "jain") {
-                  relicSrc = "/relics/ahimsa-hand.png";
+                  relicSrc = "/relics/lotus-bloom.png";
                 }
 
                 return (
@@ -8579,7 +8517,7 @@
 
             <div class="footer-tradition-item">
               <div class="footer-tradition-emblem">
-                <img src="/relics/ahimsa-hand.png" alt="Jain Dharma" />
+                <img src="/relics/lotus-bloom.png" alt="Jain Dharma" />
               </div>
               <div>
                 <div class="footer-tradition-name">Jain Dharma</div>
@@ -8607,7 +8545,7 @@
                 <span class="footer-brand-name">Shoonaya</span>
               </a>
               <p class="footer-brand-bio">
-                A non-profit research and spiritual foundation honoring timeless wisdom across Sanatan, Sikh, Jain, and Buddhist traditions.
+                A daily companion for Panchang, practice and learning, rooted in Sanatan Dharma. Operated by The RDS Ventures.
               </p>
               <div class="footer-brand-socials" aria-label="Official Social Media">
                 <a href="https://www.instagram.com/shoonayaapp" target="_blank" rel="noreferrer" class="brand-social-btn" aria-label="Shoonaya on Instagram" title="Instagram">
@@ -8688,7 +8626,7 @@
             <div>
               <div class="footer-col-title">Trust &amp; Ethics</div>
               <ul class="footer-links-list">
-                <li><a href="/about">About Our Foundation</a></li>
+                <li><a href="/about">About Shoonaya</a></li>
                 <li><a href="/contact">Contact Support</a></li>
                 <li><a href="/privacy">Privacy</a></li>
                 <li><a href="/terms">Terms of Devotion</a></li>

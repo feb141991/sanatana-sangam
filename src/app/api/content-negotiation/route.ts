@@ -89,7 +89,7 @@ Canonical URL: https://www.shoonaya.com/features
 4. **Bhakti Scripture Library**: Sanskrit stotrams, Gurbani baanis, Buddhist suttas, and Jain prayers with line-by-line translations.
 5. **Pathshala**: Modular text study paths through Gita, Sri Guru Granth Sahib, Dhammapada, and Agamas.
 6. **Kul Lineage**: Private multi-generational family space honoring Kuldevi/Kuldevata, gotra, and ancestor remembrance.
-7. **Dharma Mitra AI**: In-app spiritual mentor adhering to canonical scriptural commentaries without hallucinatory dogma.
+7. **Dharma Mitra AI**: In-app AI companion for studying scripture. It cites sources where available and can make mistakes.
 `;
 
 const TRADITIONS_MD = `# Sacred Traditions Covered in Shoonaya

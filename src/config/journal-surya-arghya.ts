@@ -27,7 +27,7 @@ export const suryaArghyaEssay: JournalEssay = {
   excerpt: "Why is offering water to the sun at dawn one of the most powerful Vedic rituals? We explore the optical dispersion of dawn light, pineal gland activation, and the Shastric rules of Surya Arghya.",
   keyTakeaways: [
     "Pratyaksha Devata: In Sanatan Dharma, Surya (the Sun) is the sole Pratyaksha Devata—the directly visible, tangible manifestation of the Supreme Absolute whose energy sustains all biological life.",
-    "The Optical Prism Effect: Raising a copper vessel and offering water in a continuous cascading stream creates an optical prism. Gazing at the rising sun through these micro-droplets refracts the full solar spectrum into seven chromatic rays without burning the sensitive retinal macula.",
+    "Protect Your Eyes: Do not look directly at the sun. Even at sunrise, and even through water, it can permanently damage your eyes.",
     "Circadian Neuro-Endocrine Trigger: Morning sunlight entering the eye stimulates the intrinsically photosensitive retinal ganglion cells (ipRGCs), signaling the Suprachiasmatic Nucleus (SCN) to suppress melatonin, elevate daytime dopamine, and set the master circadian clock.",
     "The Copper Conduit (Tamra Patra): Pure copper is ruled by Surya in Vedic alchemy (Rasashastra). Copper's oligodynamic antimicrobial properties and bio-energetic resonance make it the mandatory Shastric vessel for solar libations.",
     "The Ecological Rule: Sacred Arghya water must never be stepped upon or allowed to splash under the practitioner's feet. It should fall into an earthen tray, a potted holy plant (such as Tulsi), or onto bare earth."
@@ -44,10 +44,10 @@ export const suryaArghyaEssay: JournalEssay = {
     {
       heading: "The Optical Physics of Cascading Water Droplets",
       paragraphs: [
-        "One of the greatest biological questions surrounding dawn worship is how ancient practitioners gazed in the direction of the sun without damaging their eyesight. The secret lies in the hydrodynamic geometry of the Arghya stream.",
+        "Arghya is offered facing the rising sun. Do not look directly at it: falling water does not protect the eyes, and looking at the sun can permanently damage them.",
         "The practitioner holds the copper vessel (Tamra Patra) with both hands, elbows slightly bent, raising the vessel so the water flows at or slightly above eye level. The water is poured not in an abrupt splash, but in a slow, continuous ribbon that breaks into thousands of tiny descending droplets.",
         "When the soft, low-angle rays of the newly risen sun (within 45 minutes of sunrise) strike these cascading micro-droplets, the water acts as a natural celestial diffraction grating. The light is separated into its component spectral frequencies: red, orange, yellow, green, blue, indigo, and violet.",
-        "Viewing the solar disc through this sparkling curtain filters out harsh ultraviolet exposure while allowing nourishing near-infrared (NIR) and visible wavelengths to stimulate the retinal photoreceptors. Classical texts like the Markandeya Purana explicitly declare that regular Surya Arghya preserves ophthalmic health (Chakshu-roga nashana) and maintains razor-sharp vision well into old age."
+        "The colours you may notice are sunlight bending through the droplets. You do not need to look at the sun itself."
       ],
       quote: {
         text: "The sun is the cosmic eye of Mitra and Varuna; its rising dispels the darkness of the mortal realm and awakens the fire of wisdom within the seeker.",
@@ -91,7 +91,7 @@ export const suryaArghyaEssay: JournalEssay = {
       "Wake Before Dawn & Cleanse: Awaken during Brahma Muhurta, brush your teeth, take a morning snan, and put on clean cotton attire.",
       "Prepare the Copper Vessel: Fill a pure copper lota (Tamra Patra) with fresh water, adding a pinch of red sandalwood paste (Rakta Chandana), a few grains of raw unbroken rice (Akshat), and red flowers (such as hibiscus or rose petals).",
       "The Threefold Oblation Posture: Stand on clean earth or an asana facing East, feet together. Raise the copper vessel with both hands slightly above your forehead, bending your elbows comfortably so the water stream flows between you and the solar disc.",
-      "Recite the Gayatri Mantra: Pour the water in three distinct, equal streams while reciting the Gayatri Mantra ('Om Bhur Bhuvah Svaha, Tat Savitur Varenyam, Bhargo Devasya Dheemahi, Dhiyo Yo Nah Prachodayat') three times, gazing softly at the refracted solar rays.",
+      "Recite the Gayatri Mantra: Pour the water in three distinct, equal streams while reciting the Gayatri Mantra ('Om Bhur Bhuvah Svaha, Tat Savitur Varenyam, Bhargo Devasya Dheemahi, Dhiyo Yo Nah Prachodayat') three times, without looking directly at the sun.",
       "Circumambulate & Honor: Touch a drop of the sacred fallen water to your forehead and neck with your ring finger, circumambulate clockwise in place three times (Pradakshina) chanting 'Om Suryaya Namaha', and offer silent gratitude for the gift of life."
     ]
   },

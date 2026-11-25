@@ -3,7 +3,6 @@
 import { useEffect, type ReactNode } from "react";
 
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
-import { ProductHuntRibbon } from "@/components/marketing/ProductHuntRibbon";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
 import { marketingNavItems } from "@/config/marketing";
 import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
@@ -27,7 +26,6 @@ export function MarketingShell({ children }: { children: ReactNode }) {
         color: "var(--text-cream, #3E2A1F)",
       }}
     >
-      <ProductHuntRibbon />
       <NotchNavbar
         items={marketingNavItems}
         cta={{ href: OFFICIAL_STORE_LINKS.googlePlay, label: "Download App" }}

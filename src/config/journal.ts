@@ -280,7 +280,7 @@ const journalEssays: JournalEssay[] = [
     "authorRole": "Professor of Jain Epistemology & Practical Ethics",
     "authorBio": "Dr. Shah has lectured internationally on the intersection of Jain ascetic ethics, cognitive behavioral therapy, and digital minimalism.",
     "publishedDate": "February 2026",
-    "emblem": "/relics/ahimsa-hand.png",
+    "emblem": "/relics/lotus-bloom.png",
     "excerpt": "Ancient Jain masters recognized that possessiveness extends far beyond physical objects to digital tabs, endless feeds, and opinions. Discover the freedom of conscious spiritual minimalism.",
     "keyTakeaways": [
       "Aparigraha is not defined merely by the absence of goods, but by the cessation of mental clutching (Murchha).",
@@ -409,7 +409,7 @@ const journalEssays: JournalEssay[] = [
         "heading": "Brahma Muhurta: The Neurobiology of Dawn Silence",
         "paragraphs": [
           "Among the many daily divisions preserved in the Panchang, none is more revered than Brahma Muhurta, literally 'the hour of the Creator.' Occurring precisely two Muhurtas (approximately one hour and thirty-six minutes) before local sunrise, this sacred window is universally prescribed across Vedic, Buddhist, and Jain monastic codes as the supreme hour for dhyana and mantra.",
-          "Modern neurobiology confirms what the rishis intuitively knew. During Brahma Muhurta, the ambient atmospheric ionization shifts due to the pre-dawn solar wind. The human brain is naturally transitioning from deep delta sleep through theta dream states into alpha relaxed awareness. Pineal melatonin production begins its gradual taper while adrenal cortisol has not yet spiked into stress-driven vigilance.",
+          "Modern neurobiology confirms what the rishis intuitively knew. The human brain is naturally transitioning from deep delta sleep through theta dream states into alpha relaxed awareness. Pineal melatonin production begins its gradual taper while adrenal cortisol has not yet spiked into stress-driven vigilance.",
           "In this pristine liminal state, the mind is devoid of the day's accumulated social baggage. The internal monologue is thin, the breath is naturally smooth, and the sensory apparatus is calm. To wake during this window is to drink from an unpolluted reservoir of mental energy that colors every subsequent hour of the day with serenity."
         ]
       },

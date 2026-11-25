@@ -120,7 +120,7 @@ const TRADITIONS: TraditionItem[] = [
   },
   {
     key: "jain",
-    tabLabel: "☮ Jain",
+    tabLabel: "🪷 Jain",
     name: "Jain",
     slug: "jain",
     badge: "Jainism · जैन धर्म",

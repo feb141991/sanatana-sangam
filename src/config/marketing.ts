@@ -107,15 +107,15 @@ export const marketingFeatures: readonly MarketingFeature[] = [
   },
   {
     slug: "dharma-mitra",
-    name: "Dharma Mitra: Verifiable AI Companion",
+    name: "Dharma Mitra: AI Study Companion",
     eyebrow: "Interactive scripture assistant",
     summary:
-      "Study scripture and ask philosophical questions with a tradition-grounded AI companion that cites verified sources.",
+      "Study scripture and ask philosophical questions with a tradition-aware AI companion that cites its sources where available.",
     description:
-      "Dharma Mitra is Shoonaya's scripturally grounded spiritual companion, active and accessible directly in your dashboard. Ask nuanced questions about philosophy, practice, and ritual etiquette, explore comparative perspectives across traditions, and receive answers rooted strictly in verified scriptures—with exact chapter and verse citations.",
+      "Dharma Mitra is Shoonaya's AI companion for studying scripture. Ask nuanced questions about philosophy, practice, and ritual etiquette, explore comparative perspectives across traditions, and see chapter and verse where a source is available. Answers are written by AI and can be wrong, so check anything important against the source or a teacher.",
     highlights: [
-      "Grounded in verified scriptures across Hindu, Sikh, Buddhist, and Jain traditions",
-      "Exact chapter, verse, and source citations without synthetic hallucinations",
+      "Draws on Hindu, Sikh, Buddhist, and Jain texts",
+      "Chapter and verse shown where a source is available, so you can check it",
       "Context-aware companion for Bhagavad Gita study, Upanishads, and daily reflection",
     ],
     icon: Bot,

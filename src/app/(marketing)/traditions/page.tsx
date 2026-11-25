@@ -12,12 +12,12 @@ export const metadata: Metadata = {
 
 const TIMELINE_NODES = [
   {
-    year: "c. 3500 BCE",
+    year: "Vedic period",
     name: "Rigveda",
     tradition: "Sanatan Dharma",
     color: "#D88A1C",
     bgSoft: "rgba(216, 138, 28, 0.12)",
-    description: "Hymns preserved through oral and textual traditions in Sanskrit.",
+    description: "The oldest of the four Vedas, in Sanskrit, passed down by recitation.",
   },
   {
     year: "c. 500 BCE",

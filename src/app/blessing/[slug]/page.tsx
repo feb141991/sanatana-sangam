@@ -59,7 +59,7 @@ const TRAD_LABEL: Record<string, string> = {
 };
 
 const TRAD_SYMBOL: Record<string, string> = {
-  hindu: 'ॐ', sikh: 'ੴ', buddhist: '☸', jain: '☮', all: '🪔',
+  hindu: 'ॐ', sikh: 'ੴ', buddhist: '☸', jain: '🪷', all: '🪔',
 };
 
 // ─── Script font mapping ──────────────────────────────────────────────────────

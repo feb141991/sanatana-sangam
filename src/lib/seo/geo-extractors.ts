@@ -391,6 +391,10 @@ export function extractPathshalaGeo(path: { title: string; description: string; 
   };
 }
 
+function namedPersonReviewer(name: string | undefined): string | undefined {
+  return name && !/council|editorial|board|team|committee/i.test(name) ? name : undefined;
+}
+
 export function extractJournalGeo(essay: JournalEssay): GeoModel {
   const facts: GeoFact[] = [
     { label: 'Tradition', value: essay.tradition },
@@ -455,7 +459,9 @@ export function extractJournalGeo(essay: JournalEssay): GeoModel {
     qa,
     relatedLinks: [],
     canonicalUrl: `https://www.shoonaya.com/journal/${essay.slug}`,
-    reviewedBy: essay.editorialReview?.reviewerName,
+    // schema.org reviewedBy is emitted as a Person, so only a named person qualifies. A council or
+    // editorial desk is not a person, and nothing on record identifies who sits on it.
+    reviewedBy: namedPersonReviewer(essay.editorialReview?.reviewerName),
     datePublished: essay.publishedAt,
   };
 }

@@ -459,25 +459,25 @@ const RELIC_BY_SLUG: Record<string, FestivalEmblemConfig> = {
 
   // ── Jain Dharma ────────────────────────────────────────────────────────────
   "mahavir-jayanti": {
-    relicSrc: "/relics/ahimsa-hand.png",
-    name: "Sacred Ahimsa Wheel & Hand",
+    relicSrc: "/relics/lotus-bloom.png",
+    name: "Lotus",
     tradition: "jain",
     sacredGlyph: "卐",
   },
   "paryushana-parva-begins": {
-    relicSrc: "/relics/siddhachakra-wheel.png",
-    name: "Siddhachakra Navapad Wheel",
+    relicSrc: "/relics/lotus-bloom.png",
+    name: "Lotus",
     tradition: "jain",
     sacredGlyph: "卐",
   },
   "samvatsari-paryushana-ends": {
-    relicSrc: "/relics/ahimsa-hand.png",
+    relicSrc: "/relics/lotus-bloom.png",
     name: "Micchami Dukkadam Universal Forgiveness",
     tradition: "jain",
     sacredGlyph: "🙏",
   },
   "das-lakshana-dharma-begins": {
-    relicSrc: "/relics/jain-kalasha.png",
+    relicSrc: "/relics/clay-kalash.png",
     name: "Mangala Kalasha of Jain Dharma",
     tradition: "jain",
     sacredGlyph: "卐",
@@ -579,8 +579,8 @@ export function getFestivalEmblem(slug: string, tradition?: string): FestivalEmb
       };
     case "jain":
       return {
-        relicSrc: "/relics/ahimsa-hand.png",
-        name: "Sacred Ahimsa Wheel",
+        relicSrc: "/relics/lotus-bloom.png",
+        name: "Lotus",
         tradition: "jain",
         sacredGlyph: "卐",
       };

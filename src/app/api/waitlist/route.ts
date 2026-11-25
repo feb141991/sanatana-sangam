@@ -61,7 +61,7 @@ const TRAD_GREETING: Record<string, string> = {
   hindu:    'Jai Shri Ram 🙏',
   sikh:     'Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh ☬',
   buddhist: 'Namo Buddhaya ☸',
-  jain:     'Jai Jinendra ☮',
+  jain:     'Jai Jinendra 🙏',
   default:  'Namaste 🙏',
 };
 
@@ -79,7 +79,7 @@ const TRAD_SYMBOL: Record<string, string> = {
   hindu:    '🕉',
   sikh:     '☬',
   buddhist: '☸',
-  jain:     '☮',
+  jain:     '🪷',
   default:  '🪔',
 };
 

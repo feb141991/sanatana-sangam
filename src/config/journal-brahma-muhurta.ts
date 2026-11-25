@@ -29,8 +29,7 @@ export const brahmaMuhurtaEssay: JournalEssay = {
     "Mathematical Precision: 1 solar day equals 30 Muhurtas (48 minutes each). Brahma Muhurta is strictly the 14th Muhurta of the night, spanning from 96 minutes to 48 minutes before local astronomical sunrise.",
     "The Static Alarm Trap: Because local sunrise varies significantly by latitude and season (from 5:15 AM in summer to 7:45 AM in winter in temperate zones), a static 4:00 AM or 5:00 AM clock alarm misses the true sacred window for most of the year.",
     "Classical Shastric Injunctions: Both the Ashtanga Hridaya (Sutra Sthana 2.1) and Manu Smriti (4.92) command pre-dawn awakening not as an ascetic ordeal, but as the foundational prescription for biological longevity and mental sovereignty.",
-    "Neurobiological Transition: During this 48-minute gate, ambient melatonin levels decline while cortisol has not yet spiked. The brain naturally stabilizes in alpha and low-theta frequencies, down-regulating the Default Mode Network (DMN) before sensory input begins.",
-    "Atmospheric Nascent State: Pre-dawn air holds the peak natural concentration of nascent oxygen and natural ozone, maximizing cellular cellular prana absorption prior to photochemical degradation by ultraviolet solar radiation."
+    "Neurobiological Transition: During this 48-minute gate, ambient melatonin levels decline while cortisol has not yet spiked. The brain naturally stabilizes in alpha and low-theta frequencies, down-regulating the Default Mode Network (DMN) before sensory input begins."
   ],
   sections: [
     {
@@ -71,8 +70,7 @@ export const brahmaMuhurtaEssay: JournalEssay = {
       paragraphs: [
         "Modern chronobiology and neuroscience now validate the precise mechanisms described by ancient rishis. The human brain undergoes profound neurochemical shifts in the ninety minutes prior to sunrise.",
         "During deep nocturnal sleep, the brain is dominated by delta waves (0.5–4 Hz) driven by high circulating melatonin. In the pre-dawn window, melatonin levels begin their natural biological taper, while the stress hormone cortisol has not yet initiated its sharp awakening surge (the Cortisol Awakening Response, or CAR). In this brief neurochemical suspension, the brain naturally rests in an alpha-theta state (4–10 Hz).",
-        "Theta rhythm is the neural signature of deep meditation, creative synthesis, and access to the subconscious, while alpha rhythm corresponds to relaxed, alert awareness. In modern terminology, the Default Mode Network (DMN)—the neural circuitry responsible for ego-fixation, past regrets, and future rumination—remains relatively quiet. Awakening into this window allows the practitioner to cultivate presence before the sympathetic nervous system is hijacked by the day's sensory input.",
-        "Furthermore, atmospheric scientists note that during pre-dawn hours, the lower atmosphere experiences minimal photochemical smog, temperature inversion, and maximum natural ionization. The atmospheric oxygen exists in its most pristine, energized molecular state, optimizing cellular respiration during pranayama."
+        "Theta rhythm is the neural signature of deep meditation, creative synthesis, and access to the subconscious, while alpha rhythm corresponds to relaxed, alert awareness. In modern terminology, the Default Mode Network (DMN)—the neural circuitry responsible for ego-fixation, past regrets, and future rumination—remains relatively quiet. Awakening into this window allows the practitioner to cultivate presence before the sympathetic nervous system is hijacked by the day's sensory input."
       ]
     },
     {
@@ -108,8 +106,8 @@ export const brahmaMuhurtaEssay: JournalEssay = {
       reference: "Surya Siddhanta, Madhyamadhikara, Shlokas 11–14; Skanda Purana, Brahma Khanda, Chapter 7."
     },
     {
-      text: "Chronobiological studies on pre-dawn melatonin taper, cortisol awakening response (CAR), and atmospheric nascent ionization.",
-      reference: "Journal of Pineal Research; International Journal of Biometeorology (Atmospheric Ionization Studies)."
+      text: "Chronobiological studies on pre-dawn melatonin taper and cortisol awakening response (CAR).",
+      reference: "Journal of Pineal Research."
     }
   ],
   relatedSlugs: [
