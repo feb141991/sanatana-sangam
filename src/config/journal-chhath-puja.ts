@@ -5,8 +5,13 @@
 
 import type { JournalEssay } from "./journal";
 
+// PULLED 2026-11-25: same eye-safety defect as journal-surya-arghya.ts
+// (instructed gazing at the solar disc through the Supa, claimed this
+// blocks UV radiation). Fixed below; held at "pending_review" pending a
+// named human reviewer -- see
+// docs/content-reviews/surya-arghya-eye-safety-pulled-2026-11-25.md
 export const chhathPujaEssay: JournalEssay = {
-  publicationStatus: "published",
+  publicationStatus: "pending_review",
   publishedAt: "2026-11-15T12:00:00.000Z",
   editorialReview: {
     reviewerName: "Shoonaya Astrometry & Dharmic Research Council",
@@ -28,7 +33,7 @@ export const chhathPujaEssay: JournalEssay = {
   keyTakeaways: [
     "Worship of Both Transitions: Chhath Puja is uniquely sublime in world theology because it worships the setting Sun (Sandhya Arghya) with the same reverence as the rising Sun (Usha Arghya), recognizing that decline and dawn are equal, sacred phases of the cosmic cycle.",
     "The 36-Hour Waterless Fast: The primary practitioner (the Vrati) undertakes an unyielding thirty-six-hour Nirjala fast spanning from the evening of Kharna (Day 2) through the culmination of Usha Arghya on Day 4, demanding extraordinary physical and mental stamina.",
-    "The Biophysics of River Immersion (Jal-Tapasya): Standing waist-deep in cold flowing water grounds the body's electrical potential, activates cold-shock proteins and brown adipose tissue (BAT), and focuses the mind during retinal solar light absorption.",
+    "The Biophysics of River Immersion (Jal-Tapasya): Standing waist-deep in cold flowing water is believed to ground the body's energy and activate cold-shock response, while the Vrati's attention stays fixed in devotion toward the setting or rising sun -- never directly at the solar disc.",
     "Shashthi Devi (Chhathi Maiya): Celebrated on Kartika Shukla Shashthi (the sixth lunar day), the festival venerates Chhathi Maiya—the sixth cosmic manifestation of Mula Prakriti (divine nature) described in the Brahma Vaivarta Purana as the guardian of children and biological longevity.",
     "Radical Ecological and Social Purity: Chhath Puja requires no temple intermediary or priest. Everything offered comes directly from nature: bamboo baskets (Supa), clay lamps, sugarcane, ginger, raw turmeric, and unrefined wheat-jaggery sweets (Thekua), uniting all social strata in the same waters."
   ],
@@ -69,7 +74,7 @@ export const chhathPujaEssay: JournalEssay = {
         "From the perspective of environmental physiology and biophysics, standing waist-deep in cold flowing river water during twilight is an extraordinary therapeutic shock to the human system.",
         "Water is a powerful electrical conductor. When the human body is submerged in natural river water, it achieves direct, unmediated grounding (earthing), neutralizing excess free radicals and stabilizing the electrical potential across cell membranes.",
         "Furthermore, cold water immersion up to the navel triggers peripheral vasoconstriction, driving blood inward toward the liver, spleen, and heart, stimulating deep core thermal defense mechanisms. In combination with the 36-hour waterless fast, this triggers profound levels of autophagy—the cellular process by which damaged organelles and intracellular pathogens are systematically recycled for metabolic energy.",
-        "When the Vrati gazes softly through the bamboo Supa at the low-angle solar rays, the optic pathways absorb natural full-spectrum photons without the blinding UV radiation of midday, inducing a state of ecstatic neurological tranquility."
+        "This essay previously stated that gazing through the bamboo Supa at the low-angle solar rays blocks the sun's UV radiation and is neurologically beneficial. That claim has been removed: no winnow basket, cloth, or water stream reduces solar brightness or UV/infrared exposure to a safe level, and looking toward the sun at any angle -- including through the Supa -- risks solar retinopathy, a real injury that is often painless at the time it occurs. The devotional practice is to hold the Supa toward the sun as an offering while keeping the gaze lowered or on the water and lamp, not fixed on the solar disc."
       ]
     },
     {

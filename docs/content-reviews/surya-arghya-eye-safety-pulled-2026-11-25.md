@@ -1,9 +1,13 @@
-# Flag to Founder: Surya Arghya Essay Pulled for an Eye-Safety Defect
+# Flag to Founder: Two Journal Essays Pulled for an Eye-Safety Defect
 
 **Date:** 2026-11-25
 **Raised by:** Independent review of a SEO/content audit report, cross-checked against source (Claude Code agent)
-**File:** `src/config/journal-surya-arghya.ts`
-**Action taken:** `publicationStatus` flipped from `"published"` to `"pending_review"`. Still on branch `feature/sacred-samagri`, uncommitted — not yet deployed.
+**Files:** `src/config/journal-surya-arghya.ts`, `src/config/journal-chhath-puja.ts`
+**Action taken:** `publicationStatus` flipped from `"published"` to `"pending_review"` on both. Committed on branch `feature/sacred-samagri` — not yet deployed.
+
+## Update 2026-11-25 (same day): Chhath Puja carries the identical defect
+
+Following a full sweep of all 32 journal essays (ordered after this incident), `journal-chhath-puja.ts` -- which is cross-linked to Surya Arghya via `relatedSlugs` -- had the same shape of claim: *"When the Vrati gazes softly through the bamboo Supa at the low-angle solar rays, the optic pathways absorb natural full-spectrum photons without the blinding UV radiation of midday..."* and a keyTakeaway referring to "retinal solar light absorption." Same fix applied: the gazing instruction and UV-safety claim removed from both the key takeaway and the body section, essay held at `pending_review`. See "Sweep results" below for the other 10 essays flagged with different, lower-severity issues that have **not** been fixed and are the founder's call.
 
 ## What was wrong
 
@@ -23,6 +27,30 @@ In the same file, the eye-gazing instruction and the UV/safety claim were remove
 - `practiceGuidance` step 4 — now explicitly says to keep the gaze on the water or the horizon, never on the sun
 
 The devotional/liturgical content (Gayatri Mantra, Mandeha Vajra narrative, Rigveda/Taittiriya Aranyaka quotes) and the legitimate circadian-biology material (ipRGC/melatonin science, which doesn't require looking at the sun's disc) were left in place.
+
+## Sweep results: the other 10 flagged essays (not fixed, founder's call)
+
+A read-only sweep of all 32 journal essays (24 standalone files + 8 inlined in `journal.ts`) for the same shape of defect -- a traditional/scriptural belief restated by Shoonaya's own narrative voice as an unqualified modern scientific, medical, or safety fact -- found 10 more files with issues, none fixed yet. Listed worst-first; none involves a direct instruction to do something physically unsafe (that's what made Surya Arghya and Chhath Puja urgent), but two carry a different risk -- someone substituting mantra/ritual for real medical care:
+
+**Moderate-serious (health claims that could delay real care):**
+- `journal-mantra-japa-mala.ts` -- states as fact that "Rudraksha seeds possess unique electromagnetic properties that stabilize blood pressure and still erratic heart-rate rhythms," with no tradition framing. Someone with hypertension or arrhythmia could read this as a reason to skip treatment.
+- `journal-hanuman-chalisa.ts` -- a section titled "The Medical and Psychological Verses" presents reciting the Chalisa (including drinking recited-over water) as the remedy for "Acute Physical Illness & Pain," panic attacks, and sleep paralysis, with no disclaimer that this isn't medical treatment.
+
+**Moderate (specific scientific/statistical claims stated as settled fact, no direct action risk):**
+- `journal-amavasya-purnima.ts` -- an ER/police "lunar effect" anecdote plus a claim that lunar gravity "produces micro-fluctuations in neurotransmitter concentrations," presented as established neurophysiology (the lunar-behavior link is actually scientifically contested).
+- `journal-fasting-science.ts` -- claims the digestive tract "consumes approximately 30 to 40% of the body's daily metabolic energy" as "well established"; the real figure is closer to ~10%.
+- `journal-pitru-paksha.ts` -- "water molecules possess liquid crystalline properties capable of imprinting... the vibrational frequency of the sacred Gotra" (water-memory pseudoscience) and a fabricated-sounding "scientific analyses confirm" claim about Kusha grass's "electro-magnetic insulating properties."
+- `journal-tulsi-seva.ts` -- "studies published in environmental biology confirm that Tulsi emits small amounts of oxygen for up to 20 hours a day" -- an implausible figure with no real citation. (This same file also has a genuinely good, responsible caveat about dental safety and chewing Tulsi leaves -- worth keeping as the model to match.)
+
+**Minor (pseudo-scientific flourish, no safety implication):**
+- `journal-home-mandir-vastu.ts` -- "beneficial geomagnetic currents flowing from the North Pole."
+- `journal-brahma-muhurta.ts` -- "peak natural concentration of nascent oxygen and natural ozone" before dawn.
+- `journal-diwali-lakshmi-puja.ts` -- a diya flame "ionizes the indoor atmosphere."
+- `journal-sandhyavandanam.ts` -- "water ionization of the digestive tract" and acoustic vibration "resolving into subtle electromagnetic oscillation... in the prefrontal cortex."
+
+**Cross-cutting, every essay:** most citation lists include one or two vague modern-science references with no author/year/title ("Cell; Nature Neuroscience," "BMJ Rhythm Studies") -- same shape as Surya Arghya's original citation. Not confirmed fabricated, but not verifiable either.
+
+**Clean (20 of 32), worth naming the good examples:** `journal-kumbh-2027.ts` already has a real named reviewer (`"Pt. Prince Sharma"`) and sources every fact to a dated schedule -- the model other essays should match. `journal-rahu-kaal.ts` explicitly and correctly exempts medical emergencies from its "inauspicious time" framing.
 
 ## Still needs the founder's decision
 
