@@ -68,7 +68,7 @@ export const hanumanChalisaEssay: JournalEssay = {
       }
     },
     {
-      heading: "Verses for Specific Occasions: Traditional Devotional Uses",
+      heading: "Verses of Solace, Mental Fortitude, and Healing (Rog & Peera)",
       paragraphs: [
         "Within the forty verses, specific Chaupais have traditional devotional associations for particular life situations. These are spiritual practices of faith and comfort, not medical or psychological treatments, and are not a substitute for seeing a doctor or a mental-health professional:",
         "1. During Illness: Chaupai 25 ('Nase rog hare sab peera, japat nirantar hanumat veera') is traditionally recited 27 or 108 times over a cup of clean drinking water, which is then consumed as an act of devotion alongside -- never instead of -- appropriate medical care.\n2. During Anxiety or Distress: Chaupai 36 ('Sankat kate mite sab peera, jo sumirai hanumat balbeera') is invoked for comfort and steadiness of mind. Persistent panic attacks or sleep paralysis are conditions a doctor or mental-health professional should evaluate.\n3. For Overcoming Seeming Impossibilities: Chaupai 19 ('Durgam kaaj jagat ke jete, sugam anugraha tumhre tete') reminds the devotee that every insurmountable obstacle becomes lighter through faith and divine grace.\n4. For a Sense of Being Trapped or Entangled: Chaupai 38 ('Jo sat bar path kare koi, chhootahi bandi maha sukh hoi') establishes the traditional devotional discipline of completing 100 recitations of the hymn during a single sitting or over a 40-day Mandala, undertaken as an act of faith for relief from a difficult situation."
