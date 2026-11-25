@@ -33,6 +33,8 @@ export default defineConfig({
       '@': r('./src'),
     },
   },
+  // tsconfig keeps JSX for Next to compile; tests that render a component need it compiled here.
+  oxc: { jsx: { runtime: 'automatic' } },
   test: {
     // Only app-level tests. The packages own their suites; picking them up here
     // would run them twice under different resolution and invite drift.

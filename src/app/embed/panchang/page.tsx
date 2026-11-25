@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { calculatePanchang } from '@/lib/panchang';
+import { lunarMonthLabel } from '@/lib/calendar/lunar-month-label';
 import { resolveEmbedCity } from '@/lib/embed/cities';
 import { Sunrise, Sunset, Clock, Sparkles, AlertCircle, Compass, Calendar } from 'lucide-react';
 
@@ -36,6 +37,7 @@ export default async function EmbedPanchangPage({ searchParams }: EmbedPanchangP
   // Compute panchang for current instant in the target city's timezone
   const now = new Date();
   const panchang = calculatePanchang(now, location.lat, location.lon, location.tz);
+  const lunarMonth = lunarMonthLabel(now);
 
   // Theme styling configurations
   const themeStyles = {
@@ -118,7 +120,7 @@ export default async function EmbedPanchangPage({ searchParams }: EmbedPanchangP
                 Masa & Vara
               </span>
               <p className="text-sm font-semibold mt-0.5">
-                {panchang.masaName}
+                {lunarMonth?.text ?? '—'}
               </p>
               <p className={`text-xs ${themeStyles.mutedText}`}>
                 {panchang.vara}

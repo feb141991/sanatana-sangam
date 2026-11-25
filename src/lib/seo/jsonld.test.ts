@@ -42,7 +42,6 @@ describe("AEO & SEO JSON-LD Configuration", () => {
     );
     expect(softwareApplication?.alternateName).toBeUndefined();
     expect(softwareApplication?.sameAs).toEqual([
-      "https://apps.apple.com/app/shoonaya/id6793055966",
       "https://play.google.com/store/apps/details?id=com.shoonaya.app",
     ]);
   });

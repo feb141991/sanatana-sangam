@@ -84,8 +84,8 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
       coordinates: formatCityCoordinates(facts.city),
       sunrise: facts.panchang.sunrise,
       sunset: facts.panchang.sunset,
-      tithi: `${facts.panchang.paksha} ${facts.panchang.tithi}`,
-      masa: facts.panchang.masaName,
+      tithi: facts.festivalDate ? `${facts.panchang.paksha} ${facts.panchang.tithi}` : '',
+      masa: facts.lunarMonth?.text ?? '',
     },
   });
 
@@ -163,11 +163,13 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
               <Fact label="Reference date" value={facts.festivalDate ?? 'No reference date available'} />
               <Fact label="Local sunrise" value={facts.panchang.sunrise} />
               <Fact label="Local sunset" value={facts.panchang.sunset} />
-              <Fact label="Tithi at local noon" value={`${facts.panchang.paksha} ${facts.panchang.tithi}`} />
+              {facts.festivalDate ? (
+                <Fact label="Tithi at local noon" value={`${facts.panchang.paksha} ${facts.panchang.tithi}`} />
+              ) : null}
             </div>
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--text-dim)]">
-              <span>Masa: {facts.panchang.masaName}</span>
-              <span>Nakshatra: {facts.panchang.nakshatra}</span>
+              {facts.lunarMonth ? <span>Masa: {facts.lunarMonth.text}</span> : null}
+              {facts.festivalDate ? <span>Nakshatra: {facts.panchang.nakshatra}</span> : null}
               <span>{facts.calculationLabel}</span>
             </div>
           </section>

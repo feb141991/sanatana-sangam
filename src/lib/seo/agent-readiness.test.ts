@@ -34,7 +34,6 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
     expect(landingHtml).toContain('"@type": "Organization"');
     expect(landingHtml).toContain('"@type": "Service"');
     expect(landingHtml).toContain('"@type": "SoftwareApplication"');
-    expect(landingHtml).toContain("https://apps.apple.com/app");
     expect(landingHtml).toContain("https://play.google.com/store/apps");
     expect(landingHtml).toContain('"price": "0"');
   });
@@ -169,12 +168,14 @@ describe("Agent-Readiness 8-Pillars Validation", () => {
     expect(festData.result.content[0].text).toContain("Ekadashi");
   });
 
-  it("Findability: Sitemap carries recent lastmod dates on every URL", async () => {
+  it("Findability: Sitemap carries lastmod only where a real date is known", async () => {
     const entries = await sitemap();
     expect(entries.length).toBeGreaterThan(50);
-    for (const entry of entries) {
-      expect(entry.lastModified).toBeDefined();
-    }
+    // One build-time date on every URL is an invented date, and search engines
+    // learn to ignore the field. See public-page-seo.test.ts.
+    const dated = entries.filter((entry) => entry.lastModified);
+    expect(dated.length).toBeGreaterThan(0);
+    expect(dated.length).toBeLessThan(entries.length);
   });
 
   it("Commercial Legibility: Landing HTML links about, pricing, contact, privacy, and terms", () => {

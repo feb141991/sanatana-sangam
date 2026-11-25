@@ -63,7 +63,6 @@ const FAQ_ITEMS: FaqItem[] = [
       "Kul and Mandali: Family, lineage, and community spaces.",
     ],
     links: [
-      { label: "Explore Daily Sadhana", href: "/features/daily-sadhana" },
       { label: "Tactile Japa Feature", href: "/features/japa" },
       { label: "Play Gyan Chaupar", href: "/play/gyan-chaupar" },
     ],
@@ -388,6 +387,7 @@ export function FaqClient() {
                 <button
                   onClick={() => toggleItem(item.id)}
                   aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${item.id}`}
                   className="flex w-full items-start justify-between gap-4 p-6 text-left transition-colors"
                 >
                   <div className="space-y-1.5">
@@ -409,50 +409,49 @@ export function FaqClient() {
                   </div>
                 </button>
 
-                {isOpen && (
-                  <div className="border-t border-[var(--card-border)] px-6 pb-6 pt-5 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base">
-                    <p className="text-[var(--text-cream)]/90">{item.answer}</p>
+                {/* Always in the HTML, so crawlers and find-in-page can read every answer. */}
+                <div id={`faq-answer-${item.id}`} hidden={!isOpen} className="border-t border-[var(--card-border)] px-6 pb-6 pt-5 text-sm leading-relaxed text-[var(--text-muted-warm)] sm:text-base">
+                  <p className="text-[var(--text-cream)]/90">{item.answer}</p>
 
-                    {item.bullets && item.bullets.length > 0 && (
-                      <ul className="mt-4 space-y-2.5 pl-1">
-                        {item.bullets.map((bullet, idx) => (
-                          <li key={idx} className="flex items-start gap-3">
-                            <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--brand-primary-strong)]" />
-                            <span>{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                  {item.bullets && item.bullets.length > 0 && (
+                    <ul className="mt-4 space-y-2.5 pl-1">
+                      {item.bullets.map((bullet, idx) => (
+                        <li key={idx} className="flex items-start gap-3">
+                          <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--brand-primary-strong)]" />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
 
-                    {item.links && item.links.length > 0 && (
-                      <div className="mt-6 flex flex-wrap gap-3 pt-3 border-t border-[var(--card-border)]/50">
-                        {item.links.map((link, idx) =>
-                          link.href.startsWith("http") ? (
-                            <a
-                              key={idx}
-                              href={link.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--card-bg-subtle)] px-4 py-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] transition-colors"
-                            >
-                              <span>{link.label}</span>
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                          ) : (
-                            <Link
-                              key={idx}
-                              href={link.href}
-                              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--card-bg-subtle)] px-4 py-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] transition-colors"
-                            >
-                              <span>{link.label}</span>
-                              <ArrowRight className="h-3 w-3" />
-                            </Link>
-                          ),
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
+                  {item.links && item.links.length > 0 && (
+                    <div className="mt-6 flex flex-wrap gap-3 pt-3 border-t border-[var(--card-border)]/50">
+                      {item.links.map((link, idx) =>
+                        link.href.startsWith("http") ? (
+                          <a
+                            key={idx}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--card-bg-subtle)] px-4 py-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] transition-colors"
+                          >
+                            <span>{link.label}</span>
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        ) : (
+                          <Link
+                            key={idx}
+                            href={link.href}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-[var(--card-border)] bg-[var(--card-bg-subtle)] px-4 py-1.5 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)] hover:text-[var(--text-cream)] transition-colors"
+                          >
+                            <span>{link.label}</span>
+                            <ArrowRight className="h-3 w-3" />
+                          </Link>
+                        ),
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })

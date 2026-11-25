@@ -16,11 +16,11 @@
  *   Kṛṣṇa paksha  : purnimantaMonth = amantaMonth + 1      (next month name)
  */
 
-import { getLunarMonth, type MonthSystem as EngineMonthSystem } from '@sangam/panchang-engine';
+import { resolveMonthLabelForDate, type SupportedMonthSystem } from './lunar-month-label';
 import type { MonthSystem as ContextMonthSystem } from './calendar-context';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
-export type SupportedMonthSystem = 'amanta' | 'purnimanta';
+export { resolveMonthLabelForDate, type SupportedMonthSystem };
 
 export interface MonthLabelResult {
   monthName: string;
@@ -34,31 +34,6 @@ export interface ObservanceRuleMonthInput {
   corrected_month_system?: 'amanta' | 'purnimanta' | string | null;
   lunar_masa_name?: string | null;
   lunar_tithi_index?: number | null;
-}
-
-/**
- * Resolves the month label for a specific UTC date/instant given a target month system.
- * Uses `getLunarMonth(instant, targetSystem)` to obtain the exact label for that astronomical day.
- */
-export function resolveMonthLabelForDate(
-  dateOrInstant: Date | string,
-  targetSystem: SupportedMonthSystem
-): { monthName: string; monthIndex: number; paksha: 'shukla' | 'krishna'; isAdhika: boolean } | null {
-  const instant = typeof dateOrInstant === 'string'
-    ? new Date(`${dateOrInstant.split('T')[0]}T12:00:00Z`)
-    : dateOrInstant;
-
-  if (isNaN(instant.getTime())) return null;
-
-  const result = getLunarMonth(instant, targetSystem as EngineMonthSystem);
-  if (!result || !result.ok) return null;
-
-  return {
-    monthName: result.monthName,
-    monthIndex: result.monthIndex,
-    paksha: result.paksha,
-    isAdhika: result.isAdhika,
-  };
 }
 
 /**

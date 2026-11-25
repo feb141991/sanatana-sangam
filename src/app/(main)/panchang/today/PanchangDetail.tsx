@@ -8,6 +8,7 @@ import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
 import { WhyTodayCard } from '@/components/calendar/WhyTodayCard';
 import { WhyTodayExplanationModal } from '@/components/calendar/WhyTodayExplanationModal';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
+import { lunarMonthLabel } from '@/lib/calendar/lunar-month-label';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { PANCHANG_TRUST_META, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter';
@@ -259,6 +260,8 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
   }, [timezone]);
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition, displayTz === 'ist' ? 'Asia/Kolkata' : timezone);
+  // Nanakshahi months are solar, so a lunar month name is not shown as a "Mahina".
+  const lunarMonth = useMemo(() => (tradition === 'sikh' ? null : lunarMonthLabel(selected)), [selected, tradition]);
 
   // Phase 6.5: reference-city comparison. Always computed (hooks must run
   // unconditionally) but only rendered when the viewer has a real, non-
@@ -497,7 +500,7 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
             style={{ background: `linear-gradient(135deg, ${tradMeta.accent}dd, ${tradMeta.accent}99)`, border: `1px solid rgba(255,255,255,0.12)` }}>
             <span className="text-2xl">🪔</span>
             <div>
-              <p className="text-white font-bold text-sm">{p.paksha} Paksha · {p.masaName} {p.labels.monthLabel}</p>
+              <p className="text-white font-bold text-sm">{p.paksha} Paksha{lunarMonth ? ` · ${lunarMonth.text} ${p.labels.monthLabel}` : ''}</p>
               <p className="text-white/60 text-[11px] mt-0.5">{p.vara} · {tradMeta.note}</p>
             </div>
             <div className="ml-auto text-right">

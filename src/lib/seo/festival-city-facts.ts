@@ -1,6 +1,8 @@
 import { EMBED_POPULAR_CITIES, type EmbedCityPreset } from '@/lib/embed/cities';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import { unstable_cache } from 'next/cache';
+import { lunarMonthLabel, type LunarMonthLabel } from '@/lib/calendar/lunar-month-label';
+import { zonedTimeToUtcIso } from '@/lib/marketing/social/schedule-time';
 import {
   calculateObservancesForYearCorrected,
   type CalculatedOccurrence,
@@ -11,6 +13,8 @@ export interface FestivalCityFacts {
   year: number;
   festivalDate: string | null;
   panchang: ReturnType<typeof calculatePanchang>;
+  /** Lunar month at local noon of the reference date; null without a reference date. */
+  lunarMonth: LunarMonthLabel | null;
   calculationLabel: string;
 }
 
@@ -31,8 +35,9 @@ export function resolveFestivalSeoCity(value: string): EmbedCityPreset | null {
   return EMBED_POPULAR_CITIES[slug] ?? null;
 }
 
-function civilNoon(date: string): Date {
-  return new Date(`${date}T12:00:00Z`);
+/** The instant of 12:00 in the city, so "at local noon" means the city's noon and not 12:00 UTC. */
+export function localCivilNoon(date: string, timeZone: string): Date {
+  return new Date(zonedTimeToUtcIso(date, '12:00', timeZone));
 }
 
 function currentCivilDate(timeZone: string, now = new Date()): string {
@@ -51,7 +56,7 @@ function occurrenceDate(
   return occurrences.find((occurrence) => occurrence.slug === slug)?.date ?? null;
 }
 
-function computeFestivalCityFacts(
+export function computeFestivalCityFacts(
   festivalSlug: string,
   citySlug: string,
   year: number,
@@ -64,13 +69,14 @@ function computeFestivalCityFacts(
     calculateObservancesForYearCorrected(year, FESTIVAL_DATE_LOCATION),
     festivalSlug,
   );
-  const panchangDate = festivalDate ?? currentCivilDate(city.tz);
+  const noon = localCivilNoon(festivalDate ?? currentCivilDate(city.tz), city.tz);
 
   return {
     city,
     year,
     festivalDate,
-    panchang: calculatePanchang(civilNoon(panchangDate), city.lat, city.lon, city.tz),
+    panchang: calculatePanchang(noon, city.lat, city.lon, city.tz),
+    lunarMonth: festivalDate ? lunarMonthLabel(noon) : null,
     calculationLabel: 'Festival date: Ujjain reference set · timings: local coordinates and IANA timezone',
   };
 }
@@ -78,7 +84,7 @@ function computeFestivalCityFacts(
 const getCachedFestivalCityFacts = unstable_cache(
   async (festivalSlug: string, citySlug: string, year: number) =>
     computeFestivalCityFacts(festivalSlug, citySlug, year),
-  ['festival-city-facts-v1'],
+  ['festival-city-facts-v2'],
   { revalidate: 86_400 },
 );
 

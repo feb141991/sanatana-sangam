@@ -152,6 +152,9 @@ export default function PanchangHub({ panchang }: Props) {
       </div>
 
       <div className="max-w-lg mx-auto px-4 mt-6 space-y-4">
+        <h1 className="font-serif text-2xl font-bold leading-tight" style={{ color: 'var(--brand-primary-strong)' }}>
+          Panchang and Astrology Hub
+        </h1>
         {/* Hub Card Entry List */}
         
         {/* Card A: Panchang */}

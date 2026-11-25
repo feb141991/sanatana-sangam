@@ -55,7 +55,6 @@ const SITEMAP_DIRECTORY: SitemapCategory[] = [
     summary: "Grounded rituals, contemplative breathwork, and sacred sound for daily life.",
     icon: Sparkles,
     links: [
-      { label: "Daily Sadhana", href: "/features/daily-sadhana", description: "Calm sequences tailored to your available time." },
       { label: "Tactile Japa Mala", href: "/features/japa", description: "27, 54, and 108-bead mantra meditation counter." },
       { label: "Bhakti Hub", href: "/bhakti", description: "Aarti, Stotram, and sacred song collections." },
       { label: "Stotram Library", href: "/bhakti/browse", description: "Devanagari, transliteration, and sourced translations." },

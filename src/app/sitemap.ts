@@ -22,6 +22,9 @@ import {
 const BASE_URL = "https://www.shoonaya.com";
 export const revalidate = 3600;
 
+// lastModified is set only where a real date is known. A date invented at build
+// time is the same on every URL and teaches search engines to ignore the field.
+
 // Top high-search festivals and diaspora cities for localized programmatic SEO
 const MAJOR_FESTIVAL_SLUGS_FOR_SEO: readonly string[] = [
   "diwali",
@@ -88,11 +91,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: `${BASE_URL}/early-access`,
       changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/features/daily-sadhana`,
-      changeFrequency: "monthly",
       priority: 0.8,
     },
     {
@@ -251,7 +249,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
-  const now = new Date();
   const rawEntries: MetadataRoute.Sitemap = [
     ...staticRoutes,
     ...vratRoutes,
@@ -270,6 +267,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
     ...getAllJournalEssays().map((essay) => ({
       url: `${BASE_URL}/journal/${essay.slug}`,
+      ...(essay.publishedAt ? { lastModified: new Date(essay.publishedAt) } : {}),
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
@@ -284,10 +282,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { url: hi, changeFrequency: "monthly" as const, priority: 0.7, alternates },
       ];
     }),
-  ].map((entry: MetadataRoute.Sitemap[number]) => ({
-    ...entry,
-    lastModified: entry.lastModified ?? now,
-  }));
+  ];
 
   return filterSitemapIndexableRoutes(deduplicateSitemap(rawEntries));
 }
