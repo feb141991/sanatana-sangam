@@ -16,7 +16,7 @@ export default function TermsClient() {
         <button
           onClick={() => setRegion('global')}
           className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-            region === 'global' ? 'bg-[#C5A059] text-[#1a1610]' : 'text-white/40 hover:text-white'
+            region === 'global' ? 'bg-[#C5A059] text-[#1a1610]' : 'text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)]'
           }`}
         >
           Global
@@ -26,7 +26,7 @@ export default function TermsClient() {
             key={app.region}
             onClick={() => setRegion(app.region)}
             className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-              region === app.region ? 'bg-[#C5A059] text-[#1a1610]' : 'text-white/40 hover:text-white'
+              region === app.region ? 'bg-[#C5A059] text-[#1a1610]' : 'text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)]'
             }`}
           >
             {app.label}
@@ -53,7 +53,7 @@ export default function TermsClient() {
                     {section.title}
                   </h2>
                 </div>
-                <p className="text-[#C5A059] font-medium text-xs uppercase tracking-widest mb-4 opacity-80 italic">
+                <p className="text-[#7B1A1A] font-medium text-xs uppercase tracking-widest mb-4 opacity-80 italic">
                   — {section.summary}
                 </p>
                 <div className="space-y-4">
@@ -69,7 +69,7 @@ export default function TermsClient() {
             {/* Regional Appendix Sections */}
             {currentAppendix && (
               <div className="pt-10 border-t border-white/10 mt-16">
-                <div className="inline-block px-3 py-1 rounded-full bg-[#C5A059]/10 border border-[#C5A059]/20 text-[#C5A059] text-[10px] font-bold uppercase tracking-widest mb-8">
+                <div className="inline-block px-3 py-1 rounded-full bg-[#7B1A1A]/10 border border-[#7B1A1A]/20 text-[#7B1A1A] text-[10px] font-bold uppercase tracking-widest mb-8">
                   {currentAppendix.label} Specific Addendum
                 </div>
                 <div className="space-y-10">
@@ -81,7 +81,7 @@ export default function TermsClient() {
                           {section.title}
                         </h2>
                       </div>
-                      <p className="text-[#C5A059] font-medium text-xs uppercase tracking-widest mb-4 opacity-60 italic">
+                      <p className="text-[#7B1A1A] font-medium text-xs uppercase tracking-widest mb-4 opacity-80 italic">
                         — {section.summary}
                       </p>
                       <div className="space-y-4">
@@ -102,7 +102,7 @@ export default function TermsClient() {
 
       <div
         data-terms-version={TERMS_VERSION}
-        className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold"
+        className="pt-8 border-t border-white/5 text-[10px] text-[color:var(--brand-muted)] uppercase tracking-[0.3em] font-bold"
       >
         Last Updated: November 18, 2026 • Shoonaya by The RDS Ventures
       </div>

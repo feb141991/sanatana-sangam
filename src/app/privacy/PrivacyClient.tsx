@@ -17,7 +17,7 @@ export default function PrivacyClient() {
         <button
           onClick={() => setRegion('global')}
           className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-            region === 'global' ? 'bg-[#7B1A1A]/20 text-[#7B1A1A] border border-[#7B1A1A]/40' : 'text-white/40 hover:text-white'
+            region === 'global' ? 'bg-[#7B1A1A]/20 text-[#7B1A1A] border border-[#7B1A1A]/40' : 'text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)]'
           }`}
         >
           Global
@@ -27,7 +27,7 @@ export default function PrivacyClient() {
             key={app.region}
             onClick={() => setRegion(app.region)}
             className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-              region === app.region ? 'bg-[#7B1A1A]/20 text-[#7B1A1A] border border-[#7B1A1A]/40' : 'text-white/40 hover:text-white'
+              region === app.region ? 'bg-[#7B1A1A]/20 text-[#7B1A1A] border border-[#7B1A1A]/40' : 'text-[color:var(--brand-muted)] hover:text-[color:var(--text-cream)]'
             }`}
           >
             {app.label}
@@ -82,7 +82,7 @@ export default function PrivacyClient() {
                           {section.title}
                         </h2>
                       </div>
-                      <p className="text-[#7B1A1A] font-medium text-xs uppercase tracking-widest mb-4 opacity-60 italic">
+                      <p className="text-[#7B1A1A] font-medium text-xs uppercase tracking-widest mb-4 opacity-80 italic">
                         — {section.summary}
                       </p>
                       <div className="space-y-4">
@@ -109,7 +109,7 @@ export default function PrivacyClient() {
 
       <div
         data-privacy-version={PRIVACY_VERSION}
-        className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold"
+        className="pt-8 border-t border-white/5 text-[10px] text-[color:var(--brand-muted)] uppercase tracking-[0.3em] font-bold"
       >
         Last Updated: November 18, 2026 • Shoonaya by The RDS Ventures
       </div>

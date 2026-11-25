@@ -35,7 +35,7 @@ export default function GuidelinesPage() {
                 <h2 className="font-display text-2xl font-bold text-[color:var(--text-cream)] tracking-tight">
                   {section.title}
                 </h2>
-                <p className="text-xs font-medium uppercase italic tracking-widest text-[var(--brand-primary-strong)] opacity-80">
+                <p className="text-xs font-medium uppercase italic tracking-widest text-[var(--brand-primary-strong)]">
                   — {section.summary}
                 </p>
                 <div className="space-y-4">
@@ -53,7 +53,7 @@ export default function GuidelinesPage() {
           </motion.section>
         ))}
 
-        <div className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold">
+        <div className="pt-8 border-t border-white/5 text-[10px] text-[color:var(--brand-muted)] uppercase tracking-[0.3em] font-bold">
           Updated: May 14, 2026 • Shoonaya Ethics Council
         </div>
       </div>
