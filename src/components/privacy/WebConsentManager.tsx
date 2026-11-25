@@ -55,7 +55,7 @@ export default function WebConsentManager({ gaMeasurementId, adsenseClient, clar
   function save(nextValues: Choice) {
     const next: WebConsentPreferences = { version: WEB_CONSENT_VERSION, ...nextValues, decidedAt: new Date().toISOString() };
     // Compared against what was in force before, so withdrawing a category really removes its cookies.
-    clearVendorState(saved, next);
+    clearVendorState(saved, next, { gaMeasurementId });
     try { window.localStorage.setItem(WEB_CONSENT_STORAGE_KEY, JSON.stringify(next)); } catch { /* fail closed in memory */ }
     setSaved(next);
     setDraft({ analytics: next.analytics, advertising: next.advertising });

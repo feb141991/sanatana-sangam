@@ -57,16 +57,30 @@ function presentCookieNames(): string[] {
   }
 }
 
-export function clearVendorState(previous: WebConsentPreferences, next: WebConsentPreferences) {
+export function clearVendorState(
+  previous: WebConsentPreferences,
+  next: WebConsentPreferences,
+  vendors: { gaMeasurementId?: string } = {},
+) {
   if (typeof window === 'undefined') return;
   if (previous.analytics && !next.analytics) {
+    const page = window as unknown as Record<string, unknown> & { clarity?: (...args: unknown[]) => void };
+    // Google's documented opt-out switch: a gtag already loaded on this page stops sending once it is set.
+    if (vendors.gaMeasurementId) page[`ga-disable-${vendors.gaMeasurementId}`] = true;
     clearKeys(['_ga', '_gid', '_gat', ...presentCookieNames().filter((name) => GA_COOKIE_PREFIXES.test(name))]);
-    // Microsoft Clarity's first-party cookies, then its consent API, which stops a recording already running on this page.
+    // Microsoft Clarity. Its consent call alone only switches it to recording without cookies (seen on the live site
+    // 2026-11-17: uploads continued every few seconds), so it is also stopped, and its session key is removed.
     clearKeys(['_clck', '_clsk']);
     try {
-      (window as unknown as { clarity?: (...args: unknown[]) => void }).clarity?.('consent', false);
+      page.clarity?.('consent', false);
+      page.clarity?.('stop');
     } catch {
       /* a missing or failing Clarity script must not stop the withdrawal */
+    }
+    try {
+      window.sessionStorage?.removeItem('_cltk');
+    } catch {
+      /* storage can be unavailable; the cookies are already gone */
     }
   }
   if (previous.advertising && !next.advertising) clearKeys(['__gads', '__gpi', '__eoi', 'google_ama_config']);

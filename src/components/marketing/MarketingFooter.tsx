@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import BrandMark from "@/components/BrandMark";
+import PrivacyChoicesButton from '@/components/privacy/PrivacyChoicesButton';
 import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
 import {
   OFFICIAL_EMAILS,
@@ -100,7 +101,7 @@ const FOOTER_COLUMNS = [
   {
     title: "Trust & Governance",
     links: [
-      { href: "/privacy", label: "Privacy Policy (Zero Trackers)" },
+      { href: "/privacy", label: "Privacy Policy" },
       { href: "/terms", label: "Terms of Service" },
       { href: "/guidelines", label: "Community Guidelines" },
       { href: "/sources", label: "Editorial Verification Tiers" },
@@ -297,6 +298,8 @@ export function MarketingFooter() {
 
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
             <Link href="/privacy" className="hover:text-[var(--text-cream)] transition-colors">Privacy Policy</Link>
+            <span>•</span>
+            <PrivacyChoicesButton className="hover:text-[var(--text-cream)] transition-colors" />
             <span>•</span>
             <Link href="/terms" className="hover:text-[var(--text-cream)] transition-colors">Terms of Service</Link>
             <span>•</span>

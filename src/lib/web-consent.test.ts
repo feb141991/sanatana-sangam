@@ -110,7 +110,8 @@ test('ticking a box changes a draft, not the saved choice', () => {
 });
 
 test('saving clears vendor state against the choice that was in force, not the half-edited one', () => {
-  assert.match(banner, /clearVendorState\(saved,\s*next\)/);
+  // Also passes the measurement id, so a Google Analytics script already on the page can be switched off.
+  assert.match(banner, /clearVendorState\(saved,\s*next,\s*\{ gaMeasurementId \}\)/);
 });
 
 test('the first-layer buttons carry equal visual weight: refusing is as prominent as accepting', () => {
@@ -153,11 +154,60 @@ function clarityCalls(previous: WebConsentPreferences, next: WebConsentPreferenc
   return calls;
 }
 
-test('withdrawing analytics revokes Clarity consent; withdrawing only advertising does not', () => {
-  assert.deepEqual(clarityCalls(prefs(true, false), prefs(false, false)), [['consent', false]]);
+test('withdrawing analytics revokes Clarity consent and stops it; withdrawing only advertising does not', () => {
+  // Consent alone leaves Clarity recording without cookies (live site, 2026-11-17); only 'stop' ends the upload.
+  assert.deepEqual(clarityCalls(prefs(true, false), prefs(false, false)), [['consent', false], ['stop']]);
   assert.deepEqual(clarityCalls(prefs(true, true), prefs(true, false)), []);
 });
 
 test('a Clarity script that throws does not stop the withdrawal', () => {
   assert.doesNotThrow(() => clarityCalls(prefs(true, false), prefs(false, false), () => { throw new Error('clarity failed'); }));
+});
+
+// ── Withdrawing analytics stops trackers already running on the open page ───────────────────────
+
+function withdrawOnPage(previous: WebConsentPreferences, next: WebConsentPreferences, vendors?: { gaMeasurementId?: string }) {
+  const session = new Map<string, string>([['_cltk', 'abc'], ['keep-me', '1']]);
+  const page: Record<string, unknown> = {
+    location: { hostname: 'www.shoonaya.com' },
+    sessionStorage: { removeItem: (key: string) => session.delete(key) },
+  };
+  const g = globalThis as unknown as { window?: unknown; document?: unknown };
+  const saved = { window: g.window, document: g.document };
+  g.window = page;
+  g.document = { set cookie(_value: string) {}, get cookie() { return ''; } };
+  try {
+    clearVendorState(previous, next, vendors);
+  } finally {
+    g.window = saved.window;
+    g.document = saved.document;
+  }
+  return { page, session: [...session.keys()] };
+}
+
+test('withdrawing analytics sets Google\'s opt-out switch for the measurement id in use', () => {
+  const { page } = withdrawOnPage(prefs(true, false), prefs(false, false), { gaMeasurementId: 'G-ABC123' });
+  assert.equal(page['ga-disable-G-ABC123'], true);
+  const kept = withdrawOnPage(prefs(true, true), prefs(true, false), { gaMeasurementId: 'G-ABC123' });
+  assert.equal(kept.page['ga-disable-G-ABC123'], undefined);
+});
+
+test('withdrawing analytics removes Clarity\'s session key and nothing else', () => {
+  assert.deepEqual(withdrawOnPage(prefs(true, false), prefs(false, false)).session, ['keep-me']);
+  assert.deepEqual(withdrawOnPage(prefs(true, true), prefs(true, false)).session, ['_cltk', 'keep-me']);
+});
+
+// ── A visitor who is not signed in can reopen their choices ───────────────────────────────────────
+
+test('the public footer and the privacy policy page both offer Privacy choices', () => {
+  for (const file of ['src/components/marketing/MarketingFooter.tsx', 'src/app/privacy/PrivacyClient.tsx']) {
+    const source = readFileSync(join(process.cwd(), file), 'utf8');
+    assert.match(source, /import PrivacyChoicesButton from '@\/components\/privacy\/PrivacyChoicesButton'/, file);
+    assert.match(source, /<PrivacyChoicesButton\b/, file);
+  }
+});
+
+test('the footer does not claim the site has no trackers', () => {
+  const footer = readFileSync(join(process.cwd(), 'src/components/marketing/MarketingFooter.tsx'), 'utf8');
+  assert.doesNotMatch(footer, /zero trackers|no trackers|tracker-free/i);
 });

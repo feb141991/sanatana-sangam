@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { PRIVACY_DATA, PRIVACY_VERSION, PrivacyRegion } from '@/lib/privacy-content';
 import { motion, AnimatePresence } from 'framer-motion';
+import PrivacyChoicesButton from '@/components/privacy/PrivacyChoicesButton';
 
 export default function PrivacyClient() {
   const [region, setRegion] = useState<PrivacyRegion>('global');
@@ -98,6 +99,12 @@ export default function PrivacyClient() {
             )}
           </motion.div>
         </AnimatePresence>
+      </div>
+
+      {/* A visitor who is not signed in has no Settings page; this is where they change or withdraw cookie consent. */}
+      <div className="flex flex-wrap items-center gap-3 pt-8 border-t border-white/5">
+        <p className="text-sm text-[color:var(--brand-muted)]">Change or withdraw your cookie choices for this site:</p>
+        <PrivacyChoicesButton className="min-h-[44px] px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest bg-[#7B1A1A]/10 text-[#7B1A1A] border border-[#7B1A1A]/30 hover:bg-[#7B1A1A]/20 transition-all" />
       </div>
 
       <div
