@@ -26,6 +26,7 @@ Use the smallest set of agents needed for the task.
 - Supabase schema, API routes, cron jobs, RLS, auth, or queries: `shoonaya-supabase-backend-engineer.md`
 - Ritual sequence, Nitya Karma, Dinacharya, Panchang, scripture placement: `shoonaya-ritual-practice-reviewer.md`
 - Scriptural/source correctness: `shoonaya-pramana-content-reviewer.md`
+- Writing or correcting a Sanctuary Journal essay (`src/config/journal-*.ts`): `shoonaya-journal-essay-writer.md` (follows `.claude/skills/journal-essay-integrity/SKILL.md`), then route the result through `shoonaya-pramana-content-reviewer.md` and `shoonaya-ritual-practice-reviewer.md` before treating it as reviewed
 - Brand strategy, positioning, naming, public copy, campaign language, social proof, feature-status messaging, or community identity: `shoonaya-brand-manager.md`
 - Product behavior, scope, rollout, mode decisions: `shoonaya-product-manager.md`
 - Durable decisions or knowledge capture: `shoonaya-knowledge-curator.md`
