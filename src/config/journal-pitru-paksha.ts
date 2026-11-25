@@ -70,9 +70,9 @@ export const pitruPakshaEssay: JournalEssay = {
       heading: "The Subtle Physics of Tarpan: Water, Sesame, and Kusha Grass",
       paragraphs: [
         "To the modern eye, pouring water through one's hands over a patch of grass appears as an antiquated primitive rite. Yet in Vedic metaphysics, every element employed in Tarpan serves a precise vibrational function:",
-        "1. Jala (Water): Pure water is the universal elemental conduit. Water molecules possess liquid crystalline properties capable of imprinting and carrying the vibrational frequency of the sacred Gotra (lineage) and the practitioner's focused mental intention across dimensional planes.",
-        "2. Kala Til (Black Sesame): Ruled by Lord Yama (the judge of karma) and Shani (Saturn), black sesame seeds possess unique etheric absorption properties. When released with water, they transmute physical prana into subtle nourishment, cooling the burning desires and attachments of disembodied souls.",
-        "3. Kusha Grass (Desmostachya bipinnata): The practitioner wears a ring woven from unblemished Kusha grass (called Pavitram) on the right ring finger. Scientific analyses confirm that Kusha grass has extraordinary electro-magnetic insulating properties. In the Agamas, the Pavitram shields the practitioner's personal bio-magnetic field, preventing subtle psychic exhaustion during deep communion with the departed."
+        "1. Jala (Water): Pure water is the universal elemental conduit. In Agamic metaphysics, water is held to carry the practitioner's focused intention and connection to the Gotra (lineage) -- a devotional and symbolic understanding, not a claim about any measurable physical property of water molecules.",
+        "2. Kala Til (Black Sesame): Ruled by Lord Yama (the judge of karma) and Shani (Saturn), black sesame seeds are traditionally held to carry subtle nourishing properties. When released with water, they are understood to transmute physical prana into subtle nourishment, cooling the burning desires and attachments of disembodied souls.",
+        "3. Kusha Grass (Desmostachya bipinnata): The practitioner wears a ring woven from unblemished Kusha grass (called Pavitram) on the right ring finger. In the Agamas, the Pavitram is said to shield the practitioner's personal energetic field, preventing subtle psychic exhaustion during deep communion with the departed -- a traditional belief about the grass's symbolic protective quality, not a scientifically demonstrated electromagnetic property."
       ]
     },
     {

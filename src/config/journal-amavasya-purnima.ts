@@ -27,7 +27,7 @@ export const amavasyaPurnimaEssay: JournalEssay = {
   excerpt: "Why do emotions swing wildly on full and new moon days? We explore the lunar gravitational tidal pull on human neurochemistry, the ancestral gate of Amavasya, and the glory of Purnima.",
   keyTakeaways: [
     "Chandrama Manaso Jatah: In the Rigveda's Purusha Sukta, the Moon is declared to be born from the cosmic mind. In Vedic psychology and astrology, Chandra rules Manas (the emotional, instinctual mind), sensory perception, and bodily water/lymphatic fluid balance.",
-    "Spring Tides and Neural Fluid Dynamics: On both Amavasya (Sun-Moon conjunction at 0°) and Purnima (Sun-Moon opposition at 180°), gravitational forces align to produce maximum ocean tides (Spring Tides). In the human organism (which is over 65% water), this gravitational pull produces micro-fluctuations in neurotransmitter concentrations and blood volume.",
+    "Spring Tides: On both Amavasya (Sun-Moon conjunction at 0°) and Purnima (Sun-Moon opposition at 180°), gravitational forces align to produce maximum ocean tides (Spring Tides) -- a real, well-understood astronomical fact. What is not established: that this tiny gravitational difference has any measurable effect on human neurotransmitters or blood volume. The oldest and largest body of research on a 'lunar effect' on human behavior and mood found essentially no reliable correlation (see citations).",
     "Amavasya (The Inward Void): The complete absence of reflected sunlight draws the vital breath downward (Apana Vayu). It is the sacred domain of the ancestors (Pitruloka); celebratory social events are paused, while ancestral Tarpan and deep internal meditation flourish.",
     "Purnima (The Luminous Expansion): The full reflection of solar light draws the vital prana upward (Prana Vayu), expanding latent emotional states. It is the premier day for Sri Satyanarayan Puja, sacred river bathing, devotional chanting, and cognitive clarity.",
     "The Fasting Protective Shield: In classical Ayurveda (Charaka Samhita), fasting or maintaining a light fruit diet on both Amavasya and Purnima prevents digestive toxification (Ama) and stabilizes emotional volatility during peak lunar gravity."
@@ -37,8 +37,8 @@ export const amavasyaPurnimaEssay: JournalEssay = {
       heading: "The Ocean Within: The Living Pulse of the Moon",
       paragraphs: [
         "Throughout human history, across every civilization that ever gazed into the night sky, the Moon has been recognized as the intimate, fluctuating companion of earthly life. While the Sun remains constant, unchanging, and fiery, the Moon waxes and wanes, dying into darkness and rebirthing into fullness every 29.5 days.",
-        "In modern urban life, artificial electric lighting has decoupled our senses from the lunar cycle. Yet emergency room physicians, psychiatric nurses, and police officers still report consistent surges in emotional volatility, restlessness, and sleep disturbances during the full moon and new moon.",
-        "In Sanatan Dharma, this is neither a superstition nor a mystery. The Purusha Sukta of the Rigveda reveals the fundamental metaphysical correspondence: 'Chandrama manaso jatah'—From the cosmic mind of the Supreme Being, the Moon was born. Because the Moon governs the human mind and bodily fluids, the extremes of the lunar cycle—Amavasya (the New Moon) and Purnima (the Full Moon)—are treated as potent spiritual portals requiring distinct conscious alignments."
+        "A persistent folk belief holds that emergency rooms, psychiatric wards, and police stations see predictable surges during the full and new moon. This essay previously repeated that claim as fact. It isn't: the largest body of research on a lunar effect on human behavior -- pooling dozens of studies on crime, suicide, psychiatric admissions, and ER visits -- found no reliable correlation with lunar phase (see citations). A handful of more recent, smaller studies have found a possible small effect on sleep specifically, but attempts to replicate it have had mixed results, so even that narrower claim remains unsettled.",
+        "What the Rigveda's teaching offers is not a claim about lunar gravity and neurochemistry, but a symbolic and psychological one. The Purusha Sukta declares: 'Chandrama manaso jatah'—From the cosmic mind of the Supreme Being, the Moon was born. In Vedic psychology, Chandra is the presiding deity of Manas (the emotional, instinctual mind) -- a teaching about how the mind's moods wax and wane like the Moon, not a mechanism by which the Moon's gravity acts on the body. On that understanding, Amavasya (the New Moon) and Purnima (the Full Moon) are treated as potent spiritual portals requiring distinct conscious alignments."
       ]
     },
     {
@@ -47,7 +47,7 @@ export const amavasyaPurnimaEssay: JournalEssay = {
         "To understand why human consciousness fluctuates across the lunar fortnight, one must look at astrophysics and fluid mechanics.",
         "The Earth's oceans experience two distinct tidal regimes:",
         "1. Neap Tides (during the first and third quarter moons): When the Sun and Moon stand at 90-degree angles to each other relative to Earth, their gravitational fields partially cancel each other out, producing modest, gentle tides.\n2. Spring Tides (during Amavasya and Purnima): When the Earth, Moon, and Sun align along a single straight line (Syzygy), their gravitational forces combine. The ocean waters bulge dramatically, producing maximum high tides and minimum low tides.",
-        "The human body is an internal ocean: approximately 60% of our weight is water, our blood plasma is virtually identical in electrolyte composition to sea water, and the brain floats in a continuous bath of cerebrospinal fluid (CSF). During Syzygy, the subtle gravitational shift alters micro-vascular circulation and cellular fluid permeability. In the nervous system, this magnifies whatever psychological baseline is already present: anger becomes rage, anxiety becomes panic, but love becomes divine ecstasy, and quiet concentration becomes Samadhi."
+        "It's true that the human body is mostly water, and tempting to extend the tidal metaphor inward. But the Moon's gravitational pull on a human-sized body of water is vanishingly small next to the Earth-scale mass needed to move oceans -- far smaller, for comparison, than the gravitational effect of standing next to a large building. Modern research backs the metaphor's poetry, not its physics: the lunar-emotion link people report is better explained by expectation and memory bias (noticing a bad night and blaming the full moon) than by any gravitational mechanism. The traditional teaching is better understood psychologically: Syzygy is treated as a time when whatever emotional baseline is already present comes into sharper relief -- anger toward rage, anxiety toward panic, but also love toward devotion, and quiet toward stillness."
       ],
       quote: {
         text: "The Moon is the lord of all waters, the sovereign ruler of medicinal herbs, and the indwelling presider over human thought and emotional flow.",
@@ -108,8 +108,12 @@ export const amavasyaPurnimaEssay: JournalEssay = {
       reference: "Skanda Purana, Reva Khanda; Bhavishya Purana."
     },
     {
-      text: "Gravitational tides, lunar phase chronobiology, and psychiatric hospitalization correlation studies.",
-      reference: "Molecular Psychiatry; Current Biology (Human Circalunar Rhythms Research)."
+      text: "The largest meta-analysis of the 'lunar effect' on behavior (crime, suicide, psychiatric crisis, ER calls, pooling 37 studies) found no reliable correlation with lunar phase.",
+      reference: "Rotton J, Kelly IW. Much Ado About the Full Moon: A Meta-Analysis of Lunar-Lunacy Research. Psychological Bulletin. 1985;97(2):286-306."
+    },
+    {
+      text: "A smaller, contested finding of a lunar-phase effect specifically on sleep EEG and melatonin in a controlled lab setting; a later replication attempt (also in Current Biology) did not reproduce it.",
+      reference: "Cajochen C, et al. Evidence that the lunar cycle influences human sleep. Current Biology. 2013;23(15):1485-1488."
     }
   ],
   relatedSlugs: [

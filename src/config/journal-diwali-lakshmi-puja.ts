@@ -30,7 +30,7 @@ export const diwaliLakshmiPujaEssay: JournalEssay = {
     "The Pradosha-Amavasya Intersection: The supreme moment for Diwali worship occurs when Kartika Krishna Amavasya tithi intersects with Pradosh Kaal (the 96-minute sunset twilight). If Amavasya ends before sunset, the festival shifts according to precise Shastric vyapti rules.",
     "Dhanteras & Dhanvantari Trayodashi: Two days prior to Diwali, the festival opens with Dhanatrayodashi, celebrating the emergence of Lord Dhanvantari (the father of Ayurveda) bearing the Amrit Kalash, coupled with Yamadeepdaan to avert premature demise (Apamrityu).",
     "The Geocentric East-West Divergence: While North and West India worship Mahalakshmi and Ganesha during Pradosh Kaal, Eastern traditions (Bengal, Assam, Mithila) worship Goddess Kali during the deep midnight hour (Nishita Kaal) on the exact same Amavasya night.",
-    "The Photonic Geometry of Clay Diyas: The traditional terracotta lamp filled with unadulterated mustard or sesame oil emits a steady, soot-binding flame that clears seasonal autumnal insects and ionizes the indoor atmosphere following the monsoon retreat."
+    "The Clay Diya's Flame: The traditional terracotta lamp filled with mustard or sesame oil burns with a steady flame whose smoke is traditionally held to discourage seasonal autumnal insects; any flame does ionize the air immediately around it, but this doesn't establish a health benefit to the room, and burning oil indoors also adds particulate smoke -- a reason to keep diya rooms ventilated, not a claim of air purification."
   ],
   sections: [
     {

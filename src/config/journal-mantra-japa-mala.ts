@@ -47,7 +47,7 @@ export const mantraJapaMalaEssay: JournalEssay = {
         "A common point of confusion among modern meditators is whether the material of the beads actually matters. Can one chant Shiva mantras on a Tulsi mala, or Krishna mantras on a Rudraksha mala?",
         "The classical texts (such as the Shiva Purana and Hari Bhakti Vilasa) provide unambiguous guidance based on the subtle energetic qualities of each material:",
         "1. Tulsi Mala (Sacred Basil Wood): Tulsi is the beloved consort of Lord Narayana. Her wood is light, aromatic, and cooling, naturally reducing excess Pitta dosha. It is strictly prescribed for all Vaishnava mantras: the Hare Krishna Mahamantra, the Ashtakshara Mantra ('Om Namo Narayanaya'), the Dwadashakshara Mantra ('Om Namo Bhagavate Vasudevaya'), and the Rama Mantra. Chanting Vishnu mantras on Tulsi invokes tenderness, spiritual devotion, and deep inner peace.",
-        "2. Rudraksha Mala (Tears of Shiva): Botanically derived from the seed of the Elaeocarpus ganitrus tree, Rudraksha seeds possess unique electromagnetic properties that stabilize blood pressure and still erratic heart-rate rhythms. It is the mandatory vehicle for Shaiva, Shakta, and Smarta mantras: the Panchakshari ('Om Namah Shivaya'), the Mahamrityunjaya, the Navarna Chandi Mantra, and Bhairava mantras. Rudraksha cultivates laser-like concentration, fearlessness, and fiery spiritual willpower (Tapas).",
+        "2. Rudraksha Mala (Tears of Shiva): Botanically derived from the seed of the Elaeocarpus ganitrus tree, Rudraksha seeds are traditionally held to carry grounding, steadying properties -- a devotional and Ayurvedic belief, not a claim that wearing or chanting on Rudraksha stabilizes blood pressure or heart rhythm; anyone with a cardiovascular condition should rely on their physician, not a mala, for that. It is the mandatory vehicle for Shaiva, Shakta, and Smarta mantras: the Panchakshari ('Om Namah Shivaya'), the Mahamrityunjaya, the Navarna Chandi Mantra, and Bhairava mantras. Rudraksha cultivates laser-like concentration, fearlessness, and fiery spiritual willpower (Tapas).",
         "3. Spatika (Quartz Crystal) and Kamal Gatta (Lotus Seed): Spatika crystal promotes absolute mental clarity and is sacred to Goddess Saraswati and Gayatri Japa, while black lotus seeds (Kamal Gatta) are employed specifically for Mahalakshmi abundance liturgies."
       ],
       quote: {
@@ -110,8 +110,8 @@ export const mantraJapaMalaEssay: JournalEssay = {
       reference: "Yogatattva Upanishad; Manu Smriti, Adhyaya 2, Verses 85–87."
     },
     {
-      text: "Cardiovascular synchronization, vagal stimulation, and neuroplasticity through repetitive mantra chanting.",
-      reference: "British Medical Journal (BMJ Rhythm Studies); International Journal of Yoga Therapy."
+      text: "Reciting a rhythmic mantra or prayer slows breathing to about six breaths per minute and measurably increases heart-rate variability and baroreflex sensitivity (a real, specific finding -- not a claim about Rudraksha itself).",
+      reference: "Bernardi L, Sleight P, Bandinelli G, et al. Effect of rosary prayer and yoga mantras on autonomic cardiovascular rhythms: comparative study. BMJ. 2001;323(7327):1446-1449."
     }
   ],
   relatedSlugs: [

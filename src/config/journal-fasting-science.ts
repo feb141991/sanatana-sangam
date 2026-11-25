@@ -71,7 +71,7 @@ export const fastingScienceEssay: JournalEssay = {
       heading: "Ayurvedic Autophagy: Langhana Param Aushadham",
       paragraphs: [
         "For centuries, classical Ayurvedic physicians have treated disease through a fundamental maxim: 'Langhana param aushadham'—Fasting is the supreme medicine.",
-        "In modern gastroenterology, it is well established that the human digestive tract (the enteric nervous system) consumes approximately 30 to 40% of the body's daily metabolic energy. When you constantly graze, snack, and consume heavy meals throughout the day, the body's immune system and cellular repair mechanisms are held hostage by the unending burden of digestion.",
+        "This essay previously stated that digestion consumes 30 to 40% of daily metabolic energy. The real, well-established figure (known as the thermic effect of food) is much lower: roughly 5 to 15% of daily energy expenditure for a typical mixed diet, varying by how much protein is eaten (see citations). The directional point still holds: constant grazing and heavy meals throughout the day keep the digestive system continuously working, leaving less of a true rest period than a defined fasting window provides.",
         "When you undertake a sacred fast (such as Ekadashi, Navratri, or Pradosham), your digestive fire (Jatharagni) is liberated. Deprived of external food, this metabolic fire redirects its heat inward, consuming toxic undigested residues (Ama), burning through inflammatory visceral fat, and triggering deep cellular autophagy (the Nobel Prize-winning mechanism by which cells recycle damaged proteins and organelles).",
         "In the Shastras, this is not mere physical dieting; it is Tapasya—the voluntary heat of self-discipline that burns away both physical toxins and spiritual impurities."
       ]
@@ -110,8 +110,12 @@ export const fastingScienceEssay: JournalEssay = {
       reference: "Charaka Samhita, Sutra Sthana, Chapter 22 (Langhanabrimhaniya Adhyaya)."
     },
     {
-      text: "Autophagy mechanisms, caloric restriction, and intermittent fasting cellular repair.",
-      reference: "Nature Reviews Molecular Cell Biology; Cell Metabolism (Yoshinori Ohsumi Autophagy Studies)."
+      text: "The thermic effect of food (energy spent on digestion) is roughly 5-15% of daily energy expenditure for a mixed diet at energy balance, not 30-40%.",
+      reference: "Westerterp KR. Diet induced thermogenesis. Nutrition & Metabolism. 2004;1:5."
+    },
+    {
+      text: "Autophagy mechanisms, for which Yoshinori Ohsumi won the 2016 Nobel Prize in Physiology or Medicine.",
+      reference: "Mizushima N, Komatsu M. Autophagy: Renovation of Cells and Tissues. Cell. 2011;147(4):728-741."
     }
   ],
   relatedSlugs: [

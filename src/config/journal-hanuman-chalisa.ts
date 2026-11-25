@@ -28,7 +28,7 @@ export const hanumanChalisaEssay: JournalEssay = {
   keyTakeaways: [
     "The 40-Verse Structure: Authored in the 16th century by Goswami Tulsidas in sacred Awadhi, the hymn comprises two opening Dohas (cleansing the mirror of the mind), forty Chaupais (four-line rhymed quatrains in strict 16-matra meter), and one closing Doha.",
     "The Planetary Covenant of Shani (Saturn): In Pauranic tradition, when Hanuman freed Shani Deva from Ravana's subterranean prison in Lanka, Shani granted an eternal blessing: no devotee who takes refuge in Sri Hanuman shall ever be tormented by Saturn's malefic gaze (Sade Sati or Dhaiya).",
-    "Rahu & Ketu Phobia Dissolution: Verse 24 ('Bhoot pishach nikat nahi aavai...') specifically neutralizes the shadowy, paranoid psychological afflictions ruled by Rahu and Ketu, including panic disorders, sleep paralysis, and existential dread.",
+    "Rahu & Ketu Phobia Dissolution: Verse 24 ('Bhoot pishach nikat nahi aavai...') is traditionally recited for courage against the fear, dread, and disquiet astrologically associated with Rahu and Ketu. This is a devotional practice for fear and dread, not a treatment for panic disorder or sleep paralysis -- those are real conditions that warrant a doctor or mental-health professional.",
     "Neuro-Acoustic Entrainment: The unbroken, rhythmic 16-matra Chaupai meter operates as an acoustic metronome. Chanting it at a moderate pace naturally decelerates breathing to 5 to 6 breaths per minute, elevating Heart Rate Variability (HRV) and stabilizing vagal nerve tone.",
     "The 100-Recitation Protocol (Sat Baar): Verse 38 ('Jo sat bar path kare koi, chhootahi bandi maha sukh hoi') establishes the traditional remedial discipline of 100 recitations for resolving insurmountable legal, physical, or karmic bondage."
   ],
@@ -68,10 +68,10 @@ export const hanumanChalisaEssay: JournalEssay = {
       }
     },
     {
-      heading: "The Medical and Psychological Verses: The Specific Mantras",
+      heading: "Verses for Specific Occasions: Traditional Devotional Uses",
       paragraphs: [
-        "Within the forty verses, specific Chaupais function as targeted verbal medicines for common human crises:",
-        "1. For Acute Physical Illness & Pain: Chaupai 25 ('Nase rog hare sab peera, japat nirantar hanumat veera') is traditionally recited 27 or 108 times over a cup of clean drinking water, which is then consumed to fortify the body's healing prana.\n2. For Severe Mental Anxiety & Confusion: Chaupai 36 ('Sankat kate mite sab peera, jo sumirai hanumat balbeera') is invoked to steady racing thoughts, panic attacks, and sleep paralysis.\n3. For Overcoming Seeming Impossibilities: Chaupai 19 ('Durgam kaaj jagat ke jete, sugam anugraha tumhre tete') reminds the soul that every insurmountable obstacle in this physical universe becomes effortless through divine grace.\n4. For Freedom from Legal or Bondage Entanglements: Chaupai 38 ('Jo sat bar path kare koi, chhootahi bandi maha sukh hoi') establishes the traditional spiritual discipline of completing 100 recitations of the hymn during a single sitting or over a 40-day Mandala to shatter severe external or internal bondage."
+        "Within the forty verses, specific Chaupais have traditional devotional associations for particular life situations. These are spiritual practices of faith and comfort, not medical or psychological treatments, and are not a substitute for seeing a doctor or a mental-health professional:",
+        "1. During Illness: Chaupai 25 ('Nase rog hare sab peera, japat nirantar hanumat veera') is traditionally recited 27 or 108 times over a cup of clean drinking water, which is then consumed as an act of devotion alongside -- never instead of -- appropriate medical care.\n2. During Anxiety or Distress: Chaupai 36 ('Sankat kate mite sab peera, jo sumirai hanumat balbeera') is invoked for comfort and steadiness of mind. Persistent panic attacks or sleep paralysis are conditions a doctor or mental-health professional should evaluate.\n3. For Overcoming Seeming Impossibilities: Chaupai 19 ('Durgam kaaj jagat ke jete, sugam anugraha tumhre tete') reminds the devotee that every insurmountable obstacle becomes lighter through faith and divine grace.\n4. For a Sense of Being Trapped or Entangled: Chaupai 38 ('Jo sat bar path kare koi, chhootahi bandi maha sukh hoi') establishes the traditional devotional discipline of completing 100 recitations of the hymn during a single sitting or over a 40-day Mandala, undertaken as an act of faith for relief from a difficult situation."
       ]
     },
     {
@@ -107,8 +107,8 @@ export const hanumanChalisaEssay: JournalEssay = {
       reference: "Valmiki Ramayana, Sundara Kanda, Sargas 1–15."
     },
     {
-      text: "Heart Rate Variability (HRV), resonant frequency breathing (0.1 Hz), and acoustic entrainment in Vedic metric chanting.",
-      reference: "International Journal of Psychophysiology; Frontiers in Psychology (Vocal Prosody Studies)."
+      text: "Resonance-frequency breathing (around six breaths per minute, ~0.1 Hz) strengthens baroreflex gain and is a well-studied mechanism for heart-rate-variability biofeedback; rhythmic prayer/mantra recitation has been shown to produce a similar breathing rate and autonomic effect.",
+      reference: "Lehrer PM, Gevirtz R. Heart rate variability biofeedback: how and why does it work? Frontiers in Psychology. 2014;5:756. See also Bernardi L, et al. BMJ. 2001;323(7327):1446-1449."
     }
   ],
   relatedSlugs: [

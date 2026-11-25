@@ -26,7 +26,7 @@ export const homeMandirVastuEssay: JournalEssay = {
   emblem: "/relics/diya-bronze.png",
   excerpt: "Where should your home altar face, and why is placing murtis on the floor a severe energetic mistake? We break down the sacred architectural rules of the Vastu Purusha Mandala.",
   keyTakeaways: [
-    "The Ishanya (North-East) Quadrant: In the Vastu Purusha Mandala, the cosmic being's head rests in the North-East corner. This quadrant represents pure Sattva, clear mental prana, and the unhindered flow of solar and geomagnetic energies, making it the supreme location for a home Mandir.",
+    "The Ishanya (North-East) Quadrant: In the Vastu Purusha Mandala, the cosmic being's head rests in the North-East corner. This quadrant is held to represent pure Sattva and clear mental prana, and is the traditionally prescribed location for a home Mandir.",
     "Direction of Worship: The practitioner should face either East (Purva—the direction of the rising sun, invoking spiritual enlightenment and focus) or North (Uttara—the direction of Kubera and the pole star, invoking stability and prosperity) while praying.",
     "The Height of the Altar: Deities must never be placed directly upon the floor, nor positioned so high that they tower out of sight. The feet or base of the primary murti should align exactly with the worshiper's chest or heart center when seated in prayer.",
     "Domestic Murti Proportions: According to the Shilpa Shastras, uninitiated householders should avoid installing stone or metal idols exceeding 9 to 10 inches in height. Large temple murtis require continuous, strict Agamic rituals that domestic households cannot realistically maintain.",
@@ -46,7 +46,7 @@ export const homeMandirVastuEssay: JournalEssay = {
       heading: "The Vastu Purusha Mandala: The Ishanya (North-East) Alignment",
       paragraphs: [
         "To understand why directional placement matters, one must examine the ancient grid of the Vastu Purusha Mandala. Ancient architects envisioned the cosmic consciousness as a being lying face down upon the earth, head oriented toward the North-East and feet anchored in the South-West.",
-        "The North-East corner is called Ishanya Kona, named after Ishana, the serene, compassionate aspect of Lord Shiva. Because the Earth's rotational axis tilts 23.4 degrees toward the North-East, this quadrant receives the first, unpolluted rays of early morning sunlight (carrying restorative near-infrared wavelengths) along with beneficial geomagnetic currents flowing from the North Pole.",
+        "The North-East corner is called Ishanya Kona, named after Ishana, the serene, compassionate aspect of Lord Shiva. A North-East-facing room does receive the first rays of early morning sunlight before the rest of the home; the Shastric reasoning for choosing this quadrant is spiritual and traditional (it is Ishana's quadrant), not a claim about any 'geomagnetic current' flowing from the pole, which is not a real, directional, room-scale phenomenon.",
         "If the North-East is unavailable due to apartment constraints, the Shastras offer authorized secondary alternatives: the pure East (governed by Surya and Indra) or the pure North (governed by Kubera and Budha). Conversely, locating the altar in the South-West (Nairritya—the heavy, Tamasic realm of earth) or directly in the South creates subtle mental friction, agitation, and restless sleep."
       ],
       quote: {

@@ -28,8 +28,8 @@ export const sandhyavandanamEssay: JournalEssay = {
   keyTakeaways: [
     "The Primary Vedic Injunction (Nitya Karma): In classical Dharmashastra, Sandhyavandanam is not an optional spiritual bonus; it is the non-negotiable daily foundation. Neglecting it forfeits the authority to perform all other rituals, while its daily practice grants long life, sharp intellect, and spiritual radiance (Brahma Tejas).",
     "The Trisandhya Windows: The practice is anchored to the three astronomical transitions (Sandhis) of the solar day: Pratah Sandhya (commenced before sunrise while stars still twinkle), Madhyahna Sandhya (at exact solar noon zenith), and Sayam Sandhya (commenced before sunset and concluded as stars emerge).",
-    "The Fivefold Liturgical Architecture: The practice harmonizes five physiological and spiritual actions: Achamana (water ionization of the digestive tract), Pranayama (rhythmic balance of Ida and Pingala channels), Marjana (sensory lustration), Surya Arghya (solar tribute), and Gayatri Japa (silent contemplation of the supreme light).",
-    "The Science of Manasika Gayatri: The highest tier of Gayatri chanting is silent, mental repetition (Manasika), where acoustic vibration resolves into subtle electromagnetic oscillation within the heart and prefrontal cortex.",
+    "The Fivefold Liturgical Architecture: The practice harmonizes five ritual actions: Achamana (sipping consecrated water as a purification act), Pranayama (rhythmic balance of Ida and Pingala channels), Marjana (sensory lustration), Surya Arghya (solar tribute), and Gayatri Japa (silent contemplation of the supreme light).",
+    "Manasika Gayatri: The highest tier of Gayatri chanting is silent, mental repetition (Manasika) -- in the tradition's own terms, a dissolving of acoustic vibration into pure inner stillness, not a claim about electromagnetic activity in a specific body region.",
     "Universal Access for Modern Seekers: While classical orthodox initiation requires the sacred thread (Upanayana), the essential heart of Sandhyavandanam—sitting quietly at dawn and dusk, harmonizing the breath, and contemplating the divine solar light—is an eternal, universal science accessible to every human soul."
   ],
   sections: [
@@ -111,8 +111,8 @@ export const sandhyavandanamEssay: JournalEssay = {
       reference: "Chandogya Upanishad, Prapathaka 3 (Madhu Brahmana)."
     },
     {
-      text: "Autonomic nervous system stabilization and prefrontal cortical alpha synchrony during silent Gayatri Japa.",
-      reference: "International Journal of Yoga; Frontiers in Human Neuroscience (Mantra Neurophysiology)."
+      text: "Rhythmic prayer/mantra recitation slows breathing to roughly six breaths per minute and measurably increases heart-rate variability and baroreflex sensitivity -- the real, specific finding behind this essay's autonomic-balance framing (not a claim about 'electromagnetic' brain activity).",
+      reference: "Bernardi L, Sleight P, Bandinelli G, et al. Effect of rosary prayer and yoga mantras on autonomic cardiovascular rhythms: comparative study. BMJ. 2001;323(7327):1446-1449."
     }
   ],
   relatedSlugs: [

@@ -30,7 +30,7 @@ export const tulsiSevaEssay: JournalEssay = {
     "The Non-Plucking Days: The Padma Purana and Hari Bhakti Vilasa strictly forbid plucking Tulsi leaves on Sundays (Ravivara), Tuesdays (Bhaumavara), Ekadashi, Dwadashi, Sankranti days, and during solar or lunar eclipses.",
     "The Nocturnal Sanctuary: Tulsi must never be touched or harvested after sunset (Sandhya) or in the dark. At dusk, the sacred plant enters a state of deep meditative communion with Lord Narayana.",
     "The Permission Prayer: Before harvesting leaves for deity worship, the practitioner must gently wash their hands and recite the sacred Shastric shloka requesting permission, plucking only mature leaves with the soft pads of the fingers without using fingernails or breaking branches.",
-    "Bio-Atmospheric Defense: Modern phytochemistry reveals that Holy Basil emits high concentrations of volatile eugenol, caryophyllene, and rosmarinic acid, creating a natural antimicrobial barrier that purifies ambient air of bacterial pathogens and airborne mold spores."
+    "Documented Phytochemistry: Laboratory studies on Holy Basil's essential oil have measured antimicrobial and insect-repellent compounds, including eugenol, caryophyllene, and rosmarinic acid -- real, published findings about the extracted oil, distinct from any claim about a living plant purifying room air."
   ],
   sections: [
     {
@@ -80,7 +80,7 @@ export const tulsiSevaEssay: JournalEssay = {
       paragraphs: [
         "In Ayurvedic pharmacology, Tulsi is classified as Rasayana—a supreme herb that promotes longevity, mental equilibrium, and systemic immunity.",
         "Gas chromatography and phytomedical analyses demonstrate that Holy Basil leaves contain extraordinary concentrations of eugenol, ursolic acid, carvacrol, and rosmarinic acid. These volatile aromatic terpenes possess potent antiviral, antibacterial, and anti-inflammatory properties.",
-        "Studies published in environmental biology confirm that Tulsi emits small amounts of oxygen for up to 20 hours a day and releases secondary metabolites that neutralize volatile organic compounds (VOCs) and deter disease-carrying mosquitoes. The ancient custom of chewing or consuming water infused with Tulsi leaves protects the digestive fire (Agni) and strengthens the respiratory mucosa.",
+        "This essay previously claimed Tulsi 'emits oxygen for up to 20 hours a day' -- that figure has no real botanical basis and has been removed; like all green plants, Tulsi releases oxygen only during daylight photosynthesis and consumes it at night. What is genuinely documented: Ocimum sanctum essential oil has shown insect-repellent activity against mosquitoes in laboratory studies, and some of its compounds show measured antimicrobial effects in vitro. The traditional custom of chewing or consuming water infused with Tulsi leaves is held in Ayurveda to protect the digestive fire (Agni) and strengthen the respiratory mucosa -- a traditional claim, not an independently verified medical one.",
         "(Note: Shastric tradition cautions against chewing Tulsi leaves with the teeth, recommending swallowing them whole with water. Modern dentists confirm that the high concentration of iron and volatile acids in fresh leaves can erode dental enamel if chewed frequently.)"
       ]
     }
