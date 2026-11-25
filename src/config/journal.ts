@@ -280,7 +280,7 @@ const journalEssays: JournalEssay[] = [
     "authorRole": "Professor of Jain Epistemology & Practical Ethics",
     "authorBio": "Dr. Shah has lectured internationally on the intersection of Jain ascetic ethics, cognitive behavioral therapy, and digital minimalism.",
     "publishedDate": "February 2026",
-    "emblem": "/relics/lotus-bloom.png",
+    "emblem": "/relics/ahimsa-hand.png",
     "excerpt": "Ancient Jain masters recognized that possessiveness extends far beyond physical objects to digital tabs, endless feeds, and opinions. Discover the freedom of conscious spiritual minimalism.",
     "keyTakeaways": [
       "Aparigraha is not defined merely by the absence of goods, but by the cessation of mental clutching (Murchha).",

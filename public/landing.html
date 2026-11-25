@@ -4921,20 +4921,124 @@
       .footer-social-links a:hover svg {
         stroke: var(--saffron-dk);
       }
+      /* Privacy choices: same text, choices and equal buttons as the rest of the site (WebConsentManager). */
+      #privacy-choices {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        z-index: 10010;
+        max-width: 576px;
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        background: #fffaf2;
+        color: #3f2a20;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+      #privacy-choices[hidden],
+      #privacy-choices [hidden],
+      body.landing-embed #privacy-choices {
+        display: none !important;
+      }
+      #privacy-choices h2 {
+        font-family: var(--fd);
+        font-size: 20px;
+        line-height: 1.4;
+      }
+      #privacy-choices p {
+        margin-top: 8px;
+        font-size: 14px;
+        line-height: 24px;
+        opacity: 0.85;
+      }
+      .privacy-first,
+      .privacy-custom {
+        display: grid;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      #privacy-choices button {
+        min-height: 44px;
+        padding: 0 8px;
+        border: 1px solid rgba(63, 42, 32, 0.3);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.6);
+        color: inherit;
+        font: 600 14px/1.3 var(--fb);
+        cursor: pointer;
+      }
+      #privacy-choices button:hover {
+        background: #fff;
+      }
+      #privacy-choices button:focus-visible,
+      #privacy-choices input:focus-visible,
+      .footer-links-list button:focus-visible {
+        outline: 2px solid var(--saffron-dk);
+        outline-offset: 2px;
+      }
+      #privacy-choices label {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 8px 12px;
+        border: 1px solid rgba(63, 42, 32, 0.15);
+        border-radius: 12px;
+      }
+      #privacy-choices input {
+        width: 20px;
+        height: 20px;
+      }
+      .footer-links-list button {
+        padding: 0;
+        border: 0;
+        background: none;
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink-mid);
+        cursor: pointer;
+      }
+      @media (min-width: 640px) {
+        .privacy-first {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      /* The Explore button is the way in, so the panel must not cover it. */
+      @media (min-width: 1181px) {
+        #privacy-choices {
+          left: auto;
+          right: 24px;
+          bottom: 24px;
+          width: 360px;
+        }
+        .privacy-first {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 1180px) {
+        body.privacy-choices-open #splash-bottom {
+          position: fixed;
+          bottom: calc(var(--privacy-choices-height, 0px) + 24px);
+          background: none;
+        }
+        body.privacy-choices-open #explore-btn {
+          background: var(--warm-white);
+        }
+      }
+      @media (min-width: 1400px) {
+        #privacy-choices {
+          width: 520px;
+        }
+        .privacy-first {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
     </style>
-    <!-- Clarity tracking code for https://shoonaya.com/ -->
-    <script>
-      (function(c,l,a,r,i,t,y){
-        // Load only after a recorded yes to analytics. No choice, an old consent version or unreadable storage means no.
-        try {
-          var consent = JSON.parse(localStorage.getItem("shoonaya.web-consent"));
-          if (!consent || consent.version !== "2026-08-28.v2" || !consent.decidedAt || consent.analytics !== true) return;
-        } catch (e) { return; }
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "ze1obrqvfw");
-    </script>
   </head>
   <body>
     <script>
@@ -7872,8 +7976,8 @@
                   "guru-nanak-gurpurab": "/relics/khanda-gold.png",
                   "baisakhi": "/relics/sacred-kirpan.png",
                   "vesak-buddha-purnima": "/relics/bodhi-leaf.png",
-                  "mahavir-jayanti": "/relics/lotus-bloom.png",
-                  "paryushana": "/relics/lotus-bloom.png"
+                  "mahavir-jayanti": "/relics/ahimsa-hand.png",
+                  "paryushana": "/relics/siddhachakra-wheel.png"
                 };
 
                 var itemSlug = (item.slug || "").toLowerCase();
@@ -7891,7 +7995,7 @@
                 } else if (tradition === "buddhist") {
                   relicSrc = "/relics/dharma-wheel.png";
                 } else if (tradition === "jain") {
-                  relicSrc = "/relics/lotus-bloom.png";
+                  relicSrc = "/relics/ahimsa-hand.png";
                 }
 
                 return (
@@ -8517,7 +8621,7 @@
 
             <div class="footer-tradition-item">
               <div class="footer-tradition-emblem">
-                <img src="/relics/lotus-bloom.png" alt="Jain Dharma" />
+                <img src="/relics/ahimsa-hand.png" alt="Jain Dharma" />
               </div>
               <div>
                 <div class="footer-tradition-name">Jain Dharma</div>
@@ -8629,6 +8733,7 @@
                 <li><a href="/about">About Shoonaya</a></li>
                 <li><a href="/contact">Contact Support</a></li>
                 <li><a href="/privacy">Privacy</a></li>
+                <li><button type="button" id="privacy-choices-open">Privacy choices</button></li>
                 <li><a href="/terms">Terms of Devotion</a></li>
                 <li><a href="/sources">Scriptural Source Repository</a></li>
                 <li><a href="mailto:support@shoonaya.com">Support (support@shoonaya.com)</a></li>
@@ -10218,6 +10323,114 @@
         </button>
       </div>
     </div>
+    <!-- Privacy choices. This page is outside the React consent manager, so it carries its own copy; the stored value is shared. -->
+    <div id="privacy-choices" role="dialog" aria-labelledby="privacy-choices-title" aria-describedby="privacy-choices-body" hidden>
+      <h2 id="privacy-choices-title">Your privacy choices</h2>
+      <p id="privacy-choices-body">Shoonaya uses necessary storage for sign-in and preferences. Analytics and advertising stay off unless you choose them.</p>
+      <div class="privacy-first" id="privacy-first">
+        <button type="button" id="privacy-refuse">Keep both off</button>
+        <button type="button" id="privacy-customize">Choose settings</button>
+        <button type="button" id="privacy-accept">Allow analytics &amp; ads</button>
+      </div>
+      <div class="privacy-custom" id="privacy-custom" hidden>
+        <label>Analytics <input type="checkbox" id="privacy-analytics" /></label>
+        <label>Advertising <input type="checkbox" id="privacy-advertising" /></label>
+        <button type="button" id="privacy-save">Save choices</button>
+      </div>
+    </div>
+    <script id="home-consent">
+      (function () {
+        var KEY = "shoonaya.web-consent";
+        var VERSION = "2026-08-28.v2";
+        var $ = function (id) { return document.getElementById(id); };
+        var panel = $("privacy-choices");
+        var loaded = false;
+
+        // Only a complete choice under the current version counts; anything else means nothing was chosen.
+        function read() {
+          try {
+            var v = JSON.parse(localStorage.getItem(KEY));
+            if (!v || v.version !== VERSION || typeof v.analytics !== "boolean" || typeof v.advertising !== "boolean") return null;
+            if (typeof v.decidedAt !== "string" || !v.decidedAt) return null;
+            return v;
+          } catch (e) { return null; }
+        }
+        function loadClarity() {
+          if (loaded) return;
+          loaded = true;
+          (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+          })(window, document, "clarity", "script", "ze1obrqvfw");
+        }
+        function clear(names) {
+          var host = location.hostname;
+          var domains = ["", "; domain=." + host, "; domain=." + host.split(".").slice(-2).join(".")];
+          names.forEach(function (name) {
+            domains.forEach(function (d) { document.cookie = name + "=; Max-Age=0; path=/; SameSite=Lax" + d; });
+          });
+        }
+        // Until 2026-11-26 this page loaded Clarity before any choice, so its cookies can be present without a yes.
+        function clearAnalytics() {
+          clear(["_clck", "_clsk"]);
+          try { sessionStorage.removeItem("_cltk"); } catch (e) {}
+          try {
+            if (window.clarity) { window.clarity("consent", false); window.clarity("stop"); }
+          } catch (e) {}
+        }
+        function clearGoogleAnalytics() {
+          var names = ["_ga", "_gid", "_gat"];
+          document.cookie.split(";").forEach(function (entry) {
+            var name = entry.split("=")[0].trim();
+            if (/^(_ga_|_gat_|_gac_)/.test(name)) names.push(name);
+          });
+          clear(names);
+        }
+        function show(customizing, choice) {
+          $("privacy-analytics").checked = !!(choice && choice.analytics);
+          $("privacy-advertising").checked = !!(choice && choice.advertising);
+          $("privacy-first").hidden = customizing;
+          $("privacy-custom").hidden = !customizing;
+          panel.hidden = false;
+          document.body.classList.add("privacy-choices-open");
+          measure();
+        }
+        function measure() {
+          if (!panel.hidden) document.documentElement.style.setProperty("--privacy-choices-height", panel.offsetHeight + "px");
+        }
+        function save(analytics, advertising) {
+          var before = saved;
+          saved = { version: VERSION, analytics: analytics, advertising: advertising, decidedAt: new Date().toISOString() };
+          try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+          if (analytics) loadClarity();
+          else {
+            clearAnalytics();
+            if (before && before.analytics) clearGoogleAnalytics();
+          }
+          if (before && before.advertising && !advertising) clear(["__gads", "__gpi", "__eoi", "google_ama_config"]);
+          panel.hidden = true;
+          document.body.classList.remove("privacy-choices-open");
+        }
+
+        var saved = read();
+        if (saved && saved.analytics) loadClarity();
+        else clearAnalytics();
+
+        $("privacy-refuse").addEventListener("click", function () { save(false, false); });
+        $("privacy-accept").addEventListener("click", function () { save(true, true); });
+        $("privacy-customize").addEventListener("click", function () { show(true, saved); });
+        $("privacy-save").addEventListener("click", function () {
+          save($("privacy-analytics").checked, $("privacy-advertising").checked);
+        });
+        $("privacy-choices-open").addEventListener("click", function () {
+          show(true, saved);
+          $("privacy-analytics").focus();
+        });
+        window.addEventListener("resize", measure);
+        if (!saved && !document.body.classList.contains("landing-embed")) show(false, null);
+      })();
+    </script>
     <!-- WebMCP In-Browser Agent Tools -->
     <script src="/assets/js/webmcp.js" defer></script>
   </body>
