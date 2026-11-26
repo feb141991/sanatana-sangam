@@ -68,13 +68,7 @@ describe("homepage sacred places map", () => {
   });
 });
 
-describe("homepage Explore button", () => {
-  it("sits above the hero, takes clicks itself, and goes away once the page is open", () => {
-    expect(landingHtml).toMatch(/#splash-bottom \{\s*z-index: 3;\s*pointer-events: none;/);
-    expect(landingHtml).toMatch(/#splash-bottom > \* \{\s*pointer-events: auto;/);
-    expect(landingHtml).toMatch(/body\.landing-entered #splash-bottom \{\s*display: none;/);
-  });
-});
+// The Explore button went with the gate it opened; the moon hero is covered by src/lib/moon-hero/landing-hero.test.ts.
 
 describe("homepage on a phone", () => {
   it("stacks the stats row in the phone rules, whose !important beats every earlier breakpoint", () => {

@@ -4997,6 +4997,253 @@
         }
       }
     </style>
+      <style id="moon-hero-css">
+      /* Homepage moon hero (scripts/moon-hero/scene.ts draws the picture). Colours are the page's own
+         tokens; --mh-* are set per scroll position by the 3D script and start at the evening values. */
+      #moon-hero {
+        --mh-bg: #161c2a;
+        --mh-fg: #faf6ef;
+        --mh-fg-mid: rgba(250, 246, 239, 0.82);
+        --mh-fg-soft: rgba(250, 246, 239, 0.62);
+        --mh-kick: #f0b25a;
+        --mh-btn-bg: #faf6ef;
+        --mh-btn-fg: #3e2a1f;
+        position: relative;
+        height: 350vh;
+        background: var(--mh-bg);
+        color: var(--mh-fg);
+      }
+      #moon-hero .mh-stage {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100svh;
+        overflow: hidden;
+        background: var(--mh-bg);
+      }
+      #moon-hero .mh-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: pan-y;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+      }
+      #moon-hero .mh-fallback {
+        position: absolute;
+        left: 72%;
+        top: 50%;
+        width: 58vh;
+        height: 58vh;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: radial-gradient(circle at 42% 40%, #fffaf0 0, #ece5d6 55%, #cfc6b4 100%);
+        box-shadow: 0 0 120px rgba(255, 240, 210, 0.18);
+        transition: opacity 0.6s ease;
+      }
+      #moon-hero.mh-ready .mh-canvas { opacity: 1; }
+      #moon-hero.mh-ready .mh-fallback { opacity: 0; }
+      #moon-hero .mh-grain {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0.22;
+        mix-blend-mode: soft-light;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .45  0 0 0 0 .4  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      }
+      #moon-hero .mh-copy {
+        position: absolute;
+        left: clamp(16px, 6vw, 96px);
+        top: 0;
+        bottom: 0;
+        z-index: 2;
+        width: min(520px, 44vw);
+        pointer-events: none;
+        text-align: left;
+      }
+      #moon-hero .mh-chapter {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 53%;
+        transform: translateY(-50%);
+        opacity: 0;
+        will-change: opacity, transform;
+      }
+      #moon-hero .mh-chapter:first-child { opacity: 1; }
+      #moon-hero .mh-kicker {
+        margin: 0 0 18px;
+        font-family: var(--fb);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--mh-kick);
+      }
+      #moon-hero #splash-title,
+      #moon-hero .mh-chapter h2 {
+        margin: 0 0 20px;
+        max-width: none;
+        font-family: var(--fd);
+        font-weight: 400;
+        font-size: clamp(40px, 5.6vw, 76px);
+        line-height: 1.02;
+        letter-spacing: -0.01em;
+        text-align: left;
+        color: var(--mh-fg);
+        text-shadow: none;
+      }
+      #moon-hero #splash-title em {
+        display: block;
+        font-style: italic;
+        color: var(--mh-kick);
+      }
+      #moon-hero .mh-chapter p:not(.mh-kicker):not(.hero-observance-heading) {
+        margin: 0;
+        max-width: 36ch;
+        font-family: var(--fb);
+        font-size: clamp(17px, 1.4vw, 19px);
+        line-height: 1.55;
+        color: var(--mh-fg-mid);
+      }
+      #moon-hero .mh-hint { margin-top: 26px !important; font-size: 14px !important; color: var(--mh-fg-soft) !important; }
+      #moon-hero .hero-tradition-strip { margin: 22px 0 0; justify-content: flex-start; color: var(--mh-fg-mid); }
+      #moon-hero .hero-observance-rail {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: min(100%, 420px);
+        margin-top: 22px;
+        transform: none;
+      }
+      #moon-hero .hero-observance-heading { color: var(--mh-fg-mid); }
+      #moon-hero .hero-observance-stack { min-height: 0; }
+      #moon-hero .splash-actions { margin: 26px 0 0; justify-content: flex-start; }
+      #moon-hero .store-badges-row { justify-content: flex-start; }
+      #moon-hero .mh-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        margin-top: 10px;
+        font-family: var(--fb);
+        font-weight: 600;
+        color: var(--mh-fg);
+        text-underline-offset: 4px;
+      }
+      #moon-hero .mh-sections {
+        position: absolute;
+        left: clamp(16px, 6vw, 96px);
+        bottom: max(20px, env(safe-area-inset-bottom));
+        z-index: 5;
+        display: flex;
+        gap: 22px;
+      }
+      #moon-hero .mh-sections button {
+        all: unset;
+        cursor: pointer;
+        min-height: 44px;
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 8px;
+        font-family: var(--fb);
+        font-size: 13px;
+        color: var(--mh-fg-soft);
+      }
+      #moon-hero .mh-sections button::after {
+        content: "";
+        width: 18px;
+        height: 2px;
+        background: currentColor;
+        opacity: 0.6;
+        transition: width 0.3s;
+      }
+      #moon-hero .mh-sections button[aria-current="step"] { color: var(--mh-fg); font-weight: 600; }
+      #moon-hero .mh-sections button[aria-current="step"]::after { width: 34px; opacity: 1; background: var(--saffron); }
+      #moon-hero .mh-sections button:focus-visible { outline: 2px solid var(--saffron); outline-offset: 4px; }
+      #moon-hero .mh-caption {
+        position: absolute;
+        right: clamp(16px, 3vw, 40px);
+        bottom: max(24px, env(safe-area-inset-bottom));
+        z-index: 3;
+        max-width: 340px;
+        margin: 0;
+        text-align: right;
+        font-family: var(--fb);
+        font-size: 14px;
+        color: var(--mh-fg-mid);
+      }
+      #moon-hero .mh-cap-title { display: block; margin-bottom: 2px; font-family: var(--fd); font-size: 20px; font-weight: 400; color: var(--mh-fg); }
+      #moon-hero .mh-cap-note { display: block; margin-top: 4px; font-size: 12px; color: var(--mh-fg-soft); }
+      #moon-hero .mh-label {
+        position: absolute;
+        z-index: 2;
+        transform: translate(-50%, -50%);
+        font-family: var(--fb);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        pointer-events: none;
+        color: var(--mh-fg-mid);
+      }
+      #moon-hero .mh-tip {
+        position: absolute;
+        z-index: 6;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-family: var(--fb);
+        font-size: 13px;
+        line-height: 1.35;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        transform: translate(-50%, calc(-100% - 14px));
+        background: var(--mh-btn-bg);
+        color: var(--mh-btn-fg);
+        box-shadow: 0 6px 20px rgba(22, 28, 42, 0.25);
+      }
+      #moon-hero .mh-tip strong { display: block; font-family: var(--fd); font-size: 16px; font-weight: 400; }
+      @media (max-width: 720px) {
+        #moon-hero .mh-fallback { left: 50%; top: 38%; width: 64vw; height: 64vw; }
+        #moon-hero .mh-copy { width: calc(100% - 32px); }
+        #moon-hero .mh-chapter { top: auto; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 8px); transform: none; }
+        #moon-hero .mh-sections { left: auto; right: 12px; top: 96px; bottom: auto; gap: 0; }
+        #moon-hero .mh-sections button { font-size: 0; min-width: 34px; align-items: center; }
+        #moon-hero .mh-sections button::after { width: 14px; }
+        #moon-hero .mh-sections button[aria-current="step"]::after { width: 24px; }
+        #moon-hero .mh-caption { left: 16px; right: auto; top: 98px; bottom: auto; max-width: calc(100% - 170px); text-align: left; font-size: 12px; }
+        #moon-hero .mh-cap-title { font-size: 16px; }
+        #moon-hero .mh-cap-note, #moon-hero .mh-label { display: none; }
+        #moon-hero .hero-observance-rail { display: none; }
+        #moon-hero .mh-stage::after {
+          content: "";
+          position: absolute;
+          inset: auto 0 0 0;
+          z-index: 1;
+          height: 52%;
+          pointer-events: none;
+          background: linear-gradient(to bottom, transparent, var(--mh-bg) 38%);
+        }
+      }
+      /* Reduce Motion: one still picture, then the four chapters as ordinary text. */
+      @media (prefers-reduced-motion: reduce) {
+        #moon-hero { height: auto; }
+        #moon-hero .mh-stage { position: relative; height: auto; overflow: visible; padding-top: 70vh; }
+        #moon-hero .mh-canvas { height: 70vh; bottom: auto; }
+        #moon-hero .mh-fallback { top: 35vh; }
+        #moon-hero .mh-stage::after { display: none; }
+        #moon-hero .mh-copy { position: relative; left: auto; width: auto; padding: 32px clamp(16px, 6vw, 96px) 24px; pointer-events: auto; }
+        #moon-hero .mh-chapter { position: relative; top: auto; bottom: auto; margin-bottom: 48px; opacity: 1; transform: none; }
+        #moon-hero .mh-sections, #moon-hero .mh-hint, #moon-hero .mh-label { display: none; }
+        #moon-hero .mh-caption { position: relative; inset: auto; max-width: none; padding: 0 clamp(16px, 6vw, 96px) 48px; text-align: left; }
+        #moon-hero .hero-observance-rail { display: block; }
+      }
+    </style>
   </head>
   <body>
     <script>
@@ -5007,32 +5254,19 @@
         }
       })();
     </script>
-    <div id="splash">
-      <div class="splash-ambient-aura" aria-hidden="true"></div>
-      <nav class="hero-nav" aria-label="Homepage navigation">
-        <a class="hero-nav-brand" href="/" aria-label="Shoonaya home">
-          <img src="/icons/icon-192x192.png" alt="Shoonaya" />
-          <span>Shoonaya</span>
-        </a>
-        <div class="hero-nav-links">
-          <a href="/play/gyan-chaupar">Play</a>
-          <a href="/traditions">Traditions</a>
-          <a href="/features/sacred-calendar">Festivals</a>
-          <a href="/journal">Journal</a>
-          <a href="/community">Community</a>
-          <a href="/features">Features</a>
-          <a href="/about">About</a>
-        </div>
-        <a
-          class="hero-nav-beta"
-          href="https://play.google.com/store/apps/details?id=com.shoonaya.app&pcampaignid=web_share"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Download App →</a
-        >
-        <details class="hero-nav-mobile">
-          <summary>Menu</summary>
-          <div class="hero-nav-mobile-menu">
+    <section id="moon-hero" aria-label="Introduction">
+      <div class="mh-stage">
+        <div class="mh-fallback" aria-hidden="true"></div>
+        <canvas class="mh-canvas" aria-hidden="true"></canvas>
+        <div class="mh-grain" aria-hidden="true"></div>
+        <div class="mh-labels" aria-hidden="true"></div>
+        <div class="mh-tip" aria-hidden="true"></div>
+        <nav class="hero-nav" aria-label="Homepage navigation">
+          <a class="hero-nav-brand" href="/" aria-label="Shoonaya home">
+            <img src="/icons/icon-192x192.png" alt="Shoonaya" />
+            <span>Shoonaya</span>
+          </a>
+          <div class="hero-nav-links">
             <a href="/play/gyan-chaupar">Play</a>
             <a href="/traditions">Traditions</a>
             <a href="/features/sacred-calendar">Festivals</a>
@@ -5040,267 +5274,210 @@
             <a href="/community">Community</a>
             <a href="/features">Features</a>
             <a href="/about">About</a>
-            <a
-              href="https://play.google.com/store/apps/details?id=com.shoonaya.app&pcampaignid=web_share"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Download Android App</a
-            >
           </div>
-        </details>
-      </nav>
-      <canvas id="sky-canvas"></canvas>
-      <div id="celebration-layer" aria-hidden="true"></div>
-      <div id="splash-content">
-        <div
-          id="countdown-pill"
-          style="
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 18px;
-            border-radius: 9999px;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            border: 1px solid rgba(197, 160, 89, 0.3);
-            background: rgba(197, 160, 89, 0.08);
-            color: #c5a059;
-            font-family: var(--fb);
-          "
-        >
-                  SACRED TIME · DAILY PRACTICE · CONNECTION
-        </div>
-        <h1 id="splash-title">Shoonaya.<em>Find your infinite.</em></h1>
-        <h2 style="font-size: 20px; color: #c5a059; margin-bottom: 14px; font-weight: 500; font-family: var(--fb);">Shoonaya&apos;s purpose</h2>
-        <p class="splash-value">
-          A daily spiritual sanctuary for sacred time, practice, and connection.
-          See what is unfolding in your local Panchang, understand why sacred days
-          matter, and make room for Japa, daily practice, and learning.
-        </p>
-        <div class="hero-tradition-strip" aria-label="Traditions in Shoonaya">
-          <span>🪔 Sanatan</span><span aria-hidden="true">•</span>
-          <span>ੴ Sikh</span><span aria-hidden="true">•</span>
-          <span>Jain</span><span aria-hidden="true">•</span>
-          <span>☸ Buddhist</span>
-        </div>
-        <div class="hero-promise" aria-label="Shoonaya helps you">
-          <span>Know what sacred day is approaching</span>
-          <span>Understand why it matters</span>
-          <span>Observe it wherever you are</span>
-        </div>
-        <p class="hero-positioning">
-          Sacred time and meaningful practice, made easier to return to each day.
-        </p>
-        <p class="splash-data-note">
-          Google sign-in uses only your basic account information (name,
-          email address, and profile image) to create, secure, and
-          personalise your Shoonaya account. Shoonaya does not request access
-          to Gmail, Google Drive, contacts, or calendars.
-          <a href="/privacy">Read our Privacy Policy</a>.
-        </p>
-        <div id="splash-trads">
-          <span class="s-trad hindu" title="Hindu">ॐ</span>
-          <span class="s-trad sikh" title="Sikh">ੴ</span>
-          <span class="s-trad bud" title="Buddhist">☸</span>
-          <span class="s-trad jain" title="Jain">
-            <svg
-              width="56"
-              height="56"
-              viewBox="0 0 36 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              opacity="0.9"
-            >
-              <path
-                d="M18 38C10 38 5 31 5 24V13C5 11.3 6.3 10 8 10C9.7 10 11 11.3 11 13V19
-                   C11 17.3 12.3 16 14 16C15.7 16 17 17.3 17 19V18C17 16.3 18.3 15 20 15
-                   C21.7 15 23 16.3 23 18V19C23 17.3 24.3 16 26 16C27.7 16 29 17.3 29 19V26
-                   C29 33 24.3 38 18 38Z"
-                stroke="#3D8A60"
-                stroke-width="1.6"
-                stroke-linejoin="round"
-              />
-              <circle
-                cx="18"
-                cy="28"
-                r="5"
-                stroke="#3D8A60"
-                stroke-width="1.2"
-              />
-              <circle cx="18" cy="28" r="1.5" fill="#3D8A60" />
-              <line
-                x1="18"
-                y1="23.2"
-                x2="18"
-                y2="24.5"
-                stroke="#3D8A60"
-                stroke-width="0.9"
-              />
-              <line
-                x1="18"
-                y1="31.5"
-                x2="18"
-                y2="32.8"
-                stroke="#3D8A60"
-                stroke-width="0.9"
-              />
-              <line
-                x1="13.2"
-                y1="28"
-                x2="14.5"
-                y2="28"
-                stroke="#3D8A60"
-                stroke-width="0.9"
-              />
-              <line
-                x1="21.5"
-                y1="28"
-                x2="22.8"
-                y2="28"
-                stroke="#3D8A60"
-                stroke-width="0.9"
-              />
-              <line
-                x1="14.7"
-                y1="24.7"
-                x2="15.7"
-                y2="25.7"
-                stroke="#3D8A60"
-                stroke-width="0.7"
-              />
-              <line
-                x1="20.3"
-                y1="30.3"
-                x2="21.3"
-                y2="31.3"
-                stroke="#3D8A60"
-                stroke-width="0.7"
-              />
-              <line
-                x1="21.3"
-                y1="24.7"
-                x2="20.3"
-                y2="25.7"
-                stroke="#3D8A60"
-                stroke-width="0.7"
-              />
-              <line
-                x1="15.7"
-                y1="30.3"
-                x2="14.7"
-                y2="31.3"
-                stroke="#3D8A60"
-                stroke-width="0.7"
-              />
-              <path
-                d="M13 6C13 3.8 15.2 2 18 2C20.8 2 23 3.8 23 6C23 3.8 20.8 2.8 18 2.8C15.2 2.8 13 3.8 13 6Z"
-                fill="#3D8A60"
-                opacity="0.7"
-              />
-              <circle cx="18" cy="1" r="1.2" fill="#3D8A60" opacity="0.7" />
-            </svg>
-          </span>
-        </div>
-        <div
-          id="splash-verse"
-          role="img"
-          aria-label="Dharmic verses across traditions"
-        >
-          <div class="splash-verse-track" aria-hidden="true">
-            <span>सर्वे भवन्तु सुखिनः</span><span class="dot">•</span>
-            <span class="gurmukhi">ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ</span
-            ><span class="dot">•</span>
-            <span class="roman">Buddham sharanam gacchami</span
-            ><span class="dot">•</span> <span>अहिंसा परमो धर्मः</span
-            ><span class="dot">•</span> <span>वसुधैव कुटुम्बकम्</span
-            ><span class="dot">•</span>
-            <span class="roman">Parasparopagraho jīvānām</span
-            ><span class="dot">•</span> <span>एकं सत् विप्राः बहुधा वदन्ति</span
-            ><span class="dot">•</span> <span>सर्वे भवन्तु सुखिनः</span
-            ><span class="dot">•</span>
-            <span class="gurmukhi">ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ</span
-            ><span class="dot">•</span>
-            <span class="roman">Buddham sharanam gacchami</span
-            ><span class="dot">•</span> <span>अहिंसा परमो धर्मः</span
-            ><span class="dot">•</span> <span>वसुधैव कुटुम्बकम्</span
-            ><span class="dot">•</span>
-            <span class="roman">Parasparopagraho jīvānām</span
-            ><span class="dot">•</span> <span>एकं सत् विप्राः बहुधा वदन्ति</span
-            ><span class="dot">•</span>
-          </div>
-        </div>
-        <div class="splash-actions" aria-label="Download Shoonaya app">
-          <div class="store-badges-row">
-            <a
-              class="store-badge-link"
-              href="https://play.google.com/store/apps/details?id=com.shoonaya.app&pcampaignid=web_share"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Get Shoonaya on Google Play"
-            >
-              <img
-                src="/badges/google-play-badge.svg"
-                alt="Get it on Google Play"
-                width="180"
-                height="54"
-              />
-            </a>
-            <div class="store-badge-ios" role="status" aria-label="iOS App Store coming soon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.33c.64-.78 1.08-1.86.96-2.94-.93.04-2.06.62-2.72 1.4-.58.68-1.1 1.79-.96 2.84 1.04.08 2.08-.52 2.72-1.3" />
-              </svg>
-              <span class="store-badge-ios-text">
-                <span class="store-badge-ios-eyebrow">iOS App Store</span>
-                <span class="store-badge-ios-title">Coming Soon</span>
-              </span>
+          <a
+            class="hero-nav-beta"
+            href="https://play.google.com/store/apps/details?id=com.shoonaya.app&pcampaignid=web_share"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Download App →</a
+          >
+          <details class="hero-nav-mobile">
+            <summary>Menu</summary>
+            <div class="hero-nav-mobile-menu">
+              <a href="/play/gyan-chaupar">Play</a>
+              <a href="/traditions">Traditions</a>
+              <a href="/features/sacred-calendar">Festivals</a>
+              <a href="/journal">Journal</a>
+              <a href="/community">Community</a>
+              <a href="/features">Features</a>
+              <a href="/about">About</a>
+              <a
+                href="https://play.google.com/store/apps/details?id=com.shoonaya.app&pcampaignid=web_share"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Download Android App</a
+              >
             </div>
-            <a
-              class="store-badge-link"
-              href="https://www.producthunt.com/products/shoonaya?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-shoonaya"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Shoonaya on Product Hunt"
-            >
-              <img
-                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1323867&theme=neutral&t=1795157969891"
-                alt="Shoonaya - Meditation and spiritual learning for everyday life | Product Hunt"
-                width="250"
-                height="54"
-                style="height: 52px; width: auto; border-radius: 10px; display: block;"
-              />
-            </a>
+          </details>
+        </nav>
+        <div class="mh-copy">
+          <div class="mh-chapter">
+            <p class="mh-kicker" data-mh-now-kicker>Shoonaya</p>
+            <h1 id="splash-title">Shoonaya.<em>Find your infinite.</em></h1>
+            <p>A daily spiritual sanctuary for sacred time, practice, and connection.</p>
+            <div class="hero-tradition-strip" aria-label="Traditions in Shoonaya">
+              <span>🪔 Sanatan</span><span aria-hidden="true">•</span>
+              <span>ੴ Sikh</span><span aria-hidden="true">•</span>
+              <span>Jain</span><span aria-hidden="true">•</span>
+              <span>☸ Buddhist</span>
+            </div>
+            <p class="mh-hint">Scroll through one lunar month ↓</p>
+          </div>
+          <div class="mh-chapter">
+            <p class="mh-kicker">01 · Know</p>
+            <h2>Know what sacred day is approaching.</h2>
+            <p>Most observances follow the moon. Shoonaya follows it for your location and time zone, across Hindu, Sikh, Jain and Buddhist calendars.</p>
+            <aside class="hero-observance-rail" aria-label="Upcoming reviewed observances">
+              <p class="hero-observance-heading">
+                <span class="hero-live-dot" aria-hidden="true"></span>
+                Live sacred calendar
+              </p>
+              <div
+                class="hero-observance-stack"
+                id="hero-observance-stack"
+                aria-live="polite"
+              >
+                <div class="hero-observance-empty">Loading reviewed observances…</div>
+              </div>
+            </aside>
+          </div>
+          <div class="mh-chapter">
+            <p class="mh-kicker">02 · Understand</p>
+            <h2>Understand why it matters.</h2>
+            <p>Ekadashi comes on the eleventh lunar day of each fortnight. Shoonaya explains what each sacred day is, and how your tradition keeps it.</p>
+          </div>
+          <div class="mh-chapter">
+            <p class="mh-kicker">03 · Observe</p>
+            <h2>Observe it wherever you are.</h2>
+            <p>Gentle reminders before each observance, and a quiet place for Japa and daily practice.</p>
+            <div class="splash-actions" aria-label="Download Shoonaya app">
+              <div class="store-badges-row">
+                <a
+                  class="store-badge-link"
+                  href="https://play.google.com/store/apps/details?id=com.shoonaya.app&pcampaignid=web_share"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Get Shoonaya on Google Play"
+                >
+                  <img
+                    src="/badges/google-play-badge.svg"
+                    alt="Get it on Google Play"
+                    width="180"
+                    height="54"
+                  />
+                </a>
+                <div class="store-badge-ios" role="status" aria-label="iOS App Store coming soon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.33c.64-.78 1.08-1.86.96-2.94-.93.04-2.06.62-2.72 1.4-.58.68-1.1 1.79-.96 2.84 1.04.08 2.08-.52 2.72-1.3" />
+                  </svg>
+                  <span class="store-badge-ios-text">
+                    <span class="store-badge-ios-eyebrow">iOS App Store</span>
+                    <span class="store-badge-ios-title">Coming Soon</span>
+                  </span>
+                </div>
+                <a
+                  class="store-badge-link"
+                  href="https://www.producthunt.com/products/shoonaya?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-shoonaya"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Shoonaya on Product Hunt"
+                >
+                  <img
+                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1323867&theme=neutral&t=1795157969891"
+                    alt="Shoonaya - Meditation and spiritual learning for everyday life | Product Hunt"
+                    width="250"
+                    height="54"
+                    style="height: 52px; width: auto; border-radius: 10px; display: block;"
+                  />
+                </a>
+              </div>
+            </div>
+            <a class="mh-link" href="/features/sacred-calendar">Explore the calendar →</a>
           </div>
         </div>
-        <aside class="hero-observance-rail" aria-label="Upcoming reviewed observances">
-          <p class="hero-observance-heading">
-            <span class="hero-live-dot" aria-hidden="true"></span>
-            Live sacred calendar
-          </p>
-          <div
-            class="hero-observance-stack"
-            id="hero-observance-stack"
-            aria-live="polite"
-          >
-            <div class="hero-observance-empty">Loading reviewed observances…</div>
-          </div>
-        </aside>
+        <div class="mh-sections" role="navigation" aria-label="Introduction sections"></div>
+        <p class="mh-caption" aria-live="off"><span class="mh-cap-title"></span><span class="mh-cap-sub"></span><span class="mh-cap-note"></span></p>
       </div>
-      <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-      <div id="splash-bottom">
-        <button id="explore-btn">
-          Explore Shoonaya
-          <span
-            class="explore-arrow"
-            style="
-              display: inline-block;
-              animation: bounceDown 1.6s ease-in-out infinite;
-            "
-            >↓</span
-          >
-        </button>
-      </div>
-    </div>
+    </section>
+    <noscript>
+      <style>
+        #moon-hero { height: auto; }
+        #moon-hero .mh-stage { position: relative; height: auto; padding-top: 70vh; }
+        #moon-hero .mh-fallback { top: 35vh; }
+        #moon-hero .mh-copy { position: relative; left: auto; width: auto; padding: 32px clamp(16px, 6vw, 96px) 48px; pointer-events: auto; }
+        #moon-hero .mh-chapter { position: relative; top: auto; bottom: auto; margin-bottom: 48px; opacity: 1; transform: none; }
+        #moon-hero .mh-sections, #moon-hero .mh-hint, #moon-hero .mh-caption { display: none; }
+        #moon-hero .hero-observance-rail { display: block; }
+      </style>
+    </noscript>
+    <script>
+      /* Moon hero: chapter text and section links, from the first paint. The 3D picture
+         (/assets/js/moon-hero.js) loads once the page has loaded and reads window.__moonHero.p,
+         so the words work even when it never arrives. */
+      (function () {
+        var hero = document.getElementById("moon-hero");
+        if (!hero) return;
+        var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var state = (window.__moonHero = { p: 0, still: still, visible: true });
+        var chapters = hero.querySelectorAll(".mh-chapter");
+        var sections = hero.querySelector(".mh-sections");
+        var names = ["Begin", "Know", "Understand", "Observe"];
+        var n = chapters.length - 1;
+        var buttons = [];
+        function span() { return hero.offsetHeight - window.innerHeight; }
+        function goTo(p, instant) {
+          window.scrollTo({ top: hero.offsetTop + p * span(), behavior: instant || still ? "auto" : "smooth" });
+        }
+        names.forEach(function (name, i) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = name;
+          b.setAttribute("aria-label", "Go to " + name);
+          b.addEventListener("click", function () { goTo(i / n); });
+          sections.appendChild(b);
+          buttons.push(b);
+        });
+        function loadPicture() {
+          var s = document.createElement("script");
+          s.src = "/assets/js/moon-hero.js?v=8019c23e340c";
+          s.async = true;
+          document.body.appendChild(s);
+        }
+        function whenIdle() { (window.requestIdleCallback || function (f) { setTimeout(f, 200); })(loadPicture, { timeout: 2000 }); }
+        if (document.readyState === "complete") whenIdle();
+        else window.addEventListener("load", whenIdle, { once: true });
+        if (still) return;
+        // A keyboard user tabbing into a chapter (a calendar card, a store badge) is taken to it, so focus is never on hidden text.
+        Array.prototype.forEach.call(chapters, function (el, i) {
+          el.addEventListener("focusin", function () { if (Math.round(state.p * n) !== i) goTo(i / n, true); });
+        });
+        var target = 0;
+        function read() {
+          var r = hero.getBoundingClientRect(), s = r.height - window.innerHeight;
+          target = s > 0 ? Math.min(1, Math.max(0, -r.top / s)) : 0;
+        }
+        function paint(p) {
+          var wide = window.innerWidth >= 720;
+          for (var i = 0; i < chapters.length; i++) {
+            var d = (p - i / n) * n, o = Math.max(0, 1 - Math.abs(d) * 2.2), el = chapters[i];
+            el.style.opacity = o;
+            el.style.transform = wide ? "translateY(calc(-50% + " + (-d * 60) + "px))" : "translateY(" + (-d * 40) + "px)";
+            el.style.pointerEvents = o > 0.6 ? "auto" : "none";
+          }
+          var c = Math.round(p * n);
+          buttons.forEach(function (b, i) { if (i === c) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+        }
+        var running = false;
+        function tick() {
+          if (!state.visible) { running = false; return; }
+          state.p += (target - state.p) * 0.08;
+          if (Math.abs(target - state.p) < 1e-4) state.p = target;
+          paint(state.p);
+          requestAnimationFrame(tick);
+        }
+        function start() { if (!running) { running = true; requestAnimationFrame(tick); } }
+        window.addEventListener("scroll", read, { passive: true });
+        window.addEventListener("resize", read);
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(function (e) { state.visible = e[0].isIntersecting; if (state.visible) start(); }).observe(hero);
+        }
+        read();
+        state.p = target;
+        paint(state.p);
+        start();
+      })();
+    </script>
     <script>
       function loadShoonayaPublicCalendar() {
         if (!window.shoonayaPublicCalendarPromise) {
@@ -5700,7 +5877,7 @@
         </button>
       </div>
     </div>
-    <div id="main-page" style="display: none">
+    <div id="main-page">
       <div id="glyph-layer"></div>
       <div class="stats-band reveal" id="shoonaya-content">
         <div class="stat-item">
@@ -9022,6 +9199,7 @@
             "scroll",
             () => {
               const t = document.getElementById("nav");
+              if (!t) return; // no element has this id; the listener used to throw on every scroll
               window.scrollY > 60
                 ? ((t.style.background = "rgba(250,246,239,0.97)"),
                   (t.style.borderBottomColor = "rgba(216,138,28,0.22)"))
@@ -9823,22 +10001,28 @@
             });
         })());
       let mainPageInitialised = !1;
-      function triggerExplore() {
-        if (document.body.classList.contains("landing-entered")) return;
-        const t = document.getElementById("explore-btn");
-        t && t.click();
+      // The homepage used to sit behind a full-screen gate opened by "Explore". The moon hero scrolls,
+      // so the rest of the page is always below it and is set up when it comes near (or a link asks for it).
+      function ensureMainPage() {
+        if (mainPageInitialised) return;
+        mainPageInitialised = !0;
+        document.body.classList.add("landing-entered");
+        try {
+          initMainPage();
+        } catch (t) {
+          (console.error("[landing] initMainPage failed", t),
+            document
+              .querySelectorAll(".reveal")
+              .forEach((t) => t.classList.add("visible")));
+        }
       }
       function openLandingSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (!section) return;
-        const alreadyOpen = document.body.classList.contains("landing-entered");
-        if (!alreadyOpen) triggerExplore();
-        window.setTimeout(
-          function () {
-            section.scrollIntoView({ behavior: "smooth", block: "start" });
-          },
-          alreadyOpen ? 0 : 420,
-        );
+        ensureMainPage();
+        window.setTimeout(function () {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 0);
       }
       function openRequestedLandingSection() {
         const sectionId = window.location.hash.slice(1);
@@ -9850,62 +10034,17 @@
       if (window.location.hash) {
         window.setTimeout(openRequestedLandingSection, 0);
       }
-      document.getElementById("splash").addEventListener(
-        "wheel",
-        function (t) {
-          t.deltaY > 12 && triggerExplore();
-        },
-        { passive: !0 },
-      );
-      let touchStartY = 0;
-      (document.getElementById("splash").addEventListener(
-        "touchstart",
-        function (t) {
-          t.touches && t.touches[0] && (touchStartY = t.touches[0].clientY);
-        },
-        { passive: !0 },
-      ),
-        document.getElementById("splash").addEventListener(
-          "touchend",
-          function (t) {
-            if (t.changedTouches && t.changedTouches[0]) {
-              const e = t.changedTouches[0].clientY;
-              touchStartY - e > 45 && triggerExplore();
-            }
+      !(function () {
+        const page = document.getElementById("main-page");
+        if (!page || !("IntersectionObserver" in window)) return ensureMainPage();
+        const io = new IntersectionObserver(
+          function (entries) {
+            entries.some(function (e) { return e.isIntersecting; }) && (io.disconnect(), ensureMainPage());
           },
-          { passive: !0 },
-        ),
-        document
-          .getElementById("explore-btn")
-          .addEventListener("click", function () {
-            const t = document.getElementById("main-page");
-            (document.body.classList.add("landing-entered"),
-              "function" == typeof window._stopSkyCanvas &&
-                window._stopSkyCanvas(),
-              (this.textContent = "Continue below ↓"),
-              (t.style.display = "block"),
-              (t.style.opacity = "1"),
-              (t.style.transition = ""),
-              requestAnimationFrame(() => {
-                if (!mainPageInitialised) {
-                  mainPageInitialised = !0;
-                  try {
-                    initMainPage();
-                  } catch (t) {
-                    (console.error("[landing] initMainPage failed", t),
-                      document
-                        .querySelectorAll(".reveal")
-                        .forEach((t) => t.classList.add("visible")));
-                  }
-                }
-                setTimeout(() => {
-                  const e = document.getElementById("shoonaya-content");
-                  e
-                    ? e.scrollIntoView({ behavior: "smooth", block: "start" })
-                    : t.scrollIntoView({ behavior: "smooth", block: "start" });
-                }, 120);
-              }));
-          }));
+          { rootMargin: "800px 0px" },
+        );
+        io.observe(page);
+      })();
     </script>
     <script>
       function openDrawer() {
