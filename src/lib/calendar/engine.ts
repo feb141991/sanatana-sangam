@@ -647,7 +647,7 @@ export interface RegionalCalendarRule {
 
 const CULTURAL_SIKH_SLUGS = new Set(['lohri', 'sahibzade-shaheedi-diwas']);
 
-function isSgpcOnlySikhRule(rule: ObservanceRule): boolean {
+export function isSgpcOnlySikhRule(rule: ObservanceRule): boolean {
   return rule.tradition === 'sikh' && !CULTURAL_SIKH_SLUGS.has(rule.slug);
 }
 

@@ -13,14 +13,14 @@
     "calendar": "north_indian_purnimanta",
     "tradition": "smarta"
   },
-  "capturedAt": "2026-11-20T07:38:01.445Z",
+  "capturedAt": "2026-11-26T19:19:30.125Z",
   "engineVersion": "0.2.4",
   "ruleEngineVersion": "2.0.0",
   "captured": {
-    "civilDate": null,
+    "civilDate": "2026-04-20",
     "slug": "akshaya-tritiya",
     "recurring": null
   },
   "approved": false,
-  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-11-20T07:38:01.445Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
+  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-11-26T19:19:30.125Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
 }

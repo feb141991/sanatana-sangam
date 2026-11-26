@@ -33,6 +33,7 @@ import {
   calculateObservancesForYearLegacy,
   calculateObservancesForYearCorrected,
   calculateObservanceCandidateDiagnosticsForYear,
+  isSgpcOnlySikhRule,
   ruleIdentityKey,
 } from '@/lib/calendar/engine';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
@@ -80,6 +81,19 @@ const occurrences = (path: 'legacy' | 'corrected', year: number) => {
 
 const BUILDERS = ['legacy', 'corrected'] as const;
 
+/**
+ * The pairs the builders' publication gate decides. A Sikh rule's publication is decided by the printed SGPC edition
+ * instead, before the gate runs (founder decision 2026-11-25, "for Sikhs always keep SGPC for now", engine commit
+ * abe1fb0): a printed date is published even in a year the rule lists as disputed (guru-ravidas-jayanti 2027-02-20),
+ * and a year with no printed row is withheld even when undisputed. Both are pinned in
+ * src/lib/calendar/__tests__/sikh-sgpc-only-engine.test.ts, so they are left out here rather than asserted twice
+ * with opposite answers.
+ */
+const GATED = DISPUTED.filter(({ ruleKey }) => {
+  const rule = CANONICAL_RULES.find(r => ruleIdentityKey(r) === ruleKey)!;
+  return !isSgpcOnlySikhRule(rule);
+});
+
 const datesFor = (path: 'legacy' | 'corrected', ruleKey: string, year: number) =>
   occurrences(path, year).filter(o => o.ruleKey === ruleKey).map(o => o.date);
 
@@ -91,16 +105,22 @@ describe('disputed_years — publication gate', () => {
     // Guards against this whole suite silently becoming a no-op if the field is
     // renamed or cleared. A suite that tests nothing must not report success.
     expect(DISPUTED.length).toBeGreaterThan(0);
+    expect(GATED.length).toBeGreaterThan(0);
+  });
+
+  it('leaves out exactly the SGPC-only Sikh pairs, and nothing else', () => {
+    // If the exclusion ever widened, a gated rule could drop out of this suite unnoticed.
+    expect(DISPUTED.filter(d => !GATED.includes(d)).map(d => `${d.ruleKey} ${d.year}`)).toEqual(['guru-ravidas-jayanti 2027']);
   });
 
   describe.each(BUILDERS)('%s builder', (path) => {
-    it.each(DISPUTED)('withholds $ruleKey in $year', ({ ruleKey, year }) => {
+    it.each(GATED)('withholds $ruleKey in $year', ({ ruleKey, year }) => {
       expect(datesFor(path, ruleKey, year)).toEqual([]);
     }, TIMEOUT);
   });
 
   describe.each(BUILDERS)('%s builder — no over-suppression', (path) => {
-    it.each(DISPUTED)('$ruleKey still publishes in years adjacent to $year', ({ slug, ruleKey, year }) => {
+    it.each(GATED)('$ruleKey still publishes in years adjacent to $year', ({ slug, ruleKey, year }) => {
       const rule = CANONICAL_RULES.find(r => ruleIdentityKey(r) === ruleKey)!;
       // A launch-deferred rule is withheld in every year by design. The
       // disputed-year gate must not be credited or blamed for its absence.

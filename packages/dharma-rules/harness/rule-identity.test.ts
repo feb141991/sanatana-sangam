@@ -194,31 +194,25 @@ describe('two same-slug variants retain distinct identities', () => {
     TIMEOUT,
   );
 
-  it('2027 krishna-janmashtami: smarta un-gated (D32-adjacent fix 2026-08-17), gaudiya still withheld',
+  it('2027 krishna-janmashtami: both variants un-gated, still two distinct identities',
     () => {
-      // The smarta variant's disputed_years was cleared after directly
-      // verifying the real nishitha-touches evaluator condition qualifies
-      // exactly 2027-08-24, matching the council ruling -- the raw
-      // sunrise-sampled engine's 08-25 was the sampling artifact, not the
-      // ruling. calculateObservancesForYear (the production entry point,
-      // USE_CONDITION_EVALUATOR=true) now correctly resolves this to
-      // 2027-08-24; see materialize.test.ts / harness.test.ts for that
-      // assertion. These raw builders below don't run the evaluator at all,
-      // so smarta now surfaces its un-evaluated sunrise-tithi candidate
-      // (08-25, not the final published date) simply because the publish
-      // gate no longer blocks it -- confirming the gate opened for exactly
-      // the row intended, not confirming the date itself.
-      // The gaudiya/ISKCON variant's own sunrise+rohini condition was never
-      // separately re-verified and remains genuinely disputed, so it stays
-      // gated at this layer too.
+      // Smarta's 2027 dispute was cleared 2026-08-17 (the real nishitha-touches evaluator gives the council's
+      // 2027-08-24). Gaudiya/ISKCON's was cleared 2026-11-26 by founder decision (a08ec4c, not council ratified):
+      // Ashtami at sunrise decides and Rohini only breaks a two-sunrise tie, so 2027 left disputed_years.
+      // These raw builders do not run the evaluator: the dates below are each builder's un-evaluated candidate,
+      // not the published date. What is pinned is that both rows pass the gate and keep separate identities.
       const legacyOccs = calculateObservancesForYearLegacy(2027)
         .filter(o => o.slug === 'krishna-janmashtami');
-      expect(legacyOccs.map(o => o.ruleKey)).toEqual(['krishna-janmashtami::smarta_nishita']);
+      expect(legacyOccs.map(o => o.ruleKey)).toEqual([
+        'krishna-janmashtami::smarta_nishita',
+        'krishna-janmashtami::gaudiya_iskcon',
+      ]);
 
       const correctedOccs = calculateObservancesForYearCorrected(2027)
         .filter(o => o.slug === 'krishna-janmashtami');
       expect(correctedOccs).toEqual([
         { slug: 'krishna-janmashtami', ruleKey: 'krishna-janmashtami::smarta_nishita', date: '2027-08-25', year: 2027 },
+        { slug: 'krishna-janmashtami', ruleKey: 'krishna-janmashtami::gaudiya_iskcon', date: '2027-08-25', year: 2027 },
       ]);
     },
     TIMEOUT,
@@ -243,11 +237,9 @@ describe('diagnostics retain both variant identities', () => {
     TIMEOUT,
   );
 
-  it('2027 krishna-janmashtami diagnostics: smarta no longer withheld, gaudiya still labelled disputed_year',
+  it('2027 krishna-janmashtami diagnostics: neither variant withheld, both identities kept',
     () => {
-      // smarta_nishita's disputed_years was cleared 2026-08-17 after direct
-      // evaluator verification (see the 'un-gated' test above); gaudiya's
-      // sunrise+rohini condition was never separately re-verified.
+      // Both 2027 disputes are cleared (smarta 2026-08-17; gaudiya 2026-11-26, a08ec4c). See the test above.
       const diags = calculateObservanceCandidateDiagnosticsForYear(2027)
         .filter(d => d.slug === 'krishna-janmashtami');
 
@@ -260,13 +252,11 @@ describe('diagnostics retain both variant identities', () => {
         expect(d.ruleKey).toContain('krishna-janmashtami');
       }
 
-      const smarta = diags.find(d => d.ruleKey === 'krishna-janmashtami::smarta_nishita');
-      expect(smarta?.publicationWithheld).toBe(false);
-      expect(smarta?.withheldReason).toBe(null);
-
-      const gaudiya = diags.find(d => d.ruleKey === 'krishna-janmashtami::gaudiya_iskcon');
-      expect(gaudiya?.publicationWithheld).toBe(true);
-      expect(gaudiya?.withheldReason).toBe('disputed_year');
+      for (const ruleKey of ['krishna-janmashtami::smarta_nishita', 'krishna-janmashtami::gaudiya_iskcon']) {
+        const d = diags.find(x => x.ruleKey === ruleKey);
+        expect(d?.publicationWithheld, ruleKey).toBe(false);
+        expect(d?.withheldReason, ruleKey).toBe(null);
+      }
     },
     TIMEOUT,
   );
@@ -277,21 +267,25 @@ describe('diagnostics retain both variant identities', () => {
 // ---------------------------------------------------------------------------
 
 describe('relative rules resolve correctly after identity fix', () => {
-  it('dhanteras date is exactly 2 days before diwali (relative resolution via slugIndex)',
+  it('a negative relative offset resolves via slugIndex (chhath-nahay-khay before chhath-puja)',
     () => {
+      // This pinned Dhanteras = Diwali - 2 until 2026-11-26, when Dhanteras became its own tithi rule and the offset
+      // was removed (founder decision, a08ec4c). Chhath Nahay-Khay keeps the same shape: a relative rule with a
+      // negative offset, resolved through slugIndex. The offset is read from the rule, not restated here.
+      const rule = CANONICAL_RULES.find(r => r.slug === 'chhath-nahay-khay')!;
+      expect(rule.rule_family).toBe('relative_to_other_observance');
+      expect(rule.relative_offset_days).toBeLessThan(0);
+
       const occs = calculateObservancesForYearLegacy(2026);
+      const base = occs.find(o => o.slug === rule.relative_base_slug);
+      const child = occs.find(o => o.slug === 'chhath-nahay-khay');
 
-      const diwali = occs.find(o => o.slug === 'diwali');
-      const dhanteras = occs.find(o => o.slug === 'dhanteras');
+      expect(base).toBeDefined();
+      expect(child).toBeDefined();
 
-      expect(diwali).toBeDefined();
-      expect(dhanteras).toBeDefined();
-
-      const diwaliDate = new Date(diwali!.date + 'T00:00:00Z');
-      const dhanterasDate = new Date(dhanteras!.date + 'T00:00:00Z');
-      const diffDays = (diwaliDate.getTime() - dhanterasDate.getTime()) / 86400000;
-
-      expect(diffDays).toBe(2);
+      const diffDays =
+        (new Date(child!.date + 'T00:00:00Z').getTime() - new Date(base!.date + 'T00:00:00Z').getTime()) / 86400000;
+      expect(diffDays).toBe(rule.relative_offset_days);
     },
     TIMEOUT,
   );
