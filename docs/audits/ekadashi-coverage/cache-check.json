@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-11-26T18:08:43.685Z",
+  "scope": "Optional parallel uncommitted panchang grid cache; not a rule change",
+  "before": "2026-11-20T01:45:00.000Z",
+  "after": "2026-11-20T01:59:00.000Z",
+  "location": {
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata"
+  },
+  "beforeTithi": 10,
+  "warmAfterTithi": 10,
+  "coldAfterTithi": 11,
+  "warmColdDisagree": true,
+  "cacheHash": "8884ef621a9c0ec2c4c440274e5e2cc9f437d7998f59f8bc00b3ce13f0f6209e",
+  "panchangHash": "e37e5bd61b66d116de5eddba0534cae19e42a72533b1643ec8f48eaa86868812"
+}

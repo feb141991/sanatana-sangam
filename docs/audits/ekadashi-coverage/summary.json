@@ -1,0 +1,952 @@
+{
+  "inventory": {
+    "namedSlugCount": 24,
+    "namedRuleRows": 25,
+    "missingAdditionalNames": [
+      "padmini-ekadashi",
+      "parama-ekadashi",
+      "mokshada-ekadashi"
+    ],
+    "rules": [
+      {
+        "slug": "vaikunta-ekadashi",
+        "key": "vaikunta-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Margashirsha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "kamada-ekadashi",
+        "key": "kamada-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Chaitra",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "nirjala-ekadashi",
+        "key": "nirjala-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Jyeshtha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "devshayani-ekadashi",
+        "key": "devshayani-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Ashadha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "shravana-putrada-ekadashi",
+        "key": "shravana-putrada-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Shravana",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "parivartini-ekadashi",
+        "key": "parivartini-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Bhadrapada",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "devutthana-ekadashi",
+        "key": "devutthana-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Kartika",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "skippedPolicy": "previous_day",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "amalaki-ekadashi",
+        "key": "amalaki-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Phalguna",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "papmochani-ekadashi",
+        "key": "papmochani-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Chaitra",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "apara-ekadashi",
+        "key": "apara-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Jyeshtha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "kamika-ekadashi",
+        "key": "kamika-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Shravana",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "aja-ekadashi",
+        "key": "aja-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Bhadrapada",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "rama-ekadashi",
+        "key": "rama-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Kartika",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "utpanna-ekadashi",
+        "key": "utpanna-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Margashirsha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "saphala-ekadashi",
+        "key": "saphala-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Pausha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "vijaya-ekadashi",
+        "key": "vijaya-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Phalguna",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "ekadashi",
+        "key": "ekadashi",
+        "family": "lunar_tithi_recurring",
+        "targets": [
+          11,
+          26
+        ],
+        "adhikaPolicy": "both",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": {
+          "slug": "ekadashi",
+          "windowDays": 5,
+          "isRecurring": true,
+          "variants": [
+            {
+              "variantId": "standard",
+              "spiritualTradition": null,
+              "isPrimary": true,
+              "conditions": [
+                {
+                  "type": "tithi_presence",
+                  "tithi": 11,
+                  "period": "sunrise",
+                  "mode": "at"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "slug": "yogini-ekadashi",
+        "key": "yogini-ekadashi::smarta",
+        "family": "lunar_tithi",
+        "month": "Ashadha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "disputedYears": [
+          2026
+        ],
+        "skippedPolicy": "previous_day",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": {
+          "slug": "yogini-ekadashi",
+          "windowDays": 15,
+          "variants": [
+            {
+              "variantId": "vaishnava_vidhava",
+              "spiritualTradition": null,
+              "isPrimary": false,
+              "conditions": [
+                {
+                  "type": "lunar_month",
+                  "value": "Ashadha",
+                  "monthSystem": "purnimanta"
+                },
+                {
+                  "type": "paksha",
+                  "value": "krishna"
+                },
+                {
+                  "type": "tithi_presence",
+                  "tithi": 11,
+                  "period": "arunodaya",
+                  "mode": "prevails"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "slug": "yogini-ekadashi",
+        "key": "yogini-ekadashi::vaishnava_vidhava",
+        "family": "lunar_tithi",
+        "month": "Ashadha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "disputedYears": [
+          2026
+        ],
+        "skippedPolicy": "following_day",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": {
+          "slug": "yogini-ekadashi",
+          "windowDays": 15,
+          "variants": [
+            {
+              "variantId": "vaishnava_vidhava",
+              "spiritualTradition": null,
+              "isPrimary": false,
+              "conditions": [
+                {
+                  "type": "lunar_month",
+                  "value": "Ashadha",
+                  "monthSystem": "purnimanta"
+                },
+                {
+                  "type": "paksha",
+                  "value": "krishna"
+                },
+                {
+                  "type": "tithi_presence",
+                  "tithi": 11,
+                  "period": "arunodaya",
+                  "mode": "prevails"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "slug": "pausha-putrada-ekadashi",
+        "key": "pausha-putrada-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Pausha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "shattila-ekadashi",
+        "key": "shattila-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Magha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "jaya-ekadashi",
+        "key": "jaya-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Magha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "varuthini-ekadashi",
+        "key": "varuthini-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Vaishakha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "mohini-ekadashi",
+        "key": "mohini-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Vaishakha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "indira-ekadashi",
+        "key": "indira-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Ashwin",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "papankusha-ekadashi",
+        "key": "papankusha-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Ashwin",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      }
+    ]
+  },
+  "completedCases": 11,
+  "requestedCases": 11,
+  "changedInputs": [],
+  "rows": [
+    {
+      "year": 2025,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 25,
+      "unresolvedGeneric": 0,
+      "missingGeneric": [],
+      "adhikaGeneric": [],
+      "namedReviewHeldInstances": [
+        {
+          "key": "yogini-ekadashi::vaishnava_vidhava",
+          "instances": [
+            [
+              "2025-06-22"
+            ]
+          ]
+        }
+      ],
+      "lostNamedInstances": [
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2025-06-21"
+            ]
+          ],
+          "output": []
+        },
+        {
+          "key": "pausha-putrada-ekadashi",
+          "instances": [
+            [
+              "2025-12-31"
+            ]
+          ],
+          "output": [
+            "2025-01-10"
+          ]
+        }
+      ],
+      "namedWithoutGeneric": [],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2026,
+      "location": "ujjain",
+      "genericBaseline": 24,
+      "genericPublished": 23,
+      "unresolvedGeneric": 1,
+      "missingGeneric": [
+        "2026-05-26"
+      ],
+      "adhikaGeneric": [
+        "2026-05-26",
+        "2026-06-11"
+      ],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [],
+      "namedWithoutGeneric": [
+        {
+          "key": "devutthana-ekadashi",
+          "dates": [
+            "2026-11-20"
+          ]
+        }
+      ],
+      "withheldRuleKeys": [
+        "yogini-ekadashi::smarta",
+        "yogini-ekadashi::vaishnava_vidhava"
+      ]
+    },
+    {
+      "year": 2027,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 24,
+      "unresolvedGeneric": 1,
+      "missingGeneric": [
+        "2027-03-03"
+      ],
+      "adhikaGeneric": [],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "saphala-ekadashi",
+          "instances": [
+            [
+              "2027-12-23"
+            ]
+          ],
+          "output": [
+            "2027-01-03"
+          ]
+        },
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2027-06-30"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [
+        {
+          "key": "vijaya-ekadashi",
+          "dates": [
+            "2027-03-04"
+          ]
+        }
+      ],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2028,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 25,
+      "unresolvedGeneric": 0,
+      "missingGeneric": [],
+      "adhikaGeneric": [],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2028-06-18"
+            ]
+          ],
+          "output": []
+        },
+        {
+          "key": "pausha-putrada-ekadashi",
+          "instances": [
+            [
+              "2028-12-27"
+            ]
+          ],
+          "output": [
+            "2028-01-08"
+          ]
+        }
+      ],
+      "namedWithoutGeneric": [],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2029,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 24,
+      "unresolvedGeneric": 1,
+      "missingGeneric": [
+        "2029-10-17"
+      ],
+      "adhikaGeneric": [
+        "2029-03-26",
+        "2029-04-09"
+      ],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2029-07-07"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [
+        {
+          "key": "papankusha-ekadashi",
+          "dates": [
+            "2029-10-17"
+          ]
+        }
+      ],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2030,
+      "location": "ujjain",
+      "genericBaseline": 24,
+      "genericPublished": 24,
+      "unresolvedGeneric": 0,
+      "missingGeneric": [],
+      "adhikaGeneric": [],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2030-06-26"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2031,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 25,
+      "unresolvedGeneric": 0,
+      "missingGeneric": [],
+      "adhikaGeneric": [
+        "2031-08-29",
+        "2031-09-12"
+      ],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2031-06-15"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2032,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 25,
+      "unresolvedGeneric": 0,
+      "missingGeneric": [],
+      "adhikaGeneric": [],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "saphala-ekadashi",
+          "instances": [
+            [
+              "2032-12-28"
+            ]
+          ],
+          "output": [
+            "2032-01-09"
+          ]
+        },
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2032-07-03"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2033,
+      "location": "ujjain",
+      "genericBaseline": 24,
+      "genericPublished": 23,
+      "unresolvedGeneric": 1,
+      "missingGeneric": [
+        "2033-05-09"
+      ],
+      "adhikaGeneric": [],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2033-06-23"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [
+        {
+          "key": "mohini-ekadashi",
+          "dates": [
+            "2033-05-09"
+          ]
+        }
+      ],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2034,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 25,
+      "unresolvedGeneric": 0,
+      "missingGeneric": [],
+      "adhikaGeneric": [
+        "2034-06-27",
+        "2034-07-12"
+      ],
+      "namedReviewHeldInstances": [
+        {
+          "key": "yogini-ekadashi::vaishnava_vidhava",
+          "instances": [
+            [
+              "2034-06-13"
+            ]
+          ]
+        }
+      ],
+      "lostNamedInstances": [
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2034-06-12"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [],
+      "withheldRuleKeys": []
+    },
+    {
+      "year": 2035,
+      "location": "ujjain",
+      "genericBaseline": 25,
+      "genericPublished": 23,
+      "unresolvedGeneric": 2,
+      "missingGeneric": [
+        "2035-02-03",
+        "2035-07-15"
+      ],
+      "adhikaGeneric": [],
+      "namedReviewHeldInstances": [],
+      "lostNamedInstances": [
+        {
+          "key": "saphala-ekadashi",
+          "instances": [
+            [
+              "2035-12-25"
+            ]
+          ],
+          "output": [
+            "2035-01-05"
+          ]
+        },
+        {
+          "key": "yogini-ekadashi::smarta",
+          "instances": [
+            [
+              "2035-07-02"
+            ]
+          ],
+          "output": []
+        }
+      ],
+      "namedWithoutGeneric": [
+        {
+          "key": "devshayani-ekadashi",
+          "dates": [
+            "2035-07-15"
+          ]
+        },
+        {
+          "key": "shattila-ekadashi",
+          "dates": [
+            "2035-02-03"
+          ]
+        }
+      ],
+      "withheldRuleKeys": []
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "source": "https://news.tirumala.org/govinda-govinda-chant-rocks-tirumala/",
+  "sourceEventDate": "2017-01-08",
+  "sourceConvention": "Shukla Ekadashi in Dhanurmasa (TTD)",
+  "location": {
+    "lat": 13.6833,
+    "lon": 79.3472,
+    "tz": "Asia/Kolkata"
+  },
+  "computedSunrise": "2017-01-08T01:08:20.266Z",
+  "computedTithi": 10,
+  "computedAmantaMonth": "Pausha",
+  "canonicalRuleMonth": "Margashirsha",
+  "canonicalRuleMonthSystem": "amanta",
+  "declaredMonthMatchesSourceDay": false,
+  "declaredRuleMatchesSourceDay": false,
+  "limitation": "Single source/location/day predicate check; not a ratification, date override, full-year calculation, or universal Vaikunta policy."
+}

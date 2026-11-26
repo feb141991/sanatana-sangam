@@ -1,0 +1,5211 @@
+{
+  "timestamp": "2026-11-26T17:58:31.386Z",
+  "head": "4aac8f2ba0af7078edf6fc64318dfe32c76a0045",
+  "workingTree": " M src/app/(main)/bhakti/katha/[id]/page.tsx\n M src/app/(main)/bhakti/stotram/[id]/page.tsx\n M src/app/(marketing)/journal/[slug]/page.tsx\n M src/app/api/ai/chat/route.ts\n M src/lib/panchang.ts\n?? docs/audits/ekadashi-coverage/\n?? scripts/audit-ekadashi-coverage.test.ts\n?? scripts/audit-ekadashi-coverage.ts\n?? scripts/warm-tts-corpus.ts\n?? src/app/api/native/audio-manifest/\n?? src/lib/panchang/\n",
+  "inputHashes": {
+    "src/lib/calendar/engine.ts": "2604f0547979771353644451da2fb23264676052ccfd37aa08878ac5da8a2961",
+    "src/lib/calendar/materialize.ts": "ccb0b62cc3a3432c0854d8caf55f3d907e82ece60b2c1aa1c9666d3141507e53",
+    "src/lib/calendar/rules.ts": "12ede6fb60ead7a3b1510bdadcaebc65f77a134fd9bd908e1b3f08011fd183ad",
+    "src/lib/panchang.ts": "e37e5bd61b66d116de5eddba0534cae19e42a72533b1643ec8f48eaa86868812",
+    "packages/dharma-rules/src/festivals/rules.json": "bf9f6a878a80a790ae400981f4f11637f05b59cc810fefd1fba710147f28b58a"
+  },
+  "inputChangedDuringRun": [],
+  "years": [
+    2026,
+    2029,
+    2032,
+    2035
+  ],
+  "locations": [
+    "ujjain"
+  ],
+  "inventory": {
+    "namedSlugCount": 24,
+    "namedRuleRows": 25,
+    "missingAdditionalNames": [
+      "padmini-ekadashi",
+      "parama-ekadashi",
+      "mokshada-ekadashi"
+    ],
+    "rules": [
+      {
+        "slug": "vaikunta-ekadashi",
+        "key": "vaikunta-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Margashirsha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "kamada-ekadashi",
+        "key": "kamada-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Chaitra",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "nirjala-ekadashi",
+        "key": "nirjala-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Jyeshtha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "devshayani-ekadashi",
+        "key": "devshayani-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Ashadha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "shravana-putrada-ekadashi",
+        "key": "shravana-putrada-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Shravana",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "parivartini-ekadashi",
+        "key": "parivartini-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Bhadrapada",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "devutthana-ekadashi",
+        "key": "devutthana-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Kartika",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "skippedPolicy": "previous_day",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "amalaki-ekadashi",
+        "key": "amalaki-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Phalguna",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "papmochani-ekadashi",
+        "key": "papmochani-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Chaitra",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "apara-ekadashi",
+        "key": "apara-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Jyeshtha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "kamika-ekadashi",
+        "key": "kamika-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Shravana",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "aja-ekadashi",
+        "key": "aja-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Bhadrapada",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "rama-ekadashi",
+        "key": "rama-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Kartika",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "utpanna-ekadashi",
+        "key": "utpanna-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Margashirsha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "saphala-ekadashi",
+        "key": "saphala-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Pausha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "vijaya-ekadashi",
+        "key": "vijaya-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Phalguna",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "ekadashi",
+        "key": "ekadashi",
+        "family": "lunar_tithi_recurring",
+        "targets": [
+          11,
+          26
+        ],
+        "adhikaPolicy": "both",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": {
+          "slug": "ekadashi",
+          "windowDays": 5,
+          "isRecurring": true,
+          "variants": [
+            {
+              "variantId": "standard",
+              "spiritualTradition": null,
+              "isPrimary": true,
+              "conditions": [
+                {
+                  "type": "tithi_presence",
+                  "tithi": 11,
+                  "period": "sunrise",
+                  "mode": "at"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "slug": "yogini-ekadashi",
+        "key": "yogini-ekadashi::smarta",
+        "family": "lunar_tithi",
+        "month": "Ashadha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "disputedYears": [
+          2026
+        ],
+        "skippedPolicy": "previous_day",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": {
+          "slug": "yogini-ekadashi",
+          "windowDays": 15,
+          "variants": [
+            {
+              "variantId": "vaishnava_vidhava",
+              "spiritualTradition": null,
+              "isPrimary": false,
+              "conditions": [
+                {
+                  "type": "lunar_month",
+                  "value": "Ashadha",
+                  "monthSystem": "purnimanta"
+                },
+                {
+                  "type": "paksha",
+                  "value": "krishna"
+                },
+                {
+                  "type": "tithi_presence",
+                  "tithi": 11,
+                  "period": "arunodaya",
+                  "mode": "prevails"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "slug": "yogini-ekadashi",
+        "key": "yogini-ekadashi::vaishnava_vidhava",
+        "family": "lunar_tithi",
+        "month": "Ashadha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "disputedYears": [
+          2026
+        ],
+        "skippedPolicy": "following_day",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": {
+          "slug": "yogini-ekadashi",
+          "windowDays": 15,
+          "variants": [
+            {
+              "variantId": "vaishnava_vidhava",
+              "spiritualTradition": null,
+              "isPrimary": false,
+              "conditions": [
+                {
+                  "type": "lunar_month",
+                  "value": "Ashadha",
+                  "monthSystem": "purnimanta"
+                },
+                {
+                  "type": "paksha",
+                  "value": "krishna"
+                },
+                {
+                  "type": "tithi_presence",
+                  "tithi": 11,
+                  "period": "arunodaya",
+                  "mode": "prevails"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "slug": "pausha-putrada-ekadashi",
+        "key": "pausha-putrada-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Pausha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "shattila-ekadashi",
+        "key": "shattila-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Magha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "jaya-ekadashi",
+        "key": "jaya-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Magha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "varuthini-ekadashi",
+        "key": "varuthini-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Vaishakha",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "mohini-ekadashi",
+        "key": "mohini-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Vaishakha",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "indira-ekadashi",
+        "key": "indira-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Ashwin",
+        "monthSystem": "purnimanta",
+        "tithi": 26,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      },
+      {
+        "slug": "papankusha-ekadashi",
+        "key": "papankusha-ekadashi",
+        "family": "lunar_tithi",
+        "month": "Ashwin",
+        "monthSystem": "amanta",
+        "tithi": 11,
+        "adhikaPolicy": "nija",
+        "launchStatus": "included",
+        "windowSource": {
+          "tier": 6,
+          "source_name": "UNSOURCED — authority record pending",
+          "location_in_source": "not yet identified",
+          "read_by_human": false,
+          "status": "unsourced"
+        },
+        "evaluator": null
+      }
+    ]
+  },
+  "cases": [
+    {
+      "year": 2026,
+      "locationName": "ujjain",
+      "location": {
+        "lat": 23.1765,
+        "lon": 75.7885,
+        "tz": "Asia/Kolkata"
+      },
+      "seconds": 246.884,
+      "dayCount": 365,
+      "production": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "ruleKey": "vaikunta-ekadashi::legacy-default",
+          "date": "2026-12-20",
+          "year": 2026
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "ruleKey": "kamada-ekadashi::legacy-default",
+          "date": "2026-03-29",
+          "year": 2026
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "ruleKey": "nirjala-ekadashi::legacy-default",
+          "date": "2026-06-25",
+          "year": 2026
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "ruleKey": "devshayani-ekadashi::legacy-default",
+          "date": "2026-07-25",
+          "year": 2026
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "ruleKey": "shravana-putrada-ekadashi::legacy-default",
+          "date": "2026-08-23",
+          "year": 2026
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "ruleKey": "parivartini-ekadashi::legacy-default",
+          "date": "2026-09-22",
+          "year": 2026
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "ruleKey": "devutthana-ekadashi::legacy-default",
+          "date": "2026-11-20",
+          "year": 2026
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "ruleKey": "amalaki-ekadashi::legacy-default",
+          "date": "2026-02-27",
+          "year": 2026
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "ruleKey": "papmochani-ekadashi::legacy-default",
+          "date": "2026-03-15",
+          "year": 2026
+        },
+        {
+          "slug": "apara-ekadashi",
+          "ruleKey": "apara-ekadashi::legacy-default",
+          "date": "2026-05-13",
+          "year": 2026
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "ruleKey": "kamika-ekadashi::legacy-default",
+          "date": "2026-08-09",
+          "year": 2026
+        },
+        {
+          "slug": "aja-ekadashi",
+          "ruleKey": "aja-ekadashi::legacy-default",
+          "date": "2026-09-07",
+          "year": 2026
+        },
+        {
+          "slug": "rama-ekadashi",
+          "ruleKey": "rama-ekadashi::legacy-default",
+          "date": "2026-11-05",
+          "year": 2026
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "ruleKey": "utpanna-ekadashi::legacy-default",
+          "date": "2026-12-04",
+          "year": 2026
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "ruleKey": "vijaya-ekadashi::legacy-default",
+          "date": "2026-02-13",
+          "year": 2026
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "ruleKey": "shattila-ekadashi::legacy-default",
+          "date": "2026-01-14",
+          "year": 2026
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "ruleKey": "jaya-ekadashi::legacy-default",
+          "date": "2026-01-29",
+          "year": 2026
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "ruleKey": "varuthini-ekadashi::legacy-default",
+          "date": "2026-04-13",
+          "year": 2026
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "ruleKey": "mohini-ekadashi::legacy-default",
+          "date": "2026-04-27",
+          "year": 2026
+        },
+        {
+          "slug": "indira-ekadashi",
+          "ruleKey": "indira-ekadashi::legacy-default",
+          "date": "2026-10-06",
+          "year": 2026
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "ruleKey": "papankusha-ekadashi::legacy-default",
+          "date": "2026-10-22",
+          "year": 2026
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-01-14",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-01-29",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-02-13",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-02-27",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-03-15",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-03-29",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-04-13",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-04-27",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-05-13",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-06-11",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-06-25",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-07-11",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-07-25",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-08-09",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-08-23",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-09-07",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-09-22",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-10-06",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-10-22",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-11-05",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-11-21",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-12-04",
+          "year": 2026,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2026-12-20",
+          "year": 2026,
+          "recurring": true
+        }
+      ],
+      "genericRaw": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-05-26",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "genericOutput": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "unresolved": [
+        {
+          "slug": "ekadashi",
+          "year": 2026,
+          "variant_key": "standard",
+          "spiritual_tradition": null,
+          "calendar_profile": "legacy-ujjain",
+          "ambiguity_type": "vrddhi_tithi",
+          "reasoning": "Scholar review pending: Vrddhi tithi spans two sunrises (qualified on 2026-05-26, 2026-05-27).",
+          "candidate_dates": [
+            "2026-05-26",
+            "2026-05-27"
+          ],
+          "source_refs": [],
+          "evaluator_details": {
+            "ruleId": "standard",
+            "festivalId": "ekadashi",
+            "windowSize": 5,
+            "allEvaluations": [
+              {
+                "date": "2026-05-21",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-21 05:43 to 2026-05-21 05:43]: DID NOT MATCH. (Start: Panchami, End: Panchami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 5,
+                      "endTithi": 5,
+                      "startUtc": "2026-05-21T00:13:22.156Z",
+                      "endUtc": "2026-05-21T00:13:22.156Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-22",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-22 05:43 to 2026-05-22 05:43]: DID NOT MATCH. (Start: Shashthi, End: Shashthi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 6,
+                      "endTithi": 6,
+                      "startUtc": "2026-05-22T00:13:02.145Z",
+                      "endUtc": "2026-05-22T00:13:02.145Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-23",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-23 05:42 to 2026-05-23 05:42]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2026-05-23T00:12:43.285Z",
+                      "endUtc": "2026-05-23T00:12:43.285Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-24",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-24 05:42 to 2026-05-24 05:42]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 9,
+                      "endTithi": 9,
+                      "startUtc": "2026-05-24T00:12:25.581Z",
+                      "endUtc": "2026-05-24T00:12:25.581Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-25",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-25 05:42 to 2026-05-25 05:42]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 10,
+                      "endTithi": 10,
+                      "startUtc": "2026-05-25T00:12:09.035Z",
+                      "endUtc": "2026-05-25T00:12:09.035Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-26",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2026-05-26, 2026-05-27). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2026-05-26",
+                        "2026-05-27"
+                      ],
+                      "isFirstSunrise": true,
+                      "isSecondSunrise": false
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2026-05-27",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2026-05-26, 2026-05-27). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2026-05-26",
+                        "2026-05-27"
+                      ],
+                      "isFirstSunrise": false,
+                      "isSecondSunrise": true
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2026-05-28",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-28 05:41 to 2026-05-28 05:41]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 12,
+                      "endTithi": 12,
+                      "startUtc": "2026-05-28T00:11:26.371Z",
+                      "endUtc": "2026-05-28T00:11:26.371Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-29",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-29 05:41 to 2026-05-29 05:41]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 13,
+                      "endTithi": 13,
+                      "startUtc": "2026-05-29T00:11:14.475Z",
+                      "endUtc": "2026-05-29T00:11:14.475Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-30",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-30 05:41 to 2026-05-30 05:41]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 14,
+                      "endTithi": 14,
+                      "startUtc": "2026-05-30T00:11:03.740Z",
+                      "endUtc": "2026-05-30T00:11:03.740Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2026-05-31",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2026-05-31 05:40 to 2026-05-31 05:40]: DID NOT MATCH. (Start: Purnima, End: Purnima).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 15,
+                      "endTithi": 15,
+                      "startUtc": "2026-05-31T00:10:54.163Z",
+                      "endUtc": "2026-05-31T00:10:54.163Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              }
+            ],
+            "diagnostics": [
+              "vrddhi_tithi"
+            ]
+          }
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "year": 2026,
+          "variant_key": "smarta",
+          "spiritual_tradition": null,
+          "calendar_profile": "legacy-ujjain",
+          "ambiguity_type": "disputed_ratification",
+          "reasoning": "Disputed variant pending council ratification: Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+          "candidate_dates": [
+            "2026-07-10"
+          ],
+          "source_refs": [
+            {
+              "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+              "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+              "edition": "English edition",
+              "pageOrSection": "p.30",
+              "tier": 1
+            }
+          ],
+          "evaluator_details": {
+            "ruleId": "smarta",
+            "festivalId": "yogini-ekadashi",
+            "source_refs": [
+              {
+                "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                "edition": "English edition",
+                "pageOrSection": "p.30",
+                "tier": 1
+              }
+            ],
+            "diagnostics": [
+              "disputed_ratification"
+            ]
+          }
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "year": 2026,
+          "variant_key": "vaishnava_vidhava",
+          "spiritual_tradition": null,
+          "calendar_profile": "legacy-ujjain",
+          "ambiguity_type": "disputed_ratification",
+          "reasoning": "Disputed variant pending council ratification: Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+          "candidate_dates": [
+            "2026-07-11"
+          ],
+          "source_refs": [
+            {
+              "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+              "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+              "edition": "English edition",
+              "pageOrSection": "p.30",
+              "tier": 1
+            }
+          ],
+          "evaluator_details": {
+            "ruleId": "vaishnava_vidhava",
+            "festivalId": "yogini-ekadashi",
+            "source_refs": [
+              {
+                "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                "edition": "English edition",
+                "pageOrSection": "p.30",
+                "tier": 1
+              }
+            ],
+            "diagnostics": [
+              "disputed_ratification"
+            ]
+          }
+        }
+      ],
+      "missingGeneric": [
+        "2026-05-26"
+      ],
+      "adhikaMonths": [
+        "Adhika Jyeshtha"
+      ],
+      "adhikaGeneric": [
+        "2026-05-26",
+        "2026-06-11"
+      ],
+      "noNamedDate": [
+        "2026-05-26",
+        "2026-06-11",
+        "2026-11-21"
+      ],
+      "namedWithoutGeneric": [
+        {
+          "key": "devutthana-ekadashi",
+          "dates": [
+            "2026-11-20"
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "key": "vaikunta-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-12-20"
+          ],
+          "instances": [
+            [
+              "2026-12-20"
+            ]
+          ],
+          "output": [
+            "2026-12-20"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "key": "kamada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-03-29"
+          ],
+          "instances": [
+            [
+              "2026-03-29"
+            ]
+          ],
+          "output": [
+            "2026-03-29"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "key": "nirjala-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-06-25"
+          ],
+          "instances": [
+            [
+              "2026-06-25"
+            ]
+          ],
+          "output": [
+            "2026-06-25"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "key": "devshayani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-07-25"
+          ],
+          "instances": [
+            [
+              "2026-07-25"
+            ]
+          ],
+          "output": [
+            "2026-07-25"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "key": "shravana-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-08-23"
+          ],
+          "instances": [
+            [
+              "2026-08-23"
+            ]
+          ],
+          "output": [
+            "2026-08-23"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "key": "parivartini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-09-22"
+          ],
+          "instances": [
+            [
+              "2026-09-22"
+            ]
+          ],
+          "output": [
+            "2026-09-22"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "key": "devutthana-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-11-20"
+          ],
+          "instances": [
+            [
+              "2026-11-20"
+            ]
+          ],
+          "output": [
+            "2026-11-20"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "key": "amalaki-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-02-27"
+          ],
+          "instances": [
+            [
+              "2026-02-27"
+            ]
+          ],
+          "output": [
+            "2026-02-27"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "key": "papmochani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-03-15"
+          ],
+          "instances": [
+            [
+              "2026-03-15"
+            ]
+          ],
+          "output": [
+            "2026-03-15"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "apara-ekadashi",
+          "key": "apara-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-05-13"
+          ],
+          "instances": [
+            [
+              "2026-05-13"
+            ]
+          ],
+          "output": [
+            "2026-05-13"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "key": "kamika-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-08-09"
+          ],
+          "instances": [
+            [
+              "2026-08-09"
+            ]
+          ],
+          "output": [
+            "2026-08-09"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "aja-ekadashi",
+          "key": "aja-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-09-07"
+          ],
+          "instances": [
+            [
+              "2026-09-07"
+            ]
+          ],
+          "output": [
+            "2026-09-07"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "rama-ekadashi",
+          "key": "rama-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-11-05"
+          ],
+          "instances": [
+            [
+              "2026-11-05"
+            ]
+          ],
+          "output": [
+            "2026-11-05"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "key": "utpanna-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-12-04"
+          ],
+          "instances": [
+            [
+              "2026-12-04"
+            ]
+          ],
+          "output": [
+            "2026-12-04"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "saphala-ekadashi",
+          "key": "saphala-ekadashi",
+          "publishable": true,
+          "candidates": [],
+          "instances": [],
+          "output": [],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "key": "vijaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-02-13"
+          ],
+          "instances": [
+            [
+              "2026-02-13"
+            ]
+          ],
+          "output": [
+            "2026-02-13"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::smarta",
+          "publishable": false,
+          "candidates": [
+            "2026-07-10"
+          ],
+          "instances": [
+            [
+              "2026-07-10"
+            ]
+          ],
+          "output": [],
+          "missingInstances": [],
+          "unresolved": [
+            {
+              "slug": "yogini-ekadashi",
+              "year": 2026,
+              "variant_key": "smarta",
+              "spiritual_tradition": null,
+              "calendar_profile": "legacy-ujjain",
+              "ambiguity_type": "disputed_ratification",
+              "reasoning": "Disputed variant pending council ratification: Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+              "candidate_dates": [
+                "2026-07-10"
+              ],
+              "source_refs": [
+                {
+                  "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                  "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                  "edition": "English edition",
+                  "pageOrSection": "p.30",
+                  "tier": 1
+                }
+              ],
+              "evaluator_details": {
+                "ruleId": "smarta",
+                "festivalId": "yogini-ekadashi",
+                "source_refs": [
+                  {
+                    "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                    "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                    "edition": "English edition",
+                    "pageOrSection": "p.30",
+                    "tier": 1
+                  }
+                ],
+                "diagnostics": [
+                  "disputed_ratification"
+                ]
+              }
+            },
+            {
+              "slug": "yogini-ekadashi",
+              "year": 2026,
+              "variant_key": "vaishnava_vidhava",
+              "spiritual_tradition": null,
+              "calendar_profile": "legacy-ujjain",
+              "ambiguity_type": "disputed_ratification",
+              "reasoning": "Disputed variant pending council ratification: Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+              "candidate_dates": [
+                "2026-07-11"
+              ],
+              "source_refs": [
+                {
+                  "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                  "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                  "edition": "English edition",
+                  "pageOrSection": "p.30",
+                  "tier": 1
+                }
+              ],
+              "evaluator_details": {
+                "ruleId": "vaishnava_vidhava",
+                "festivalId": "yogini-ekadashi",
+                "source_refs": [
+                  {
+                    "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                    "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                    "edition": "English edition",
+                    "pageOrSection": "p.30",
+                    "tier": 1
+                  }
+                ],
+                "diagnostics": [
+                  "disputed_ratification"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::vaishnava_vidhava",
+          "publishable": false,
+          "candidates": [
+            "2026-07-11"
+          ],
+          "instances": [
+            [
+              "2026-07-11"
+            ]
+          ],
+          "output": [],
+          "missingInstances": [],
+          "unresolved": [
+            {
+              "slug": "yogini-ekadashi",
+              "year": 2026,
+              "variant_key": "smarta",
+              "spiritual_tradition": null,
+              "calendar_profile": "legacy-ujjain",
+              "ambiguity_type": "disputed_ratification",
+              "reasoning": "Disputed variant pending council ratification: Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+              "candidate_dates": [
+                "2026-07-10"
+              ],
+              "source_refs": [
+                {
+                  "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                  "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                  "edition": "English edition",
+                  "pageOrSection": "p.30",
+                  "tier": 1
+                }
+              ],
+              "evaluator_details": {
+                "ruleId": "smarta",
+                "festivalId": "yogini-ekadashi",
+                "source_refs": [
+                  {
+                    "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                    "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                    "edition": "English edition",
+                    "pageOrSection": "p.30",
+                    "tier": 1
+                  }
+                ],
+                "diagnostics": [
+                  "disputed_ratification"
+                ]
+              }
+            },
+            {
+              "slug": "yogini-ekadashi",
+              "year": 2026,
+              "variant_key": "vaishnava_vidhava",
+              "spiritual_tradition": null,
+              "calendar_profile": "legacy-ujjain",
+              "ambiguity_type": "disputed_ratification",
+              "reasoning": "Disputed variant pending council ratification: Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+              "candidate_dates": [
+                "2026-07-11"
+              ],
+              "source_refs": [
+                {
+                  "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                  "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                  "edition": "English edition",
+                  "pageOrSection": "p.30",
+                  "tier": 1
+                }
+              ],
+              "evaluator_details": {
+                "ruleId": "vaishnava_vidhava",
+                "festivalId": "yogini-ekadashi",
+                "source_refs": [
+                  {
+                    "sourceName": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.)",
+                    "publisher": "Positional Astronomy Centre / India Meteorological Department (Govt. of India)",
+                    "edition": "English edition",
+                    "pageOrSection": "p.30",
+                    "tier": 1
+                  }
+                ],
+                "diagnostics": [
+                  "disputed_ratification"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "slug": "pausha-putrada-ekadashi",
+          "key": "pausha-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [],
+          "instances": [],
+          "output": [],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "key": "shattila-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-01-14"
+          ],
+          "instances": [
+            [
+              "2026-01-14"
+            ]
+          ],
+          "output": [
+            "2026-01-14"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "key": "jaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-01-29"
+          ],
+          "instances": [
+            [
+              "2026-01-29"
+            ]
+          ],
+          "output": [
+            "2026-01-29"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "key": "varuthini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-04-13"
+          ],
+          "instances": [
+            [
+              "2026-04-13"
+            ]
+          ],
+          "output": [
+            "2026-04-13"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "key": "mohini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-04-27"
+          ],
+          "instances": [
+            [
+              "2026-04-27"
+            ]
+          ],
+          "output": [
+            "2026-04-27"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "indira-ekadashi",
+          "key": "indira-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-10-06"
+          ],
+          "instances": [
+            [
+              "2026-10-06"
+            ]
+          ],
+          "output": [
+            "2026-10-06"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "key": "papankusha-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2026-10-22"
+          ],
+          "instances": [
+            [
+              "2026-10-22"
+            ]
+          ],
+          "output": [
+            "2026-10-22"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        }
+      ]
+    },
+    {
+      "year": 2029,
+      "locationName": "ujjain",
+      "location": {
+        "lat": 23.1765,
+        "lon": 75.7885,
+        "tz": "Asia/Kolkata"
+      },
+      "seconds": 241.441,
+      "dayCount": 365,
+      "production": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "ruleKey": "vaikunta-ekadashi::legacy-default",
+          "date": "2029-12-16",
+          "year": 2029
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "ruleKey": "kamada-ekadashi::legacy-default",
+          "date": "2029-04-25",
+          "year": 2029
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "ruleKey": "nirjala-ekadashi::legacy-default",
+          "date": "2029-06-22",
+          "year": 2029
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "ruleKey": "devshayani-ekadashi::legacy-default",
+          "date": "2029-07-21",
+          "year": 2029
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "ruleKey": "shravana-putrada-ekadashi::legacy-default",
+          "date": "2029-08-20",
+          "year": 2029
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "ruleKey": "parivartini-ekadashi::legacy-default",
+          "date": "2029-09-18",
+          "year": 2029
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "ruleKey": "devutthana-ekadashi::legacy-default",
+          "date": "2029-11-16",
+          "year": 2029
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "ruleKey": "amalaki-ekadashi::legacy-default",
+          "date": "2029-02-25",
+          "year": 2029
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "ruleKey": "papmochani-ekadashi::legacy-default",
+          "date": "2029-03-10",
+          "year": 2029
+        },
+        {
+          "slug": "apara-ekadashi",
+          "ruleKey": "apara-ekadashi::legacy-default",
+          "date": "2029-06-07",
+          "year": 2029
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "ruleKey": "kamika-ekadashi::legacy-default",
+          "date": "2029-08-06",
+          "year": 2029
+        },
+        {
+          "slug": "aja-ekadashi",
+          "ruleKey": "aja-ekadashi::legacy-default",
+          "date": "2029-09-04",
+          "year": 2029
+        },
+        {
+          "slug": "rama-ekadashi",
+          "ruleKey": "rama-ekadashi::legacy-default",
+          "date": "2029-11-02",
+          "year": 2029
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "ruleKey": "utpanna-ekadashi::legacy-default",
+          "date": "2029-12-02",
+          "year": 2029
+        },
+        {
+          "slug": "saphala-ekadashi",
+          "ruleKey": "saphala-ekadashi::legacy-default",
+          "date": "2029-12-31",
+          "year": 2029
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "ruleKey": "vijaya-ekadashi::legacy-default",
+          "date": "2029-02-09",
+          "year": 2029
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "ruleKey": "shattila-ekadashi::legacy-default",
+          "date": "2029-01-10",
+          "year": 2029
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "ruleKey": "jaya-ekadashi::legacy-default",
+          "date": "2029-01-26",
+          "year": 2029
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "ruleKey": "varuthini-ekadashi::legacy-default",
+          "date": "2029-05-09",
+          "year": 2029
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "ruleKey": "mohini-ekadashi::legacy-default",
+          "date": "2029-05-24",
+          "year": 2029
+        },
+        {
+          "slug": "indira-ekadashi",
+          "ruleKey": "indira-ekadashi::legacy-default",
+          "date": "2029-10-04",
+          "year": 2029
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "ruleKey": "papankusha-ekadashi::legacy-default",
+          "date": "2029-10-17",
+          "year": 2029
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-01-10",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-01-26",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-02-09",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-02-25",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-03-10",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-03-26",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-04-09",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-04-25",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-05-09",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-05-24",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-06-07",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-06-22",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-07-07",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-07-21",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-08-06",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-08-20",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-09-04",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-09-18",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-10-04",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-11-02",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-11-16",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-12-02",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-12-16",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2029-12-31",
+          "year": 2029,
+          "recurring": true
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "ruleKey": "yogini-ekadashi::vaishnava_vidhava",
+          "date": "2029-07-07",
+          "year": 2029
+        }
+      ],
+      "genericRaw": [
+        "2029-01-10",
+        "2029-01-26",
+        "2029-02-09",
+        "2029-02-25",
+        "2029-03-10",
+        "2029-03-26",
+        "2029-04-09",
+        "2029-04-25",
+        "2029-05-09",
+        "2029-05-24",
+        "2029-06-07",
+        "2029-06-22",
+        "2029-07-07",
+        "2029-07-21",
+        "2029-08-06",
+        "2029-08-20",
+        "2029-09-04",
+        "2029-09-18",
+        "2029-10-04",
+        "2029-10-17",
+        "2029-11-02",
+        "2029-11-16",
+        "2029-12-02",
+        "2029-12-16",
+        "2029-12-31"
+      ],
+      "genericOutput": [
+        "2029-01-10",
+        "2029-01-26",
+        "2029-02-09",
+        "2029-02-25",
+        "2029-03-10",
+        "2029-03-26",
+        "2029-04-09",
+        "2029-04-25",
+        "2029-05-09",
+        "2029-05-24",
+        "2029-06-07",
+        "2029-06-22",
+        "2029-07-07",
+        "2029-07-21",
+        "2029-08-06",
+        "2029-08-20",
+        "2029-09-04",
+        "2029-09-18",
+        "2029-10-04",
+        "2029-11-02",
+        "2029-11-16",
+        "2029-12-02",
+        "2029-12-16",
+        "2029-12-31"
+      ],
+      "unresolved": [
+        {
+          "slug": "ekadashi",
+          "year": 2029,
+          "variant_key": "standard",
+          "spiritual_tradition": null,
+          "calendar_profile": "legacy-ujjain",
+          "ambiguity_type": "vrddhi_tithi",
+          "reasoning": "Scholar review pending: Vrddhi tithi spans two sunrises (qualified on 2029-10-17, 2029-10-18).",
+          "candidate_dates": [
+            "2029-10-17",
+            "2029-10-18"
+          ],
+          "source_refs": [],
+          "evaluator_details": {
+            "ruleId": "standard",
+            "festivalId": "ekadashi",
+            "windowSize": 5,
+            "allEvaluations": [
+              {
+                "date": "2029-10-12",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-12 06:22 to 2029-10-12 06:22]: DID NOT MATCH. (Start: Panchami, End: Panchami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 5,
+                      "endTithi": 5,
+                      "startUtc": "2029-10-12T00:52:31.079Z",
+                      "endUtc": "2029-10-12T00:52:31.079Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-13",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-13 06:22 to 2029-10-13 06:22]: DID NOT MATCH. (Start: Saptami, End: Saptami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 7,
+                      "endTithi": 7,
+                      "startUtc": "2029-10-13T00:52:55.155Z",
+                      "endUtc": "2029-10-13T00:52:55.155Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-14",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-14 06:23 to 2029-10-14 06:23]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2029-10-14T00:53:19.631Z",
+                      "endUtc": "2029-10-14T00:53:19.631Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-15",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-15 06:23 to 2029-10-15 06:23]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 9,
+                      "endTithi": 9,
+                      "startUtc": "2029-10-15T00:53:44.520Z",
+                      "endUtc": "2029-10-15T00:53:44.520Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-16",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-16 06:24 to 2029-10-16 06:24]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 10,
+                      "endTithi": 10,
+                      "startUtc": "2029-10-16T00:54:09.832Z",
+                      "endUtc": "2029-10-16T00:54:09.832Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-17",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2029-10-17, 2029-10-18). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2029-10-17",
+                        "2029-10-18"
+                      ],
+                      "isFirstSunrise": true,
+                      "isSecondSunrise": false
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2029-10-18",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2029-10-17, 2029-10-18). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2029-10-17",
+                        "2029-10-18"
+                      ],
+                      "isFirstSunrise": false,
+                      "isSecondSunrise": true
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2029-10-19",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-19 06:25 to 2029-10-19 06:25]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 12,
+                      "endTithi": 12,
+                      "startUtc": "2029-10-19T00:55:28.398Z",
+                      "endUtc": "2029-10-19T00:55:28.398Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-20",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-20 06:25 to 2029-10-20 06:25]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 13,
+                      "endTithi": 13,
+                      "startUtc": "2029-10-20T00:55:55.494Z",
+                      "endUtc": "2029-10-20T00:55:55.494Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-21",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-21 06:26 to 2029-10-21 06:26]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 14,
+                      "endTithi": 14,
+                      "startUtc": "2029-10-21T00:56:23.056Z",
+                      "endUtc": "2029-10-21T00:56:23.056Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2029-10-22",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2029-10-22 06:26 to 2029-10-22 06:26]: DID NOT MATCH. (Start: Purnima, End: Purnima).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 15,
+                      "endTithi": 15,
+                      "startUtc": "2029-10-22T00:56:51.092Z",
+                      "endUtc": "2029-10-22T00:56:51.092Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              }
+            ],
+            "diagnostics": [
+              "vrddhi_tithi"
+            ]
+          }
+        }
+      ],
+      "missingGeneric": [
+        "2029-10-17"
+      ],
+      "adhikaMonths": [
+        "Adhika Chaitra"
+      ],
+      "adhikaGeneric": [
+        "2029-03-26",
+        "2029-04-09"
+      ],
+      "noNamedDate": [
+        "2029-03-26",
+        "2029-04-09"
+      ],
+      "namedWithoutGeneric": [
+        {
+          "key": "papankusha-ekadashi",
+          "dates": [
+            "2029-10-17"
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "key": "vaikunta-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-12-16"
+          ],
+          "instances": [
+            [
+              "2029-12-16"
+            ]
+          ],
+          "output": [
+            "2029-12-16"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "key": "kamada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-04-25"
+          ],
+          "instances": [
+            [
+              "2029-04-25"
+            ]
+          ],
+          "output": [
+            "2029-04-25"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "key": "nirjala-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-06-22"
+          ],
+          "instances": [
+            [
+              "2029-06-22"
+            ]
+          ],
+          "output": [
+            "2029-06-22"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "key": "devshayani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-07-21"
+          ],
+          "instances": [
+            [
+              "2029-07-21"
+            ]
+          ],
+          "output": [
+            "2029-07-21"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "key": "shravana-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-08-20"
+          ],
+          "instances": [
+            [
+              "2029-08-20"
+            ]
+          ],
+          "output": [
+            "2029-08-20"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "key": "parivartini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-09-18"
+          ],
+          "instances": [
+            [
+              "2029-09-18"
+            ]
+          ],
+          "output": [
+            "2029-09-18"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "key": "devutthana-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-11-16"
+          ],
+          "instances": [
+            [
+              "2029-11-16"
+            ]
+          ],
+          "output": [
+            "2029-11-16"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "key": "amalaki-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-02-25"
+          ],
+          "instances": [
+            [
+              "2029-02-25"
+            ]
+          ],
+          "output": [
+            "2029-02-25"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "key": "papmochani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-03-10"
+          ],
+          "instances": [
+            [
+              "2029-03-10"
+            ]
+          ],
+          "output": [
+            "2029-03-10"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "apara-ekadashi",
+          "key": "apara-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-06-07"
+          ],
+          "instances": [
+            [
+              "2029-06-07"
+            ]
+          ],
+          "output": [
+            "2029-06-07"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "key": "kamika-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-08-06"
+          ],
+          "instances": [
+            [
+              "2029-08-06"
+            ]
+          ],
+          "output": [
+            "2029-08-06"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "aja-ekadashi",
+          "key": "aja-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-09-04"
+          ],
+          "instances": [
+            [
+              "2029-09-04"
+            ]
+          ],
+          "output": [
+            "2029-09-04"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "rama-ekadashi",
+          "key": "rama-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-11-02"
+          ],
+          "instances": [
+            [
+              "2029-11-02"
+            ]
+          ],
+          "output": [
+            "2029-11-02"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "key": "utpanna-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-12-02"
+          ],
+          "instances": [
+            [
+              "2029-12-02"
+            ]
+          ],
+          "output": [
+            "2029-12-02"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "saphala-ekadashi",
+          "key": "saphala-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-12-31"
+          ],
+          "instances": [
+            [
+              "2029-12-31"
+            ]
+          ],
+          "output": [
+            "2029-12-31"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "key": "vijaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-02-09"
+          ],
+          "instances": [
+            [
+              "2029-02-09"
+            ]
+          ],
+          "output": [
+            "2029-02-09"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::smarta",
+          "publishable": true,
+          "candidates": [
+            "2029-07-07"
+          ],
+          "instances": [
+            [
+              "2029-07-07"
+            ]
+          ],
+          "output": [],
+          "missingInstances": [
+            [
+              "2029-07-07"
+            ]
+          ],
+          "unresolved": []
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::vaishnava_vidhava",
+          "publishable": true,
+          "candidates": [
+            "2029-07-07"
+          ],
+          "instances": [
+            [
+              "2029-07-07"
+            ]
+          ],
+          "output": [
+            "2029-07-07"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "pausha-putrada-ekadashi",
+          "key": "pausha-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [],
+          "instances": [],
+          "output": [],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "key": "shattila-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-01-10"
+          ],
+          "instances": [
+            [
+              "2029-01-10"
+            ]
+          ],
+          "output": [
+            "2029-01-10"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "key": "jaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-01-26"
+          ],
+          "instances": [
+            [
+              "2029-01-26"
+            ]
+          ],
+          "output": [
+            "2029-01-26"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "key": "varuthini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-05-09"
+          ],
+          "instances": [
+            [
+              "2029-05-09"
+            ]
+          ],
+          "output": [
+            "2029-05-09"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "key": "mohini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-05-24"
+          ],
+          "instances": [
+            [
+              "2029-05-24"
+            ]
+          ],
+          "output": [
+            "2029-05-24"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "indira-ekadashi",
+          "key": "indira-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-10-04"
+          ],
+          "instances": [
+            [
+              "2029-10-04"
+            ]
+          ],
+          "output": [
+            "2029-10-04"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "key": "papankusha-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2029-10-17",
+            "2029-10-18"
+          ],
+          "instances": [
+            [
+              "2029-10-17",
+              "2029-10-18"
+            ]
+          ],
+          "output": [
+            "2029-10-17"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        }
+      ]
+    },
+    {
+      "year": 2032,
+      "locationName": "ujjain",
+      "location": {
+        "lat": 23.1765,
+        "lon": 75.7885,
+        "tz": "Asia/Kolkata"
+      },
+      "seconds": 217.525,
+      "dayCount": 366,
+      "production": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "ruleKey": "vaikunta-ekadashi::legacy-default",
+          "date": "2032-12-13",
+          "year": 2032
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "ruleKey": "kamada-ekadashi::legacy-default",
+          "date": "2032-04-21",
+          "year": 2032
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "ruleKey": "nirjala-ekadashi::legacy-default",
+          "date": "2032-06-19",
+          "year": 2032
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "ruleKey": "devshayani-ekadashi::legacy-default",
+          "date": "2032-07-19",
+          "year": 2032
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "ruleKey": "shravana-putrada-ekadashi::legacy-default",
+          "date": "2032-08-17",
+          "year": 2032
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "ruleKey": "parivartini-ekadashi::legacy-default",
+          "date": "2032-09-16",
+          "year": 2032
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "ruleKey": "devutthana-ekadashi::legacy-default",
+          "date": "2032-11-13",
+          "year": 2032
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "ruleKey": "amalaki-ekadashi::legacy-default",
+          "date": "2032-03-22",
+          "year": 2032
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "ruleKey": "papmochani-ekadashi::legacy-default",
+          "date": "2032-04-06",
+          "year": 2032
+        },
+        {
+          "slug": "apara-ekadashi",
+          "ruleKey": "apara-ekadashi::legacy-default",
+          "date": "2032-06-04",
+          "year": 2032
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "ruleKey": "kamika-ekadashi::legacy-default",
+          "date": "2032-08-01",
+          "year": 2032
+        },
+        {
+          "slug": "aja-ekadashi",
+          "ruleKey": "aja-ekadashi::legacy-default",
+          "date": "2032-08-31",
+          "year": 2032
+        },
+        {
+          "slug": "rama-ekadashi",
+          "ruleKey": "rama-ekadashi::legacy-default",
+          "date": "2032-10-29",
+          "year": 2032
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "ruleKey": "utpanna-ekadashi::legacy-default",
+          "date": "2032-11-28",
+          "year": 2032
+        },
+        {
+          "slug": "saphala-ekadashi",
+          "ruleKey": "saphala-ekadashi::legacy-default",
+          "date": "2032-01-09",
+          "year": 2032
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "ruleKey": "vijaya-ekadashi::legacy-default",
+          "date": "2032-03-08",
+          "year": 2032
+        },
+        {
+          "slug": "pausha-putrada-ekadashi",
+          "ruleKey": "pausha-putrada-ekadashi::legacy-default",
+          "date": "2032-01-23",
+          "year": 2032
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "ruleKey": "shattila-ekadashi::legacy-default",
+          "date": "2032-02-07",
+          "year": 2032
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "ruleKey": "jaya-ekadashi::legacy-default",
+          "date": "2032-02-21",
+          "year": 2032
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "ruleKey": "varuthini-ekadashi::legacy-default",
+          "date": "2032-05-05",
+          "year": 2032
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "ruleKey": "mohini-ekadashi::legacy-default",
+          "date": "2032-05-21",
+          "year": 2032
+        },
+        {
+          "slug": "indira-ekadashi",
+          "ruleKey": "indira-ekadashi::legacy-default",
+          "date": "2032-09-30",
+          "year": 2032
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "ruleKey": "papankusha-ekadashi::legacy-default",
+          "date": "2032-10-15",
+          "year": 2032
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-01-09",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-01-23",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-02-07",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-02-21",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-03-08",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-03-22",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-04-06",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-04-21",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-05-05",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-05-21",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-06-04",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-06-19",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-07-03",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-07-19",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-08-01",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-08-17",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-08-31",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-09-16",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-09-30",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-10-15",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-10-29",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-11-13",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-11-28",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-12-13",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2032-12-28",
+          "year": 2032,
+          "recurring": true
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "ruleKey": "yogini-ekadashi::vaishnava_vidhava",
+          "date": "2032-07-03",
+          "year": 2032
+        }
+      ],
+      "genericRaw": [
+        "2032-01-09",
+        "2032-01-23",
+        "2032-02-07",
+        "2032-02-21",
+        "2032-03-08",
+        "2032-03-22",
+        "2032-04-06",
+        "2032-04-21",
+        "2032-05-05",
+        "2032-05-21",
+        "2032-06-04",
+        "2032-06-19",
+        "2032-07-03",
+        "2032-07-19",
+        "2032-08-01",
+        "2032-08-17",
+        "2032-08-31",
+        "2032-09-16",
+        "2032-09-30",
+        "2032-10-15",
+        "2032-10-29",
+        "2032-11-13",
+        "2032-11-28",
+        "2032-12-13",
+        "2032-12-28"
+      ],
+      "genericOutput": [
+        "2032-01-09",
+        "2032-01-23",
+        "2032-02-07",
+        "2032-02-21",
+        "2032-03-08",
+        "2032-03-22",
+        "2032-04-06",
+        "2032-04-21",
+        "2032-05-05",
+        "2032-05-21",
+        "2032-06-04",
+        "2032-06-19",
+        "2032-07-03",
+        "2032-07-19",
+        "2032-08-01",
+        "2032-08-17",
+        "2032-08-31",
+        "2032-09-16",
+        "2032-09-30",
+        "2032-10-15",
+        "2032-10-29",
+        "2032-11-13",
+        "2032-11-28",
+        "2032-12-13",
+        "2032-12-28"
+      ],
+      "unresolved": [],
+      "missingGeneric": [],
+      "adhikaMonths": [],
+      "adhikaGeneric": [],
+      "noNamedDate": [],
+      "namedWithoutGeneric": [],
+      "rules": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "key": "vaikunta-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-12-13"
+          ],
+          "instances": [
+            [
+              "2032-12-13"
+            ]
+          ],
+          "output": [
+            "2032-12-13"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "key": "kamada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-04-21"
+          ],
+          "instances": [
+            [
+              "2032-04-21"
+            ]
+          ],
+          "output": [
+            "2032-04-21"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "key": "nirjala-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-06-19"
+          ],
+          "instances": [
+            [
+              "2032-06-19"
+            ]
+          ],
+          "output": [
+            "2032-06-19"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "key": "devshayani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-07-19"
+          ],
+          "instances": [
+            [
+              "2032-07-19"
+            ]
+          ],
+          "output": [
+            "2032-07-19"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "key": "shravana-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-08-17"
+          ],
+          "instances": [
+            [
+              "2032-08-17"
+            ]
+          ],
+          "output": [
+            "2032-08-17"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "key": "parivartini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-09-16"
+          ],
+          "instances": [
+            [
+              "2032-09-16"
+            ]
+          ],
+          "output": [
+            "2032-09-16"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "key": "devutthana-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-11-13"
+          ],
+          "instances": [
+            [
+              "2032-11-13"
+            ]
+          ],
+          "output": [
+            "2032-11-13"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "key": "amalaki-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-03-22"
+          ],
+          "instances": [
+            [
+              "2032-03-22"
+            ]
+          ],
+          "output": [
+            "2032-03-22"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "key": "papmochani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-04-06"
+          ],
+          "instances": [
+            [
+              "2032-04-06"
+            ]
+          ],
+          "output": [
+            "2032-04-06"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "apara-ekadashi",
+          "key": "apara-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-06-04"
+          ],
+          "instances": [
+            [
+              "2032-06-04"
+            ]
+          ],
+          "output": [
+            "2032-06-04"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "key": "kamika-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-08-01"
+          ],
+          "instances": [
+            [
+              "2032-08-01"
+            ]
+          ],
+          "output": [
+            "2032-08-01"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "aja-ekadashi",
+          "key": "aja-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-08-31"
+          ],
+          "instances": [
+            [
+              "2032-08-31"
+            ]
+          ],
+          "output": [
+            "2032-08-31"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "rama-ekadashi",
+          "key": "rama-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-10-29"
+          ],
+          "instances": [
+            [
+              "2032-10-29"
+            ]
+          ],
+          "output": [
+            "2032-10-29"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "key": "utpanna-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-11-28"
+          ],
+          "instances": [
+            [
+              "2032-11-28"
+            ]
+          ],
+          "output": [
+            "2032-11-28"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "saphala-ekadashi",
+          "key": "saphala-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-01-09",
+            "2032-12-28"
+          ],
+          "instances": [
+            [
+              "2032-01-09"
+            ],
+            [
+              "2032-12-28"
+            ]
+          ],
+          "output": [
+            "2032-01-09"
+          ],
+          "missingInstances": [
+            [
+              "2032-12-28"
+            ]
+          ],
+          "unresolved": []
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "key": "vijaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-03-08"
+          ],
+          "instances": [
+            [
+              "2032-03-08"
+            ]
+          ],
+          "output": [
+            "2032-03-08"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::smarta",
+          "publishable": true,
+          "candidates": [
+            "2032-07-03"
+          ],
+          "instances": [
+            [
+              "2032-07-03"
+            ]
+          ],
+          "output": [],
+          "missingInstances": [
+            [
+              "2032-07-03"
+            ]
+          ],
+          "unresolved": []
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::vaishnava_vidhava",
+          "publishable": true,
+          "candidates": [
+            "2032-07-03"
+          ],
+          "instances": [
+            [
+              "2032-07-03"
+            ]
+          ],
+          "output": [
+            "2032-07-03"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "pausha-putrada-ekadashi",
+          "key": "pausha-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-01-23"
+          ],
+          "instances": [
+            [
+              "2032-01-23"
+            ]
+          ],
+          "output": [
+            "2032-01-23"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "key": "shattila-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-02-07"
+          ],
+          "instances": [
+            [
+              "2032-02-07"
+            ]
+          ],
+          "output": [
+            "2032-02-07"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "key": "jaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-02-21"
+          ],
+          "instances": [
+            [
+              "2032-02-21"
+            ]
+          ],
+          "output": [
+            "2032-02-21"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "key": "varuthini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-05-05"
+          ],
+          "instances": [
+            [
+              "2032-05-05"
+            ]
+          ],
+          "output": [
+            "2032-05-05"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "key": "mohini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-05-21"
+          ],
+          "instances": [
+            [
+              "2032-05-21"
+            ]
+          ],
+          "output": [
+            "2032-05-21"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "indira-ekadashi",
+          "key": "indira-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-09-30"
+          ],
+          "instances": [
+            [
+              "2032-09-30"
+            ]
+          ],
+          "output": [
+            "2032-09-30"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "key": "papankusha-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2032-10-15"
+          ],
+          "instances": [
+            [
+              "2032-10-15"
+            ]
+          ],
+          "output": [
+            "2032-10-15"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        }
+      ]
+    },
+    {
+      "year": 2035,
+      "locationName": "ujjain",
+      "location": {
+        "lat": 23.1765,
+        "lon": 75.7885,
+        "tz": "Asia/Kolkata"
+      },
+      "seconds": 228.813,
+      "dayCount": 365,
+      "production": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "ruleKey": "vaikunta-ekadashi::legacy-default",
+          "date": "2035-12-11",
+          "year": 2035
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "ruleKey": "kamada-ekadashi::legacy-default",
+          "date": "2035-04-18",
+          "year": 2035
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "ruleKey": "nirjala-ekadashi::legacy-default",
+          "date": "2035-06-16",
+          "year": 2035
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "ruleKey": "devshayani-ekadashi::legacy-default",
+          "date": "2035-07-15",
+          "year": 2035
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "ruleKey": "shravana-putrada-ekadashi::legacy-default",
+          "date": "2035-08-14",
+          "year": 2035
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "ruleKey": "parivartini-ekadashi::legacy-default",
+          "date": "2035-09-13",
+          "year": 2035
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "ruleKey": "devutthana-ekadashi::legacy-default",
+          "date": "2035-11-11",
+          "year": 2035
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "ruleKey": "amalaki-ekadashi::legacy-default",
+          "date": "2035-03-20",
+          "year": 2035
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "ruleKey": "papmochani-ekadashi::legacy-default",
+          "date": "2035-04-04",
+          "year": 2035
+        },
+        {
+          "slug": "apara-ekadashi",
+          "ruleKey": "apara-ekadashi::legacy-default",
+          "date": "2035-06-02",
+          "year": 2035
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "ruleKey": "kamika-ekadashi::legacy-default",
+          "date": "2035-07-31",
+          "year": 2035
+        },
+        {
+          "slug": "aja-ekadashi",
+          "ruleKey": "aja-ekadashi::legacy-default",
+          "date": "2035-08-29",
+          "year": 2035
+        },
+        {
+          "slug": "rama-ekadashi",
+          "ruleKey": "rama-ekadashi::legacy-default",
+          "date": "2035-10-27",
+          "year": 2035
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "ruleKey": "utpanna-ekadashi::legacy-default",
+          "date": "2035-11-25",
+          "year": 2035
+        },
+        {
+          "slug": "saphala-ekadashi",
+          "ruleKey": "saphala-ekadashi::legacy-default",
+          "date": "2035-01-05",
+          "year": 2035
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "ruleKey": "vijaya-ekadashi::legacy-default",
+          "date": "2035-03-05",
+          "year": 2035
+        },
+        {
+          "slug": "pausha-putrada-ekadashi",
+          "ruleKey": "pausha-putrada-ekadashi::legacy-default",
+          "date": "2035-01-20",
+          "year": 2035
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "ruleKey": "shattila-ekadashi::legacy-default",
+          "date": "2035-02-03",
+          "year": 2035
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "ruleKey": "jaya-ekadashi::legacy-default",
+          "date": "2035-02-18",
+          "year": 2035
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "ruleKey": "varuthini-ekadashi::legacy-default",
+          "date": "2035-05-04",
+          "year": 2035
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "ruleKey": "mohini-ekadashi::legacy-default",
+          "date": "2035-05-17",
+          "year": 2035
+        },
+        {
+          "slug": "indira-ekadashi",
+          "ruleKey": "indira-ekadashi::legacy-default",
+          "date": "2035-09-27",
+          "year": 2035
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "ruleKey": "papankusha-ekadashi::legacy-default",
+          "date": "2035-10-13",
+          "year": 2035
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-01-05",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-01-20",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-02-18",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-03-05",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-03-20",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-04-04",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-04-18",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-05-04",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-05-17",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-06-02",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-06-16",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-07-02",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-07-31",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-08-14",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-08-29",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-09-13",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-09-27",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-10-13",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-10-27",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-11-11",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-11-25",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-12-11",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "ekadashi",
+          "ruleKey": "ekadashi::standard",
+          "date": "2035-12-25",
+          "year": 2035,
+          "recurring": true
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "ruleKey": "yogini-ekadashi::vaishnava_vidhava",
+          "date": "2035-07-02",
+          "year": 2035
+        }
+      ],
+      "genericRaw": [
+        "2035-01-05",
+        "2035-01-20",
+        "2035-02-03",
+        "2035-02-18",
+        "2035-03-05",
+        "2035-03-20",
+        "2035-04-04",
+        "2035-04-18",
+        "2035-05-04",
+        "2035-05-17",
+        "2035-06-02",
+        "2035-06-16",
+        "2035-07-02",
+        "2035-07-15",
+        "2035-07-31",
+        "2035-08-14",
+        "2035-08-29",
+        "2035-09-13",
+        "2035-09-27",
+        "2035-10-13",
+        "2035-10-27",
+        "2035-11-11",
+        "2035-11-25",
+        "2035-12-11",
+        "2035-12-25"
+      ],
+      "genericOutput": [
+        "2035-01-05",
+        "2035-01-20",
+        "2035-02-18",
+        "2035-03-05",
+        "2035-03-20",
+        "2035-04-04",
+        "2035-04-18",
+        "2035-05-04",
+        "2035-05-17",
+        "2035-06-02",
+        "2035-06-16",
+        "2035-07-02",
+        "2035-07-31",
+        "2035-08-14",
+        "2035-08-29",
+        "2035-09-13",
+        "2035-09-27",
+        "2035-10-13",
+        "2035-10-27",
+        "2035-11-11",
+        "2035-11-25",
+        "2035-12-11",
+        "2035-12-25"
+      ],
+      "unresolved": [
+        {
+          "slug": "ekadashi",
+          "year": 2035,
+          "variant_key": "standard",
+          "spiritual_tradition": null,
+          "calendar_profile": "legacy-ujjain",
+          "ambiguity_type": "vrddhi_tithi",
+          "reasoning": "Scholar review pending: Vrddhi tithi spans two sunrises (qualified on 2035-02-03, 2035-02-04).",
+          "candidate_dates": [
+            "2035-02-03",
+            "2035-02-04"
+          ],
+          "source_refs": [],
+          "evaluator_details": {
+            "ruleId": "standard",
+            "festivalId": "ekadashi",
+            "windowSize": 5,
+            "allEvaluations": [
+              {
+                "date": "2035-01-29",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-01-29 07:07 to 2035-01-29 07:07]: DID NOT MATCH. (Start: Shashthi, End: Shashthi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 21,
+                      "endTithi": 21,
+                      "startUtc": "2035-01-29T01:37:59.726Z",
+                      "endUtc": "2035-01-29T01:37:59.726Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-01-30",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-01-30 07:07 to 2035-01-30 07:07]: DID NOT MATCH. (Start: Saptami, End: Saptami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 22,
+                      "endTithi": 22,
+                      "startUtc": "2035-01-30T01:37:39.759Z",
+                      "endUtc": "2035-01-30T01:37:39.759Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-01-31",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-01-31 07:07 to 2035-01-31 07:07]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 23,
+                      "endTithi": 23,
+                      "startUtc": "2035-01-31T01:37:18.475Z",
+                      "endUtc": "2035-01-31T01:37:18.475Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-02-01",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-02-01 07:06 to 2035-02-01 07:06]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 24,
+                      "endTithi": 24,
+                      "startUtc": "2035-02-01T01:36:55.888Z",
+                      "endUtc": "2035-02-01T01:36:55.888Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-02-02",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-02-02 07:06 to 2035-02-02 07:06]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 25,
+                      "endTithi": 25,
+                      "startUtc": "2035-02-02T01:36:32.014Z",
+                      "endUtc": "2035-02-02T01:36:32.014Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-02-03",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2035-02-03, 2035-02-04). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2035-02-03",
+                        "2035-02-04"
+                      ],
+                      "isFirstSunrise": true,
+                      "isSecondSunrise": false
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2035-02-04",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2035-02-03, 2035-02-04). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2035-02-03",
+                        "2035-02-04"
+                      ],
+                      "isFirstSunrise": false,
+                      "isSecondSunrise": true
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2035-02-05",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-02-05 07:05 to 2035-02-05 07:05]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 27,
+                      "endTithi": 27,
+                      "startUtc": "2035-02-05T01:35:12.825Z",
+                      "endUtc": "2035-02-05T01:35:12.825Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-02-06",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-02-06 07:04 to 2035-02-06 07:04]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 28,
+                      "endTithi": 28,
+                      "startUtc": "2035-02-06T01:34:43.964Z",
+                      "endUtc": "2035-02-06T01:34:43.964Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-02-07",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-02-07 07:04 to 2035-02-07 07:04]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 29,
+                      "endTithi": 29,
+                      "startUtc": "2035-02-07T01:34:13.902Z",
+                      "endUtc": "2035-02-07T01:34:13.902Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-02-08",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-02-08 07:03 to 2035-02-08 07:03]: DID NOT MATCH. (Start: Amavasya, End: Amavasya).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 30,
+                      "endTithi": 30,
+                      "startUtc": "2035-02-08T01:33:42.658Z",
+                      "endUtc": "2035-02-08T01:33:42.658Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              }
+            ],
+            "diagnostics": [
+              "vrddhi_tithi"
+            ]
+          }
+        },
+        {
+          "slug": "ekadashi",
+          "year": 2035,
+          "variant_key": "standard",
+          "spiritual_tradition": null,
+          "calendar_profile": "legacy-ujjain",
+          "ambiguity_type": "vrddhi_tithi",
+          "reasoning": "Scholar review pending: Vrddhi tithi spans two sunrises (qualified on 2035-07-15, 2035-07-16).",
+          "candidate_dates": [
+            "2035-07-15",
+            "2035-07-16"
+          ],
+          "source_refs": [],
+          "evaluator_details": {
+            "ruleId": "standard",
+            "festivalId": "ekadashi",
+            "windowSize": 5,
+            "allEvaluations": [
+              {
+                "date": "2035-07-10",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-10 05:47 to 2035-07-10 05:47]: DID NOT MATCH. (Start: Shashthi, End: Shashthi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 6,
+                      "endTithi": 6,
+                      "startUtc": "2035-07-10T00:17:48.571Z",
+                      "endUtc": "2035-07-10T00:17:48.571Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-11",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-11 05:48 to 2035-07-11 05:48]: DID NOT MATCH. (Start: Saptami, End: Saptami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 7,
+                      "endTithi": 7,
+                      "startUtc": "2035-07-11T00:18:12.762Z",
+                      "endUtc": "2035-07-11T00:18:12.762Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-12",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-12 05:48 to 2035-07-12 05:48]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2035-07-12T00:18:37.263Z",
+                      "endUtc": "2035-07-12T00:18:37.263Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-13",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-13 05:49 to 2035-07-13 05:49]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 9,
+                      "endTithi": 9,
+                      "startUtc": "2035-07-13T00:19:02.046Z",
+                      "endUtc": "2035-07-13T00:19:02.046Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-14",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-14 05:49 to 2035-07-14 05:49]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 10,
+                      "endTithi": 10,
+                      "startUtc": "2035-07-14T00:19:27.084Z",
+                      "endUtc": "2035-07-14T00:19:27.084Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-15",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2035-07-15, 2035-07-16). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2035-07-15",
+                        "2035-07-16"
+                      ],
+                      "isFirstSunrise": true,
+                      "isSecondSunrise": false
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2035-07-16",
+                "qualified": true,
+                "reasons": [
+                  {
+                    "code": "vrddhi_tithi_detected",
+                    "text": "[S] Scholar review pending: Vrddhi tithi Ekadashi spans two sunrises (2035-07-15, 2035-07-16). Tradition-specific resolution is required.",
+                    "details": {
+                      "targetTithi": 11,
+                      "sunrisesWithTithi": [
+                        "2035-07-15",
+                        "2035-07-16"
+                      ],
+                      "isFirstSunrise": false,
+                      "isSecondSunrise": true
+                    }
+                  }
+                ],
+                "diagnostics": [
+                  "vrddhi_tithi"
+                ]
+              },
+              {
+                "date": "2035-07-17",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-17 05:50 to 2035-07-17 05:50]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 12,
+                      "endTithi": 12,
+                      "startUtc": "2035-07-17T00:20:43.474Z",
+                      "endUtc": "2035-07-17T00:20:43.474Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-18",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-18 05:51 to 2035-07-18 05:51]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 13,
+                      "endTithi": 13,
+                      "startUtc": "2035-07-18T00:21:09.277Z",
+                      "endUtc": "2035-07-18T00:21:09.277Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-19",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-19 05:51 to 2035-07-19 05:51]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 14,
+                      "endTithi": 14,
+                      "startUtc": "2035-07-19T00:21:35.210Z",
+                      "endUtc": "2035-07-19T00:21:35.210Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2035-07-20",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ekadashi (11) presence mode 'at' during 'sunrise' [2035-07-20 05:52 to 2035-07-20 05:52]: DID NOT MATCH. (Start: Purnima, End: Purnima).",
+                    "details": {
+                      "targetTithi": 11,
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 15,
+                      "endTithi": 15,
+                      "startUtc": "2035-07-20T00:22:01.248Z",
+                      "endUtc": "2035-07-20T00:22:01.248Z",
+                      "isExtendedMoonrise": false
+                    }
+                  }
+                ],
+                "diagnostics": []
+              }
+            ],
+            "diagnostics": [
+              "vrddhi_tithi"
+            ]
+          }
+        }
+      ],
+      "missingGeneric": [
+        "2035-02-03",
+        "2035-07-15"
+      ],
+      "adhikaMonths": [],
+      "adhikaGeneric": [],
+      "noNamedDate": [],
+      "namedWithoutGeneric": [
+        {
+          "key": "devshayani-ekadashi",
+          "dates": [
+            "2035-07-15"
+          ]
+        },
+        {
+          "key": "shattila-ekadashi",
+          "dates": [
+            "2035-02-03"
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "slug": "vaikunta-ekadashi",
+          "key": "vaikunta-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-12-11"
+          ],
+          "instances": [
+            [
+              "2035-12-11"
+            ]
+          ],
+          "output": [
+            "2035-12-11"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamada-ekadashi",
+          "key": "kamada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-04-18"
+          ],
+          "instances": [
+            [
+              "2035-04-18"
+            ]
+          ],
+          "output": [
+            "2035-04-18"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "nirjala-ekadashi",
+          "key": "nirjala-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-06-16"
+          ],
+          "instances": [
+            [
+              "2035-06-16"
+            ]
+          ],
+          "output": [
+            "2035-06-16"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devshayani-ekadashi",
+          "key": "devshayani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-07-15",
+            "2035-07-16"
+          ],
+          "instances": [
+            [
+              "2035-07-15",
+              "2035-07-16"
+            ]
+          ],
+          "output": [
+            "2035-07-15"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shravana-putrada-ekadashi",
+          "key": "shravana-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-08-14"
+          ],
+          "instances": [
+            [
+              "2035-08-14"
+            ]
+          ],
+          "output": [
+            "2035-08-14"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "parivartini-ekadashi",
+          "key": "parivartini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-09-13"
+          ],
+          "instances": [
+            [
+              "2035-09-13"
+            ]
+          ],
+          "output": [
+            "2035-09-13"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "devutthana-ekadashi",
+          "key": "devutthana-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-11-11"
+          ],
+          "instances": [
+            [
+              "2035-11-11"
+            ]
+          ],
+          "output": [
+            "2035-11-11"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "amalaki-ekadashi",
+          "key": "amalaki-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-03-20"
+          ],
+          "instances": [
+            [
+              "2035-03-20"
+            ]
+          ],
+          "output": [
+            "2035-03-20"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papmochani-ekadashi",
+          "key": "papmochani-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-04-04"
+          ],
+          "instances": [
+            [
+              "2035-04-04"
+            ]
+          ],
+          "output": [
+            "2035-04-04"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "apara-ekadashi",
+          "key": "apara-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-06-02"
+          ],
+          "instances": [
+            [
+              "2035-06-02"
+            ]
+          ],
+          "output": [
+            "2035-06-02"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "kamika-ekadashi",
+          "key": "kamika-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-07-31"
+          ],
+          "instances": [
+            [
+              "2035-07-31"
+            ]
+          ],
+          "output": [
+            "2035-07-31"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "aja-ekadashi",
+          "key": "aja-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-08-29"
+          ],
+          "instances": [
+            [
+              "2035-08-29"
+            ]
+          ],
+          "output": [
+            "2035-08-29"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "rama-ekadashi",
+          "key": "rama-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-10-27"
+          ],
+          "instances": [
+            [
+              "2035-10-27"
+            ]
+          ],
+          "output": [
+            "2035-10-27"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "utpanna-ekadashi",
+          "key": "utpanna-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-11-25"
+          ],
+          "instances": [
+            [
+              "2035-11-25"
+            ]
+          ],
+          "output": [
+            "2035-11-25"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "saphala-ekadashi",
+          "key": "saphala-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-01-05",
+            "2035-12-25"
+          ],
+          "instances": [
+            [
+              "2035-01-05"
+            ],
+            [
+              "2035-12-25"
+            ]
+          ],
+          "output": [
+            "2035-01-05"
+          ],
+          "missingInstances": [
+            [
+              "2035-12-25"
+            ]
+          ],
+          "unresolved": []
+        },
+        {
+          "slug": "vijaya-ekadashi",
+          "key": "vijaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-03-05"
+          ],
+          "instances": [
+            [
+              "2035-03-05"
+            ]
+          ],
+          "output": [
+            "2035-03-05"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::smarta",
+          "publishable": true,
+          "candidates": [
+            "2035-07-02"
+          ],
+          "instances": [
+            [
+              "2035-07-02"
+            ]
+          ],
+          "output": [],
+          "missingInstances": [
+            [
+              "2035-07-02"
+            ]
+          ],
+          "unresolved": []
+        },
+        {
+          "slug": "yogini-ekadashi",
+          "key": "yogini-ekadashi::vaishnava_vidhava",
+          "publishable": true,
+          "candidates": [
+            "2035-07-02"
+          ],
+          "instances": [
+            [
+              "2035-07-02"
+            ]
+          ],
+          "output": [
+            "2035-07-02"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "pausha-putrada-ekadashi",
+          "key": "pausha-putrada-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-01-20"
+          ],
+          "instances": [
+            [
+              "2035-01-20"
+            ]
+          ],
+          "output": [
+            "2035-01-20"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "shattila-ekadashi",
+          "key": "shattila-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-02-03",
+            "2035-02-04"
+          ],
+          "instances": [
+            [
+              "2035-02-03",
+              "2035-02-04"
+            ]
+          ],
+          "output": [
+            "2035-02-03"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "jaya-ekadashi",
+          "key": "jaya-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-02-18"
+          ],
+          "instances": [
+            [
+              "2035-02-18"
+            ]
+          ],
+          "output": [
+            "2035-02-18"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "varuthini-ekadashi",
+          "key": "varuthini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-05-04"
+          ],
+          "instances": [
+            [
+              "2035-05-04"
+            ]
+          ],
+          "output": [
+            "2035-05-04"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "mohini-ekadashi",
+          "key": "mohini-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-05-17"
+          ],
+          "instances": [
+            [
+              "2035-05-17"
+            ]
+          ],
+          "output": [
+            "2035-05-17"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "indira-ekadashi",
+          "key": "indira-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-09-27"
+          ],
+          "instances": [
+            [
+              "2035-09-27"
+            ]
+          ],
+          "output": [
+            "2035-09-27"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        },
+        {
+          "slug": "papankusha-ekadashi",
+          "key": "papankusha-ekadashi",
+          "publishable": true,
+          "candidates": [
+            "2035-10-13"
+          ],
+          "instances": [
+            [
+              "2035-10-13"
+            ]
+          ],
+          "output": [
+            "2035-10-13"
+          ],
+          "missingInstances": [],
+          "unresolved": []
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Internal path completeness comparison, not independent astronomy/religious validation.",
+    "Consecutive daily hits are one candidate instance; adjacent civil-year context is separately flagged, not synthesized.",
+    "Unresolved/disputed candidates are reported separately from silently dropped instances.",
+    "No rule, occurrence, publication status, fixture or policy is mutated.",
+    "Working tree may include parallel edits; hashes identify audited inputs.",
+    "Default sweep is finite, not a claim covering every year, profile, or geographic location."
+  ]
+}

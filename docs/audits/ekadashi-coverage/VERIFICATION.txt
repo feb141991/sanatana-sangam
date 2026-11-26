@@ -1,0 +1,10 @@
+Audit-only changes; no rule/date/database mutation.
+
+PASS: tsx --test scripts/audit-ekadashi-coverage.test.ts (8 passed, 0 failed, 0 skipped).
+PASS: vitest run src/lib/calendar/__tests__/ekadashi-selection.test.ts (19 passed).
+PASS: eslint scripts/audit-ekadashi-coverage.ts scripts/audit-ekadashi-coverage.test.ts.
+PASS: tsc --noEmit --pretty false.
+PASS: annual sweep and generated summary completed all requested cases; input fingerprints unchanged among recorded inputs.
+PASS: read-only database export, TTD month-convention spot-check and optional working-tree cache reproduction.
+Graphify: required CLI update reached JSON/report generation but optional HTML failed the size cap. AST/JSON/report refresh then completed with only the optional HTML export skipped, without altering the installed tool.
+No fresh application build, device smoke test, full calendar harness or exhaustive external-date verification was run; no production calculation code was edited.
