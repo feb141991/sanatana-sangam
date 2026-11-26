@@ -5,7 +5,8 @@ import { CANONICAL_RULES } from '../src/lib/calendar/rules';
 test('every relative rule has a declared relation category', () => {
   const relative = CANONICAL_RULES.filter((rule) => rule.rule_family === 'relative_to_other_observance');
   // 35 -> 33 -> 30: Anant Chaturdashi, Kartik Purnima and Mahalaya Amavasya became lunar_tithi rules (2026-11-17, commit 3dfc35b).
-  assert.equal(relative.length, 30);
+  // 30 -> 29: Dhanteras became a lunar_tithi rule, its Diwali -2 offset removed (founder decision 2026-11-26, commit a08ec4c).
+  assert.equal(relative.length, 29);
   for (const rule of relative) {
     assert.ok(rule.relation, `${rule.slug} has no relation declaration`);
     assert.equal(rule.relation?.parent_slug, rule.relative_base_slug, rule.slug);
