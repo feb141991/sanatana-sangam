@@ -84,8 +84,9 @@ describe('lunar month on festival city pages', () => {
         checked += 1;
       }
     }
-    // 17 festivals have both a rule month and an engine date: a skip must not pass quietly.
-    expect(checked).toBe(17 * 15 * years.length);
+    // 18 festivals have both a rule month and an engine date (Dhanteras joined 2026-11-26 when it became its
+    // own tithi rule instead of a Diwali offset): a skip must not pass quietly.
+    expect(checked).toBe(18 * 15 * years.length);
   });
 
   it('shows no lunar month when there is no festival date to take it from', () => {

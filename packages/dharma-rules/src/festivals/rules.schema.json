@@ -508,6 +508,30 @@
         },
         "description": "Canonical condition objects consumed by the condition evaluator."
       },
+      "evaluator_fallback_conditions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "description": "Conditions used only when no day in the window satisfies evaluator_conditions (the primary rule) and no day is a vrddhi candidate. Exactly one qualifying day is required; otherwise the occurrence stays unresolved."
+      },
+      "evaluator_vrddhi_preference": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "description": "When the primary rule's tithi is present at two sunrises (vrddhi), the one candidate day that also satisfies all of these conditions is chosen. If none or both do, the occurrence stays in scholar review."
+      },
       "relation": {
         "type": "object",
         "required": ["kind", "status"],

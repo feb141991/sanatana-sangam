@@ -100,6 +100,10 @@ export interface ObservanceRule {
   profile_scope?: 'descriptive' | 'engine_enforced';
   /** Canonical conditions consumed by the condition-based evaluator. */
   evaluator_conditions?: RuleCondition[];
+  /** Used only when no day satisfies evaluator_conditions; exactly one qualifying day is required. */
+  evaluator_fallback_conditions?: RuleCondition[];
+  /** Picks the one vrddhi candidate day that also satisfies these; otherwise scholar review. */
+  evaluator_vrddhi_preference?: RuleCondition[];
   relation?: {
     kind: 'series_child' | 'independent_offset' | 'alias' | 'convention';
     parent_slug?: string;

@@ -287,10 +287,14 @@ describe('Prompt 4 End-to-End: Yogini Ekadashi Variant Selection & Governance', 
     // correctly discriminate them on real, not synthetic, data for the
     // first time -- see test 18 for the synthetic case proving the
     // mechanism CAN discriminate, which this test now confirms it DOES.
+    //
+    // 2026-11-26: the founder resolved gaudiya_iskcon 2027 (Ashtami at sunrise decides; Rohini only breaks a
+    // two-sunrise tie), so its disputed_years is now [] and both variants publish. The per-row identity match is
+    // still proven by the empty diagnostics below; test 18 keeps the synthetic asymmetric case.
     const smartaWithheld2027 = isWithheldOccurrence('krishna-janmashtami', '2027-09-04', null, 'smarta_nishita', undefined, diagnostics2027);
     const gaudiyaWithheld2027 = isWithheldOccurrence('krishna-janmashtami', '2027-09-05', null, 'gaudiya_iskcon', undefined, diagnostics2027);
     expect(smartaWithheld2027).toBe(false);
-    expect(gaudiyaWithheld2027).toBe(true);
+    expect(gaudiyaWithheld2027).toBe(false);
     expect(diagnostics2027).not.toContain('legacy-insufficient-identity');
   });
 

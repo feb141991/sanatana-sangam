@@ -975,10 +975,8 @@
     "prefer_last_match": true,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator. RE-VERIFIED 2026-08-18: directly ran this variant's own real evaluator condition (tithi 8 krishna-paksha AT sunrise, AND rohini nakshatra TOUCHES sunrise -- materialize.ts EVALUATOR_RULES 'vaishnava' variant) day-by-day across 2027-08-20 through 2027-08-28. Confirmed: Ashtami-at-sunrise occurs only on 08-25; Rohini does not touch sunrise until 08-26. The two conditions never coincide on the same day anywhere in that window -- this is not a sampling artifact like the Smarta row's nishitha gap was, it is the AND-condition as coded genuinely having zero qualifying days for 2027. Unlike Smarta (D39), there is no hidden fix the evaluator was already computing correctly; either the condition needs OR/nearest-day tie-breaking logic (which day 'wins' when tithi and nakshatra don't align, itself a real dharma-sastra question, not an engineering one) or 2027 genuinely has no clean Gaudiya date under this citation. disputed_years correctly left as-is -- confirmed disputed, not stale. CLOSED 2026-08-18 (founder decision): engineering has now directly verified there is nothing further to find here without a real dharma-sastra ruling on the tie-breaking question above. No further engineering action pending; revisit only if a new source or council ruling arrives.",
-    "disputed_years": [
-      2027
-    ],
+    "ratification_note": "RESOLVED 2026-11-26 by founder decision (not council ratified): Ashtami at sunrise (udaya, free of Saptami-viddha) decides the day; Rohini is no longer a pass/fail gate, only the preference when Ashtami spans two sunrises, because waiting for Rohini at the next sunrise puts the vrata on Navami, which Vaishnava practice forbids. The founder cited Hari-bhakti-vilasa; the text was not read in this change. 2027 removed from disputed_years under this ruling. Earlier history follows. DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator. RE-VERIFIED 2026-08-18: directly ran this variant's own real evaluator condition (tithi 8 krishna-paksha AT sunrise, AND rohini nakshatra TOUCHES sunrise -- materialize.ts EVALUATOR_RULES 'vaishnava' variant) day-by-day across 2027-08-20 through 2027-08-28. Confirmed: Ashtami-at-sunrise occurs only on 08-25; Rohini does not touch sunrise until 08-26. The two conditions never coincide on the same day anywhere in that window -- this is not a sampling artifact like the Smarta row's nishitha gap was, it is the AND-condition as coded genuinely having zero qualifying days for 2027. Unlike Smarta (D39), there is no hidden fix the evaluator was already computing correctly; either the condition needs OR/nearest-day tie-breaking logic (which day 'wins' when tithi and nakshatra don't align, itself a real dharma-sastra question, not an engineering one) or 2027 genuinely has no clean Gaudiya date under this citation. disputed_years correctly left as-is -- confirmed disputed, not stale. CLOSED 2026-08-18 (founder decision): engineering has now directly verified there is nothing further to find here without a real dharma-sastra ruling on the tie-breaking question above. No further engineering action pending; revisit only if a new source or council ruling arrives.",
+    "disputed_years": [],
     "evaluator_conditions": [
       {
         "type": "lunar_month",
@@ -994,7 +992,9 @@
         "tithi": 8,
         "period": "sunrise",
         "mode": "at"
-      },
+      }
+    ],
+    "evaluator_vrddhi_preference": [
       {
         "type": "nakshatra_presence",
         "nakshatra": "rohini",
@@ -1732,11 +1732,15 @@
     "description": "First day of Diwali festival — worship of Goddess Lakshmi",
     "kind": "major",
     "tradition": "hindu",
-    "rule_family": "relative_to_other_observance",
+    "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
-    "relative_base_slug": "diwali",
-    "relative_offset_days": -2,
+    "corrected_lunar_masa_name": "Kartika",
+    "corrected_month_system": "purnimanta",
+    "adhika_policy": "nija",
+    "corrected_lunar_tithi_index": 28,
+    "corrected_prefer_last_match": false,
     "launch_status": "included",
+    "ratification_note": "Fallback founder-approved 2026-11-26 (not council ratified): when Ashwin Krishna Trayodashi touches the pradosha of neither day (it begins after Day 1's pradosha and ends before Day 2's), the date is the day Trayodashi is present at sunrise (Day 2), never Day 1, whose pradosha is still Dwadashi; Yama Deepdaan then falls in the Naraka Chaturdashi evening. The founder cited Nirnayasindhu, Dharmasindhu and the Rashtriya Panchang for this; none was read in this change. The primary rule (Trayodashi touching pradosha) is unchanged. Same day the founder chose this tithi rule over the earlier proposed Diwali-minus-2 offset (relation removed): the offset gave the ruled-out Day 1 in 2028 and 2029, and the same dates as the tithi rule in 2026, 2027 and 2030. Kartika purnimanta Krishna Trayodashi (index 28) = Ashwin amanta, mirroring naraka-chaturdashi.",
     "evaluator_conditions": [
       {
         "type": "lunar_month",
@@ -1754,14 +1758,25 @@
         "mode": "touches"
       }
     ],
-    "relation": {
-      "kind": "independent_offset",
-      "parent_slug": "diwali",
-      "offset_days": -2,
-      "status": "proposed"
-    },
+    "evaluator_fallback_conditions": [
+      {
+        "type": "lunar_month",
+        "value": "Ashwin",
+        "monthSystem": "amanta"
+      },
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 13,
+        "period": "sunrise",
+        "mode": "at"
+      }
+    ],
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 13,
       "paksha": "krishna",

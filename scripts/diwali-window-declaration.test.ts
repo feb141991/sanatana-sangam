@@ -2,13 +2,18 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { CANONICAL_RULES } from '../src/lib/calendar/rules';
 
-test('Dhanteras keeps its explicit proposed window and Diwali offset', () => {
+test('Dhanteras is its own tithi rule (pradosha, sunrise fallback), not a Diwali offset', () => {
+  // Founder decision 2026-11-26: the Diwali-minus-2 offset gave the ruled-out Day 1 in 2028 and 2029.
   const rule = CANONICAL_RULES.find((candidate) => candidate.slug === 'dhanteras');
   assert.ok(rule?.date_assignment);
-  assert.equal(rule.date_assignment?.status, 'proposed');
+  assert.equal(rule.date_assignment?.status, 'founder_approved');
   assert.equal(rule.date_assignment?.basis, 'lunar_tithi');
+  assert.equal(rule.date_assignment?.period, 'pradosha');
   assert.equal(rule.date_assignment?.tie_break, 'first_qualifying_date');
-  assert.equal(rule.relation?.status, 'proposed');
+  assert.equal(rule.rule_family, 'lunar_tithi');
+  assert.equal(rule.relation, undefined);
+  assert.equal(rule.corrected_lunar_tithi_index, 28);
+  assert.deepEqual(rule.evaluator_fallback_conditions?.map((c) => c.type), ['lunar_month', 'paksha', 'tithi_presence']);
 });
 
 test('Govardhan Puja and Bhai Dooj are founder-approved udaya-tithi rules, not Diwali offsets', () => {

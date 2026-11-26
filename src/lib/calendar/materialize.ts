@@ -214,8 +214,9 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
         conditions: [
           { type: 'lunar_month', value: 'Shravana', monthSystem: 'amanta' },
           { type: 'paksha', value: 'krishna' },
+          // Founder decision 2026-11-26: Ashtami at sunrise decides; Rohini is only the vrddhi preference
+          // (rules.json evaluator_vrddhi_preference), never a gate that pushes the vrata onto Navami.
           { type: 'tithi_presence', tithi: 8, period: 'sunrise', mode: 'at' },
-          { type: 'nakshatra_presence', nakshatra: 'rohini', period: 'sunrise', mode: 'touches' },
         ],
       },
     ],
@@ -633,6 +634,47 @@ export function clearEvaluatorRunCache(): void {
   evaluatorRunCache.clear();
 }
 
+type EvaluatorDayMatch = { date: string; reasoning: EvaluationReason[]; diagnostics: string[] };
+
+/**
+ * Picks the one resolved day for an evaluator variant, or null for review.
+ * 1. Exactly one primary-qualified day and no vrddhi candidate: that day.
+ * 2. No primary-qualified day, two or more vrddhi candidates and a preference (rules.json
+ *    evaluator_vrddhi_preference): the one candidate that also satisfies it, if exactly one does.
+ * 3. No primary-qualified day, no vrddhi candidate and a fallback (rules.json
+ *    evaluator_fallback_conditions): the one window day that satisfies it, if exactly one does and it is not vrddhi.
+ * Anything else stays unresolved: this never chooses between two days on its own.
+ */
+export function selectEvaluatorMatch(input: {
+  qualified: EvaluatorDayMatch[];
+  vrddhiDates: EvaluatorDayMatch[];
+  vrddhiPreference?: RuleCondition[];
+  fallbackConditions?: RuleCondition[];
+  windowDates: string[];
+  evaluate: (conditions: RuleCondition[], date: string) => { qualified: boolean | 'indeterminate'; reasoning: EvaluationReason[]; diagnostics: string[] };
+}): EvaluatorDayMatch | null {
+  const { qualified, vrddhiDates, vrddhiPreference, fallbackConditions, windowDates, evaluate } = input;
+  if (qualified.length === 1 && vrddhiDates.length === 0) return qualified[0];
+  if (qualified.length > 0) return null;
+
+  if (vrddhiDates.length > 1 && vrddhiPreference?.length) {
+    const preferred = vrddhiDates.filter(v => evaluate(vrddhiPreference, v.date).qualified === true);
+    return preferred.length === 1 ? { ...preferred[0], diagnostics: [...preferred[0].diagnostics, 'vrddhi_preference'] } : null;
+  }
+
+  if (vrddhiDates.length === 0 && fallbackConditions?.length) {
+    const hits: EvaluatorDayMatch[] = [];
+    for (const date of windowDates) {
+      const res = evaluate(fallbackConditions, date);
+      if (res.qualified === true && !res.diagnostics.includes('vrddhi_tithi')) {
+        hits.push({ date, reasoning: res.reasoning, diagnostics: res.diagnostics });
+      }
+    }
+    return hits.length === 1 ? { ...hits[0], diagnostics: [...hits[0].diagnostics, 'fallback_conditions'] } : null;
+  }
+  return null;
+}
+
 export function calculateOccurrencesWithEvaluator(
   year: number,
   location: LocationInput = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' },
@@ -764,8 +806,29 @@ export function calculateOccurrencesWithEvaluator(
           ? selectFirstOfConsecutiveDates(qualified)
           : qualified;
 
-        if (selectedQualified.length === 1 && vrddhiDates.length === 0) {
-          const match = selectedQualified[0];
+        const evaluateWith = (ruleConditions: RuleCondition[], checkDate: string) => evaluateVariant(
+          {
+            ruleId: variant.variantId,
+            festivalId: eRule.slug,
+            traditionProfile: variant.spiritualTradition ?? undefined,
+            conditions: ruleConditions,
+          },
+          checkDate,
+          location,
+        );
+        const match = selectEvaluatorMatch({
+          qualified: selectedQualified,
+          vrddhiDates,
+          vrddhiPreference: canonicalVariant?.evaluator_vrddhi_preference,
+          fallbackConditions: canonicalVariant?.evaluator_fallback_conditions,
+          windowDates: Array.from({ length: windowSize * 2 + 1 }, (_, i) => offsetDateStr(candidate.date, i - windowSize)),
+          evaluate: (ruleConditions, checkDate) => {
+            const res = evaluateWith(ruleConditions, checkDate);
+            return { qualified: res.qualified, reasoning: res.reasons, diagnostics: res.diagnostics };
+          },
+        });
+
+        if (match) {
           finalOccurrences.push({
             slug: eRule.slug,
             date: match.date,
