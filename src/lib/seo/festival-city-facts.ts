@@ -50,14 +50,27 @@ function currentCivilDate(timeZone: string, now = new Date()): string {
   }).format(now);
 }
 
-/** The calendar profile and timezones of the Ujjain reference set the app publishes. */
+/**
+ * The Ujjain reference point the app publishes. Rows on the same profile and an Indian timezone are also
+ * materialised at other coordinates (Kolkata, Delhi, even London with an Indian timezone), and they can fall
+ * on a different day, so the coordinates must match too.
+ */
 export const PUBLISHED_REFERENCE_PROFILE = 'legacy-ujjain';
 const PUBLISHED_REFERENCE_TIMEZONES = new Set(['Asia/Kolkata', 'Asia/Calcutta']);
+const COORDINATE_TOLERANCE = 0.001;
+
+function isAtReferencePoint(row: PublishedOccurrenceRow): boolean {
+  return typeof row.computed_latitude === 'number' && typeof row.computed_longitude === 'number'
+    && Math.abs(row.computed_latitude - FESTIVAL_DATE_LOCATION.lat) < COORDINATE_TOLERANCE
+    && Math.abs(row.computed_longitude - FESTIVAL_DATE_LOCATION.lon) < COORDINATE_TOLERANCE;
+}
 
 export type PublishedOccurrenceRow = ObservanceJoinedRow & {
   year?: number | null;
   calendar_profile?: string | null;
   computed_timezone?: string | null;
+  computed_latitude?: number | null;
+  computed_longitude?: number | null;
   is_primary_variant?: boolean | null;
   manual_date_override?: string | null;
 };
@@ -83,7 +96,8 @@ export function selectPublishedFestivalDate(
   const candidates = (filterEligibleMarketingObservances([...rows]) as PublishedOccurrenceRow[]).filter((row) =>
     definitionSlug(row) === festivalSlug
     && row.calendar_profile === PUBLISHED_REFERENCE_PROFILE
-    && PUBLISHED_REFERENCE_TIMEZONES.has(row.computed_timezone ?? ''));
+    && PUBLISHED_REFERENCE_TIMEZONES.has(row.computed_timezone ?? '')
+    && isAtReferencePoint(row));
   const effectiveDate = (row: PublishedOccurrenceRow) => row.manual_date_override ?? row.date;
   const inYear = candidates.filter((row) => effectiveDate(row)?.startsWith(`${year}-`));
   const primary = inYear.filter((row) => row.is_primary_variant === true);
@@ -104,6 +118,10 @@ async function fetchPublishedFestivalDate(festivalSlug: string, year: number): P
     .eq('observance_definitions.slug', festivalSlug)
     .eq('publication_status', 'published')
     .eq('calendar_profile', PUBLISHED_REFERENCE_PROFILE)
+    .gte('computed_latitude', FESTIVAL_DATE_LOCATION.lat - COORDINATE_TOLERANCE)
+    .lte('computed_latitude', FESTIVAL_DATE_LOCATION.lat + COORDINATE_TOLERANCE)
+    .gte('computed_longitude', FESTIVAL_DATE_LOCATION.lon - COORDINATE_TOLERANCE)
+    .lte('computed_longitude', FESTIVAL_DATE_LOCATION.lon + COORDINATE_TOLERANCE)
     .gte('date', `${year - 1}-12-01`)
     .lte('date', `${year + 1}-01-31`)
     .limit(500);

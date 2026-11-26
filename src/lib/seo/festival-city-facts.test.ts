@@ -107,6 +107,8 @@ describe('published festival date on city pages', () => {
     publication_status: 'published',
     calendar_profile: 'legacy-ujjain',
     computed_timezone: 'Asia/Kolkata',
+    computed_latitude: 23.1765,
+    computed_longitude: 75.7885,
     is_primary_variant: null,
     final_date_source: 'calculation_engine',
     observance_definitions: { slug: 'diwali' },
@@ -136,6 +138,15 @@ describe('published festival date on city pages', () => {
       row('2027-10-28', { is_primary_variant: true }),
       row('2026-11-08'),
     ], 'diwali', 2026)).toBe('2026-11-08');
+  });
+
+  it('ignores rows computed at other coordinates under the Ujjain profile and an Indian timezone', () => {
+    // Production on 2026-11-26: Ram Navami 27 Mar rows were computed at Kolkata (22.5726, 88.3639).
+    expect(selectPublishedFestivalDate([
+      row('2026-03-27', { observance_definitions: { slug: 'ram-navami' }, computed_latitude: 22.5726, computed_longitude: 88.3639 }),
+      row('2026-03-26', { observance_definitions: { slug: 'ram-navami' } }),
+    ], 'ram-navami', 2026)).toBe('2026-03-26');
+    expect(selectPublishedFestivalDate([row('2026-11-08', { computed_latitude: null, computed_longitude: null })], 'diwali', 2026)).toBeNull();
   });
 
   it('shows no date for a fallback date or when nothing is published', () => {
