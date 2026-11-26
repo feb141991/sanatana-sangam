@@ -79,7 +79,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },
@@ -172,7 +172,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },
@@ -266,7 +266,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },
@@ -360,7 +360,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },
@@ -455,7 +455,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },
@@ -551,7 +551,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },
@@ -646,7 +646,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },
@@ -741,7 +741,7 @@ const journalEssays: JournalEssay[] = [
     "publicationStatus": "published",
     "publishedAt": "2026-10-05T12:00:00.000Z",
     "editorialReview": {
-      "reviewerName": "Shoonaya Editorial Council",
+      "reviewerName": "Shoonaya Editorial",
       "reviewedAt": "2026-10-05T12:00:00.000Z",
       "sourcesVerified": true
     },

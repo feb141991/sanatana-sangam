@@ -20,4 +20,14 @@ describe("journal bylines", () => {
       expect(essay.authorBio, essay.slug).not.toMatch(/\b(Dr|Prof|Acharya|Swami|Pt)\.?\s/);
     }
   });
+
+  // 2026-11-26: no council reviewed these essays. A reviewer is Shoonaya Editorial
+  // or a real person who did check the essay (the founder reviewed Kumbh 2027).
+  it("names no council, board or committee as an essay's reviewer", () => {
+    const allowedReviewers = new Set(["Shoonaya Editorial", "Pt. Prince Sharma"]);
+    for (const essay of getAllJournalEssays()) {
+      const reviewer = essay.editorialReview?.reviewerName ?? "";
+      expect(allowedReviewers.has(reviewer), `${essay.slug}: ${reviewer}`).toBe(true);
+    }
+  });
 });

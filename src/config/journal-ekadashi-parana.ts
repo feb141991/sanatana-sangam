@@ -9,7 +9,7 @@ export const ekadashiParanaEssay: JournalEssay = {
   publicationStatus: "published",
   publishedAt: "2026-11-15T12:00:00.000Z",
   editorialReview: {
-    reviewerName: "Shoonaya Astrometry & Dharmic Research Council",
+    reviewerName: "Shoonaya Editorial",
     reviewedAt: "2026-11-15T12:00:00.000Z",
     sourcesVerified: true,
   },

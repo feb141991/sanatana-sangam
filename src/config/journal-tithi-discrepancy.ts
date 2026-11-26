@@ -10,7 +10,7 @@ export const tithiDiscrepancyEssay: JournalEssay = {
   publicationStatus: "published",
   publishedAt: "2026-11-15T12:00:00.000Z",
   editorialReview: {
-    reviewerName: "Shoonaya Astrometry & Dharmic Research Council",
+    reviewerName: "Shoonaya Editorial",
     reviewedAt: "2026-11-15T12:00:00.000Z",
     sourcesVerified: true,
   },
@@ -86,7 +86,7 @@ export const tithiDiscrepancyEssay: JournalEssay = {
     {
       heading: "A Canonical Protocol for Temple Committees and Diaspora Families",
       paragraphs: [
-        "To bring peace and clarity to diaspora congregations, the Shoonaya Council proposes four canonical guidelines established by the classical acharyas for community leaders:",
+        "To bring peace and clarity to diaspora congregations, Shoonaya suggests four canonical guidelines established by the classical acharyas for community leaders:",
         "1. Never import a civil date from an Indian newspaper or calendar. Use a verified algorithmic ephemeris (such as the Swiss Ephemeris or Sangam Panchang Engine) configured to your specific temple coordinates.",
         "2. Distinguish Udaya-Vyapini from Pradosha and Chandrodaya observances. A morning puja follows local dawn; an evening puja follows local sunset; a moon sighting follows local moonrise.",
         "3. Publish the underlying calculation alongside the announcement. Transparently stating 'Sunrise: 06:44 AM EST, Tithi at Sunrise: Shukla Dashami until 09:12 AM' builds trust and dispels rumors of priestly discord.",
