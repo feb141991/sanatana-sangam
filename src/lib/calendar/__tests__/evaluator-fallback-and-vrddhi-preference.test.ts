@@ -52,6 +52,22 @@ describe('2028 at Ujjain on the production evaluator path', () => {
   let rows: ReturnType<typeof calculateOccurrencesWithEvaluator>;
   beforeAll(() => { rows = calculateOccurrencesWithEvaluator(2028); }, 600_000);
 
+  // Founder rulings 2026-11-26/27 (not council ratified), on the same 2028 run.
+  it('2028 tie-break rulings: Vasant Panchami 31 Jan, Hartalika Teej 22 Aug, Sankashti 8 Aug, Ekadashi moved off Dashami dawn', () => {
+    const on = (slug: string) => rows.resolved.filter(r => r.slug === slug);
+    expect(on('vasant-panchami').map(r => r.date)).toEqual(['2028-01-31']);
+    expect(on('vasant-panchami')[0].diagnostics).toContain('tie_break_first');
+    expect(on('hartalika-teej').map(r => r.date)).toEqual(['2028-08-22']);
+    expect(on('hartalika-teej')[0].diagnostics).toContain('kshaya_previous_day');
+    expect(on('sankashti-chaturthi').map(r => r.date)).toContain('2028-08-08');
+    expect(on('sankashti-chaturthi').map(r => r.date)).not.toContain('2028-08-09');
+    const eka = on('ekadashi').map(r => r.date);
+    expect(eka).toContain('2028-08-17');
+    expect(eka).not.toContain('2028-08-16');
+    expect(on('aja-ekadashi').map(r => r.date)).toEqual(['2028-08-17']);
+    expect(rows.unresolved.filter(u => ['vasant-panchami', 'hartalika-teej', 'sankashti-chaturthi', 'ekadashi'].includes(u.slug))).toEqual([]);
+  });
+
   it('Dhanteras is 16 Oct by the sunrise fallback (Trayodashi starts 3 minutes after Day 1 pradosha ends)', () => {
     const dhanteras = rows.resolved.filter(r => r.slug === 'dhanteras');
     expect(dhanteras.map(r => r.date)).toEqual(['2028-10-16']);

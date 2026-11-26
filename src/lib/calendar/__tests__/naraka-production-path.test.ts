@@ -57,15 +57,13 @@ describe('calendar production-path inclusion and recurring vrat dates', () => {
     expect(evaluatorRows.unresolved.filter(row => row.slug === 'purnima-vrat')).toEqual([]);
   });
 
-  it('keeps the doubled May Ekadashi sunrise unresolved until the profile selects Smarta or Vaishnava', () => {
-    const unresolved = evaluatorRows.unresolved.filter(row => row.slug === 'ekadashi');
-
-    expect(unresolved).toEqual([
-      expect.objectContaining({
-        ambiguity_type: 'vrddhi_tithi',
-        candidate_dates: ['2026-05-26', '2026-05-27'],
-      }),
-    ]);
+  // Founder ruling 2026-11-26 (not council ratified): an Ekadashi at two sunrises is kept on the second, for the one
+  // calendar. This replaced the earlier hold for a Smarta or Vaishnava profile choice.
+  it('resolves the doubled May Ekadashi sunrise to the second day', () => {
+    expect(evaluatorRows.unresolved.filter(row => row.slug === 'ekadashi')).toEqual([]);
+    const may = evaluatorRows.resolved.filter(row => row.slug === 'ekadashi' && row.date.startsWith('2026-05-2'));
+    expect(may.map(row => row.date)).toEqual(['2026-05-27']);
+    expect(may[0].diagnostics).toEqual(expect.arrayContaining(['vrddhi_tithi', 'tie_break_last']));
   });
 
   it('preserves the actual five production outputs rather than reimplementing their rules in the test', () => {

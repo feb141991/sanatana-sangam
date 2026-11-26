@@ -544,7 +544,8 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
       conditions: [
         { type: 'lunar_month', value: 'Vaishakha', monthSystem: 'amanta' },
         { type: 'paksha', value: 'shukla' },
-        { type: 'tithi_presence', tithi: 3, period: 'purvahna', mode: 'touches' },
+        // Founder ruling 2026-11-26: Tritiya at sunrise (Udaya); rules.json evaluator_tie_break takes the first of two.
+        { type: 'tithi_presence', tithi: 3, period: 'sunrise', mode: 'at' },
       ],
     }],
   },
@@ -558,7 +559,8 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
       conditions: [
         { type: 'lunar_month', value: 'Bhadrapada', monthSystem: 'amanta' },
         { type: 'paksha', value: 'shukla' },
-        { type: 'tithi_presence', tithi: 3, period: 'purvahna', mode: 'touches' },
+        // Founder ruling 2026-11-26: Tritiya at sunrise (Udaya); rules.json evaluator_tie_break takes the first of two.
+        { type: 'tithi_presence', tithi: 3, period: 'sunrise', mode: 'at' },
       ],
     }],
   },
@@ -643,17 +645,46 @@ type EvaluatorDayMatch = { date: string; reasoning: EvaluationReason[]; diagnost
  *    evaluator_vrddhi_preference): the one candidate that also satisfies it, if exactly one does.
  * 3. No primary-qualified day, no vrddhi candidate and a fallback (rules.json
  *    evaluator_fallback_conditions): the one window day that satisfies it, if exactly one does and it is not vrddhi.
+ * 0. A tie-break (rules.json evaluator_tie_break) is checked first: when the qualifying days, vrddhi candidates
+ *    included, form one unbroken run of consecutive civil days, the first or last of them. A broken run stays
+ *    unresolved; no qualifying day goes on to the fallback.
+ * Afterwards, with rules.json evaluator_kshaya_day "previous_day", a day chosen for a tithi present at no sunrise
+ * (kshaya) moves back to the civil day in which that tithi runs. Then, if the chosen day satisfies rules.json evaluator_viddha_shift_conditions, it moves to the next civil day.
  * Anything else stays unresolved: this never chooses between two days on its own.
  */
-export function selectEvaluatorMatch(input: {
+export function selectEvaluatorMatch(input: Parameters<typeof selectEvaluatorDay>[0]): EvaluatorDayMatch | null {
+  let match = selectEvaluatorDay(input);
+  if (match && input.kshayaDay === 'previous_day' && match.diagnostics.includes('kshaya_tithi')) {
+    // A tithi present at no sunrise runs inside the previous civil day (sunrise to sunrise); observe it there.
+    match = { ...match, date: offsetDateStr(match.date, -1), diagnostics: [...match.diagnostics, 'kshaya_previous_day'] };
+  }
+  if (!match || !input.shiftConditions?.length) return match;
+  if (input.evaluate(input.shiftConditions, match.date).qualified !== true) return match;
+  return { ...match, date: offsetDateStr(match.date, 1), diagnostics: [...match.diagnostics, 'arunodaya_viddha_shift'] };
+}
+
+function selectEvaluatorDay(input: {
   qualified: EvaluatorDayMatch[];
   vrddhiDates: EvaluatorDayMatch[];
   vrddhiPreference?: RuleCondition[];
   fallbackConditions?: RuleCondition[];
+  tieBreak?: 'first_qualifying_day' | 'last_qualifying_day';
+  shiftConditions?: RuleCondition[];
+  kshayaDay?: 'previous_day';
   windowDates: string[];
   evaluate: (conditions: RuleCondition[], date: string) => { qualified: boolean | 'indeterminate'; reasoning: EvaluationReason[]; diagnostics: string[] };
 }): EvaluatorDayMatch | null {
-  const { qualified, vrddhiDates, vrddhiPreference, fallbackConditions, windowDates, evaluate } = input;
+  const { qualified, vrddhiDates, vrddhiPreference, fallbackConditions, tieBreak, windowDates, evaluate } = input;
+  if (tieBreak) {
+    const run = [...qualified, ...vrddhiDates].sort((a, b) => a.date.localeCompare(b.date));
+    if (run.length === 1) return run[0];
+    if (run.length > 1) {
+      const unbroken = run.every((day, i) => i === 0 || offsetDateStr(run[i - 1].date, 1) === day.date);
+      if (!unbroken) return null;
+      const picked = tieBreak === 'first_qualifying_day' ? run[0] : run[run.length - 1];
+      return { ...picked, diagnostics: [...picked.diagnostics, tieBreak === 'first_qualifying_day' ? 'tie_break_first' : 'tie_break_last'] };
+    }
+  }
   if (qualified.length === 1 && vrddhiDates.length === 0) return qualified[0];
   if (qualified.length > 0) return null;
 
@@ -821,6 +852,9 @@ export function calculateOccurrencesWithEvaluator(
           vrddhiDates,
           vrddhiPreference: canonicalVariant?.evaluator_vrddhi_preference,
           fallbackConditions: canonicalVariant?.evaluator_fallback_conditions,
+          tieBreak: canonicalVariant?.evaluator_tie_break,
+          shiftConditions: canonicalVariant?.evaluator_viddha_shift_conditions,
+          kshayaDay: canonicalVariant?.evaluator_kshaya_day,
           windowDates: Array.from({ length: windowSize * 2 + 1 }, (_, i) => offsetDateStr(candidate.date, i - windowSize)),
           evaluate: (ruleConditions, checkDate) => {
             const res = evaluateWith(ruleConditions, checkDate);

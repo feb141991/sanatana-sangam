@@ -46,8 +46,9 @@
         "mode": "touches"
       }
     ],
+    "evaluator_tie_break": "first_qualifying_day",
     "launch_status": "included",
-    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
+    "ratification_note": "Founder ruling 2026-11-26: when Magha Shukla Panchami touches the Purvahna of two days, the first day is taken; the second day is used only when Panchami begins after the first day's Purvahna. The engine's Purvahna is the first two fifths of daytime; for picking the first touched day this gives the same answer as the second fifth alone, because a tithi that touches either begins before the end of the second fifth. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -538,12 +539,14 @@
       {
         "type": "tithi_presence",
         "tithi": 3,
-        "period": "purvahna",
-        "mode": "touches"
+        "period": "sunrise",
+        "mode": "at"
       }
     ],
+    "evaluator_tie_break": "first_qualifying_day",
+    "evaluator_kshaya_day": "previous_day",
     "launch_status": "included",
-    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
+    "ratification_note": "Founder ruling 2026-11-26: Akshaya Tritiya is the civil day with Shukla Tritiya at sunrise (Udaya). When Tritiya is present at two sunrises, the first of them is taken, as this rule's date_assignment tie_break already stated. When Tritiya is present at no sunrise (it begins after one sunrise and ends before the next), the civil day in which it runs is taken (founder decision 2026-11-27). Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -551,8 +554,8 @@
       "paksha": "shukla",
       "lunar_month": "Vaishakha",
       "month_system": "amanta",
-      "period": "purvahna",
-      "mode": "touches",
+      "period": "sunrise",
+      "mode": "at",
       "skipped_tithi": "first_qualifying_date",
       "tie_break": "first_qualifying_date"
     },
@@ -1374,10 +1377,12 @@
       {
         "type": "tithi_presence",
         "tithi": 3,
-        "period": "purvahna",
-        "mode": "touches"
+        "period": "sunrise",
+        "mode": "at"
       }
     ],
+    "evaluator_tie_break": "first_qualifying_day",
+    "evaluator_kshaya_day": "previous_day",
     "launch_status": "included",
     "date_assignment": {
       "status": "founder_approved",
@@ -1386,8 +1391,8 @@
       "paksha": "shukla",
       "lunar_month": "Bhadrapada",
       "month_system": "amanta",
-      "period": "purvahna",
-      "mode": "touches",
+      "period": "sunrise",
+      "mode": "at",
       "skipped_tithi": "first_qualifying_date",
       "tie_break": "first_qualifying_date"
     },
@@ -1398,7 +1403,7 @@
       "read_by_human": false,
       "status": "unsourced"
     },
-    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
+    "ratification_note": "Founder ruling 2026-11-26: Hartalika Teej is the civil day with Shukla Tritiya at sunrise (Udaya). When Tritiya is present at two sunrises, the first of them is taken, as this rule's date_assignment tie_break already stated. When Tritiya is present at no sunrise (it begins after one sunrise and ends before the next), the civil day in which it runs is taken (founder decision 2026-11-27). Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation."
   },
   {
     "slug": "mahalaya-amavasya",
@@ -2240,12 +2245,14 @@
     "corrected_lunar_masa_name": "Margashirsha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "vaikunta-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "ratified",
       "basis": "lunar_tithi",
@@ -2256,7 +2263,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2294,11 +2301,14 @@
     "corrected_lunar_masa_name": "Chaitra",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "kamada-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2309,7 +2319,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2331,11 +2341,14 @@
     "corrected_lunar_masa_name": "Jyeshtha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "nirjala-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2346,7 +2359,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2368,11 +2381,14 @@
     "corrected_lunar_masa_name": "Ashadha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "devshayani-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2383,7 +2399,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2405,11 +2421,14 @@
     "corrected_lunar_masa_name": "Shravana",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "shravana-putrada-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2420,7 +2439,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2442,11 +2461,14 @@
     "corrected_lunar_masa_name": "Bhadrapada",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "parivartini-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2457,7 +2479,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2479,13 +2501,15 @@
     "corrected_lunar_masa_name": "Kartika",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "devutthana-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "corrected_skipped_tithi_policy": "previous_day",
     "launch_status": "included",
-    "ratification_note": "Skipped-tithi policy changed 2026-11-17 from the default (following day) to previous_day, the Smarta convention that yogini-ekadashi's Smarta variant uses, on the founder's instruction (\"Add Smarta variant\"). Ekadashi 2026 ran 20 Nov 07:17 to 21 Nov 06:32 IST and is at no sunrise in Ujjain or Delhi: the following-day policy gave Saturday 21 Nov (the Vaishnava day); this gives Friday 20 Nov. Unspecified and Smarta profiles use Smarta behaviour. A Smarta/Vaishnava pair as for Yogini is NOT built: the reader resolves a pair only for rules that cite a printed source, and no printed Devutthana entry has been read. The policy changes the date only in years where Ekadashi is at no sunrise.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Skipped-tithi policy changed 2026-11-17 from the default (following day) to previous_day, the Smarta convention that yogini-ekadashi's Smarta variant uses, on the founder's instruction (\"Add Smarta variant\"). Ekadashi 2026 ran 20 Nov 07:17 to 21 Nov 06:32 IST and is at no sunrise in Ujjain or Delhi: the following-day policy gave Saturday 21 Nov (the Vaishnava day); this gives Friday 20 Nov. Unspecified and Smarta profiles use Smarta behaviour. A Smarta/Vaishnava pair as for Yogini is NOT built: the reader resolves a pair only for rules that cite a printed source, and no printed Devutthana entry has been read. The policy changes the date only in years where Ekadashi is at no sunrise.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2496,7 +2520,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "previous_day",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2518,11 +2542,14 @@
     "corrected_lunar_masa_name": "Phalguna",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "amalaki-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2533,7 +2560,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2555,11 +2582,14 @@
     "corrected_lunar_masa_name": "Chaitra",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "papmochani-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "date_assignment": {
       "status": "proposed",
       "basis": "lunar_tithi",
@@ -2570,7 +2600,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2592,13 +2622,15 @@
     "corrected_lunar_masa_name": "Jyeshtha",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "apara-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.34 -- Apara Ekadasi listed at 2026-05-13",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2609,7 +2641,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2631,13 +2663,15 @@
     "corrected_lunar_masa_name": "Shravana",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "kamika-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.57 -- Kamika Ekadasi listed at 2026-08-09",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2648,7 +2682,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2670,13 +2704,15 @@
     "corrected_lunar_masa_name": "Bhadrapada",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "aja-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.65 -- Aja Ekadasi listed at 2026-09-07",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2687,7 +2723,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2709,13 +2745,15 @@
     "corrected_lunar_masa_name": "Kartika",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "rama-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.80 -- Rama Ekadasi listed at 2026-11-05",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2726,7 +2764,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2748,13 +2786,15 @@
     "corrected_lunar_masa_name": "Margashirsha",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "utpanna-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.88 -- Utpanna Ekadasi listed at 2026-12-04",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2765,7 +2805,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2787,13 +2827,15 @@
     "corrected_lunar_masa_name": "Pausha",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "saphala-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.96 -- Saphala Ekadasi listed at 2027-01-03",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -2804,7 +2846,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -2826,6 +2868,8 @@
     "corrected_lunar_masa_name": "Phalguna",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "vijaya-ekadashi",
@@ -2833,7 +2877,7 @@
     "launch_status": "included",
     "corrected_prefer_last_match": true,
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.92 (PDF file page 112) -- Vijaya Ekadasi listed at 2027-03-04, one day after tithi 26 first touches sunrise (source shows 'Ekadasi ahoratra' the prior day) -- a genuine vrddhi tithi. corrected_prefer_last_match selects the later of the two candidate days; verified a no-op in 2026 and 2028, which have no vrddhi tithi at this position.",
-    "ratification_note": "Council decision batch 0 approved only the 2027-03-04 Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Other years, locations, and profiles remain governed by their own evidence and publication gates.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council decision batch 0 approved only the 2027-03-04 Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Other years, locations, and profiles remain governed by their own evidence and publication gates.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -3935,12 +3979,22 @@
     "route_kind": "vrat",
     "route_slug": "ekadashi",
     "launch_status": "included",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified.",
     "evaluator_conditions": [
       {
         "type": "tithi_presence",
         "tithi": 11,
         "period": "sunrise",
         "mode": "at"
+      }
+    ],
+    "evaluator_tie_break": "last_qualifying_day",
+    "evaluator_viddha_shift_conditions": [
+      {
+        "type": "tithi_presence",
+        "tithi": 10,
+        "period": "arunodaya",
+        "mode": "touches"
       }
     ],
     "date_assignment": {
@@ -3953,7 +4007,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -4172,7 +4226,7 @@
     "route_kind": "vrat",
     "route_slug": "sankashti-chaturthi",
     "launch_status": "included",
-    "ratification_note": "Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
+    "ratification_note": "Founder ruling 2026-11-26: Sankashti is the civil day with Krishna Chaturthi at local moonrise. If Chaturthi is at two moonrises, the first day. If it is at no moonrise, the day with Chaturthi at sunrise (Udaya). The ruling's Pradosha option for Day 1 is not modelled: it applies only when Chaturthi begins after Day 1's moonrise, and Pradosha comes before moonrise on a Krishna Chaturthi, so Chaturthi cannot be present at Day 1's Pradosha in that case. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Approved by Pt. Prince Sharma 2026-11-19. Promoted from deferred to launch_status: included with verified calendar engine calculation.",
     "evaluator_conditions": [
       {
         "type": "paksha",
@@ -4182,6 +4236,19 @@
         "type": "tithi_presence",
         "tithi": 4,
         "period": "moonrise",
+        "mode": "at"
+      }
+    ],
+    "evaluator_tie_break": "first_qualifying_day",
+    "evaluator_fallback_conditions": [
+      {
+        "type": "paksha",
+        "value": "krishna"
+      },
+      {
+        "type": "tithi_presence",
+        "tithi": 4,
+        "period": "sunrise",
         "mode": "at"
       }
     ],
@@ -4388,12 +4455,14 @@
     "corrected_lunar_masa_name": "Pausha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "pausha-putrada-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4404,7 +4473,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -4426,12 +4495,14 @@
     "corrected_lunar_masa_name": "Magha",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "shattila-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4442,7 +4513,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -4464,12 +4535,14 @@
     "corrected_lunar_masa_name": "Magha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "jaya-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4480,7 +4553,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -4502,12 +4575,14 @@
     "corrected_lunar_masa_name": "Vaishakha",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "varuthini-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4518,7 +4593,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -4540,12 +4615,14 @@
     "corrected_lunar_masa_name": "Vaishakha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "mohini-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4556,7 +4633,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -4578,12 +4655,14 @@
     "corrected_lunar_masa_name": "Ashwin",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "indira-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4594,7 +4673,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,
@@ -4616,12 +4695,14 @@
     "corrected_lunar_masa_name": "Ashwin",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
+    "corrected_vrddhi_day": "second_sunrise",
+    "corrected_arunodaya_viddha": "next_day",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "papankusha-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
+    "ratification_note": "Founder ruling 2026-11-26: when Ekadashi is present at two consecutive sunrises, the second day is taken. If Dashami is present at Arunodaya (the 96 minutes, 4 ghatikas, before sunrise) of that day, the fast moves to the next civil day; the calendar has one Ekadashi date, not separate Smarta and Vaishnava dates. Mahadwadashi and parana are not modelled. Founder cited Jyotishdham, Amar Ujala, ModernAstro, ISKCON Desire Tree and NDTV India; those sources were not read in this change. This ruling is not council ratified. Earlier: Council reviewed and approved by Pt. Prince Sharma (reference founder:pt-prince-20261031; docs/content-reviews/ekadashi-series-2026-v1.md). Promoted from deferred to launch_status: included with verified lunar tithi engine anchor.",
     "date_assignment": {
       "status": "founder_approved",
       "basis": "lunar_tithi",
@@ -4632,7 +4713,7 @@
       "period": "sunrise",
       "mode": "at",
       "skipped_tithi": "first_qualifying_date",
-      "tie_break": "first_qualifying_date"
+      "tie_break": "last_qualifying_date"
     },
     "window_source": {
       "tier": 6,

@@ -520,6 +520,38 @@
         },
         "description": "Conditions used only when no day in the window satisfies evaluator_conditions (the primary rule) and no day is a vrddhi candidate. Exactly one qualifying day is required; otherwise the occurrence stays unresolved."
       },
+      "evaluator_tie_break": {
+        "type": "string",
+        "enum": ["first_qualifying_day", "last_qualifying_day"],
+        "description": "When two or more consecutive civil days satisfy evaluator_conditions (including a tithi present at two sunrises), take the first or the last of them. The days must form one unbroken run; otherwise the occurrence stays unresolved."
+      },
+      "corrected_vrddhi_day": {
+        "type": "string",
+        "enum": ["second_sunrise"],
+        "description": "Corrected (non-evaluator) engine only: when the rule's tithi is present at two consecutive sunrises, keep the second day instead of the first. Founder ruling 2026-11-26 for Ekadashi."
+      },
+      "evaluator_viddha_shift_conditions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "description": "Checked on the day already selected: if it satisfies all of these, the observance moves to the next civil day. Ekadashi uses Dashami touching Arunodaya (founder ruling 2026-11-26)."
+      },
+      "corrected_arunodaya_viddha": {
+        "type": "string",
+        "enum": ["next_day"],
+        "description": "Corrected (non-evaluator) engine only: when the tithi before the rule's tithi is present at Arunodaya (96 minutes before sunrise) of a matched day, the observance moves to the next civil day. Ekadashi, founder ruling 2026-11-26."
+      },
+      "evaluator_kshaya_day": {
+        "type": "string",
+        "enum": ["previous_day"],
+        "description": "When the selected day was chosen because the rule's tithi is present at no sunrise (kshaya), observe it on the previous civil day, in which the tithi runs. Akshaya Tritiya and Hartalika Teej, founder decision 2026-11-27."
+      },
       "evaluator_vrddhi_preference": {
         "type": "array",
         "items": {

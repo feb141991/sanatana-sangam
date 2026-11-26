@@ -444,6 +444,9 @@ export function isMasaMatching(
 /**
  * Handler for Lunar Tithi rules
  */
+/** Arunodaya: 4 ghatikas (96 minutes) before sunrise, as the evaluator's arunodaya window (founder ruling 2026-11-26). */
+const ARUNODAYA_MINUTES = 96;
+
 export const LunarTithiHandler = {
   evaluate(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>): string[] {
     if (!rule.lunar_masa_name || rule.lunar_tithi_index === undefined) {
@@ -462,6 +465,31 @@ export const LunarTithiHandler = {
         if (!matchedSet.has(d.dateStr)) {
           matchedDates.push(d.dateStr);
           matchedSet.add(d.dateStr);
+        }
+      }
+    }
+    // Founder ruling 2026-11-26 (Ekadashi): a tithi present at two consecutive sunrises is kept on the second.
+    if (rule.corrected_vrddhi_day === 'second_sunrise') {
+      for (let i = matchedDates.length - 2; i >= 0; i--) {
+        if (offsetCivilDateStr(matchedDates[i], 1) === matchedDates[i + 1]) {
+          matchedSet.delete(matchedDates[i]);
+          matchedDates.splice(i, 1);
+        }
+      }
+    }
+    // Founder ruling 2026-11-26 (Ekadashi, single calendar): Dashami at Arunodaya (the 96 minutes before sunrise)
+    // disqualifies the day; the fast moves to the next civil day. Tithi is location-independent, so the instant is enough.
+    if (rule.corrected_arunodaya_viddha === 'next_day') {
+      const sunriseByDate = new Map(days.map(d => [d.dateStr, (d as { sunriseUtc?: string }).sunriseUtc]));
+      const previousTithi = target === 1 ? 30 : target - 1;
+      for (let i = 0; i < matchedDates.length; i++) {
+        const sunriseUtc = sunriseByDate.get(matchedDates[i]);
+        if (!sunriseUtc) continue;
+        const dawn = new Date(new Date(sunriseUtc).getTime() - ARUNODAYA_MINUTES * 60_000);
+        if (calculatePanchang(dawn, REFERENCE_LOCATION_UJJAIN.lat, REFERENCE_LOCATION_UJJAIN.lon).tithiIndex === previousTithi) {
+          matchedSet.delete(matchedDates[i]);
+          matchedDates[i] = offsetCivilDateStr(matchedDates[i], 1);
+          matchedSet.add(matchedDates[i]);
         }
       }
     }

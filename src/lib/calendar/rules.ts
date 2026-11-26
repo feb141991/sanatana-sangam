@@ -104,6 +104,12 @@ export interface ObservanceRule {
   evaluator_fallback_conditions?: RuleCondition[];
   /** Picks the one vrddhi candidate day that also satisfies these; otherwise scholar review. */
   evaluator_vrddhi_preference?: RuleCondition[];
+  /** Pick the first or last day of a consecutive run that satisfies evaluator_conditions (vrddhi included). */
+  evaluator_tie_break?: 'first_qualifying_day' | 'last_qualifying_day';
+  /** If the selected day also satisfies these, the observance moves to the next civil day (Ekadashi: Dashami at Arunodaya). */
+  evaluator_viddha_shift_conditions?: RuleCondition[];
+  /** previous_day: a tithi present at no sunrise (kshaya) is observed on the civil day it runs in. */
+  evaluator_kshaya_day?: 'previous_day';
   relation?: {
     kind: 'series_child' | 'independent_offset' | 'alias' | 'convention';
     parent_slug?: string;
@@ -144,6 +150,10 @@ export interface ObservanceRule {
   corrected_month_system?: 'amanta' | 'purnimanta';
   adhika_policy?: 'nija' | 'adhika' | 'both';
   corrected_prefer_last_match?: boolean;
+  /** Corrected engine: keep the second of two consecutive sunrises holding the tithi (Ekadashi, founder ruling 2026-11-26). */
+  corrected_vrddhi_day?: 'second_sunrise';
+  /** Corrected engine: Dashami at Arunodaya (96 min before sunrise) moves the day to the next civil day (Ekadashi, founder ruling 2026-11-26). */
+  corrected_arunodaya_viddha?: 'next_day';
   corrected_allow_skipped_tithi?: boolean;
   corrected_skipped_tithi_policy?: SkippedTithiPolicy;
   // D34: which instant of the civil day determines the prevailing tithi.
