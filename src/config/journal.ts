@@ -165,7 +165,7 @@ const journalEssays: JournalEssay[] = [
     "relatedSlugs": [
       "alchemy-of-the-name-japa",
       "rhythm-of-sacred-time-panchang",
-      "gyan-chaupar-cosmic-game-soul"
+      "home-mandir-vastu-direction-geometry-and-altar-setup"
     ]
   },
   {
@@ -259,7 +259,7 @@ const journalEssays: JournalEssay[] = [
     "relatedSlugs": [
       "aparigraha-in-the-screen-age",
       "metta-in-age-of-reaction",
-      "alchemy-of-the-name-japa"
+      "understanding-karma-sanchita-prarabdha-and-kriyamana"
     ]
   },
   {
@@ -639,7 +639,7 @@ const journalEssays: JournalEssay[] = [
     "relatedSlugs": [
       "architecture-of-silence-ancient-mandirs",
       "rhythm-of-sacred-time-panchang",
-      "seva-as-stillness-unconditional-presence"
+      "mantra-japa-tulsi-vs-rudraksha-mala-and-meru-bead-rule"
     ]
   },
   {

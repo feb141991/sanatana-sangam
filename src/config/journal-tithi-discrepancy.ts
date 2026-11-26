@@ -131,7 +131,7 @@ export const tithiDiscrepancyEssay: JournalEssay = {
   relatedSlugs: [
     "architecture-of-silence-ancient-mandirs",
     "alchemy-of-the-name-japa",
-    "kumbh-mela-2027-sacred-astronomy"
+    "karwa-chauth-moonrise-astronomy-and-global-cities"
   ]
 };
 

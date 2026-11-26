@@ -116,6 +116,6 @@ export const rahuKaalEssay: JournalEssay = {
   relatedSlugs: [
     "the-global-tithi-discrepancy-astronomy-and-timezones",
     "rhythm-of-sacred-time-panchang",
-    "the-sacred-science-of-brahma-muhurta-astronomy-and-awakening"
+    "diwali-lakshmi-puja-sthira-lagna-and-dhanteras-astronomy"
   ]
 };

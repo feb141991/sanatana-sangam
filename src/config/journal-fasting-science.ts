@@ -117,6 +117,6 @@ export const fastingScienceEssay: JournalEssay = {
   relatedSlugs: [
     "the-complete-ekadashi-parana-guide-shastric-rules-and-timing",
     "the-sacred-science-of-brahma-muhurta-astronomy-and-awakening",
-    "architecture-of-silence-ancient-mandirs"
+    "tulsi-seva-shastric-rules-for-watering-and-plucking"
   ]
 };

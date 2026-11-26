@@ -117,6 +117,6 @@ export const diwaliLakshmiPujaEssay: JournalEssay = {
   relatedSlugs: [
     "the-global-tithi-discrepancy-astronomy-and-timezones",
     "rahu-kaal-and-choghadiya-astronomy-and-muhurta-science",
-    "rhythm-of-sacred-time-panchang"
+    "sri-krishna-janmashtami-ashtami-vs-rohini-nakshatra"
   ]
 };

@@ -119,7 +119,7 @@ export const navratriEssay: JournalEssay = {
   ],
   relatedSlugs: [
     "the-global-tithi-discrepancy-astronomy-and-timezones",
-    "architecture-of-silence-ancient-mandirs",
+    "ganesh-chaturthi-madhyahna-sthapana-and-chandra-darshan-dosha",
     "rhythm-of-sacred-time-panchang"
   ]
 };

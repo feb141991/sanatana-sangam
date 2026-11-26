@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Calendar, Compass, ShieldCheck, Sparkles, MapPin } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { findJournalEssay } from '@/config/journal';
+import { getEssaySlugsForFestival } from '@/config/journal-site-links';
 import { generateFestivalSeoCampaign } from '@/lib/ai/marketing-rag';
 import { AppStoreBadges } from '@/components/marketing/AppStoreBadges';
 import festivalRulesJson from '../../../../../../packages/dharma-rules/src/festivals/rules.json';
@@ -72,6 +74,10 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
 
   const facts = await getFestivalCityFacts(slug, city, year);
   if (!facts) notFound();
+
+  const journalEssays = getEssaySlugsForFestival(slug)
+    .map((essaySlug) => findJournalEssay(essaySlug))
+    .filter((essay) => essay !== undefined);
 
   const campaign = await generateFestivalSeoCampaign({
     festivalSlug: slug,
@@ -274,6 +280,35 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
           </div>
         </div>
       </section>
+      {journalEssays.length > 0 && (
+        <section aria-labelledby="journal-heading" className="border-t border-[var(--card-border)] py-12 sm:py-16">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand-primary-strong)]">
+              From the Shoonaya Journal
+            </p>
+            <h2 id="journal-heading" className="mt-1 font-display text-2xl font-bold text-[var(--text-cream)]">
+              Read more about {campaign.festivalName}
+            </h2>
+            <ul className="mt-6 space-y-4">
+              {journalEssays.map((essay) => (
+                <li key={essay.slug}>
+                  <Link
+                    href={`/journal/${essay.slug}`}
+                    className="group block rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5 transition-colors hover:border-[var(--brand-primary)]/40"
+                  >
+                    <span className="block font-display text-lg font-semibold text-[var(--text-cream)] group-hover:text-[var(--brand-primary-strong)]">
+                      {essay.title}
+                    </span>
+                    <span className="mt-2 block text-sm leading-relaxed text-[var(--text-muted-warm)]">
+                      {essay.excerpt}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

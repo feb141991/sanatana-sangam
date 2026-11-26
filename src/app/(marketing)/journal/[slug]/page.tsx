@@ -26,6 +26,7 @@ import {
   getRelatedEssays,
 } from "@/config/journal";
 import { OFFICIAL_STORE_LINKS } from "@/config/official-links";
+import { getJournalSiteLinks } from "@/config/journal-site-links";
 
 type JournalArticleProps = {
   params: Promise<{ slug: string }>;
@@ -68,6 +69,8 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
   const related = getRelatedEssays(essay.slug, 3);
   const canonicalUrl = `https://www.shoonaya.com/journal/${essay.slug}`;
   const geo = extractJournalGeo(essay);
+  const siteLinks = getJournalSiteLinks(essay.slug);
+  const hasSiteLinks = siteLinks.festivalDates.length > 0 || siteLinks.guides.length > 0;
 
   return (
     <main className="w-full overflow-x-clip">
@@ -377,6 +380,65 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
           </aside>
         </div>
       </section>
+
+      {/* ── Dates and guides on Shoonaya ──────────────────────────────────── */}
+      {hasSiteLinks && (
+        <section
+          aria-labelledby="site-links-heading"
+          className="border-t border-[var(--card-border)] px-6 py-12 sm:px-10 lg:px-14 xl:px-20"
+        >
+          <div className="mx-auto max-w-[1440px]">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand-primary-strong)]">
+              Put it into practice
+            </p>
+            <h3 id="site-links-heading" className="mt-1 font-display text-2xl font-bold text-[var(--text-cream)]">
+              Dates and guides on Shoonaya
+            </h3>
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {siteLinks.festivalDates.map((group) => (
+                <div
+                  key={group.festival}
+                  className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5"
+                >
+                  <p className="text-sm font-semibold text-[var(--text-cream)]">
+                    {group.name} date and timings
+                  </p>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {group.links.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="inline-flex min-h-11 items-center rounded-full border border-[var(--card-border)] px-4 text-xs font-semibold text-[var(--brand-primary-strong)] hover:border-[var(--brand-primary)]/50"
+                        >
+                          {group.name} in {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              {siteLinks.guides.length > 0 && (
+                <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] p-5">
+                  <p className="text-sm font-semibold text-[var(--text-cream)]">Guides and tools</p>
+                  <ul className="mt-3 space-y-1">
+                    {siteLinks.guides.map((link) => (
+                      <li key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-[var(--brand-primary-strong)] hover:underline"
+                        >
+                          <span>{link.label}</span>
+                          <ArrowRight className="size-3.5" aria-hidden="true" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Related Reflections ─────────────────────────────────────────── */}
       <section className="border-t border-[var(--card-border)] bg-[var(--surface-soft)] px-6 py-16 sm:px-10 lg:px-14 xl:px-20">

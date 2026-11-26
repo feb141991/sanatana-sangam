@@ -113,7 +113,7 @@ export const makarSankrantiEssay: JournalEssay = {
   ],
   relatedSlugs: [
     "the-global-tithi-discrepancy-astronomy-and-timezones",
-    "rhythm-of-sacred-time-panchang",
+    "kumbh-2027-haridwar-nashik-official-dates",
     "the-sacred-science-of-brahma-muhurta-astronomy-and-awakening"
   ]
 };

@@ -114,7 +114,7 @@ export const mahaShivratriEssay: JournalEssay = {
     }
   ],
   relatedSlugs: [
-    "architecture-of-silence-ancient-mandirs",
+    "pradosh-vrat-twilight-window-and-shani-pradosham",
     "alchemy-of-the-name-japa",
     "the-sacred-science-of-brahma-muhurta-astronomy-and-awakening"
   ]

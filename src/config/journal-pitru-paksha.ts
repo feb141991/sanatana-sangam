@@ -115,6 +115,6 @@ export const pitruPakshaEssay: JournalEssay = {
   relatedSlugs: [
     "the-global-tithi-discrepancy-astronomy-and-timezones",
     "rhythm-of-sacred-time-panchang",
-    "architecture-of-silence-ancient-mandirs"
+    "amavasya-vs-purnima-navigating-lunar-polarities-and-consciousness"
   ]
 };

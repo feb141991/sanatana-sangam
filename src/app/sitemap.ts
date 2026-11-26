@@ -7,6 +7,7 @@ import {
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { VRAT_DATABASE } from "@/lib/vrat-data";
+import { MAJOR_FESTIVAL_SLUGS_FOR_SEO, TOP_DIASPORA_CITIES } from "@/lib/seo/festival-seo-pages";
 import { STOTRAMS } from "@/lib/stotrams";
 import { ALL_KATHAS, getCanonicalKathaId } from "@/lib/katha-library";
 import { getPublishableFestivalSlugs } from "@/lib/festival-data";
@@ -24,48 +25,6 @@ export const revalidate = 3600;
 
 // lastModified is set only where a real date is known. A date invented at build
 // time is the same on every URL and teaches search engines to ignore the field.
-
-// Top high-search festivals and diaspora cities for localized programmatic SEO
-const MAJOR_FESTIVAL_SLUGS_FOR_SEO: readonly string[] = [
-  "diwali",
-  "maha-shivaratri",
-  "holi",
-  "krishna-janmashtami",
-  "ganesh-chaturthi",
-  "raksha-bandhan",
-  "karva-chauth",
-  "dhanteras",
-  "chhath-puja",
-  "ram-navami",
-  "hanuman-jayanti",
-  "makar-sankranti",
-  "akshaya-tritiya",
-  "guru-purnima",
-  "kartik-purnima",
-  "gita-jayanti",
-  "navratri-begins",
-  "chaitra-navratri-begins",
-  "nirjala-ekadashi",
-  "vaikunta-ekadashi",
-];
-
-const TOP_DIASPORA_CITIES: readonly string[] = [
-  "london",
-  "leicester",
-  "birmingham",
-  "new-york",
-  "san-francisco",
-  "chicago",
-  "toronto",
-  "vancouver",
-  "sydney",
-  "melbourne",
-  "singapore",
-  "dubai",
-  "delhi",
-  "mumbai",
-  "bengaluru",
-];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [

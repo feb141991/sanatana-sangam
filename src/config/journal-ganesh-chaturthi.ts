@@ -118,6 +118,6 @@ export const ganeshChaturthiEssay: JournalEssay = {
   relatedSlugs: [
     "the-global-tithi-discrepancy-astronomy-and-timezones",
     "rhythm-of-sacred-time-panchang",
-    "architecture-of-silence-ancient-mandirs"
+    "navratri-ghatasthapana-muhurta-and-nine-devi-forms"
   ]
 };

@@ -116,7 +116,7 @@ export const ekadashiParanaEssay: JournalEssay = {
   relatedSlugs: [
     "the-global-tithi-discrepancy-astronomy-and-timezones",
     "rhythm-of-sacred-time-panchang",
-    "alchemy-of-the-name-japa"
+    "dietary-purity-and-the-science-of-fasting-ayurvedic-autophagy"
   ]
 };
 

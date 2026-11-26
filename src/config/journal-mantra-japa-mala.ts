@@ -116,7 +116,7 @@ export const mantraJapaMalaEssay: JournalEssay = {
   ],
   relatedSlugs: [
     "alchemy-of-the-name-japa",
-    "architecture-of-silence-ancient-mandirs",
+    "hanuman-chalisa-meaning-meter-and-astrological-protection",
     "the-sacred-science-of-brahma-muhurta-astronomy-and-awakening"
   ]
 };

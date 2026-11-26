@@ -115,7 +115,7 @@ export const suryaArghyaEssay: JournalEssay = {
   ],
   relatedSlugs: [
     "the-sacred-science-of-brahma-muhurta-astronomy-and-awakening",
-    "rhythm-of-sacred-time-panchang",
-    "makar-sankranti-astronomy-punya-kaal-and-uttarayana"
+    "chhath-puja-austere-tapasya-and-solar-biophysics",
+    "sandhyavandanam-cosmic-science-of-trisandhya-and-solar-meditation"
   ]
 };

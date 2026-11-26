@@ -142,5 +142,9 @@ export const kumbh2027Essay: JournalEssay = {
     ],
   },
   citations: citationsFor([haridwar, nashik]),
-  relatedSlugs: [],
+  relatedSlugs: [
+    "makar-sankranti-astronomy-punya-kaal-and-uttarayana",
+    "maha-shivratri-nishita-kaal-and-four-pahar-puja",
+    "the-global-tithi-discrepancy-astronomy-and-timezones",
+  ],
 };
