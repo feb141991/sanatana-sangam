@@ -79,7 +79,7 @@ export default async function FestivalCityPage({ params }: FestivalCityPageProps
     year,
     locationFacts: {
       festivalDate: facts.festivalDate,
-      festivalDateBasis: 'Ujjain reference set; local date derivation is deferred',
+      festivalDateBasis: 'Shoonaya published calendar, Ujjain reference set; local date derivation is deferred',
       timezone: facts.city.tz,
       coordinates: formatCityCoordinates(facts.city),
       sunrise: facts.panchang.sunrise,

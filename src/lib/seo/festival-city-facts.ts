@@ -1,12 +1,13 @@
 import { EMBED_POPULAR_CITIES, type EmbedCityPreset } from '@/lib/embed/cities';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import { unstable_cache } from 'next/cache';
+import { createClient } from '@supabase/supabase-js';
 import { lunarMonthLabel, type LunarMonthLabel } from '@/lib/calendar/lunar-month-label';
 import { zonedTimeToUtcIso } from '@/lib/marketing/social/schedule-time';
 import {
-  calculateObservancesForYearCorrected,
-  type CalculatedOccurrence,
-} from '@/lib/calendar/engine';
+  filterEligibleMarketingObservances,
+  type ObservanceJoinedRow,
+} from '@/lib/marketing/sources/published-observance';
 
 export interface FestivalCityFacts {
   city: EmbedCityPreset;
@@ -49,26 +50,77 @@ function currentCivilDate(timeZone: string, now = new Date()): string {
   }).format(now);
 }
 
-function occurrenceDate(
-  occurrences: readonly CalculatedOccurrence[],
-  slug: string,
-): string | null {
-  return occurrences.find((occurrence) => occurrence.slug === slug)?.date ?? null;
+/** The calendar profile and timezones of the Ujjain reference set the app publishes. */
+export const PUBLISHED_REFERENCE_PROFILE = 'legacy-ujjain';
+const PUBLISHED_REFERENCE_TIMEZONES = new Set(['Asia/Kolkata', 'Asia/Calcutta']);
+
+export type PublishedOccurrenceRow = ObservanceJoinedRow & {
+  year?: number | null;
+  calendar_profile?: string | null;
+  computed_timezone?: string | null;
+  is_primary_variant?: boolean | null;
+  manual_date_override?: string | null;
+};
+
+function definitionSlug(row: ObservanceJoinedRow): string | undefined {
+  const def = Array.isArray(row.observance_definitions) ? row.observance_definitions[0] : row.observance_definitions;
+  return def?.slug;
 }
 
-export function computeFestivalCityFacts(
+/**
+ * The date Shoonaya has published for this festival on the Ujjain reference set, or null.
+ *
+ * Only published, rule-governed rows that pass the withheld/disputed and final-date gates
+ * (the same gate marketing uses) count. The primary variant wins; without one, every
+ * remaining row must agree. Disagreement is not resolved here: the page shows no date.
+ * The page never computes a date of its own (AGENTS.md section 2).
+ */
+export function selectPublishedFestivalDate(
+  rows: readonly PublishedOccurrenceRow[],
   festivalSlug: string,
+  year: number,
+): string | null {
+  const candidates = (filterEligibleMarketingObservances([...rows]) as PublishedOccurrenceRow[]).filter((row) =>
+    definitionSlug(row) === festivalSlug
+    && row.calendar_profile === PUBLISHED_REFERENCE_PROFILE
+    && PUBLISHED_REFERENCE_TIMEZONES.has(row.computed_timezone ?? ''));
+  const effectiveDate = (row: PublishedOccurrenceRow) => row.manual_date_override ?? row.date;
+  const inYear = candidates.filter((row) => effectiveDate(row)?.startsWith(`${year}-`));
+  const primary = inYear.filter((row) => row.is_primary_variant === true);
+  const dates = new Set((primary.length ? primary : inYear).map(effectiveDate));
+  return dates.size === 1 ? [...dates][0] : null;
+}
+
+async function fetchPublishedFestivalDate(festivalSlug: string, year: number): Promise<string | null> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) throw new Error('Supabase is not configured for festival city pages.');
+  const supabase = createClient(url, anonKey, {
+    auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
+  });
+  const { data, error } = await supabase
+    .from('observance_occurrences')
+    .select('*, observance_definitions!inner(*)')
+    .eq('observance_definitions.slug', festivalSlug)
+    .eq('publication_status', 'published')
+    .eq('calendar_profile', PUBLISHED_REFERENCE_PROFILE)
+    .gte('date', `${year - 1}-12-01`)
+    .lte('date', `${year + 1}-01-31`)
+    .limit(500);
+  // A failed read is not "no published date" (AGENTS.md section 18): throw, so nothing is cached.
+  if (error) throw new Error('Published festival dates are unavailable.');
+  return selectPublishedFestivalDate((data ?? []) as PublishedOccurrenceRow[], festivalSlug, year);
+}
+
+/** City facts around a festival date that was already published; never derives the date. */
+export function computeFestivalCityFacts(
   citySlug: string,
   year: number,
+  festivalDate: string | null,
 ): FestivalCityFacts | null {
   const city = resolveFestivalSeoCity(citySlug);
   if (!city) return null;
 
-  const location = { lat: city.lat, lon: city.lon, tz: city.tz };
-  const festivalDate = occurrenceDate(
-    calculateObservancesForYearCorrected(year, FESTIVAL_DATE_LOCATION),
-    festivalSlug,
-  );
   const noon = localCivilNoon(festivalDate ?? currentCivilDate(city.tz), city.tz);
 
   return {
@@ -77,14 +129,16 @@ export function computeFestivalCityFacts(
     festivalDate,
     panchang: calculatePanchang(noon, city.lat, city.lon, city.tz),
     lunarMonth: festivalDate ? lunarMonthLabel(noon) : null,
-    calculationLabel: 'Festival date: Ujjain reference set · timings: local coordinates and IANA timezone',
+    calculationLabel: 'Festival date: Shoonaya published calendar (Ujjain reference) · timings: local coordinates and IANA timezone',
   };
 }
 
 const getCachedFestivalCityFacts = unstable_cache(
-  async (festivalSlug: string, citySlug: string, year: number) =>
-    computeFestivalCityFacts(festivalSlug, citySlug, year),
-  ['festival-city-facts-v2'],
+  async (festivalSlug: string, citySlug: string, year: number) => {
+    if (!resolveFestivalSeoCity(citySlug)) return null;
+    return computeFestivalCityFacts(citySlug, year, await fetchPublishedFestivalDate(festivalSlug, year));
+  },
+  ['festival-city-facts-v3'],
   { revalidate: 86_400 },
 );
 

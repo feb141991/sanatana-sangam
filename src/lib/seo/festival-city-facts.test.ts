@@ -9,7 +9,10 @@ import {
   formatCityCoordinates,
   localCivilNoon,
   resolveFestivalSeoCity,
+  selectPublishedFestivalDate,
+  type PublishedOccurrenceRow,
 } from './festival-city-facts';
+import { readFileSync } from 'node:fs';
 
 describe('festival city facts', () => {
   it('resolves curated cities without falling back to Ujjain', () => {
@@ -51,7 +54,8 @@ describe('lunar month on festival city pages', () => {
     expect(cities).toHaveLength(15);
     for (const city of cities) {
       for (const year of years) {
-        const facts = computeFestivalCityFacts('gita-jayanti', city, year);
+        const date = calculateObservancesForYearCorrected(year, FESTIVAL_DATE_LOCATION).find((o) => o.slug === 'gita-jayanti')?.date ?? null;
+        const facts = computeFestivalCityFacts(city, year, date);
         expect(facts?.festivalDate, `${city} ${year}`).toMatch(new RegExp(`^${year}-12-`));
         // Shukla Ekadashi: Amanta and Purnimanta agree, so exactly one name.
         expect(facts?.lunarMonth?.text, `${city} ${year}`).toBe('Margashirsha');
@@ -85,7 +89,7 @@ describe('lunar month on festival city pages', () => {
   });
 
   it('shows no lunar month when there is no festival date to take it from', () => {
-    const facts = computeFestivalCityFacts('guru-purnima', 'london', 2026);
+    const facts = computeFestivalCityFacts('london', 2026, null);
     expect(facts?.festivalDate).toBeNull();
     expect(facts?.lunarMonth).toBeNull();
   });
@@ -93,5 +97,58 @@ describe('lunar month on festival city pages', () => {
   it('uses the city\'s own noon', () => {
     expect(localCivilNoon('2026-12-20', 'Australia/Sydney').toISOString()).toBe('2026-12-20T01:00:00.000Z');
     expect(localCivilNoon('2026-12-20', 'America/Los_Angeles').toISOString()).toBe('2026-12-20T20:00:00.000Z');
+  });
+});
+
+describe('published festival date on city pages', () => {
+  const row = (date: string, extra: Partial<PublishedOccurrenceRow> = {}): PublishedOccurrenceRow => ({
+    id: `${date}-${Math.random()}`,
+    date,
+    publication_status: 'published',
+    calendar_profile: 'legacy-ujjain',
+    computed_timezone: 'Asia/Kolkata',
+    is_primary_variant: null,
+    final_date_source: 'calculation_engine',
+    observance_definitions: { slug: 'diwali' },
+    ...extra,
+  });
+
+  it('uses the published 2026 Diwali date, not the engine\'s', () => {
+    // Production on 2026-11-26: published 8 Nov; the page computed 9 Nov.
+    const engine = calculateObservancesForYearCorrected(2026, FESTIVAL_DATE_LOCATION).find((o) => o.slug === 'diwali')?.date;
+    expect(engine).toBe('2026-11-09');
+    const rows = [row('2026-11-08', { is_primary_variant: true }), row('2026-11-08'), row('2026-11-08', { computed_timezone: 'Asia/Calcutta' })];
+    expect(selectPublishedFestivalDate(rows, 'diwali', 2026)).toBe('2026-11-08');
+  });
+
+  it('prefers the primary variant and otherwise needs every row to agree', () => {
+    expect(selectPublishedFestivalDate([row('2026-11-08', { is_primary_variant: true }), row('2026-11-09')], 'diwali', 2026)).toBe('2026-11-08');
+    expect(selectPublishedFestivalDate([row('2026-11-08'), row('2026-11-09')], 'diwali', 2026)).toBeNull();
+    expect(selectPublishedFestivalDate([row('2026-11-08'), row('2026-11-08')], 'diwali', 2026)).toBe('2026-11-08');
+  });
+
+  it('ignores unpublished rows, other profiles, other timezones, other festivals and other years', () => {
+    expect(selectPublishedFestivalDate([
+      row('2026-11-07', { publication_status: 'draft', is_primary_variant: true }),
+      row('2026-11-07', { calendar_profile: 'north_indian_purnimanta', is_primary_variant: true }),
+      row('2026-11-07', { computed_timezone: 'Europe/London', is_primary_variant: true }),
+      row('2026-11-07', { observance_definitions: { slug: 'dhanteras' }, is_primary_variant: true }),
+      row('2027-10-28', { is_primary_variant: true }),
+      row('2026-11-08'),
+    ], 'diwali', 2026)).toBe('2026-11-08');
+  });
+
+  it('shows no date for a fallback date or when nothing is published', () => {
+    expect(selectPublishedFestivalDate([row('2026-11-08', { final_date_source: 'fallback' })], 'diwali', 2026)).toBeNull();
+    expect(selectPublishedFestivalDate([], 'diwali', 2026)).toBeNull();
+  });
+
+  it('honours a manual override', () => {
+    expect(selectPublishedFestivalDate([row('2026-11-09', { manual_date_override: '2026-11-08', is_primary_variant: true })], 'diwali', 2026)).toBe('2026-11-08');
+  });
+
+  it('never computes a date of its own', () => {
+    const source = readFileSync(new URL('./festival-city-facts.ts', import.meta.url), 'utf8');
+    expect(source).not.toMatch(/calculateObservancesForYear/);
   });
 });
