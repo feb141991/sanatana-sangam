@@ -471,8 +471,9 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
       conditions: [
         { type: 'lunar_month', value: 'Shravana', monthSystem: 'amanta' },
         { type: 'paksha', value: 'shukla' },
-        { type: 'tithi_presence', tithi: 15, period: 'aparahna', mode: 'touches' },
-        { type: 'karana_presence', karana: 'Vishti', period: 'aparahna', mode: 'absent' },
+        // Founder-approved 2026-11-26 (not council ratified): Purnima at aparahna with no Bhadra; when no
+        // day passes, Day 2 if Purnima lasts 3 muhurtas after its sunrise, else Day 1 after Bhadra (or its puccha).
+        { type: 'raksha_bandhan', minUdayaMinutes: 144, pucchaMinutes: 72 },
       ],
     }],
   },

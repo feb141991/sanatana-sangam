@@ -65,6 +65,7 @@ export function validateWindowDeclarationParity(input: readonly Rule[] = rules a
     const paksha = effectiveCondition(rule, 'paksha');
     const presence = effectiveCondition(rule, 'tithi_presence');
     const holika = effectiveCondition(rule, 'holika_dahan');
+    const raksha = effectiveCondition(rule, 'raksha_bandhan');
     const executableTithi = rule.corrected_lunar_tithi_index ?? rule.lunar_tithi_index;
     const nightProxy = LEGACY_INDEX_IS_NIGHT_PROXY.has(rule.slug);
     if (nightProxy && declaration.period !== 'nishita') issues.push(`${key(rule)}: night-proxy rule must declare a nishita period`);
@@ -99,6 +100,9 @@ export function validateWindowDeclarationParity(input: readonly Rule[] = rules a
     } else if (holika) {
       if (declaration.period !== 'pradosha') issues.push(`${key(rule)}: period ${declaration.period} != holika_dahan pradosha`);
       if (declaration.mode !== 'touches') issues.push(`${key(rule)}: mode ${declaration.mode} != holika_dahan touches`);
+    } else if (raksha) {
+      if (declaration.period !== 'aparahna') issues.push(`${key(rule)}: period ${declaration.period} != raksha_bandhan aparahna`);
+      if (declaration.mode !== 'touches') issues.push(`${key(rule)}: mode ${declaration.mode} != raksha_bandhan touches`);
     } else if (declaration.period !== 'sunrise' && !DECLARED_AHEAD_OF_ENGINE.has(rule.slug) && !DECLARATIVE_ONLY_PERIODS.has(rule.slug)) {
       const reference: string = (rule as any).corrected_tithi_reference_time ?? 'sunrise';
       const expectedPeriod = reference === 'madhyahna' ? 'madhyahna' : 'sunrise';

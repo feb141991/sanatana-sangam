@@ -21,6 +21,7 @@ export {
   type NakshatraPresenceCondition,
   type KaranaPresenceCondition,
   type HolikaDahanCondition,
+  type RakshaBandhanCondition,
   type ViddhaCondition,
   type EvaluationReason,
   type ConditionEvaluationResult,

@@ -63,6 +63,7 @@ import {
   PakshaCondition,
   KaranaPresenceCondition,
   HolikaDahanCondition,
+  RakshaBandhanCondition,
 } from './types.js';
 
 
@@ -473,6 +474,104 @@ export function resolveHolikaDahan(civilDateStr: string, location: LocationInput
   });
 }
 
+// ---------------------------------------------------------------------------
+// Raksha Bandhan (founder-approved 2026-11-26; puccha length PROPOSED)
+// ---------------------------------------------------------------------------
+
+export type RakshaBandhanBranch = 'aparahna_no_bhadra' | 'udaya_three_muhurta' | 'after_bhadra' | 'bhadra_puccha' | 'unresolved';
+
+export interface RakshaBandhanResolution {
+  date: string | null;
+  branch: RakshaBandhanBranch;
+  purnimaStartUtc: string | null;
+  bhadraEndUtc: string | null;
+  purnimaEndUtc: string | null;
+  /** Minutes Purnima lasts after sunrise on Day 2; null when Purnima is not at Day 2's sunrise. */
+  udayaMinutes: number | null;
+  /** When the ritual may begin on the resolved date (after Bhadra, or the puccha), for the fallback-B branches only. */
+  ritualWindowStartUtc: string | null;
+}
+
+const rakshaBandhanCache = new Map<string, RakshaBandhanResolution>();
+
+/**
+ * Resolves the Raksha Bandhan civil date for the Purnima near `civilDateStr`.
+ * Purnima = elongation 168-180 deg; Bhadra (Vishti) = its first half, 168-174 deg.
+ * Day 2 = the first civil day whose sunrise is after Purnima begins; Day 1 = the day before it.
+ * Order: (1) the first day whose aparahna touches Purnima with no Bhadra in it; (2) Day 2 when Purnima
+ * is at its sunrise and lasts at least `minUdayaMinutes` after it; (3) Day 1, after Bhadra ends, or in
+ * the Bhadra-puccha when Bhadra ends after Day 1's midnight. No other date is invented.
+ */
+export function resolveRakshaBandhan(
+  civilDateStr: string,
+  location: LocationInput,
+  minUdayaMinutes = 144,
+  pucchaMinutes = 72,
+): RakshaBandhanResolution {
+  const cacheKey = `${civilDateStr}|${location.lat}|${location.lon}|${location.tz}|${minUdayaMinutes}|${pucchaMinutes}`;
+  return memoizeBounded(rakshaBandhanCache, cacheKey, () => {
+    const none = { purnimaStartUtc: null, bhadraEndUtc: null, purnimaEndUtc: null, udayaMinutes: null, ritualWindowStartUtc: null };
+    const unresolved: RakshaBandhanResolution = { date: null, branch: 'unresolved', ...none };
+    const base = parseCivilDateUtc(civilDateStr).getTime();
+    const t168 = findElongationUpwardCrossing(168, base - 96 * 3_600_000, base + 120 * 3_600_000);
+    if (t168 === null) return unresolved;
+    const t174 = findElongationUpwardCrossing(174, t168 - 6 * 3_600_000, t168 + 48 * 3_600_000);
+    const t180 = findElongationUpwardCrossing(180, t168 - 6 * 3_600_000, t168 + 72 * 3_600_000);
+    if (t174 === null || t180 === null) return unresolved;
+    const info = {
+      ...none,
+      purnimaStartUtc: new Date(t168).toISOString(),
+      bhadraEndUtc: new Date(t174).toISOString(),
+      purnimaEndUtc: new Date(t180).toISOString(),
+    };
+
+    // (1) Primary: aparahna touches Purnima and has no Bhadra.
+    let day = offsetCivilDateStr(formatCivilDateInTz(new Date(t168), location.tz), -1);
+    const lastDay = offsetCivilDateStr(formatCivilDateInTz(new Date(t180), location.tz), 1);
+    for (let guard = 0; guard < 6 && day <= lastDay; guard += 1) {
+      const aparahna = getPeriodWindow('aparahna', day, location);
+      if (aparahna) {
+        const touchesPurnima = aparahna.start.getTime() < t180 && aparahna.end.getTime() > t168;
+        const overlapsBhadra = aparahna.start.getTime() < t174 && aparahna.end.getTime() > t168;
+        if (touchesPurnima && !overlapsBhadra) return { ...info, date: day, branch: 'aparahna_no_bhadra' };
+      }
+      day = offsetCivilDateStr(day, 1);
+    }
+
+    // Day 2: the first civil day whose sunrise falls after Purnima begins.
+    let day2 = formatCivilDateInTz(new Date(t168), location.tz);
+    let day2Sunrise: Date | null = null;
+    for (let guard = 0; guard < 3; guard += 1) {
+      const rise = getPeriodWindow('sunrise', day2, location);
+      if (rise && rise.start.getTime() > t168) { day2Sunrise = rise.start; break; }
+      day2 = offsetCivilDateStr(day2, 1);
+    }
+    if (!day2Sunrise) return { ...unresolved, ...info };
+    const udayaMinutes = day2Sunrise.getTime() < t180 ? (t180 - day2Sunrise.getTime()) / 60_000 : null;
+
+    // (2) Fallback A: Purnima at Day 2 sunrise for at least 3 muhurtas.
+    if (udayaMinutes !== null && udayaMinutes >= minUdayaMinutes) {
+      return { ...info, udayaMinutes, date: day2, branch: 'udaya_three_muhurta' };
+    }
+
+    // (3) Fallback B: Day 1, after Bhadra ends, or in the puccha if Bhadra ends after Day 1's midnight.
+    const day1 = offsetCivilDateStr(day2, -1);
+    const bhadraEndsOnDay1 = formatCivilDateInTz(new Date(t174), location.tz) === day1;
+    const windowStart = bhadraEndsOnDay1 ? t174 : Math.max(t168, t174 - pucchaMinutes * 60_000);
+    if (formatCivilDateInTz(new Date(windowStart), location.tz) !== day1 && !bhadraEndsOnDay1) {
+      // The puccha itself starts after Day 1's midnight: the rule as given does not place it on Day 1.
+      return { ...unresolved, ...info, udayaMinutes };
+    }
+    return {
+      ...info,
+      udayaMinutes,
+      date: day1,
+      branch: bhadraEndsOnDay1 ? 'after_bhadra' : 'bhadra_puccha',
+      ritualWindowStartUtc: new Date(windowStart).toISOString(),
+    };
+  });
+}
+
 export function evaluateCondition(
   condition: RuleCondition,
   civilDateStr: string,
@@ -852,6 +951,25 @@ export function evaluateCondition(
       satisfied,
       reasons,
       diagnostics: [`holika_dahan_${resolution.branch}`],
+    };
+  }
+
+  if (condition.type === 'raksha_bandhan') {
+    const c = condition as RakshaBandhanCondition;
+    const resolution = resolveRakshaBandhan(civilDateStr, location, c.minUdayaMinutes ?? 144, c.pucchaMinutes ?? 72);
+    const satisfied = resolution.date === civilDateStr;
+    reasons.push({
+      code: 'raksha_bandhan_check',
+      text: resolution.date
+        ? `Raksha Bandhan resolves to ${resolution.date} via '${resolution.branch}': ${satisfied ? 'MATCHED' : 'DID NOT MATCH'} on ${civilDateStr}.`
+        : `Raksha Bandhan unresolved near ${civilDateStr}.`,
+      details: { ...resolution },
+    });
+    return {
+      conditionType: condition.type,
+      satisfied,
+      reasons,
+      diagnostics: [`raksha_bandhan_${resolution.branch}`],
     };
   }
 

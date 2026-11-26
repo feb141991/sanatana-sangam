@@ -85,6 +85,20 @@ export interface HolikaDahanCondition extends BaseCondition {
   pucchaMinutes?: number;
 }
 
+/**
+ * Raksha Bandhan date (founder-approved 2026-11-26, from the founder's summary of Dharmasindhu; not council ratified).
+ * Primary: Shravana Purnima touches aparahna with no Bhadra (Vishti) in it. If no day passes:
+ *   A. Purnima is present at sunrise on Day 2 and lasts at least `minUdayaMinutes` (3 muhurtas, 144 min) after it: Day 2.
+ *   B. Otherwise: Day 1, with the ritual window after Bhadra ends, or in the Bhadra-puccha (last `pucchaMinutes`
+ *      of Bhadra, PROPOSED length, the same 72 minutes Holika Dahan uses) when Bhadra runs past midnight.
+ * Satisfied only on the civil date it resolves to.
+ */
+export interface RakshaBandhanCondition extends BaseCondition {
+  type: 'raksha_bandhan';
+  minUdayaMinutes?: number;
+  pucchaMinutes?: number;
+}
+
 export interface ViddhaCondition extends BaseCondition {
   type: 'viddha';
   piercedBy: number; // e.g. 10
@@ -106,6 +120,7 @@ export type RuleCondition =
   | NakshatraPresenceCondition
   | KaranaPresenceCondition
   | HolikaDahanCondition
+  | RakshaBandhanCondition
   | ViddhaCondition
   | GenericCondition;
 

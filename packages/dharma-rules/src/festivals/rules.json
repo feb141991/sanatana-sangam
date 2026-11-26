@@ -869,21 +869,14 @@
         "value": "shukla"
       },
       {
-        "type": "tithi_presence",
-        "tithi": 15,
-        "period": "aparahna",
-        "mode": "touches"
-      },
-      {
-        "type": "karana_presence",
-        "karana": "Vishti",
-        "period": "aparahna",
-        "mode": "absent"
+        "type": "raksha_bandhan",
+        "minUdayaMinutes": 144,
+        "pucchaMinutes": 72
       }
     ],
     "launch_status": "included",
     "date_assignment": {
-      "status": "proposed",
+      "status": "founder_approved",
       "basis": "lunar_tithi",
       "tithi": 15,
       "paksha": "shukla",
@@ -901,7 +894,7 @@
       "read_by_human": false,
       "status": "unsourced"
     },
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-08-28, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #35) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+    "ratification_note": "approved by the founder 2026-11-26; not council ratified. Primary: Shravana Purnima touches aparahna with no Bhadra (Vishti) in it. When no day passes: (A) if Purnima is at sunrise on Day 2 and lasts at least 3 muhurtas (144 minutes) after it, Day 2; (B) otherwise Day 1, with the ritual after Bhadra ends, or in the Bhadra-puccha if Bhadra runs past midnight. The founder gave this hierarchy as Dharmasindhu's; the text itself was not read in this change, so window_source stays unsourced. The puccha LENGTH (72 minutes = 3 ghatikas, as for Holika Dahan) is a PROPOSED parameter until confirmed. Earlier provenance: corrected engine computes 2026-08-28, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #35); see docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "krishna-janmashtami",
