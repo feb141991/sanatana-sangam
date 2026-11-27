@@ -52,7 +52,8 @@ describe('homepage moon hero page', () => {
 describe('homepage moon hero calendar honesty', () => {
   it('labels the ring as an illustration and never derives a tithi from the real Moon', () => {
     expect(scene).toContain('An illustration of one lunar month, not tonight');
-    expect(scene).toContain('Your tithi for today is in the app.');
+    // The real Moon's caption is only "% lit, waxing/waning" (founder decision 2026-11-27: no note under it).
+    expect(scene).toContain("capNote.textContent = ''; // founder decision 2026-11-27");
     // The real Moon only gives "% lit" and waxing or waning.
     expect(scene).not.toMatch(/tithi\w*\(\s*nowFrac|tithi\w*\(\s*nowElong/);
   });

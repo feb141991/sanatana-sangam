@@ -51,7 +51,6 @@ declare global { interface Window { __moonHero?: HeroState } }
   const nowFrac = nowElong / 360;
   const nowLit = Math.round(illuminatedFraction(nowElong) * 100);
   const nowWaxing = isWaxing(nowElong);
-  const nowDate = NOW.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
   const REAL_UNTIL = 0.15;
   function moonFrac(p: number) {
     if (p > REAL_UNTIL) return illustratedFraction(p);
@@ -292,7 +291,7 @@ declare global { interface Window { __moonHero?: HeroState } }
       if (real) {
         capTitle.textContent = 'The moon right now';
         capSub.textContent = `${nowLit}% lit, ${nowWaxing ? 'waxing' : 'waning'}`;
-        capNote.textContent = `Worked out in your browser for ${nowDate}. Your tithi for today is in the app.`;
+        capNote.textContent = ''; // founder decision 2026-11-27: no note under the real moon
       } else {
         const { name, line } = tithiLabel(curIdx);
         capTitle.textContent = name; capSub.textContent = line;
