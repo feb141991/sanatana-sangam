@@ -122,6 +122,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     { url: `${BASE_URL}/rashiphala`, changeFrequency: "daily", priority: 0.9 },
     { url: `${BASE_URL}/kundali`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE_URL}/vrat`, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/tirtha-map`, changeFrequency: "weekly", priority: 0.8 },
 
     // Content / learning
