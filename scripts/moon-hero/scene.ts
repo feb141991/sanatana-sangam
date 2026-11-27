@@ -204,8 +204,6 @@ declare global { interface Window { __moonHero?: HeroState } }
   const capTitle = hero.querySelector<HTMLElement>('.mh-cap-title');
   const capSub = hero.querySelector<HTMLElement>('.mh-cap-sub');
   const capNote = hero.querySelector<HTMLElement>('.mh-cap-note');
-  const kicker = hero.querySelector<HTMLElement>('[data-mh-now-kicker]');
-  if (kicker && !state.still) kicker.textContent = 'The moon right now · Shoonaya';
   let lastCap = '';
 
   /* ---------- layout ---------- */
@@ -213,7 +211,9 @@ declare global { interface Window { __moonHero?: HeroState } }
   function resize() {
     W = canvas!.clientWidth || stage!.clientWidth; H = canvas!.clientHeight || window.innerHeight;
     renderer.setSize(W, H, false);
-    camera.aspect = W / H; wide = W >= 720;
+    // Side by side only on a wide, landscape screen; a portrait tablet uses the phone layout (text below the moon),
+    // matching the hero's CSS media query and the inline script in landing.html.
+    camera.aspect = W / H; wide = W >= 720 && W > H;
     camera.setViewOffset(W, H, wide ? -W * 0.22 : 0, wide ? 0 : H * 0.12, W, H);
     camera.updateProjectionMatrix();
   }
@@ -230,7 +230,8 @@ declare global { interface Window { __moonHero?: HeroState } }
   const frontTurn = (idx: number) => -Math.PI / 2 - (Math.PI / 2 - ((idx + 0.5) / N) * TAU);
   let ringTurn = 0, curIdx = 0, reveal = 0;
 
-  function draw(p: number, settle: boolean) {
+  // Returns true while the ring is still turning toward its target, so the loop knows to keep drawing.
+  function draw(p: number, settle: boolean): boolean {
     const bg = bgAt(p);
     (scene.background as Color).copy(bg);
     const day = ss(0.4, 0.75, p);
@@ -249,6 +250,7 @@ declare global { interface Window { __moonHero?: HeroState } }
     const want = frontTurn(curIdx) * ss(0.36, 0.5, p);
     const diff = Math.atan2(Math.sin(want - ringTurn), Math.cos(want - ringTurn));
     ringTurn += settle ? diff : diff * 0.08;
+    const turning = !settle && Math.abs(diff) > 1e-4;
 
     setInstance(moons, 0, origin, 1); setInstance(hull, 0, origin, 1.012);
     for (let i = 0; i < N; i++) {
@@ -305,6 +307,7 @@ declare global { interface Window { __moonHero?: HeroState } }
       el.style.left = `${(v.x * 0.5 + 0.5) * W}px`; el.style.top = `${(-v.y * 0.5 + 0.5) * H}px`;
       el.style.opacity = String((0.35 + 0.65 * emph) * reveal);
     }
+    return turning;
   }
 
   /* ---------- hover or tap a Moon for its name ---------- */
@@ -338,14 +341,21 @@ declare global { interface Window { __moonHero?: HeroState } }
   } else {
     window.addEventListener('resize', resize);
     draw(state.p, true);
-    let running = false, onScreen = true;
+    // Draw only while something moves: the scroll position (eased by the inline script) or the ring
+    // settling. A page left still stops drawing, so an idle phone's graphics chip is not kept busy.
+    let running = false, onScreen = true, lastP = -1;
     const tick = () => {
       if (!onScreen || document.hidden) { running = false; return; }
-      draw(state.p, false);
+      const p = state.p;
+      const turning = draw(p, false);
+      if (!turning && p === lastP) { running = false; return; }
+      lastP = p;
       requestAnimationFrame(tick);
     };
     const run = () => { if (!running) { running = true; requestAnimationFrame(tick); } };
     run();
+    window.addEventListener('scroll', run, { passive: true });
+    window.addEventListener('resize', run);
     if ('IntersectionObserver' in window) {
       new IntersectionObserver((e) => { onScreen = e[0].isIntersecting; if (onScreen) run(); }).observe(hero);
     }

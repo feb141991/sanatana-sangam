@@ -5208,9 +5208,10 @@
         box-shadow: 0 6px 20px rgba(22, 28, 42, 0.25);
       }
       #moon-hero .mh-tip strong { display: block; font-family: var(--fd); font-size: 16px; font-weight: 400; }
-      @media (max-width: 720px) {
+      /* Phones and portrait tablets: text below the moon, never over it. */
+      @media (max-width: 720px), (orientation: portrait) {
         #moon-hero .mh-fallback { left: 50%; top: 38%; width: 64vw; height: 64vw; }
-        #moon-hero .mh-copy { width: calc(100% - 32px); }
+        #moon-hero .mh-copy { width: calc(100% - 32px); max-width: 560px; }
         #moon-hero .mh-chapter { top: auto; bottom: calc(max(24px, env(safe-area-inset-bottom)) + 8px); transform: none; }
         #moon-hero .mh-sections { left: auto; right: 12px; top: 96px; bottom: auto; gap: 0; }
         #moon-hero .mh-sections button { font-size: 0; min-width: 34px; align-items: center; }
@@ -5430,7 +5431,7 @@
         });
         function loadPicture() {
           var s = document.createElement("script");
-          s.src = "/assets/js/moon-hero.js?v=8019c23e340c";
+          s.src = "/assets/js/moon-hero.js?v=499e1bb25587";
           s.async = true;
           document.body.appendChild(s);
         }
@@ -5448,9 +5449,10 @@
           target = s > 0 ? Math.min(1, Math.max(0, -r.top / s)) : 0;
         }
         function paint(p) {
-          var wide = window.innerWidth >= 720;
+          var wide = window.innerWidth >= 720 && window.innerWidth > window.innerHeight;
           for (var i = 0; i < chapters.length; i++) {
-            var d = (p - i / n) * n, o = Math.max(0, 1 - Math.abs(d) * 2.2), el = chapters[i];
+            // Each chapter stays fully readable for most of its stretch and crossfades only near the midpoint.
+            var d = (p - i / n) * n, o = Math.min(1, Math.max(0, (0.5 - Math.abs(d)) * 5)), el = chapters[i];
             el.style.opacity = o;
             el.style.transform = wide ? "translateY(calc(-50% + " + (-d * 60) + "px))" : "translateY(" + (-d * 40) + "px)";
             el.style.pointerEvents = o > 0.6 ? "auto" : "none";
@@ -5459,16 +5461,19 @@
           buttons.forEach(function (b, i) { if (i === c) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
         }
         var running = false;
+        // Runs only while easing toward the scroll position; stops once there and restarts on scroll.
         function tick() {
           if (!state.visible) { running = false; return; }
           state.p += (target - state.p) * 0.08;
           if (Math.abs(target - state.p) < 1e-4) state.p = target;
           paint(state.p);
+          if (state.p === target) { running = false; return; }
           requestAnimationFrame(tick);
         }
         function start() { if (!running) { running = true; requestAnimationFrame(tick); } }
-        window.addEventListener("scroll", read, { passive: true });
-        window.addEventListener("resize", read);
+        function onMove() { read(); start(); }
+        window.addEventListener("scroll", onMove, { passive: true });
+        window.addEventListener("resize", onMove);
         if ("IntersectionObserver" in window) {
           new IntersectionObserver(function (e) { state.visible = e[0].isIntersecting; if (state.visible) start(); }).observe(hero);
         }

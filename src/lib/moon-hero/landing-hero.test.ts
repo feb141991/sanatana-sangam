@@ -57,3 +57,20 @@ describe('homepage moon hero calendar honesty', () => {
     expect(scene).not.toMatch(/tithi\w*\(\s*nowFrac|tithi\w*\(\s*nowElong/);
   });
 });
+
+// 2026-11-27 review: both loops redrew every frame while the hero was on screen, even with nobody
+// scrolling, and on portrait tablets the chapter text sat on top of the moon.
+describe('homepage moon hero cost and layout', () => {
+  it('stops both animation loops once nothing is moving, and restarts them on scroll', () => {
+    expect(landing).toMatch(/if \(state\.p === target\) \{ running = false; return; \}/);
+    expect(landing).toMatch(/window\.addEventListener\("scroll", onMove, \{ passive: true \}\)/);
+    expect(scene).toMatch(/if \(!turning && p === lastP\) \{ running = false; return; \}/);
+    expect(scene).toMatch(/window\.addEventListener\('scroll', run, \{ passive: true \}\)/);
+  });
+
+  it('puts the text below the moon on portrait screens, in CSS, the inline script and the scene alike', () => {
+    expect(landing).toMatch(/@media \(max-width: 720px\), \(orientation: portrait\) \{\s*#moon-hero \.mh-fallback/);
+    expect(landing).toContain('var wide = window.innerWidth >= 720 && window.innerWidth > window.innerHeight;');
+    expect(scene).toContain('wide = W >= 720 && W > H;');
+  });
+});
