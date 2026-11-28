@@ -32,6 +32,51 @@ import { understandingKarmaEssay } from "./journal-understanding-karma";
 import { chhathPujaEssay } from "./journal-chhath-puja";
 import { amavasyaPurnimaEssay } from "./journal-amavasya-purnima";
 import { fastingScienceEssay } from "./journal-fasting-science";
+import { pradosh2027Essay } from "./journal-pradosh-2027";
+import { chaturmasya2027Essay } from "./journal-chaturmasya-2027";
+import { jainCalendar2027Essay } from "./journal-jain-calendar-2027";
+import { mahaShivaratri2027Essay } from "./journal-maha-shivaratri-2027";
+import { navratri2027Essay } from "./journal-navratri-2027";
+import { nakshatrasEssay } from "./journal-nakshatras-lunar-mansions";
+import { abhijitMuhurtaEssay } from "./journal-abhijit-muhurta";
+import { sankalpaEssay } from "./journal-sankalpa-ritual-intention";
+import { panchangaFiveLimbsEssay } from "./journal-panchanga-five-limbs";
+import { amantaPurnimantaEssay } from "./journal-amanta-vs-purnimanta";
+import { gayatriMantraEssay } from "./journal-gayatri-mantra";
+import { deepaLampEssay } from "./journal-deepa-lamp-lighting";
+import { shankhaGhantaEssay } from "./journal-shankha-and-ghanta";
+import { pradakshinaEssay } from "./journal-pradakshina";
+import { naivedyaPrasadEssay } from "./journal-naivedya-prasad";
+import { vishnuSahasranamaEssay } from "./journal-vishnu-sahasranama";
+import { lalitaSahasranamaEssay } from "./journal-lalita-sahasranama";
+import { rudrashtakamEssay } from "./journal-rudrashtakam";
+import { adityaHridayamEssay } from "./journal-aditya-hridayam";
+import { shantiMantrasEssay } from "./journal-shanti-mantras";
+import { ishavasyaEssay } from "./journal-ishavasya-upanishad";
+import { kathaUpanishadEssay } from "./journal-katha-upanishad";
+import { nishkamaKarmaEssay } from "./journal-nishkama-karma";
+import { sthitaprajnaEssay } from "./journal-sthitaprajna";
+import { svadharmaEssay } from "./journal-svadharma";
+import { japjiSahibEssay } from "./journal-japji-sahib";
+import { nitnemEssay } from "./journal-nitnem-banis";
+import { ardasEssay } from "./journal-ardas";
+import { sangatPangatEssay } from "./journal-sangat-pangat";
+import { chardiKalaEssay } from "./journal-chardi-kala";
+import { ahimsaEssay } from "./journal-mahavir-ahimsa";
+import { micchamiDukkadamEssay } from "./journal-micchami-dukkadam";
+import { namokarMantraEssay } from "./journal-namokar-mantra";
+import { anapanasatiEssay } from "./journal-anapanasati";
+import { brahmaviharasEssay } from "./journal-brahmaviharas";
+import { jyotirlingasEssay } from "./journal-twelve-jyotirlingas";
+import { charDhamEssay } from "./journal-char-dham";
+import { saptaNadiEssay } from "./journal-sapta-nadi";
+import { kashiEssay } from "./journal-kashi-tradition";
+import { harmandirSahibEssay } from "./journal-harmandir-sahib";
+import { panchaMahayajnaEssay } from "./journal-pancha-mahayajna";
+import { pitriRinEssay } from "./journal-pitri-rin";
+import { daanEthicsEssay } from "./journal-daan-ethics";
+import { atithiDevoEssay } from "./journal-atithi-devo";
+import { maunaEssay } from "./journal-mauna-silence";
 
 export type JournalSectionHighlight = {
   label: string;
@@ -861,6 +906,52 @@ const journalEssays: JournalEssay[] = [
   purnimaAmavasya2027Essay,
   diwali2027Essay,
   sikhCalendar2027Essay,
+  // 45 Pramana & Ritual-reviewed Sanctuary Journal essays (9 batches, published 2026-11-28).
+  pradosh2027Essay,
+  chaturmasya2027Essay,
+  jainCalendar2027Essay,
+  mahaShivaratri2027Essay,
+  navratri2027Essay,
+  nakshatrasEssay,
+  abhijitMuhurtaEssay,
+  sankalpaEssay,
+  panchangaFiveLimbsEssay,
+  amantaPurnimantaEssay,
+  gayatriMantraEssay,
+  deepaLampEssay,
+  shankhaGhantaEssay,
+  pradakshinaEssay,
+  naivedyaPrasadEssay,
+  vishnuSahasranamaEssay,
+  lalitaSahasranamaEssay,
+  rudrashtakamEssay,
+  adityaHridayamEssay,
+  shantiMantrasEssay,
+  ishavasyaEssay,
+  kathaUpanishadEssay,
+  nishkamaKarmaEssay,
+  sthitaprajnaEssay,
+  svadharmaEssay,
+  japjiSahibEssay,
+  nitnemEssay,
+  ardasEssay,
+  sangatPangatEssay,
+  chardiKalaEssay,
+  ahimsaEssay,
+  micchamiDukkadamEssay,
+  namokarMantraEssay,
+  anapanasatiEssay,
+  brahmaviharasEssay,
+  jyotirlingasEssay,
+  charDhamEssay,
+  saptaNadiEssay,
+  kashiEssay,
+  harmandirSahibEssay,
+  panchaMahayajnaEssay,
+  pitriRinEssay,
+  daanEthicsEssay,
+  atithiDevoEssay,
+  maunaEssay,
   // The Global Tithi Discrepancy & Timezones: Canonical Astrometric and Shastric Study
   tithiDiscrepancyEssay,
   // The Sacred Science of Brahma Muhurta
