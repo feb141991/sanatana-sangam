@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { postSlackOperationalAlert } from '@/lib/slack-alerts';
+import { isChunkLoadError } from '@/lib/chunk-load-recovery';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,7 +69,7 @@ export async function GET(request: Request) {
     // 2. Audit Client Crashes
     const { data: clientErrors, error: clientErr } = await supabase
       .from('client_error_events')
-      .select('error_name, error_message, route, created_at')
+      .select('error_name, error_message, route, created_at, client_release_sha, server_release_sha')
       .gt('created_at', sinceIso)
       .order('created_at', { ascending: false })
       .limit(50);
@@ -115,7 +116,20 @@ export async function GET(request: Request) {
     }
 
     const nativeFailures = apiErrors || [];
-    const clientCrashes = clientErrors || [];
+    const allClientErrors = clientErrors || [];
+    // A ChunkLoadError whose client_release_sha differs from server_release_sha comes from a
+    // pre-deploy browser tab requesting a superseded webpack chunk, not a broken live deploy.
+    const isStaleDeployChunkError = (e: {
+      error_name?: string | null;
+      error_message?: string | null;
+      client_release_sha?: string | null;
+      server_release_sha?: string | null;
+    }) =>
+      Boolean(e.client_release_sha && e.server_release_sha && e.client_release_sha !== e.server_release_sha) &&
+      isChunkLoadError({ name: e.error_name, message: e.error_message });
+
+    const staleChunkCount = allClientErrors.filter(isStaleDeployChunkError).length;
+    const clientCrashes = allClientErrors.filter((e) => !isStaleDeployChunkError(e));
     const criticalMonEvents = monEvents || [];
 
     // Categorize server errors (HTTP 5xx) vs client 4xx
@@ -176,6 +190,7 @@ export async function GET(request: Request) {
           server5xxCount: serverErrors.length,
           totalNativeFailures: nativeFailures.length,
           clientCrashCount: clientCrashes.length,
+          staleChunkCount,
           criticalMonEventsCount: criticalMonEvents.length,
         },
       });
@@ -197,6 +212,7 @@ export async function GET(request: Request) {
           totalNativeFailures: nativeFailures.length,
           server5xxCount: serverErrors.length,
           clientCrashCount: clientCrashes.length,
+          staleChunkCount,
           criticalMonEventsCount: criticalMonEvents.length,
         },
       });
@@ -214,6 +230,7 @@ export async function GET(request: Request) {
         nativeFailuresTotal: nativeFailures.length,
         nativeServer5xx: serverErrors.length,
         clientCrashes: clientCrashes.length,
+        staleChunkErrorsIgnored: staleChunkCount,
         criticalBackendEvents: criticalMonEvents.length,
       },
     });

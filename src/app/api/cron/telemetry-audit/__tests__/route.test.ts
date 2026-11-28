@@ -330,4 +330,54 @@ describe('/api/cron/telemetry-audit', () => {
       expect(postSlackOperationalAlert).toHaveBeenCalled();
     });
   });
+
+  describe('stale-deploy ChunkLoadError filtering', () => {
+    it('ignores stale-deploy ChunkLoadError when client_release_sha differs from server_release_sha', async () => {
+      mocks.mockClientErrors = [
+        {
+          error_name: 'ChunkLoadError',
+          error_message: 'Loading chunk 7177 failed.\n(error: https://www.shoonaya.com/_next/static/chunks/app/layout-e6b18ca8.js)',
+          route: '/bhakti/katha',
+          created_at: new Date().toISOString(),
+          client_release_sha: '4a44e2719c98361329fcf7621fc7a60f5438b1fe',
+          server_release_sha: '9dc6afcacc45ebf916e54f3fdf3febf5640fd58b',
+        },
+      ];
+
+      const req = new Request('https://shoonaya.com/api/cron/telemetry-audit', {
+        headers: { authorization: 'Bearer test-cron-secret-123' },
+      });
+      const res = await GET(req);
+      const body = await res.json();
+
+      expect(body.summary.clientCrashes).toBe(0);
+      expect(body.summary.staleChunkErrorsIgnored).toBe(1);
+      expect(body.summary.clean).toBe(true);
+      expect(postSlackOperationalAlert).not.toHaveBeenCalled();
+    });
+
+    it('still alerts on ChunkLoadError when client and server SHAs match (broken live deploy)', async () => {
+      mocks.mockClientErrors = [
+        {
+          error_name: 'ChunkLoadError',
+          error_message: 'Loading chunk 7177 failed.',
+          route: '/bhakti/katha',
+          created_at: new Date().toISOString(),
+          client_release_sha: '9dc6afcacc45ebf916e54f3fdf3febf5640fd58b',
+          server_release_sha: '9dc6afcacc45ebf916e54f3fdf3febf5640fd58b',
+        },
+      ];
+
+      const req = new Request('https://shoonaya.com/api/cron/telemetry-audit', {
+        headers: { authorization: 'Bearer test-cron-secret-123' },
+      });
+      const res = await GET(req);
+      const body = await res.json();
+
+      expect(body.summary.clientCrashes).toBe(1);
+      expect(body.summary.staleChunkErrorsIgnored).toBe(0);
+      expect(body.summary.clean).toBe(false);
+      expect(postSlackOperationalAlert).toHaveBeenCalled();
+    });
+  });
 });
