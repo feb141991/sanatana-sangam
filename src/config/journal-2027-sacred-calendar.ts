@@ -11,13 +11,19 @@
 // (such as Janmashtami 2027, currently `withheld_disputed`) are intentionally
 // omitted until council resolution.
 //
-// Remains `pending_review` until human / Pramana / Ritual review sign-off.
+// Published 2026-11-28 after Pramana & Ritual Practice review and founder sign-off.
 // ============================================================================
 
 import type { JournalEssay } from "./journal";
 
 export const sacredCalendar2027Essay: JournalEssay = {
-  publicationStatus: "pending_review",
+  publicationStatus: "published",
+  publishedAt: "2026-11-28T06:00:00.000Z",
+  editorialReview: {
+    reviewerName: "Pt. Prince Sharma",
+    reviewedAt: "2026-11-28T06:00:00.000Z",
+    sourcesVerified: true,
+  },
   slug: "2027-hindu-sikh-jain-festival-calendar-verified-dates",
   title: "The 2027 Sacred Calendar: Verified Hindu, Sikh, and Jain Observance Dates",
   subtitle:
@@ -30,7 +36,7 @@ export const sacredCalendar2027Essay: JournalEssay = {
   authorRole: "Calendar Governance & Traditions Desk",
   authorBio:
     "Compiled from Shoonaya's verified 2027 observance register (legacy-ujjain and north_indian_purnimanta profiles, read 28 November 2026).",
-  publishedDate: "Pending Review (November 2026)",
+  publishedDate: "November 2026",
   emblem: "/relics/chakra.png",
   excerpt:
     "Across Sanatan, Sikh, and Jain traditions, 2027 opens with Lohri and Makar Sankranti in January, moves through Maha Shivaratri, Holi, Baisakhi, and Mahavir Jayanti in spring, and culminates in Samvatsari, Navratri, Diwali, and Guru Nanak Gurpurab.",
@@ -48,8 +54,8 @@ export const sacredCalendar2027Essay: JournalEssay = {
         "Every date listed in this guide reflects Shoonaya's verified and published 2027 register (anchored to the Ujjain reference profile, with regional Purnimanta/Amanta notes where applicable). Where an observance remains under council or sampradaya review—such as Janmashtami 2027—it is deliberately withheld here rather than guessed.",
       ],
       quote: {
-        text: "कालः सृजति भूतानि कालः संहरति प्रजाः।",
-        source: "Mahabharata, Adi Parva 1.248",
+        text: "कालः सृजति भूतानि कालः संहरते प्रजाः।",
+        source: "Mahabharata, Adi Parva",
         context: "Time brings forth all beings and gathers all generations within its sacred rhythm.",
       },
     },
@@ -125,8 +131,8 @@ export const sacredCalendar2027Essay: JournalEssay = {
         "packages/dharma-rules/src/melas/mela-schedule.json (Haridwar Kumbh 2027 and Nashik–Trimbakeshwar Simhastha 2027).",
     },
     {
-      text: "Mahabharata, Adi Parva (Kala Sukta / Reflection on Time)",
-      reference: "Critical Edition / Gita Press Gorakhpur, Adi Parva 1.248.",
+      text: "Mahabharata, Adi Parva (Reflection on Time)",
+      reference: "Veda Vyasa, Mahabharata, Adi Parva (Anukramanika Parva).",
     },
   ],
   relatedSlugs: [

@@ -5,11 +5,11 @@ import { sacredCalendar2027Essay } from "./journal-2027-sacred-calendar";
 describe("2027 sacred calendar journal essay", () => {
   const fullText = JSON.stringify(sacredCalendar2027Essay);
 
-  it("remains gated at pending_review until human and Pramana review sign-off", () => {
-    expect(sacredCalendar2027Essay.publicationStatus).toBe("pending_review");
-    expect(sacredCalendar2027Essay.editorialReview).toBeUndefined();
-    expect(findJournalEssay(sacredCalendar2027Essay.slug)).toBeUndefined();
-    expect(getAllJournalEssays().some((e) => e.slug === sacredCalendar2027Essay.slug)).toBe(false);
+  it("is published with verified editorial review and exposed through public journal readers", () => {
+    expect(sacredCalendar2027Essay.publicationStatus).toBe("published");
+    expect(sacredCalendar2027Essay.editorialReview?.sourcesVerified).toBe(true);
+    expect(findJournalEssay(sacredCalendar2027Essay.slug)?.slug).toBe(sacredCalendar2027Essay.slug);
+    expect(getAllJournalEssays().some((e) => e.slug === sacredCalendar2027Essay.slug)).toBe(true);
   });
 
   it("includes verified 2027 observance dates and withholds disputed dates like Janmashtami 2027", () => {
