@@ -17,6 +17,40 @@ export interface OverviewStats {
   onboardedSeekers: number;
   pendingReports: number;
   pendingDharmVeerReview: number;
+  activeStreakSeekers?: number;
+  mandalisCount?: number;
+  traditionBreakdown?: Array<{ label: string; val: string }>;
+}
+
+export interface SupportTicketSummary {
+  open: number;
+  urgent: number;
+  waitingOnSeeker: number;
+  resolved: number;
+  recentOpen: Array<{
+    id: string;
+    ticket_number: string;
+    subject: string;
+    priority: string;
+    status: string;
+    seeker_name?: string | null;
+    created_at: string;
+  }>;
+}
+
+export interface OperationsPulse {
+  notificationQueue: {
+    pending: number;
+    claimed: number;
+    sent: number;
+    failed: number;
+  } | null;
+  crons: {
+    total: number;
+    healthy: number;
+    failing: number;
+    stale: number;
+  } | null;
 }
 
 export interface OperatorActivityItem {

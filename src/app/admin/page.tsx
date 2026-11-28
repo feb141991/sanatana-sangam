@@ -13,8 +13,10 @@ import {
 import type { SeekerTrend } from "@/lib/admin-seeker-trend";
 import {
   splitOverviewAlerts,
+  type OperationsPulse,
   type OperatorActivityItem,
   type OverviewStats,
+  type SupportTicketSummary,
 } from "@/lib/admin-overview-view-model";
 
 /**
@@ -38,6 +40,15 @@ export default function AdminOverviewPage() {
   const [activityLogs, setActivityLogs] = useState<OperatorActivityItem[]>([]);
   const [activityLoading, setActivityLoading] = useState(true);
   const [activityFailed, setActivityFailed] = useState(false);
+
+  // Priority Operational Signals: Support Tickets & Cron/Notification Delivery Pulse
+  const [ticketSummary, setTicketSummary] = useState<SupportTicketSummary | null>(null);
+  const [ticketsLoading, setTicketsLoading] = useState(true);
+  const [ticketsFailed, setTicketsFailed] = useState(false);
+
+  const [opsPulse, setOpsPulse] = useState<OperationsPulse | null>(null);
+  const [opsLoading, setOpsLoading] = useState(true);
+  const [opsFailed, setOpsFailed] = useState(false);
 
   // Platform edge cache flush
   const [isFlushing, setIsFlushing] = useState(false);
@@ -64,6 +75,11 @@ export default function AdminOverviewPage() {
           onboardedSeekers: Number(data.onboardedSeekers) || 0,
           pendingReports: Number(data.pendingReports) || 0,
           pendingDharmVeerReview: Number(data.pendingDharmVeerReview) || 0,
+          activeStreakSeekers: Number(data.activeNow) || 0,
+          mandalisCount: Number(data.globalReach) || 0,
+          traditionBreakdown: Array.isArray(data.intelligence?.traditionBreakdown)
+            ? data.intelligence.traditionBreakdown
+            : undefined,
         });
         loadedSomething = true;
       }
@@ -133,16 +149,86 @@ export default function AdminOverviewPage() {
     }
   }, []);
 
+  const fetchTickets = useCallback(async () => {
+    setTicketsLoading(true);
+    try {
+      const res = await fetch("/api/admin/tickets?status=open&limit=4");
+      if (!res.ok) {
+        setTicketsFailed(true);
+        return;
+      }
+      const data = await res.json();
+      if (data && data.stats) {
+        setTicketSummary({
+          open: Number(data.stats.open) || 0,
+          urgent: Number(data.stats.urgent) || 0,
+          waitingOnSeeker: Number(data.stats.waitingOnSeeker) || 0,
+          resolved: Number(data.stats.resolved) || 0,
+          recentOpen: Array.isArray(data.tickets) ? data.tickets.slice(0, 4) : [],
+        });
+        setTicketsFailed(false);
+      } else {
+        setTicketsFailed(true);
+      }
+    } catch (err) {
+      console.error("[AdminOverview] Failed to fetch tickets:", err);
+      setTicketsFailed(true);
+    } finally {
+      setTicketsLoading(false);
+    }
+  }, []);
+
+  const fetchOpsPulse = useCallback(async () => {
+    setOpsLoading(true);
+    try {
+      const res = await fetch("/api/admin/crons");
+      if (!res.ok) {
+        setOpsFailed(true);
+        return;
+      }
+      const data = await res.json();
+      const cronsArr = Array.isArray(data?.crons) ? data.crons : null;
+      const cronStats = cronsArr
+        ? {
+            total: cronsArr.length,
+            healthy: cronsArr.filter((c: { status?: string }) => c.status === "healthy" || c.status === "ok").length,
+            failing: cronsArr.filter((c: { status?: string }) => c.status === "failing" || c.status === "error").length,
+            stale: cronsArr.filter((c: { status?: string }) => c.status === "stale" || c.status === "overdue").length,
+          }
+        : null;
+      const q = data?.queue;
+      const queueStats = q
+        ? {
+            pending: Number(q.pending) || 0,
+            claimed: Number(q.claimed) || 0,
+            sent: Number(q.sent) || 0,
+            failed: Number(q.failed) || 0,
+          }
+        : null;
+      setOpsPulse({ crons: cronStats, notificationQueue: queueStats });
+      setOpsFailed(false);
+    } catch (err) {
+      console.error("[AdminOverview] Failed to fetch ops pulse:", err);
+      setOpsFailed(true);
+    } finally {
+      setOpsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchOverviewData();
     fetchTrend();
     fetchActivityLogs();
-  }, [fetchOverviewData, fetchTrend, fetchActivityLogs]);
+    fetchTickets();
+    fetchOpsPulse();
+  }, [fetchOverviewData, fetchTrend, fetchActivityLogs, fetchTickets, fetchOpsPulse]);
 
   const handleRefresh = () => {
     fetchOverviewData();
     fetchTrend();
     fetchActivityLogs();
+    fetchTickets();
+    fetchOpsPulse();
   };
 
   const handleFlushCache = async () => {
@@ -200,6 +286,12 @@ export default function AdminOverviewPage() {
         activity={activityLogs}
         activityLoading={activityLoading}
         activityFailed={activityFailed}
+        ticketSummary={ticketSummary}
+        ticketsLoading={ticketsLoading && !ticketSummary}
+        ticketsFailed={ticketsFailed && !ticketSummary}
+        opsPulse={opsPulse}
+        opsLoading={opsLoading && !opsPulse}
+        opsFailed={opsFailed && !opsPulse}
         isFlushing={isFlushing}
         flushMessage={flushMessage}
         copiedAlertId={copiedAlertId}
@@ -222,6 +314,8 @@ export default function AdminOverviewPage() {
           fetchOverviewData();
           fetchTrend();
           fetchActivityLogs();
+          fetchTickets();
+          fetchOpsPulse();
         }}
       />
       </div>
