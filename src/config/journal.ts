@@ -4,6 +4,7 @@
 // ============================================================================
 
 import { kumbh2027Essay } from "./journal-kumbh-2027";
+import { sacredCalendar2027Essay } from "./journal-2027-sacred-calendar";
 import { tithiDiscrepancyEssay } from "./journal-tithi-discrepancy";
 import { brahmaMuhurtaEssay } from "./journal-brahma-muhurta";
 import { ekadashiParanaEssay } from "./journal-ekadashi-parana";
@@ -833,6 +834,8 @@ const journalEssays: JournalEssay[] = [
   },
   // Built from the shared Kumbh schedule (./journal-kumbh-2027); hidden until a named reviewer verifies it.
   kumbh2027Essay,
+  // 2027 Sacred Calendar guide (./journal-2027-sacred-calendar); pending_review until human/Pramana sign-off.
+  sacredCalendar2027Essay,
   // The Global Tithi Discrepancy & Timezones: Canonical Astrometric and Shastric Study
   tithiDiscrepancyEssay,
   // The Sacred Science of Brahma Muhurta
