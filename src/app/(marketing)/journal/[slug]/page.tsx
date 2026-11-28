@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { AppStoreBadges } from "@/components/marketing/AppStoreBadges";
+import { JournalSectionTable } from "@/components/journal/JournalSectionTable";
 import { GeoArticleJsonLd } from "@/components/seo/JsonLd";
 import { GeoMicroSummary } from "@/components/seo/GeoMicroSummary";
 import { extractJournalGeo } from "@/lib/seo/geo-extractors";
@@ -43,6 +44,8 @@ export async function generateMetadata({
 
   if (!essay) return {};
 
+  const ogImageUrl = `https://www.shoonaya.com/api/og/wisdom?type=journal&slug=${essay.slug}`;
+
   return {
     title: `${essay.title} | The Sanctuary Journal`,
     description: essay.excerpt,
@@ -55,6 +58,20 @@ export async function generateMetadata({
       url: `https://www.shoonaya.com/journal/${essay.slug}`,
       type: "article",
       authors: [essay.author],
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${essay.title} - The Sanctuary Journal`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${essay.title} | Shoonaya Journal`,
+      description: essay.excerpt,
+      images: [ogImageUrl],
     },
   };
 }
@@ -176,13 +193,40 @@ export default async function JournalArticlePage({ params }: JournalArticleProps
                     {section.heading}
                   </h2>
 
-                  <div className="max-w-[74ch] space-y-5 text-base leading-8 text-[var(--text-muted-warm)] font-normal [text-wrap:pretty]">
-                    {section.paragraphs.map((p, pIdx) => (
-                      <p key={pIdx} className="first-letter:text-xl">
-                        {p}
-                      </p>
-                    ))}
-                  </div>
+                  {section.highlights && section.highlights.length > 0 && (
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {section.highlights.map((item, hIdx) => (
+                        <div
+                          key={hIdx}
+                          className="rounded-2xl border border-[var(--card-border)] bg-[var(--surface-soft)] p-4"
+                        >
+                          <span className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-dim)]">
+                            {item.label}
+                          </span>
+                          <span className="mt-1 block font-display text-lg font-bold text-[var(--brand-primary-strong)]">
+                            {item.value}
+                          </span>
+                          {item.note && (
+                            <span className="mt-1 block text-xs text-[var(--text-muted-warm)]">
+                              {item.note}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.paragraphs.length > 0 && (
+                    <div className="max-w-[74ch] space-y-5 text-base leading-8 text-[var(--text-muted-warm)] font-normal [text-wrap:pretty]">
+                      {section.paragraphs.map((p, pIdx) => (
+                        <p key={pIdx} className={p.trimStart().startsWith("•") ? "" : "first-letter:text-xl"}>
+                          {p}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.table && <JournalSectionTable table={section.table} />}
 
                   {/* Classical Quote Callout */}
                   {section.quote && (

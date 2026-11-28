@@ -5,6 +5,10 @@
 
 import { kumbh2027Essay } from "./journal-kumbh-2027";
 import { sacredCalendar2027Essay } from "./journal-2027-sacred-calendar";
+import { ekadashi2027Essay } from "./journal-ekadashi-2027";
+import { purnimaAmavasya2027Essay } from "./journal-purnima-amavasya-2027";
+import { diwali2027Essay } from "./journal-diwali-2027";
+import { sikhCalendar2027Essay } from "./journal-sikh-calendar-2027";
 import { tithiDiscrepancyEssay } from "./journal-tithi-discrepancy";
 import { brahmaMuhurtaEssay } from "./journal-brahma-muhurta";
 import { ekadashiParanaEssay } from "./journal-ekadashi-parana";
@@ -29,9 +33,25 @@ import { chhathPujaEssay } from "./journal-chhath-puja";
 import { amavasyaPurnimaEssay } from "./journal-amavasya-purnima";
 import { fastingScienceEssay } from "./journal-fasting-science";
 
+export type JournalSectionHighlight = {
+  label: string;
+  value: string;
+  note?: string;
+};
+
+export type JournalSectionTable = {
+  caption?: string;
+  columns: string[];
+  rows: string[][];
+  /** Optional column index used to render interactive filter pills (e.g. Tradition or Quarter). */
+  filterColumnIndex?: number;
+};
+
 export type JournalSection = {
   heading: string;
+  highlights?: JournalSectionHighlight[];
   paragraphs: string[];
+  table?: JournalSectionTable;
   quote?: {
     text: string;
     source: string;
@@ -834,8 +854,13 @@ const journalEssays: JournalEssay[] = [
   },
   // Built from the shared Kumbh schedule (./journal-kumbh-2027); hidden until a named reviewer verifies it.
   kumbh2027Essay,
-  // 2027 Sacred Calendar guide (./journal-2027-sacred-calendar); pending_review until human/Pramana sign-off.
+  // 2027 Sacred Calendar guide (./journal-2027-sacred-calendar); published 2026-11-28.
   sacredCalendar2027Essay,
+  // 2027 Tier-1 SEO calendar guides (pending_review until Pramana / Ritual / founder sign-off).
+  ekadashi2027Essay,
+  purnimaAmavasya2027Essay,
+  diwali2027Essay,
+  sikhCalendar2027Essay,
   // The Global Tithi Discrepancy & Timezones: Canonical Astrometric and Shastric Study
   tithiDiscrepancyEssay,
   // The Sacred Science of Brahma Muhurta
